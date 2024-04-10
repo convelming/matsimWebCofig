@@ -164,147 +164,147 @@
     "en-US":"BrainExpBeta"
   },
   "PathSizeLogitBeta": {
-    "zh-CN":"PathSizeLogitBeta",
+    "zh-CN":"PathSizeLogit参数，貌似现版本不兼容",
     "en-US":"PathSizeLogitBeta"
   },
   "fractionOfIterationsToStartScoreMSA": {
-    "zh-CN":"fractionOfIterationsToStartScoreMSA",
+    "zh-CN":"重新计算出行方式在迭代次数的百分比",
     "en-US":"fractionOfIterationsToStartScoreMSA"
   },
   "learningRate": {
-    "zh-CN":"learningRate",
+    "zh-CN":"学习率",
     "en-US":"learningRate"
   },
   "usingOldScoringBelowZeroUtilityDuration": {
-    "zh-CN":"usingOldScoringBelowZeroUtilityDuration",
+    "zh-CN":"使用旧的停留时间小于0的效用计算方式",
     "en-US":"usingOldScoringBelowZeroUtilityDuration"
   },
   "writeExperiencedPlans": {
-    "zh-CN":"writeExperiencedPlans",
+    "zh-CN":"是否保存每个迭代过程中实际出行计划与评分",
     "en-US":"writeExperiencedPlans"
   },
   "Parametersets: Scoring": {
-    "zh-CN":"Parametersets: Scoring",
+    "zh-CN":"参数集: 效用评分",
     "en-US":"Parametersets: Scoring"
   },
   "Scoring": {
-    "zh-CN":"Scoring",
+    "zh-CN":"评分",
     "en-US":"Scoring"
   },
   "earlyDeparture": {
-    "zh-CN":"earlyDeparture",
+    "zh-CN":"提前出发",
     "en-US":"earlyDeparture"
   },
   "lateArrival": {
-    "zh-CN":"lateArrival",
+    "zh-CN":"迟到",
     "en-US":"lateArrival"
   },
   "marginalUtilityOfMoney": {
-    "zh-CN":"marginalUtilityOfMoney",
+    "zh-CN":"费用（钱）的边际效用",
     "en-US":"marginalUtilityOfMoney"
   },
   "performing": {
-    "zh-CN":"performing",
+    "zh-CN":"活动进行",
     "en-US":"performing"
   },
   "subpopulation": {
-    "zh-CN":"subpopulation",
+    "zh-CN":"子群体ID",
     "en-US":"subpopulation"
   },
   "utilityOfLineSwitch": {
-    "zh-CN":"utilityOfLineSwitch",
+    "zh-CN":"换乘效用项的参数",
     "en-US":"utilityOfLineSwitch"
   },
   "waiting": {
-    "zh-CN":"waiting",
+    "zh-CN":"等待效用值的参数",
     "en-US":"waiting"
   },
   "waitingPt": {
-    "zh-CN":"waitingPt",
+    "zh-CN":"等待（公交）效用值的参数",
     "en-US":"waitingPt"
   },
   "Parametersets: Activity": {
-    "zh-CN":"Parametersets: Activity",
+    "zh-CN":"活动参数集",
     "en-US":"Parametersets: Activity"
   },
   "Activity": {
-    "zh-CN":"Activity",
+    "zh-CN":"活动",
     "en-US":"Activity"
   },
   "Parametersets: Mode": {
-    "zh-CN":"Parametersets: Mode",
+    "zh-CN":"出行方式参数集",
     "en-US":"Parametersets: Mode"
   },
   "Mode": {
-    "zh-CN":"Mode",
+    "zh-CN":"出行方式",
     "en-US":"Mode"
   },
   "activityType": {
-    "zh-CN":"activityType",
+    "zh-CN":"活动类型",
     "en-US":"activityType"
   },
   "closingTime": {
-    "zh-CN":"closingTime",
+    "zh-CN":"关闭时间",
     "en-US":"closingTime"
   },
   "earliestEndTime": {
-    "zh-CN":"earliestEndTime",
+    "zh-CN":"最早的结束时刻",
     "en-US":"earliestEndTime"
   },
   "latestStartTime": {
-    "zh-CN":"latestStartTime",
+    "zh-CN":"最晚的开始时刻",
     "en-US":"latestStartTime"
   },
   "minimalDuration": {
-    "zh-CN":"minimalDuration",
+    "zh-CN":"最小停留时间段",
     "en-US":"minimalDuration"
   },
   "openingTime": {
-    "zh-CN":"openingTime",
+    "zh-CN":"开门（营业）时间",
     "en-US":"openingTime"
   },
   "priority": {
-    "zh-CN":"priority",
+    "zh-CN":"优先级",
     "en-US":"priority"
   },
   "scoringThisActivityAtAll": {
-    "zh-CN":"scoringThisActivityAtAll",
+    "zh-CN":"是否计算此活动的效用值",
     "en-US":"scoringThisActivityAtAll"
   },
   "typicalDuration": {
-    "zh-CN":"typicalDuration",
+    "zh-CN":"典型的停留时间",
     "en-US":"typicalDuration"
   },
   "typicalDurationScoreComputation": {
-    "zh-CN":"typicalDurationScoreComputation",
+    "zh-CN":"计算停留效用值的方法",
     "en-US":"typicalDurationScoreComputation"
   },
   "constant": {
-    "zh-CN":"constant",
+    "zh-CN":"产量",
     "en-US":"constant"
   },
   "dailyMonetaryConstant": {
-    "zh-CN":"dailyMonetaryConstant",
+    "zh-CN":"日常费用常数",
     "en-US":"dailyMonetaryConstant"
   },
   "dailyUtilityConstant": {
-    "zh-CN":"dailyUtilityConstant",
+    "zh-CN":"日常效用常数",
     "en-US":"dailyUtilityConstant"
   },
   "marginalUtilityOfDistance_util_m": {
-    "zh-CN":"marginalUtilityOfDistance_util_m",
+    "zh-CN":"出行距离的边际效用参数（以米计）",
     "en-US":"marginalUtilityOfDistance_util_m"
   },
   "marginalUtilityOfTraveling_util_hr": {
-    "zh-CN":"marginalUtilityOfTraveling_util_hr",
+    "zh-CN":"出行时间边际效用参数（以小时计）",
     "en-US":"marginalUtilityOfTraveling_util_hr"
   },
   "mode": {
-    "zh-CN":"mode",
+    "zh-CN":"出行方式",
     "en-US":"mode"
   },
   "monetaryDistanceRate": {
-    "zh-CN":"monetaryDistanceRate",
+    "zh-CN":"出行费用的距离折算率参数",
     "en-US":"monetaryDistanceRate"
   },
 }

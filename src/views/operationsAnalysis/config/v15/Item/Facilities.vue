@@ -40,7 +40,7 @@
 <language>
 {
   "facilitiesSource": {
-    "zh-CN":"facilitiesSource",
+    "zh-CN":"设施来源",
     "en-US":"facilitiesSource"
   },
   "none": {
@@ -68,23 +68,23 @@
     "en-US":"onePerActivityLocationInPlansFile"
   },
   "idPrefix": {
-    "zh-CN":"idPrefix",
+    "zh-CN":"ID前缀",
     "en-US":"idPrefix"
   },
   "inputCRS": {
-    "zh-CN":"inputCRS",
+    "zh-CN":"输入坐标系",
     "en-US":"inputCRS"
   },
   "inputFacilitiesFile": {
-    "zh-CN":"inputFacilitiesFile",
+    "zh-CN":"设施文件路径",
     "en-US":"inputFacilitiesFile"
   },
   "inputFacilityAttributesFile": {
-    "zh-CN":"inputFacilityAttributesFile",
+    "zh-CN":"设施属性文件路径",
     "en-US":"inputFacilityAttributesFile"
   },
   "insistingOnUsingDeprecatedFacilitiesAttributeFile": {
-    "zh-CN":"insistingOnUsingDeprecatedFacilitiesAttributeFile",
+    "zh-CN":"是否坚持使用已过时的设施属性文件",
     "en-US":"insistingOnUsingDeprecatedFacilitiesAttributeFile"
   },
 }

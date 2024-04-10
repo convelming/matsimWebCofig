@@ -28,23 +28,23 @@
 <language>
 {
   "estimatedNumberOfEvents": {
-    "zh-CN":"estimatedNumberOfEvents",
+    "zh-CN":"预估events的数量",
     "en-US":"estimatedNumberOfEvents"
   },
   "eventsQueueSize": {
-    "zh-CN":"eventsQueueSize",
+    "zh-CN":"events排队数量",
     "en-US":"eventsQueueSize"
   },
   "numberOfThreads": {
-    "zh-CN":"numberOfThreads",
+    "zh-CN":"线程数",
     "en-US":"numberOfThreads"
   },
   "oneThreadPerHandler": {
-    "zh-CN":"oneThreadPerHandler",
+    "zh-CN":"是否单独已个线程负责一个监听器",
     "en-US":"oneThreadPerHandler"
   },
   "synchronizeOnSimSteps": {
-    "zh-CN":"synchronizeOnSimSteps",
+    "zh-CN":"是否同步每个仿真步长",
     "en-US":"synchronizeOnSimSteps"
   },
 }

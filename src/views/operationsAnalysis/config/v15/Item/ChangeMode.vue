@@ -1,18 +1,18 @@
 <template>
   <div class="ConfigItem col_1 ChangeMode">
-    <div class="ConfigItem_title" :style="`color:#000;`" title="ChangeMode">ChangeMode</div>
+    <div class="ConfigItem_title" :style="`color:#000;`" title="ChangeMode" >ChangeMode</div>
     <div class="ConfigItem_bodyer">
       <el-form class="scroll_y" label-position="top">
-        <el-form-item :label="$l('Ignore Car Availability')">
+        <el-form-item :label="$l('ignoreCarAvailability')">
           <el-switch v-model="form.ignoreCarAvailability" active-value="true" inactive-value="false" />
         </el-form-item>
-        <el-form-item :label="$l('Mode Switch Behavior')">
+        <el-form-item :label="$l('modeSwitchBehavior')">
           <el-radio-group class="col" v-model="form.modeSwitchBehavior">
             <el-radio label="fromAllModesToSpecifiedModes">{{ $l("fromAllModesToSpecifiedModes") }}</el-radio>
             <el-radio label="fromSpecifiedModesToSpecifiedModes">{{ $l("fromSpecifiedModesToSpecifiedModes") }}</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item :label="$l('Modes')">
+        <el-form-item :label="$l('modes')">
           <Tags v-model="form.modes" />
         </el-form-item>
       </el-form>
@@ -22,25 +22,37 @@
 
 <language>
 {
-  "Ignore Car Availability": {
-    "zh-CN": "Ignore Car Availability",
+  "ignoreCarAvailability": {
+    "zh-CN": "忽略是否可以使用私家车",
     "en-US": "Ignore Car Availability"
   },
-  "Mode Switch Behavior": {
-    "zh-CN": "Mode Switch Behavior",
+  "ignoreCarAvailabilityHelp": {
+  "zh-CN": "如果忽略，则方式选择时默认可选私家车出行",
+  "en-US": "if ignore, every can choose car as travel mode"
+  },
+  "modeSwitchBehavior": {
+    "zh-CN": "出行方式选择行为",
     "en-US": "Mode Switch Behavior"
   },
+  "modeSwitchBehaviorHelp": {
+  "zh-CN": "出行方式变化的选择策略",
+  "en-US": "Mode Switch Behavior"
+  },
   "fromAllModesToSpecifiedModes": {
-    "zh-CN": "fromAllModesToSpecifiedModes",
+    "zh-CN": "从所有方式到指定的方式",
     "en-US": "fromAllModesToSpecifiedModes"
   },
   "fromSpecifiedModesToSpecifiedModes": {
-    "zh-CN": "fromSpecifiedModesToSpecifiedModes",
+    "zh-CN": "从指定的方式到指定的方式",
     "en-US": "fromSpecifiedModesToSpecifiedModes"
   },
-  "Modes": {
-    "zh-CN": "Modes",
+  "modes": {
+    "zh-CN": "出行方式",
     "en-US": "Modes"
+  },
+  "modesHelp": {
+  "zh-CN": "默认的出行方式有car，pt，walk，ride，其他出行方式要自定义",
+  "en-US": "by default, only car, pt, walk and ride are allowed, other modes need to be configured in other modules!!"
   },
 }
 </language>

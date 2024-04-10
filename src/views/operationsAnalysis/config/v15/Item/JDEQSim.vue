@@ -34,7 +34,7 @@
 <language>
 {
   "carSize": {
-    "zh-CN":"carSize",
+    "zh-CN":"车辆大小",
     "en-US":"carSize"
   },
   "endTime": {
@@ -42,7 +42,7 @@
     "en-US":"endTime"
   },
   "flowCapacityFactor": {
-    "zh-CN":"flowCapacityFactor",
+    "zh-CN":"路段流量系数",
     "en-US":"flowCapacityFactor"
   },
   "gapTravelSpeed": {
@@ -50,7 +50,7 @@
     "en-US":"gapTravelSpeed"
   },
   "minimumInFlowCapacity": {
-    "zh-CN":"minimumInFlowCapacity",
+    "zh-CN":"最小路段流量",
     "en-US":"minimumInFlowCapacity"
   },
   "squeezeTime": {
@@ -58,7 +58,7 @@
     "en-US":"squeezeTime"
   },
   "storageCapacityFactor": {
-    "zh-CN":"storageCapacityFactor",
+    "zh-CN":"路段可容纳车辆系数",
     "en-US":"storageCapacityFactor"
   },
 }

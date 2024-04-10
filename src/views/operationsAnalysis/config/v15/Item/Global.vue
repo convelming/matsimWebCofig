@@ -5,19 +5,19 @@
     </div>
     <div class="ConfigItem_bodyer">
       <el-form class="scroll_y" label-position="top">
-        <el-form-item :label="$l('坐标系')">
+        <el-form-item :label="$l('coordinateSystem')">
           <el-input v-model="form.coordinateSystem" clearable />
         </el-form-item>
-        <el-form-item :label="$l('默认分隔符')">
+        <el-form-item :label="$l('defaultDelimiter')">
           <el-input v-model="form.defaultDelimiter" clearable />
         </el-form-item>
-        <el-form-item :label="$l('随机种子')">
+        <el-form-item :label="$l('randomSeed')">
           <el-input-number v-model="form.randomSeed" :step="1" :min="0" step-strictly controls-position="right" />
         </el-form-item>
-        <el-form-item :label="$l('线程数')">
+        <el-form-item :label="$l('numberOfThreads')">
           <el-input-number v-model="form.numberOfThreads" :step="1" :min="1" step-strictly controls-position="right" />
         </el-form-item>
-        <el-form-item :label="$l('坚持使用弃用的配置版本')">
+        <el-form-item :label="$l('insistingOnDeprecatedConfigVersion')">
           <el-switch v-model="form.insistingOnDeprecatedConfigVersion" active-value="true" inactive-value="false" />
         </el-form-item>
       </el-form>
@@ -27,25 +27,25 @@
 
 <language>
 {
-  "坐标系": {
+  "coordinateSystem": {
     "zh-CN":"坐标系",
-    "en-US":"坐标系"
+    "en-US":"coordinateSystem"
   },
-  "默认分隔符": {
+  "defaultDelimiter": {
     "zh-CN":"默认分隔符",
-    "en-US":"默认分隔符"
+    "en-US":"defaultDelimiter"
   },
-  "随机种子": {
+  "randomSeed": {
     "zh-CN":"随机种子",
-    "en-US":"随机种子"
+    "en-US":"randomSeed"
   },
-  "线程数": {
+  "numberOfThreads": {
     "zh-CN":"线程数",
-    "en-US":"线程数"
+    "en-US":"numberOfThreads"
   },
-  "坚持使用弃用的配置版本": {
+  "insistingOnDeprecatedConfigVersion": {
     "zh-CN":"坚持使用弃用的配置版本",
-    "en-US":"坚持使用弃用的配置版本"
+    "en-US":"insistingOnDeprecatedConfigVersion"
   },
 }
 </language>
