@@ -1,0 +1,151 @@
+import {
+  getAllBase,
+  getAllScheme,
+  loadScheme,
+  runMatsim,
+  addScheme,
+  saveScheme,
+} from "@/api/database";
+
+const datasource = {
+  state: {
+    dataBase: "",
+    dataBaseList: [],
+    dataBaseListLoading: false,
+
+    dataSource: "",
+    dataSourceList: [],
+    dataSourceListLoading: false,
+  },
+
+  mutations: {
+    SET_DATA_BASE(state, dataBase) {
+      state.dataBase = dataBase;
+    },
+    SET_DATA_BASE_LIST(state, dataBaseList) {
+      console.log(dataBaseList);
+      state.dataBaseList = dataBaseList;
+    },
+    SET_DATA_BASE_LIST_LOADING(state, dataBaseListLoading) {
+      state.dataBaseListLoading = dataBaseListLoading;
+    },
+
+    SET_DATA_SOURCE(state, dataSource) {
+      state.dataSource = dataSource;
+    },
+    SET_DATA_SOURCE_LIST(state, dataSourceList) {
+      state.dataSourceList = dataSourceList;
+    },
+    SET_DATA_SOURCE_LIST_LOADING(state, dataSourceListLoading) {
+      state.dataSourceListLoading = dataSourceListLoading;
+    },
+
+    SET_DATA_SOURCE_RUN_STATUS(state, { index, runStatus }) {
+      state.dataSourceList[index].runStatus = runStatus;
+    },
+    SET_DATA_SOURCE_LOAD_STATUS(state, { index, loadStatus }) {
+      state.dataSourceList[index].loadStatus = loadStatus;
+    },
+  },
+
+  actions: {
+    async initDataBase({ commit, dispatch }) {
+      commit("SET_DATA_BASE", "");
+      commit("SET_DATA_BASE_LIST", []);
+      commit("SET_DATA_SOURCE", "");
+      commit("SET_DATA_SOURCE_LIST", []);
+      await dispatch("getDataBaseList");
+    },
+
+    setDataBase({ commit }, dataBase) {
+      commit("SET_DATA_BASE", dataBase);
+    },
+    setDataSource({ commit }, dataSource) {
+      commit("SET_DATA_SOURCE", dataSource);
+    },
+
+    async getDataBaseList({ commit }) {
+      try {
+        commit("SET_DATA_BASE_LIST_LOADING", true);
+        const res = await getAllBase();
+        commit(
+          "SET_DATA_BASE_LIST",
+          res.data.map((v) => ({ name: v }))
+        );
+        commit("SET_DATA_BASE_LIST_LOADING", false);
+      } catch (error) {
+        commit("SET_DATA_BASE_LIST", []);
+        commit("SET_DATA_SOURCE_LIST_LOADING", false);
+      }
+    },
+    async getDataSourceList({ commit }, dataBase) {
+      try {
+        commit("SET_DATA_SOURCE_LIST_LOADING", true);
+        const res = await getAllScheme({
+          base: dataBase,
+        });
+        commit("SET_DATA_SOURCE_LIST", res.data);
+        commit("SET_DATA_SOURCE_LIST_LOADING", false);
+      } catch (error) {
+        commit("SET_DATA_SOURCE_LIST", []);
+        commit("SET_DATA_SOURCE_LIST_LOADING", false);
+      }
+    },
+
+    async saveDataSource({ commit, state, dispatch }, { key }) {
+      try {
+        const res = await saveScheme({ key });
+        return res;
+      } catch (error) {
+      } finally {
+        dispatch("getDataSourceList", state.dataBase);
+      }
+    },
+    async createDataSource({ commit, state, dispatch }, { base, key }) {
+      try {
+        const res = await addScheme({ base, key });
+        return res;
+      } catch (error) {
+      } finally {
+        dispatch("getDataSourceList", state.dataBase);
+      }
+    },
+    async loadDataSource({ commit, state, dispatch }, { name }) {
+      try {
+        let index = state.dataSourceList.findIndex((v) => v.name === name);
+        if (index > -1) {
+          commit("SET_DATA_SOURCE_LOAD_STATUS", {
+            index,
+            loadStatus: "加载中",
+          });
+        }
+        await loadScheme({
+          key: name,
+        });
+      } finally {
+        dispatch("getDataSourceList", state.dataBase);
+      }
+    },
+    async runDataSource({ commit, state, dispatch }, { key }) {
+      try {
+        let index = state.dataSourceList.findIndex((v) => v.name === key);
+        if (index > -1) {
+          commit("SET_DATA_SOURCE_RUN_STATUS", { index, runStatus: "运行中" });
+        }
+        await runMatsim({
+          key: key,
+        });
+      } finally {
+        dispatch("getDataSourceList", state.dataBase);
+      }
+    },
+  },
+  getters: {
+    dataBase: (state) => state.dataBase,
+    dataBaseList: (state) => state.dataBaseList,
+    dataSource: (state) => state.dataSource,
+    dataSourceList: (state) => state.dataSourceList,
+  },
+};
+
+export default datasource;
