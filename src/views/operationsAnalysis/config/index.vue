@@ -20,7 +20,7 @@
     </div>
     <div class="toolbar">
       <div class="btn2" style="font-size: 20px; color: red">
-        <div class="text">BUG</div>
+        <div class="text"><a href="https://doc.weixin.qq.com/sheet/e3_AdQA8Aa_ADMt1qh97LkSHer6ALqI2?scode=APwA6gfEAA0aeGdABPAdQA8Aa_ADM&tab=f2oofj">BUG</a></div>
       </div>
       <div class="btn2" @click="handleScrollTop()">
         <img class="icon" src="@/assets/image/顶部.png" alt="" />
