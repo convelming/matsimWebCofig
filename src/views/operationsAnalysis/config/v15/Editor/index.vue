@@ -9,22 +9,6 @@ import { keymap } from "@codemirror/view";
 import { Transaction, EditorState } from "@codemirror/state";
 
 export default {
-  props: {
-    value: {
-      type: String,
-    },
-  },
-  watch: {
-    value: {
-      handler(val) {
-        if (this._myView) {
-          this._myView.dispatch({
-            changes: { from: 0, to: this._myView.state.doc.length, insert: val },
-          });
-        }
-      },
-    },
-  },
   mounted() {
     let startState = EditorState.create({
       doc: this.value,
@@ -37,6 +21,18 @@ export default {
   },
   destroyed() {
     this._myView.destroy();
+  },
+  methods: {
+    setXml(val) {
+      if (this._myView) {
+        this._myView.dispatch({
+          changes: { from: 0, to: this._myView.state.doc.length, insert: val },
+        });
+      }
+    },
+    getXml() {
+      return this._myView.state.doc.toString();
+    },
   },
 };
 </script>

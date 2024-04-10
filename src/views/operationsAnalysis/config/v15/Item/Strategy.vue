@@ -1,8 +1,6 @@
 <template>
   <div class="ConfigItem col_2 Strategy">
-    <div class="ConfigItem_title" :style="`color:#000;`" title="Strategy">
-      Strategy
-    </div>
+    <div class="ConfigItem_title" :style="`color:#000;`" title="Strategy">Strategy</div>
     <div class="ConfigItem_bodyer">
       <el-form class="scroll_y" label-position="top">
         <el-row :gutter="20">
@@ -217,6 +215,24 @@ const defaultXml = `
 		<param name="maxAgentPlanMemorySize" value="5" />
 		<!-- strategyName of PlanSelector for plans removal.  Possible defaults: WorstPlanSelector SelectRandom SelectExpBetaForRemoval ChangeExpBetaForRemoval PathSizeLogitSelectorForRemoval . The current default, WorstPlanSelector is not a good choice from a discrete choice theoretical perspective. Alternatives, however, have not been systematically tested. kai, feb'12 -->
 		<param name="planSelectorForRemoval" value="WorstPlanSelector" />
+    <parameterset type="strategysettings">			
+      <!-- iteration after which strategy will be disabled.  most
+      useful for ''innovative'' strategies (new routes, new times, ...). Normally, better use
+      fractionOfIterationsToDisableInnovation -->
+      <param name="disableAfterIteration" value="-1" />			<!-- path to external executable (if
+      applicable) -->
+      <param name="executionPath" value="null" />			<!-- strategyName of strategy.  Possible default
+      names: SelectRandom BestScore KeepLastSelected ChangeExpBeta SelectExpBeta SelectPathSizeLogit
+      (selectors),
+      ReRouteTimeAllocationMutatorTimeAllocationMutator_ReRouteChangeSingleTripModeChangeTripModeSubtourModeChoice
+      (innovative strategies). -->
+      <param name="strategyName" value="ChangeTripMode" />			<!-- subpopulation to which the strategy
+      applies. "null" refers to the default population, that is, the set of persons for which no
+      explicit subpopulation is defined (ie no subpopulation attribute) -->
+      <param name="subpopulation" value="null" />			<!-- weight of a strategy: for each agent, a
+      strategy will be selected with a probability proportional to its weight -->
+      <param name="weight" value="0.6" />
+    </parameterset>
 	</module>
 `;
 export default {
@@ -314,20 +330,20 @@ export default {
           });
         }
       }
+
       function mapFunc(v) {
-        const nodes = ["strategyName", "weight"];
-        if (v.subpopulation) {
-          nodes.push("subpopulation");
-        }
+        const nodes = ["strategyName", "weight", "subpopulation"];
         return {
           name: "parameterset",
           attrs: {
             type: "strategysettings",
           },
-          nodes: nodes.map((v2) => ({
-            name: "param",
-            attrs: { name: v2, value: v[v2] },
-          })),
+          nodes: nodes
+            .filter((v2) => v[v2] !== "" && v[v2] !== null && v[v2] !== "null")
+            .map((v2) => ({
+              name: "param",
+              attrs: { name: v2, value: v[v2] },
+            })),
         };
       }
       nodes.push(...Innovation.map(mapFunc));
@@ -341,10 +357,7 @@ export default {
       });
     },
     handleAddInnovation() {
-      let index =
-        this.form.Innovation.length > 0
-          ? this.form.Innovation[this.form.Innovation.length - 1].index + 1
-          : 1;
+      let index = this.form.Innovation.length > 0 ? this.form.Innovation[this.form.Innovation.length - 1].index + 1 : 1;
       this.form.Innovation.push({
         open: false,
         name: `${this.$l("Innovation")} ${index}`,
@@ -360,10 +373,7 @@ export default {
       if (index >= 0) this.form.Innovation.splice(index, 1);
     },
     handleAddSelection() {
-      let index =
-        this.form.Selection.length > 0
-          ? this.form.Selection[this.form.Selection.length - 1].index + 1
-          : 1;
+      let index = this.form.Selection.length > 0 ? this.form.Selection[this.form.Selection.length - 1].index + 1 : 1;
       this.form.Selection.push({
         open: false,
         name: `${this.$l("Selection")} ${index}`,
