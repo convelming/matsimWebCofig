@@ -3,13 +3,20 @@
     <div class="_header">
       <img class="logo" src="@/assets/image/logo2.png" alt="" />
       <div class="btn_box">
+        <el-dropdown class="language" @command="changeLanguage" placement="top-start" trigger="click">
+          <div class="btn1">
+            <img class="icon" src="@/assets/image/切换语言.png" alt="" />
+            <span>{{ $l("切换语言") }}</span>
+          </div>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item command="zh-CN" :disabled="page_language == 'zh-CN'">中文（简体）</el-dropdown-item>
+            <el-dropdown-item command="zh_MO" :disabled="page_language == 'zh-MO'">中文（繁體）</el-dropdown-item>
+            <el-dropdown-item command="en-US" :disabled="page_language == 'en-US'">English</el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
         <div class="btn1">
           <img class="icon" src="@/assets/image/用户指南.png" alt="" />
           <span>{{ $l("用户指南") }}</span>
-        </div>
-        <div class="btn1">
-          <img class="icon" src="@/assets/image/切换语言.png" alt="" />
-          <span>{{ $l("切换语言") }}</span>
         </div>
       </div>
     </div>
@@ -104,6 +111,9 @@ export default {
     this.handleReload();
   },
   methods: {
+    changeLanguage(lan) {
+      this.$setLanguage(lan);
+    },
     handleChangeView() {
       if (this.$refs.bodyer) {
         this.$refs.bodyer.handleChangeView();
@@ -191,6 +201,7 @@ export default {
     border: 1px solid rgba($color: #a3a3a3, $alpha: 0.4);
     border-radius: 8px;
     cursor: pointer;
+    font-size: 16px;
     .icon {
       width: 24px;
       height: 24px;
