@@ -49,19 +49,19 @@
 <language>
 {
   "analyzedModes": {
-    "zh-CN":"analyzedModes",
+    "zh-CN":"需要分析的出行方式",
     "en-US":"analyzedModes"
   },
   "averageCountsOverIterations": {
-    "zh-CN":"averageCountsOverIterations",
+    "zh-CN":"指定取平均的迭代次数",
     "en-US":"averageCountsOverIterations"
   },
   "countsScaleFactor": {
-    "zh-CN":"countsScaleFactor",
+    "zh-CN":"调整系数",
     "en-US":"countsScaleFactor"
   },
   "distanceFilter": {
-    "zh-CN":"distanceFilter",
+    "zh-CN":"筛选距离",
     "en-US":"distanceFilter"
   },
   "distanceFilterCenterNode": {
@@ -69,19 +69,19 @@
     "en-US":"distanceFilterCenterNode"
   },
   "filterModes": {
-    "zh-CN":"filterModes",
+    "zh-CN":"出行方式筛选",
     "en-US":"filterModes"
   },
   "inputCRS": {
-    "zh-CN":"inputCRS",
+    "zh-CN":"输入坐标系",
     "en-US":"inputCRS"
   },
   "inputCountsFile": {
-    "zh-CN":"inputCountsFile",
+    "zh-CN":"流量输入文件路径",
     "en-US":"inputCountsFile"
   },
   "outputformat": {
-    "zh-CN":"outputformat",
+    "zh-CN":"输出文件格式",
     "en-US":"outputformat"
   },
   "html": {
@@ -101,7 +101,7 @@
     "en-US":"all"
   },
   "writeCountsInterval": {
-    "zh-CN":"writeCountsInterval",
+    "zh-CN":"流量写入的迭代间隔",
     "en-US":"writeCountsInterval"
   },
 }

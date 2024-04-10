@@ -1,7 +1,7 @@
 <template>
   <div class="ConfigItem col_1 ChangeMode">
-    <div class="ConfigItem_title" :style="`color:#000;`" title="ChangeMode">
-      ChangeMode
+    <div class="ConfigItem_title" :style="`color:#000;`" title="customizedModule">
+      CustomizedModule
     </div>
     <div class="ConfigItem_bodyer">
       <el-form class="scroll_y" label-position="top"> </el-form>

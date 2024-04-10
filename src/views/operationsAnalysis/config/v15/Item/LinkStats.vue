@@ -19,11 +19,11 @@
 <language>
 {
   "averageLinkStatsOverIterations": {
-    "zh-CN":"averageLinkStatsOverIterations",
+    "zh-CN":"计算路段状况所使用的迭代次数",
     "en-US":"averageLinkStatsOverIterations"
   },
   "writeLinkStatsInterval": {
-    "zh-CN":"writeLinkStatsInterval",
+    "zh-CN":"保存路段状况的迭代间隔",
     "en-US":"writeLinkStatsInterval"
   },
 }

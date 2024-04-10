@@ -5,7 +5,7 @@
     </div>
     <div class="ConfigItem_bodyer">
       <el-form class="scroll_y" label-position="top">
-        <el-form-item :label="$l('压缩格式')">
+        <el-form-item :label="$l('compressionType')">
           <el-select v-model="form.compressionType" clearable>
             <el-option :label="$l('gzip')" value="gzip" />
             <el-option :label="$l('none')" value="none" />
@@ -13,27 +13,27 @@
             <el-option :label="$l('zst')" value="zst" />
           </el-select>
         </el-form-item>
-        <el-form-item :label="$l('事件文件格式')">
+        <el-form-item :label="$l('eventsFileFormat')">
           <el-checkbox-group :value="strToList(form.eventsFileFormat, ',')" @input="form.eventsFileFormat = listToStr($event, ',')">
             <el-checkbox label="xml">{{ $l("xml") }}</el-checkbox>
             <el-checkbox label="pb">{{ $l("pb") }}</el-checkbox>
             <el-checkbox label="json">{{ $l("json") }}</el-checkbox>
           </el-checkbox-group>
         </el-form-item>
-        <el-form-item :label="$l('起始迭代次数')">
+        <el-form-item :label="$l('firstIteration')">
           <el-input-number v-model="form.firstIteration" :min="0" :step="1" step-strictly controls-position="right" />
         </el-form-item>
-        <el-form-item :label="$l('终止迭代次数')">
+        <el-form-item :label="$l('lastIteration')">
           <el-input-number v-model="form.lastIteration" :min="Number(form.firstIteration)" :step="1" step-strictly controls-position="right" />
         </el-form-item>
-        <el-form-item :label="$l('移动仿真器')">
+        <el-form-item :label="$l('mobsim')">
           <el-select v-model="form.mobsim" clearable>
             <el-option :label="$l('qsim')" value="qsim" />
             <el-option :label="$l('JDEQSim')" value="JDEQSim" />
             <el-option :label="$l('hermes')" value="hermes" />
           </el-select>
         </el-form-item>
-        <el-form-item :label="$l('路径规划算法')">
+        <el-form-item :label="$l('routingAlgorithmType')">
           <el-select v-model="form.routingAlgorithmType" clearable>
             <el-option :label="$l('AStarLandmarks')" value="AStarLandmarks" />
             <el-option :label="$l('Dijkstra')" value="Dijkstra" />
@@ -42,45 +42,45 @@
             <el-option :label="$l('SpeedyALT')" value="SpeedyALT" />
           </el-select>
         </el-form-item>
-        <el-form-item :label="$l('启用 link 到 link 的路径规划')">
+        <el-form-item :label="$l('enableLinkToLinkRouting')">
           <el-switch v-model="form.enableLinkToLinkRouting" active-value="true" inactive-value="false" />
         </el-form-item>
-        <el-form-item :label="$l('输出文件夹')">
+        <el-form-item :label="$l('outputDirectory')">
           <el-input v-model="form.outputDirectory" clearable />
         </el-form-item>
-        <el-form-item :label="$l('运行ID（输出文件的前缀）')">
+        <el-form-item :label="$l('runId')">
           <el-input v-model="form.runId" clearable />
         </el-form-item>
-        <el-form-item :label="$l('覆写文件设置')">
+        <el-form-item :label="$l('overwriteFiles')">
           <el-select v-model="form.overwriteFiles" clearable>
-            <el-option :label="$l('文件存在时失败')" value="failIfDirectoryExists" />
-            <el-option :label="$l('覆写现有的文件')" value="overwriteExistingFiles" />
-            <el-option :label="$l('删除存在的目录')" value="deleteDirectoryIfExists" />
+            <el-option :label="$l('failIfDirectoryExists')" value="failIfDirectoryExists" />
+            <el-option :label="$l('overwriteExistingFiles')" value="overwriteExistingFiles" />
+            <el-option :label="$l('deleteDirectoryIfExists')" value="deleteDirectoryIfExists" />
           </el-select>
         </el-form-item>
         <el-form-item :label="$l('创建图表')">
           <el-switch v-model="form.createGraphs" active-value="true" inactive-value="false" />
         </el-form-item>
-        <el-form-item :label="$l('结束时存储数据')">
+        <el-form-item :label="$l('dumpDataAtEnd')">
           <el-switch v-model="form.dumpDataAtEnd" active-value="true" inactive-value="false" />
         </el-form-item>
-        <el-form-item :label="$l('事件写入间隔')">
+        <el-form-item :label="$l('writeEventsInterval')">
           <el-input-number v-model="form.writeEventsInterval" :min="0" :step="1" step-strictly controls-position="right" />
         </el-form-item>
-        <el-form-item :label="$l('计划写入间隔')">
+        <el-form-item :label="$l('writePlansInterval')">
           <el-input-number v-model="form.writePlansInterval" :min="0" :step="1" step-strictly controls-position="right" />
         </el-form-item>
-        <el-form-item :label="$l('行程写入间隔')">
+        <el-form-item :label="$l('writeTripsInterval')">
           <el-input-number v-model="form.writeTripsInterval" :min="0" :step="1" step-strictly controls-position="right" />
         </el-form-item>
-        <el-form-item :label="$l('快照格式')">
+        <el-form-item :label="$l('snapshotFormat')">
           <el-select v-model="form.snapshotFormat" clearable>
             <el-option :label="$l('transims')" value="transims" />
             <el-option :label="$l('googleearth')" value="googleearth" />
             <el-option :label="$l('otfvis')" value="otfvis" />
           </el-select>
         </el-form-item>
-        <el-form-item :label="$l('快照写入间隔')">
+        <el-form-item :label="$l('writeSnapshotsInterval')">
           <el-input-number v-model="form.writeSnapshotsInterval" :min="0" :step="1" step-strictly controls-position="right" />
         </el-form-item>
       </el-form>
@@ -90,9 +90,9 @@
 
 <language>
 {
-  "压缩格式": {
+  "compressionType": {
     "zh-CN":"压缩格式",
-    "en-US":"压缩格式"
+    "en-US":"compressionType"
   },
   "gzip": {
     "zh-CN":"gzip",
@@ -110,9 +110,9 @@
     "zh-CN":"zst",
     "en-US":"zst"
   },
-  "事件文件格式": {
+  "eventsFileFormat": {
     "zh-CN":"事件文件格式",
-    "en-US":"事件文件格式"
+    "en-US":"eventsFileFormat"
   },
   "xml": {
     "zh-CN":"xml",
@@ -126,17 +126,17 @@
     "zh-CN":"json",
     "en-US":"json"
   },
-  "起始迭代次数": {
+  "firstIteration": {
     "zh-CN":"起始迭代次数",
-    "en-US":"起始迭代次数"
+    "en-US":"firstIteration"
   },
-  "终止迭代次数": {
+  "lastIteration": {
     "zh-CN":"终止迭代次数",
-    "en-US":"终止迭代次数"
+    "en-US":"lastIteration"
   },
-  "移动仿真器": {
-    "zh-CN":"移动仿真器",
-    "en-US":"移动仿真器"
+  "mobsim": {
+    "zh-CN":"交通模拟",
+    "en-US":"mobsim"
   },
   "qsim": {
     "zh-CN":"qsim",
@@ -150,9 +150,9 @@
     "zh-CN":"hermes",
     "en-US":"hermes"
   },
-  "路径规划算法": {
+  "routingAlgorithmType": {
     "zh-CN":"路径规划算法",
-    "en-US":"路径规划算法"
+    "en-US":"routingAlgorithmType"
   },
   "AStarLandmarks": {
     "zh-CN":"AStarLandmarks",
@@ -174,90 +174,75 @@
     "zh-CN":"SpeedyALT",
     "en-US":"SpeedyALT"
   },
-  "启用 link 到 link 的路径规划": {
+  "enableLinkToLinkRouting": {
     "zh-CN":"启用 link 到 link 的路径规划",
-    "en-US":"启用 link 到 link 的路径规划"
+    "en-US":"enableLinkToLinkRouting"
   },
-  "输出文件夹": {
+  "outputDirectory": {
     "zh-CN":"输出文件夹",
-    "en-US":"输出文件夹"
+    "en-US":"outputDirectory"
   },
-  "运行ID（输出文件的前缀）": {
+  "runId": {
     "zh-CN":"运行ID（输出文件的前缀）",
-    "en-US":"运行ID（输出文件的前缀）"
+    "en-US":"runId"
   },
-  "覆写文件设置": {
+  "overwriteFiles": {
     "zh-CN":"覆写文件设置",
-    "en-US":"覆写文件设置"
+    "en-US":"overwriteFiles"
   },
-  "文件存在时失败": {
-    "zh-CN":"文件存在时失败",
-    "en-US":"文件存在时失败"
+  "failIfDirectoryExists": {
+    "zh-CN":"文件存在时程序运行失败终止",
+    "en-US":"failIfDirectoryExists"
   },
-  "覆写现有的文件": {
-    "zh-CN":"覆写现有的文件",
-    "en-US":"覆写现有的文件"
+  "overwriteExistingFiles": {
+    "zh-CN":"覆盖现有的文件",
+    "en-US":"overwriteExistingFiles"
   },
-  "删除存在的目录": {
-    "zh-CN":"删除存在的目录",
-    "en-US":"删除存在的目录"
+  "deleteDirectoryIfExists": {
+    "zh-CN":"如存在则将当前目录删除",
+    "en-US":"deleteDirectoryIfExists"
   },
-  "创建图表": {
+  "createGraphs": {
     "zh-CN":"创建图表",
-    "en-US":"创建图表"
+    "en-US":"createGraphs"
   },
-  "结束时存储数据": {
-    "zh-CN":"结束时存储数据",
-    "en-US":"结束时存储数据"
+  "dumpDataAtEnd": {
+    "zh-CN":"结束时存储路网计划等数据",
+    "en-US":"dumpDataAtEnd"
   },
-  "事件写入间隔": {
-    "zh-CN":"事件写入间隔",
-    "en-US":"事件写入间隔"
+  "writeEventsInterval": {
+    "zh-CN":"events文件写入间隔",
+    "en-US":"writeEventsInterval"
   },
-  "计划写入间隔": {
-    "zh-CN":"计划写入间隔",
-    "en-US":"计划写入间隔"
+  "writePlansInterval": {
+    "zh-CN":"plans文件写入间隔",
+    "en-US":"writePlansInterval"
   },
-  "行程写入间隔": {
-    "zh-CN":"行程写入间隔",
-    "en-US":"行程写入间隔"
+  "writeTripsInterval": {
+    "zh-CN":"trips文件写入间隔",
+    "en-US":"writeTripsInterval"
   },
-  "快照格式": {
+  "snapshotFormat": {
     "zh-CN":"快照格式",
-    "en-US":"快照格式"
+    "en-US":"snapshotFormat"
   },
   "transims": {
-    "zh-CN":"transims",
+    "zh-CN":"transims软件",
     "en-US":"transims"
   },
   "googleearth": {
-    "zh-CN":"googleearth",
+    "zh-CN":"谷歌地球",
     "en-US":"googleearth"
   },
   "otfvis": {
     "zh-CN":"otfvis",
     "en-US":"otfvis"
   },
-  "快照写入间隔": {
+  "writeSnapshotsInterval": {
     "zh-CN":"快照写入间隔",
-    "en-US":"快照写入间隔"
+    "en-US":"writeSnapshotsInterval"
   },
-  "aaa": {
-    "zh-CN":"aaa",
-    "en-US":"aaa"
-  },
-  "aaa": {
-    "zh-CN":"aaa",
-    "en-US":"aaa"
-  },
-  "aaa": {
-    "zh-CN":"aaa",
-    "en-US":"aaa"
-  },
-  "aaa": {
-    "zh-CN":"aaa",
-    "en-US":"aaa"
-  },
+
 }
 </language>
 

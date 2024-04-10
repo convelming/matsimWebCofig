@@ -5,19 +5,19 @@
     </div>
     <div class="ConfigItem_bodyer">
       <el-form class="scroll_y" label-position="top">
-        <el-form-item :label="$l('输入文件坐标系')">
+        <el-form-item :label="$l('inputCRS')">
           <el-input v-model="form.inputCRS" clearable />
         </el-form-item>
-        <el-form-item :label="$l('输入路网文件')">
+        <el-form-item :label="$l('inputNetworkFile')">
           <el-input v-model="form.inputNetworkFile" clearable />
         </el-form-item>
-        <el-form-item :label="$l('车道定义文件')">
+        <el-form-item :label="$l('laneDefinitionsFile')">
           <el-input v-model="form.laneDefinitionsFile" clearable />
         </el-form-item>
-        <el-form-item :label="$l('是否为时变网络')">
+        <el-form-item :label="$l('timeVariantNetwork')">
           <el-switch v-model="form.timeVariantNetwork" active-value="true" inactive-value="false" />
         </el-form-item>
-        <el-form-item :label="$l('输入变更事件文件')">
+        <el-form-item :label="$l('inputChangeEventsFile')">
           <el-input v-model="form.inputChangeEventsFile" clearable />
         </el-form-item>
       </el-form>
@@ -27,25 +27,25 @@
 
 <language>
 {
-  "输入文件坐标系": {
+  "inputCRS": {
     "zh-CN":"输入文件坐标系",
-    "en-US":"输入文件坐标系"
+    "en-US":"inputCRS"
   },
-  "输入路网文件": {
-    "zh-CN":"输入路网文件",
-    "en-US":"输入路网文件"
+  "inputNetworkFile": {
+    "zh-CN":"输入路网文件路径",
+    "en-US":"inputNetworkFile"
   },
-  "车道定义文件": {
-    "zh-CN":"车道定义文件",
-    "en-US":"车道定义文件"
+  "laneDefinitionsFile": {
+    "zh-CN":"车道定义文件路径",
+    "en-US":"laneDefinitionsFile"
   },
-  "是否为时变网络": {
-    "zh-CN":"是否为时变网络",
-    "en-US":"是否为时变网络"
+  "timeVariantNetwork": {
+    "zh-CN":"路网路段是否为时变网络",
+    "en-US":"timeVariantNetwork"
   },
-  "输入变更事件文件": {
+  "inputChangeEventsFile": {
     "zh-CN":"输入变更事件文件",
-    "en-US":"输入变更事件文件"
+    "en-US":"inputChangeEventsFile"
   },
 }
 </language>

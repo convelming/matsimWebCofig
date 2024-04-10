@@ -5,34 +5,34 @@
     </div>
     <div class="ConfigItem_bodyer">
       <el-form class="scroll_y" label-position="top">
-        <el-form-item :label="$l('输入文件坐标系')">
+        <el-form-item :label="$l('inputCRS')">
           <el-input v-model="form.inputCRS" clearable />
         </el-form-item>
-        <el-form-item :label="$l('输入计划文件')">
+        <el-form-item :label="$l('inputPlansFile')">
           <el-input v-model="form.inputPlansFile" clearable />
         </el-form-item>
-        <el-form-item :label="$l('输入人员属性文件')">
+        <el-form-item :label="$l('inputPersonAttributesFile')">
           <el-input v-model="form.inputPersonAttributesFile" clearable />
         </el-form-item>
-        <el-form-item :label="$l('路网路由类型')">
+        <el-form-item :label="$l('networkRouteType')">
           <el-select v-model="form.networkRouteType" clearable>
             <el-option :label="$l('LinkNetworkRoute')" value="LinkNetworkRoute" />
             <el-option :label="$l('CompressedNetworkRoute')" value="CompressedNetworkRoute" />
           </el-select>
         </el-form-item>
-        <el-form-item :label="$l('处理没有路由的计划')">
+        <el-form-item :label="$l('handlingOfPlansWithoutRoutingMode')">
           <el-select v-model="form.handlingOfPlansWithoutRoutingMode" clearable>
-            <el-option :label="$l('丢弃')" value="reject" />
-            <el-option :label="$l('使用主模式来填充')" value="useMainModeldentifier" />
+            <el-option :label="$l('reject')" value="reject" />
+            <el-option :label="$l('useMainModeldentifier')" value="useMainModeldentifier" />
           </el-select>
         </el-form-item>
-        <el-form-item :label="$l('删除未使用计划的属性')">
+        <el-form-item :label="$l('removingUnnecessaryPlanAttributes')">
           <el-switch v-model="form.removingUnnecessaryPlanAttributes" active-value="true" inactive-value="false" />
         </el-form-item>
-        <el-form-item :label="$l('行程持续时间')">
+        <el-form-item :label="$l('tripDurationHandling')">
           <el-select v-model="form.tripDurationHandling" clearable>
-            <el-option :label="$l('忽略延误，出发时间始终基于计划的上一活动的结束时间')" value="ignoreDelays" />
-            <el-option :label="$l('延迟活动结束时间')" value="shiftActivityEndTimes" />
+            <el-option :label="$l('ignoreDelays')" value="ignoreDelays" />
+            <el-option :label="$l('shiftActivityEndTimes')" value="shiftActivityEndTimes" />
           </el-select>
         </el-form-item>
       </el-form>
@@ -42,16 +42,16 @@
 
 <language>
 {
-  "输入文件坐标系": {
+  "inputCRS": {
     "zh-CN":"输入文件坐标系",
-    "en-US":"输入文件坐标系"
+    "en-US":"inputCRS"
   },
-  "输入计划文件": {
-    "zh-CN":"输入计划文件",
-    "en-US":"输入计划文件"
+  "inputPlansFile": {
+    "zh-CN":"输入计划文件路径",
+    "en-US":"inputPlansFile"
   },
   "输入人员属性文件": {
-    "zh-CN":"输入人员属性文件",
+    "zh-CN":"输入出行者属性文件路径",
     "en-US":"输入人员属性文件"
   },
   "路网路由类型": {
