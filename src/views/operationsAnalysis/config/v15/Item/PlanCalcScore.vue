@@ -752,16 +752,5 @@ export default {
 
 <style lang="scss" scoped>
 .PlanCalcScore {
-  .box {
-    width: 100%;
-    height: 100%;
-    overflow-x: hidden;
-    overflow-y: auto;
-    display: flex;
-    justify-content: space-between;
-    .el-form {
-      width: 48%;
-    }
-  }
 }
 </style>

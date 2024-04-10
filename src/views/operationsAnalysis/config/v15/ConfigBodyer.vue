@@ -6,10 +6,10 @@
         <div class="section">
           <Global :xml.sync="form.global" />
           <Network :xml.sync="form.network" />
-          <Plans :xml.sync="form.plans" />
           <Controler :xml.sync="form.controler" />
           <Strategy :xml.sync="form.strategy" />
           <Qsim :xml.sync="form.qsim" />
+          <Plans :xml.sync="form.plans" />
         </div>
         <div class="title">{{ $l("可选配置-主要") }}</div>
         <div class="section">
@@ -153,7 +153,7 @@ export default {
       xml: "",
       loading: true,
       form: {},
-      type: "editor",
+      type: "item",
     };
   },
   created() {},

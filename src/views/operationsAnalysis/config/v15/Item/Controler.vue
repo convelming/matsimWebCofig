@@ -1,88 +1,92 @@
 <template>
-  <div class="ConfigItem col_1 Controler">
-    <div class="ConfigItem_title" :style="`color:#000;`" title="Controler">
-      Controler
-    </div>
+  <div class="ConfigItem col_2 Controler">
+    <div class="ConfigItem_title" :style="`color:#000;`" title="Controler">Controler</div>
     <div class="ConfigItem_bodyer">
       <el-form class="scroll_y" label-position="top">
-        <el-form-item :label="$l('压缩格式')">
-          <el-select v-model="form.compressionType" clearable>
-            <el-option :label="$l('gzip')" value="gzip" />
-            <el-option :label="$l('none')" value="none" />
-            <el-option :label="$l('lz4')" value="lz4" />
-            <el-option :label="$l('zst')" value="zst" />
-          </el-select>
-        </el-form-item>
-        <el-form-item :label="$l('事件文件格式')">
-          <el-checkbox-group :value="strToList(form.eventsFileFormat, ',')" @input="form.eventsFileFormat = listToStr($event, ',')">
-            <el-checkbox label="xml">{{ $l("xml") }}</el-checkbox>
-            <el-checkbox label="pb">{{ $l("pb") }}</el-checkbox>
-            <el-checkbox label="json">{{ $l("json") }}</el-checkbox>
-          </el-checkbox-group>
-        </el-form-item>
-        <el-form-item :label="$l('起始迭代次数')">
-          <el-input-number v-model="form.firstIteration" :min="0" :step="1" step-strictly controls-position="right" />
-        </el-form-item>
-        <el-form-item :label="$l('终止迭代次数')">
-          <el-input-number v-model="form.lastIteration" :min="Number(form.firstIteration)" :step="1" step-strictly controls-position="right" />
-        </el-form-item>
-        <el-form-item :label="$l('移动仿真器')">
-          <el-select v-model="form.mobsim" clearable>
-            <el-option :label="$l('qsim')" value="qsim" />
-            <el-option :label="$l('JDEQSim')" value="JDEQSim" />
-            <el-option :label="$l('hermes')" value="hermes" />
-          </el-select>
-        </el-form-item>
-        <el-form-item :label="$l('路径规划算法')">
-          <el-select v-model="form.routingAlgorithmType" clearable>
-            <el-option :label="$l('AStarLandmarks')" value="AStarLandmarks" />
-            <el-option :label="$l('Dijkstra')" value="Dijkstra" />
-            <el-option :label="$l('FastDijkstra')" value="FastDijkstra" />
-            <el-option :label="$l('FastAStarLandmarks')" value="FastAStarLandmarks" />
-            <el-option :label="$l('SpeedyALT')" value="SpeedyALT" />
-          </el-select>
-        </el-form-item>
-        <el-form-item :label="$l('启用 link 到 link 的路径规划')">
-          <el-switch v-model="form.enableLinkToLinkRouting" active-value="true" inactive-value="false" />
-        </el-form-item>
-        <el-form-item :label="$l('输出文件夹')">
-          <el-input v-model="form.outputDirectory" clearable />
-        </el-form-item>
-        <el-form-item :label="$l('运行ID（输出文件的前缀）')">
-          <el-input v-model="form.runId" clearable />
-        </el-form-item>
-        <el-form-item :label="$l('覆写文件设置')">
-          <el-select v-model="form.overwriteFiles" clearable>
-            <el-option :label="$l('文件存在时失败')" value="failIfDirectoryExists" />
-            <el-option :label="$l('覆写现有的文件')" value="overwriteExistingFiles" />
-            <el-option :label="$l('删除存在的目录')" value="deleteDirectoryIfExists" />
-          </el-select>
-        </el-form-item>
-        <el-form-item :label="$l('创建图表')">
-          <el-switch v-model="form.createGraphs" active-value="true" inactive-value="false" />
-        </el-form-item>
-        <el-form-item :label="$l('结束时存储数据')">
-          <el-switch v-model="form.dumpDataAtEnd" active-value="true" inactive-value="false" />
-        </el-form-item>
-        <el-form-item :label="$l('事件写入间隔')">
-          <el-input-number v-model="form.writeEventsInterval" :min="0" :step="1" step-strictly controls-position="right" />
-        </el-form-item>
-        <el-form-item :label="$l('计划写入间隔')">
-          <el-input-number v-model="form.writePlansInterval" :min="0" :step="1" step-strictly controls-position="right" />
-        </el-form-item>
-        <el-form-item :label="$l('行程写入间隔')">
-          <el-input-number v-model="form.writeTripsInterval" :min="0" :step="1" step-strictly controls-position="right" />
-        </el-form-item>
-        <el-form-item :label="$l('快照格式')">
-          <el-select v-model="form.snapshotFormat" clearable>
-            <el-option :label="$l('transims')" value="transims" />
-            <el-option :label="$l('googleearth')" value="googleearth" />
-            <el-option :label="$l('otfvis')" value="otfvis" />
-          </el-select>
-        </el-form-item>
-        <el-form-item :label="$l('快照写入间隔')">
-          <el-input-number v-model="form.writeSnapshotsInterval" :min="0" :step="1" step-strictly controls-position="right" />
-        </el-form-item>
+        <el-row :gutter="20">
+          <el-col :span="12" style="height: 100%">
+            <el-form-item :label="$l('压缩格式')">
+              <el-select v-model="form.compressionType" clearable>
+                <el-option :label="$l('gzip')" value="gzip" />
+                <el-option :label="$l('none')" value="none" />
+                <el-option :label="$l('lz4')" value="lz4" />
+                <el-option :label="$l('zst')" value="zst" />
+              </el-select>
+            </el-form-item>
+            <el-form-item :label="$l('事件文件格式')">
+              <el-checkbox-group :value="strToList(form.eventsFileFormat, ',')" @input="form.eventsFileFormat = listToStr($event, ',')">
+                <el-checkbox label="xml">{{ $l("xml") }}</el-checkbox>
+                <el-checkbox label="pb">{{ $l("pb") }}</el-checkbox>
+                <el-checkbox label="json">{{ $l("json") }}</el-checkbox>
+              </el-checkbox-group>
+            </el-form-item>
+            <el-form-item :label="$l('起始迭代次数')">
+              <el-input-number v-model="form.firstIteration" :min="0" :step="1" step-strictly controls-position="right" />
+            </el-form-item>
+            <el-form-item :label="$l('终止迭代次数')">
+              <el-input-number v-model="form.lastIteration" :min="Number(form.firstIteration)" :step="1" step-strictly controls-position="right" />
+            </el-form-item>
+            <el-form-item :label="$l('移动仿真器')">
+              <el-select v-model="form.mobsim" clearable>
+                <el-option :label="$l('qsim')" value="qsim" />
+                <el-option :label="$l('JDEQSim')" value="JDEQSim" />
+                <el-option :label="$l('hermes')" value="hermes" />
+              </el-select>
+            </el-form-item>
+            <el-form-item :label="$l('路径规划算法')">
+              <el-select v-model="form.routingAlgorithmType" clearable>
+                <el-option :label="$l('AStarLandmarks')" value="AStarLandmarks" />
+                <el-option :label="$l('Dijkstra')" value="Dijkstra" />
+                <el-option :label="$l('FastDijkstra')" value="FastDijkstra" />
+                <el-option :label="$l('FastAStarLandmarks')" value="FastAStarLandmarks" />
+                <el-option :label="$l('SpeedyALT')" value="SpeedyALT" />
+              </el-select>
+            </el-form-item>
+            <el-form-item :label="$l('启用 link 到 link 的路径规划')">
+              <el-switch v-model="form.enableLinkToLinkRouting" active-value="true" inactive-value="false" />
+            </el-form-item>
+            <el-form-item :label="$l('输出文件夹')">
+              <el-input v-model="form.outputDirectory" clearable />
+            </el-form-item>
+            <el-form-item :label="$l('运行ID（输出文件的前缀）')">
+              <el-input v-model="form.runId" clearable />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12" style="height: 100%">
+            <el-form-item :label="$l('覆写文件设置')">
+              <el-select v-model="form.overwriteFiles" clearable>
+                <el-option :label="$l('文件存在时失败')" value="failIfDirectoryExists" />
+                <el-option :label="$l('覆写现有的文件')" value="overwriteExistingFiles" />
+                <el-option :label="$l('删除存在的目录')" value="deleteDirectoryIfExists" />
+              </el-select>
+            </el-form-item>
+            <el-form-item :label="$l('创建图表')">
+              <el-switch v-model="form.createGraphs" active-value="true" inactive-value="false" />
+            </el-form-item>
+            <el-form-item :label="$l('结束时存储数据')">
+              <el-switch v-model="form.dumpDataAtEnd" active-value="true" inactive-value="false" />
+            </el-form-item>
+            <el-form-item :label="$l('事件写入间隔')">
+              <el-input-number v-model="form.writeEventsInterval" :min="0" :step="1" step-strictly controls-position="right" />
+            </el-form-item>
+            <el-form-item :label="$l('计划写入间隔')">
+              <el-input-number v-model="form.writePlansInterval" :min="0" :step="1" step-strictly controls-position="right" />
+            </el-form-item>
+            <el-form-item :label="$l('行程写入间隔')">
+              <el-input-number v-model="form.writeTripsInterval" :min="0" :step="1" step-strictly controls-position="right" />
+            </el-form-item>
+            <el-form-item :label="$l('快照格式')">
+              <el-select v-model="form.snapshotFormat" clearable>
+                <el-option :label="$l('transims')" value="transims" />
+                <el-option :label="$l('googleearth')" value="googleearth" />
+                <el-option :label="$l('otfvis')" value="otfvis" />
+              </el-select>
+            </el-form-item>
+            <el-form-item :label="$l('快照写入间隔')">
+              <el-input-number v-model="form.writeSnapshotsInterval" :min="0" :step="1" step-strictly controls-position="right" />
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
     </div>
   </div>
