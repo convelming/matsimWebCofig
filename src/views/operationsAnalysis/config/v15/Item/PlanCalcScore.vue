@@ -566,23 +566,23 @@ export default {
         return obj;
       }
 
-      function getScoring(node) {
+      function getScoring(_node) {
         const obj = {
           uuid: guid(),
           open: false,
 
           ActivityOrMode: [],
         };
-        for (const { name, attrs } of node.nodes) {
-          if (name == "param") {
-            obj[attrs.name] = attrs.value;
-          } else if (name == "parameterset" && attrs.type == "activityParams") {
+        for (const node of _node.nodes) {
+          if (node.name == "param") {
+            obj[node.attrs.name] = node.attrs.value;
+          } else if (node.name == "parameterset" && node.attrs.type == "activityParams") {
             const item = getActivityPOrMode(node);
             item.index = obj.ActivityOrMode.length + 1;
             item.name = `Activity ${item.index}`;
             item.type = `Activity`;
             obj.ActivityOrMode.push(item);
-          } else if (name == "parameterset" && attrs.type == "modeParams") {
+          } else if (node.name == "parameterset" && node.attrs.type == "modeParams") {
             const item = getActivityPOrMode(node);
             item.index = obj.ActivityOrMode.length + 1;
             item.name = `Mode ${item.index}`;
@@ -596,8 +596,9 @@ export default {
       for (const node of nodes) {
         if (node.name == "param") {
           form[node.attrs.name] = node.attrs.value;
-        } else if (node.name == "parameterset") {
+        } else if (node.name == "parameterset" && node.attrs.type == "scoringParameters") {
           const item = getScoring(node);
+          console.log(item);
           item.index = form.Scoring.length + 1;
           item.name = `Scoring ${item.index}`;
           form.Scoring.push(item);
@@ -606,7 +607,7 @@ export default {
       return form;
     },
     getXml(data) {
-      const { ..._data } = data;
+      const { Scoring, ..._data } = data;
       const nodes = [];
       for (const key in _data) {
         const value = _data[key];
@@ -620,6 +621,51 @@ export default {
           });
         }
       }
+
+      nodes.push(
+        ...Scoring.map((v) => {
+          const nodes = ["earlyDeparture", "lateArrival", "marginalUtilityOfMoney", "performing", "subpopulation", "utilityOfLineSwitch", "waiting", "waitingPt"];
+          const nodeList = nodes
+            .filter((v2) => v[v2] !== "" && v[v2] !== null && v[v2] !== "null")
+            .map((v2) => ({
+              name: "param",
+              attrs: { name: v2, value: v[v2] },
+            }));
+
+          nodeList.push(
+            ...v.ActivityOrMode.map((v2) => {
+              const typeMap = {
+                Activity: "activityParams",
+                Mode: "modeParams",
+              };
+              const nodesMap = {
+                Activity: ["activityType", "closingTime", "earliestEndTime", "latestStartTime", "minimalDuration", "openingTime", "priority", "scoringThisActivityAtAll", "typicalDuration", "typicalDurationScoreComputation"],
+                Mode: ["constant", "dailyMonetaryConstant", "dailyUtilityConstant", "marginalUtilityOfDistance_util_m", "marginalUtilityOfTraveling_util_hr", "mode", "monetaryDistanceRate"],
+              };
+              return {
+                name: "parameterset",
+                attrs: {
+                  type: typeMap[v2.type],
+                },
+                nodes: nodesMap[v2.type]
+                  .filter((v3) => v2[v3] !== "" && v2[v3] !== null && v2[v3] !== "null")
+                  .map((v3) => ({
+                    name: "param",
+                    attrs: { name: v3, value: v2[v3] },
+                  })),
+              };
+            })
+          );
+
+          return {
+            name: "parameterset",
+            attrs: {
+              type: "scoringParameters",
+            },
+            nodes: nodeList,
+          };
+        })
+      );
       return jsonToXml({
         name: "module",
         attrs: {

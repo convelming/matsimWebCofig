@@ -258,19 +258,18 @@ export default {
         }
       }
       function mapFunc(v) {
-        const nodes = ["strategyName", "weight"];
-        if (v.subpopulation) {
-          nodes.push("subpopulation");
-        }
+        const nodes = ["beelineDistanceFactor", "mode", "teleportedModeFreespeedFactor", "teleportedModeSpeed"];
         return {
           name: "parameterset",
           attrs: {
             type: "teleportedModeParameters",
           },
-          nodes: nodes.map((v2) => ({
-            name: "param",
-            attrs: { name: v2, value: v[v2] },
-          })),
+          nodes: nodes
+            .filter((v2) => v[v2] !== "" && v[v2] !== null && v[v2] !== "null")
+            .map((v2) => ({
+              name: "param",
+              attrs: { name: v2, value: v[v2] },
+            })),
         };
       }
       nodes.push(...TeleportedMode.map(mapFunc));

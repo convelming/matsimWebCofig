@@ -8,10 +8,9 @@ import { Map, LocalMapLayer } from "@/mymap/index.js";
 import { Build3DLayer } from "./layer/Build3DLayer";
 import { HeatmMapLayer } from "./layer/HeatmMapLayer";
 import { PTALLayer } from "./layer/PTALLayer";
-import { LinkFlowLayer } from "./layer/LinkFlowLayer";
+import { LinkFlowLayer, LightGlow } from "./layer/LinkFlowLayer";
 
 import testpage2Data from "@/assets/data/testpage2.data.json";
-
 
 export default {
   mounted() {
@@ -29,6 +28,7 @@ export default {
       this._map.addLayer(this._LocalMapLayer);
       // this._map.addLayer(new Build3DLayer({ zIndex: 20 }));
       this._map.addLayer(new LinkFlowLayer({ zIndex: 20 }));
+      this._map.addLayer(new LightGlow({ zIndex: 20 }));
       // const length = 5000; // testpage2Data.length;
       // this._map.addLayer(
       //   new HeatmMapLayer({

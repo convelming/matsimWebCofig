@@ -39,7 +39,7 @@
           <OtherModule />
         </div>
       </template>
-      <Editor v-else-if="type == 'editor' && !loading" v-model="xml" />
+      <Editor v-show="type == 'editor' && !loading" v-model="xml" ref="Editor" />
     </div>
   </div>
 </template>
@@ -181,10 +181,11 @@ export default {
     },
     handleChangeView() {
       if (this.type == "editor") {
-        this.form = this.getForm(this.xml);
+        this.form = this.getForm(this.$refs.Editor.getXml());
+        console.log(this.form);
         this.type = "item";
       } else {
-        this.form = this.getXml(this.form);
+        this.$refs.Editor.setXml(this.getXml(this.form));
         this.type = "editor";
       }
     },
@@ -204,7 +205,7 @@ export default {
           reader.onload = (e) => {
             const xml = jsonToXml(xmlToJson(e.target.result));
             this.form = this.getForm(xml);
-            this.xml = this.getXml(this.form);
+            this.$refs.Editor.setXml(this.getXml(this.form));
           };
           reader.onerror = (e) => {
             console.log(e);
@@ -242,7 +243,7 @@ export default {
       }).then((res) => {
         const xml = jsonToXml(xmlToJson(res.data));
         this.form = this.getForm(xml);
-        this.xml = this.getXml(this.form);
+        this.$refs.Editor.setXml(this.getXml(this.form));
         this.loading = false;
       });
     },
