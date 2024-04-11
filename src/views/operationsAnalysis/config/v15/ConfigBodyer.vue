@@ -2,7 +2,7 @@
   <div class="ConfigBodyer" ref="scrollView">
     <div class="list" v-loading="loading">
       <template v-if="type == 'item' && !loading">
-        <div class="title">{{ $l("必需配置") }}</div>
+        <div class="title">{{ $l("mandatoryModules") }}</div>
         <div class="section">
           <Global :xml.sync="form.global" />
           <Network :xml.sync="form.network" />
@@ -11,7 +11,7 @@
           <Qsim :xml.sync="form.qsim" />
           <Plans :xml.sync="form.plans" />
         </div>
-        <div class="title">{{ $l("可选配置-主要") }}</div>
+        <div class="title">{{ $l("mainModules") }}</div>
         <div class="section">
           <TimeAllocationMutator :xml.sync="form.TimeAllocationMutator" />
           <ChangeMode :xml.sync="form.changeMode" />
@@ -28,13 +28,13 @@
           <TravelTimeCalculator :xml.sync="form.travelTimeCalculator" />
           <Vehicles :xml.sync="form.vehicles" />
         </div>
-        <div class="title">{{ $l("可选配置-次要") }}</div>
+        <div class="title">{{ $l("optionalModules") }}</div>
         <div class="section">
           <JDEQSim :xml.sync="form.JDEQSim" />
           <ReplanningAnnealer :xml.sync="form.ReplanningAnnealer" />
           <VspExperimental :xml.sync="form.vspExperimental" />
         </div>
-        <div class="title">{{ $l("自定义配置") }}</div>
+        <div class="title">{{ $l("customizedModules") }}</div>
         <div class="section">
           <OtherModule />
         </div>
@@ -46,33 +46,33 @@
 
 <language>
 {
-  "必需配置": {
+  "mandatoryModules": {
     "zh-CN": "必需配置",
-    "en-US": "必需配置"
+    "en-US": "Mandatory Modules"
   },
-  "可选配置-主要": {
+  "mainModules": {
     "zh-CN": "可选配置-主要",
-    "en-US": "可选配置-主要"
+    "en-US": "Main Modules"
   },
-  "可选配置-次要": {
+  "optionalModules": {
     "zh-CN": "可选配置-次要",
-    "en-US": "可选配置-次要"
+    "en-US": "Optional Modules"
   },
-  "自定义配置": {
+  "customizedModules": {
     "zh-CN": "自定义配置",
-    "en-US": "自定义配置"
+    "en-US": "Customized Modules"
   },
-  "保存成功": {
+  "saveSuccess": {
     "zh-CN": "保存成功",
-    "en-US": "保存成功"
+    "en-US": "successfully saved..."
   },
-  "保存失败": {
+  "saveFailure": {
     "zh-CN": "保存失败",
-    "en-US": "保存失败"
+    "en-US": "save failed..."
   },
-  "保存中，请稍等...": {
+  "waitSaving": {
     "zh-CN": "保存中，请稍等...",
-    "en-US": "保存中，请稍等..."
+    "en-US": "saving, please wait..."
   },
 }
 </language>
@@ -217,7 +217,7 @@ export default {
     },
     async handleSave() {
       this.saveLoading = true;
-      if (this.saveLoading) return this.$message.warning(this.$l("保存中，请稍等..."));
+      if (this.saveLoading) return this.$message.warning(this.$l("waitSaving"));
       try {
         const xml = this.getXml(this.form);
         const blob = new Blob([xml], { type: "application/xml" });
@@ -226,11 +226,11 @@ export default {
         });
         await uploadConfig(file, this.dataSource);
         console.log(res);
-        this.$message.success(this.$l("保存成功"));
+        this.$message.success(this.$l("saveSuccess"));
         this.handleReload();
       } catch (error) {
         console.log("config保存失败", error);
-        this.$message.success(this.$l("保存失败"));
+        this.$message.success(this.$l("saveFailure"));
       } finally {
         this.saveLoading = false;
       }
