@@ -46,7 +46,8 @@
 <script>
 import { ColorList } from "@/components/ColorSelect.vue";
 import { BinningLayer } from "./layer/BinningLayer";
-import hpPTAL from "@/assets/data/hpPTAL.json";
+// import hpPTAL from "@/assets/data/hpPTAL.json";
+const hpPTAL = {};
 export default {
   props: ["name", "showLayer"],
   inject: ["rootVue"],
