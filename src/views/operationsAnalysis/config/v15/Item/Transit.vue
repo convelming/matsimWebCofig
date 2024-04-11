@@ -46,19 +46,19 @@
 <language>
 {
   "inputScheduleCRS": {
-    "zh-CN":"inputScheduleCRS",
+    "zh-CN":"公交系统的坐标系",
     "en-US":"inputScheduleCRS"
   },
   "insistingOnUsingDeprecatedAttributeFiles": {
-    "zh-CN":"insistingOnUsingDeprecatedAttributeFiles",
+    "zh-CN":"是否坚持使用过期的属性文件",
     "en-US":"insistingOnUsingDeprecatedAttributeFiles"
   },
   "routingAlgorithmType": {
-    "zh-CN":"routingAlgorithmType",
+    "zh-CN":"公交路径选择算法类型",
     "en-US":"routingAlgorithmType"
   },
   "DijkstraBased": {
-    "zh-CN":"DijkstraBased",
+    "zh-CN":"基于迪杰斯特拉",
     "en-US":"DijkstraBased"
   },
   "SwissRailRaptor": {
@@ -66,35 +66,32 @@
     "en-US":"SwissRailRaptor"
   },
   "transitLinesAttributesFile": {
-    "zh-CN":"transitLinesAttributesFile",
+    "zh-CN":"公交线路的属性文件路径",
     "en-US":"transitLinesAttributesFile"
   },
   "transitModes": {
-    "zh-CN":"transitModes",
+    "zh-CN":"公交线路的出行方式名称",
     "en-US":"transitModes"
   },
   "transitScheduleFile": {
-    "zh-CN":"transitScheduleFile",
+    "zh-CN":"公交线路的文件路径",
     "en-US":"transitScheduleFile"
   },
   "transitStopsAttributesFile": {
-    "zh-CN":"transitStopsAttributesFile",
+    "zh-CN":"公交站点属性文件路径",
     "en-US":"transitStopsAttributesFile"
   },
   "useTransit": {
-    "zh-CN":"useTransit",
+    "zh-CN":"是否使用公交出行方式",
     "en-US":"useTransit"
   },
   "usingTransitInMobsim": {
-    "zh-CN":"usingTransitInMobsim",
+    "zh-CN":"是否在mobsim里使用公交系统",
     "en-US":"usingTransitInMobsim"
   },
-  "aaa": {
-    "zh-CN":"aaa",
-    "en-US":"aaa"
-  },
+
   "vehiclesFile": {
-    "zh-CN":"vehiclesFile",
+    "zh-CN":"公交车辆文件路径",
     "en-US":"vehiclesFile"
   },
 }

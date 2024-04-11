@@ -16,7 +16,7 @@
 <language>
 {
   "activateAnnealingModule": {
-    "zh-CN":"activateAnnealingModule",
+    "zh-CN":"激活模拟退货模块",
     "en-US":"activateAnnealingModule"
   },
 }

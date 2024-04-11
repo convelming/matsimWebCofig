@@ -28,23 +28,23 @@
 <language>
 {
   "additionalTransferTime": {
-    "zh-CN":"additionalTransferTime",
+    "zh-CN":"额外的换乘时间",
     "en-US":"additionalTransferTime"
   },
   "directWalkFactor": {
-    "zh-CN":"directWalkFactor",
+    "zh-CN":"直线步行系数",
     "en-US":"directWalkFactor"
   },
   "extensionRadius": {
-    "zh-CN":"extensionRadius",
+    "zh-CN":"扩展半径",
     "en-US":"extensionRadius"
   },
   "maxBeelineWalkConnectionDistance": {
-    "zh-CN":"maxBeelineWalkConnectionDistance",
+    "zh-CN":"步行的最大直线距离",
     "en-US":"maxBeelineWalkConnectionDistance"
   },
   "searchRadius": {
-    "zh-CN":"searchRadius",
+    "zh-CN":"搜寻共交线路的半径",
     "en-US":"searchRadius"
   },
 }

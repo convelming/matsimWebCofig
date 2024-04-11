@@ -23,7 +23,7 @@
         <el-form-item :label="$l('handlingOfPlansWithoutRoutingMode')">
           <el-select v-model="form.handlingOfPlansWithoutRoutingMode" clearable>
             <el-option :label="$l('reject')" value="reject" />
-            <el-option :label="$l('useMainModeldentifier')" value="useMainModeldentifier" />
+            <el-option :label="$l('useMainModeIdentifier')" value="useMainModeIdentifier" />
           </el-select>
         </el-form-item>
         <el-form-item :label="$l('removingUnnecessaryPlanAttributes')">
@@ -50,13 +50,13 @@
     "zh-CN":"输入计划文件路径",
     "en-US":"inputPlansFile"
   },
-  "输入人员属性文件": {
+  "inputPersonAttributesFile": {
     "zh-CN":"输入出行者属性文件路径",
-    "en-US":"输入人员属性文件"
+    "en-US":"inputPersonAttributesFile"
   },
-  "路网路由类型": {
-    "zh-CN":"路网路由类型",
-    "en-US":"路网路由类型"
+  "networkRouteType": {
+    "zh-CN":"出行路径在内存中暂存的格式",
+    "en-US":"networkRouteType"
   },
   "LinkNetworkRoute": {
     "zh-CN":"LinkNetworkRoute",
@@ -66,33 +66,33 @@
     "zh-CN":"CompressedNetworkRoute",
     "en-US":"CompressedNetworkRoute"
   },
-  "处理没有路由的计划": {
-    "zh-CN":"处理没有路由的计划",
-    "en-US":"处理没有路由的计划"
+  "handlingOfPlansWithoutRoutingMode": {
+    "zh-CN":"如何处理没有出行路径的计划",
+    "en-US":"handlingOfPlansWithoutRoutingMode"
   },
-  "丢弃": {
+  "reject": {
     "zh-CN":"丢弃",
-    "en-US":"丢弃"
+    "en-US":"reject"
   },
-  "使用主模式来填充": {
-    "zh-CN":"使用主模式来填充",
-    "en-US":"使用主模式来填充"
+  "useMainModeIdentifier": {
+    "zh-CN":"使用主要出行方式",
+    "en-US":"useMainModeIdentifier"
   },
-  "删除未使用计划的属性": {
-    "zh-CN":"删除未使用计划的属性",
-    "en-US":"删除未使用计划的属性"
+  "removingUnnecessaryPlanAttributes": {
+    "zh-CN":"删除计划中不必要的属性",
+    "en-US":"removingUnnecessaryPlanAttributes"
   },
-  "行程持续时间": {
-    "zh-CN":"行程持续时间",
-    "en-US":"行程持续时间"
+  "tripDurationHandling": {
+    "zh-CN":"行程持续时间处理方式",
+    "en-US":"tripDurationHandling"
   },
-  "忽略延误，出发时间始终基于计划的上一活动的结束时间": {
+  "ignoreDelays": {
     "zh-CN":"忽略延误，出发时间始终基于计划的上一活动的结束时间",
-    "en-US":"忽略延误，出发时间始终基于计划的上一活动的结束时间"
+    "en-US":"ignoreDelays"
   },
-  "延迟活动结束时间": {
+  "shiftActivityEndTimes": {
     "zh-CN":"延迟活动结束时间",
-    "en-US":"延迟活动结束时间"
+    "en-US":"shiftActivityEndTimes"
   },
 }
 </language>

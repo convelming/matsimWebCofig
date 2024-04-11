@@ -14,7 +14,7 @@
 <language>
 {
   "vehiclesFile": {
-    "zh-CN":"vehiclesFile",
+    "zh-CN":"车辆文件的路径",
     "en-US":"vehiclesFile"
   },
 }

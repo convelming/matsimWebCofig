@@ -69,11 +69,11 @@
 <language>
 {
   "accessEgressType": {
-    "zh-CN":"accessEgressType",
+    "zh-CN":"定义如何脱离/进入主要出行方式",
     "en-US":"accessEgressType"
   },
   "none": {
-    "zh-CN":"none",
+    "zh-CN":"无，不会模拟从初始位置到link的出行",
     "en-US":"none"
   },
   "accessEgressModeToLink": {
@@ -89,39 +89,39 @@
     "en-US":"accessEgressModeToLinkPlusTimeConstant"
   },
   "clearDefaultTeleportedModeParams": {
-    "zh-CN":"clearDefaultTeleportedModeParams",
+    "zh-CN":"清除默认的瞬移的出行方式",
     "en-US":"clearDefaultTeleportedModeParams"
   },
   "networkModes": {
-    "zh-CN":"networkModes",
+    "zh-CN":"路网可接纳的方式",
     "en-US":"networkModes"
   },
   "routingRandomness": {
-    "zh-CN":"routingRandomness",
+    "zh-CN":"路径随机性，与收费道路有关，默认3.0",
     "en-US":"routingRandomness"
   },
   "Parametersets: TeleportedMode": {
-    "zh-CN":"Parametersets: TeleportedMode",
+    "zh-CN":"参数集: 瞬移的出行方式",
     "en-US":"Parametersets: TeleportedMode"
   },
   "beelineDistanceFactor": {
-    "zh-CN":"beelineDistanceFactor",
+    "zh-CN":"直线距离系数",
     "en-US":"beelineDistanceFactor"
   },
   "mode": {
-    "zh-CN":"mode",
+    "zh-CN":"出行方式",
     "en-US":"mode"
   },
   "teleportedModeFreespeedFactor": {
-    "zh-CN":"teleportedModeFreespeedFactor",
+    "zh-CN":"瞬移速度权重",
     "en-US":"teleportedModeFreespeedFactor"
   },
   "teleportedModeSpeed": {
-    "zh-CN":"teleportedModeSpeed",
+    "zh-CN":"瞬移方式的速度",
     "en-US":"teleportedModeSpeed"
   },
   "TeleportedMode": {
-    "zh-CN":"TeleportedMode",
+    "zh-CN":"瞬移的出行方式",
     "en-US":"TeleportedMode"
   },
 }

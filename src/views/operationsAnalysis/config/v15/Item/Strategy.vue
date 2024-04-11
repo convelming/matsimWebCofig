@@ -5,13 +5,13 @@
       <el-form class="scroll_y" label-position="top">
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item :label="$l('外部执行文件的模板')">
+            <el-form-item :label="$l('ExternalExeConfigTemplate')">
               <el-input v-model="form.ExternalExeConfigTemplate" clearable />
             </el-form-item>
-            <el-form-item :label="$l('外部执行文件响应阈值')">
+            <el-form-item :label="$l('ExternalExeTimeOut')">
               <el-input-number v-model="form.ExternalExeTimeOut" :min="0" :step="1" step-strictly controls-position="right" />
             </el-form-item>
-            <el-form-item :label="$l('外部可执行文件生成的临时文件夹路径')">
+            <el-form-item :label="$l('ExternalExeTmpFileRootDir')">
               <el-input v-model="form.ExternalExeTmpFileRootDir" clearable />
             </el-form-item>
 
@@ -30,10 +30,10 @@
                     </div>
                     <el-collapse-transition>
                       <div class="collapse_item_content" v-show="item.open">
-                        <el-form-item :label="$l('策略名称')">
+                        <el-form-item :label="$l('strategyName')">
                           <el-input v-model="item.strategyName" clearable></el-input>
                         </el-form-item>
-                        <el-form-item :label="$l('比重')">
+                        <el-form-item :label="$l('weight')">
                           <el-input v-model="item.weight" clearable></el-input>
                         </el-form-item>
                         <el-form-item :label="$l('subpopulation')">
@@ -47,13 +47,13 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item :label="$l('创新行为失效的迭代比例')">
+            <el-form-item :label="$l('fractionOfIterationsToDisableInnovation')">
               <el-input-number v-model="form.fractionOfIterationsToDisableInnovation" :min="0" :max="1" :step="0.1" controls-position="right" />
             </el-form-item>
-            <el-form-item :label="$l('智能体最大计划内存数')">
+            <el-form-item :label="$l('maxAgentPlanMemorySize')">
               <el-input-number v-model="form.maxAgentPlanMemorySize" :min="0" :step="1" step-strictly controls-position="right" />
             </el-form-item>
-            <el-form-item :label="$l('移除计划选择器')">
+            <el-form-item :label="$l('planSelectorForRemoval')">
               <el-select v-model="form.planSelectorForRemoval" clearable>
                 <el-option :label="$l('WorstPlanSelector')" value="WorstPlanSelector" />
                 <el-option :label="$l('SelectRandom')" value="SelectRandom" />
@@ -77,10 +77,10 @@
                     </div>
                     <el-collapse-transition>
                       <div class="collapse_item_content" v-show="item.open">
-                        <el-form-item :label="$l('策略名称')">
+                        <el-form-item :label="$l('strategyName')">
                           <el-input v-model="item.strategyName" clearable></el-input>
                         </el-form-item>
-                        <el-form-item :label="$l('比重')">
+                        <el-form-item :label="$l('weight')">
                           <el-input v-model="item.weight" clearable></el-input>
                         </el-form-item>
                         <el-form-item :label="$l('subpopulation')">
@@ -101,17 +101,17 @@
 
 <language>
 {
-  "外部执行文件的模板": {
+  "ExternalExeConfigTemplate": {
     "zh-CN":"外部执行文件的模板",
-    "en-US":"外部执行文件的模板"
+    "en-US":"ExternalExeConfigTemplate"
   },
-  "外部执行文件响应阈值": {
-    "zh-CN":"外部执行文件响应阈值",
-    "en-US":"外部执行文件响应阈值"
+  "ExternalExeTimeOut": {
+    "zh-CN":"外部执行文件响应时间阈值",
+    "en-US":"ExternalExeTimeOut"
   },
-  "外部可执行文件生成的临时文件夹路径": {
+  "ExternalExeTmpFileRootDir": {
     "zh-CN":"外部可执行文件生成的临时文件夹路径",
-    "en-US":"外部可执行文件生成的临时文件夹路径"
+    "en-US":"ExternalExeTmpFileRootDir"
   },
   "Parametersets: Innovation": {
     "zh-CN":"Parametersets: Innovation",
@@ -121,29 +121,29 @@
     "zh-CN":"Innovation",
     "en-US":"Innovation"
   },
-  "策略名称": {
+  "strategyName": {
     "zh-CN":"策略名称",
-    "en-US":"策略名称"
+    "en-US":"strategyName"
   },
-  "比重": {
+  "weight": {
     "zh-CN":"比重",
-    "en-US":"比重"
+    "en-US":"weight"
   },
   "subpopulation": {
     "zh-CN":"subpopulation",
     "en-US":"subpopulation"
   },
-  "创新行为失效的迭代比例": {
-    "zh-CN":"创新行为失效的迭代比例",
-    "en-US":"创新行为失效的迭代比例"
+  "fractionOfIterationsToDisableInnovation": {
+    "zh-CN":"计划选取策略重新计算比例",
+    "en-US":"fractionOfIterationsToDisableInnovation"
   },
-  "智能体最大计划内存数": {
-    "zh-CN":"智能体最大计划内存数",
-    "en-US":"智能体最大计划内存数"
+  "maxAgentPlanMemorySize": {
+    "zh-CN":"出行总计划数",
+    "en-US":"maxAgentPlanMemorySize"
   },
-  "移除计划选择器": {
-    "zh-CN":"移除计划选择器",
-    "en-US":"移除计划选择器"
+  "planSelectorForRemoval": {
+    "zh-CN":"筛除多余计划策略",
+    "en-US":"planSelectorForRemoval"
   },
   "WorstPlanSelector": {
     "zh-CN":"WorstPlanSelector",
@@ -166,23 +166,23 @@
     "en-US":"PathSizeLogitSelectorForRemoval"
   },
   "Parametersets: Selection": {
-    "zh-CN":"Parametersets: Selection",
+    "zh-CN":"选择参数集",
     "en-US":"Parametersets: Selection"
   },
   "Selection": {
-    "zh-CN":"Selection",
+    "zh-CN":"出行计划选择策略",
     "en-US":"Selection"
   },
-  "策略名称": {
+  "strategyName": {
     "zh-CN":"策略名称",
-    "en-US":"策略名称"
+    "en-US":"strategyName"
   },
   "比重": {
     "zh-CN":"比重",
-    "en-US":"比重"
+    "en-US":"weight"
   },
   "subpopulation": {
-    "zh-CN":"subpopulation",
+    "zh-CN":"子出行群体ID",
     "en-US":"subpopulation"
   },
 }

@@ -19,11 +19,11 @@
 <language>
 {
   "Mutation Affects Duration": {
-    "zh-CN":"Mutation Affects Duration",
+    "zh-CN":"变异影响的停留时间",
     "en-US":"Mutation Affects Duration"
   },
   "Mutation Range": {
-    "zh-CN":"Mutation Range",
+    "zh-CN":"变异的范围",
     "en-US":"Mutation Range"
   },
 }

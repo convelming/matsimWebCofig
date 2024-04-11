@@ -43,11 +43,11 @@
 <language>
 {
   "countsScaleFactor": {
-    "zh-CN":"countsScaleFactor",
+    "zh-CN":"客流量权重系数",
     "en-US":"countsScaleFactor"
   },
   "distanceFilter": {
-    "zh-CN":"distanceFilter",
+    "zh-CN":"距离筛选",
     "en-US":"distanceFilter"
   },
   "distanceFilterCenterNode": {
@@ -55,19 +55,19 @@
     "en-US":"distanceFilterCenterNode"
   },
   "inputAlightCountsFile": {
-    "zh-CN":"inputAlightCountsFile",
+    "zh-CN":"上车客流量的文件路径",
     "en-US":"inputAlightCountsFile"
   },
   "inputBoardCountsFile": {
-    "zh-CN":"inputBoardCountsFile",
+    "zh-CN":"下车客流量的文件路径",
     "en-US":"inputBoardCountsFile"
   },
   "inputOccupancyCountsFile": {
-    "zh-CN":"inputOccupancyCountsFile",
+    "zh-CN":"载客量（车上乘客数量）的文件路径",
     "en-US":"inputOccupancyCountsFile"
   },
   "outputformat": {
-    "zh-CN":"outputformat",
+    "zh-CN":"输出文件格式",
     "en-US":"outputformat"
   },
   "null": {
@@ -91,7 +91,7 @@
     "en-US":"all"
   },
   "ptCountsInterval": {
-    "zh-CN":"ptCountsInterval",
+    "zh-CN":"输出的迭代间隔数",
     "en-US":"ptCountsInterval"
   },
 }

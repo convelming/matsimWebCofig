@@ -28,27 +28,27 @@
 <language>
 {
   "Behavior": {
-    "zh-CN":"Behavior",
+    "zh-CN":"行为",
     "en-US":"Behavior"
   },
   "fromAllModesToSpecifiedModes": {
-    "zh-CN":"fromAllModesToSpecifiedModes",
+    "zh-CN":"从所有的方式到指定的出行方式",
     "en-US":"fromAllModesToSpecifiedModes"
   },
   "fromSpecifiedModesToSpecifiedModes": {
-    "zh-CN":"fromSpecifiedModesToSpecifiedModes",
+    "zh-CN":"从指定的到指定的出行方式",
     "en-US":"fromSpecifiedModesToSpecifiedModes"
   },
   "Chain Based Modes": {
-    "zh-CN":"Chain Based Modes",
+    "zh-CN":"基于出行链的方式",
     "en-US":"Chain Based Modes"
   },
   "Consider Car Availability": {
-    "zh-CN":"Consider Car Availability",
+    "zh-CN":"是否考虑出行者拥有私家车",
     "en-US":"Consider Car Availability"
   },
   "Modes": {
-    "zh-CN":"Modes",
+    "zh-CN":"出行方式",
     "en-US":"Modes"
   },
 }
