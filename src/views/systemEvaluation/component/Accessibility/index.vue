@@ -142,7 +142,7 @@ export default {
       valueFunc: (value) => value.properties.AI_all,
     });
     import("@/assets/data/hpPTAL.json").then((res) => {
-      this._BinningLayer.setData(res);
+      this._BinningLayer.setData(res.default);
     });
   },
   mounted() {

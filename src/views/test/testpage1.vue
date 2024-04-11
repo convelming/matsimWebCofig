@@ -10,7 +10,6 @@ import { HeatmMapLayer } from "./layer/HeatmMapLayer";
 import { PTALLayer } from "./layer/PTALLayer";
 import { LinkFlowLayer } from "./layer/LinkFlowLayer";
 
-
 export default {
   mounted() {
     this.initLayer();
@@ -22,29 +21,31 @@ export default {
       this._map = new Map({
         rootId: "map",
         // center: [12643420.551717436, 2601035.512601995],
+        center: [1.262302803977593E7, 2648343.7701357277],
       });
       this._map.cameraControls.enableRotate = true;
       this._map.addLayer(this._LocalMapLayer);
       // this._map.addLayer(new Build3DLayer({ zIndex: 20 }));
       this._map.addLayer(new LinkFlowLayer({ zIndex: 20 }));
-      import("@/assets/data/testpage2.data.json").then((res) => {
-        const length = 5000; // res.length;
-        this._map.addLayer(
-          new HeatmMapLayer({
-            zIndex: 10,
-            data: res.map((v, i, l) => {
-              v[0] = length * (Math.random() - 0.5) + this._map.center[0];
-              v[1] = length * (Math.random() - 0.5) + this._map.center[1];
-              return v;
-            }),
-          })
-        );
-        this._map.addLayer(
-          new PTALLayer({
-            zIndex: 200,
-          })
-        );
-      });
+      // import("@/assets/data/testpage2.data.json").then((res) => {
+      //   const length = 5000; // res.length;
+      //   this._map.addLayer(
+      //     new HeatmMapLayer({
+      //       zIndex: 10,
+      //       data: res.default.map((v, i, l) => {
+      //         v[0] = length * (Math.random() - 0.5) + this._map.center[0];
+      //         v[1] = length * (Math.random() - 0.5) + this._map.center[1];
+      //         return v;
+      //       }),
+      //     })
+      //   );
+      // });
+
+      // this._map.addLayer(
+      //   new PTALLayer({
+      //     zIndex: 200,
+      //   })
+      // );
     },
     // 初始化图层
     initLayer() {

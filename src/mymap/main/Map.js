@@ -6,6 +6,9 @@ import Stats from "three/addons/libs/stats.module.js";
 import { WGS84ToMercator, EPSG4526ToMercator } from "../utils/LngLatUtils";
 import { EventListener } from "./EventListener";
 
+import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer";
+import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
+
 // 事件类型
 export const MAP_EVENT = {
   // 鼠标点击没有拾取到模型事件
@@ -62,9 +65,7 @@ export class Map extends EventListener {
 
   // 获取摄像机到观测点距离
   get cameraHeight() {
-    return this.cameraControls
-      ? Math.round(this.cameraControls.getDistance())
-      : Math.pow(2, MAP_ZOOM_RANGE.MAX - this.zoom) * MAP_ZOOM_HEIGHT;
+    return this.cameraControls ? Math.round(this.cameraControls.getDistance()) : Math.pow(2, MAP_ZOOM_RANGE.MAX - this.zoom) * MAP_ZOOM_HEIGHT;
   }
 
   // 获取一个拾取图层颜色
@@ -100,19 +101,7 @@ export class Map extends EventListener {
     }
   }
 
-  constructor({
-    rootId,
-    center = [12614426, 2646623],
-    zoom = 15,
-    pitch = 90,
-    minPitch = 30,
-    rotation = 0,
-    openGPUPick = true,
-    noControls = false,
-    enableRotate = false,
-    background = 0xd9ecff,
-    ...opt
-  }) {
+  constructor({ rootId, center = [12614426, 2646623], zoom = 15, pitch = 90, minPitch = 30, rotation = 0, openGPUPick = true, noControls = false, enableRotate = false, background = 0xd9ecff, ...opt }) {
     super(opt);
     // 获取根节点dom
     this.rootDoc = document.getElementById(rootId);
@@ -150,6 +139,7 @@ export class Map extends EventListener {
     this.initCamera();
     // 初始化相机控制器
     if (!noControls) this.initCameraControls();
+    this.initComposer();
 
     // 设置层级
     this.setZoom(zoom);
@@ -183,9 +173,13 @@ export class Map extends EventListener {
     this.renderer.domElement.style.position = "absolute";
     this.renderer.domElement.style.top = "0";
     this.renderer.domElement.style.left = "0";
-    this.renderer.setPixelRatio(window.devicePixelRatio);
-    // this.renderer.toneMapping = THREE.ReinhardToneMapping;
     this.rootDoc.appendChild(this.renderer.domElement);
+  }
+
+  initComposer() {
+    this.renderScene = new RenderPass(this.scene, this.camera);
+    this.composer = new EffectComposer(this.renderer);
+    this.composer.addPass(this.renderScene);
   }
 
   // 初始化场景
@@ -273,14 +267,10 @@ export class Map extends EventListener {
           const x = data.event.offsetX;
           const y = data.event.offsetY;
           const pickLayerColor = this.handleGPUPickLayer(x, y);
-          const layer = this.layers.find(
-            (v) => v.pickLayerColor.getHex() == pickLayerColor
-          );
+          const layer = this.layers.find((v) => v.pickLayerColor.getHex() == pickLayerColor);
           this.on(MAP_EVENT.HANDLE_MOUSE_MOVE_PICK, {
             ...data,
-            pickColor: layer
-              ? this.handleGPUPickMesh(layer.pickMeshScene, x, y)
-              : 0,
+            pickColor: layer ? this.handleGPUPickMesh(layer.pickMeshScene, x, y) : 0,
             layerId: layer ? layer.id : null,
           });
         }, 50);
@@ -324,14 +314,10 @@ export class Map extends EventListener {
             const x = data.event.offsetX;
             const y = data.event.offsetY;
             const pickLayerColor = this.handleGPUPickLayer(x, y);
-            const layer = this.layers.find(
-              (v) => v.pickLayerColor.getHex() == pickLayerColor
-            );
+            const layer = this.layers.find((v) => v.pickLayerColor.getHex() == pickLayerColor);
             const pickData = {
               ...data,
-              pickColor: layer
-                ? this.handleGPUPickMesh(layer.pickMeshScene, x, y)
-                : 0,
+              pickColor: layer ? this.handleGPUPickMesh(layer.pickMeshScene, x, y) : 0,
               layerId: layer ? layer.id : null,
             };
             this.on(MAP_EVENT.HANDLE_CLICK_LEFT, pickData);
@@ -350,14 +336,10 @@ export class Map extends EventListener {
             const x = data.event.offsetX;
             const y = data.event.offsetY;
             const pickLayerColor = this.handleGPUPickLayer(x, y);
-            const layer = this.layers.find(
-              (v) => v.pickLayerColor.getHex() == pickLayerColor
-            );
+            const layer = this.layers.find((v) => v.pickLayerColor.getHex() == pickLayerColor);
             const pickData = {
               ...data,
-              pickColor: layer
-                ? this.handleGPUPickMesh(layer.pickMeshScene, x, y)
-                : 0,
+              pickColor: layer ? this.handleGPUPickMesh(layer.pickMeshScene, x, y) : 0,
               layerId: layer ? layer.id : null,
             };
             this.on(MAP_EVENT.HANDLE_CLICK_RIGHT, pickData);
@@ -418,10 +400,7 @@ export class Map extends EventListener {
   // 添加地图摄像机控制器
   initCameraControls() {
     // 设置相机控件轨道控制器OrbitControls
-    this.cameraControls = new OrbitControls(
-      this.camera,
-      this.renderer.domElement
-    );
+    this.cameraControls = new OrbitControls(this.camera, this.renderer.domElement);
     // 启用或禁用摄像机水平或垂直旋转。默认值为true。
     // 请注意，可以通过将PolarAngle或者AzimuthAngle的min和max设置为相同的值来禁用单个轴， 这将使得水平旋转或垂直旋转固定为所设置的值。
     this.cameraControls.enableRotate = this._enableRotate;
@@ -433,10 +412,8 @@ export class Map extends EventListener {
     // 是否使用屏幕空间旋转。默认值为false。
     this.cameraControls.screenSpacePanning = false;
 
-    this.cameraControls.minDistance =
-      Math.pow(2, MAP_ZOOM_RANGE.MAX - MAP_ZOOM_RANGE.MAX) * MAP_ZOOM_HEIGHT;
-    this.cameraControls.maxDistance =
-      Math.pow(2, MAP_ZOOM_RANGE.MAX - MAP_ZOOM_RANGE.MIN) * MAP_ZOOM_HEIGHT;
+    this.cameraControls.minDistance = Math.pow(2, MAP_ZOOM_RANGE.MAX - MAP_ZOOM_RANGE.MAX) * MAP_ZOOM_HEIGHT;
+    this.cameraControls.maxDistance = Math.pow(2, MAP_ZOOM_RANGE.MAX - MAP_ZOOM_RANGE.MIN) * MAP_ZOOM_HEIGHT;
     //修改鼠标按键
     // this.cameraControls.mouseButtons = {
     //   LEFT: THREE.MOUSE.PAN,
@@ -446,8 +423,7 @@ export class Map extends EventListener {
 
     this.cameraControls.addEventListener("change", (res) => {
       const height = Math.round(this.cameraControls.getDistance());
-      const zoom =
-        MAP_ZOOM_RANGE.MAX - Math.LOG2E * Math.log(height / MAP_ZOOM_HEIGHT);
+      const zoom = MAP_ZOOM_RANGE.MAX - Math.LOG2E * Math.log(height / MAP_ZOOM_HEIGHT);
       this.scene.fog.near = height * 2;
       this.scene.fog.far = height * 3;
       this.camera.far = height * 3;
@@ -467,10 +443,7 @@ export class Map extends EventListener {
       } else if (px < 0 && pz > 0) {
         rotation = 360 + rotation;
       }
-      if (
-        Math.abs(this.pitch - pitch) > 1 ||
-        Math.abs(this.rotation - rotation) > 1
-      ) {
+      if (Math.abs(this.pitch - pitch) > 1 || Math.abs(this.rotation - rotation) > 1) {
         this.on(MAP_EVENT.UPDATE_CAMERA_ROTATE, {
           oldPitch: this.pitch,
           newPitch: pitch,
@@ -494,11 +467,7 @@ export class Map extends EventListener {
       if (Math.abs(x) > 0.1 || Math.abs(y) > 0.1) {
         const [lng, lat] = this.CanvasXYToWebMercator(x, -z);
         const position = this.camera.position;
-        this.camera.position.set(
-          position.x - x,
-          position.y - y,
-          position.z - z
-        );
+        this.camera.position.set(position.x - x, position.y - y, position.z - z);
         this.camera.lookAt(0, 0, 0);
         this.cameraControls.target.set(0, 0, 0);
         this.setCenter([lng, lat]);
@@ -520,19 +489,9 @@ export class Map extends EventListener {
     this.renderer.setRenderTarget(null);
     // 读取点击位置的颜色
     const pixelBufferLayer = new Uint8Array(4);
-    this.renderer.readRenderTargetPixels(
-      this.pickLayerTarget,
-      x,
-      this.pickLayerTarget.height - y,
-      1,
-      1,
-      pixelBufferLayer
-    );
+    this.renderer.readRenderTargetPixels(this.pickLayerTarget, x, this.pickLayerTarget.height - y, 1, 1, pixelBufferLayer);
     // 将颜色信息转换回对象的唯一标识
-    const pickLayerColor =
-      (pixelBufferLayer[0] << 16) |
-      (pixelBufferLayer[1] << 8) |
-      pixelBufferLayer[2];
+    const pickLayerColor = (pixelBufferLayer[0] << 16) | (pixelBufferLayer[1] << 8) | pixelBufferLayer[2];
     return pickLayerColor;
   }
 
@@ -551,19 +510,9 @@ export class Map extends EventListener {
 
       // 读取点击位置的颜色
       const pixelBufferMesh = new Uint8Array(4);
-      this.renderer.readRenderTargetPixels(
-        this.pickMeshTarget,
-        x,
-        this.pickMeshTarget.height - y,
-        1,
-        1,
-        pixelBufferMesh
-      );
+      this.renderer.readRenderTargetPixels(this.pickMeshTarget, x, this.pickMeshTarget.height - y, 1, 1, pixelBufferMesh);
       // 将颜色信息转换回对象的唯一标识
-      const pickColor =
-        (pixelBufferMesh[0] << 16) |
-        (pixelBufferMesh[1] << 8) |
-        pixelBufferMesh[2];
+      const pickColor = (pixelBufferMesh[0] << 16) | (pixelBufferMesh[1] << 8) | pixelBufferMesh[2];
       this.pickMeshWorld.remove(scene);
       return pickColor;
     } else {
@@ -603,11 +552,12 @@ export class Map extends EventListener {
     this.on(MAP_EVENT.LAYER_BEFORE_RENDER, this);
     for (const layer of this.layers) {
       new Promise((resolve) => {
+        layer.render(this);
         resolve();
-        layer.render();
       });
     }
-    this.renderer.render(this.scene, this.camera);
+    // this.renderer.render(this.scene, this.camera);
+    this.composer.render();
     this.on(MAP_EVENT.LAYER_AFTER_RENDER, this);
   }
 
@@ -636,8 +586,7 @@ export class Map extends EventListener {
       this.on(MAP_EVENT.UPDATE_CAMERA_HEIGHT, height);
 
       if (!noChangeZoom) {
-        let zoom =
-          MAP_ZOOM_RANGE.MAX - Math.LOG2E * Math.log(height / MAP_ZOOM_HEIGHT);
+        let zoom = MAP_ZOOM_RANGE.MAX - Math.LOG2E * Math.log(height / MAP_ZOOM_HEIGHT);
         this.setZoom(zoom, true);
       }
     }
@@ -691,26 +640,17 @@ export class Map extends EventListener {
 
     let lenX = maxX - minX;
     let lenY = maxY - minY;
-    let {
-      minX: _minX,
-      minY: _minY,
-      maxX: _maxX,
-      maxY: _maxY,
-    } = this.getWindowRangeAndWebMercator();
+    let { minX: _minX, minY: _minY, maxX: _maxX, maxY: _maxY } = this.getWindowRangeAndWebMercator();
 
     let _lenX = _maxX - _minX;
     let _lenY = _maxY - _minY;
     let _height = this.cameraHeight;
 
-    let height = Math.max(
-      (_height * lenX * 1.5) / _lenX,
-      (_height * lenY * 1.5) / _lenY
-    );
+    let height = Math.max((_height * lenX * 1.5) / _lenX, (_height * lenY * 1.5) / _lenY);
     return {
       height: height,
       center: [(maxX + minX) / 2, (maxY + minY) / 2],
-      zoom:
-        MAP_ZOOM_RANGE.MAX - Math.LOG2E * Math.log(height / MAP_ZOOM_HEIGHT),
+      zoom: MAP_ZOOM_RANGE.MAX - Math.LOG2E * Math.log(height / MAP_ZOOM_HEIGHT),
     };
   }
 
@@ -771,24 +711,12 @@ export class Map extends EventListener {
 
   // 把窗口坐标换成渲染坐标
   WindowXYToCanvasXY(x, y) {
-    const origin = new THREE.Vector3().setFromMatrixPosition(
-      this.camera.matrixWorld
-    );
-    const direction = new THREE.Vector3(
-      (x / this.rootDoc.clientWidth) * 2 - 1,
-      -(y / this.rootDoc.clientHeight) * 2 + 1,
-      0.5
-    ).unproject(this.camera);
+    const origin = new THREE.Vector3().setFromMatrixPosition(this.camera.matrixWorld);
+    const direction = new THREE.Vector3((x / this.rootDoc.clientWidth) * 2 - 1, -(y / this.rootDoc.clientHeight) * 2 + 1, 0.5).unproject(this.camera);
 
     const y3 = 0;
-    const px =
-      ((origin.x - direction.x) / (origin.y - direction.y)) *
-        (y3 - direction.y) +
-      direction.x;
-    const pz =
-      ((origin.z - direction.z) / (origin.y - direction.y)) *
-        (y3 - direction.y) +
-      direction.z;
+    const px = ((origin.x - direction.x) / (origin.y - direction.y)) * (y3 - direction.y) + direction.x;
+    const pz = ((origin.z - direction.z) / (origin.y - direction.y)) * (y3 - direction.y) + direction.z;
 
     return [px, -pz];
   }

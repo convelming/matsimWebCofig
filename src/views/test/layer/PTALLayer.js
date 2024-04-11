@@ -30,7 +30,7 @@ export class PTALLayer extends Layer {
       const colList = [];
       const data = {};
 
-      res.features.forEach((v1) => {
+      res.default.features.forEach((v1) => {
         const centerX = [];
         const centerY = [];
         v1.geometry.coordinates.flat(2).forEach((v2) => {
