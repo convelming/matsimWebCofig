@@ -10,7 +10,6 @@ import { HeatmMapLayer } from "./layer/HeatmMapLayer";
 import { PTALLayer } from "./layer/PTALLayer";
 import { LinkFlowLayer } from "./layer/LinkFlowLayer";
 
-import testpage2Data from "@/assets/data/testpage2.data.json";
 
 export default {
   mounted() {
