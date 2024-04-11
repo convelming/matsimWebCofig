@@ -34,18 +34,23 @@ const routes = [
     name: "systemEvaluation",
     component: () => import(/* webpackChunkName: "systemEvaluation" */ "../views/systemEvaluation/index.vue"),
   },
-  // {
-  //   path: "/test",
-  //   name: "test",
-  //   component: () => import(/* webpackChunkName: "test" */ "../views/test/index.vue"),
-  //   children: [
-  //     {
-  //       path: "testpage1",
-  //       name: "testpage1",
-  //       component: () => import(/* webpackChunkName: "test" */ "../views/test/testpage1.vue"),
-  //     },
-  //   ],
-  // },
+  {
+    path: "/test",
+    name: "test",
+    component: () => import(/* webpackChunkName: "test" */ "../views/test/index.vue"),
+    children: [
+      {
+        path: "testpage1",
+        name: "testpage1",
+        component: () => import(/* webpackChunkName: "test" */ "../views/test/testpage1.vue"),
+      },
+      {
+        path: "testpage2",
+        name: "testpage2",
+        component: () => import(/* webpackChunkName: "test" */ "../views/test/testpage2.vue"),
+      },
+    ],
+  },
 ];
 
 const router = new VueRouter({

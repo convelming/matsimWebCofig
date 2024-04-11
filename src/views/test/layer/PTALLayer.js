@@ -1,7 +1,6 @@
 import { Layer, MAP_EVENT } from "@/mymap";
 import * as THREE from "three";
 
-import hpPTALData from "@/assets/data/hpPTAL.json";
 import * as BufferGeometryUtils from "three/addons/utils/BufferGeometryUtils.js";
 
 export class PTALLayer extends Layer {
@@ -25,43 +24,45 @@ export class PTALLayer extends Layer {
   }
 
   setData() {
-    const size = 110;
-    const rowList = [];
-    const colList = [];
-    const data = {};
+    import("@/assets/data/hpPTAL.json").then((res) => {
+      const size = 110;
+      const rowList = [];
+      const colList = [];
+      const data = {};
 
-    hpPTALData.features.forEach((v1) => {
-      const centerX = [];
-      const centerY = [];
-      v1.geometry.coordinates.flat(2).forEach((v2) => {
-        centerX.push(v2[0]);
-        centerY.push(v2[1]);
+      res.features.forEach((v1) => {
+        const centerX = [];
+        const centerY = [];
+        v1.geometry.coordinates.flat(2).forEach((v2) => {
+          centerX.push(v2[0]);
+          centerY.push(v2[1]);
+        });
+        const minX = Math.min(...centerX);
+        const minY = Math.min(...centerY);
+
+        const row = Math.floor(minY / size);
+        const col = Math.floor(minX / size);
+        data[`${row}_${col}`] = v1;
+        rowList.push(row);
+        colList.push(col);
       });
-      const minX = Math.min(...centerX);
-      const minY = Math.min(...centerY);
 
-      const row = Math.floor(minY / size);
-      const col = Math.floor(minX / size);
-      data[`${row}_${col}`] = v1;
-      rowList.push(row);
-      colList.push(col);
+      const minRow = Math.min(...rowList);
+      const minCol = Math.min(...colList);
+      const maxRow = Math.max(...rowList);
+      const maxCol = Math.max(...colList);
+
+      this.size = size;
+      this.s_row = minRow;
+      this.e_row = maxRow;
+      this.s_col = minCol;
+      this.e_col = maxCol;
+      this.center = [this.col * size, this.row * size];
+      this.data = data;
+
+      console.log(this);
+      this.update();
     });
-
-    const minRow = Math.min(...rowList);
-    const minCol = Math.min(...colList);
-    const maxRow = Math.max(...rowList);
-    const maxCol = Math.max(...colList);
-
-    this.size = size;
-    this.s_row = minRow;
-    this.e_row = maxRow;
-    this.s_col = minCol;
-    this.e_col = maxCol;
-    this.center = [this.col * size, this.row * size];
-    this.data = data;
-
-    console.log(this);
-    this.update();
   }
 
   update() {
@@ -87,15 +88,10 @@ export class PTALLayer extends Layer {
           const colorStr = this.getColorByValue(value / index);
           console.log(value / index, colorStr);
           const color = new THREE.Color(colorStr);
-          const attrColor = new Array(4)
-            .fill([color.r, color.g, color.b])
-            .flat();
+          const attrColor = new Array(4).fill([color.r, color.g, color.b]).flat();
 
           const geometry = new THREE.PlaneGeometry(size * segm, size * segm);
-          geometry.setAttribute(
-            "color",
-            new THREE.BufferAttribute(new Float32Array(attrColor), 3)
-          );
+          geometry.setAttribute("color", new THREE.BufferAttribute(new Float32Array(attrColor), 3));
 
           const s_x = (j - s_col + segm / 2) * size;
           const s_y = (i - s_row + segm / 2) * size;
@@ -108,10 +104,7 @@ export class PTALLayer extends Layer {
       }
     }
 
-    const geometry = BufferGeometryUtils.mergeBufferGeometries(
-      geometryList,
-      false
-    );
+    const geometry = BufferGeometryUtils.mergeBufferGeometries(geometryList, false);
     // geometry.computeBoundingSphere();
 
     console.log(geometry.attributes);

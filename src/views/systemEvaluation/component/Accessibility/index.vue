@@ -36,18 +36,40 @@
 
 <language>
 {
+  "公交可达性分析": {
+    "zh-CN": "公交可达性分析",
+    "en-US": "公交可达性分析"
+  },
+  "数据类型：": {
+    "zh-CN": "数据类型：",
+    "en-US": "数据类型："
+  },
+  "PTAL": {
+    "zh-CN": "PTAL",
+    "en-US": "PTAL"
+  },
+  "需求端": {
+    "zh-CN": "需求端",
+    "en-US": "需求端"
+  },
+  "供给端": {
+    "zh-CN": "供给端",
+    "en-US": "供给端"
+  },
+  "网格边长(x100m)：": {
+    "zh-CN": "网格边长(x100m)：",
+    "en-US": "网格边长(x100m)："
+  },
   "网格颜色：": {
     "zh-CN": "网格颜色：",
     "en-US": "网格颜色："
-  }
+  },
 }
 </language>
 
 <script>
 import { ColorList } from "@/components/ColorSelect.vue";
 import { BinningLayer } from "./layer/BinningLayer";
-// import hpPTAL from "@/assets/data/hpPTAL.json";
-const hpPTAL = {};
 export default {
   props: ["name", "showLayer"],
   inject: ["rootVue"],
@@ -84,9 +106,7 @@ export default {
         } else if (val == "demand") {
           this._BinningLayer.setValueFunc((value) => value.properties.AI_Bus);
         } else if (val == "supply") {
-          this._BinningLayer.setValueFunc(
-            (value) => value.properties.AI_Subway
-          );
+          this._BinningLayer.setValueFunc((value) => value.properties.AI_Subway);
         }
       },
     },
@@ -121,7 +141,9 @@ export default {
       segm: this.binningSize,
       valueFunc: (value) => value.properties.AI_all,
     });
-    this._BinningLayer.setData(hpPTAL);
+    import("@/assets/data/hpPTAL.json").then((res) => {
+      this._BinningLayer.setData(res);
+    });
   },
   mounted() {
     this._interval = setInterval(() => {

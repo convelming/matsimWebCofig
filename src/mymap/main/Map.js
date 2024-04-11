@@ -183,6 +183,8 @@ export class Map extends EventListener {
     this.renderer.domElement.style.position = "absolute";
     this.renderer.domElement.style.top = "0";
     this.renderer.domElement.style.left = "0";
+    this.renderer.setPixelRatio(window.devicePixelRatio);
+    // this.renderer.toneMapping = THREE.ReinhardToneMapping;
     this.rootDoc.appendChild(this.renderer.domElement);
   }
 

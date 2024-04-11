@@ -8,37 +8,37 @@
               <Accessibility :showLayer.sync="showLayerAccessibility" name="Accessibility" />
               <el-collapse-item name="居住人口">
                 <div class="el-collapse-item__title" slot="title">
-                  <el-checkbox :value="s_showLayer">{{$l("居住人口") }}</el-checkbox>
+                  <el-checkbox>{{ $l("居住人口") }}</el-checkbox>
                 </div>
               </el-collapse-item>
               <el-collapse-item name="就业人口">
                 <div class="el-collapse-item__title" slot="title">
-                  <el-checkbox :value="s_showLayer">{{$l("就业人口") }}</el-checkbox>
+                  <el-checkbox>{{ $l("就业人口") }}</el-checkbox>
                 </div>
               </el-collapse-item>
               <el-collapse-item name="出行OD">
                 <div class="el-collapse-item__title" slot="title">
-                  <el-checkbox :value="s_showLayer">{{$l("出行OD") }}</el-checkbox>
+                  <el-checkbox>{{ $l("出行OD") }}</el-checkbox>
                 </div>
               </el-collapse-item>
               <el-collapse-item name="站点数量">
                 <div class="el-collapse-item__title" slot="title">
-                  <el-checkbox :value="s_showLayer">{{$l("站点数量") }}</el-checkbox>
+                  <el-checkbox>{{ $l("站点数量") }}</el-checkbox>
                 </div>
               </el-collapse-item>
               <el-collapse-item name="站点客流">
                 <div class="el-collapse-item__title" slot="title">
-                  <el-checkbox :value="s_showLayer">{{$l("站点客流") }}</el-checkbox>
+                  <el-checkbox>{{ $l("站点客流") }}</el-checkbox>
                 </div>
               </el-collapse-item>
               <el-collapse-item name="客流廊道">
                 <div class="el-collapse-item__title" slot="title">
-                  <el-checkbox :value="s_showLayer">{{$l("客流廊道") }}</el-checkbox>
+                  <el-checkbox>{{ $l("客流廊道") }}</el-checkbox>
                 </div>
               </el-collapse-item>
               <el-collapse-item name="覆盖范围">
                 <div class="el-collapse-item__title" slot="title">
-                  <el-checkbox :value="s_showLayer">{{$l("覆盖范围") }}</el-checkbox>
+                  <el-checkbox>{{ $l("覆盖范围") }}</el-checkbox>
                 </div>
               </el-collapse-item>
             </el-collapse>

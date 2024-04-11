@@ -3,27 +3,27 @@
     <div class="ConfigItem_title" :style="`color:#000;`" title="VspExperimental">VspExperimental</div>
     <div class="ConfigItem_bodyer">
       <el-form class="scroll_y" label-position="top">
-        <el-form-item label="isAbleToOverwritePtInteractionParams">
+        <el-form-item :label="$l('isAbleToOverwritePtInteractionParams')">
           <el-switch v-model="form.isAbleToOverwritePtInteractionParams" active-value="true" inactive-value="false" />
         </el-form-item>
-        <el-form-item label="isGeneratingBoardingDeniedEvent">
+        <el-form-item :label="$l('isGeneratingBoardingDeniedEvent')">
           <el-switch v-model="form.isGeneratingBoardingDeniedEvent" active-value="true" inactive-value="false" />
         </el-form-item>
-        <el-form-item label="isUsingOpportunityCostOfTimeForLocationChoice">
+        <el-form-item :label="$l('isUsingOpportunityCostOfTimeForLocationChoice')">
           <el-switch v-model="form.isUsingOpportunityCostOfTimeForLocationChoice" active-value="true" inactive-value="false" />
         </el-form-item>
-        <el-form-item label="logitScaleParamForPlansRemoval">
+        <el-form-item :label="$l('logitScaleParamForPlansRemoval')">
           <el-input-number v-model="form.logitScaleParamForPlansRemoval" :step="0.1" :min="0" controls-position="right" />
         </el-form-item>
-        <el-form-item label="vspDefaultsCheckingLevel">
+        <el-form-item :label="$l('vspDefaultsCheckingLevel')">
           <el-select v-model="form.vspDefaultsCheckingLevel" clearable>
-            <el-option label="ignore" value="ignore" />
-            <el-option label="info" value="info" />
-            <el-option label="warn" value="warn" />
-            <el-option label="abort" value="abort" />
+            <el-option :label="$l('ignore')" value="ignore" />
+            <el-option :label="$l('info')" value="info" />
+            <el-option :label="$l('warn')" value="warn" />
+            <el-option :label="$l('abort')" value="abort" />
           </el-select>
         </el-form-item>
-        <el-form-item label="writingOutputEvents">
+        <el-form-item :label="$l('writingOutputEvents')">
           <el-switch v-model="form.writingOutputEvents" active-value="true" inactive-value="false" />
         </el-form-item>
       </el-form>
@@ -33,21 +33,45 @@
 
 <language>
 {
-  "aaa": {
-    "zh-CN":"aaa",
-    "en-US":"aaa"
+  "isAbleToOverwritePtInteractionParams": {
+    "zh-CN":"isAbleToOverwritePtInteractionParams",
+    "en-US":"isAbleToOverwritePtInteractionParams"
   },
-  "aaa": {
-    "zh-CN":"aaa",
-    "en-US":"aaa"
+  "isGeneratingBoardingDeniedEvent": {
+    "zh-CN":"isGeneratingBoardingDeniedEvent",
+    "en-US":"isGeneratingBoardingDeniedEvent"
   },
-  "aaa": {
-    "zh-CN":"aaa",
-    "en-US":"aaa"
+  "isUsingOpportunityCostOfTimeForLocationChoice": {
+    "zh-CN":"isUsingOpportunityCostOfTimeForLocationChoice",
+    "en-US":"isUsingOpportunityCostOfTimeForLocationChoice"
   },
-  "aaa": {
-    "zh-CN":"aaa",
-    "en-US":"aaa"
+  "logitScaleParamForPlansRemoval": {
+    "zh-CN":"logitScaleParamForPlansRemoval",
+    "en-US":"logitScaleParamForPlansRemoval"
+  },
+  "vspDefaultsCheckingLevel": {
+    "zh-CN":"vspDefaultsCheckingLevel",
+    "en-US":"vspDefaultsCheckingLevel"
+  },
+  "ignore": {
+    "zh-CN":"ignore",
+    "en-US":"ignore"
+  },
+  "info": {
+    "zh-CN":"info",
+    "en-US":"info"
+  },
+  "warn": {
+    "zh-CN":"warn",
+    "en-US":"warn"
+  },
+  "abort": {
+    "zh-CN":"abort",
+    "en-US":"abort"
+  },
+  "writingOutputEvents": {
+    "zh-CN":"writingOutputEvents",
+    "en-US":"writingOutputEvents"
   },
 }
 </language>
