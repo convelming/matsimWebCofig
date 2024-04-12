@@ -14,16 +14,18 @@ export class Layer extends EventListener {
   pickLayerColor = new THREE.Color(0);
   pickMeshScene = null;
   zIndex = 0;
-  visible = false;
-  visibleFunc = null;
   pickColorNum = 0;
 
-  constructor({ zIndex = 0, visible = true, visibleFunc, event } = {}) {
+  set visible(visible) {
+    this._visible = !!visible;
+    !!visible ? this.show() : this.hide();
+  }
+
+  constructor({ zIndex = 0, visible = true, event } = {}) {
     super({ event });
     this.id = parseInt(Math.random() * 255 * 255 * 255).toString(16);
     this.zIndex = zIndex;
     this.visible = visible;
-    this.visibleFunc = visibleFunc;
     this.pickColorNum = 0;
 
     this.scene = new THREE.Group();
@@ -70,6 +72,7 @@ export class Layer extends EventListener {
     if (this.map) this.removeFromParent();
     this.map = map;
     this.setPickLayerColor(this.map.getPickLayerColor());
+    this.visible = this._visible;
   }
 
   // 地图中移除回调
@@ -84,12 +87,12 @@ export class Layer extends EventListener {
     if (this.map) this.map.removeLayer(this);
   }
 
+  beforeRender() {}
+
+  afterRender() {}
+
   // 渲染
-  render() {
-    let visible = this.visible;
-    if (this.visibleFunc) visible = this.visibleFunc(this);
-    visible ? this.show() : this.hide();
-  }
+  render() {}
 
   // 事件回调
   on(type, data) {
@@ -115,15 +118,13 @@ export class Layer extends EventListener {
   clearScene() {
     this.pickColorNum = 0;
     if (this.scene) this.scene.remove(...this.scene.children);
-    if (this.pickLayerScene)
-      this.pickLayerScene.remove(...this.pickLayerScene.children);
-    if (this.pickMeshScene)
-      this.pickMeshScene.remove(...this.pickMeshScene.children);
+    if (this.pickLayerScene) this.pickLayerScene.remove(...this.pickLayerScene.children);
+    if (this.pickMeshScene) this.pickMeshScene.remove(...this.pickMeshScene.children);
   }
 
   // 隐藏
   hide() {
-    this.visible = false;
+    this._visible = false;
     if (this.scene) this.scene.removeFromParent();
     if (this.pickLayerScene) this.pickLayerScene.removeFromParent();
     if (this.pickMeshScene) this.pickMeshScene.removeFromParent();
@@ -131,13 +132,11 @@ export class Layer extends EventListener {
 
   // 显示
   show() {
-    this.visible = true;
+    this._visible = true;
     if (this.map) {
       if (this.map.world) this.map.world.add(this.scene);
-      if (this.map.pickLayerWorld)
-        this.map.pickLayerWorld.add(this.pickLayerScene);
-      if (this.map.pickMeshWorld)
-        this.map.pickMeshWorld.add(this.pickMeshScene);
+      if (this.map.pickLayerWorld) this.map.pickLayerWorld.add(this.pickLayerScene);
+      if (this.map.pickMeshWorld) this.map.pickMeshWorld.add(this.pickMeshScene);
     }
   }
 

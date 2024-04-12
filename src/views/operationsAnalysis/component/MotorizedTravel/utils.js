@@ -32,10 +32,7 @@ class ModelPoolInstance {
   };
 
   // 默认模型
-  defaultModel = new THREE.Mesh(
-    new THREE.BoxGeometry(1, 1, 1),
-    new THREE.MeshBasicMaterial({ color: 0x00ff00 })
-  );
+  defaultModel = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshBasicMaterial({ color: 0x00ff00 }));
 
   constructor() {
     console.log("ModelPoolInstance constructor");
@@ -65,9 +62,7 @@ class ModelPoolInstance {
   // 获取模型
   take(name) {
     try {
-      return (
-        this.modelPool.get(name).shift() || this.modelObj.get(name).clone()
-      );
+      return this.modelPool.get(name).shift() || this.modelObj.get(name).clone();
     } catch (error) {
       return this.defaultModel.clone();
     }
@@ -89,6 +84,7 @@ export const ModelPool = new ModelPoolInstance();
 
 export class BusMotionPath {
   constructor(opt = []) {
+    this._opt = JSON.parse(JSON.stringify(opt));
     const startPoint = new BusMotionPoint(opt[0]);
     const endPoint = new BusMotionPoint(opt[opt.length - 1]);
 
@@ -170,6 +166,10 @@ export class BusMotionPath {
       isRunning: true,
     };
   }
+
+  toJSON() {
+    return JSON.parse(JSON.stringify(this._opt));
+  }
 }
 
 export class BusMotionPoint {
@@ -242,6 +242,7 @@ export class BusMotionPoint {
 
 export class CarMotionPath {
   constructor(opt = []) {
+    this._opt = JSON.parse(JSON.stringify(opt));
     const startPoint = new BusMotionPoint(opt[0].startPoint);
     const endPoint = new BusMotionPoint(opt[opt.length - 1].endPoint);
     const startTime = opt[0].startTime;
@@ -326,10 +327,13 @@ export class CarMotionPath {
       isRunning: true,
     };
   }
+
+  toJSON() {
+    return JSON.parse(JSON.stringify(this._opt));
+  }
 }
 
 export class CarMotionPoint extends BusMotionPoint {}
-
 
 export function guid() {
   return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {

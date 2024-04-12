@@ -42,15 +42,9 @@ export class CarMotionLayer extends Layer {
 
     this.pickGeometry = new THREE.BufferGeometry();
 
-    this.pickLayerMesh = new THREE.Points(
-      this.pickGeometry,
-      this.pickLayerMaterial
-    );
+    this.pickLayerMesh = new THREE.Points(this.pickGeometry, this.pickLayerMaterial);
 
-    this.pickMeshMesh = new THREE.Points(
-      this.pickGeometry,
-      this.pickMeshMaterial
-    );
+    this.pickMeshMesh = new THREE.Points(this.pickGeometry, this.pickMeshMaterial);
 
     this.pickLayerScene.add(this.pickLayerMesh);
     this.pickMeshScene.add(this.pickMeshMesh);
@@ -73,8 +67,11 @@ export class CarMotionLayer extends Layer {
         case "render":
           this.handleRenderCallback(data);
           break;
-        case "getPickCar":
-          this.handleGetPickCarCallback(data);
+        case "getCarByColor":
+          this.handleGetCarByColorCallback(data);
+          break;
+        case "getCarByUuid":
+          this.handleGetCarByUuidCallback(data);
           break;
       }
     };
@@ -93,7 +90,7 @@ export class CarMotionLayer extends Layer {
 
     if (type == MAP_EVENT.HANDLE_PICK_LEFT && data.layerId == this.id) {
       this.worker.postMessage({
-        key: "getPickCar",
+        key: "getCarByColor",
         data: { pickColor: data.pickColor },
       });
     }
@@ -102,6 +99,15 @@ export class CarMotionLayer extends Layer {
   onAdd(map) {
     super.onAdd(map);
     this.center = this.map.center;
+  }
+
+  beforeRender() {
+    if (this.lockSelectCar && this._selectCarDetail && this._selectCarPath) {
+      const { start, end, isRunning } = this._selectCarPath.getPointByTime(this.time);
+      if (isRunning) {
+        this.map.setCenter(start.toJSON());
+      }
+    }
   }
 
   render() {
@@ -121,6 +127,27 @@ export class CarMotionLayer extends Layer {
     this.worker.terminate();
   }
 
+  setSelectCarId(uuid) {
+    this.selectCarId = uuid;
+    this.worker.postMessage({
+      key: "getCarByUuid",
+      data: {
+        uuid: this.selectCarId,
+      },
+    });
+  }
+
+  handleGetCarByUuidCallback(data) {
+    if (data) {
+      const { carDetail, path } = data;
+      this._selectCarDetail = carDetail;
+      this._selectCarPath = new CarMotionPath(path);
+    } else {
+      this._selectCarDetail = null;
+      this._selectCarPath = null;
+    }
+  }
+
   handleRenderCallback({ time, list }) {
     this.rendering = false;
 
@@ -135,26 +162,16 @@ export class CarMotionLayer extends Layer {
       let model = this.runCarList[i];
       if (list[i] && list[i].carDetail.uuid == this.selectCarId) {
         const { position, worldPosition } = list[i].runDetail;
-        this.coneMesh.position.set(
-          position[0],
-          position[1],
-          this.modelSize * 7
-        );
+        this.coneMesh.position.set(position[0], position[1], this.modelSize * 7);
         const scale = this.modelSize * 0.1;
         this.coneMesh.scale.set(scale, scale, scale);
         this.scene.add(this.coneMesh);
-        if (this.lockSelectCar) {
-          const eventId = this.map.addEventListener(
-            MAP_EVENT.LAYER_AFTER_RENDER,
-            () => {
-              this.map.setCenter(worldPosition);
-              this.map.removeEventListener(
-                MAP_EVENT.LAYER_AFTER_RENDER,
-                eventId
-              );
-            }
-          );
-        }
+        // if (this.lockSelectCar) {
+        //   const eventId = this.map.addEventListener(MAP_EVENT.LAYER_AFTER_RENDER, () => {
+        //     this.map.setCenter(worldPosition);
+        //     this.map.removeEventListener(MAP_EVENT.LAYER_AFTER_RENDER, eventId);
+        //   });
+        // }
       } else if (i > this.maxCarNum || !list[i]) {
         if (model) {
           this.scene.remove(model);
@@ -188,22 +205,16 @@ export class CarMotionLayer extends Layer {
     this.runCarList = runCarList;
 
     // 更新车辆选择视图
-    this.pickGeometry.setAttribute(
-      "position",
-      new THREE.BufferAttribute(new Float32Array(attrPoitions), 3)
-    );
-    this.pickGeometry.setAttribute(
-      "color",
-      new THREE.BufferAttribute(new Float32Array(attrPickColors), 3)
-    );
+    this.pickGeometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(attrPoitions), 3));
+    this.pickGeometry.setAttribute("color", new THREE.BufferAttribute(new Float32Array(attrPickColors), 3));
     this.pickGeometry.needsUpdate = true;
     this.pickGeometry.computeBoundingSphere();
   }
 
-  handleGetPickCarCallback(data) {
-    console.log("handleGetPickCarCallback", data);
+  handleGetCarByColorCallback(data) {
+    console.log("handleGetCarByColorCallback", data);
     if (data) {
-      this.handleEventListener(MAP_EVENT.HANDLE_PICK_LEFT, data);
+      this.handleEventListener(MAP_EVENT.HANDLE_PICK_LEFT, data.carDetail);
     }
   }
 
@@ -220,14 +231,8 @@ export class CarMotionLayer extends Layer {
     this.timeObj.forEach((v) => (v.length = 0));
     this.timeObj.clear();
 
-    this.pickGeometry.setAttribute(
-      "position",
-      new THREE.BufferAttribute(new Float32Array([]), 3)
-    );
-    this.pickGeometry.setAttribute(
-      "color",
-      new THREE.BufferAttribute(new Float32Array([]), 3)
-    );
+    this.pickGeometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array([]), 3));
+    this.pickGeometry.setAttribute("color", new THREE.BufferAttribute(new Float32Array([]), 3));
     this.coneMesh.removeFromParent();
     if (this.scene) this.scene.remove(...this.scene.children);
   }
@@ -239,7 +244,7 @@ export class CarMotionLayer extends Layer {
   setTime(time) {
     this.time = time;
   }
-  
+
   setModelSize(modelSize) {
     this.modelSize = modelSize;
     this.pickLayerMaterial.setValues({ size: this.modelSize * 5 });

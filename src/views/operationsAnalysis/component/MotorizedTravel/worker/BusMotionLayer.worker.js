@@ -7,11 +7,23 @@ class BusMotionWorker {
   pathMap = new Map();
   timeSpeed = 60 * 1;
 
-  getPickBus({ pickColor }) {
+  getBusByUuid({ uuid }) {
+    console.log(uuid);
+    for (const { pathId, busId, ...busDetail } of this.busMap.values()) {
+      if (uuid == busDetail.uuid) {
+        const path = this.pathMap.get(pathId);
+        return { busDetail, path: path.toJSON() };
+      }
+    }
+    return null;
+  }
+
+  getBusByColor({ pickColor }) {
     console.log(pickColor);
     for (const { pathId, busId, ...busDetail } of this.busMap.values()) {
       if (pickColor > 0 && pickColor == busDetail.pickColor) {
-        return busDetail;
+        const path = this.pathMap.get(pathId);
+        return { busDetail, path: path.toJSON() };
       }
     }
     return null;
@@ -32,26 +44,15 @@ class BusMotionWorker {
         // 汽车没有走到终点
         // 计算汽车当前行驶到那个路段
         const path = this.pathMap.get(pathId);
-        const { start, end, running } =
-          path.getPointByDistance(traveledDistance);
+        const { start, end, isRunning } = path.getPointByDistance(traveledDistance);
 
         const { x: x0, y: y0 } = start.offset(_center);
         const { x: x1, y: y1 } = end.offset(_center);
         const position = new THREE.Vector3(x0, y0, 0);
         const target = new THREE.Vector3(x1, y1, 0); // 你的目标点
-        const direction = new THREE.Vector3()
-          .subVectors(target, position)
-          .normalize();
-        const m4 = new THREE.Matrix4().makeRotationAxis(
-          new THREE.Vector3(1, 0, 0),
-          Math.PI / 2
-        );
-        m4.multiply(
-          new THREE.Matrix4().makeRotationAxis(
-            new THREE.Vector3(0, 1, 0),
-            Math.atan2(direction.y, direction.x) + Math.PI / 2
-          )
-        );
+        const direction = new THREE.Vector3().subVectors(target, position).normalize();
+        const m4 = new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(1, 0, 0), Math.PI / 2);
+        m4.multiply(new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(0, 1, 0), Math.atan2(direction.y, direction.x) + Math.PI / 2));
         const rotation = new THREE.Euler();
         rotation.setFromRotationMatrix(m4);
 
@@ -115,11 +116,7 @@ class BusMotionWorker {
           pickColor: pickColorNum++,
         };
         const { startTime, endTime } = bus;
-        for (
-          let index = startTime;
-          index < endTime + timeSpeed;
-          index += timeSpeed
-        ) {
+        for (let index = startTime; index < endTime + timeSpeed; index += timeSpeed) {
           const key = Math.ceil(index / timeSpeed);
           if (!timeObj.has(key)) timeObj.set(key, new Array());
           const arr = timeObj.get(key);
@@ -143,8 +140,12 @@ onmessage = function (e) {
     case "render":
       this.postMessage({ key: key, data: worker.render(data) });
       break;
-    case "getPickBus":
-      this.postMessage({ key: key, data: worker.getPickBus(data) });
+    case "getBusByColor":
+      this.postMessage({ key: key, data: worker.getBusByColor(data) });
+      break;
+    case "getBusByUuid":
+      console.log(key, data);
+      this.postMessage({ key: key, data: worker.getBusByUuid(data) });
       break;
   }
 };

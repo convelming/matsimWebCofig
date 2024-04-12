@@ -7,11 +7,21 @@ class CarMotionWorker {
   carMap = new Map();
   timeSpeed = 60 * 1;
 
-  getPickCar({ pickColor }) {
+  getCarByUuid({ uuid }) {
+    console.log(uuid);
+    for (const { carId, path, ...carDetail } of this.carMap.values()) {
+      if (uuid == carDetail.uuid) {
+        return { carDetail, path: path.toJSON() };
+      }
+    }
+    return null;
+  }
+
+  getCarByColor({ pickColor }) {
     console.log(pickColor);
     for (const { carId, path, ...carDetail } of this.carMap.values()) {
       if (pickColor > 0 && pickColor == carDetail.pickColor) {
-        return carDetail;
+        return { carDetail, path: path.toJSON() };
       }
     }
     return null;
@@ -27,25 +37,15 @@ class CarMotionWorker {
       const v1 = this.carMap.get(carKey);
       if (v1 && time >= v1.startTime && time <= v1.endTime) {
         const { carId, path, ...carDetail } = v1;
-        const { start, end, running } = path.getPointByTime(time);
+        const { start, end, isRunning } = path.getPointByTime(time);
 
         const { x: x0, y: y0 } = start.offset(_center);
         const { x: x1, y: y1 } = end.offset(_center);
         const position = new THREE.Vector3(x0, y0, 0);
         const target = new THREE.Vector3(x1, y1, 0); // 你的目标点
-        const direction = new THREE.Vector3()
-          .subVectors(target, position)
-          .normalize();
-        const m4 = new THREE.Matrix4().makeRotationAxis(
-          new THREE.Vector3(1, 0, 0),
-          Math.PI / 2
-        );
-        m4.multiply(
-          new THREE.Matrix4().makeRotationAxis(
-            new THREE.Vector3(0, 1, 0),
-            Math.atan2(direction.y, direction.x) + Math.PI / 2
-          )
-        );
+        const direction = new THREE.Vector3().subVectors(target, position).normalize();
+        const m4 = new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(1, 0, 0), Math.PI / 2);
+        m4.multiply(new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(0, 1, 0), Math.atan2(direction.y, direction.x) + Math.PI / 2));
         const rotation = new THREE.Euler();
         rotation.setFromRotationMatrix(m4);
 
@@ -102,11 +102,7 @@ class CarMotionWorker {
       carMap.set(carId, car);
 
       const { startTime, endTime } = car;
-      for (
-        let index = startTime;
-        index < endTime + timeSpeed;
-        index += timeSpeed
-      ) {
+      for (let index = startTime; index < endTime + timeSpeed; index += timeSpeed) {
         const key = Math.ceil(index / timeSpeed);
         if (!timeObj.has(key)) timeObj.set(key, new Array());
         const arr = timeObj.get(key);
@@ -127,8 +123,11 @@ onmessage = function (e) {
     case "render":
       this.postMessage({ key: key, data: worker.render(data) });
       break;
-    case "getPickCar":
-      this.postMessage({ key: key, data: worker.getPickCar(data) });
+    case "getCarByColor":
+      this.postMessage({ key: key, data: worker.getCarByColor(data) });
+      break;
+    case "getCarByUuid":
+      this.postMessage({ key: key, data: worker.getCarByUuid(data) });
       break;
   }
 };

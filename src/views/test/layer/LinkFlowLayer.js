@@ -14,7 +14,7 @@ export class LinkFlowLayer extends Layer {
 
   constructor(opt) {
     super(opt);
-    import("@/assets/data/linkflow.json").then((res) => {
+    import("@/assets/data/linkflow.v2.json").then((res) => {
       this.data = res.default.data;
       this.update();
     });

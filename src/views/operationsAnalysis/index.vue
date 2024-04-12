@@ -204,7 +204,7 @@ export default {
         rootId: "mapRoot",
         zoom: 11,
         enableRotate: true,
-        // zoom: 16,
+        zoom: 16,
       });
       this._Map.addLayer(this._MapLayer);
       window._Map = this._Map;

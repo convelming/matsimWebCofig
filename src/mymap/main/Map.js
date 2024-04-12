@@ -547,23 +547,45 @@ export class Map extends EventListener {
     }
   }
 
+  // 渲染前事件
+  beforeRender() {
+    for (const layer of this.layers) {
+      // new Promise((resolve) => {
+        layer.beforeRender(this);
+      //   resolve();
+      // });
+    }
+  }
+
+  // 渲染后事件
+  afterRender() {
+    for (const layer of this.layers) {
+      // new Promise((resolve) => {
+        layer.afterRender(this);
+      //   resolve();
+      // });
+    }
+  }
+
   // 渲染事件
   render() {
-    this.on(MAP_EVENT.LAYER_BEFORE_RENDER, this);
     for (const layer of this.layers) {
-      new Promise((resolve) => {
+      // new Promise((resolve) => {
         layer.render(this);
-        resolve();
-      });
+      //   resolve();
+      // });
     }
     // this.renderer.render(this.scene, this.camera);
     this.composer.render();
-    this.on(MAP_EVENT.LAYER_AFTER_RENDER, this);
   }
 
   // 渲染循环
   animation() {
+    this.beforeRender();
+    this.on(MAP_EVENT.LAYER_BEFORE_RENDER, this);
     this.render();
+    this.afterRender();
+    this.on(MAP_EVENT.LAYER_AFTER_RENDER, this);
     // this.stats.update();
     window.requestAnimationFrame(this.animation.bind(this));
   }

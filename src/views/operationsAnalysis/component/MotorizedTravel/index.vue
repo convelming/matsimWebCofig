@@ -181,7 +181,7 @@ export default {
       event: {
         [MAP_EVENT.HANDLE_PICK_LEFT]: ({ data }) => {
           console.log(data);
-          this._BusMotionLayer.selectBusId = data.uuid;
+          this._BusMotionLayer.setSelectBusId(data.uuid);
           this.rootVue.handleShowBusDetail({
             uuid: data.uuid,
             busDetail: data,
@@ -196,7 +196,7 @@ export default {
       modelSize: this.modelSize,
       event: {
         [MAP_EVENT.HANDLE_PICK_LEFT]: ({ data }) => {
-          this._CarMotionLayer.selectCarId = data.uuid;
+          this._CarMotionLayer.setSelectCarId(data.uuid);
           this.rootVue.handleShowCarDetail({
             uuid: data.uuid,
             carDetail: data,
@@ -246,7 +246,7 @@ export default {
             this._BusData = null;
           }
           this.rootVue.$on("setSelectedBus", (busDetail) => {
-            this._BusMotionLayer.selectBusId = busDetail.uuid;
+            this._BusMotionLayer.setSelectBusId(busDetail.uuid);
           });
           this._Map.addLayer(this._BusMotionLayer);
         } else {
@@ -263,7 +263,7 @@ export default {
             this._CarData = null;
           }
           this.rootVue.$on("setSelectedCar", (carDetail) => {
-            this._CarMotionLayer.selectCarId = carDetail.uuid;
+            this._CarMotionLayer.setSelectCarId(carDetail.uuid);
           });
           this._Map.addLayer(this._CarMotionLayer);
         } else {

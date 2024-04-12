@@ -42,15 +42,9 @@ export class BusMotionLayer extends Layer {
 
     this.pickGeometry = new THREE.BufferGeometry();
 
-    this.pickLayerMesh = new THREE.Points(
-      this.pickGeometry,
-      this.pickLayerMaterial
-    );
+    this.pickLayerMesh = new THREE.Points(this.pickGeometry, this.pickLayerMaterial);
 
-    this.pickMeshMesh = new THREE.Points(
-      this.pickGeometry,
-      this.pickMeshMaterial
-    );
+    this.pickMeshMesh = new THREE.Points(this.pickGeometry, this.pickMeshMaterial);
 
     this.pickLayerScene.add(this.pickLayerMesh);
     this.pickMeshScene.add(this.pickMeshMesh);
@@ -73,8 +67,11 @@ export class BusMotionLayer extends Layer {
         case "render":
           this.handleRenderCallback(data);
           break;
-        case "getPickBus":
-          this.handleGetPickBusCallback(data);
+        case "getBusByColor":
+          this.handleGetBusByColorCallback(data);
+          break;
+        case "getBusByUuid":
+          this.handleGetBusByUuidCallback(data);
           break;
       }
     };
@@ -93,7 +90,7 @@ export class BusMotionLayer extends Layer {
 
     if (type == MAP_EVENT.HANDLE_PICK_LEFT && data.layerId == this.id) {
       this.worker.postMessage({
-        key: "getPickBus",
+        key: "getBusByColor",
         data: { pickColor: data.pickColor },
       });
     }
@@ -102,6 +99,17 @@ export class BusMotionLayer extends Layer {
   onAdd(map) {
     super.onAdd(map);
     this.center = this.map.center;
+  }
+
+  beforeRender() {
+    if (this.lockSelectBus && this._selectBusDetail && this._selectBusPath) {
+      const { startTime, desireSpeed } = this._selectBusDetail;
+      const traveledDistance = (this.time - startTime) * desireSpeed;
+      const { start, end, isRunning } = this._selectBusPath.getPointByDistance(traveledDistance);
+      if (isRunning) {
+        this.map.setCenter(start.toJSON());
+      }
+    }
   }
 
   render() {
@@ -123,6 +131,27 @@ export class BusMotionLayer extends Layer {
     this.worker.terminate();
   }
 
+  setSelectBusId(uuid) {
+    this.selectBusId = uuid;
+    this.worker.postMessage({
+      key: "getBusByUuid",
+      data: {
+        uuid: this.selectBusId,
+      },
+    });
+  }
+
+  handleGetBusByUuidCallback(data) {
+    if (data) {
+      const { busDetail, path } = data;
+      this._selectBusDetail = busDetail;
+      this._selectBusPath = new BusMotionPath(path);
+    } else {
+      this._selectBusDetail = null;
+      this._selectBusPath = null;
+    }
+  }
+
   handleRenderCallback({ time, list, center }) {
     this.rendering = false;
 
@@ -138,26 +167,16 @@ export class BusMotionLayer extends Layer {
       let model = this.runBusList[i];
       if (list[i] && list[i].busDetail.uuid == this.selectBusId) {
         const { position, worldPosition } = list[i].runDetail;
-        this.coneMesh.position.set(
-          position[0],
-          position[1],
-          this.modelSize * 7
-        );
+        this.coneMesh.position.set(position[0], position[1], this.modelSize * 7);
         const scale = this.modelSize * 0.1;
         this.coneMesh.scale.set(scale, scale, scale);
         this.scene.add(this.coneMesh);
-        if (this.lockSelectBus) {
-          const eventId = this.map.addEventListener(
-            MAP_EVENT.LAYER_AFTER_RENDER,
-            () => {
-              this.map.setCenter(worldPosition);
-              this.map.removeEventListener(
-                MAP_EVENT.LAYER_AFTER_RENDER,
-                eventId
-              );
-            }
-          );
-        }
+        // if (this.lockSelectBus) {
+        //   const eventId = this.map.addEventListener(MAP_EVENT.LAYER_AFTER_RENDER, () => {
+        //     this.map.setCenter(worldPosition);
+        //     this.map.removeEventListener(MAP_EVENT.LAYER_AFTER_RENDER, eventId);
+        //   });
+        // }
       } else if (i > this.maxBusNum || !list[i]) {
         if (model) {
           this.scene.remove(model);
@@ -191,22 +210,16 @@ export class BusMotionLayer extends Layer {
     this.runBusList = runBusList;
 
     // 更新车辆选择视图
-    this.pickGeometry.setAttribute(
-      "position",
-      new THREE.BufferAttribute(new Float32Array(attrPoitions), 3)
-    );
-    this.pickGeometry.setAttribute(
-      "color",
-      new THREE.BufferAttribute(new Float32Array(attrPickColors), 3)
-    );
+    this.pickGeometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(attrPoitions), 3));
+    this.pickGeometry.setAttribute("color", new THREE.BufferAttribute(new Float32Array(attrPickColors), 3));
     this.pickGeometry.needsUpdate = true;
     this.pickGeometry.computeBoundingSphere();
   }
 
-  handleGetPickBusCallback(data) {
-    console.log("handleGetPickBusCallback", data);
+  handleGetBusByColorCallback(data) {
+    console.log("handleGetBusByColorCallback", data);
     if (data) {
-      this.handleEventListener(MAP_EVENT.HANDLE_PICK_LEFT, data);
+      this.handleEventListener(MAP_EVENT.HANDLE_PICK_LEFT, data.busDetail);
     }
   }
 
@@ -223,14 +236,8 @@ export class BusMotionLayer extends Layer {
     this.timeObj.forEach((v) => (v.length = 0));
     this.timeObj.clear();
 
-    this.pickGeometry.setAttribute(
-      "position",
-      new THREE.BufferAttribute(new Float32Array([]), 3)
-    );
-    this.pickGeometry.setAttribute(
-      "color",
-      new THREE.BufferAttribute(new Float32Array([]), 3)
-    );
+    this.pickGeometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array([]), 3));
+    this.pickGeometry.setAttribute("color", new THREE.BufferAttribute(new Float32Array([]), 3));
     this.coneMesh.removeFromParent();
     if (this.scene) this.scene.remove(...this.scene.children);
   }
