@@ -1,19 +1,10 @@
-import { Layer, MAP_EVENT } from "@/mymap";
+import { Layer, MAP_EVENT, OutlineLayer } from "@/mymap";
 import * as THREE from "three";
 
-import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
-import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass";
-import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass";
-import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer";
-import { FXAAShader } from "three/examples/jsm/shaders/FXAAShader";
-
-const ENTIRE_SCENE = 0,
-  BLOOM_SCENE = 1;
-
-export class LinkFlowLayer extends Layer {
-
+export class LinkFlowLayer extends OutlineLayer {
   constructor(opt) {
     super(opt);
+
     import("@/assets/data/linkflow.v2.json").then((res) => {
       this.data = res.default.data;
       this.update();
@@ -76,10 +67,9 @@ export class LinkFlowLayer extends Layer {
       // const [x, y] = linkNormal.clone().multiplyScalar(offset);
       // mesh.position.set(x, y, 0);
 
-      // mesh.layers.enable(BLOOM_SCENE);
-
       this.scene.add(mesh);
     }
+    this.outlinePass.selectedObjects = this.scene.children;
     console.timeEnd("update");
   }
 }

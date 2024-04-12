@@ -173,6 +173,7 @@ export class Map extends EventListener {
     this.renderer.domElement.style.position = "absolute";
     this.renderer.domElement.style.top = "0";
     this.renderer.domElement.style.left = "0";
+    this.renderer.setPixelRatio(window.devicePixelRatio);
     this.rootDoc.appendChild(this.renderer.domElement);
   }
 
@@ -365,6 +366,7 @@ export class Map extends EventListener {
         this.camera.updateProjectionMatrix();
         // 更新渲染器的大小
         this.renderer.setSize(width, height);
+        this.composer.setSize(width, height);
         // 更新拾取渲染器的大小
         this.pickLayerTarget.setSize(width, height);
         this.pickMeshTarget.setSize(width, height);
@@ -551,7 +553,7 @@ export class Map extends EventListener {
   beforeRender() {
     for (const layer of this.layers) {
       // new Promise((resolve) => {
-        layer.beforeRender(this);
+      layer.beforeRender(this);
       //   resolve();
       // });
     }
@@ -561,7 +563,7 @@ export class Map extends EventListener {
   afterRender() {
     for (const layer of this.layers) {
       // new Promise((resolve) => {
-        layer.afterRender(this);
+      layer.afterRender(this);
       //   resolve();
       // });
     }
@@ -571,7 +573,7 @@ export class Map extends EventListener {
   render() {
     for (const layer of this.layers) {
       // new Promise((resolve) => {
-        layer.render(this);
+      layer.render(this);
       //   resolve();
       // });
     }

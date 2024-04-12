@@ -10,6 +10,8 @@ import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPa
 import { BloomPass } from "three/examples/jsm/postprocessing/BloomPass";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer";
+import { GammaCorrectionShader } from "three/examples/jsm/shaders/GammaCorrectionShader.js";
+import { OutlinePass } from "three/examples/jsm/postprocessing/OutlinePass";
 
 export default {
   data() {
