@@ -131,9 +131,9 @@ export class BusLinkLayer extends Layer {
         "#include <begin_vertex>",
         `
           #include <begin_vertex>
+          vLineLength = lineLength;
           float lineWidth = ${Number(this.lineWidth).toFixed(2)};
           float offset = lineWidth / 2.0 * side;
-          vLineLength = lineLength;
 
           float lenA = length(position.xy - startPosition);
           float lenB = length(position.xy - endPosition);

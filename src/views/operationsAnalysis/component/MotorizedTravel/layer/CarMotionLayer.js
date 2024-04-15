@@ -175,12 +175,12 @@ export class CarMotionLayer extends Layer {
       } else if (i > this.maxCarNum || !list[i]) {
         if (model) {
           this.scene.remove(model);
-          ModelPool.still(modelName, model);
+          ModelPool.instance.still(modelName, model);
         }
         continue;
       }
       if (!model) {
-        model = ModelPool.take(modelName);
+        model = ModelPool.instance.take(modelName);
         this.scene.add(model);
       }
       const scale = this.modelSize * 0.005;
@@ -221,7 +221,7 @@ export class CarMotionLayer extends Layer {
   clearScene() {
     this.runCarList.forEach((v) => {
       const car = this.carMap.get(v);
-      if (car.model) ModelPool.still(car.modelName, car.model);
+      if (car.model) ModelPool.instance.still(car.modelName, car.model);
       car.isShow = false;
       car.model = null;
     });

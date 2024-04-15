@@ -1,9 +1,18 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
+let ModelPoolInstance = null;
+
 // 模型池
-class ModelPoolInstance {
+export class ModelPool {
   loader = false;
+
+  static get instance() {
+    if (!ModelPoolInstance) {
+      ModelPoolInstance = new ModelPool();
+    }
+    return ModelPoolInstance;
+  }
 
   modelPool = null;
 
@@ -35,7 +44,7 @@ class ModelPoolInstance {
   defaultModel = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshBasicMaterial({ color: 0x00ff00 }));
 
   constructor() {
-    console.log("ModelPoolInstance constructor");
+    console.log("ModelPool constructor");
     const loader = new GLTFLoader();
     const pList = [];
     for (const [name, url] of Object.entries(this.modelsUrl)) {
@@ -79,8 +88,6 @@ class ModelPoolInstance {
     }
   }
 }
-
-export const ModelPool = new ModelPoolInstance();
 
 export class BusMotionPath {
   constructor(opt = []) {

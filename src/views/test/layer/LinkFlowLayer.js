@@ -1,7 +1,7 @@
-import { Layer, MAP_EVENT, OutlineLayer } from "@/mymap";
+import { Layer, MAP_EVENT, OutlineLayer, SCENE_MAP } from "@/mymap";
 import * as THREE from "three";
 
-export class LinkFlowLayer extends OutlineLayer {
+export class LinkFlowLayer extends Layer {
   constructor(opt) {
     super(opt);
 
@@ -53,7 +53,7 @@ export class LinkFlowLayer extends OutlineLayer {
     for (let i = 0; i < legs.length; i++) {
       const { offset, coords } = legs[i];
 
-      const points = coords.map((v) => new THREE.Vector3(v[0], v[1], v[2] / 3600));
+      const points = coords.map((v) => new THREE.Vector3(v[0], v[1], v[2] / 60));
       const geometry = new THREE.BufferGeometry().setFromPoints(points);
       const mesh = new THREE.Line(geometry, material);
 
@@ -66,10 +66,9 @@ export class LinkFlowLayer extends OutlineLayer {
 
       // const [x, y] = linkNormal.clone().multiplyScalar(offset);
       // mesh.position.set(x, y, 0);
-
+      mesh.layers.enable(SCENE_MAP.BLOOM_SCENE);
       this.scene.add(mesh);
     }
-    this.outlinePass.selectedObjects = this.scene.children;
     console.timeEnd("update");
   }
 }

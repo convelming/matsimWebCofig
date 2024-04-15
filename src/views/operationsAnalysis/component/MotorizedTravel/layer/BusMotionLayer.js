@@ -180,12 +180,12 @@ export class BusMotionLayer extends Layer {
       } else if (i > this.maxBusNum || !list[i]) {
         if (model) {
           this.scene.remove(model);
-          ModelPool.still(modelName, model);
+          ModelPool.instance.still(modelName, model);
         }
         continue;
       }
       if (!model) {
-        model = ModelPool.take(modelName);
+        model = ModelPool.instance.take(modelName);
         this.scene.add(model);
       }
       const scale = this.modelSize * 0.005;
@@ -226,7 +226,7 @@ export class BusMotionLayer extends Layer {
   clearScene() {
     this.runBusList.forEach((v) => {
       const bus = this.busMap.get(v);
-      if (bus.model) ModelPool.still(bus.modelName, bus.model);
+      if (bus.model) ModelPool.instance.still(bus.modelName, bus.model);
       bus.isShow = false;
       bus.model = null;
     });

@@ -34,9 +34,7 @@ export class StopsLayer extends Layer {
   frameStartPoint = [0, 0];
   frameEndPoint = [0, 0];
   texture = new THREE.TextureLoader().load(require("@/assets/image/point.png"));
-  texture3D = new THREE.TextureLoader().load(
-    require("@/assets/image/公交站牌.png")
-  );
+  texture3D = new THREE.TextureLoader().load(require("@/assets/image/公交站牌.png"));
 
   constructor(opt) {
     super(opt);
@@ -252,9 +250,11 @@ export class StopsLayer extends Layer {
 
   show() {
     super.show();
-    this.setSize(this.map.cameraHeight / 80);
-    this.setPitch(this.map.pitch);
-    this.update();
+    if (this.map) {
+      this.setSize(this.map.cameraHeight / 80);
+      this.setPitch(this.map.pitch);
+      this.update();
+    }
   }
 
   setColor(color) {
@@ -281,8 +281,7 @@ export class StopsLayer extends Layer {
       if (!this.visible) return;
       if (this.updateing) return;
       this.updateing = true;
-      const { maxX, minX, maxY, minY } =
-        this.map.getWindowRangeAndWebMercator();
+      const { maxX, minX, maxY, minY } = this.map.getWindowRangeAndWebMercator();
       const wd = Math.abs(maxX - minX);
       const hd = Math.abs(maxY - minY);
       const maxX1 = maxX + wd;
@@ -290,8 +289,7 @@ export class StopsLayer extends Layer {
       const maxY1 = maxY + hd;
       const minY1 = minY - hd;
       const [maxX2, minX2, maxY2, minY2] = this.range;
-      if (maxX1 <= maxX2 && minX1 >= minX2 && maxY1 <= maxY2 && minY1 >= minY2)
-        throw new Error("当前视野范围不需要更新");
+      if (maxX1 <= maxX2 && minX1 >= minX2 && maxY1 <= maxY2 && minY1 >= minY2) throw new Error("当前视野范围不需要更新");
       if (!maxX1 || !minX1 || !maxY1 || !minY1) throw new Error("坐标不能为空");
       this.range = [maxX1, minX1, maxY1, minY1];
       const res = await getStopFacilities({
@@ -325,14 +323,8 @@ export class StopsLayer extends Layer {
   }
 
   updateFrame() {
-    let [x1, y1] = this.map.WebMercatorToCanvasXY(
-      ...this.frameStartPoint,
-      ...this.center
-    );
-    let [x2, y2] = this.map.WebMercatorToCanvasXY(
-      ...this.frameEndPoint,
-      ...this.center
-    );
+    let [x1, y1] = this.map.WebMercatorToCanvasXY(...this.frameStartPoint, ...this.center);
+    let [x2, y2] = this.map.WebMercatorToCanvasXY(...this.frameEndPoint, ...this.center);
     let attrUv = [0, 0, 0, 1, 1, 1, 1, 0];
     let attrPosition = [
       Math.min(x1, x2),
@@ -349,18 +341,9 @@ export class StopsLayer extends Layer {
       0, // 左上
     ];
     let attrIndex = [0, 1, 2, 0, 2, 3];
-    this.frameGeometry.setAttribute(
-      "position",
-      new THREE.BufferAttribute(new Float32Array(attrPosition), 3)
-    );
-    this.frameGeometry.setAttribute(
-      "uv",
-      new THREE.BufferAttribute(new Float32Array(attrUv), 2)
-    );
-    this.frameGeometry.index = new THREE.BufferAttribute(
-      new Uint16Array(attrIndex),
-      1
-    );
+    this.frameGeometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(attrPosition), 3));
+    this.frameGeometry.setAttribute("uv", new THREE.BufferAttribute(new Float32Array(attrUv), 2));
+    this.frameGeometry.index = new THREE.BufferAttribute(new Uint16Array(attrIndex), 1);
     this.frameGeometry.needsUpdate = true;
     this.frameGeometry.computeBoundingSphere();
 
@@ -372,10 +355,7 @@ export class StopsLayer extends Layer {
     const data = this.data;
     const count = data.length;
     const positions = new THREE.BufferAttribute(new Float32Array(count * 3), 3);
-    const pickColors = new THREE.BufferAttribute(
-      new Float32Array(count * 3),
-      3
-    );
+    const pickColors = new THREE.BufferAttribute(new Float32Array(count * 3), 3);
     for (let i = 0; i < count; i++) {
       const { coord, pickColor } = data[i];
       positions.setXYZ(i, coord.x, coord.y, 0);
@@ -393,10 +373,7 @@ export class StopsLayer extends Layer {
     this.mesh.position.set(x, y, 0);
     this.scene.add(this.mesh);
 
-    this.pickLayerMesh = new THREE.Points(
-      this.geometry,
-      this.pickLayerMaterial
-    );
+    this.pickLayerMesh = new THREE.Points(this.geometry, this.pickLayerMaterial);
     this.pickLayerMesh.position.set(x, y, 0);
     this.pickLayerScene.add(this.pickLayerMesh);
 
@@ -411,15 +388,8 @@ export class StopsLayer extends Layer {
     } else {
       this.labelMesh.material.setValues({ map: this.labelData.map });
       this.labelMesh.material.needsUpdate = true;
-      this.labelMesh.scale.set(
-        (this.labelData.mapWidth * this.size * this.scale) / 80,
-        (this.labelData.mapHeight * this.size * this.scale) / 80,
-        1
-      );
-      const [x, y] = this.map.WebMercatorToCanvasXY(
-        this.labelData.x,
-        this.labelData.y
-      );
+      this.labelMesh.scale.set((this.labelData.mapWidth * this.size * this.scale) / 80, (this.labelData.mapHeight * this.size * this.scale) / 80, 1);
+      const [x, y] = this.map.WebMercatorToCanvasXY(this.labelData.x, this.labelData.y);
       this.labelMesh.position.set(x, y, 10);
       this.scene.add(this.labelMesh);
     }

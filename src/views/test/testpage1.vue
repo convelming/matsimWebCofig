@@ -9,8 +9,9 @@ import { Build3DLayer } from "./layer/Build3DLayer";
 import { HeatmMapLayer } from "./layer/HeatmMapLayer";
 import { PTALLayer } from "./layer/PTALLayer";
 import { LinkFlowLayer } from "./layer/LinkFlowLayer";
-import { BloomLayer } from "./layer/BloomLayer";
+import { BloomTestLayer } from "./layer/BloomTestLayer";
 import { OutlineTestLayer } from "./layer/OutlineTestLayer";
+import { Line2DTestLayer } from "./layer/Line2DTestLayer";
 
 export default {
   mounted() {
@@ -28,9 +29,10 @@ export default {
       this._map.cameraControls.enableRotate = true;
       this._map.addLayer(new LocalMapLayer({ zIndex: 0 }));
       // this._map.addLayer(new Build3DLayer({ zIndex: 20 }));
-      this._map.addLayer(new LinkFlowLayer({ zIndex: 20 }));
-      // this._map.addLayer(new BloomLayer({ zIndex: 20 }));
-      this._map.addLayer(new OutlineTestLayer({ zIndex: 20 }));
+      // this._map.addLayer(new LinkFlowLayer({ zIndex: 20 }));
+      this._map.addLayer(new Line2DTestLayer({ zIndex: 20 }));
+      // this._map.addLayer(new BloomTestLayer({ zIndex: 20 }));
+      // this._map.addLayer(new OutlineTestLayer({ zIndex: 20 }));
       // import("@/assets/data/testpage2.data.json").then((res) => {
       //   const length = 5000; // res.length;
       //   this._map.addLayer(

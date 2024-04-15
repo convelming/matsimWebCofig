@@ -3,11 +3,17 @@ import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 //引入性能监视器stats.js
 import Stats from "three/addons/libs/stats.module.js";
-import { WGS84ToMercator, EPSG4526ToMercator } from "../utils/LngLatUtils";
-import { EventListener } from "./EventListener";
-
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
+
+import { WGS84ToMercator, EPSG4526ToMercator } from "../utils/LngLatUtils";
+import { EventListener } from "./EventListener";
+import { BloomComposer } from "../composer/BloomComposer";
+
+export const SCENE_MAP = {
+  ENTIRE_SCENE: 0, // 全景图层
+  BLOOM_SCENE: 1, // 泛光图层
+};
 
 // 事件类型
 export const MAP_EVENT = {
@@ -178,9 +184,13 @@ export class Map extends EventListener {
   }
 
   initComposer() {
-    this.renderScene = new RenderPass(this.scene, this.camera);
+    this.renderPass = new RenderPass(this.scene, this.camera);
+    this.bloomComposer = new BloomComposer(this.renderer, this.scene, this.camera, {
+      layerNum: SCENE_MAP.BLOOM_SCENE,
+    });
     this.composer = new EffectComposer(this.renderer);
-    this.composer.addPass(this.renderScene);
+    this.composer.addPass(this.renderPass);
+    this.composer.addPass(this.bloomComposer.pass);
   }
 
   // 初始化场景
@@ -367,6 +377,7 @@ export class Map extends EventListener {
         // 更新渲染器的大小
         this.renderer.setSize(width, height);
         this.composer.setSize(width, height);
+        this.bloomComposer.setSize(width, height);
         // 更新拾取渲染器的大小
         this.pickLayerTarget.setSize(width, height);
         this.pickMeshTarget.setSize(width, height);
@@ -526,6 +537,7 @@ export class Map extends EventListener {
   addLayer(layer) {
     layer.onAdd(this);
     this.layers.push(layer);
+    this.layers.sort((a, b) => a.zIndex - b.zIndex);
   }
 
   // 移除图层
@@ -577,7 +589,7 @@ export class Map extends EventListener {
       //   resolve();
       // });
     }
-    // this.renderer.render(this.scene, this.camera);
+    this.bloomComposer.render();
     this.composer.render();
   }
 
