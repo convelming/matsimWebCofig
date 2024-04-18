@@ -8,6 +8,8 @@
               <PublicTransit :showLayer.sync="showLayerPublicTransit" name="PublicTransit" />
               <MotorizedTravel :showLayer.sync="showLayerMotorizedTravel" name="MotorizedTravel" />
               <Build3D :showLayer.sync="showLayerBuild3D" name="Build3D" />
+              <Network :showLayer.sync="showLayerNetwork" name="Network" />
+              <div style="height: 100px"></div>
             </el-collapse>
           </Drawer>
           <div class="Drawer_col">
@@ -28,8 +30,7 @@
                   <div class="form_item">
                     <div class="form_label">{{ $l("速度：") }}</div>
                     <div class="form_value">
-                      <el-slider style="padding: 0 calc(2em - 10px)" v-model="speed" :step="0.1" :min="0" :max="30" :marks="speedMarks" :format-tooltip="formatSpeed">
-                      </el-slider>
+                      <el-slider style="padding: 0 calc(2em - 10px)" v-model="speed" :step="0.1" :min="0" :max="30" :marks="speedMarks" :format-tooltip="formatSpeed"> </el-slider>
                     </div>
                   </div>
                 </div>
@@ -85,6 +86,7 @@ import Toolbar from "./component/Toolbar/index.vue";
 
 import MotorizedTravel from "./component/MotorizedTravel/index.vue";
 import Build3D from "./component/Build3D/index.vue";
+import Network from "./component/Network/index.vue";
 
 import Clock from "@/components/Clock.vue";
 
@@ -96,6 +98,7 @@ export default {
     Toolbar,
     MotorizedTravel,
     Build3D,
+    Network,
   },
   watch: {
     page_language: {
@@ -117,11 +120,12 @@ export default {
       loading: false,
       _Map: null,
       _MapLayer: null,
-      activeNames: ["PublicTransit", "MotorizedTravel", "Build3D"],
+      activeNames: ["PublicTransit", "MotorizedTravel", "Build3D", "Network"],
 
       showLayerPublicTransit: false,
       showLayerMotorizedTravel: false,
       showLayerBuild3D: false,
+      showLayerNetwork: true,
 
       showStopToolbar: false,
 
@@ -142,6 +146,9 @@ export default {
       this.handleChangeMapCameraControls();
     },
     showLayerBuild3D(val) {
+      this.handleChangeMapCameraControls();
+    },
+    showLayerNetwork(val) {
       this.handleChangeMapCameraControls();
     },
   },
@@ -192,6 +199,7 @@ export default {
       // enableRotate = enableRotate || this.showLayerPublicTransit;
       enableRotate = enableRotate || this.showLayerMotorizedTravel;
       enableRotate = enableRotate || this.showLayerBuild3D;
+      enableRotate = enableRotate || this.showLayerNetwork;
       if (enableRotate) {
         this._Map.enableRotate = true;
       } else {
@@ -204,7 +212,7 @@ export default {
         rootId: "mapRoot",
         zoom: 11,
         enableRotate: true,
-        zoom: 16,
+        zoom: 15,
       });
       this._Map.addLayer(this._MapLayer);
       window._Map = this._Map;

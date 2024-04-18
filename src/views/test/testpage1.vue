@@ -52,6 +52,12 @@ export default {
       //     zIndex: 200,
       //   })
       // );
+      let l1 = new Line2DTestLayer({ zIndex: 20,pickNum:1 })
+      let l2 = new Line2DTestLayer({ zIndex: 20,pickNum:2 })
+      let l3 = new Line2DTestLayer({ zIndex: 20,pickNum:3 })
+      let l4 = new Line2DTestLayer({ zIndex: 20,pickNum:4 })
+      let l5 = new Line2DTestLayer({ zIndex: 20,pickNum:5 })
+      console.log(l1.pickNum);
     },
   },
 };

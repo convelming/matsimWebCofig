@@ -35,5 +35,12 @@ new Vue({
   render: (h) => h(App),
   created() {
     this.$store.dispatch("initDataBase");
+    setInterval(() => {
+      this.$store.dispatch("getDataBaseList");
+      const dataBase = this.$store.getters.dataBase;
+      if (dataBase) {
+        this.$store.dispatch("getDataSourceList", dataBase);
+      }
+    }, 1000 * 60 * 5);
   },
 }).$mount("#app");

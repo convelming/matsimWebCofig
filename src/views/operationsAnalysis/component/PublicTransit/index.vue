@@ -1,52 +1,22 @@
 <template>
   <el-collapse-item class="BusStopForm" :name="name">
     <div class="el-collapse-item__title" slot="title">
-      <el-checkbox :value="s_showLayer" @change="handleChangeShowLayer">{{
-        $l("公共交通")
-      }}</el-checkbox>
+      <el-checkbox :value="s_showLayer" @change="handleChangeShowLayer">{{ $l("公共交通") }}</el-checkbox>
     </div>
     <div class="form">
       <div class="form_item">
         <div class="form_label">{{ $l("图标大小：") }}</div>
         <div class="form_value">
-          <el-slider
-            :disabled="!s_showLayer"
-            v-model="stopScale"
-            :min="1"
-            :max="20"
-          ></el-slider>
+          <el-slider :disabled="!s_showLayer" v-model="stopScale" :min="1" :max="20"></el-slider>
         </div>
       </div>
       <div class="form_item" style="align-items: center">
-        <el-switch
-          :disabled="!s_showLayer"
-          style="width: 100%"
-          v-model="showStopName"
-          :active-text="$l('显示站点名称')"
-        ></el-switch>
-        <el-color-picker
-          :disabled="!s_showLayer"
-          :title="$l('公交站点颜色')"
-          size="mini"
-          :predefine="predefineColors"
-          v-model="stopColor"
-        />
-        <div
-          aria-disabled=""
-          :title="$l('公交线路查询')"
-          :class="{ active: sreachLine, disabled: !s_showLayer }"
-          class="icon_button icon_stop"
-          @click="s_showLayer && handleSreachStop(!sreachLine)"
-        >
-          <!-- <object class="img" type="image/svg+xml" :data="icon_sreach"></object> -->
+        <el-switch :disabled="!s_showLayer" style="width: 100%" v-model="showStopName" :active-text="$l('显示站点名称')"></el-switch>
+        <el-color-picker :disabled="!s_showLayer" :title="$l('公交站点颜色')" size="mini" :predefine="predefineColors" v-model="stopColor" />
+        <!-- <div aria-disabled="" :title="$l('公交线路查询')" :class="{ active: sreachLine, disabled: !s_showLayer }" class="icon_button icon_stop" @click="s_showLayer && handleSreachStop(!sreachLine)">
           <img class="img" src="@/assets/image/地图 (2).svg" alt="" />
-        </div>
-        <div
-          :title="$l('公交站点选取')"
-          :class="{ active: selectStop, disabled: !s_showLayer }"
-          class="icon_button el-icon-aim"
-          @click="s_showLayer && handleSelectStop(!selectStop)"
-        ></div>
+        </div> -->
+        <div :title="$l('公交站点选取')" :class="{ active: selectStop, disabled: !s_showLayer }" class="icon_button el-icon-aim" @click="s_showLayer && handleSelectStop(!selectStop)"></div>
       </div>
     </div>
   </el-collapse-item>
@@ -144,15 +114,7 @@ export default {
       selectStop: false,
       selectBusStopList: [],
 
-      predefineColors: [
-        "#ff4500",
-        "#ff8c00",
-        "#ffd700",
-        "#90ee90",
-        "#00ced1",
-        "#409eff",
-        "#c71585",
-      ],
+      predefineColors: ["#ff4500", "#ff8c00", "#ffd700", "#90ee90", "#00ced1", "#409eff", "#c71585"],
 
       _StopsLayer: undefined,
       _LinkLayer: undefined,
@@ -229,19 +191,13 @@ export default {
       this.selectStop = value;
       if (value) {
         this.handleSreachStop(false);
-        this._StopsLayerEventId = this._StopsLayer.addEventListener(
-          STOPS_EVENT.SELECT_STOP_CHANGE,
-          (res) => {
-            this.selectBusStopList = res.data;
-            this.rootVue.handleShowStopAndRoute(res.data);
-          }
-        );
+        this._StopsLayerEventId = this._StopsLayer.addEventListener(STOPS_EVENT.SELECT_STOP_CHANGE, (res) => {
+          this.selectBusStopList = res.data;
+          this.rootVue.handleShowStopAndRoute(res.data);
+        });
         this._StopsLayer.state = STOPS_STATE_KEY.CAN_SELECT;
       } else {
-        this._StopsLayer.removeEventListener(
-          STOPS_EVENT.SELECT_STOP_CHANGE,
-          this._StopsLayerEventId
-        );
+        this._StopsLayer.removeEventListener(STOPS_EVENT.SELECT_STOP_CHANGE, this._StopsLayerEventId);
 
         this._StopsLayer.state = STOPS_STATE_KEY.DISABLE;
       }
@@ -288,7 +244,7 @@ export default {
     border: 1px solid #e6e6e6;
     border-radius: 4px;
     &.active {
-      background-color: rgba($color:#409EFF, $alpha: 1);
+      background-color: rgba($color: #409eff, $alpha: 1);
       color: #ffffff;
     }
     &.disabled {

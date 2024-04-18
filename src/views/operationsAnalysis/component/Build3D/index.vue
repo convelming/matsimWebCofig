@@ -178,6 +178,18 @@ export default {
       background-color: rgba($color: #409eff, $alpha: 1);
       color: #ffffff;
     }
+    &.disabled {
+      cursor: no-drop;
+    }
+    &.icon_stop {
+      .img {
+        width: 20px;
+        height: 20px;
+        display: block;
+        object-fit: cover;
+        padding: 4px;
+      }
+    }
   }
 }
 </style>

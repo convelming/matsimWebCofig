@@ -21,6 +21,10 @@ export class Layer extends EventListener {
     !!visible ? this.show() : this.hide();
   }
 
+  get visible() {
+    return this._visible;
+  }
+
   constructor({ zIndex = 0, visible = true, event } = {}) {
     super({ event });
     this.id = parseInt(Math.random() * 255 * 255 * 255).toString(16);

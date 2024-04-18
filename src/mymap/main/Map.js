@@ -5,6 +5,7 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import Stats from "three/addons/libs/stats.module.js";
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
+import { SMAAPass } from "three/examples/jsm/postprocessing/SMAAPass";
 
 import { WGS84ToMercator, EPSG4526ToMercator } from "../utils/LngLatUtils";
 import { EventListener } from "./EventListener";
@@ -184,13 +185,21 @@ export class Map extends EventListener {
   }
 
   initComposer() {
+    this.composer = new EffectComposer(this.renderer);
+
     this.renderPass = new RenderPass(this.scene, this.camera);
+    this.composer.addPass(this.renderPass);
+
     this.bloomComposer = new BloomComposer(this.renderer, this.scene, this.camera, {
       layerNum: SCENE_MAP.BLOOM_SCENE,
     });
-    this.composer = new EffectComposer(this.renderer);
-    this.composer.addPass(this.renderPass);
     this.composer.addPass(this.bloomComposer.pass);
+
+    //获取.setPixelRatio()设置的设备像素比
+    const pixelRatio = this.renderer.getPixelRatio();
+    // width、height是canva画布的宽高度
+    this.smaaPass = new SMAAPass(this.rootDoc.clientWidth * pixelRatio, this.rootDoc.clientHeight * pixelRatio);
+    this.composer.addPass(this.smaaPass);
   }
 
   // 初始化场景

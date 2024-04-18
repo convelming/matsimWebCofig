@@ -6,7 +6,6 @@ import * as BufferGeometryUtils from "three/addons/utils/BufferGeometryUtils.js"
 import { getTileFacilities } from "@/api/index";
 
 const BUILD_ZOOM = 11;
-let _pickColorNum = 0;
 
 export class Build3DLayer extends Layer {
   name = "Build3DLayer";
@@ -23,8 +22,6 @@ export class Build3DLayer extends Layer {
     this.builds = {};
     this.buildColor = opt.buildColor || this.buildColor;
     this.buildOpacity = opt.buildOpacity || this.buildOpacity;
-
-    _pickColorNum = 0;
 
     this.material = new THREE.MeshLambertMaterial({
       color: this.buildColor,
@@ -135,19 +132,15 @@ export class Build3DLayer extends Layer {
 
     const zoom = BUILD_ZOOM;
     const [mapCenterX, mapCenterY] = this.map.center;
-    const { far, fov } = this.map.camera;
-    const width = far / Math.cos((Math.PI * fov) / 180);
+    // const { far, fov } = this.map.camera;
+    // const width = far / Math.cos((Math.PI * fov) / 180);
 
-    const [row, col] = [
-      Math.floor(
-        ((EARTH_RADIUS + mapCenterX) * Math.pow(2, zoom)) / (EARTH_RADIUS * 2)
-      ),
-      Math.floor(
-        ((EARTH_RADIUS - mapCenterY) * Math.pow(2, zoom)) / (EARTH_RADIUS * 2)
-      ),
-    ];
+    const { maxX, minX, maxY, minY } = this.map.getWindowRangeAndWebMercator();
+    const width = Math.max(maxX - minX, maxY - minY);
+
+    const [row, col] = [Math.floor(((EARTH_RADIUS + mapCenterX) * Math.pow(2, zoom)) / (EARTH_RADIUS * 2)), Math.floor(((EARTH_RADIUS - mapCenterY) * Math.pow(2, zoom)) / (EARTH_RADIUS * 2))];
     const tileSize = (EARTH_RADIUS * 2) / Math.pow(2, zoom);
-    const radius = Math.ceil(width / tileSize);
+    const radius = Math.ceil(width / tileSize) + 1;
 
     const max_row_col = Math.pow(2, zoom);
     let rowStart = row - radius;
@@ -164,17 +157,11 @@ export class Build3DLayer extends Layer {
         let key = `${i}_${j}`;
         let tile = this.tileMap[key];
         if (!tile) {
-          tile = new BuildTile(
-            i,
-            j,
-            this.material,
-            this.pickLayerMeterial,
-            this.pickBuildMeterial
-          );
+          tile = new BuildTile(i, j, this.material, this.pickLayerMeterial, this.pickBuildMeterial);
           this.tileMap[key] = tile;
         }
         if (tile.loadStatus == 1) {
-          tile.load();
+          tile.load(() => ++this.pickColorNum);
         }
         const [x, y] = this.map.WebMercatorToCanvasXY(tile.x, tile.y);
 
@@ -200,10 +187,7 @@ export class Build3DLayer extends Layer {
     }
 
     if (this.selectBuildTile) {
-      const [x, y] = this.map.WebMercatorToCanvasXY(
-        this.selectBuildTile.x,
-        this.selectBuildTile.y
-      );
+      const [x, y] = this.map.WebMercatorToCanvasXY(this.selectBuildTile.x, this.selectBuildTile.y);
       this.coneMesh.position.set(x, y, 0);
       this.coneMesh.renderOrder = Number.MAX_SAFE_INTEGER;
       this.scene.add(this.coneMesh);
@@ -216,7 +200,7 @@ export class Build3DLayer extends Layer {
 class BuildTile {
   _loadNum = 0;
 
-  // 加载状态 1未加载 2加载成功 3加载失败
+  // 加载状态 1未加载 2加载成功 3加载失败 4加载中
   _loadStatus = 1;
 
   get loadStatus() {
@@ -250,12 +234,8 @@ class BuildTile {
   constructor(row, col, baseMaterial, pickLayerMeterial, pickBuildMeterial) {
     this._row = row;
     this._col = col;
-    this._x =
-      ((row + 0.5) * (EARTH_RADIUS * 2)) / Math.pow(2, BUILD_ZOOM) -
-      EARTH_RADIUS;
-    this._y =
-      EARTH_RADIUS -
-      ((col + 0.5) * (EARTH_RADIUS * 2)) / Math.pow(2, BUILD_ZOOM);
+    this._x = ((row + 0.5) * (EARTH_RADIUS * 2)) / Math.pow(2, BUILD_ZOOM) - EARTH_RADIUS;
+    this._y = EARTH_RADIUS - ((col + 0.5) * (EARTH_RADIUS * 2)) / Math.pow(2, BUILD_ZOOM);
 
     this._data = [];
 
@@ -266,8 +246,9 @@ class BuildTile {
     this._pickBuildMesh = new THREE.Mesh(this._geometry, pickBuildMeterial);
   }
 
-  async load() {
+  async load(getPickColorFunc) {
     try {
+      this._loadStatus = 4;
       if (this._geometry) {
         this._geometry.dispose();
       }
@@ -277,7 +258,7 @@ class BuildTile {
 
         const geometryList = [];
         for (const v of data) {
-          v.pickColorNum = ++_pickColorNum;
+          v.pickColorNum = getPickColorFunc();
           const pickColor = new THREE.Color(v.pickColorNum);
           const shapes = [
             {
@@ -285,17 +266,12 @@ class BuildTile {
               holes: v.coordinates.slice(1),
             },
           ];
-          geometryList.push(
-            new BuildGeometry({ shapes, height: v.height, color: pickColor })
-          );
+          geometryList.push(new BuildGeometry({ shapes, height: v.height, color: pickColor }));
 
           this._data[v.pickColorNum] = v;
         }
 
-        this._geometry = BufferGeometryUtils.mergeBufferGeometries(
-          geometryList,
-          false
-        );
+        this._geometry = BufferGeometryUtils.mergeBufferGeometries(geometryList, false);
       } else {
         this._geometry = new THREE.BufferGeometry();
       }
@@ -321,12 +297,7 @@ class BuildTile {
 }
 
 class BuildGeometry extends THREE.BufferGeometry {
-  constructor({
-    shapes = [],
-    curveSegments = 12,
-    height = 10,
-    color = new THREE.Color(0xff0000),
-  }) {
+  constructor({ shapes = [], curveSegments = 12, height = 10, color = new THREE.Color(0xff0000) }) {
     super();
 
     this.type = "BuildGeometry";
@@ -338,13 +309,9 @@ class BuildGeometry extends THREE.BufferGeometry {
     const uvs = [];
 
     for (const item of shapes) {
-      const shape = new THREE.Shape(
-        item.points.map((v) => new THREE.Vector2(v[0], v[1]))
-      );
+      const shape = new THREE.Shape(item.points.map((v) => new THREE.Vector2(v[0], v[1])));
       for (const item2 of item.holes) {
-        const holePath = new THREE.Path(
-          item2.map((v) => new THREE.Vector2(v[0], v[1]))
-        );
+        const holePath = new THREE.Path(item2.map((v) => new THREE.Vector2(v[0], v[1])));
         shape.holes.push(holePath);
       }
       addShape(shape);
@@ -355,10 +322,7 @@ class BuildGeometry extends THREE.BufferGeometry {
     }
 
     this.setIndex(indices);
-    this.setAttribute(
-      "position",
-      new THREE.Float32BufferAttribute(vertices, 3)
-    );
+    this.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
     this.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
     // this.setAttribute("normal", new THREE.Float32BufferAttribute(normals, 3));
     this.setAttribute("uv", new THREE.Float32BufferAttribute(uvs, 2));
@@ -379,10 +343,7 @@ class BuildGeometry extends THREE.BufferGeometry {
       }
 
       // 根据路径和空洞生成面
-      const faces = THREE.ShapeUtils.triangulateShape(
-        points.shape,
-        points.holes
-      );
+      const faces = THREE.ShapeUtils.triangulateShape(points.shape, points.holes);
 
       const shapeVertices = [].concat(points.shape);
       for (let i = 0, l = points.holes.length; i < l; i++) {

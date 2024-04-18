@@ -345,3 +345,15 @@ export function getFacilitiesById(params) {
     method: "get",
   });
 }
+
+// 按照瓦片地图返回路网
+// GET /pt/network/getTileNetwork
+// 接口ID：165438635
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-165438635
+export function getTileNetwork(params) {
+  return request({
+    url: `/pt/network/getTileNetwork`,
+    params: params,
+    method: "get",
+  });
+}
