@@ -1,4 +1,5 @@
 .DS_Store
+.VSCodeCounter
 node_modules
 /bus_route_correction_dist
 /src/assets/data

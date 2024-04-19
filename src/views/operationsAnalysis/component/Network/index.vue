@@ -25,9 +25,9 @@
         </div>
       </div>
       <div class="form_item" style="align-items: center">
-        <el-switch :disabled="!s_showLayer" style="width: 100%" v-model="showNodes" :active-text="$l('showNodes')"></el-switch>
+        <el-switch :disabled="!s_showLayer" style="width: 100%" v-model="showNode" :active-text="$l('showNode')"></el-switch>
         <!-- <el-color-picker :disabled="!s_showLayer" :title="$l('color')" size="mini" :predefine="predefineColors" v-model="color" /> -->
-        <div :title="$l('selectLine')" :class="{ active: canSelect, disabled: !s_showLayer }" class="icon_button el-icon-aim" @click="s_showLayer && handleSelectStop(!selectStop)"></div>
+        <div :title="$l('selectLine')" :class="{ active: canSelect, disabled: !s_showLayer }" class="icon_button el-icon-aim" @click="s_showLayer && handleCanSelect(!canSelect)"></div>
       </div>
     </div>
   </el-collapse-item>
@@ -51,7 +51,7 @@
     "zh-CN": "颜色：",
     "en-US": "Color: "
   },
-  "showNodes":{
+  "showNode":{
     "zh-CN": "显示节点",
     "en-US": "Show Nodes"
   },
@@ -106,6 +106,11 @@ export default {
         }, 200);
       },
     },
+    showNode: {
+      handler(val) {
+        this._NetworkLayer.setShowNode(val);
+      },
+    },
   },
   data() {
     return {
@@ -113,12 +118,13 @@ export default {
       s_showLayer: true,
 
       _NetworkLayer: null,
+      _NetworkNodeLayer: null,
 
       colors: 0,
       width: 10,
-      offset: 0,
+      offset: 12,
       color: "#E9CDAA",
-      showNodes: false,
+      showNode: false,
       canSelect: false,
 
       colorsList: ColorList,
@@ -126,7 +132,13 @@ export default {
   },
   created() {
     this.s_showLayer = this.showLayer;
-    this._NetworkLayer = new NetworkLayer({ zIndex: 20, lineWidth: this.width, lineOffset: this.offset, colors: this.colorsList[this.colors] });
+    this._NetworkLayer = new NetworkLayer({
+      zIndex: 20,
+      lineWidth: this.width,
+      lineOffset: this.offset,
+      colors: this.colorsList[this.colors],
+      showNode: this.showNode,
+    });
   },
   mounted() {
     this._interval = setInterval(() => {
@@ -148,6 +160,7 @@ export default {
     // 组件初始化事件
     handleEnable() {
       this._Map.addLayer(this._NetworkLayer);
+      this.handleCanSelect(this.canSelect);
       this.rootVue.$on("timeChange", this.handleTimeChange);
     },
     // 组件卸载事件
@@ -157,6 +170,22 @@ export default {
     },
     handleTimeChange(time) {
       if (this._NetworkLayer) this._NetworkLayer.setTime(time);
+    },
+    handleCanSelect(value) {
+      this.canSelect = value;
+      if (value) {
+        this._NetworkLayerEventId = this._NetworkLayer.addEventListener(MAP_EVENT.HANDLE_PICK_LEFT, ({ data }) => {
+          console.log(data);
+          this.selectItem = data;
+          if (data.type == "line") {
+            this.rootVue.handleShowLineDetail({ uuid: data.uuid, lineDetail: data });
+          } else if (data.type == "node") {
+            this.rootVue.handleShowLineDetail({ uuid: data.uuid, nodeDetail: data });
+          }
+        });
+      } else {
+        this._NetworkLayer.removeEventListener(MAP_EVENT.HANDLE_PICK_LEFT, this._NetworkLayerEventId);
+      }
     },
   },
 };

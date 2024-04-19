@@ -16,7 +16,7 @@ import Drawer from "@/components/Drawer/index.vue";
 import ColorSelect from "@/components/ColorSelect.vue";
 import Tags from "@/components/Tags.vue";
 
-Vue.config.productionTip = false;
+// Vue.config.productionTip = false;
 
 Vue.component("Pagination", Pagination);
 Vue.component("Dialog", Dialog);

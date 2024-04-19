@@ -5,10 +5,11 @@ import { ColorBar2D } from "@/mymap/utils/ColorBar2D.js";
 
 import { getTileNetwork } from "@/api/index.js";
 
+import { guid } from "@/utils/utils";
+
 // import { Line2DGeometry, Line2DMaterial } from "@/mymap/geometry/Line2D";
 
 const BUILD_ZOOM = 11;
-let _pickColorNum = 0;
 
 export class NetworkLayer extends Layer {
   colors = ColorBar2D.defaultColors;
@@ -24,56 +25,57 @@ export class NetworkLayer extends Layer {
 
   constructor(opt) {
     super(opt);
-    _pickColorNum = 0;
 
     this.time = opt.time || this.time;
     this.colors = opt.colors || this.colors;
     this.lineWidth = opt.lineWidth || this.lineWidth;
     this.lineOffset = opt.lineOffset || this.lineOffset;
+    this.showNode = opt.showNode || this.showNode;
 
-    this.material = new NetworkMaterial({ color: 0xff0000, colorBar: ColorBar2D.instance.drowColorBar(this.colors) });
-    this.pickLayerMaterial = new NetworkMaterial({ color: this.pickLayerColor });
-    this.pickBuildMaterial = new NetworkMaterial({ usePickColor: true });
+    console.log(this);
+  }
+
+  setShowNode(showNode) {
+    this.showNode = showNode;
+    for (const tile of Object.values(this.tileMap)) {
+      tile.setShowNode(showNode);
+    }
   }
 
   setTime(time) {
     this.time = time;
     for (const tile of Object.values(this.tileMap)) {
-      tile.setFlowNum(Math.floor(time / 3600));
+      tile.setTime(time);
     }
   }
 
   setColors(colors) {
     this.colors = colors || ColorBar2D.defaultColors;
-    this.material.uniforms.colorBar.value = ColorBar2D.instance.drowColorBar(this.colors);
-    this.material.needsUpdate = true;
+    for (const tile of Object.values(this.tileMap)) {
+      tile.setColors(colors);
+    }
   }
 
   setLineWidth(lineWidth) {
     this.lineWidth = lineWidth;
-    this.material.uniforms.lineWidth.value = this.lineWidth;
-    this.material.needsUpdate = true;
-    this.pickLayerMaterial.uniforms.lineWidth.value = this.lineWidth;
-    this.pickLayerMaterial.needsUpdate = true;
-    this.pickMeshMaterial.uniforms.lineWidth.value = this.lineWidth;
-    this.pickMeshMaterial.needsUpdate = true;
+    for (const tile of Object.values(this.tileMap)) {
+      tile.setLineWidth(lineWidth);
+    }
   }
 
   setLineOffset(lineOffset) {
     this.lineOffset = lineOffset;
-    this.material.uniforms.lineOffset.value = this.lineOffset;
-    this.material.needsUpdate = true;
-    this.pickLayerMaterial.uniforms.lineOffset.value = this.lineOffset;
-    this.pickLayerMaterial.needsUpdate = true;
-    this.pickMeshMaterial.uniforms.lineOffset.value = this.lineOffset;
-    this.pickMeshMaterial.needsUpdate = true;
+    for (const tile of Object.values(this.tileMap)) {
+      tile.setLineOffset(lineOffset);
+    }
   }
 
   // 设置拾取图层颜色
   setPickLayerColor(pickLayerColor) {
     this.pickLayerColor = pickLayerColor;
-    this.pickLayerMaterial.uniforms.diffuse.value = pickLayerColor;
-    this.pickLayerMaterial.needsUpdate = true;
+    for (const tile of Object.values(this.tileMap)) {
+      tile.setPickLayerColor(pickLayerColor);
+    }
   }
 
   on(type, data) {
@@ -84,8 +86,14 @@ export class NetworkLayer extends Layer {
       const pickColorNum = data.pickColor;
       for (const tile of Object.values(this.tileMap)) {
         const item = tile.getLineByPickColor(pickColorNum);
+        const nodeItem = tile.getNodeByPickColor(pickColorNum);
         if (item) {
+          console.log(item);
           this.handleEventListener(type, item);
+          break;
+        } else if (nodeItem) {
+          console.log(nodeItem);
+          this.handleEventListener(type, nodeItem);
           break;
         }
       }
@@ -104,21 +112,21 @@ export class NetworkLayer extends Layer {
     const zoom = BUILD_ZOOM;
     const [mapCenterX, mapCenterY] = this.map.center;
     const { maxX, minX, maxY, minY } = this.map.getWindowRangeAndWebMercator();
-    const width = Math.max(maxX - minX, maxY - minY) * 1.1;
+    const width = Math.max(maxX - minX, maxY - minY);
 
     const [row, col] = [Math.floor(((EARTH_RADIUS + mapCenterX) * Math.pow(2, zoom)) / (EARTH_RADIUS * 2)), Math.floor(((EARTH_RADIUS - mapCenterY) * Math.pow(2, zoom)) / (EARTH_RADIUS * 2))];
     const tileSize = (EARTH_RADIUS * 2) / Math.pow(2, zoom);
-    const radius = Math.ceil(width / tileSize) + 1;
+    const radius = Math.ceil(width / tileSize);
 
     const max_row_col = Math.pow(2, zoom);
     let rowStart = row - radius;
     if (rowStart < 0) rowStart = 0;
-    let rowEnd = row + radius;
+    let rowEnd = row + radius + 1;
     if (rowEnd > max_row_col) rowEnd = max_row_col;
 
     let colStart = col - radius;
     if (colStart < 0) colStart = 0;
-    let colEnd = col + radius;
+    let colEnd = col + radius + 1;
     if (colEnd > max_row_col) colEnd = max_row_col;
 
     const noLoadTileList = [];
@@ -128,29 +136,37 @@ export class NetworkLayer extends Layer {
         let key = `${i}_${j}`;
         let tile = this.tileMap[key];
         if (!tile) {
-          tile = new NetworkTile(i, j, this.material, this.pickLayerMaterial, this.pickBuildMaterial);
+          tile = new NetworkTile({
+            row: i,
+            col: j,
+            time: this.time,
+            lineWidth: this.lineWidth,
+            lineOffset: this.lineOffset,
+            colors: this.colors,
+            pickLayerColor: this.pickLayerColor,
+          });
           this.tileMap[key] = tile;
         }
         if (tile.loadStatus == 1) {
-          noLoadTileList.push(tile);
+          // noLoadTileList.push(tile);
+          tile.load(() => ++this.pickColorNum);
         }
         const [x, y] = this.map.WebMercatorToCanvasXY(tile.x, tile.y);
+        tile.baseScene.position.set(x, y, 0);
+        this.scene.add(tile.baseScene);
 
-        tile.baseMesh.position.set(x, y, 0);
-        this.scene.add(tile.baseMesh);
+        tile.pickLayerScene.position.set(x, y, 0);
+        this.pickLayerScene.add(tile.pickLayerScene);
 
-        tile.pickLayerMesh.position.set(x, y, 0);
-        this.pickLayerScene.add(tile.pickLayerMesh);
-
-        tile.pickBuildMesh.position.set(x, y, 0);
-        this.pickMeshScene.add(tile.pickBuildMesh);
+        tile.pickMeshScene.position.set(x, y, 0);
+        this.pickMeshScene.add(tile.pickMeshScene);
       }
     }
 
-    while (noLoadTileList.length > 0) {
-      const list = noLoadTileList.splice(0, 30);
-      await Promise.all(list.map((v) => v.load(() => ++this.pickColorNum)));
-    }
+    // while (noLoadTileList.length > 0) {
+    //   const list = noLoadTileList.splice(0, 30);
+    //   await Promise.all(list.map((v) => v.load(() => ++this.pickColorNum)));
+    // }
 
     if (this.selectBuildTile) {
       const [x, y] = this.map.WebMercatorToCanvasXY(this.selectBuildTile.x, this.selectBuildTile.y);
@@ -164,6 +180,8 @@ export class NetworkLayer extends Layer {
 }
 
 class NetworkTile {
+  static noodMap = new THREE.TextureLoader().load(require("@/assets/image/point2.png"));
+
   _loadNum = 0;
 
   // 加载状态 1未加载 2加载成功 3加载失败 4加载中
@@ -184,67 +202,156 @@ class NetworkTile {
   get y() {
     return this._y;
   }
-  get geometry() {
-    return this._geometry;
+  get baseScene() {
+    return this._baseScene;
   }
-  get baseMesh() {
-    return this._baseMesh;
+  get pickLayerScene() {
+    return this._pickLayerScene;
   }
-  get pickLayerMesh() {
-    return this._pickLayerMesh;
-  }
-  get pickBuildMesh() {
-    return this._pickBuildMesh;
+  get pickMeshScene() {
+    return this._pickMeshScene;
   }
 
-  constructor(row, col, baseMaterial, pickLayerMaterial, pickBuildMaterial, flowNum) {
+  constructor({ row, col, flowNum, lineWidth, lineOffset, colors, pickLayerColor, showNode }) {
     this._row = row;
     this._col = col;
     this._x = ((row + 0.5) * (EARTH_RADIUS * 2)) / Math.pow(2, BUILD_ZOOM) - EARTH_RADIUS;
     this._y = EARTH_RADIUS - ((col + 0.5) * (EARTH_RADIUS * 2)) / Math.pow(2, BUILD_ZOOM);
-
-    this._data = [];
+    this._lineOffset = lineOffset;
+    this._lineWidth = lineWidth;
+    this._colors = colors;
+    this._pickLayerColor = pickLayerColor;
+    this._showNode = showNode;
+    this._nodeData = {};
+    this._data = {};
 
     this._geometry = new THREE.BufferGeometry();
+    this._baseMaterial = new NetworkMaterial({
+      color: 0xff0000,
+      colorBar: ColorBar2D.instance.drowColorBar(this._colors),
+      lineWidth: this._lineWidth,
+      lineOffset: this._lineOffset,
+    });
+    this._pickLayerMaterial = new NetworkMaterial({
+      color: this._pickLayerColor,
+      lineWidth: this._lineWidth,
+      lineOffset: this._lineOffset,
+    });
+    this._pickMeshMaterial = new NetworkMaterial({
+      usePickColor: true,
+      lineWidth: this._lineWidth,
+      lineOffset: this._lineOffset,
+    });
 
-    this._baseMesh = new THREE.Mesh(this._geometry, baseMaterial);
-    this._pickLayerMesh = new THREE.Mesh(this._geometry, pickLayerMaterial);
-    this._pickBuildMesh = new THREE.Mesh(this._geometry, pickBuildMaterial);
+    this._nodeGeometry = new THREE.PlaneGeometry(100, 100);
+    this._baseNodeMaterial = new THREE.MeshBasicMaterial({
+      map: NetworkTile.noodMap,
+      color: new THREE.Color(0xff0000),
+      transparent: true,
+    });
+    this._pickLayerNodeMaterial = new THREE.MeshBasicMaterial({ color: this._pickLayerColor });
+    this._pickMeshNodeMaterial = new THREE.MeshBasicMaterial();
+
+    this._baseScene = new THREE.Group();
+    this._pickLayerScene = new THREE.Group();
+    this._pickMeshScene = new THREE.Group();
 
     this._flowNum = flowNum;
+  }
+
+  setShowNode(showNode) {
+    this._showNode = showNode;
+    if (showNode) {
+      if (this._baseNodeMesh) this._baseScene.add(this._baseNodeMesh);
+      if (this._pickLayerNodeMesh) this._pickLayerScene.add(this._pickLayerNodeMesh);
+      if (this._pickMeshNodeMesh) this._pickMeshScene.add(this._pickMeshNodeMesh);
+    } else {
+      if (this._baseNodeMesh) this._baseNodeMesh.removeFromParent();
+      if (this._pickLayerNodeMesh) this._pickLayerNodeMesh.removeFromParent();
+      if (this._pickMeshNodeMesh) this._pickMeshNodeMesh.removeFromParent();
+    }
+  }
+
+  clear() {
+    this._baseScene.remove(...this._baseScene.children);
+    this._pickLayerScene.remove(...this._pickLayerScene.children);
+    this._pickMeshScene.remove(...this._pickMeshScene.children);
+
+    this._baseNodeMesh = null;
+    this._pickLayerNodeMesh = null;
+    this._pickMeshNodeMesh = null;
   }
 
   async load(getPickColorFunc) {
     try {
       this._loadStatus = 4;
-      if (this._geometry) {
-        this._geometry.dispose();
-      }
       const { data } = await getTileNetwork({ x: this._row, y: this._col });
       if (data && data.length > 0) {
         this._data = {};
+        this._nodeData = {};
+        const nodeObj = {};
         for (const v of data) {
           v.pickColorNum = getPickColorFunc();
+          v.type = "line";
+          v.uuid = guid();
           this._data[v.pickColorNum] = v;
+
+          const fromNode = { coord: v.fromCoord, id: v.fromNodeId, type: "node", uuid: guid() };
+          const toNode = { coord: v.toCoord, id: v.toNodeId, type: "node", uuid: guid() };
+          if (!nodeObj[fromNode.id]) {
+            const pickColorNum = getPickColorFunc();
+            fromNode.pickColorNum = pickColorNum;
+            this._nodeData[pickColorNum] = fromNode;
+            nodeObj[fromNode.id] = true;
+          }
+          if (!nodeObj[toNode.id]) {
+            const pickColorNum = getPickColorFunc();
+            toNode.pickColorNum = pickColorNum;
+            this._nodeData[pickColorNum] = toNode;
+            nodeObj[toNode.id] = true;
+          }
         }
         this._geometry = new NetworkGeometry(data, this._flowNum);
-      } else {
-        this._geometry = new THREE.BufferGeometry();
+
+        this._baseMesh = new THREE.Mesh(this._geometry, this._baseMaterial);
+        this._pickLayerMesh = new THREE.Mesh(this._geometry, this._pickLayerMaterial);
+        this._pickBuildMesh = new THREE.Mesh(this._geometry, this._pickMeshMaterial);
+        this._baseScene.add(this._baseMesh);
+        this._pickLayerScene.add(this._pickLayerMesh);
+        this._pickMeshScene.add(this._pickBuildMesh);
+
+        const nodeList = Object.values(this._nodeData);
+        this._baseNodeMesh = new THREE.InstancedMesh(this._nodeGeometry, this._baseNodeMaterial, nodeList.length);
+        this._pickLayerNodeMesh = new THREE.InstancedMesh(this._nodeGeometry, this._pickLayerNodeMaterial, nodeList.length);
+        this._pickMeshNodeMesh = new THREE.InstancedMesh(this._nodeGeometry, this._pickMeshNodeMaterial, nodeList.length);
+
+        const _scale = (this._lineWidth / 100) * 1.1;
+        for (let i = 0, l = nodeList.length; i < l; i++) {
+          const { coord, pickColorNum } = nodeList[i];
+          const matrix = new THREE.Matrix4();
+          const positionV3 = new THREE.Vector3(coord.x, coord.y, i / l + 1);
+          const scaleV3 = new THREE.Vector3(_scale, _scale, 1);
+          matrix.compose(positionV3, new THREE.Quaternion(), scaleV3);
+
+          this._baseNodeMesh.setMatrixAt(i, matrix);
+          this._pickLayerNodeMesh.setMatrixAt(i, matrix);
+          this._pickMeshNodeMesh.setMatrixAt(i, matrix);
+          this._pickMeshNodeMesh.setColorAt(i, new THREE.Color(pickColorNum));
+        }
+        this._baseNodeMesh.instanceMatrix.needsUpdate = true;
+        this._pickLayerNodeMesh.instanceMatrix.needsUpdate = true;
+        this._pickMeshNodeMesh.instanceMatrix.needsUpdate = true;
+        if (this._showNode) {
+          this._baseScene.add(this._baseNodeMesh);
+          this._pickLayerScene.add(this._pickLayerNodeMesh);
+          this._pickMeshScene.add(this._pickMeshNodeMesh);
+        }
       }
       this._loadStatus = 2;
     } catch (error) {
-      this._geometry = new THREE.BufferGeometry();
       this._loadStatus = 3;
       console.log("networktile:error", error);
     }
-    this._geometry.userData = this;
-
-    this._baseMesh.geometry = this._geometry;
-    this._baseMesh.needsUpdate = true;
-    this._pickLayerMesh.geometry = this._geometry;
-    this._pickLayerMesh.needsUpdate = true;
-    this._pickBuildMesh.geometry = this._geometry;
-    this._pickBuildMesh.needsUpdate = true;
     return this;
   }
 
@@ -252,15 +359,73 @@ class NetworkTile {
     return this._data[pickColor];
   }
 
-  setFlowNum(flowNum) {
-    this._flowNum = flowNum;
-    if (this._loadStatus == 2 && this._geometry.isNetworkGeometry) {
-      this._geometry.setFlowNum(flowNum);
+  getNodeByPickColor(pickColor) {
+    return this._nodeData[pickColor];
+  }
+
+  setColors(colors) {
+    this._colors = colors || ColorBar2D.defaultColors;
+    this._baseMaterial.uniforms.colorBar.value = ColorBar2D.instance.drowColorBar(this._colors);
+    this._baseMaterial.needsUpdate = true;
+  }
+
+  setPickLayerColor(pickLayerColor) {
+    this._pickLayerColor = pickLayerColor;
+    this._pickLayerMaterial.uniforms.diffuse.value = pickLayerColor;
+    this._pickLayerMaterial.needsUpdate = true;
+  }
+
+  setLineWidth(lineWidth) {
+    this._lineWidth = lineWidth;
+    this._baseMaterial.uniforms.lineWidth.value = this._lineWidth;
+    this._baseMaterial.needsUpdate = true;
+    this._pickLayerMaterial.uniforms.lineWidth.value = this._lineWidth;
+    this._pickLayerMaterial.needsUpdate = true;
+    this._pickMeshMaterial.uniforms.lineWidth.value = this._lineWidth;
+    this._pickMeshMaterial.needsUpdate = true;
+
+    if (this.loadStatus != 2) return;
+    const nodeList = Object.values(this._nodeData);
+    for (let i = 0, l = nodeList.length; i < l; i++) {
+      const { coord, pickColorNum } = nodeList[i];
+      const matrix = new THREE.Matrix4();
+      const positionV3 = new THREE.Vector3(coord.x, coord.y, i / l + 1);
+      const _scale = (this._lineWidth / 100) * 1.1;
+      const scaleV3 = new THREE.Vector3(_scale, _scale, 1);
+      matrix.compose(positionV3, new THREE.Quaternion(), scaleV3);
+
+      if (this._baseNodeMesh) this._baseNodeMesh.setMatrixAt(i, matrix);
+      if (this._pickLayerNodeMesh) this._pickLayerNodeMesh.setMatrixAt(i, matrix);
+      if (this._pickMeshNodeMesh) this._pickMeshNodeMesh.setMatrixAt(i, matrix);
+    }
+    if (this._baseNodeMesh) this._baseNodeMesh.instanceMatrix.needsUpdate = true;
+    if (this._pickLayerNodeMesh) this._pickLayerNodeMesh.instanceMatrix.needsUpdate = true;
+    if (this._pickMeshNodeMesh) this._pickMeshNodeMesh.instanceMatrix.needsUpdate = true;
+  }
+
+  setLineOffset(lineOffset) {
+    this._lineOffset = lineOffset;
+    this._baseMaterial.uniforms.lineOffset.value = this._lineOffset;
+    this._baseMaterial.needsUpdate = true;
+    this._pickLayerMaterial.uniforms.lineOffset.value = this._lineOffset;
+    this._pickLayerMaterial.needsUpdate = true;
+    this._pickMeshMaterial.uniforms.lineOffset.value = this._lineOffset;
+    this._pickMeshMaterial.needsUpdate = true;
+  }
+
+  setTime(time) {
+    this._flowNum = Math.floor(time / 3600);
+    if (this.loadStatus != 2) return;
+    if (this._geometry.isNetworkGeometry) {
+      const flows = this._geometry.flowsMap.get(this._flowNum) || NetworkGeometry.nullFlows;
+      this._geometry.setAttribute("flow", flows);
     }
   }
 }
 
 class NetworkGeometry extends THREE.BufferGeometry {
+  static nullFlows = new THREE.Float32BufferAttribute([], 2);
+
   constructor(lineList, flowNum) {
     console.time(`NetworkGeometry:lineList:${lineList.length}`);
     super();
@@ -304,8 +469,8 @@ class NetworkGeometry extends THREE.BufferGeometry {
       // 起点
       lineNormals.push(normal.x, normal.y, 1);
       lineNormals.push(normal.x, normal.y, -1);
-      positions.push(fromCoord.x, fromCoord.y, 0);
-      positions.push(fromCoord.x, fromCoord.y, 0);
+      positions.push(fromCoord.x, fromCoord.y, i / l);
+      positions.push(fromCoord.x, fromCoord.y, i / l);
       pickColors.push(...pickColor);
       pickColors.push(...pickColor);
       uvs.push(0, 0);
@@ -313,8 +478,8 @@ class NetworkGeometry extends THREE.BufferGeometry {
       // 终点
       lineNormals.push(normal.x, normal.y, 1);
       lineNormals.push(normal.x, normal.y, -1);
-      positions.push(toCoord.x, toCoord.y, 0);
-      positions.push(toCoord.x, toCoord.y, 0);
+      positions.push(toCoord.x, toCoord.y, i / l);
+      positions.push(toCoord.x, toCoord.y, i / l);
       pickColors.push(...pickColor);
       pickColors.push(...pickColor);
       uvs.push(1, 1);
@@ -329,18 +494,13 @@ class NetworkGeometry extends THREE.BufferGeometry {
     this.setAttribute("pickColor", new THREE.Float32BufferAttribute(pickColors, 3));
     this.setAttribute("lineNormal", new THREE.Float32BufferAttribute(lineNormals, 3));
     this.setAttribute("uv", new THREE.Float32BufferAttribute(uvs, 2));
-    this.setAttribute("flow", flowsMap.get(flowNum) || []);
+    this.setAttribute("flow", flowsMap.get(flowNum) || NetworkGeometry.nullFlows);
     this.computeVertexNormals();
 
     this.flowsMap = flowsMap;
     this.flowMax = flowMax;
     this.flowMin = flowMin;
     console.timeEnd(`NetworkGeometry:lineList:${lineList.length}`);
-  }
-
-  setFlowNum(flowNum) {
-    this.setAttribute("flow", this.flowsMap.get(flowNum) || []);
-    this.needsUpdate = true;
   }
 
   dispose() {

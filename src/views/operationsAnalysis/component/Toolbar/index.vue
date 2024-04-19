@@ -1,13 +1,6 @@
 <template>
   <el-collapse v-model="activeName" accordion>
-    <component
-      v-for="item in list"
-      :key="item.name"
-      :is="item.type"
-      :name="item.name"
-      :show="item.name == activeName"
-      v-bind="item.data"
-    />
+    <component v-for="item in list" :key="item.name" :is="item.type" :name="item.name" :show="item.name == activeName" v-bind="item.data" />
   </el-collapse>
 </template>
 
@@ -20,6 +13,8 @@ import RouteDetail from "../PublicTransit/toolbar/routeDetail.vue";
 import StopAndRoute from "../PublicTransit/toolbar/stopAndRoute.vue";
 import StopDetail from "../PublicTransit/toolbar/stopDetail.vue";
 import RouteDepartures from "../PublicTransit/toolbar/routeDepartures.vue";
+import LineDetail from "../Network/toolbar/lineDetail.vue";
+import NodeDetail from "../Network/toolbar/nodeDetail.vue";
 export default {
   components: {
     BuildDetail,
@@ -29,6 +24,8 @@ export default {
     StopAndRoute,
     StopDetail,
     RouteDepartures,
+    LineDetail,
+    NodeDetail,
   },
   data() {
     return {
@@ -41,20 +38,31 @@ export default {
   beforeDestroy() {},
   methods: {
     add(type, data) {
-      if (type == "BusDetail" || type == "CarDetail" || type == "BuildDetail") {
-        const item = this.list.find((v) => v.data.uuid == data.uuid);
-        if (item) {
-          this.activeName = item.name;
-          return;
+      console.log(type, data);
+      switch (type) {
+        case "BusDetail":
+        case "CarDetail":
+        case "BuildDetail":
+        case "LineDetail":
+        case "NodeDetail": {
+          const item = this.list.find((v) => v.data.uuid == data.uuid);
+          if (item) {
+            this.activeName = item.name;
+            break;
+          }
         }
+        default:
+          {
+            const item = {
+              type: type,
+              data: data,
+              name: guid(),
+            };
+            this.activeName = item.name;
+            this.list.unshift(item);
+          }
+          break;
       }
-      const item = {
-        type: type,
-        data: data,
-        name: guid(),
-      };
-      this.activeName = item.name;
-      this.list.unshift(item);
     },
   },
 };

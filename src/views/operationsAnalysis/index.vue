@@ -125,7 +125,7 @@ export default {
       showLayerPublicTransit: false,
       showLayerMotorizedTravel: false,
       showLayerBuild3D: false,
-      showLayerNetwork: true,
+      showLayerNetwork: false,
 
       showStopToolbar: false,
 
@@ -213,6 +213,7 @@ export default {
         zoom: 11,
         enableRotate: true,
         zoom: 15,
+        minPitch: -90,
       });
       this._Map.addLayer(this._MapLayer);
       window._Map = this._Map;
@@ -270,7 +271,6 @@ export default {
       }
     },
     handleShowCarDetail({ uuid, carDetail }) {
-      console.log(carDetail);
       if (this.$refs.Toolbar) {
         this.$refs.Toolbar.add("CarDetail", {
           uuid: uuid,
@@ -280,11 +280,28 @@ export default {
       }
     },
     handleShowBuildDetail({ uuid, buildDetail }) {
-      console.log(buildDetail);
       if (this.$refs.Toolbar) {
         this.$refs.Toolbar.add("BuildDetail", {
           uuid: uuid,
           buildDetail: buildDetail,
+        });
+        this.showStopToolbar = true;
+      }
+    },
+    handleShowLineDetail({ uuid, lineDetail }) {
+      if (this.$refs.Toolbar) {
+        this.$refs.Toolbar.add("LineDetail", {
+          uuid: uuid,
+          lineDetail: lineDetail,
+        });
+        this.showStopToolbar = true;
+      }
+    },
+    handleShowNodeDetail({ uuid, nodeDetail }) {
+      if (this.$refs.Toolbar) {
+        this.$refs.Toolbar.add("NodeDetail", {
+          uuid: uuid,
+          nodeDetail: nodeDetail,
         });
         this.showStopToolbar = true;
       }

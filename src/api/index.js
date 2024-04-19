@@ -357,3 +357,27 @@ export function getTileNetwork(params) {
     method: "get",
   });
 }
+
+// 根据id查询link详情
+// GET /pt/link/getLinkById
+// 接口ID：166838450
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-166838450
+export function getLinkById(params) {
+  return request({
+    url: `/pt/link/getLinkById`,
+    params: params,
+    method: "get",
+  });
+}
+
+// 根据id查询node详情
+// GET /pt/link/getNodeById
+// 接口ID：166870242
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-166870242
+export function getNodeById(params) {
+  return request({
+    url: `/pt/link/getNodeById`,
+    params: params,
+    method: "get",
+  });
+}
