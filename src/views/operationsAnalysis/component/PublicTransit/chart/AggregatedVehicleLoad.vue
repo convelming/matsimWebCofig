@@ -1,9 +1,9 @@
 <template>
   <el-tabs v-model="activeName" @tab-click="handleChange">
-    <el-tab-pane :label="$('Chart')" name="Chart">
+    <el-tab-pane :label="$l('Chart')" name="Chart">
       <div ref="chart" class="chart-container" v-loading="loading"></div>
     </el-tab-pane>
-    <el-tab-pane :label="$('Data')" name="Data">
+    <el-tab-pane :label="$l('Data')" name="Data">
       <el-table
         class="small"
         :data="list"
@@ -13,18 +13,18 @@
         v-loading="loading"
       >
         <el-table-column
-          :label="$('Stop Name')"
+          :label="$l('Stop Name')"
           prop="stopName"
           show-overflow-tooltip
         />
         <el-table-column
-          :label="$('Stop Id')"
+          :label="$l('Stop Id')"
           prop="stopId"
           show-overflow-tooltip
         />
-        <el-table-column :label="$('min')" prop="min" />
-        <el-table-column :label="$('avg')" prop="avg" />
-        <el-table-column :label="$('max')" prop="max" />
+        <el-table-column :label="$l('min')" prop="min" />
+        <el-table-column :label="$l('avg')" prop="avg" />
+        <el-table-column :label="$l('max')" prop="max" />
       </el-table>
     </el-tab-pane>
   </el-tabs>

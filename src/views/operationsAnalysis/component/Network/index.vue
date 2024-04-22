@@ -125,7 +125,7 @@ export default {
       offset: 12,
       color: "#E9CDAA",
       showNode: false,
-      canSelect: false,
+      canSelect: true,
 
       colorsList: ColorList,
     };

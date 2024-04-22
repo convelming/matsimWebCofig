@@ -15,7 +15,7 @@
                 command: 'Transit Route Analysis...',
               })
             "
-            >{{ $("Transit Route Analysis...") }}</el-button
+            >{{ $l("Transit Route Analysis...") }}</el-button
           >
         </div>
         <div class="stop_title">

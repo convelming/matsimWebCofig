@@ -1,37 +1,36 @@
 <template>
-  <el-tabs v-model="activeName" @tab-click="handleChange">
-    <el-tab-pane :label="$l('Chart')" name="Chart">
-      <div ref="chart" class="chart-container" v-loading="loading"></div>
-    </el-tab-pane>
-    <el-tab-pane :label="$l('Data')" name="Data">
-      <el-table
-        class="small"
-        :data="list"
-        border
-        stripe
-        height="calc(100vh - 400px)"
-        v-loading="loading"
-      >
-        <el-table-column
-          :label="$l('Stop Name')"
-          prop="stopName"
-          show-overflow-tooltip
-        />
-        <el-table-column
-          :label="$l('Stop Id')"
-          prop="stopId"
-          show-overflow-tooltip
-        />
-        <el-table-column :label="$l('#entering')" prop="entering" />
-        <el-table-column :label="$l('#leaving')" prop="leaving" />
-        <el-table-column :label="$l('#passengers')" prop="passengers" />
-      </el-table>
-    </el-tab-pane>
-  </el-tabs>
+  <div>
+    <Dialog :title="$l('IntersectionFlows')" visible @close="$emit('close')" left="center" width="900px">
+      <div class="SelectLinkAnalysis__bodyer">
+        <div class="row">
+          <div style="margin-right: 10px">{{ $l("aggregateTo") }}</div>
+          <el-select v-model="second" @click="getData">
+            <el-option label="5 minutes" value="300" />
+            <el-option label="15 minutes" value="900" />
+            <el-option label="20 minutes" value="1200" />
+            <el-option label="30 minutes" value="1800" />
+            <el-option label="1 hour" value="3600" />
+          </el-select>
+        </div>
+        <el-tabs v-model="activeName" @tab-click="handleChange">
+          <el-tab-pane :label="$l('Chart')" name="Chart">
+            <div ref="chart" class="chart-container" v-loading="loading"></div>
+          </el-tab-pane>
+          <el-tab-pane :label="$l('Data')" name="Data">
+            <el-table class="small" :data="tableList" border stripe height="calc(100vh - 400px)" v-loading="loading" :show-header="false"> </el-table>
+          </el-tab-pane>
+        </el-tabs>
+      </div>
+    </Dialog>
+  </div>
 </template>
 
 <language>
 {
+  "IntersectionFlows":{
+    "zh-CN": "IntersectionFlows",
+    "en-US": "IntersectionFlows"
+  },
   "Chart":{
     "zh-CN": "Chart",
     "en-US": "Chart"
@@ -40,54 +39,32 @@
     "zh-CN": "Data",
     "en-US": "Data"
   },
-  "Stop Name":{
-    "zh-CN": "Stop Name",
-    "en-US": "Stop Name"
-  },
-  "Stop Id":{
-    "zh-CN": "Stop Id",
-    "en-US": "Stop Id"
-  },
-  "#entering":{
-    "zh-CN": "#entering",
-    "en-US": "#entering"
-  },
-  "#leaving":{
-    "zh-CN": "#leaving",
-    "en-US": "#leaving"
-  },
-  "#passengers":{
-    "zh-CN": "#passengers",
-    "en-US": "#passengers"
+  "aggregateTo":{
+    "zh-CN": "Aggregate To",
+    "en-US": "Aggregate To"
   },
 }
 </language>
 
 <script>
 import * as echarts from "echarts";
-import { passengerEnteringAndLeaving } from "@/api/index";
+import { getLinkVolumes } from "@/api/index";
 export default {
   props: {
-    form: {
-      type: Object,
-      default: () => ({}),
-    },
-  },
-  watch: {
-    form: {
-      handler(val) {
-        this.getData();
-      },
-      immediate: true,
-      deep: true,
+    linkId: {
+      type: [String, Number],
     },
   },
   data() {
     return {
-      activeName: "Chart",
-      list: [],
       loading: false,
+      activeName: "Chart",
+      second: "1200",
+      tableList: [],
     };
+  },
+  created() {
+    this.getData();
   },
   mounted() {
     this._chart = echarts.init(this.$refs.chart);
@@ -100,26 +77,28 @@ export default {
         this.$nextTick(() => this._chart.resize());
       }
     },
-    // 请求数据
     getData() {
       this.loading = true;
-      passengerEnteringAndLeaving(this.form)
+      getLinkVolumes({
+        linkId: this.linkId,
+        second: this.second,
+      })
         .then((res) => {
-          this.list = res.data || [];
-          this.updateChart();
+          this.tableList = res.data || [];
+          console.log(res);
+          // this.updateChart();
           this.loading = false;
         })
         .catch((err) => {
           this.list = [];
-          this.updateChart();
+          // this.updateChart();
           this.loading = false;
         });
     },
     // 更新图表
     updateChart() {
       if (this._chart) {
-        this._chart.setOption(this.getChartOption(), true);
-        this._chart.resize();
+        this._chart.setOption(this.getChartOption(), true).this._chart.resize();
       }
     },
     // 获取图表配置
@@ -213,9 +192,33 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.chart-container {
-  width: 100%;
-  min-height: 300px;
-  height: calc(100vh - 420px);
+.SelectLinkAnalysis__bodyer {
+  font-size: 14px;
+  color: #606266;
+  .row {
+    line-height: 35px;
+    display: flex;
+    margin-bottom: 10px;
+    align-items: center;
+    .el-radio {
+      line-height: 35px;
+      display: block;
+    }
+    .button {
+      background: #409eff;
+      flex-shrink: 1;
+      width: 30px;
+      height: 32px;
+    }
+  }
+  .chart-container {
+    width: 100%;
+    min-height: 300px;
+    height: calc(100vh - 420px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: auto;
+  }
 }
 </style>

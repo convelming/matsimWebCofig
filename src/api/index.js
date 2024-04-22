@@ -381,3 +381,27 @@ export function getNodeById(params) {
     method: "get",
   });
 }
+
+// Intersection Flows
+// POST /pt/network/intersectionFlows
+// 接口ID：158726359
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-158726359
+export function intersectionFlows(data) {
+  return request({
+    url: `/pt/network/intersectionFlows`,
+    data: data,
+    method: "post",
+  });
+}
+
+// Link Volumes
+// GET /pt/network/getLinkVolumes
+// 接口ID：165781499
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-165781499
+export function getLinkVolumes(params) {
+  return request({
+    url: `/pt/network/getLinkVolumes`,
+    params: params,
+    method: "get",
+  });
+}

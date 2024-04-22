@@ -1,11 +1,11 @@
 <template>
   <el-tabs v-model="activeName">
-    <el-tab-pane :label="$('Chart')" name="Chart">
+    <el-tab-pane :label="$l('Chart')" name="Chart">
       <div ref="chart" class="chart-container" v-loading="loading">
         <div class="chart" v-html="src"></div>
       </div>
     </el-tab-pane>
-    <el-tab-pane :label="$('Data')" name="Data">
+    <el-tab-pane :label="$l('Data')" name="Data">
       <el-table
         class="small"
         :data="tableList"

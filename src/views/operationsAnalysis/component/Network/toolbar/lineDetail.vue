@@ -1,11 +1,12 @@
 <template>
   <el-collapse-item class="BusStopToolbar" :name="name">
     <div class="collapse_item_title" slot="title">{{ title }}</div>
-    <div class="BusStopToolbar_bodyer">
+    <div class="BusStopToolbar_bodyer" v-loading="loading">
       <el-descriptions class="margin-top" :column="1" border size="small" labelClassName="labelClassName">
         <template slot="extra">
-          <el-button type="primary" size="small" @click="handleMenu({ data: resData, command: 'selectLinkAnalysis' })">Select Link Analysis</el-button>
-          <el-button type="primary" size="small" @click="handleMenu({ data: resData, command: 'transitLinesOnLink' })">Transit Lines On Link</el-button>
+          <el-button type="primary" size="mini" @click="handleMenu({ data: resData, command: 'selectLinkAnalysis' })">Select Link Analysis</el-button>
+          <!-- <el-button type="primary" size="mini" @click="handleMenu({ data: resData, command: 'transitLinesOnLink' })">Transit Lines On Link</el-button> -->
+          <el-button type="primary" size="mini" @click="handleMenu({ data: resData, command: 'linkVolumes' })">Link Volumes</el-button>
         </template>
         <el-descriptions-item label="Link Id">{{ resData.id }}</el-descriptions-item>
         <el-descriptions-item label="From Node Id">{{ resData.fromNode }}</el-descriptions-item>
@@ -21,7 +22,7 @@
         <el-descriptions-item label="storageCapacityUsedInQsim">{{ resData.storageCapacityUsedInQsim }}</el-descriptions-item>
       </el-descriptions>
     </div>
-    <LineMenu :visible.sync="showMenu" :style="menuStyle" @command="handleMenu({ data: stopList[0], command: $event.command })" />
+    <LineMenu :visible.sync="showMenu" :style="menuStyle" @command="handleMenu({ data: resData, command: $event.command })" />
   </el-collapse-item>
 </template>
 
@@ -30,14 +31,12 @@ import { MAP_EVENT } from "@/mymap";
 import LineMenu, { line_menu } from "../menu/Line.vue";
 import { getLinkById } from "@/api/index";
 
-import SelectLinkAnalysis from "../dialog/SelectLinkAnalysis.vue";
-import TransitLinesOnLink from "../dialog/TransitLinesOnLink.vue";
+import LinkVolumes from "../dialog/LinkVolumes.vue";
 
 import Vue from "vue";
 import store from "@/store";
 
-const SelectLinkAnalysisExtend = Vue.extend(SelectLinkAnalysis);
-const TransitLinesOnLinkExtend = Vue.extend(TransitLinesOnLink);
+const LinkVolumesExtend = Vue.extend(LinkVolumes);
 
 export default {
   props: {
@@ -93,7 +92,7 @@ export default {
   data() {
     return {
       loading: true,
-      resData: null,
+      resData: {},
       showMenu: false,
       menuStyle: "top:100px;left:100px;z-index:1000;",
       _NodeLayer: undefined,
@@ -125,10 +124,8 @@ export default {
       window.removeEventListener("mousedown", this.handleCloseMenu);
     },
     handleOpenMenu(res) {
-      if (this.stopList.length) {
-        this.menuStyle = `top: ${res.data.event.pageY + 10}px; left: ${res.data.event.pageX - 30}px;z-index:1000;`;
-        this.showMenu = true;
-      }
+      this.menuStyle = `top: ${res.data.event.pageY + 10}px; left: ${res.data.event.pageX - 30}px;z-index:1000;`;
+      this.showMenu = true;
     },
     handleCloseMenu(event) {
       if (event.button == 0) {
@@ -138,36 +135,24 @@ export default {
     handleMenu({ data, command }) {
       switch (command) {
         case "selectLinkAnalysis":
-          this.handleShowSelectLinkAnalysis(data);
+          this.handleSelectLinkAnalysis(data);
           break;
-        case "transitLinesOnLink":
-          this.handleShowTransitLinesOnLink(data);
+        case "linkVolumes":
+          this.handleShowLinkVolumes(data);
           break;
       }
     },
-    handleShowSelectLinkAnalysis(data) {
-      if (this._selectLinkAnalysis) return;
-      this._selectLinkAnalysis = new SelectLinkAnalysisExtend({
-        propsData: { form: data },
+    handleShowLinkVolumes() {
+      if (this._linkVolumes) return;
+      this._linkVolumes = new LinkVolumesExtend({
+        propsData: { linkId: this.lineDetail.linkId },
         store,
       }).$mount();
-      this._selectLinkAnalysis.$on("close", () => {
-        this._selectLinkAnalysis.$destroy();
-        this._selectLinkAnalysis = null;
+      this._linkVolumes.$on("close", () => {
+        this._linkVolumes.$destroy();
+        this._linkVolumes = null;
       });
-      document.body.append(this._selectLinkAnalysis.$el);
-    },
-    handleShowTransitLinesOnLink(data) {
-      if (this._transitLinesOnLink) return;
-      this._transitLinesOnLink = new TransitLinesOnLinkExtend({
-        propsData: { form: data },
-        store,
-      }).$mount();
-      this._transitLinesOnLink.$on("close", () => {
-        this._transitLinesOnLink.$destroy();
-        this._transitLinesOnLink = null;
-      });
-      document.body.append(this._transitLinesOnLink.$el);
+      document.body.append(this._linkVolumes.$el);
     },
   },
 };
@@ -192,30 +177,9 @@ export default {
   }
   .BusStopToolbar_bodyer {
     padding: 0 20px;
-    .stop_name {
-      font-size: 16px;
-      line-height: 30px;
-      font-weight: bold;
-      margin-bottom: 10px;
-    }
-    .stop_title {
-      font-size: 14px;
-      height: 35px;
+    .row {
+      line-height: 35px;
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 10px;
-    }
-    .stops_table {
-      margin-bottom: 10px;
-    }
-    .routes_type {
-      margin-bottom: 10px;
-      .el-select {
-        width: 100%;
-      }
-    }
-    .routes_table {
       margin-bottom: 10px;
     }
   }

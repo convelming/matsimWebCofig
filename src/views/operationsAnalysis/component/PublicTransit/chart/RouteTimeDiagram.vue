@@ -1,9 +1,9 @@
 <template>
   <el-tabs v-model="activeName" @tab-click="handleChange">
-    <el-tab-pane :label="$('Chart')" name="Chart">
+    <el-tab-pane :label="$l('Chart')" name="Chart">
       <div ref="chart" class="chart-container" v-loading="loading"></div>
     </el-tab-pane>
-    <el-tab-pane :label="$('Data')" name="Data">
+    <el-tab-pane :label="$l('Data')" name="Data">
       <el-table
         class="small"
         :data="tableList"
@@ -12,7 +12,7 @@
         height="calc(100vh - 400px)"
         v-loading="loading"
       >
-        <el-table-column :label="$('Stop Name')">
+        <el-table-column :label="$l('Stop Name')">
           <el-table-column
             :label="lineInfo.line"
             prop="stopName"
@@ -20,7 +20,7 @@
             show-overflow-tooltip
           />
         </el-table-column>
-        <el-table-column :label="$('Stop Id')">
+        <el-table-column :label="$l('Stop Id')">
           <el-table-column
             :label="lineInfo.routeId"
             prop="stopId"
@@ -29,7 +29,7 @@
           />
         </el-table-column>
         <el-table-column
-          :label="$('dep/arr')"
+          :label="$l('dep/arr')"
           prop="type"
           width="150"
           show-overflow-tooltip
@@ -40,7 +40,7 @@
           :key="k"
         >
           <el-table-column
-            :label="$('scheduled')"
+            :label="$l('scheduled')"
             prop="type"
             width="150"
             show-overflow-tooltip
@@ -50,7 +50,7 @@
             }}</template>
           </el-table-column>
           <el-table-column
-            :label="$('simulated')"
+            :label="$l('simulated')"
             prop="type"
             width="150"
             show-overflow-tooltip

@@ -125,7 +125,7 @@ export default {
       showLayerPublicTransit: false,
       showLayerMotorizedTravel: false,
       showLayerBuild3D: false,
-      showLayerNetwork: false,
+      showLayerNetwork: true,
 
       showStopToolbar: false,
 

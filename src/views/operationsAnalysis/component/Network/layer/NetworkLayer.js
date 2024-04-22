@@ -181,6 +181,7 @@ export class NetworkLayer extends Layer {
 
 class NetworkTile {
   static noodMap = new THREE.TextureLoader().load(require("@/assets/image/point2.png"));
+  static lineMap = new THREE.TextureLoader().load(require("@/assets/image/up2.png"));
 
   _loadNum = 0;
 
@@ -231,6 +232,7 @@ class NetworkTile {
       colorBar: ColorBar2D.instance.drowColorBar(this._colors),
       lineWidth: this._lineWidth,
       lineOffset: this._lineOffset,
+      // map: NetworkTile.lineMap,
     });
     this._pickLayerMaterial = new NetworkMaterial({
       color: this._pickLayerColor,
@@ -439,6 +441,8 @@ class NetworkGeometry extends THREE.BufferGeometry {
     const uvs = []; // new Array(posLen * 3);
     const indices = []; // new Array(lineList.length * 6);
     const lineNormals = [];
+    const lineLengths = [];
+
     const flowsMap = new Map();
 
     let flowMax = Number.MIN_SAFE_INTEGER;
@@ -467,6 +471,8 @@ class NetworkGeometry extends THREE.BufferGeometry {
       const normal = new THREE.Vector2(-lineDirection.y, lineDirection.x);
 
       // 起点
+      lineLengths.push(lineLength);
+      lineLengths.push(lineLength);
       lineNormals.push(normal.x, normal.y, 1);
       lineNormals.push(normal.x, normal.y, -1);
       positions.push(fromCoord.x, fromCoord.y, i / l);
@@ -476,8 +482,10 @@ class NetworkGeometry extends THREE.BufferGeometry {
       uvs.push(0, 0);
       uvs.push(0, 1);
       // 终点
-      lineNormals.push(normal.x, normal.y, 1);
+      lineLengths.push(lineLength);
+      lineLengths.push(lineLength);
       lineNormals.push(normal.x, normal.y, -1);
+      lineNormals.push(normal.x, normal.y, 1);
       positions.push(toCoord.x, toCoord.y, i / l);
       positions.push(toCoord.x, toCoord.y, i / l);
       pickColors.push(...pickColor);
@@ -485,11 +493,12 @@ class NetworkGeometry extends THREE.BufferGeometry {
       uvs.push(1, 1);
       uvs.push(1, 0);
       // 三角形顶点
-      indices.push(i * 4, i * 4 + 1, i * 4 + 3);
-      indices.push(i * 4, i * 4 + 3, i * 4 + 2);
+      indices.push(i * 4, i * 4 + 1, i * 4 + 2);
+      indices.push(i * 4, i * 4 + 2, i * 4 + 3);
     }
 
     this.setIndex(indices);
+    this.setAttribute("lineLength", new THREE.Float32BufferAttribute(lineLengths, 1));
     this.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
     this.setAttribute("pickColor", new THREE.Float32BufferAttribute(pickColors, 3));
     this.setAttribute("lineNormal", new THREE.Float32BufferAttribute(lineNormals, 3));
@@ -561,6 +570,7 @@ class NetworkMaterial extends THREE.Material {
       varying vec3 vPickColor;
       varying vec2 vUv;
       varying float vFlow;
+      varying float vLineLength;
 
       uniform float lineWidth;
       uniform float lineOffset;
@@ -571,12 +581,12 @@ class NetworkMaterial extends THREE.Material {
 
         vFlow = flow;
         vPickColor = pickColor;
+        vLineLength = lineLength;
 
         vec3 transformed = vec3(1.0);
 
         #ifdef USE_MAP
           vUv = ( uvTransform * vec3( uv, 1 ) ).xy;
-          // vUv.y = mod(vUv.y * lineLength, lineWidth) / lineWidth;
         #endif
 
         transformed = vec3(position.xy + lineNormal.xy * lineNormal.z * lineWidth / 2.0 - lineNormal.xy * lineOffset, position.z);
@@ -598,6 +608,7 @@ class NetworkMaterial extends THREE.Material {
         float range;
       };
 
+      uniform float lineWidth;
       uniform vec3 diffuse;
       uniform float opacity;
       uniform sampler2D map;
@@ -607,6 +618,7 @@ class NetworkMaterial extends THREE.Material {
       varying vec3 vPickColor;
       varying vec2 vUv;
       varying float vFlow;
+      varying float vLineLength;
 
 
       void main() {
@@ -620,7 +632,9 @@ class NetworkMaterial extends THREE.Material {
         #endif
 
         #ifdef USE_MAP
-          vec4 sampledDiffuseColor = texture2D(map, vUv);
+          vec2 uv = vUv;
+          uv.x = mod(vUv.x * vLineLength, lineWidth) / lineWidth;
+          vec4 sampledDiffuseColor = texture2D(map, uv);
           sampledDiffuseColor.rgb *= sampledDiffuseColor.a;
           diffuseColor.rgb += sampledDiffuseColor.rgb;
         #endif

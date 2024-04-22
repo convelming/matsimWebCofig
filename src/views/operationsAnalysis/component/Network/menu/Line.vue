@@ -1,7 +1,7 @@
 <template>
   <div v-show="visible" @mousedown.stop class="BusStopMenu el-dropdown-menu el-popper el-popper" x-placement="bottom-end">
     <!-- <div class="el-dropdown-menu__item is-disabled">{{ $l("Transit Route") }} {{ route.routeId }}</div> -->
-    <div v-for="(v, i) in menu_list" :key="v.value" :class="{ 'el-dropdown-menu__item--divided': i == 0 }" class="el-dropdown-menu__item" @click="handleCommand({ data: menuData, command: v.value })">
+    <div v-for="v in menu_list" :key="v.value" class="el-dropdown-menu__item" @click="handleCommand({ data: menuData, command: v.value })">
       {{ $l(v.label) }}
     </div>
     <div x-arrow="" class="popper__arrow" style="left: 20px"></div>
@@ -14,9 +14,9 @@
     "zh-CN": "Select Link Analysis",
     "en-US": "Select Link Analysis"
   },
-  "transitLinesOnLink":{
-    "zh-CN": "Transit Lineson Link",
-    "en-US": "Transit Lineson Link"
+  "linkVolumes":{
+    "zh-CN": "Link Volumes",
+    "en-US": "Link Volumes"
   },
 }
 </language>
@@ -24,7 +24,7 @@
 <script>
 export const line_menu = [
   { label: "selectLinkAnalysis", value: "selectLinkAnalysis" },
-  { label: "transitLinesOnLink", value: "transitLinesOnLink" },
+  { label: "linkVolumes", value: "linkVolumes" },
 ];
 
 export default {
