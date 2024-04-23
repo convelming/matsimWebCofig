@@ -4,9 +4,7 @@
     <div class="BusStopToolbar_bodyer">
       <div class="form_item" style="align-items: center">
         <div class="form_label">{{ $l("color") }}</div>
-        <div class="form_value">
-          <el-color-picker size="mini" :predefine="predefineColors" v-model="color" />
-        </div>
+        <el-color-picker size="mini" :predefine="predefineColors" v-model="color" />
       </div>
     </div>
   </el-collapse-item>
@@ -91,11 +89,11 @@ export default {
       loading: true,
       resData: {},
       _LinkFlowLayer: undefined,
-      color: "#E9CDAA",
+      color: "#ff4500",
     };
   },
   created() {
-    this._LinkFlowLayer = new LinkFlowLayer({ zIndex: 100 });
+    this._LinkFlowLayer = new LinkFlowLayer({ zIndex: 100, color: this.color });
     this.getDetail();
   },
   beforeDestroy() {

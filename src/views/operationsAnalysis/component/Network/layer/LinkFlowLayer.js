@@ -8,7 +8,7 @@ export class LinkFlowLayer extends Layer {
     this.color = opt.color || this.color;
 
     this.material = new THREE.LineBasicMaterial({
-      color: 0x0000ff,
+      color: this.color,
     });
   }
 
