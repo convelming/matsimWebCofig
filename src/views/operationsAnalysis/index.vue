@@ -125,7 +125,7 @@ export default {
       showLayerPublicTransit: false,
       showLayerMotorizedTravel: false,
       showLayerBuild3D: false,
-      showLayerNetwork: true,
+      showLayerNetwork: false,
 
       showStopToolbar: false,
 
@@ -302,6 +302,15 @@ export default {
         this.$refs.Toolbar.add("NodeDetail", {
           uuid: uuid,
           nodeDetail: nodeDetail,
+        });
+        this.showStopToolbar = true;
+      }
+    },
+    handleShowSelectLinkAnalysis({ uuid, lineDetail }) {
+      if (this.$refs.Toolbar) {
+        this.$refs.Toolbar.add("SelectLinkAnalysis", {
+          uuid: uuid,
+          lineDetail: lineDetail,
         });
         this.showStopToolbar = true;
       }

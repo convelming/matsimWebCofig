@@ -1,10 +1,10 @@
 <template>
   <div>
-    <Dialog :title="$l('LinkVolumes')" visible @close="$emit('close')" left="center" width="900px">
+    <Dialog :title="$l('linkVolumes')" visible @close="$emit('close')" left="center" width="900px">
       <div class="SelectLinkAnalysis__bodyer">
         <div class="row">
           <div style="margin-right: 10px">{{ $l("aggregateTo") }}</div>
-          <el-select v-model="second" @click="getData">
+          <el-select v-model="second" @change="getData">
             <el-option label="5 minutes" value="300" />
             <el-option label="15 minutes" value="900" />
             <el-option label="20 minutes" value="1200" />
@@ -13,11 +13,14 @@
           </el-select>
         </div>
         <el-tabs v-model="activeName" @tab-click="handleChange">
-          <el-tab-pane :label="$l('Chart')" name="Chart">
+          <el-tab-pane :label="$l('chart')" name="Chart">
             <div ref="chart" class="chart-container" v-loading="loading"></div>
           </el-tab-pane>
-          <el-tab-pane :label="$l('Data')" name="Data">
-            <el-table class="small" :data="tableList" border stripe height="calc(100vh - 400px)" v-loading="loading" :show-header="false"> </el-table>
+          <el-tab-pane :label="$l('data')" name="Data">
+            <el-table class="small" :data="tableList" border stripe height="calc(100vh - 400px)" v-loading="loading">
+              <el-table-column prop="time" :label="$l('time')" width="200" :formatter="timeFormatter" />
+              <el-table-column prop="vehicles" :label="$l('vehicles')" />
+            </el-table>
           </el-tab-pane>
         </el-tabs>
       </div>
@@ -27,17 +30,25 @@
 
 <language>
 {
-  "LinkVolumes":{
-    "zh-CN": "LinkVolumes",
-    "en-US": "LinkVolumes"
+  "linkVolumes":{
+    "zh-CN": "Link Volumes",
+    "en-US": "Link Volumes"
   },
-  "Chart":{
+  "chart":{
     "zh-CN": "Chart",
     "en-US": "Chart"
   },
-  "Data":{
+  "data":{
     "zh-CN": "Data",
     "en-US": "Data"
+  },
+  "vehicles":{
+    "zh-CN": "#Vehicles",
+    "en-US": "#Vehicles"
+  },
+  "time":{
+    "zh-CN": "Time",
+    "en-US": "Time"
   },
   "aggregateTo":{
     "zh-CN": "Aggregate To",
@@ -47,6 +58,7 @@
 </language>
 
 <script>
+import { formatHour } from "@/utils/utils";
 import * as echarts from "echarts";
 import { getLinkVolumes } from "@/api/index";
 export default {
@@ -79,26 +91,31 @@ export default {
     },
     getData() {
       this.loading = true;
-      getLinkVolumes({
+      const form = {
         linkId: this.linkId,
         second: this.second,
-      })
+      };
+      getLinkVolumes(form)
         .then((res) => {
-          this.tableList = res.data || [];
+          this.tableList = (res.data || []).map((v, i) => ({
+            time: form.second * i,
+            vehicles: v,
+          }));
           console.log(res);
-          // this.updateChart();
+          this.updateChart();
           this.loading = false;
         })
         .catch((err) => {
           this.list = [];
-          // this.updateChart();
+          this.updateChart();
           this.loading = false;
         });
     },
     // 更新图表
     updateChart() {
       if (this._chart) {
-        this._chart.setOption(this.getChartOption(), true).this._chart.resize();
+        this._chart.setOption(this.getChartOption(), true);
+        this._chart.resize();
       }
     },
     // 获取图表配置
@@ -109,83 +126,49 @@ export default {
           axisPointer: {
             type: "shadow",
           },
-        },
-        legend: {
-          data: ["entering", "leaving", "passengers"],
-        },
-        grid: [
-          {
-            top: 50,
-            bottom: "42.5%",
-            left: 50,
-            right: 10,
-            backgroundColor: "#ccc",
-            containLabel: true,
+          formatter: function (params, ticket, callback) {
+            return `${formatHour(params[0].name)}  ${params[0].value}`;
           },
-          {
-            top: "62.5%",
-            bottom: "5%",
-            left: 50,
-            right: 10,
-            backgroundColor: "#ccc",
-            containLabel: true,
-          },
-        ],
-        axisPointer: {
-          link: { xAxisIndex: [0, 1] },
+        },
+        grid: {
+          left: "3%",
+          right: "4%",
+          bottom: "3%",
+          containLabel: true,
         },
         xAxis: [
           {
+            name: this.$l("Time"),
             type: "category",
-            show: false,
-            data: this.list.map((v) => v.stopName),
-            axisLabel: {
-              show: false,
+            data: this.tableList.map((v) => v.time),
+            axisTick: {
+              alignWithLabel: true,
             },
-          },
-          {
-            type: "category",
-            gridIndex: 1,
-            data: this.list.map((v) => v.stopName),
+            interval: 3600,
             axisLabel: {
-              interval: 0,
-              rotate: 90,
+              formatter: function (value, index) {
+                return Math.floor(value / 3600) + "h";
+              },
             },
           },
         ],
         yAxis: [
           {
+            name: this.$l("vehicles"),
             type: "value",
-            splitNumber: 2,
-          },
-          {
-            gridIndex: 1,
-            type: "value",
-            splitNumber: 1,
           },
         ],
         series: [
           {
-            name: "entering",
             type: "bar",
-            stack: "Total",
-            data: this.list.map((v) => v.entering),
-          },
-          {
-            name: "leaving",
-            type: "bar",
-            stack: "Total",
-            data: this.list.map((v) => v.leaving * -1),
-          },
-          {
-            name: "passengers",
-            type: "bar",
-            xAxisIndex: 1,
-            yAxisIndex: 1,
-            data: this.list.map((v) => v.passengers),
+            barWidth: "60%",
+            data: this.tableList.map((v) => v.vehicles),
           },
         ],
       };
+    },
+    timeFormatter(row) {
+      return formatHour(row.time);
     },
   },
 };

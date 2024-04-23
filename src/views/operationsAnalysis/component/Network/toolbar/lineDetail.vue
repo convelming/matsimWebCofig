@@ -4,32 +4,98 @@
     <div class="BusStopToolbar_bodyer" v-loading="loading">
       <el-descriptions class="margin-top" :column="1" border size="small" labelClassName="labelClassName">
         <template slot="extra">
-          <el-button type="primary" size="mini" @click="handleMenu({ data: resData, command: 'selectLinkAnalysis' })">Select Link Analysis</el-button>
+          <el-button type="primary" size="mini" @click="handleMenu({ data: resData, command: 'selectLinkAnalysis' })">{{ $l("selectLinkAnalysis") }}</el-button>
           <!-- <el-button type="primary" size="mini" @click="handleMenu({ data: resData, command: 'transitLinesOnLink' })">Transit Lines On Link</el-button> -->
-          <el-button type="primary" size="mini" @click="handleMenu({ data: resData, command: 'linkVolumes' })">Link Volumes</el-button>
+          <el-button type="primary" size="mini" @click="handleMenu({ data: resData, command: 'linkVolumes' })">{{ $l("linkVolumes") }}</el-button>
         </template>
-        <el-descriptions-item label="Link Id">{{ resData.id }}</el-descriptions-item>
-        <el-descriptions-item label="From Node Id">{{ resData.fromNode }}</el-descriptions-item>
-        <el-descriptions-item label="To Node Id">{{ resData.toNode }}</el-descriptions-item>
-        <el-descriptions-item label="Allowed Transport Node">{{ resData.allowedTransportNode }}</el-descriptions-item>
-        <el-descriptions-item label="Length">{{ resData.length }}</el-descriptions-item>
-        <el-descriptions-item label="Capacity">{{ resData.capacity }}</el-descriptions-item>
-        <el-descriptions-item label="Free Speed">{{ resData.freespeed }}</el-descriptions-item>
-        <el-descriptions-item label="Number of Lanes">{{ resData.numberofLanes }}</el-descriptions-item>
-        <el-descriptions-item label="origid">{{ resData.origid }}</el-descriptions-item>
-        <el-descriptions-item label="type">{{ resData.type }}</el-descriptions-item>
-        <el-descriptions-item label="originId">{{ resData.originId }}</el-descriptions-item>
-        <el-descriptions-item label="storageCapacityUsedInQsim">{{ resData.storageCapacityUsedInQsim }}</el-descriptions-item>
+        <el-descriptions-item :label="$l('linkId')">{{ resData.id }}</el-descriptions-item>
+        <el-descriptions-item :label="$l('fromNodeId')">{{ resData.fromNode }}</el-descriptions-item>
+        <el-descriptions-item :label="$l('toNodeId')">{{ resData.toNode }}</el-descriptions-item>
+        <el-descriptions-item :label="$l('allowedTransportNode')">{{ resData.allowedTransportNode }}</el-descriptions-item>
+        <el-descriptions-item :label="$l('length')">{{ resData.length }}</el-descriptions-item>
+        <el-descriptions-item :label="$l('capacity')">{{ resData.capacity }}</el-descriptions-item>
+        <el-descriptions-item :label="$l('freeSpeed')">{{ resData.freespeed }}</el-descriptions-item>
+        <el-descriptions-item :label="$l('numberOfLanes')">{{ resData.numberofLanes }}</el-descriptions-item>
+        <el-descriptions-item :label="$l('origid')">{{ resData.origid }}</el-descriptions-item>
+        <el-descriptions-item :label="$l('type')">{{ resData.type }}</el-descriptions-item>
+        <el-descriptions-item :label="$l('originId')">{{ resData.originId }}</el-descriptions-item>
+        <el-descriptions-item :label="$l('storageCapacityUsedInQsim')">{{ resData.storageCapacityUsedInQsim }}</el-descriptions-item>
       </el-descriptions>
     </div>
     <LineMenu :visible.sync="showMenu" :style="menuStyle" @command="handleMenu({ data: resData, command: $event.command })" />
   </el-collapse-item>
 </template>
 
+<language>
+{
+  "lineDetail":{
+    "zh-CN": "Line Detail",
+    "en-US": "Line Detail"
+  },
+  "selectLinkAnalysis":{
+    "zh-CN": "Select Link Analysis",
+    "en-US": "Select Link Analysis"
+  },
+  "linkVolumes":{
+    "zh-CN": "Link Volumes",
+    "en-US": "Link Volumes"
+  },
+  "linkId":{
+    "zh-CN": "Link Id",
+    "en-US": "Link Id"
+  },
+  "fromNodeId":{
+    "zh-CN": "From Node Id",
+    "en-US": "From Node Id"
+  },
+  "toNodeId":{
+    "zh-CN": "To Node Id",
+    "en-US": "To Node Id"
+  },
+  "allowedTransportNode":{
+    "zh-CN": "Allowed Transport Node",
+    "en-US": "Allowed Transport Node"
+  },
+  "length":{
+    "zh-CN": "Length",
+    "en-US": "Length"
+  },
+  "capacity":{
+    "zh-CN": "Capacity",
+    "en-US": "Capacity"
+  },
+  "freeSpeed":{
+    "zh-CN": "Free Speed",
+    "en-US": "Free Speed"
+  },
+  "numberOfLanes":{
+    "zh-CN": "Number of Lanes",
+    "en-US": "Number of Lanes"
+  },
+  "origid":{
+    "zh-CN": "origid",
+    "en-US": "origid"
+  },
+  "type":{
+    "zh-CN": "type",
+    "en-US": "type"
+  },
+  "originId":{
+    "zh-CN": "originId",
+    "en-US": "originId"
+  },
+  "storageCapacityUsedInQsim":{
+    "zh-CN": "storageCapacityUsedInQsim",
+    "en-US": "storageCapacityUsedInQsim"
+  },
+}
+</language>
+
 <script>
 import { MAP_EVENT } from "@/mymap";
 import LineMenu, { line_menu } from "../menu/Line.vue";
 import { getLinkById } from "@/api/index";
+import { guid } from "@/utils/utils";
 
 import LinkVolumes from "../dialog/LinkVolumes.vue";
 
@@ -61,19 +127,20 @@ export default {
       return this.rootVue._Map;
     },
     title() {
-      return "LineDetail";
+      return this.$l("lineDetail") + " " + this.lineDetail.id;
     },
   },
   watch: {
-    ids: {
-      handler(val) {
-        this.getDetail();
-      },
-      immediate: true,
-      deep: true,
-    },
     show: {
       handler(val) {
+        if (val) {
+          setTimeout(() => {
+            this.rootVue.$emit("setSelectLine", this.lineDetail);
+          }, 200);
+        } else {
+          this.rootVue.$emit("setSelectLine", {});
+        }
+
         this.$nextTick(() => {
           this._interval = setInterval(() => {
             if (!this._Map) return;
@@ -95,10 +162,11 @@ export default {
       resData: {},
       showMenu: false,
       menuStyle: "top:100px;left:100px;z-index:1000;",
-      _NodeLayer: undefined,
     };
   },
-  mounted() {},
+  mounted() {
+    this.getDetail();
+  },
   beforeDestroy() {
     clearInterval(this._interval);
     this.handleDisable();
@@ -106,7 +174,7 @@ export default {
   methods: {
     getDetail() {
       this.loading = true;
-      getLinkById({ linkId: this.lineDetail.linkId })
+      getLinkById({ linkId: this.lineDetail.id })
         .then((res) => {
           this.resData = res.data;
           this.loading = false;
@@ -135,7 +203,10 @@ export default {
     handleMenu({ data, command }) {
       switch (command) {
         case "selectLinkAnalysis":
-          this.handleSelectLinkAnalysis(data);
+          this.rootVue.handleShowSelectLinkAnalysis({
+            uuid: this.name + this.lineDetail.id,
+            lineDetail: this.lineDetail,
+          });
           break;
         case "linkVolumes":
           this.handleShowLinkVolumes(data);
@@ -145,7 +216,7 @@ export default {
     handleShowLinkVolumes() {
       if (this._linkVolumes) return;
       this._linkVolumes = new LinkVolumesExtend({
-        propsData: { linkId: this.lineDetail.linkId },
+        propsData: { linkId: this.lineDetail.id },
         store,
       }).$mount();
       this._linkVolumes.$on("close", () => {

@@ -405,3 +405,15 @@ export function getLinkVolumes(params) {
     method: "get",
   });
 }
+
+// 查询经过link的出行
+// GET /pt/link/getElapseLinkLeg
+// 接口ID：160854322
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-160854322
+export function getElapseLinkLeg(params) {
+  return request({
+    url: `/pt/link/getElapseLinkLeg`,
+    params: params,
+    method: "get",
+  });
+}

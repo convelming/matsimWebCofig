@@ -10,22 +10,15 @@
 
 <language>
 {
-  "selectLinkAnalysis":{
-    "zh-CN": "Select Link Analysis",
-    "en-US": "Select Link Analysis"
-  },
-  "transitLinesOnLink":{
-    "zh-CN": "Transit Lineson Link",
-    "en-US": "Transit Lineson Link"
+  "intersectionFlows":{
+    "zh-CN": "Intersection Flows",
+    "en-US": "Intersection Flows"
   },
 }
 </language>
 
 <script>
-export const node_menu = [
-  { label: "selectLinkAnalysis", value: "selectLinkAnalysis" },
-  { label: "transitLinesOnLink", value: "transitLinesOnLink" },
-];
+export const node_menu = [{ label: "intersectionFlows", value: "intersectionFlows" }];
 
 export default {
   props: {

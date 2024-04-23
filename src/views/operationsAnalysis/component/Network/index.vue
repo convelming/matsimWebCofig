@@ -7,13 +7,13 @@
       <div class="form_item">
         <div class="form_label">{{ $l("width") }}</div>
         <div class="form_value">
-          <el-slider :disabled="!s_showLayer" v-model="width" :min="0" :max="50" :step="1" />
+          <el-slider :disabled="!s_showLayer" v-model="width" :min="0" :max="100" :step="1" />
         </div>
       </div>
       <div class="form_item">
         <div class="form_label">{{ $l("offset") }}</div>
         <div class="form_value">
-          <el-slider :disabled="!s_showLayer" v-model="offset" :min="0" :max="50" :step="1" />
+          <el-slider :disabled="!s_showLayer" v-model="offset" :min="0" :max="100" :step="1" />
         </div>
       </div>
       <div class="form_item">
@@ -122,10 +122,10 @@ export default {
 
       colors: 0,
       width: 10,
-      offset: 12,
+      offset: 0,
       color: "#E9CDAA",
       showNode: false,
-      canSelect: true,
+      canSelect: false,
 
       colorsList: ColorList,
     };
@@ -162,11 +162,21 @@ export default {
       this._Map.addLayer(this._NetworkLayer);
       this.handleCanSelect(this.canSelect);
       this.rootVue.$on("timeChange", this.handleTimeChange);
+      this.rootVue.$on("setSelectLine", this.handleSetSelectLine);
+      this.rootVue.$on("setSelectNode", this.handleSetSelectNode);
     },
     // 组件卸载事件
     handleDisable() {
       this._Map.removeLayer(this._NetworkLayer);
       this.rootVue.$off("timeChange", this.handleTimeChange);
+      this.rootVue.$off("setSelectLine", this.handleSetSelectLine);
+      this.rootVue.$off("setSelectNode", this.handleSetSelectNode);
+    },
+    handleSetSelectLine(data) {
+      if (this._NetworkLayer) this._NetworkLayer.setSelectLine(data.id);
+    },
+    handleSetSelectNode(data) {
+      if (this._NetworkLayer) this._NetworkLayer.setSelectNode(data.id);
     },
     handleTimeChange(time) {
       if (this._NetworkLayer) this._NetworkLayer.setTime(time);
@@ -180,7 +190,7 @@ export default {
           if (data.type == "line") {
             this.rootVue.handleShowLineDetail({ uuid: data.uuid, lineDetail: data });
           } else if (data.type == "node") {
-            this.rootVue.handleShowLineDetail({ uuid: data.uuid, nodeDetail: data });
+            this.rootVue.handleShowNodeDetail({ uuid: data.uuid, nodeDetail: data });
           }
         });
       } else {

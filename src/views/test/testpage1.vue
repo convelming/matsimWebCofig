@@ -29,8 +29,8 @@ export default {
       this._map.cameraControls.enableRotate = true;
       this._map.addLayer(new LocalMapLayer({ zIndex: 0 }));
       // this._map.addLayer(new Build3DLayer({ zIndex: 20 }));
-      // this._map.addLayer(new LinkFlowLayer({ zIndex: 20 }));
-      this._map.addLayer(new Line2DTestLayer({ zIndex: 20 }));
+      this._map.addLayer(new LinkFlowLayer({ zIndex: 20 }));
+      // this._map.addLayer(new Line2DTestLayer({ zIndex: 20 }));
       // this._map.addLayer(new BloomTestLayer({ zIndex: 20 }));
       // this._map.addLayer(new OutlineTestLayer({ zIndex: 20 }));
       // import("@/assets/data/testpage2.data.json").then((res) => {

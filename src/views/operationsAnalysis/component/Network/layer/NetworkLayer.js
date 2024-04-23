@@ -31,8 +31,66 @@ export class NetworkLayer extends Layer {
     this.lineWidth = opt.lineWidth || this.lineWidth;
     this.lineOffset = opt.lineOffset || this.lineOffset;
     this.showNode = opt.showNode || this.showNode;
+    this.selectLine = {
+      show: false,
+      tile: null,
+      line: null,
+      center: [0, 0],
+      mesh: new THREE.Mesh(
+        new THREE.BufferGeometry(),
+        new NetworkMaterial({
+          color: 0xffa500,
+          lineWidth: this.lineWidth,
+          lineOffset: this.lineOffset,
+        })
+      ),
+    };
+    this.selectNode = {
+      show: false,
+      tile: null,
+      node: null,
+      center: [0, 0],
+      mesh: new THREE.Mesh(
+        new THREE.PlaneGeometry(100, 100),
+        new THREE.MeshBasicMaterial({
+          map: NetworkTile.noodMap,
+          color: 0xffa500,
+          transparent: true,
+        })
+      ),
+    };
+  }
 
-    console.log(this);
+  setSelectLine(lineId) {
+    console.log("setSelectLine", lineId);
+    for (const tile of Object.values(this.tileMap)) {
+      const lineItem = tile.getLineById(lineId);
+      if (lineItem) {
+        this.selectLine.tile = tile;
+        this.selectLine.line = lineItem;
+        this.selectLine.show = true;
+        const geometry = new NetworkGeometry([lineItem], 0);
+        this.selectLine.mesh.geometry = geometry;
+        this.loadMesh();
+        return;
+      }
+    }
+    this.scene.remove(this.selectLine.mesh);
+  }
+
+  setSelectNode(nodeId) {
+    console.log("setSelectNode", nodeId);
+    for (const tile of Object.values(this.tileMap)) {
+      const nodeItem = tile.getNodeById(nodeId);
+      if (nodeItem) {
+        this.selectNode.tile = tile;
+        this.selectNode.node = nodeItem;
+        this.selectNode.show = true;
+        this.loadMesh();
+        return;
+      }
+    }
+    this.selectNode.show = false;
   }
 
   setShowNode(showNode) {
@@ -61,6 +119,11 @@ export class NetworkLayer extends Layer {
     for (const tile of Object.values(this.tileMap)) {
       tile.setLineWidth(lineWidth);
     }
+    this.selectLine.mesh.material.uniforms.lineWidth.value = lineWidth;
+    this.selectLine.mesh.material.needsUpdate = true;
+
+    const scale = lineWidth / 100;
+    this.selectNode.mesh.scale.set(scale, scale, 1);
   }
 
   setLineOffset(lineOffset) {
@@ -68,6 +131,8 @@ export class NetworkLayer extends Layer {
     for (const tile of Object.values(this.tileMap)) {
       tile.setLineOffset(lineOffset);
     }
+    this.selectLine.mesh.material.uniforms.lineOffset.value = lineOffset;
+    this.selectLine.mesh.material.needsUpdate = true;
   }
 
   // 设置拾取图层颜色
@@ -85,14 +150,12 @@ export class NetworkLayer extends Layer {
     if (type == MAP_EVENT.HANDLE_PICK_LEFT && data.layerId == this.id) {
       const pickColorNum = data.pickColor;
       for (const tile of Object.values(this.tileMap)) {
-        const item = tile.getLineByPickColor(pickColorNum);
+        const lineItem = tile.getLineByPickColor(pickColorNum);
         const nodeItem = tile.getNodeByPickColor(pickColorNum);
-        if (item) {
-          console.log(item);
-          this.handleEventListener(type, item);
+        if (lineItem) {
+          this.handleEventListener(type, lineItem);
           break;
         } else if (nodeItem) {
-          console.log(nodeItem);
           this.handleEventListener(type, nodeItem);
           break;
         }
@@ -167,14 +230,22 @@ export class NetworkLayer extends Layer {
     //   const list = noLoadTileList.splice(0, 30);
     //   await Promise.all(list.map((v) => v.load(() => ++this.pickColorNum)));
     // }
+    console.log("this.selectLine.show", this.selectLine);
+    if (this.selectLine.show) {
+      const { line, tile, mesh } = this.selectLine;
+      const [x, y] = this.map.WebMercatorToCanvasXY(tile.x, tile.y);
+      mesh.position.set(x, y, 1.5);
+      this.scene.add(mesh);
+    }
 
-    if (this.selectBuildTile) {
-      const [x, y] = this.map.WebMercatorToCanvasXY(this.selectBuildTile.x, this.selectBuildTile.y);
-      this.coneMesh.position.set(x, y, 0);
-      this.coneMesh.renderOrder = Number.MAX_SAFE_INTEGER;
-      this.scene.add(this.coneMesh);
-    } else {
-      this.scene.remove(this.coneMesh);
+    console.log("this.selectNode.show", this.selectNode);
+    if (this.selectNode.show) {
+      const { node, tile, mesh } = this.selectNode;
+      const [x, y] = this.map.WebMercatorToCanvasXY(node.coord.x + tile.x, node.coord.y + tile.y);
+      mesh.position.set(x, y, 1.5);
+      const scale = this.lineWidth / 100;
+      mesh.scale.set(scale, scale, 1);
+      this.scene.add(mesh);
     }
   }
 }
@@ -212,6 +283,9 @@ class NetworkTile {
   get pickMeshScene() {
     return this._pickMeshScene;
   }
+  get flowNum() {
+    return this._flowNum;
+  }
 
   constructor({ row, col, flowNum, lineWidth, lineOffset, colors, pickLayerColor, showNode }) {
     this._row = row;
@@ -224,7 +298,7 @@ class NetworkTile {
     this._pickLayerColor = pickLayerColor;
     this._showNode = showNode;
     this._nodeData = {};
-    this._data = {};
+    this._lineData = {};
 
     this._geometry = new THREE.BufferGeometry();
     this._baseMaterial = new NetworkMaterial({
@@ -289,14 +363,15 @@ class NetworkTile {
       this._loadStatus = 4;
       const { data } = await getTileNetwork({ x: this._row, y: this._col });
       if (data && data.length > 0) {
-        this._data = {};
+        this._lineData = {};
         this._nodeData = {};
         const nodeObj = {};
         for (const v of data) {
           v.pickColorNum = getPickColorFunc();
           v.type = "line";
           v.uuid = guid();
-          this._data[v.pickColorNum] = v;
+          v.id = v.linkId;
+          this._lineData[v.pickColorNum] = v;
 
           const fromNode = { coord: v.fromCoord, id: v.fromNodeId, type: "node", uuid: guid() };
           const toNode = { coord: v.toCoord, id: v.toNodeId, type: "node", uuid: guid() };
@@ -315,6 +390,16 @@ class NetworkTile {
         }
         this._geometry = new NetworkGeometry(data, this._flowNum);
 
+        this._baseMaterial.uniforms.flowMax.value = this._geometry.flowMax;
+        this._baseMaterial.uniforms.flowMin.value = this._geometry.flowMin;
+        this._baseMaterial.needsUpdate = true;
+        this._pickLayerMaterial.uniforms.flowMax.value = this._geometry.flowMax;
+        this._pickLayerMaterial.uniforms.flowMin.value = this._geometry.flowMin;
+        this._pickLayerMaterial.needsUpdate = true;
+        this._pickMeshMaterial.uniforms.flowMax.value = this._geometry.flowMax;
+        this._pickMeshMaterial.uniforms.flowMin.value = this._geometry.flowMin;
+        this._pickMeshMaterial.needsUpdate = true;
+
         this._baseMesh = new THREE.Mesh(this._geometry, this._baseMaterial);
         this._pickLayerMesh = new THREE.Mesh(this._geometry, this._pickLayerMaterial);
         this._pickBuildMesh = new THREE.Mesh(this._geometry, this._pickMeshMaterial);
@@ -331,7 +416,7 @@ class NetworkTile {
         for (let i = 0, l = nodeList.length; i < l; i++) {
           const { coord, pickColorNum } = nodeList[i];
           const matrix = new THREE.Matrix4();
-          const positionV3 = new THREE.Vector3(coord.x, coord.y, i / l + 1);
+          const positionV3 = new THREE.Vector3(coord.x, coord.y, 1);
           const scaleV3 = new THREE.Vector3(_scale, _scale, 1);
           matrix.compose(positionV3, new THREE.Quaternion(), scaleV3);
 
@@ -357,8 +442,26 @@ class NetworkTile {
     return this;
   }
 
+  getLineById(lineId) {
+    for (const line of Object.values(this._lineData)) {
+      if (line.id === lineId) {
+        return line;
+      }
+    }
+    return null;
+  }
+
+  getNodeById(nodeId) {
+    for (const node of Object.values(this._nodeData)) {
+      if (node.id === nodeId) {
+        return node;
+      }
+    }
+    return null;
+  }
+
   getLineByPickColor(pickColor) {
-    return this._data[pickColor];
+    return this._lineData[pickColor];
   }
 
   getNodeByPickColor(pickColor) {
@@ -475,8 +578,8 @@ class NetworkGeometry extends THREE.BufferGeometry {
       lineLengths.push(lineLength);
       lineNormals.push(normal.x, normal.y, 1);
       lineNormals.push(normal.x, normal.y, -1);
-      positions.push(fromCoord.x, fromCoord.y, i / l);
-      positions.push(fromCoord.x, fromCoord.y, i / l);
+      positions.push(fromCoord.x, fromCoord.y, 0);
+      positions.push(fromCoord.x, fromCoord.y, 0);
       pickColors.push(...pickColor);
       pickColors.push(...pickColor);
       uvs.push(0, 0);
@@ -486,8 +589,8 @@ class NetworkGeometry extends THREE.BufferGeometry {
       lineLengths.push(lineLength);
       lineNormals.push(normal.x, normal.y, -1);
       lineNormals.push(normal.x, normal.y, 1);
-      positions.push(toCoord.x, toCoord.y, i / l);
-      positions.push(toCoord.x, toCoord.y, i / l);
+      positions.push(toCoord.x, toCoord.y, 0);
+      positions.push(toCoord.x, toCoord.y, 0);
       pickColors.push(...pickColor);
       pickColors.push(...pickColor);
       uvs.push(1, 1);
@@ -555,6 +658,12 @@ class NetworkMaterial extends THREE.Material {
           range: {},
         },
       },
+      flowMax: {
+        value: Number.MAX_SAFE_INTEGER,
+      },
+      flowMin: {
+        value: 0,
+      },
     };
     this.vertexShader = `
       #include <common>
@@ -575,6 +684,8 @@ class NetworkMaterial extends THREE.Material {
       uniform float lineWidth;
       uniform float lineOffset;
       uniform mat3 uvTransform;
+      uniform float flowMax;
+      uniform float flowMin;
 
 
       void main() {
@@ -588,8 +699,8 @@ class NetworkMaterial extends THREE.Material {
         #ifdef USE_MAP
           vUv = ( uvTransform * vec3( uv, 1 ) ).xy;
         #endif
-
         transformed = vec3(position.xy + lineNormal.xy * lineNormal.z * lineWidth / 2.0 - lineNormal.xy * lineOffset, position.z);
+        transformed.z = transformed.z + flow / (flowMax - flowMin);
 
         gl_Position = projectionMatrix * modelViewMatrix * vec4( transformed, 1.0 );
 

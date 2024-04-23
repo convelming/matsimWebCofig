@@ -15,6 +15,7 @@ import StopDetail from "../PublicTransit/toolbar/stopDetail.vue";
 import RouteDepartures from "../PublicTransit/toolbar/routeDepartures.vue";
 import LineDetail from "../Network/toolbar/lineDetail.vue";
 import NodeDetail from "../Network/toolbar/nodeDetail.vue";
+import SelectLinkAnalysis from "../Network/toolbar/selectLinkAnalysis.vue";
 export default {
   components: {
     BuildDetail,
@@ -26,6 +27,7 @@ export default {
     RouteDepartures,
     LineDetail,
     NodeDetail,
+    SelectLinkAnalysis,
   },
   data() {
     return {
@@ -40,6 +42,7 @@ export default {
     add(type, data) {
       console.log(type, data);
       switch (type) {
+        case "SelectLinkAnalysis":
         case "BusDetail":
         case "CarDetail":
         case "BuildDetail":
@@ -62,6 +65,9 @@ export default {
             this.list.unshift(item);
           }
           break;
+      }
+      if (this.list.length > 15) {
+        this.list.splice(15);
       }
     },
   },

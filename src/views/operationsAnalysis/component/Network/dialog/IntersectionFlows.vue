@@ -3,21 +3,18 @@
     <Dialog :title="$l('IntersectionFlows')" visible @close="$emit('close')" left="center" width="900px">
       <div class="SelectLinkAnalysis__bodyer">
         <div class="row">
-          <div style="margin-right: 10px">{{ $l("aggregateTo") }}</div>
-          <el-select v-model="second" @click="getData">
-            <el-option label="5 minutes" value="300" />
-            <el-option label="15 minutes" value="900" />
-            <el-option label="20 minutes" value="1200" />
-            <el-option label="30 minutes" value="1800" />
-            <el-option label="1 hour" value="3600" />
-          </el-select>
+          <TimeRangeSlider :value="[startSecond, endSecond]" :start.sync="startSecond" :end.sync="endSecond" />
         </div>
         <el-tabs v-model="activeName" @tab-click="handleChange">
           <el-tab-pane :label="$l('Chart')" name="Chart">
             <div ref="chart" class="chart-container" v-loading="loading"></div>
           </el-tab-pane>
           <el-tab-pane :label="$l('Data')" name="Data">
-            <el-table class="small" :data="tableList" border stripe height="calc(100vh - 400px)" v-loading="loading" :show-header="false"> </el-table>
+            <el-table class="small" :data="tableList" border stripe height="calc(100vh - 400px)" v-loading="loading">
+              <el-table-column prop="fromLink.linkId" :label="$l('fromLink')" />
+              <el-table-column prop="toLink.linkId" :label="$l('toLink')" />
+              <el-table-column prop="vehicles" :label="$l('vehicles')" />
+            </el-table>
           </el-tab-pane>
         </el-tabs>
       </div>
@@ -43,15 +40,28 @@
     "zh-CN": "Aggregate To",
     "en-US": "Aggregate To"
   },
+  "vehicles":{
+    "zh-CN": "#Vehicles",
+    "en-US": "#Vehicles"
+  },
+  "fromLink":{
+    "zh-CN": "From Link",
+    "en-US": "From Link"
+  },
+  "toLink":{
+    "zh-CN": "To Link",
+    "en-US": "To Link"
+  },
 }
 </language>
 
 <script>
+import { formatHour } from "@/utils/utils";
 import * as echarts from "echarts";
-import { getLinkVolumes } from "@/api/index";
+import { intersectionFlows } from "@/api/index";
 export default {
   props: {
-    linkId: {
+    nodeId: {
       type: [String, Number],
     },
   },
@@ -59,7 +69,9 @@ export default {
     return {
       loading: false,
       activeName: "Chart",
-      second: "1200",
+      startSecond: 0,
+      endSecond: 60 * 60 * 24,
+      chartData: [],
       tableList: [],
     };
   },
@@ -79,26 +91,29 @@ export default {
     },
     getData() {
       this.loading = true;
-      getLinkVolumes({
-        linkId: this.linkId,
-        second: this.second,
+      intersectionFlows({
+        nodeId: this.nodeId,
+        startSecond: this.startSecond,
+        endSecond: this.endSecond,
       })
         .then((res) => {
-          this.tableList = res.data || [];
-          console.log(res);
-          // this.updateChart();
+          this.chartData = res.data.histogram || [];
+          this.tableList = res.data.flows || [];
+          this.updateChart();
           this.loading = false;
         })
         .catch((err) => {
           this.list = [];
-          // this.updateChart();
+          this.updateChart();
           this.loading = false;
         });
     },
     // 更新图表
     updateChart() {
       if (this._chart) {
-        this._chart.setOption(this.getChartOption(), true).this._chart.resize();
+        console.log(this.getChartOption());
+        this._chart.setOption(this.getChartOption(), true);
+        this._chart.resize();
       }
     },
     // 获取图表配置
@@ -109,80 +124,42 @@ export default {
           axisPointer: {
             type: "shadow",
           },
-        },
-        legend: {
-          data: ["entering", "leaving", "passengers"],
-        },
-        grid: [
-          {
-            top: 50,
-            bottom: "42.5%",
-            left: 50,
-            right: 10,
-            backgroundColor: "#ccc",
-            containLabel: true,
+          formatter: function (params, ticket, callback) {
+            return `${formatHour(params[0].name * 3600)}  ${params[0].value}`;
           },
-          {
-            top: "62.5%",
-            bottom: "5%",
-            left: 50,
-            right: 10,
-            backgroundColor: "#ccc",
-            containLabel: true,
-          },
-        ],
-        axisPointer: {
-          link: { xAxisIndex: [0, 1] },
+        },
+        grid: {
+          left: "3%",
+          right: "4%",
+          bottom: "3%",
+          containLabel: true,
         },
         xAxis: [
           {
+            name: this.$l("Time"),
             type: "category",
-            show: false,
-            data: this.list.map((v) => v.stopName),
-            axisLabel: {
-              show: false,
+            data: this.chartData.map((v, i) => i),
+            axisTick: {
+              alignWithLabel: true,
             },
-          },
-          {
-            type: "category",
-            gridIndex: 1,
-            data: this.list.map((v) => v.stopName),
             axisLabel: {
-              interval: 0,
-              rotate: 90,
+              formatter: function (value, index) {
+                return formatHour(value * 3600);
+              },
             },
           },
         ],
         yAxis: [
           {
+            name: this.$l("vehicles"),
             type: "value",
-            splitNumber: 2,
-          },
-          {
-            gridIndex: 1,
-            type: "value",
-            splitNumber: 1,
           },
         ],
         series: [
           {
-            name: "entering",
             type: "bar",
-            stack: "Total",
-            data: this.list.map((v) => v.entering),
-          },
-          {
-            name: "leaving",
-            type: "bar",
-            stack: "Total",
-            data: this.list.map((v) => v.leaving * -1),
-          },
-          {
-            name: "passengers",
-            type: "bar",
-            xAxisIndex: 1,
-            yAxisIndex: 1,
-            data: this.list.map((v) => v.passengers),
+            barWidth: "60%",
+            data: this.chartData.map((v) => v),
           },
         ],
       };
