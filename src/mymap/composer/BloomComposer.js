@@ -85,9 +85,9 @@ export class BloomComposer {
 
   render() {
     const background = this.scene.background;
-    const fogColor = this.scene.fog.color;
+    const fog = this.scene.fog;
     this.scene.background = this.background;
-    this.scene.fog.color = this.background;
+    this.scene.fog = null;
     this.scene.traverse((obj) => {
       if (this.bloomLayer.test(obj.layers) === false) {
         this.materials.set(obj.uuid, obj.material);
@@ -114,7 +114,7 @@ export class BloomComposer {
     });
 
     this.scene.background = background;
-    this.scene.fog.color = fogColor;
+    this.scene.fog = fog;
   }
 
   dispose() {

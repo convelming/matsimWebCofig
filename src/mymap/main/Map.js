@@ -67,7 +67,7 @@ const MAP_ZOOM_HEIGHT = 400;
 
 export class Map extends EventListener {
   name = "map";
-  _pickLayerColorNum = 0x000000;
+  _pickLayerColorNum = 0xffffff;
   openGPUPick = true;
 
   // 获取摄像机到观测点距离
@@ -77,7 +77,7 @@ export class Map extends EventListener {
 
   // 获取一个拾取图层颜色
   getPickLayerColor() {
-    return new THREE.Color(++this._pickLayerColorNum);
+    return new THREE.Color(--this._pickLayerColorNum);
   }
 
   // 性能监视器对象

@@ -152,6 +152,8 @@ export class NetworkLayer extends Layer {
       for (const tile of Object.values(this.tileMap)) {
         const lineItem = tile.getLineByPickColor(pickColorNum);
         const nodeItem = tile.getNodeByPickColor(pickColorNum);
+        const nodeList = Object.keys(tile._nodeData);
+        console.log(pickColorNum, nodeList[0], nodeList[nodeList.length - 1]);
         if (lineItem) {
           this.handleEventListener(type, lineItem);
           break;
