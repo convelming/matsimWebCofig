@@ -417,3 +417,27 @@ export function getElapseLinkLeg(params) {
     method: "get",
   });
 }
+
+// 查询从建筑离开的轨迹
+// GET /pt/af/getStartInFacilities
+// 接口ID：161624636
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-161624636
+export function getStartInFacilities(params) {
+  return request({
+    url: `/pt/af/getStartInFacilities`,
+    params: params,
+    method: "get",
+  });
+}
+
+// 查询到达建筑的轨迹
+// GET /pt/af/getEndInFacilities
+// 接口ID：161821641
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-161821641
+export function getEndInFacilities(params) {
+  return request({
+    url: `/pt/af/getEndInFacilities`,
+    params: params,
+    method: "get",
+  });
+}

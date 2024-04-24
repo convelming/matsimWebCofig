@@ -16,6 +16,7 @@ import RouteDepartures from "../PublicTransit/toolbar/routeDepartures.vue";
 import LineDetail from "../Network/toolbar/lineDetail.vue";
 import NodeDetail from "../Network/toolbar/nodeDetail.vue";
 import SelectLinkAnalysis from "../Network/toolbar/selectLinkAnalysis.vue";
+import SelectBuildAnalysis from "../Build3D/toolbar/selectBuildAnalysis.vue";
 export default {
   components: {
     BuildDetail,
@@ -28,6 +29,7 @@ export default {
     LineDetail,
     NodeDetail,
     SelectLinkAnalysis,
+    SelectBuildAnalysis,
   },
   data() {
     return {
@@ -43,6 +45,7 @@ export default {
       console.log(type, data);
       switch (type) {
         case "SelectLinkAnalysis":
+        case "SelectBuildAnalysis":
         case "BusDetail":
         case "CarDetail":
         case "BuildDetail":

@@ -1,7 +1,7 @@
 import { Layer, MAP_EVENT, OutlineLayer, SCENE_MAP } from "@/mymap";
 import * as THREE from "three";
 
-export class LinkFlowLayer extends Layer {
+export class BuildFlowLayer extends Layer {
   color = 0x0000ff;
   constructor(opt) {
     super(opt);

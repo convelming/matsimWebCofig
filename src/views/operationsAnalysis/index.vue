@@ -315,6 +315,15 @@ export default {
         this.showStopToolbar = true;
       }
     },
+    handleShowSelectBuildAnalysis({ uuid, buildDetail }) {
+      if (this.$refs.Toolbar) {
+        this.$refs.Toolbar.add("SelectBuildAnalysis", {
+          uuid: uuid,
+          buildDetail: buildDetail,
+        });
+        this.showStopToolbar = true;
+      }
+    },
   },
 };
 </script>

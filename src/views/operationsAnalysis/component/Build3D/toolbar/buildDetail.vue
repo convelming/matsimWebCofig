@@ -5,6 +5,9 @@
     </div>
     <div class="_bodyer" v-loading="loading">
       <div class="form" v-if="resData">
+        <div class="form_item" style="justify-content: flex-end">
+          <el-button type="primary" size="mini" @click="handleMenu({ data: resData, command: 'selectBuildAnalysis' })">{{ $l("selectBuildAnalysis") }}</el-button>
+        </div>
         <div class="form_item">
           <div class="form_label">{{ $l("建筑ID：") }}</div>
           <div class="form_value">{{ resData.id }}</div>
@@ -122,6 +125,10 @@
     "zh-CN": "容量",
     "en-US": "容量"
   },
+  "selectBuildAnalysis":{
+    "zh-CN": "Select Build Analysis",
+    "en-US": "Select Build Analysis"
+  },
 }
 </language>
 
@@ -184,6 +191,16 @@ export default {
     },
     formatHour(val) {
       return formatHour(val).slice(0, 5);
+    },
+    handleMenu({ data, command }) {
+      switch (command) {
+        case "selectBuildAnalysis":
+          this.rootVue.handleShowSelectBuildAnalysis({
+            uuid: this.name + this.buildDetail.id,
+            buildDetail: this.buildDetail,
+          });
+          break;
+      }
     },
   },
 };

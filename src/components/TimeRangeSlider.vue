@@ -60,7 +60,7 @@ export default {
         this.$emit("update:start", this.s_value[0]);
         this.$emit("update:end", this.s_value[1]);
         this._timeout = null;
-      }, 300);
+      }, 200);
     },
   },
 };

@@ -190,6 +190,11 @@ export class Build3DLayer extends Layer {
       const [x, y] = this.map.WebMercatorToCanvasXY(this.selectBuildTile.x, this.selectBuildTile.y);
       this.coneMesh.position.set(x, y, 0);
       this.coneMesh.renderOrder = Number.MAX_SAFE_INTEGER;
+      if (this.show3D) {
+        this.coneMesh.scale.set(1, 1, 1);
+      } else {
+        this.coneMesh.scale.set(1, 1, 0.000001);
+      }
       this.scene.add(this.coneMesh);
     } else {
       this.scene.remove(this.coneMesh);

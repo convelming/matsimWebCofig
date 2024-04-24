@@ -3,6 +3,15 @@
     <div class="collapse_item_title" slot="title">{{ title }}</div>
     <div class="BusStopToolbar_bodyer">
       <div class="form_item" style="align-items: center">
+        <div class="form_label">{{ $l("type") }}</div>
+        <div class="form_value">
+          <el-select v-model="type" @change="getDetail">
+            <el-option :label="$l('startInBuild')" value="start" />
+            <el-option :label="$l('endInBuild')" value="end" />
+          </el-select>
+        </div>
+      </div>
+      <div class="form_item" style="align-items: center">
         <div class="form_label">{{ $l("color") }}</div>
         <div class="form_value">
           <TimeRangeSlider v-model="timeRanges" />
@@ -18,21 +27,34 @@
 
 <language>
 {
-  "selectLinkAnalysis":{
-    "zh-CN": "Select Link Analysis",
-    "en-US": "Select Link Analysis"
+  "selectBuildAnalysis":{
+    "zh-CN": "Select Build Analysis",
+    "en-US": "Select Build Analysis"
   },
   "color":{
     "zh-CN": "Color: ",
     "en-US": "颜色："
   },
+  "type":{
+    "zh-CN": "Type: ",
+    "en-US": "类型："
+  },
+  "startInBuild":{
+    "zh-CN": "从建筑出发",
+    "en-US": "从建筑出发"
+  },
+  "endInBuild":{
+    "zh-CN": "最终到达建筑",
+    "en-US": "最终到达建筑"
+  }
 }
 </language>
 
 <script>
 import { MAP_EVENT } from "@/mymap";
-import { getElapseLinkLeg } from "@/api/index";
-import { LinkFlowLayer } from "../layer/LinkFlowLayer";
+import { BuildFlowLayer } from "../layer/BuildFlowLayer";
+
+import { getStartInFacilities, getEndInFacilities } from "@/api/index";
 
 export default {
   props: {
@@ -43,7 +65,7 @@ export default {
     name: {
       type: String,
     },
-    lineDetail: {
+    buildDetail: {
       type: Object,
       default: () => ({}),
     },
@@ -54,7 +76,7 @@ export default {
       return this.rootVue._Map;
     },
     title() {
-      return this.$l("selectLinkAnalysis") + " " + this.lineDetail.id;
+      return this.$l("selectBuildAnalysis") + " " + this.buildDetail.id;
     },
     timeRanges: {
       get() {
@@ -94,7 +116,7 @@ export default {
     },
     color: {
       handler(val) {
-        this._LinkFlowLayer.setColor(val);
+        this._BuildFlowLayer.setColor(val);
       },
     },
   },
@@ -104,14 +126,15 @@ export default {
 
       loading: true,
       resData: {},
-      _LinkFlowLayer: undefined,
+      _BuildFlowLayer: undefined,
       color: "#ff4500",
       startTime: 0,
       endTime: 24 * 3600,
+      type: "start",
     };
   },
   created() {
-    this._LinkFlowLayer = new LinkFlowLayer({ zIndex: 100, color: this.color });
+    this._BuildFlowLayer = new BuildFlowLayer({ zIndex: 100, color: this.color });
     this.getDetail();
   },
   beforeDestroy() {
@@ -121,9 +144,10 @@ export default {
   methods: {
     getDetail() {
       this.loading = true;
-      getElapseLinkLeg({ linkId: this.lineDetail.id, startTime: this.startTime, endTime: this.endTime })
+      const apiFun = { start: getStartInFacilities, end: getEndInFacilities }[this.type];
+      apiFun({ linkId: this.lineDetail.id, startTime: this.startTime, endTime: this.endTime })
         .then((res) => {
-          this._LinkFlowLayer.setData(res.data);
+          this._BuildFlowLayer.setData(res.data);
           this.loading = false;
         })
         .finally(() => {
@@ -131,10 +155,10 @@ export default {
         });
     },
     handleEnable() {
-      this._Map.addLayer(this._LinkFlowLayer);
+      this._Map.addLayer(this._BuildFlowLayer);
     },
     handleDisable() {
-      this._Map.removeLayer(this._LinkFlowLayer);
+      this._Map.removeLayer(this._BuildFlowLayer);
     },
   },
 };

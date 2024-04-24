@@ -7,7 +7,7 @@ import { getTileNetwork } from "@/api/index.js";
 
 import { guid } from "@/utils/utils";
 
-// import { Line2DGeometry, Line2DMaterial } from "@/mymap/geometry/Line2D";
+import NetworkLayerWorker from "../worker/NetworkLayer3.worker";
 
 const BUILD_ZOOM = 11;
 
@@ -28,6 +28,7 @@ export class NetworkLayer extends Layer {
 
     this.time = opt.time || this.time;
     this.colors = opt.colors || this.colors;
+
     this.lineWidth = opt.lineWidth || this.lineWidth;
     this.lineOffset = opt.lineOffset || this.lineOffset;
     this.showNode = opt.showNode || this.showNode;
@@ -59,7 +60,30 @@ export class NetworkLayer extends Layer {
         })
       ),
     };
+
+    // this.worker = new CarMotionLayerWorker();
+    // this.worker.onmessage = (event) => {
+    //   const { key, data } = event.data;
+    //   switch (key) {
+    //     case "getNetworkTile":
+    //       this.handleGetNetworkTileCallback(data);
+    //       break;
+    //   }
+    // };
+    // this.worker.addEventListener("error", (error) => {
+    //   console.log(error);
+    // });
+
+    // this.worker.postMessage({
+    //   key: "getNetworkTile",
+    //   data: {
+    //     row: 1668,
+    //     col: 888,
+    //   },
+    // });
   }
+
+  handleGetNetworkTileCallback(data) {}
 
   setSelectLine(lineId) {
     console.log("setSelectLine", lineId);
@@ -252,7 +276,7 @@ export class NetworkLayer extends Layer {
   }
 }
 
-class NetworkTile {
+export class NetworkTile {
   static noodMap = new THREE.TextureLoader().load(require("@/assets/image/point2.png"));
   static lineMap = new THREE.TextureLoader().load(require("@/assets/image/up2.png"));
 
@@ -289,7 +313,7 @@ class NetworkTile {
     return this._flowNum;
   }
 
-  constructor({ row, col, flowNum, lineWidth, lineOffset, colors, pickLayerColor, showNode }) {
+  constructor({ row, col, flowNum = 0, lineWidth = 10, lineOffset = 0, colors = ColorBar2D.defaultColors, pickLayerColor = 0xff0000, showNode = false }) {
     this._row = row;
     this._col = col;
     this._x = ((row + 0.5) * (EARTH_RADIUS * 2)) / Math.pow(2, BUILD_ZOOM) - EARTH_RADIUS;
@@ -335,19 +359,6 @@ class NetworkTile {
     this._pickMeshScene = new THREE.Group();
 
     this._flowNum = flowNum;
-  }
-
-  setShowNode(showNode) {
-    this._showNode = showNode;
-    if (showNode) {
-      if (this._baseNodeMesh) this._baseScene.add(this._baseNodeMesh);
-      if (this._pickLayerNodeMesh) this._pickLayerScene.add(this._pickLayerNodeMesh);
-      if (this._pickMeshNodeMesh) this._pickMeshScene.add(this._pickMeshNodeMesh);
-    } else {
-      if (this._baseNodeMesh) this._baseNodeMesh.removeFromParent();
-      if (this._pickLayerNodeMesh) this._pickLayerNodeMesh.removeFromParent();
-      if (this._pickMeshNodeMesh) this._pickMeshNodeMesh.removeFromParent();
-    }
   }
 
   clear() {
@@ -524,17 +535,69 @@ class NetworkTile {
     this._flowNum = Math.floor(time / 3600);
     if (this.loadStatus != 2) return;
     if (this._geometry.isNetworkGeometry) {
-      const flows = this._geometry.flowsMap.get(this._flowNum) || NetworkGeometry.nullFlows;
-      this._geometry.setAttribute("flow", flows);
+      this._geometry.setFlowNum(this._flowNum);
     }
+  }
+
+  setShowNode(showNode) {
+    this._showNode = showNode;
+    if (showNode) {
+      if (this._baseNodeMesh) this._baseScene.add(this._baseNodeMesh);
+      if (this._pickLayerNodeMesh) this._pickLayerScene.add(this._pickLayerNodeMesh);
+      if (this._pickMeshNodeMesh) this._pickMeshScene.add(this._pickMeshNodeMesh);
+    } else {
+      if (this._baseNodeMesh) this._baseNodeMesh.removeFromParent();
+      if (this._pickLayerNodeMesh) this._pickLayerNodeMesh.removeFromParent();
+      if (this._pickMeshNodeMesh) this._pickMeshNodeMesh.removeFromParent();
+    }
+  }
+
+  toJSON() {
+    const data = {
+      row: this._row,
+      col: this._col,
+      flowNum: this._flowNum,
+      lineWidth: this._lineWidth,
+      lineOffset: this._lineOffset,
+      colors: this._colors,
+      pickLayerColor: this._pickLayerColor,
+      showNode: this._showNode,
+      loadStatus: this._loadStatus,
+    };
+    if (this._loadStatus == 2) {
+      data.lineData = JSON.parse(JSON.stringify(this._lineData));
+      data.nodeData = JSON.parse(JSON.stringify(this._nodeData));
+      data.geometry = this._geometry.toJSON();
+    }
+    return data;
+  }
+
+  static fromJSON(json) {
+    const tile = new NetworkTile({
+      row: json.row,
+      col: json.col,
+      flowNum: json.flowNum,
+      lineWidth: json.lineWidth,
+      lineOffset: json.lineOffset,
+      colors: json.colors,
+      pickLayerColor: json.pickLayerColor,
+      showNode: json.showNode,
+    });
+    if (json.loadStatus == 2) {
+      tile._loadStatus = 2;
+      tile._lineData = json.lineData;
+      tile._nodeData = json.nodeData;
+      tile._geometry = NetworkGeometry.fromJSON(json.geometry);
+    }
+    return tile;
   }
 }
 
-class NetworkGeometry extends THREE.BufferGeometry {
+export class NetworkGeometry extends THREE.BufferGeometry {
   static nullFlows = new THREE.Float32BufferAttribute([], 2);
 
   constructor(lineList, flowNum) {
-    console.time(`NetworkGeometry:lineList:${lineList.length}`);
+    console.time("NetworkGeometry:lineList:" + lineList.length);
     super();
     this.type = "NetworkGeometry";
     this.isNetworkGeometry = true;
@@ -557,14 +620,14 @@ class NetworkGeometry extends THREE.BufferGeometry {
       const { pickColorNum, flows, fromCoord, toCoord } = lineList[i];
       const pickColor = new THREE.Color(pickColorNum).toArray();
       for (let j = 0; j < flows.length; j++) {
-        if (!flowsMap.has(j)) {
+        if (!flowsMap.has(String(j))) {
           const list = new THREE.Float32BufferAttribute(new Array(posLen * 4).fill(0), 1);
-          flowsMap.set(j, list);
+          flowsMap.set(String(j), list);
         }
         const flow = flows[j];
         if (flowMax < flow) flowMax = flow;
         if (flowMin > flow) flowMin = flow;
-        const list = flowsMap.get(j);
+        const list = flowsMap.get(String(j));
         list.setX(i * 4, flow);
         list.setX(i * 4 + 1, flow);
         list.setX(i * 4 + 2, flow);
@@ -608,13 +671,51 @@ class NetworkGeometry extends THREE.BufferGeometry {
     this.setAttribute("pickColor", new THREE.Float32BufferAttribute(pickColors, 3));
     this.setAttribute("lineNormal", new THREE.Float32BufferAttribute(lineNormals, 3));
     this.setAttribute("uv", new THREE.Float32BufferAttribute(uvs, 2));
-    this.setAttribute("flow", flowsMap.get(flowNum) || NetworkGeometry.nullFlows);
+    this.setAttribute("flow", flowsMap.get(String(flowNum)) || NetworkGeometry.nullFlows);
     this.computeVertexNormals();
 
     this.flowsMap = flowsMap;
     this.flowMax = flowMax;
     this.flowMin = flowMin;
-    console.timeEnd(`NetworkGeometry:lineList:${lineList.length}`);
+    this.flowNum = String(flowNum);
+    console.timeEnd("NetworkGeometry:lineList:" + lineList.length);
+  }
+
+  setFlowNum(flowNum) {
+    this.flowNum = String(flowNum);
+    this.setAttribute("flow", this.flowsMap.get(String(this.flowNum)) || NetworkGeometry.nullFlows);
+  }
+
+  toJSON() {
+    const data = super.toJSON();
+    data.data.flowMax = this.flowMax;
+    data.data.flowMin = this.flowMin;
+    data.data.flowsMap = {};
+    for (const key of this.flowsMap.keys()) {
+      const arr = this.flowsMap.get(key);
+      data.data.flowsMap[key] = arr.toJSON();
+    }
+    return data;
+  }
+
+  static fromJSON(json) {
+    const { flowMax, flowMin, flowsMap, attributes, index } = json.data;
+    const geometry = new NetworkGeometry([], 0);
+    geometry.flowMax = flowMax;
+    geometry.flowMin = flowMin;
+    for (const key of Object.keys(flowsMap)) {
+      const { itemSize, type, array, normalized } = flowsMap[key];
+      const arr = new THREE.Float32BufferAttribute(array, itemSize);
+      geometry.flowsMap.set(String(key), arr);
+    }
+    for (const key of Object.keys(attributes)) {
+      const { itemSize, type, array, normalized } = attributes[key];
+      const arr = new THREE.Float32BufferAttribute(array, itemSize);
+      geometry.setAttribute(key, arr);
+    }
+    geometry.setIndex(index.array);
+    geometry.computeVertexNormals();
+    return geometry;
   }
 
   dispose() {
@@ -623,7 +724,7 @@ class NetworkGeometry extends THREE.BufferGeometry {
   }
 }
 
-class NetworkMaterial extends THREE.Material {
+export class NetworkMaterial extends THREE.Material {
   constructor(argu) {
     super();
     const { color = 0xffffff, opacity = 1, usePickColor = false, lineWidth = 10, lineOffset = 0, map = null, colorBar, maxColorValue, ...params } = argu || {};
