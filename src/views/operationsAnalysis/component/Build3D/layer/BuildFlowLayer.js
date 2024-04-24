@@ -54,12 +54,12 @@ export class BuildFlowLayer extends Layer {
     if (!this.data) return;
     console.time("update");
 
-    const { link, legs } = this.data;
+    const { facility, legs } = this.data;
     console.log(this.data);
 
     // const geoList = new Array(legs.length).fill(null);
-    const { center, fromCoord, toCoord } = link;
-    const linkCenter = [center.x, center.y];
+    const { coord } = facility;
+    const linkCenter = [coord.x, coord.y];
     // const fV3 = new THREE.Vector3(fromCoord.x, fromCoord.y, 0);
     // const tV3 = new THREE.Vector3(toCoord.x, toCoord.y, 0);
     // const cV3 = new THREE.Vector3(center.x, center.y, 0);

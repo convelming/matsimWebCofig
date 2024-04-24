@@ -14,7 +14,7 @@
       <div class="form_item" style="align-items: center">
         <div class="form_label">{{ $l("color") }}</div>
         <div class="form_value">
-          <TimeRangeSlider v-model="timeRanges" />
+          <TimeRangeSlider :value="[startTime, endTime]" :start.sync="startTime" :end.sync="endTime" @change="getDetail" />
         </div>
       </div>
       <div class="form_item" style="align-items: center">
@@ -78,16 +78,6 @@ export default {
     title() {
       return this.$l("selectBuildAnalysis") + " " + this.buildDetail.id;
     },
-    timeRanges: {
-      get() {
-        return [this.startTime, this.endTime];
-      },
-      set(val = []) {
-        this.startTime = val[0] || 0;
-        this.endTime = val[1] || 24 * 3600;
-        this.getDetail();
-      },
-    },
   },
   watch: {
     show: {
@@ -145,7 +135,7 @@ export default {
     getDetail() {
       this.loading = true;
       const apiFun = { start: getStartInFacilities, end: getEndInFacilities }[this.type];
-      apiFun({ linkId: this.lineDetail.id, startTime: this.startTime, endTime: this.endTime })
+      apiFun({ id: this.buildDetail.id, startTime: this.startTime, endTime: this.endTime })
         .then((res) => {
           this._BuildFlowLayer.setData(res.data);
           this.loading = false;

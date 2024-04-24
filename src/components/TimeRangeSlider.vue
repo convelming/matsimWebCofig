@@ -59,6 +59,7 @@ export default {
         this.$emit("input", this.s_value);
         this.$emit("update:start", this.s_value[0]);
         this.$emit("update:end", this.s_value[1]);
+        this.$emit("change", this.s_value);
         this._timeout = null;
       }, 200);
     },

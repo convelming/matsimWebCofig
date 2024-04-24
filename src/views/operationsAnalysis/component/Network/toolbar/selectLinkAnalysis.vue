@@ -5,7 +5,7 @@
       <div class="form_item" style="align-items: center">
         <div class="form_label">{{ $l("color") }}</div>
         <div class="form_value">
-          <TimeRangeSlider v-model="timeRanges" />
+          <TimeRangeSlider :value="[startTime, endTime]" :start.sync="startTime" :end.sync="endTime" @change="getDetail" />
         </div>
       </div>
       <div class="form_item" style="align-items: center">
@@ -55,16 +55,6 @@ export default {
     },
     title() {
       return this.$l("selectLinkAnalysis") + " " + this.lineDetail.id;
-    },
-    timeRanges: {
-      get() {
-        return [this.startTime, this.endTime];
-      },
-      set(val = []) {
-        this.startTime = val[0] || 0;
-        this.endTime = val[1] || 24 * 3600;
-        this.getDetail();
-      },
     },
   },
   watch: {
