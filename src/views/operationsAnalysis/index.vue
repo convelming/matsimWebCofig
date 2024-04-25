@@ -329,6 +329,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+::v-deep{
+  .el-collapse{
+    border-bottom: 0;
+  }
+}
 .index {
   position: relative;
   width: 100vw;

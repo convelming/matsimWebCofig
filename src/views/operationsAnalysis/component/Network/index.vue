@@ -21,13 +21,13 @@
           <div>{{ $l("color") }}</div>
         </div>
         <div class="form_value">
-          <ColorSelect v-model="colors" :colorsList="colorsList" />
+          <ColorSelect :disabled="!s_showLayer" v-model="colors" :colorsList="colorsList" />
         </div>
       </div>
       <div class="form_item" style="align-items: center">
         <el-switch :disabled="!s_showLayer" style="width: 100%" v-model="showNode" :active-text="$l('showNode')"></el-switch>
         <!-- <el-color-picker :disabled="!s_showLayer" :title="$l('color')" size="mini" :predefine="predefineColors" v-model="color" /> -->
-        <div :title="$l('selectLine')" :class="{ active: canSelect, disabled: !s_showLayer }" class="icon_button el-icon-aim" @click="s_showLayer && handleCanSelect(!canSelect)"></div>
+        <div :disabled="!s_showLayer" :title="$l('selectLine')" :class="{ active: canSelect, disabled: !s_showLayer }" class="icon_button el-icon-aim" @click="s_showLayer && handleCanSelect(!canSelect)"></div>
       </div>
     </div>
   </el-collapse-item>

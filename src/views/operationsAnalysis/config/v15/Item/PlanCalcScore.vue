@@ -34,10 +34,10 @@
                   <span>{{ $l("Parametersets: Scoring") }}</span>
                 </div>
                 <div class="collapse_list">
-                  <div class="collapse_item" v-for="item in form.Scoring" :key="item.uuid">
+                  <div class="collapse_item" v-for="(item, index) in form.Scoring" :key="item.uuid">
                     <div class="collapse_item_title" :class="{ open: item.open }" @click="item.open = !item.open">
                       <div class="el-icon-arrow-right"></div>
-                      <div class="text">{{ item.name }}</div>
+                      <div class="text">{{ `${$l(item.type)} ${index}` }}</div>
                       <div class="el-icon-delete" @click.stop="handleDeleteScoring(item.uuid)"></div>
                     </div>
                     <el-collapse-transition>
@@ -72,75 +72,90 @@
                               <i class="el-icon-circle-plus-outline"></i>&nbsp;&nbsp;
                               <span>{{ $l("Parametersets: Activity") }}</span>
                             </div>
+                            <div class="collapse_list">
+                              <template v-for="(amItem, amIndex) in item.Activitys">
+                                <div class="collapse_item" :key="amItem.uuid" v-if="amItem.type == 'Activity'">
+                                  <div class="collapse_item_title" :class="{ open: amItem.open }" @click="amItem.open = !amItem.open" style="top: 155px; z-index: 970">
+                                    <div class="el-icon-arrow-right"></div>
+                                    <div class="text">{{ `${$l(amItem.type)} ${amIndex}` }}</div>
+                                    <div class="el-icon-delete" @click.stop="handleDeleteActivity(item.uuid, amItem.uuid)"></div>
+                                  </div>
+                                  <el-collapse-transition>
+                                    <div v-show="amItem.open" class="collapse_item_content">
+                                      <el-form-item :label="$l('activityType')">
+                                        <el-input v-model="amItem.activityType" clearable />
+                                      </el-form-item>
+                                      <el-form-item :label="$l('closingTime')">
+                                        <el-time-picker v-model="amItem.closingTime" value-format="HH:mm:ss" clearable />
+                                      </el-form-item>
+                                      <el-form-item :label="$l('earliestEndTime')">
+                                        <el-time-picker v-model="amItem.earliestEndTime" value-format="HH:mm:ss" clearable />
+                                      </el-form-item>
+                                      <el-form-item :label="$l('latestStartTime')">
+                                        <el-time-picker v-model="amItem.latestStartTime" value-format="HH:mm:ss" clearable />
+                                      </el-form-item>
+                                      <el-form-item :label="$l('minimalDuration')">
+                                        <el-time-picker v-model="amItem.minimalDuration" value-format="HH:mm:ss" clearable />
+                                      </el-form-item>
+                                      <el-form-item :label="$l('openingTime')">
+                                        <el-time-picker v-model="amItem.openingTime" value-format="HH:mm:ss" clearable />
+                                      </el-form-item>
+                                      <el-form-item :label="$l('priority')">
+                                        <el-input-number v-model="amItem.priority" :step="0.1" controls-position="right" />
+                                      </el-form-item>
+                                      <el-form-item :label="$l('scoringThisActivityAtAll')">
+                                        <el-switch v-model="amItem.scoringThisActivityAtAll" active-value="true" inactive-value="false" />
+                                      </el-form-item>
+                                      <el-form-item :label="$l('typicalDuration')">
+                                        <el-time-picker v-model="amItem.typicalDuration" value-format="HH:mm:ss" clearable />
+                                      </el-form-item>
+                                      <el-form-item :label="$l('typicalDurationScoreComputation')">
+                                        <el-switch v-model="amItem.typicalDurationScoreComputation" active-value="true" inactive-value="false" />
+                                      </el-form-item>
+                                    </div>
+                                  </el-collapse-transition>
+                                </div>
+                              </template>
+                            </div>
                             <div class="collapse_add_btn" @click="handleAddMode(item.uuid)" style="top: 115px; z-index: 980">
                               <i class="el-icon-circle-plus-outline"></i>&nbsp;&nbsp;
                               <span>{{ $l("Parametersets: Mode") }}</span>
                             </div>
                             <div class="collapse_list">
-                              <div class="collapse_item" v-for="amItem in item.ActivityOrMode" :key="amItem.uuid">
-                                <div class="collapse_item_title" :class="{ open: amItem.open }" @click="amItem.open = !amItem.open" style="top: 155px; z-index: 970">
-                                  <div class="el-icon-arrow-right"></div>
-                                  <div class="text">{{ amItem.name }}</div>
-                                  <div class="el-icon-delete" @click.stop="handleDeleteActivityOrMode(amItem.uuid)"></div>
+                              <template v-for="(amItem, amIndex) in item.Modes">
+                                <div class="collapse_item" :key="amItem.uuid" v-if="amItem.type == 'Mode'">
+                                  <div class="collapse_item_title" :class="{ open: amItem.open }" @click="amItem.open = !amItem.open" style="top: 155px; z-index: 970">
+                                    <div class="el-icon-arrow-right"></div>
+                                    <div class="text">{{ `${$l(amItem.type)} ${amIndex}` }}</div>
+                                    <div class="el-icon-delete" @click.stop="handleDeleteMode(item.uuid, amItem.uuid)"></div>
+                                  </div>
+                                  <el-collapse-transition>
+                                    <div v-show="amItem.open" class="collapse_item_content">
+                                      <el-form-item :label="$l('constant')">
+                                        <el-input-number v-model="amItem.constant" :step="0.1" controls-position="right" />
+                                      </el-form-item>
+                                      <el-form-item :label="$l('dailyMonetaryConstant')">
+                                        <el-input-number v-model="amItem.dailyMonetaryConstant" :step="0.1" controls-position="right" />
+                                      </el-form-item>
+                                      <el-form-item :label="$l('dailyUtilityConstant')">
+                                        <el-input-number v-model="amItem.dailyUtilityConstant" :step="0.1" controls-position="right" />
+                                      </el-form-item>
+                                      <el-form-item :label="$l('marginalUtilityOfDistance_util_m')">
+                                        <el-input-number v-model="amItem.marginalUtilityOfDistance_util_m" :step="0.1" controls-position="right" />
+                                      </el-form-item>
+                                      <el-form-item :label="$l('marginalUtilityOfTraveling_util_hr')">
+                                        <el-input-number v-model="amItem.marginalUtilityOfTraveling_util_hr" :step="0.1" controls-position="right" />
+                                      </el-form-item>
+                                      <el-form-item :label="$l('mode')">
+                                        <el-input v-model="amItem.mode" clearable />
+                                      </el-form-item>
+                                      <el-form-item :label="$l('monetaryDistanceRate')">
+                                        <el-input-number v-model="amItem.monetaryDistanceRate" :step="0.1" controls-position="right" />
+                                      </el-form-item>
+                                    </div>
+                                  </el-collapse-transition>
                                 </div>
-                                <el-collapse-transition>
-                                  <div v-show="amItem.open" v-if="amItem.type == 'Activity'" class="collapse_item_content">
-                                    <el-form-item :label="$l('activityType')">
-                                      <el-input v-model="amItem.activityType" clearable />
-                                    </el-form-item>
-                                    <el-form-item :label="$l('closingTime')">
-                                      <el-time-picker v-model="amItem.closingTime" value-format="HH:mm:ss" clearable />
-                                    </el-form-item>
-                                    <el-form-item :label="$l('earliestEndTime')">
-                                      <el-time-picker v-model="amItem.earliestEndTime" value-format="HH:mm:ss" clearable />
-                                    </el-form-item>
-                                    <el-form-item :label="$l('latestStartTime')">
-                                      <el-time-picker v-model="amItem.latestStartTime" value-format="HH:mm:ss" clearable />
-                                    </el-form-item>
-                                    <el-form-item :label="$l('minimalDuration')">
-                                      <el-time-picker v-model="amItem.minimalDuration" value-format="HH:mm:ss" clearable />
-                                    </el-form-item>
-                                    <el-form-item :label="$l('openingTime')">
-                                      <el-time-picker v-model="amItem.openingTime" value-format="HH:mm:ss" clearable />
-                                    </el-form-item>
-                                    <el-form-item :label="$l('priority')">
-                                      <el-input-number v-model="amItem.priority" :step="0.1" controls-position="right" />
-                                    </el-form-item>
-                                    <el-form-item :label="$l('scoringThisActivityAtAll')">
-                                      <el-switch v-model="amItem.scoringThisActivityAtAll" active-value="true" inactive-value="false" />
-                                    </el-form-item>
-                                    <el-form-item :label="$l('typicalDuration')">
-                                      <el-time-picker v-model="amItem.typicalDuration" value-format="HH:mm:ss" clearable />
-                                    </el-form-item>
-                                    <el-form-item :label="$l('typicalDurationScoreComputation')">
-                                      <el-switch v-model="amItem.typicalDurationScoreComputation" active-value="true" inactive-value="false" />
-                                    </el-form-item>
-                                  </div>
-                                  <div v-show="amItem.open" v-if="amItem.type == 'Mode'" class="collapse_item_content">
-                                    <el-form-item :label="$l('constant')">
-                                      <el-input-number v-model="amItem.constant" :step="0.1" controls-position="right" />
-                                    </el-form-item>
-                                    <el-form-item :label="$l('dailyMonetaryConstant')">
-                                      <el-input-number v-model="amItem.dailyMonetaryConstant" :step="0.1" controls-position="right" />
-                                    </el-form-item>
-                                    <el-form-item :label="$l('dailyUtilityConstant')">
-                                      <el-input-number v-model="amItem.dailyUtilityConstant" :step="0.1" controls-position="right" />
-                                    </el-form-item>
-                                    <el-form-item :label="$l('marginalUtilityOfDistance_util_m')">
-                                      <el-input-number v-model="amItem.marginalUtilityOfDistance_util_m" :step="0.1" controls-position="right" />
-                                    </el-form-item>
-                                    <el-form-item :label="$l('marginalUtilityOfTraveling_util_hr')">
-                                      <el-input-number v-model="amItem.marginalUtilityOfTraveling_util_hr" :step="0.1" controls-position="right" />
-                                    </el-form-item>
-                                    <el-form-item :label="$l('mode')">
-                                      <el-input v-model="amItem.mode" clearable />
-                                    </el-form-item>
-                                    <el-form-item :label="$l('monetaryDistanceRate')">
-                                      <el-input-number v-model="amItem.monetaryDistanceRate" :step="0.1" controls-position="right" />
-                                    </el-form-item>
-                                  </div>
-                                </el-collapse-transition>
-                              </div>
+                              </template>
                             </div>
                           </div>
                         </el-form-item>
@@ -521,7 +536,7 @@ export default {
   props: {
     xml: {
       type: String,
-      default: defaultXml,
+      default: "",
     },
   },
   components: {},
@@ -572,22 +587,24 @@ export default {
           open: false,
 
           ActivityOrMode: [],
+          Activitys: [],
+          Modes: [],
         };
         for (const node of _node.nodes) {
           if (node.name == "param") {
             obj[node.attrs.name] = node.attrs.value;
           } else if (node.name == "parameterset" && node.attrs.type == "activityParams") {
             const item = getActivityPOrMode(node);
-            item.index = obj.ActivityOrMode.length + 1;
-            item.name = `Activity ${item.index}`;
+            item.index = obj.Activitys.length + 1;
+            item.name = item.index;
             item.type = `Activity`;
-            obj.ActivityOrMode.push(item);
+            obj.Activitys.push(item);
           } else if (node.name == "parameterset" && node.attrs.type == "modeParams") {
             const item = getActivityPOrMode(node);
-            item.index = obj.ActivityOrMode.length + 1;
-            item.name = `Mode ${item.index}`;
+            item.index = obj.Modes.length + 1;
+            item.name = item.index;
             item.type = `Mode`;
-            obj.ActivityOrMode.push(item);
+            obj.Modes.push(item);
           }
         }
         return obj;
@@ -600,7 +617,8 @@ export default {
           const item = getScoring(node);
           console.log(item);
           item.index = form.Scoring.length + 1;
-          item.name = `Scoring ${item.index}`;
+          item.name = item.index;
+          item.type = `Scoring`;
           form.Scoring.push(item);
         }
       }
@@ -633,21 +651,27 @@ export default {
             }));
 
           nodeList.push(
-            ...v.ActivityOrMode.map((v2) => {
-              const typeMap = {
-                Activity: "activityParams",
-                Mode: "modeParams",
-              };
-              const nodesMap = {
-                Activity: ["activityType", "closingTime", "earliestEndTime", "latestStartTime", "minimalDuration", "openingTime", "priority", "scoringThisActivityAtAll", "typicalDuration", "typicalDurationScoreComputation"],
-                Mode: ["constant", "dailyMonetaryConstant", "dailyUtilityConstant", "marginalUtilityOfDistance_util_m", "marginalUtilityOfTraveling_util_hr", "mode", "monetaryDistanceRate"],
-              };
+            ...v.Activitys.map((v2) => {
               return {
                 name: "parameterset",
                 attrs: {
-                  type: typeMap[v2.type],
+                  type: "activityParams",
                 },
-                nodes: nodesMap[v2.type]
+                nodes: ["activityType", "closingTime", "earliestEndTime", "latestStartTime", "minimalDuration", "openingTime", "priority", "scoringThisActivityAtAll", "typicalDuration", "typicalDurationScoreComputation"]
+                  .filter((v3) => v2[v3] !== "" && v2[v3] !== null && v2[v3] !== "null")
+                  .map((v3) => ({
+                    name: "param",
+                    attrs: { name: v3, value: v2[v3] },
+                  })),
+              };
+            }),
+            ...v.Modes.map((v2) => {
+              return {
+                name: "parameterset",
+                attrs: {
+                  type: "modeParams",
+                },
+                nodes: ["constant", "dailyMonetaryConstant", "dailyUtilityConstant", "marginalUtilityOfDistance_util_m", "marginalUtilityOfTraveling_util_hr", "mode", "monetaryDistanceRate"]
                   .filter((v3) => v2[v3] !== "" && v2[v3] !== null && v2[v3] !== "null")
                   .map((v3) => ({
                     name: "param",
@@ -655,6 +679,28 @@ export default {
                   })),
               };
             })
+            // ...v.ActivityOrMode.map((v2) => {
+            //   const typeMap = {
+            //     Activity: "activityParams",
+            //     Mode: "modeParams",
+            //   };
+            //   const nodesMap = {
+            //     Activity: ["activityType", "closingTime", "earliestEndTime", "latestStartTime", "minimalDuration", "openingTime", "priority", "scoringThisActivityAtAll", "typicalDuration", "typicalDurationScoreComputation"],
+            //     Mode: ["constant", "dailyMonetaryConstant", "dailyUtilityConstant", "marginalUtilityOfDistance_util_m", "marginalUtilityOfTraveling_util_hr", "mode", "monetaryDistanceRate"],
+            //   };
+            //   return {
+            //     name: "parameterset",
+            //     attrs: {
+            //       type: typeMap[v2.type],
+            //     },
+            //     nodes: nodesMap[v2.type]
+            //       .filter((v3) => v2[v3] !== "" && v2[v3] !== null && v2[v3] !== "null")
+            //       .map((v3) => ({
+            //         name: "param",
+            //         attrs: { name: v3, value: v2[v3] },
+            //       })),
+            //   };
+            // })
           );
 
           return {
@@ -698,12 +744,12 @@ export default {
       if (index >= 0) this.form.Scoring.splice(index, 1);
     },
     handleAddActivity(scoringUuid) {
-      const scoring = this.form.ActivityOrMode.find((item) => item.uuid === scoringUuid);
+      const scoring = this.form.Scoring.find((item) => item.uuid === scoringUuid);
       if (scoring) {
-        let index = scoring.ActivityOrMode.length > 0 ? scoring.ActivityOrMode[scoring.ActivityOrMode.length - 1].index + 1 : 1;
-        scoring.ActivityOrMode.push({
+        let index = scoring.Activitys.length > 0 ? scoring.Activitys[scoring.Activitys.length - 1].index + 1 : 1;
+        scoring.Activitys.push({
           open: false,
-          name: `${this.$l("Activity")} ${index}`,
+          name: index,
           type: "Activity",
           index: index,
           uuid: guid(),
@@ -722,12 +768,12 @@ export default {
       }
     },
     handleAddMode(scoringUuid) {
-      const scoring = this.form.ActivityOrMode.find((item) => item.uuid === scoringUuid);
+      const scoring = this.form.Scoring.find((item) => item.uuid === scoringUuid);
       if (scoring) {
-        let index = scoring.ActivityOrMode.length > 0 ? scoring.ActivityOrMode[scoring.ActivityOrMode.length - 1].index + 1 : 1;
-        scoring.ActivityOrMode.push({
+        let index = scoring.Modes.length > 0 ? scoring.Modes[scoring.Modes.length - 1].index + 1 : 1;
+        scoring.Modes.push({
           open: false,
-          name: `${this.$l("Mode")} ${index}`,
+          name: index,
           type: "Mode",
           index: index,
           uuid: guid(),
@@ -742,9 +788,15 @@ export default {
         });
       }
     },
-    handleDeleteActivityOrMode(uuid) {
-      let index = this.form.ActivityOrMode.findIndex((item) => item.uuid === uuid);
-      if (index >= 0) this.form.ActivityOrMode.splice(index, 1);
+    handleDeleteActivity(scoringUuid, uuid) {
+      const scoring = this.form.Scoring.find((item) => item.uuid === scoringUuid);
+      let index = scoring.Activitys.findIndex((item) => item.uuid === uuid);
+      if (index >= 0) scoring.Activitys.splice(index, 1);
+    },
+    handleDeleteMode(scoringUuid, uuid) {
+      const scoring = this.form.Scoring.find((item) => item.uuid === scoringUuid);
+      let index = scoring.Modes.findIndex((item) => item.uuid === uuid);
+      if (index >= 0) scoring.Modes.splice(index, 1);
     },
   },
 };

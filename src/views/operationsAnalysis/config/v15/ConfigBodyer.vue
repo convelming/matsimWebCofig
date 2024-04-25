@@ -4,40 +4,40 @@
       <template v-if="type == 'item' && !loading">
         <div class="title">{{ $l("mandatoryModules") }}</div>
         <div class="section">
-          <Global :xml.sync="form.global" />
-          <Network :xml.sync="form.network" />
-          <Controler :xml.sync="form.controler" />
-          <Strategy :xml.sync="form.strategy" />
-          <Qsim :xml.sync="form.qsim" />
-          <Plans :xml.sync="form.plans" />
+          <Global :style="{ order: itemOrder[0][0] }" :xml.sync="form.global" />
+          <Network :style="{ order: itemOrder[0][1] }" :xml.sync="form.network" />
+          <Controler :style="{ order: itemOrder[0][2] }" :xml.sync="form.controler" />
+          <Strategy :style="{ order: itemOrder[0][3] }" :xml.sync="form.strategy" />
+          <Qsim :style="{ order: itemOrder[0][4] }" :xml.sync="form.qsim" />
+          <Plans :style="{ order: itemOrder[0][5] }" :xml.sync="form.plans" />
         </div>
         <div class="title">{{ $l("mainModules") }}</div>
         <div class="section">
-          <TimeAllocationMutator :xml.sync="form.TimeAllocationMutator" />
-          <ChangeMode :xml.sync="form.changeMode" />
-          <Counts :xml.sync="form.counts" />
-          <Facilities :xml.sync="form.facilities" />
-          <PlanCalcScore :xml.sync="form.planCalcScore" />
-          <Planscalcroute :xml.sync="form.planscalcroute" />
-          <LinkStats :xml.sync="form.linkStats" />
-          <ParallelEventHandling :xml.sync="form.parallelEventHandling" />
-          <PtCounts :xml.sync="form.ptCounts" />
-          <SubtourModeChoice :xml.sync="form.subtourModeChoice" />
-          <Transit :xml.sync="form.transit" />
-          <TransitRouter :xml.sync="form.transitRouter" />
-          <TravelTimeCalculator :xml.sync="form.travelTimeCalculator" />
-          <Vehicles :xml.sync="form.vehicles" />
+          <TimeAllocationMutator :style="{ order: itemOrder[1][0] }" :xml.sync="form.TimeAllocationMutator" />
+          <ChangeMode :style="{ order: itemOrder[1][1] }" :xml.sync="form.changeMode" />
+          <Counts :style="{ order: itemOrder[1][2] }" :xml.sync="form.counts" />
+          <Facilities :style="{ order: itemOrder[1][3] }" :xml.sync="form.facilities" />
+          <PlanCalcScore :style="{ order: itemOrder[1][4] }" :xml.sync="form.planCalcScore" />
+          <Planscalcroute :style="{ order: itemOrder[1][5] }" :xml.sync="form.planscalcroute" />
+          <LinkStats :style="{ order: itemOrder[1][6] }" :xml.sync="form.linkStats" />
+          <ParallelEventHandling :style="{ order: itemOrder[1][7] }" :xml.sync="form.parallelEventHandling" />
+          <PtCounts :style="{ order: itemOrder[1][8] }" :xml.sync="form.ptCounts" />
+          <SubtourModeChoice :style="{ order: itemOrder[1][9] }" :xml.sync="form.subtourModeChoice" />
+          <Transit :style="{ order: itemOrder[1][10] }" :xml.sync="form.transit" />
+          <TransitRouter :style="{ order: itemOrder[1][11] }" :xml.sync="form.transitRouter" />
+          <TravelTimeCalculator :style="{ order: itemOrder[1][12] }" :xml.sync="form.travelTimeCalculator" />
+          <Vehicles :style="{ order: itemOrder[1][13] }" :xml.sync="form.vehicles" />
         </div>
         <div class="title">{{ $l("optionalModules") }}</div>
         <div class="section">
-          <JDEQSim :xml.sync="form.JDEQSim" />
-          <ReplanningAnnealer :xml.sync="form.ReplanningAnnealer" />
-          <VspExperimental :xml.sync="form.vspExperimental" />
+          <JDEQSim :style="{ order: itemOrder[2][0] }" :xml.sync="form.JDEQSim" />
+          <ReplanningAnnealer :style="{ order: itemOrder[2][1] }" :xml.sync="form.ReplanningAnnealer" />
+          <VspExperimental :style="{ order: itemOrder[2][2] }" :xml.sync="form.vspExperimental" />
         </div>
-        <div class="title">{{ $l("customizedModules") }}</div>
-        <div class="section">
-          <OtherModule />
-        </div>
+        <!-- <div class="title">{{ $l("customizedModules") }}</div> -->
+        <!-- <div class="section">
+          <CustomizedModule />
+        </div> -->
       </template>
       <Editor v-show="type == 'editor' && !loading" v-model="xml" ref="Editor" />
     </div>
@@ -107,7 +107,7 @@ import JDEQSim from "./Item/JDEQSim";
 import ReplanningAnnealer from "./Item/ReplanningAnnealer";
 import VspExperimental from "./Item/VspExperimental";
 
-import OtherModule from "./Item/OtherModule";
+import CustomizedModule from "./Item/CustomizedModule";
 import Editor from "./Editor/index.vue";
 
 import { guid, xmlToJson, jsonToXml } from "./utils";
@@ -137,7 +137,7 @@ export default {
     JDEQSim,
     ReplanningAnnealer,
     VspExperimental,
-    OtherModule,
+    CustomizedModule,
     Editor,
   },
   computed: {
@@ -156,8 +156,39 @@ export default {
       type: "item",
     };
   },
-  created() {},
+  created() {
+    this.handleWindowResize();
+    this.type = sessionStorage.getItem("config_page_type") || "item";
+  },
+  mounted() {
+    window.addEventListener("resize", this.handleWindowResize);
+  },
+  beforeDestroy() {
+    window.removeEventListener("resize", this.handleWindowResize);
+  },
   methods: {
+    handleWindowResize() {
+      const { innerWidth, innerHeight } = window;
+      if (innerWidth >= 1400) {
+        this.itemOrder = [
+          [1, 2, 3, 4, 5, 6],
+          [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+          [1, 2, 3],
+        ];
+      } else if (innerWidth >= 1000) {
+        this.itemOrder = [
+          [1, 3, 2, 4, 5, 6],
+          [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+          [1, 2, 3],
+        ];
+      } else {
+        this.itemOrder = [
+          [1, 2, 3, 4, 5, 6],
+          [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+          [1, 2, 3],
+        ];
+      }
+    },
     getForm(xml) {
       const domParser = new DOMParser();
       const dom = domParser.parseFromString(xml, "application/xml");
@@ -188,6 +219,7 @@ export default {
         this.$refs.Editor.setXml(this.getXml(this.form));
         this.type = "editor";
       }
+      sessionStorage.setItem("config_page_type", this.type);
     },
     handleScrollTop() {
       if (this.$refs.scrollView) {

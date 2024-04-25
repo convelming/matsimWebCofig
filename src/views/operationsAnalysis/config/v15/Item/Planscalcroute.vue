@@ -33,10 +33,10 @@
                   <span>{{ $l("Parametersets: TeleportedMode") }}</span>
                 </div>
                 <div class="collapse_list">
-                  <div class="collapse_item" v-for="item in form.TeleportedMode" :key="item.uuid">
+                  <div class="collapse_item" v-for="(item, index) in form.TeleportedMode" :key="item.uuid">
                     <div class="collapse_item_title" :class="{ open: item.open }" @click="item.open = !item.open">
                       <div class="el-icon-arrow-right"></div>
-                      <div class="text">{{ item.name }}</div>
+                      <div class="text">{{ `${$l(item.type)} ${index}` }}</div>
                       <div class="el-icon-delete" @click.stop="handleDeleteTeleportedMode(item.uuid)"></div>
                     </div>
                     <el-collapse-transition>
@@ -185,7 +185,7 @@ export default {
   props: {
     xml: {
       type: String,
-      default: defaultXml,
+      default: "",
     },
   },
   components: {},
@@ -236,7 +236,8 @@ export default {
         } else if (node.name == "parameterset") {
           const item = getTeleportedMode(node);
           item.index = form.TeleportedMode.length + 1;
-          item.name = `TeleportedMode ${item.index}`;
+          item.name = item.index;
+          item.type = `TeleportedMode`;
           form.TeleportedMode.push(item);
         }
       }
@@ -285,7 +286,8 @@ export default {
       let index = this.form.TeleportedMode.length > 0 ? this.form.TeleportedMode[this.form.TeleportedMode.length - 1].index + 1 : 1;
       this.form.TeleportedMode.push({
         open: false,
-        name: `${this.$l("TeleportedMode")} ${index}`,
+        name: `${index}`,
+        type: "TeleportedMode",
         index: index,
         uuid: guid(),
         beelineDistanceFactor: "",

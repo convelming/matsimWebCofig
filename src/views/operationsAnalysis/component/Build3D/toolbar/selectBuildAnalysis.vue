@@ -12,7 +12,7 @@
         </div>
       </div>
       <div class="form_item" style="align-items: center">
-        <div class="form_label">{{ $l("color") }}</div>
+        <div class="form_label">{{ $l("time") }}</div>
         <div class="form_value">
           <TimeRangeSlider :value="[startTime, endTime]" :start.sync="startTime" :end.sync="endTime" @change="getDetail" />
         </div>
@@ -32,12 +32,16 @@
     "en-US": "Select Build Analysis"
   },
   "color":{
-    "zh-CN": "Color: ",
-    "en-US": "颜色："
+    "zh-CN": "颜色：",
+    "en-US": "Color: "
+  },
+  "time":{
+    "zh-CN": "时间：",
+    "en-US": "Time: "
   },
   "type":{
-    "zh-CN": "Type: ",
-    "en-US": "类型："
+    "zh-CN": "类型：",
+    "en-US": "Type: "
   },
   "startInBuild":{
     "zh-CN": "从建筑出发",

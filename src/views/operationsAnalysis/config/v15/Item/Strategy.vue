@@ -22,10 +22,10 @@
                   <span>{{ $l("Parametersets: Innovation") }}</span>
                 </div>
                 <div class="collapse_list">
-                  <div class="collapse_item" v-for="item in form.Innovation" :key="item.uuid">
+                  <div class="collapse_item" v-for="(item, index) in form.Innovation" :key="item.uuid">
                     <div class="collapse_item_title" :class="{ open: item.open }" @click="item.open = !item.open">
                       <div class="el-icon-arrow-right"></div>
-                      <div class="text">{{ item.name }}</div>
+                      <div class="text">{{ `${$l(item.type)} ${index}` }}</div>
                       <div class="el-icon-delete" @click.stop="handleDeleteInnovation(item.uuid)"></div>
                     </div>
                     <el-collapse-transition>
@@ -69,10 +69,10 @@
                   <span>{{ $l("Parametersets: Selection") }}</span>
                 </div>
                 <div class="collapse_list">
-                  <div class="collapse_item" v-for="item in form.Selection" :key="item.uuid">
+                  <div class="collapse_item" v-for="(item, index) in form.Selection" :key="item.uuid">
                     <div class="collapse_item_title" :class="{ open: item.open }" @click="item.open = !item.open">
                       <div class="el-icon-arrow-right"></div>
-                      <div class="text">{{ item.name }}</div>
+                      <div class="text">{{ `${$l(item.type)} ${index}` }}</div>
                       <div class="el-icon-delete" @click.stop="handleDeleteSelection(item.uuid)"></div>
                     </div>
                     <el-collapse-transition>
@@ -239,7 +239,7 @@ export default {
   props: {
     xml: {
       type: String,
-      default: defaultXml,
+      default: "",
     },
   },
   components: {},
@@ -297,7 +297,8 @@ export default {
             case "ChangeSingleTripMode":
             case "TripSubtourModeChoice":
               item.index = form.Innovation.length + 1;
-              item.name = `Innovation ${item.index}`;
+              item.name = item.index;
+              item.type = "Innovation";
               form.Innovation.push(item);
               break;
             case "KeepLastSelected":
@@ -307,7 +308,8 @@ export default {
             case "SelectPathSizeLogit":
             case "SelectRandom":
               item.index = form.Selection.length + 1;
-              item.name = `Selection ${item.index}`;
+              item.name = item.index;
+              item.type = "Selection";
               form.Selection.push(item);
               break;
           }
@@ -360,8 +362,9 @@ export default {
       let index = this.form.Innovation.length > 0 ? this.form.Innovation[this.form.Innovation.length - 1].index + 1 : 1;
       this.form.Innovation.push({
         open: false,
-        name: `${this.$l("Innovation")} ${index}`,
+        name: index,
         index: index,
+        type: "Innovation",
         uuid: guid(),
         strategyName: "",
         weight: 0.1,
@@ -376,8 +379,9 @@ export default {
       let index = this.form.Selection.length > 0 ? this.form.Selection[this.form.Selection.length - 1].index + 1 : 1;
       this.form.Selection.push({
         open: false,
-        name: `${this.$l("Selection")} ${index}`,
+        name: index,
         index: index,
+        type: "Selection",
         uuid: guid(),
         strategyName: "",
         weight: 0.1,

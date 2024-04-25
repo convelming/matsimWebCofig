@@ -150,7 +150,7 @@ export default {
   props: {
     xml: {
       type: String,
-      default: defaultXml,
+      default: "",
     },
   },
   components: {},

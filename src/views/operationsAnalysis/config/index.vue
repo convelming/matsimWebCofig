@@ -1,7 +1,7 @@
 <template>
   <div class="config">
     <div class="_header">
-      <img class="logo" src="@/assets/image/logo2.png" alt="" />
+      <img class="logo" src="@/assets/image/logo.png" alt="" />
       <div class="btn_box">
         <el-dropdown class="language" @command="changeLanguage" placement="top-start" trigger="click">
           <div class="btn1">
@@ -26,9 +26,9 @@
       <span>{{ $l("切换视图") }}</span>
     </div>
     <div class="toolbar">
-      <div class="btn2" style="font-size: 20px; color: red">
-        <div class="text"><a href="https://doc.weixin.qq.com/sheet/e3_AdQA8Aa_ADMt1qh97LkSHer6ALqI2?scode=APwA6gfEAA0aeGdABPAdQA8Aa_ADM&tab=f2oofj">BUG</a></div>
-      </div>
+      <a class="btn2" style="font-size: 20px; color: red !important" target="_blank" href="https://doc.weixin.qq.com/sheet/e3_AdQA8Aa_ADMt1qh97LkSHer6ALqI2?scode=APwA6gfEAA0aeGdABPAdQA8Aa_ADM&tab=psngzw">
+        <div class="text">BUG</div>
+      </a>
       <div class="btn2" @click="handleScrollTop()">
         <img class="icon" src="@/assets/image/顶部.png" alt="" />
         <div class="text">{{ $l("顶部") }}</div>
@@ -154,6 +154,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+a {
+  text-decoration: none !important;
+}
 .config {
   overflow: hidden;
   ._header {

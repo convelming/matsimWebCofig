@@ -3,7 +3,7 @@
     <div class="collapse_item_title" slot="title">{{ title }}</div>
     <div class="BusStopToolbar_bodyer">
       <div class="form_item" style="align-items: center">
-        <div class="form_label">{{ $l("color") }}</div>
+        <div class="form_label">{{ $l("time") }}</div>
         <div class="form_value">
           <TimeRangeSlider :value="[startTime, endTime]" :start.sync="startTime" :end.sync="endTime" @change="getDetail" />
         </div>
@@ -21,6 +21,10 @@
   "selectLinkAnalysis":{
     "zh-CN": "Select Link Analysis",
     "en-US": "Select Link Analysis"
+  },
+  "time":{
+    "zh-CN": "时间：",
+    "en-US": "Time: "
   },
   "color":{
     "zh-CN": "Color: ",

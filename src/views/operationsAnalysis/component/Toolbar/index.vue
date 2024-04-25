@@ -34,7 +34,17 @@ export default {
   data() {
     return {
       activeName: "",
-      list: [],
+      list: [
+        {
+          name: "BuildDetail2233",
+          type: "BuildDetail",
+          data: {
+            buildDetail: {
+              id: "building_473739",
+            },
+          },
+        },
+      ],
     };
   },
   created() {},

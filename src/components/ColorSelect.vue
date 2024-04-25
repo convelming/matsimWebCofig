@@ -1,5 +1,5 @@
 <template>
-  <el-select class="ColorSelect" :value="s_value" @input="handleInput" placeholder="请选择">
+  <el-select class="ColorSelect" v-bind="$attrs" :value="s_value" @input="handleInput" placeholder="请选择">
     <div slot="prefix" class="ColorSelect_color_list prefix" v-if="s_value !== null || s_value !== undefined">
       <div class="ColorSelect_color_item" v-for="(color, index2) in colorsList[s_value]" :style="`background-color:${color}`" :key="index2"></div>
     </div>
@@ -71,7 +71,6 @@ export default {
 .ColorSelect {
   position: relative;
   .el-input__prefix {
-    cursor: pointer;
     position: absolute;
     top: 5px;
     left: 10px;
@@ -80,6 +79,7 @@ export default {
     z-index: 10;
     height: auto;
     transition: unset;
+    pointer-events: none;
   }
 }
 .ColorSelect_color_list {

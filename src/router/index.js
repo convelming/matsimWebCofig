@@ -20,6 +20,11 @@ const routes = [
     component: () => import(/* webpackChunkName: "operationsAnalysis" */ "../views/operationsAnalysis/index.vue"),
   },
   {
+    path: "/operationsAnalysis2/:database/:datasource",
+    name: "operationsAnalysis2",
+    component: () => import(/* webpackChunkName: "operationsAnalysis" */ "../views/operationsAnalysis/index2.vue"),
+  },
+  {
     path: "/operationsAnalysis/config/:database/:datasource",
     name: "operationsAnalysisConfig",
     component: () => import(/* webpackChunkName: "operationsAnalysisConfig" */ "../views/operationsAnalysis/config/index.vue"),

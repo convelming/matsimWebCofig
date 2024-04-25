@@ -16,7 +16,7 @@
 <language>
 {
   "activateAnnealingModule": {
-    "zh-CN":"激活模拟退货模块",
+    "zh-CN":"激活模拟退火模块",
     "en-US":"activateAnnealingModule"
   },
 }
@@ -29,7 +29,6 @@ const defaultForm = {
   activateAnnealingModule: "",
 };
 const defaultXml = `
-
 	<module name="ReplanningAnnealer" >
 		<!-- Activate the scaling of replanning modules using an annealing approach rather than fixed rates. -->
 		<param name="activateAnnealingModule" value="false" />
@@ -39,7 +38,7 @@ export default {
   props: {
     xml: {
       type: String,
-      default: defaultXml,
+      default: "",
     },
   },
   components: {},
