@@ -1,5 +1,7 @@
 # ghj_webgl_city
 
+node 20.x
+
 ## Project setup
 ```
 yarn install

@@ -138,7 +138,7 @@
     "en-US":"fractionOfIterationsToDisableInnovation"
   },
   "maxAgentPlanMemorySize": {
-    "zh-CN":"出行总计划数",
+    "zh-CN":"最大出行总计划数",
     "en-US":"maxAgentPlanMemorySize"
   },
   "planSelectorForRemoval": {

@@ -29,7 +29,7 @@ export default {
       this._map.cameraControls.enableRotate = true;
       this._map.addLayer(new LocalMapLayer({ zIndex: 0 }));
       // this._map.addLayer(new Build3DLayer({ zIndex: 20 }));
-      this._map.addLayer(new LinkFlowLayer({ zIndex: 20 }));
+      // this._map.addLayer(new LinkFlowLayer({ zIndex: 20 }));
       // this._map.addLayer(new Line2DTestLayer({ zIndex: 20 }));
       // this._map.addLayer(new BloomTestLayer({ zIndex: 20 }));
       // this._map.addLayer(new OutlineTestLayer({ zIndex: 20 }));
@@ -52,11 +52,6 @@ export default {
       //     zIndex: 200,
       //   })
       // );
-      let l1 = new Line2DTestLayer({ zIndex: 20,pickNum:1 })
-      let l2 = new Line2DTestLayer({ zIndex: 20,pickNum:2 })
-      let l3 = new Line2DTestLayer({ zIndex: 20,pickNum:3 })
-      let l4 = new Line2DTestLayer({ zIndex: 20,pickNum:4 })
-      let l5 = new Line2DTestLayer({ zIndex: 20,pickNum:5 })
       console.log(l1.pickNum);
     },
   },

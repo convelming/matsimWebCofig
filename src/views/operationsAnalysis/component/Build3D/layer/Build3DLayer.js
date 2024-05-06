@@ -200,12 +200,24 @@ export class Build3DLayer extends Layer {
       this.scene.remove(this.coneMesh);
     }
   }
+
+  dispose() {
+    this.material.dispose();
+    this.pickLayerMeterial.dispose();
+    this.pickBuildMeterial.dispose();
+    this.coneMesh.geometry.dispose();
+    this.coneMesh.material.dispose();
+    for (const tile of Object.values(this.tileMap)) {
+      tile.dispose();
+    }
+    this.tileMap = {};
+  }
 }
 
 class BuildTile {
   _loadNum = 0;
 
-  // 加载状态 1未加载 2加载成功 3加载失败 4加载中
+  // 加载状态 1未加载 2加载成功 3加载失败 4加载中 5已卸载
   _loadStatus = 1;
 
   get loadStatus() {
@@ -298,6 +310,11 @@ class BuildTile {
 
   getBuildByPickColor(pickColor) {
     return this._data[pickColor];
+  }
+
+  dispose() {
+    this._geometry.dispose();
+    this._loadStatus = 5;
   }
 }
 
