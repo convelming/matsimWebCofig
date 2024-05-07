@@ -1,8 +1,6 @@
 <template>
   <el-collapse-item class="CarDetail" :name="name">
-    <div class="collapse_item_title" slot="title">
-      {{ $l("建筑详情") }}
-    </div>
+    <div class="collapse_item_title" slot="title">{{ $l("建筑详情") }}</div>
     <div class="_bodyer" v-loading="loading">
       <div class="form" v-if="resData">
         <div class="form_item" style="justify-content: flex-end">

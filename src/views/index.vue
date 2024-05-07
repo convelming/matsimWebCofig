@@ -2,72 +2,41 @@
   <div class="back">
     <div class="root">
       <div class="module">
-        <div class="module_menu" @click="handleShowDataBase">
-          {{ dataBase || $l("请选择基准MATSIM模型")
-          }}<i class="el-icon-arrow-down el-icon--right"></i>
-        </div>
+        <div class="module_menu" @click="handleShowDataBase">{{ dataBase || $l("请选择基准MATSIM模型") }}<i class="el-icon-arrow-down el-icon--right"></i></div>
       </div>
       <div class="title">
         <img class="logo" src="@/assets/image/favicon.png" alt="" />
         <span>{{ $l("城市公交路线规划平台") }}</span>
       </div>
       <div class="list">
-        <div
-          @click="handleClickItem('operationsAnalysis')"
-          class="item"
-          style="background-color: yellowgreen"
-        >
+        <div @click="handleClickItem('operationsAnalysis')" class="item" style="background-color: yellowgreen">
           <div class="item_title">
             <img class="item_icon" src="@/assets/image/公交.svg" />
             <span>{{ $l("公交运行分析") }}</span>
           </div>
           <div class="item_detail">
-            {{
-              $l(
-                "展示整个公交系统的运行现状，包括线路、发车时间，客流量信息及其OD分布等"
-              )
-            }}
+            {{ $l("展示整个公交系统的运行现状，包括线路、发车时间，客流量信息及其OD分布等") }}
           </div>
         </div>
-        <div
-          @click="handleClickItem('planAdjustment')"
-          class="item"
-          style="background-color: #f0704b"
-        >
+        <div @click="handleClickItem('planAdjustment')" class="item" style="background-color: #f0704b">
           <div class="item_title">
             <img class="item_icon" src="@/assets/image/修改or意见.svg" />
             <span>{{ $l("线路方案调整") }}</span>
           </div>
           <div class="item_detail">
-            {{
-              $l(
-                "按照一定的策略新建或调整公交线路，站点，发车信息，实时更新线路信息。"
-              )
-            }}
+            {{ $l("按照一定的策略新建或调整公交线路，站点，发车信息，实时更新线路信息。") }}
           </div>
         </div>
-        <div
-          @click="handleClickItem('comparativeAnalysis')"
-          class="item"
-          style="background-color: #52b3ba"
-        >
+        <div @click="handleClickItem('comparativeAnalysis')" class="item" style="background-color: #52b3ba">
           <div class="item_title">
             <img class="item_icon" src="@/assets/image/比幅对比_1.svg" />
             <span>{{ $l("方案对比分析") }}</span>
           </div>
           <div class="item_detail">
-            {{
-              $l(
-                "根据调整优化的线路方案，呈现城市居民在线路调整后的反应，并将对比结果可视化呈现。"
-              )
-            }}
+            {{ $l("根据调整优化的线路方案，呈现城市居民在线路调整后的反应，并将对比结果可视化呈现。") }}
           </div>
         </div>
-        <div
-          @click="handleClickItem('systemEvaluation')"
-          class="item"
-          style="background-color: #0070c0"
-        >
+        <div @click="handleClickItem('systemEvaluation')" class="item" style="background-color: #0070c0">
           <div class="item_title">
             <img class="item_icon" src="@/assets/image/评估.svg" />
             <span>{{ $l("公交系统评估") }}</span>
@@ -79,202 +48,114 @@
       </div>
     </div>
 
-    <el-dialog
-      class="tabel_dialog"
-      :title="$l('请选择基准MATSIM模型')"
-      :visible.sync="dataBaseDialog.show"
-      width="500px"
-    >
+    <!-- 请选择基准MATSIM模型 -->
+    <el-dialog class="tabel_dialog" :title="$l('请选择基准MATSIM模型')" :visible.sync="dataBaseDialog.show" width="500px">
       <div class="tabel_toolbar">
-        <el-button
-          type="primary"
-          size="mini"
-          icon="el-icon-refresh-right"
-          @click="handleGetDataBaseList()"
-          >{{ $l("刷新列表") }}</el-button
-        >
+        <el-button type="primary" size="mini" icon="el-icon-refresh-right" @click="handleGetDataBaseList()">{{ $l("刷新列表") }}</el-button>
       </div>
-      <el-table
-        height="400"
-        :data="dataBaseList"
-        border
-        stripe
-        @row-click="handleSelectDataBase"
-        v-loading="dataBaseListLoading"
-      >
+      <el-table height="400" :data="dataBaseList" border stripe @row-click="handleSelectDataBase" v-loading="dataBaseListLoading">
         <el-table-column width="50" align="center">
-          <el-checkbox
-            slot-scope="{ row }"
-            :value="dataBaseDialog.dataBase == row.name"
-            @click="handleSelectDataBase(row)"
-          />
+          <el-checkbox slot-scope="{ row }" :value="dataBaseDialog.dataBase == row.name" @click="handleSelectDataBase(row)" />
         </el-table-column>
         <el-table-column prop="name" :label="$l('基准名称')"> </el-table-column>
       </el-table>
       <span slot="footer">
-        <el-button
-          :disabled="!dataBaseDialog.dataBase"
-          type="primary"
-          @click="handleChangeDataBase"
-          >{{ $l("确定") }}</el-button
-        >
-        <el-button @click="dataBaseDialog.show = false">{{
-          $l("取消")
-        }}</el-button>
+        <el-button :disabled="!dataBaseDialog.dataBase" type="primary" @click="handleChangeDataBase">{{ $l("确定") }}</el-button>
+        <el-button @click="dataBaseDialog.show = false">{{ $l("取消") }}</el-button>
       </span>
     </el-dialog>
 
-    <el-dialog
-      class="tabel_dialog"
-      :title="$l('公交运行分析')"
-      :visible.sync="operationsAnalysisDialog.show"
-      width="600px"
-    >
+    <!-- 公交运行分析 -->
+    <el-dialog class="tabel_dialog" :title="$l('公交运行分析')" :visible.sync="operationsAnalysisDialog.show" width="600px">
       <div class="tabel_toolbar">
-        <el-button
-          type="primary"
-          size="mini"
-          icon="el-icon-refresh-right"
-          @click="handleGetDateSourceList()"
-          >{{ $l("刷新列表") }}</el-button
-        >
+        <el-button type="primary" size="mini" icon="el-icon-refresh-right" @click="handleGetDateSourceList()">{{ $l("刷新列表") }}</el-button>
       </div>
-      <el-table
-        height="400"
-        :data="dataSourceList"
-        border
-        stripe
-        v-loading="dateSourceListLoading"
-      >
+      <el-table height="400" :data="dataSourceList" border stripe v-loading="dateSourceListLoading">
         <el-table-column prop="name" :label="$l('方案名称')" />
-        <el-table-column prop="loadStatus" :label="$l('加载状态')" />
-        <el-table-column prop="runStatus" :label="$l('运行状态')" />
+        <el-table-column prop="detail" :label="$l('方案简介')" />
+        <el-table-column prop="loadStatus" :label="$l('方案状态')">
+          <template slot-scope="{ row }">{{ row.loadStatus }} / {{ row.runStatus }}</template>
+        </el-table-column>
         <el-table-column :label="$l('操作')" width="250">
           <template slot-scope="{ row }">
-            <el-button
-              :disabled="
-                row.runStatus != '已运行' || row.loadStatus != '已加载'
-              "
-              type="primary"
-              size="mini"
-              @click="handleOperationsAnalysisToDetail(row)"
-              >{{ $l("查看") }}</el-button
-            >
-            <el-button
-              type="primary"
-              size="mini"
-              :disabled="row.noRun"
-              :loading="row.runStatus == '运行中'"
-              @click="handleOperationsAnalysisRun(row)"
-              >{{ $l("运行") }}</el-button
-            >
-            <el-button
-              type="primary"
-              size="mini"
-              :disabled="row.noLoad"
-              :loading="row.loadStatus == '加载中'"
-              @click="handleOperationsAnalysisLoad(row)"
-              >{{ $l("加载") }}</el-button
-            >
+            <el-button :disabled="row.runStatus != '已运行' || row.loadStatus != '已加载'" type="primary" size="mini" @click="handleOperationsAnalysisToDetail(row)">{{ $l("查看") }}</el-button>
+            <el-button type="primary" size="mini" :disabled="row.noRun" :loading="row.runStatus == '运行中'" @click="handleOperationsAnalysisRun(row)">{{ $l("运行") }}</el-button>
+            <el-button type="primary" size="mini" :disabled="row.noLoad" :loading="row.loadStatus == '加载中'" @click="handleOperationsAnalysisLoad(row)">{{ $l("加载") }}</el-button>
           </template>
         </el-table-column>
       </el-table>
     </el-dialog>
 
-    <el-dialog
-      class="tabel_dialog"
-      :title="$l('线路方案调整')"
-      :visible.sync="planAdjustmentDialog.show"
-      width="600px"
-    >
+    <!-- 线路方案调整 -->
+    <el-dialog class="tabel_dialog" :title="$l('线路方案调整')" :visible.sync="planAdjustmentDialog.show" width="600px">
       <div class="tabel_toolbar">
-        <el-button
-          type="primary"
-          size="mini"
-          icon="el-icon-refresh-right"
-          @click="handleGetDateSourceList()"
-          >{{ $l("刷新列表") }}</el-button
-        >
-        <el-button
-          type="primary"
-          size="mini"
-          icon="el-icon-add"
-          @click="handlePlanAdjustmentCreate()"
-          >{{ $l("新建方案") }}</el-button
-        >
+        <el-button type="primary" size="mini" icon="el-icon-refresh-right" @click="handleGetDateSourceList()">{{ $l("刷新列表") }}</el-button>
+        <el-button type="primary" size="mini" icon="el-icon-add" @click="handlePlanAdjustmentCreate()">{{ $l("新建方案") }}</el-button>
       </div>
-      <el-table
-        height="400"
-        :data="dataSourceList"
-        border
-        stripe
-        v-loading="dateSourceListLoading"
-      >
+      <el-table height="400" :data="dataSourceList" border stripe v-loading="dateSourceListLoading">
         <el-table-column prop="name" :label="$l('方案名称')" />
-        <el-table-column prop="loadStatus" :label="$l('加载状态')" />
-        <el-table-column :label="$l('操作')" width="250">
+        <el-table-column prop="detail" :label="$l('方案简介')" />
+        <el-table-column prop="loadStatus" :label="$l('方案状态')">
+          <template slot-scope="{ row }">{{ row.loadStatus }} / {{ row.runStatus }}</template>
+        </el-table-column>
+        <el-table-column :label="$l('操作')" width="150">
           <template slot-scope="{ row }">
-            <el-button
-              :disabled="row.loadStatus != '已加载'"
-              type="primary"
-              size="mini"
-              @click="handlePlanAdjustmentToDetail(row)"
-              >{{ $l("修改") }}</el-button
-            >
-            <el-button
-              type="primary"
-              size="mini"
-              :disabled="row.noLoad"
-              :loading="row.loadStatus == '加载中'"
-              @click="handlePlanAdjustmentLoad(row)"
-              >{{ $l("加载") }}</el-button
-            >
+            <el-button :disabled="row.loadStatus != '已加载'" type="primary" size="mini" @click="handlePlanAdjustmentToDetail(row)">{{ $l("修改") }}</el-button>
+            <el-button type="primary" size="mini" :disabled="row.noLoad" :loading="row.loadStatus == '加载中'" @click="handlePlanAdjustmentLoad(row)">{{ $l("加载") }}</el-button>
           </template>
         </el-table-column>
       </el-table>
     </el-dialog>
 
-    <el-dialog
-      class="tabel_dialog"
-      :title="$l('公交运营评估')"
-      :visible.sync="systemEvaluationDialog.show"
-      width="600px"
-    >
+    <!-- 方案对比分析 -->
+    <el-dialog class="tabel_dialog" :title="$l('方案对比分析')" :visible.sync="comparativeAnalysisDialog.show" width="900px">
       <div class="tabel_toolbar">
-        <el-button
-          type="primary"
-          size="mini"
-          icon="el-icon-refresh-right"
-          @click="handleGetDateSourceList()"
-          >{{ $l("刷新列表") }}</el-button
-        >
+        <el-button type="primary" size="mini" icon="el-icon-refresh-right" @click="handleGetDateSourceList()">{{ $l("刷新列表") }}</el-button>
       </div>
-      <el-table
-        height="400"
-        :data="dataSourceList"
-        border
-        stripe
-        v-loading="dateSourceListLoading"
-      >
+      <el-table height="400" :data="dataSourceList" border stripe v-loading="dateSourceListLoading">
+        <el-table-column :label="$l('基础方案')" width="90" align="center">
+          <template slot-scope="{ row }">
+            <el-checkbox v-model="comparativeAnalysisDialog.dataSource1" false-label="" :true-label="row.name" :disabled="row.loadStatus != '已加载' || row.runStatus != '已运行' || comparativeAnalysisDialog.dataSource2 == row.name">{{ "" }}</el-checkbox>
+          </template>
+        </el-table-column>
+        <el-table-column :label="$l('对比方案')" width="90" align="center">
+          <template slot-scope="{ row }">
+            <el-checkbox v-model="comparativeAnalysisDialog.dataSource2" false-label="" :true-label="row.name">{{ "" }}</el-checkbox>
+            <!-- <el-checkbox v-model="comparativeAnalysisDialog.dataSource2" false-label="" :true-label="row.name" :disabled="row.loadStatus != '已加载' || row.runStatus != '已运行' || comparativeAnalysisDialog.dataSource == row.name">{{ "" }}</el-checkbox> -->
+          </template>
+        </el-table-column>
         <el-table-column prop="name" :label="$l('方案名称')" />
-        <el-table-column prop="loadStatus" :label="$l('加载状态')" />
+        <el-table-column prop="detail" :label="$l('方案简介')" />
+        <el-table-column prop="loadStatus" :label="$l('方案状态')">
+          <template slot-scope="{ row }">{{ row.loadStatus }} / {{ row.runStatus }}</template>
+        </el-table-column>
+        <el-table-column :label="$l('操作')" width="150">
+          <template slot-scope="{ row }">
+            <el-button type="primary" size="mini" :disabled="row.noRun" :loading="row.runStatus == '运行中'" @click="handleOperationsAnalysisRun(row)">{{ $l("运行") }}</el-button>
+            <el-button type="primary" size="mini" :disabled="row.noLoad" :loading="row.loadStatus == '加载中'" @click="handleOperationsAnalysisLoad(row)">{{ $l("加载") }}</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <div style="display: flex; justify-content: center; margin-top: 20px">
+        <el-button type="primary" size="small" @click="handleComparativeAnalysisToDetail()" :disabled="!comparativeAnalysisDialog.dataSource1 || !comparativeAnalysisDialog.dataSource2">确定</el-button>
+      </div>
+    </el-dialog>
+
+    <!-- 公交运营评估 -->
+    <el-dialog class="tabel_dialog" :title="$l('公交运营评估')" :visible.sync="systemEvaluationDialog.show" width="600px">
+      <div class="tabel_toolbar">
+        <el-button type="primary" size="mini" icon="el-icon-refresh-right" @click="handleGetDateSourceList()">{{ $l("刷新列表") }}</el-button>
+      </div>
+      <el-table height="400" :data="dataSourceList" border stripe v-loading="dateSourceListLoading">
+        <el-table-column prop="name" :label="$l('方案名称')" />
+        <el-table-column prop="detail" :label="$l('方案简介')" />
+        <el-table-column prop="loadStatus" :label="$l('方案状态')">
+          <template slot-scope="{ row }">{{ row.loadStatus }} / {{ row.runStatus }}</template>
+        </el-table-column>
         <el-table-column :label="$l('操作')" width="250">
           <template slot-scope="{ row }">
-            <el-button
-              :disabled="row.loadStatus != '已加载'"
-              type="primary"
-              size="mini"
-              @click="handleSystemEvaluationToDetail(row)"
-              >{{ $l("查看") }}</el-button
-            >
-            <el-button
-              type="primary"
-              size="mini"
-              :disabled="row.noLoad"
-              :loading="row.loadStatus == '加载中'"
-              @click="handleSystemEvaluationLoad(row)"
-              >{{ $l("加载") }}</el-button
-            >
+            <el-button :disabled="row.loadStatus != '已加载'" type="primary" size="mini" @click="handleSystemEvaluationToDetail(row)">{{ $l("查看") }}</el-button>
+            <el-button type="primary" size="mini" :disabled="row.noLoad" :loading="row.loadStatus == '加载中'" @click="handleSystemEvaluationLoad(row)">{{ $l("加载") }}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -320,6 +201,14 @@
     "zh-CN":"方案名称",
     "en-US":"方案名称",
   },
+  "方案简介": {
+    "zh-CN":"方案简介",
+    "en-US":"方案简介",
+  },
+  "方案状态": {
+    "zh-CN":"方案状态",
+    "en-US":"方案状态",
+  },
   "基准名称": {
     "zh-CN":"基准名称",
     "en-US":"基准名称",
@@ -331,6 +220,14 @@
   "加载状态": {
     "zh-CN":"加载状态",
     "en-US":"加载状态",
+  },
+  "基础方案": {
+    "zh-CN":"基础方案",
+    "en-US":"基础方案",
+  },
+  "对比方案": {
+    "zh-CN":"对比方案",
+    "en-US":"对比方案",
   },
   "请选择基准MATSIM模型": {
     "zh-CN":"请选择基准MATSIM模型",
@@ -402,7 +299,8 @@ export default {
       },
       comparativeAnalysisDialog: {
         show: false,
-        dataSourceList: [],
+        dataSource1: "",
+        dataSource2: "",
       },
       systemEvaluationDialog: {
         show: false,
@@ -525,26 +423,22 @@ export default {
     },
     async handlePlanAdjustmentCreate() {
       try {
-        const { value, action } = await this.$prompt(
-          this.$l("请输入方案名称"),
-          this.$l("提示"),
-          {
-            confirmButtonText: this.$l("确定"),
-            cancelButtonText: this.$l("取消"),
-            inputValidator: (value) => {
-              if (!value) {
-                return this.$l("请输入方案名称");
-              }
-              if (!/^[a-zA-Z0-9_]+$/.test(value)) {
-                return this.$l("方案名称只能使用英文字母，数字和下划线");
-              }
-              if (value.slice(-4).toLowerCase() == "base") {
-                return this.$l("方案名称不能以base结尾");
-              }
-              return true;
-            },
-          }
-        );
+        const { value, action } = await this.$prompt(this.$l("请输入方案名称"), this.$l("提示"), {
+          confirmButtonText: this.$l("确定"),
+          cancelButtonText: this.$l("取消"),
+          inputValidator: (value) => {
+            if (!value) {
+              return this.$l("请输入方案名称");
+            }
+            if (!/^[a-zA-Z0-9_]+$/.test(value)) {
+              return this.$l("方案名称只能使用英文字母，数字和下划线");
+            }
+            if (value.slice(-4).toLowerCase() == "base") {
+              return this.$l("方案名称不能以base结尾");
+            }
+            return true;
+          },
+        });
         if (action == "confirm") {
           const data = await this.$store.dispatch("createDataSource", {
             base: this.dataBase,
@@ -574,7 +468,8 @@ export default {
     // 方案对比分析
     handleShowComparativeAnalysisDialog() {
       this.comparativeAnalysisDialog.show = true;
-      this.comparativeAnalysisDialog.dataSourceList = [];
+      this.comparativeAnalysisDialog.dataSource1 = "";
+      this.comparativeAnalysisDialog.dataSource2 = "";
     },
     //
     handleShowSystemEvaluationDialog() {
@@ -591,6 +486,15 @@ export default {
     },
     handleSystemEvaluationLoad(row) {
       this.$store.dispatch("loadDataSource", row);
+    },
+    handleComparativeAnalysisToDetail() {
+      const [database1, datasource1] = this.comparativeAnalysisDialog.dataSource1.split("/");
+      const [database2, datasource2] = this.comparativeAnalysisDialog.dataSource2.split("/");
+      const href = this.$router.resolve({
+        name: "comparativeAnalysis",
+        params: { database1: database1, datasource1: datasource1, database2: database2, datasource2: datasource2 },
+      }).href;
+      window.open(href, "_blank");
     },
   },
 };

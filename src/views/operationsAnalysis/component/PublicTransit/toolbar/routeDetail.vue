@@ -6,94 +6,37 @@
       </div>
       <div class="RouteDetail_bodyer">
         <div class="stop_title">
-          <el-button
-            type="primary"
-            size="small"
-            @click="
-              handleRouteManu({
-                data: routeDetail,
-                command: 'Transit Route Analysis...',
-              })
-            "
-            >{{ $l("Transit Route Analysis...") }}</el-button
-          >
+          <el-button type="primary" size="small" @click="handleRouteManu({ data: routeDetail, command: 'Transit Route Analysis...' })">{{ $l("Transit Route Analysis...") }}</el-button>
         </div>
         <div class="stop_title">
           <el-select v-model="routeSelect" @change="handleSelectRoute">
-            <el-option
-              v-for="(item, index) in routeList"
-              :key="index"
-              :label="item.routeId"
-              :value="index"
-            />
+            <el-option v-for="(item, index) in routeList" :key="index" :label="item.routeId" :value="index" />
           </el-select>
         </div>
         <div class="stops_table">
-          <el-table
-            class="small"
-            :data="routeDetail.stops"
-            border
-            stripe
-            height="250"
-          >
-            <el-table-column
-              :label="$l('Id')"
-              prop="id"
-              show-overflow-tooltip
-            />
-            <el-table-column
-              :label="$l('Name')"
-              prop="name"
-              show-overflow-tooltip
-            />
+          <el-table class="small" :data="routeDetail.stops" border stripe height="250">
+            <el-table-column :label="$l('Id')" prop="id" show-overflow-tooltip />
+            <el-table-column :label="$l('Name')" prop="name" show-overflow-tooltip />
             <el-table-column width="50">
-              <el-dropdown
-                slot-scope="{ row }"
-                trigger="click"
-                @command="handleOneStopMenu({ data: row, command: $event })"
-              >
-                <span
-                  class="el-dropdown-link el-icon-arrow-down el-icon--right"
-                />
+              <el-dropdown slot-scope="{ row }" trigger="click" @command="handleOneStopMenu({ data: row, command: $event })">
+                <span class="el-dropdown-link el-icon-arrow-down el-icon--right" />
                 <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item
-                    v-for="v in one_stop_menu"
-                    :key="v.value"
-                    :command="v.value"
-                    >{{ $l(v.label) }}</el-dropdown-item
-                  >
+                  <el-dropdown-item v-for="v in one_stop_menu" :key="v.value" :command="v.value">{{ $l(v.label) }}</el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
             </el-table-column>
           </el-table>
         </div>
         <div class="stop_title">
-          <el-checkbox v-model="showTransitLines">{{
-            $l("Show Transit Lines")
-          }}</el-checkbox>
-          <el-color-picker
-            size="mini"
-            :predefine="predefineColors"
-            v-model="transitLinesColor"
-          />
+          <el-checkbox v-model="showTransitLines">{{ $l("Show Transit Lines") }}</el-checkbox>
+          <el-color-picker size="mini" :predefine="predefineColors" v-model="transitLinesColor" />
         </div>
         <div class="stop_title">
-          <el-checkbox v-model="showReachableStops">{{
-            $l("Show Reachable Stops")
-          }}</el-checkbox>
-          <el-color-picker
-            size="mini"
-            :predefine="predefineColors"
-            v-model="reachableStopsColor"
-          />
+          <el-checkbox v-model="showReachableStops">{{ $l("Show Reachable Stops") }}</el-checkbox>
+          <el-color-picker size="mini" :predefine="predefineColors" v-model="reachableStopsColor" />
         </div>
       </div>
-      <RouteMenu
-        :visible.sync="showBusRouteMenu"
-        :route="routeDetail"
-        :style="busRouteMenuStyle"
-        @command="handleRouteManu"
-      />
+      <RouteMenu :visible.sync="showBusRouteMenu" :route="routeDetail" :style="busRouteMenuStyle" @command="handleRouteManu" />
     </template>
   </el-collapse-item>
 </template>
@@ -282,15 +225,7 @@ export default {
       showTransitRoutesInfo: false,
       formTransitRoutesInfo: undefined,
 
-      predefineColors: [
-        "#ff4500",
-        "#ff8c00",
-        "#ffd700",
-        "#90ee90",
-        "#00ced1",
-        "#409eff",
-        "#c71585",
-      ],
+      predefineColors: ["#ff4500", "#ff8c00", "#ffd700", "#90ee90", "#00ced1", "#409eff", "#c71585"],
 
       _TransitLinesLayer: undefined,
       _ReachableStopsLayer: undefined,
@@ -324,9 +259,7 @@ export default {
           routeId: this.routeId,
         });
         this.routeList = res.data.map((v) => new Bean.TransitRoute(v));
-        const index = this.routeList.findIndex(
-          (v) => v.routeId == this.routeId
-        );
+        const index = this.routeList.findIndex((v) => v.routeId == this.routeId);
         this.handleSelectRoute(index > -1 ? index : 0);
       });
     },
@@ -338,19 +271,13 @@ export default {
       this._ReachableStopsLayer.setData(list);
     },
     handleEnable() {
-      this._MapEvnetId1 = this._Map.addEventListener(
-        MAP_EVENT.HANDLE_CLICK_RIGHT,
-        this.handleOpenMenu
-      );
+      this._MapEvnetId1 = this._Map.addEventListener(MAP_EVENT.HANDLE_CLICK_RIGHT, this.handleOpenMenu);
       this._Map.addLayer(this._TransitLinesLayer);
       this._Map.addLayer(this._ReachableStopsLayer);
       window.addEventListener("mousedown", this.handleCloseMenu);
     },
     handleDisable() {
-      this._Map.removeEventListener(
-        MAP_EVENT.HANDLE_CLICK_RIGHT,
-        this._MapEvnetId1
-      );
+      this._Map.removeEventListener(MAP_EVENT.HANDLE_CLICK_RIGHT, this._MapEvnetId1);
       this._Map.removeLayer(this._TransitLinesLayer);
       this._Map.removeLayer(this._ReachableStopsLayer);
       this._transferList.forEach((v) => {
@@ -369,9 +296,7 @@ export default {
     },
     handleOpenMenu(res) {
       if (this.routeDetail) {
-        this.busRouteMenuStyle = `top: ${res.data.event.pageY + 10}px; left: ${
-          res.data.event.pageX - 30
-        }px;z-index:1000;`;
+        this.busRouteMenuStyle = `top: ${res.data.event.pageY + 10}px; left: ${res.data.event.pageX - 30}px;z-index:1000;`;
         this.showBusRouteMenu = true;
       }
     },
@@ -438,9 +363,7 @@ export default {
         store,
       }).$mount();
       app.$on("close", () => {
-        let index = this._transitStopLoadList.findIndex(
-          (v) => v._uid == app._uid
-        );
+        let index = this._transitStopLoadList.findIndex((v) => v._uid == app._uid);
         this._transitStopLoadList.splice(index, 1);
         app.$destroy();
       });
@@ -466,9 +389,7 @@ export default {
         store,
       }).$mount();
       app.$on("close", () => {
-        let index = this._transitRoutesInfoList.findIndex(
-          (v) => v._uid == app._uid
-        );
+        let index = this._transitRoutesInfoList.findIndex((v) => v._uid == app._uid);
         this._transitRoutesInfoList.splice(index, 1);
         app.$destroy();
       });
