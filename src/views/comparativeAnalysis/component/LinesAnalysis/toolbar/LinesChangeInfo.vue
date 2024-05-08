@@ -78,6 +78,16 @@
 </language>
 
 <script>
+import TimetableDialog from "../dialog/TimetableDialog/index.vue";
+import XmlComparisonDialog from "../dialog/XmlComparisonDialog/index.vue";
+import PassengerFlowDialog from "../dialog/PassengerFlowDialog/index.vue";
+
+import Vue from "vue";
+
+const TimetableDialogExtend = Vue.extend(TimetableDialog);
+const XmlComparisonDialogExtend = Vue.extend(XmlComparisonDialog);
+const PassengerFlowDialogExtend = Vue.extend(PassengerFlowDialog);
+
 export default {
   name: "BusRoutes",
   inject: ["rootVue"],
@@ -91,17 +101,25 @@ export default {
     },
   },
   components: {},
-  computed: {},
+  computed: {
+    _Map() {
+      return this.rootVue._Map;
+    },
+  },
   watch: {
     show: {
       handler(val) {
-        if (val) {
-          setTimeout(() => {
-            this.rootVue.$emit("setSelectedBuild", this.buildDetail);
-          }, 200);
-        } else {
-          this.rootVue.$emit("setSelectedBuild", {});
-        }
+        this.$nextTick(() => {
+          this._interval = setInterval(() => {
+            if (!this._Map) return;
+            clearInterval(this._interval);
+            if (this.show) {
+              this.handleEnable();
+            } else {
+              this.handleDisable();
+            }
+          }, 1000);
+        });
       },
       immediate: true,
     },
@@ -125,6 +143,10 @@ export default {
   mounted() {},
   methods: {
     getDetail() {},
+    handleEnable() {},
+    handleDisable() {
+      if (this._passengerFlowDialog) [...this._passengerFlowDialog].forEach((v) => v.$emit("close"));
+    },
     handleRouteMenu({ data, command }) {
       switch (command) {
         case "线路变动信息":
@@ -132,12 +154,69 @@ export default {
         case "站点变动信息":
           break;
         case "时刻表信息变动":
+          this.handleShowTimetableDialog(data);
           break;
         case "Xml信息对比":
+          this.handleShowXmlComparisonDialog(data);
           break;
         case "客流信息变化":
+          this.handleShowPassengerFlowDialog(data);
           break;
       }
+    },
+    handleShowTimetableDialog(data) {
+      if (!this._timetableDialogList) {
+        this._timetableDialogList = [];
+      }
+      const _timetableDialog = new TimetableDialogExtend({
+        propsData: { form: data, offset: this._timetableDialogList.length * 20 },
+        parent: this,
+      }).$mount();
+      this._timetableDialogList.push(_timetableDialog);
+      _timetableDialog.$on("close", () => {
+        _timetableDialog.$destroy();
+        let index = this._timetableDialogList.findIndex((v) => v === _timetableDialog);
+        if (index > -1) {
+          this._timetableDialogList.splice(index, 1);
+        }
+      });
+      document.body.append(_timetableDialog.$el);
+    },
+    handleShowXmlComparisonDialog(data) {
+      if (!this._xmlComparisonDialogList) {
+        this._xmlComparisonDialogList = [];
+      }
+      const _xmlComparisonDialog = new XmlComparisonDialogExtend({
+        propsData: { form: data, offset: this._xmlComparisonDialogList.length * 20 },
+        parent: this,
+      }).$mount();
+      this._xmlComparisonDialogList.push(_xmlComparisonDialog);
+      _xmlComparisonDialog.$on("close", () => {
+        _xmlComparisonDialog.$destroy();
+        let index = this._xmlComparisonDialogList.findIndex((v) => v === _xmlComparisonDialog);
+        if (index > -1) {
+          this._xmlComparisonDialogList.splice(index, 1);
+        }
+      });
+      document.body.append(_xmlComparisonDialog.$el);
+    },
+    handleShowPassengerFlowDialog(data) {
+      if (!this._passengerFlowDialogList) {
+        this._passengerFlowDialogList = [];
+      }
+      const _passengerFlowDialog = new PassengerFlowDialogExtend({
+        propsData: { form: data, offset: this._passengerFlowDialogList.length * 20 },
+        parent: this,
+      }).$mount();
+      this._passengerFlowDialogList.push(_passengerFlowDialog);
+      _passengerFlowDialog.$on("close", () => {
+        _passengerFlowDialog.$destroy();
+        let index = this._passengerFlowDialogList.findIndex((v) => v === _passengerFlowDialog);
+        if (index > -1) {
+          this._passengerFlowDialogList.splice(index, 1);
+        }
+      });
+      document.body.append(_passengerFlowDialog.$el);
     },
   },
 };

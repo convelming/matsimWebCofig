@@ -37,7 +37,6 @@ import { getNodeById } from "@/api/index";
 import IntersectionFlows from "../dialog/IntersectionFlows.vue";
 
 import Vue from "vue";
-import store from "@/store";
 
 const IntersectionFlowsExtend = Vue.extend(IntersectionFlows);
 export default {
@@ -148,7 +147,7 @@ export default {
       if (this._intersectionFlows) return;
       this._intersectionFlows = new IntersectionFlowsExtend({
         propsData: { nodeId: this.nodeDetail.id },
-        store,
+        parent: this,
       }).$mount();
       this._intersectionFlows.$on("close", () => {
         this._intersectionFlows.$destroy();

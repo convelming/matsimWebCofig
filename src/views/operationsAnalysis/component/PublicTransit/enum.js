@@ -40,10 +40,7 @@ export const group_attribute = [
 ];
 
 export const route_info_analysis = [
-  {
-    label: "Passengers Entering / Leaving",
-    value: "Passengers Entering / Leaving",
-  },
+  { label: "Passengers Entering / Leaving", value: "Passengers Entering / Leaving" },
   { label: "Vehicle Load", value: "Vehicle Load" },
   { label: "Aggregated Vehicle Load", value: "Aggregated Vehicle Load" },
   { label: "Route Grid", value: "Route Grid" },

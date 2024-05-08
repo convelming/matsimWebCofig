@@ -183,6 +183,12 @@ export default {
         }
       }
     },
+    offset(top, left) {
+      console.log(this.s_top, this.s_left);
+      this.s_top += Number(top) || 0;
+      this.s_left += Number(left) || 0;
+      console.log(this.s_top, this.s_left);
+    },
   },
 };
 </script>

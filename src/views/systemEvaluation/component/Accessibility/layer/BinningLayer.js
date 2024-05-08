@@ -6,7 +6,9 @@ import * as BufferGeometryUtils from "three/addons/utils/BufferGeometryUtils.js"
 import BinningWorker from "../worker/BinningLayer.worker";
 
 import Vue from "vue";
+
 import BinningColors from "../component/BinningColors";
+
 const BinningColorsExtend = Vue.extend(BinningColors);
 
 export class BinningLayer extends Layer {

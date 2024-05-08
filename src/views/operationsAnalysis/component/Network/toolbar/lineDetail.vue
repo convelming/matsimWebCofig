@@ -100,7 +100,6 @@ import { guid } from "@/utils/utils";
 import LinkVolumes from "../dialog/LinkVolumes.vue";
 
 import Vue from "vue";
-import store from "@/store";
 
 const LinkVolumesExtend = Vue.extend(LinkVolumes);
 
@@ -217,7 +216,7 @@ export default {
       if (this._linkVolumes) return;
       this._linkVolumes = new LinkVolumesExtend({
         propsData: { linkId: this.lineDetail.id },
-        store,
+        parent: this,
       }).$mount();
       this._linkVolumes.$on("close", () => {
         this._linkVolumes.$destroy();
