@@ -74,11 +74,23 @@
     "zh-CN": "保存中，请稍等...",
     "en-US": "saving, please wait..."
   },
+  "waitRunning": {
+    "zh-CN": "运行中，请稍等...",
+    "en-US": "running, please wait..."
+  },
+  "runFailure": {
+    "zh-CN": "运行失败",
+    "en-US": "run failed..."
+  },
+  "runSuccess": {
+    "zh-CN": "运行成功",
+    "en-US": "successfully runnd..."
+  },
 }
 </language>
 
 <script>
-import { uploadConfig, getConfig } from "@/api/database";
+import { uploadConfig, getConfig, runMatsim } from "@/api/database";
 import moment from "moment";
 
 import Global from "./Item/Global";
@@ -152,6 +164,8 @@ export default {
     return {
       xml: "",
       loading: true,
+      saveLoading: false,
+      runLoading: false,
       form: {},
       type: "item",
     };
@@ -248,8 +262,8 @@ export default {
       input.click();
     },
     async handleSave() {
-      this.saveLoading = true;
       if (this.saveLoading) return this.$message.warning(this.$l("waitSaving"));
+      this.saveLoading = true;
       try {
         const xml = this.getXml(this.form);
         const blob = new Blob([xml], { type: "application/xml" });
@@ -257,13 +271,12 @@ export default {
           type: "application/xml",
         });
         await uploadConfig(file, this.dataSource);
-        console.log(res);
         this.$message.success(this.$l("saveSuccess"));
         this.handleReload();
+        this.saveLoading = false;
       } catch (error) {
         console.log("config保存失败", error);
-        this.$message.success(this.$l("saveFailure"));
-      } finally {
+        this.$message.error(this.$l("saveFailure"));
         this.saveLoading = false;
       }
     },
@@ -279,11 +292,26 @@ export default {
         this.loading = false;
       });
     },
-    handleRun() {
-      this.$store.dispatch("runDataSource", {
-        database: this.dataDase,
-        key: this.dataSource,
+    async handleRun() {
+      if (this.runLoading) return this.$message.warning(this.$l("waitRunning"));
+      this.runLoading = true;
+      const xml = this.getXml(this.form);
+      const blob = new Blob([xml], { type: "application/xml" });
+      const file = new File([blob], "config.xml", {
+        type: "application/xml",
       });
+      uploadConfig(file, this.dataSource)
+        .then((res) => runMatsim({ key: this.dataSource }))
+        .then((res) => {
+          this.$message.success(this.$l("runSuccess"));
+          this.runLoading = false;
+        })
+        .catch((error) => {
+          console.log("运行失败", error);
+          this.$message.error(this.$l("runFailure"));
+          this.runLoading = false;
+        });
+      this.$store.dispatch("getDataSourceList", this.dataBase);
     },
     handleDownload() {
       const xml = this.getXml(this.form);

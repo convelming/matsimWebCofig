@@ -4,30 +4,22 @@
       <div class="TimetableDialog__bodyer">
         <div class="row">
           <div class="col">
-            <div class="_title">oldXml</div>
+            <div class="_title">{{ $l("基础方案") }}</div>
             <div class="_content">
-              <el-table v-loading="loading" :data="oldList">
-                <el-table-column type="selection" width="55" align="center" />
-                <el-table-column :label="$l('类型')" align="center" prop="type" :formatter="typeFormatter" />
-                <el-table-column :label="$l('开始时间')" align="center" prop="beginTime" />
-                <el-table-column :label="$l('结束时间')" align="center" prop="endTime" />
-                <el-table-column :label="$l('发车间隔')" align="center" prop="spacesStr" />
-                <el-table-column :label="$l('车型')" align="center" prop="model" :formatter="modelFormatter" />
-                <el-table-column :label="$l('备注')" align="center" prop="remark" />
+              <el-table v-loading="loading1" :data="oldList" height="calc(100vh - 250px)">
+                <el-table-column :label="$l('vehicleId')" width="150" prop="vehicleId" />
+                <el-table-column :label="$l('id')" prop="id" />
+                <el-table-column :label="$l('departureTime')" width="180" prop="departureTime" :formatter="timeFormatter" />
               </el-table>
             </div>
           </div>
           <div class="col">
-            <div class="_title">newXml</div>
+            <div class="_title">{{ $l("对比方案") }}</div>
             <div class="_content">
-              <el-table v-loading="loading" :data="newList">
-                <el-table-column type="selection" width="55" align="center" />
-                <el-table-column :label="$l('类型')" align="center" prop="type" :formatter="typeFormatter" />
-                <el-table-column :label="$l('开始时间')" align="center" prop="beginTime" />
-                <el-table-column :label="$l('结束时间')" align="center" prop="endTime" />
-                <el-table-column :label="$l('发车间隔')" align="center" prop="spacesStr" />
-                <el-table-column :label="$l('车型')" align="center" prop="model" :formatter="modelFormatter" />
-                <el-table-column :label="$l('备注')" align="center" prop="remark" />
+              <el-table v-loading="loading1" :data="newList" height="calc(100vh - 250px)">
+                <el-table-column :label="$l('vehicleId')" width="150" prop="vehicleId" />
+                <el-table-column :label="$l('id')" prop="id" />
+                <el-table-column :label="$l('departureTime')" width="180" prop="departureTime" :formatter="timeFormatter" />
               </el-table>
             </div>
           </div>
@@ -43,11 +35,32 @@
     "zh-CN": "时刻表信息变动",
     "en-US": "Timetable changes"
   },
+  "基础方案":{
+    "zh-CN": "基础方案",
+    "en-US": "基础方案"
+  },
+  "对比方案":{
+    "zh-CN": "对比方案",
+    "en-US": "对比方案"
+  },
+  "vehicleId":{
+    "zh-CN": "vehicleId",
+    "en-US": "vehicleId"
+  },
+  "id":{
+    "zh-CN": "id",
+    "en-US": "id"
+  },
+  "departureTime":{
+    "zh-CN": "departureTime",
+    "en-US": "departureTime"
+  },
 }
 </language>
 
 <script>
-import { number } from "echarts";
+import { formatHour } from "@/utils/utils";
+import { departureChangeInfo } from "@/api/contrast";
 
 export default {
   props: {
@@ -68,22 +81,7 @@ export default {
       s_form: {},
       oldList: [],
       newList: [],
-      typeOptions: [
-        { label: "全天", value: "all-day" },
-        { label: "工作日", value: "weekday" },
-        { label: "周末", value: "weekend" },
-        { label: "节假日", value: "holiday" },
-        { label: "其它", value: "other" },
-      ],
-      modelOptions: [
-        { label: "小型(4.5<L≤6)", value: "小型(4.5<L≤6)" },
-        { label: "中型(6<L≤9)", value: "中型(6<L≤9)" },
-        { label: "大型(9<L≤12)", value: "大型(9<L≤12)" },
-        { label: "单层特大型(12<L≤16)", value: "单层特大型(12<L≤16)" },
-        { label: "双层特大型(12≤L≤13.7)", value: "双层特大型(12≤L≤13.7)" },
-        { label: "水上巴士", value: "水上巴士" },
-        { label: "其它", value: "其它" },
-      ],
+      loading1: false,
     };
   },
   created() {
@@ -97,15 +95,22 @@ export default {
   },
   destroyed() {},
   methods: {
-    typeFormatter(row, column) {
-      let item = this.typeOptions.find((v) => v.value == row.type);
-      return item ? item.label : "";
+    timeFormatter(row) {
+      return formatHour(row.departureTime);
     },
-    modelFormatter(row, column) {
-      let item = this.modelOptions.find((v) => v.value == row.model);
-      return item ? item.label : "";
+    init() {
+      this.loading1 = true;
+      const { database1, datasource1, database2, datasource2 } = this.$route.params;
+      departureChangeInfo({
+        name1: database1 + "/" + datasource1,
+        name2: database2 + "/" + datasource2,
+        routeId: this.form.routeId,
+      }).then((res) => {
+        this.oldList = res.data.before;
+        this.newList = res.data.after;
+        this.loading1 = false;
+      });
     },
-    init() {},
   },
 };
 </script>
@@ -113,8 +118,6 @@ export default {
 <style lang="scss" scoped>
 .TimetableDialog__bodyer {
   .row {
-    height: calc(100vh - 200px);
-    overflow-y: scroll;
     display: flex;
     justify-content: space-between;
     .col {

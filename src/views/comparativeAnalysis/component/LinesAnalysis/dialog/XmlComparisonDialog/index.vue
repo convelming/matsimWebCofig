@@ -4,12 +4,14 @@
       <div class="XmlComparisonDialog__bodyer">
         <div class="row">
           <div class="col">
-            <div class="_title">oldXml</div>
-            <div class="_content">{{ oldXml }}</div>
+            <div class="_title">{{ $l("基础方案") }}</div>
+             <!-- wrap="off" -->
+            <textarea class="_content" v-model="oldXml" disabled></textarea>
           </div>
           <div class="col">
-            <div class="_title">newXml</div>
-            <div class="_content">{{ newXml }}</div>
+            <div class="_title">{{ $l("对比方案") }}</div>
+             <!-- wrap="off" -->
+            <textarea class="_content" v-model="oldXml" disabled></textarea>
           </div>
         </div>
       </div>
@@ -23,11 +25,19 @@
     "zh-CN": "Xml信息对比",
     "en-US": "Xml Comparison"
   },
+  "基础方案":{
+    "zh-CN": "基础方案",
+    "en-US": "基础方案"
+  },
+  "对比方案":{
+    "zh-CN": "对比方案",
+    "en-US": "对比方案"
+  },
 }
 </language>
 
 <script>
-import { number } from "echarts";
+import { changeInfoXml } from "@/api/contrast";
 
 export default {
   props: {
@@ -61,7 +71,20 @@ export default {
   },
   destroyed() {},
   methods: {
-    init() {},
+    init() {
+      this.loading1 = true;
+      const { database1, datasource1, database2, datasource2 } = this.$route.params;
+      changeInfoXml({
+        name1: database1 + "/" + datasource1,
+        name2: database2 + "/" + datasource2,
+        routeId: this.form.routeId,
+      }).then((res) => {
+        console.log(res);
+        this.oldXml = res.data.before;
+        this.newXml = res.data.after;
+        this.loading1 = false;
+      });
+    },
   },
 };
 </script>
@@ -69,8 +92,6 @@ export default {
 <style lang="scss" scoped>
 .XmlComparisonDialog__bodyer {
   .row {
-    height: calc(100vh - 200px);
-    overflow-y: scroll;
     display: flex;
     justify-content: space-between;
     .col {
@@ -86,7 +107,10 @@ export default {
         margin-bottom: 20px;
       }
       ._content {
+        width: 100%;
+        height: calc(100vh - 250px);
         font-size: 14px;
+        overflow-y: scroll;
       }
     }
   }

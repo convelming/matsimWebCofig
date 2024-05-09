@@ -2,10 +2,13 @@
   <el-collapse-item class="BusRoutes" :name="name">
     <div class="collapse_item_title" slot="title">{{ $l("线路比对分析") }}</div>
     <div class="_bodyer">
-      <div class="title">{{ $l("修改的线路") }}</div>
-      <el-table class="small" :data="[123]" border stripe>
-        <el-table-column :label="$l('Id')" prop="id" show-overflow-tooltip />
-        <el-table-column :label="$l('Name')" prop="name" show-overflow-tooltip />
+      <div class="title">
+        <span>{{ $l("修改的线路") }}&nbsp;&nbsp;&nbsp;</span>
+        <el-button type="primary" size="mini" circle icon="el-icon-refresh-right" @click="getList1"></el-button>
+      </div>
+      <el-table class="small" :data="list1" border stripe height="300px" v-loading="loading1">
+        <el-table-column :label="$l('Line')" prop="lineName" show-overflow-tooltip />
+        <el-table-column :label="$l('Route')" prop="routeName" show-overflow-tooltip />
         <el-table-column width="50">
           <el-dropdown slot-scope="{ row }" trigger="click" @command="handleRouteMenu({ data: row, command: $event })">
             <span class="el-dropdown-link el-icon-arrow-down el-icon--right" />
@@ -15,10 +18,13 @@
           </el-dropdown>
         </el-table-column>
       </el-table>
-      <div class="title">{{ $l("受影响的线路") }}</div>
-      <el-table class="small" :data="[123]" border stripe>
-        <el-table-column :label="$l('Id')" prop="id" show-overflow-tooltip />
-        <el-table-column :label="$l('Name')" prop="name" show-overflow-tooltip />
+      <div class="title">
+        <span>{{ $l("受影响的线路") }}&nbsp;&nbsp;&nbsp;</span>
+        <el-button type="primary" size="mini" circle icon="el-icon-refresh-right" @click="getList1"></el-button>
+      </div>
+      <el-table class="small" :data="list2" border stripe v-loading="loading2">
+        <el-table-column :label="$l('Line')" prop="lineName" show-overflow-tooltip />
+        <el-table-column :label="$l('Route')" prop="routeName" show-overflow-tooltip />
         <el-table-column width="50">
           <el-dropdown slot-scope="{ row }" trigger="click" @command="handleRouteMenu({ data: row, command: $event })">
             <span class="el-dropdown-link el-icon-arrow-down el-icon--right" />
@@ -46,13 +52,13 @@
     "zh-CN": "受影响的线路",
     "en-US": "受影响的线路"
   },
-  "Id":{
-    "zh-CN": "编号",
-    "en-US": "Id"
+  "Line":{
+    "zh-CN": "Line",
+    "en-US": "Line"
   },
-  "Name":{
-    "zh-CN": "名称",
-    "en-US": "Name"
+  "Route":{
+    "zh-CN": "Route",
+    "en-US": "Route"
   },
   "线路变动信息":{
     "zh-CN": "线路变动信息",
@@ -81,9 +87,15 @@
 import TimetableDialog from "../dialog/TimetableDialog/index.vue";
 import XmlComparisonDialog from "../dialog/XmlComparisonDialog/index.vue";
 import PassengerFlowDialog from "../dialog/PassengerFlowDialog/index.vue";
+import RoutesChangeDialog from "../dialog/RoutesChangeDialog/index.vue";
+import StopsChangeDialog from "../dialog/StopsChangeDialog/index.vue";
+
+import { changeLines } from "@/api/contrast";
 
 import Vue from "vue";
 
+const RoutesChangeDialogExtend = Vue.extend(RoutesChangeDialog);
+const StopsChangeDialogExtend = Vue.extend(StopsChangeDialog);
 const TimetableDialogExtend = Vue.extend(TimetableDialog);
 const XmlComparisonDialogExtend = Vue.extend(XmlComparisonDialog);
 const PassengerFlowDialogExtend = Vue.extend(PassengerFlowDialog);
@@ -126,7 +138,8 @@ export default {
   },
   data() {
     return {
-      loading: true,
+      loading1: false,
+      list1: [],
       route_menu1: [
         { value: "线路变动信息", label: "线路变动信息" },
         { value: "站点变动信息", label: "站点变动信息" },
@@ -134,15 +147,49 @@ export default {
         { value: "Xml信息对比", label: "Xml信息对比" },
         { value: "客流信息变化", label: "客流信息变化" },
       ],
+      loading2: false,
+      list2: [],
       route_menu2: [{ value: "客流信息变化", label: "客流信息变化" }],
     };
   },
   created() {
-    this.getDetail();
+    this.getList1();
   },
   mounted() {},
   methods: {
-    getDetail() {},
+    getList1() {
+      this.loading1 = true;
+      const { database1, datasource1, database2, datasource2 } = this.$route.params;
+      return changeLines({
+        name1: database1 + "/" + datasource1,
+        name2: database2 + "/" + datasource2,
+      })
+        .then((res) => {
+          console.log(res);
+          this.list1 = res.data;
+          this.loading1 = false;
+        })
+        .catch((err) => {
+          this.list1 = [];
+          this.loading1 = false;
+        });
+    },
+    getList2() {
+      this.loading1 = true;
+      const { database1, datasource1, database2, datasource2 } = this.$route.params;
+      return changeLines({
+        name1: database1 + "/" + datasource1,
+        name2: database2 + "/" + datasource2,
+      })
+        .then((res) => {
+          console.log(res);
+          this.loading1 = false;
+        })
+        .catch((err) => {
+          this.list1 = [];
+          this.loading1 = false;
+        });
+    },
     handleEnable() {},
     handleDisable() {
       if (this._passengerFlowDialog) [...this._passengerFlowDialog].forEach((v) => v.$emit("close"));
@@ -150,8 +197,10 @@ export default {
     handleRouteMenu({ data, command }) {
       switch (command) {
         case "线路变动信息":
+          this.handleShowRoutesChangeDialog(data);
           break;
         case "站点变动信息":
+          this.handleShowStopsChangeDialog(data);
           break;
         case "时刻表信息变动":
           this.handleShowTimetableDialog(data);
@@ -163,6 +212,42 @@ export default {
           this.handleShowPassengerFlowDialog(data);
           break;
       }
+    },
+    handleShowRoutesChangeDialog(data) {
+      if (!this._routesChangeDialogList) {
+        this._routesChangeDialogList = [];
+      }
+      const _routesChangeDialog = new RoutesChangeDialogExtend({
+        propsData: { form: data, offset: this._routesChangeDialogList.length * 20 },
+        parent: this,
+      }).$mount();
+      this._routesChangeDialogList.push(_routesChangeDialog);
+      _routesChangeDialog.$on("close", () => {
+        _routesChangeDialog.$destroy();
+        let index = this._routesChangeDialogList.findIndex((v) => v === _routesChangeDialog);
+        if (index > -1) {
+          this._routesChangeDialogList.splice(index, 1);
+        }
+      });
+      document.body.append(_routesChangeDialog.$el);
+    },
+    handleShowStopsChangeDialog(data) {
+      if (!this._stopsChangeDialogList) {
+        this._stopsChangeDialogList = [];
+      }
+      const _stopsChangeDialog = new StopsChangeDialogExtend({
+        propsData: { form: data, offset: this._stopsChangeDialogList.length * 20 },
+        parent: this,
+      }).$mount();
+      this._stopsChangeDialogList.push(_stopsChangeDialog);
+      _stopsChangeDialog.$on("close", () => {
+        _stopsChangeDialog.$destroy();
+        let index = this._stopsChangeDialogList.findIndex((v) => v === _stopsChangeDialog);
+        if (index > -1) {
+          this._stopsChangeDialogList.splice(index, 1);
+        }
+      });
+      document.body.append(_stopsChangeDialog.$el);
     },
     handleShowTimetableDialog(data) {
       if (!this._timetableDialogList) {
@@ -240,7 +325,6 @@ export default {
     }
     .form {
       width: 100%;
-
       .form_item {
         width: 100%;
         display: flex;

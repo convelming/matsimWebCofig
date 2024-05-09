@@ -98,7 +98,7 @@
         <el-table-column prop="loadStatus" :label="$l('方案状态')">
           <template slot-scope="{ row }">{{ row.loadStatus }} / {{ row.runStatus }}</template>
         </el-table-column>
-        <el-table-column :label="$l('操作')" width="150">
+        <el-table-column :label="$l('操作')" width="180">
           <template slot-scope="{ row }">
             <el-button :disabled="row.loadStatus != '已加载'" type="primary" size="mini" @click="handlePlanAdjustmentToDetail(row)">{{ $l("修改") }}</el-button>
             <el-button type="primary" size="mini" :disabled="row.noLoad" :loading="row.loadStatus == '加载中'" @click="handlePlanAdjustmentLoad(row)">{{ $l("加载") }}</el-button>
@@ -120,8 +120,8 @@
         </el-table-column>
         <el-table-column :label="$l('对比方案')" width="90" align="center">
           <template slot-scope="{ row }">
-            <el-checkbox v-model="comparativeAnalysisDialog.dataSource2" false-label="" :true-label="row.name">{{ "" }}</el-checkbox>
-            <!-- <el-checkbox v-model="comparativeAnalysisDialog.dataSource2" false-label="" :true-label="row.name" :disabled="row.loadStatus != '已加载' || row.runStatus != '已运行' || comparativeAnalysisDialog.dataSource == row.name">{{ "" }}</el-checkbox> -->
+            <!-- <el-checkbox v-model="comparativeAnalysisDialog.dataSource2" false-label="" :true-label="row.name">{{ "" }}</el-checkbox> -->
+            <el-checkbox v-model="comparativeAnalysisDialog.dataSource2" false-label="" :true-label="row.name" :disabled="row.loadStatus != '已加载' || row.runStatus != '已运行' || comparativeAnalysisDialog.dataSource1 == row.name">{{ "" }}</el-checkbox>
           </template>
         </el-table-column>
         <el-table-column prop="name" :label="$l('方案名称')" />
@@ -129,7 +129,7 @@
         <el-table-column prop="loadStatus" :label="$l('方案状态')">
           <template slot-scope="{ row }">{{ row.loadStatus }} / {{ row.runStatus }}</template>
         </el-table-column>
-        <el-table-column :label="$l('操作')" width="150">
+        <el-table-column :label="$l('操作')" width="180">
           <template slot-scope="{ row }">
             <el-button type="primary" size="mini" :disabled="row.noRun" :loading="row.runStatus == '运行中'" @click="handleOperationsAnalysisRun(row)">{{ $l("运行") }}</el-button>
             <el-button type="primary" size="mini" :disabled="row.noLoad" :loading="row.loadStatus == '加载中'" @click="handleOperationsAnalysisLoad(row)">{{ $l("加载") }}</el-button>
@@ -152,7 +152,7 @@
         <el-table-column prop="loadStatus" :label="$l('方案状态')">
           <template slot-scope="{ row }">{{ row.loadStatus }} / {{ row.runStatus }}</template>
         </el-table-column>
-        <el-table-column :label="$l('操作')" width="250">
+        <el-table-column :label="$l('操作')" width="180">
           <template slot-scope="{ row }">
             <el-button :disabled="row.loadStatus != '已加载'" type="primary" size="mini" @click="handleSystemEvaluationToDetail(row)">{{ $l("查看") }}</el-button>
             <el-button type="primary" size="mini" :disabled="row.noLoad" :loading="row.loadStatus == '加载中'" @click="handleSystemEvaluationLoad(row)">{{ $l("加载") }}</el-button>
