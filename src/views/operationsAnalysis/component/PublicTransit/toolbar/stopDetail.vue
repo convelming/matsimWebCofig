@@ -44,29 +44,25 @@
 
 <language>
 {
-  "公共交通":{
-    "zh-CN": "公共交通",
-    "en-US": "公共交通"
+  "Stop":{
+    "zh-CN": "Stop",
+    "en-US": "Stop"
   },
-  "图标大小：":{
-    "zh-CN": "图标大小：",
-    "en-US": "图标大小："
+  "Line":{
+    "zh-CN": "Line",
+    "en-US": "Line"
   },
-  "显示站点名称":{
-    "zh-CN": "显示站点名称",
-    "en-US": "显示站点名称"
+  "Route":{
+    "zh-CN": "Route",
+    "en-US": "Route"
   },
-  "公交站点颜色":{
-    "zh-CN": "公交站点颜色",
-    "en-US": "公交站点颜色"
+  "Show Transit Lines":{
+    "zh-CN": "Show Transit Lines",
+    "en-US": "Show Transit Lines"
   },
-  "公交线路查询":{
-    "zh-CN": "公交线路查询",
-    "en-US": "公交线路查询"
-  },
-  "公交站点选取":{
-    "zh-CN": "公交站点选取",
-    "en-US": "公交站点选取"
+  "Show Reachable Stops":{
+    "zh-CN": "Show Reachable Stops",
+    "en-US": "Show Reachable Stops"
   },
 }
 </language>

@@ -147,6 +147,14 @@
     "zh-CN": "Create Passengers Agent Group...",
     "en-US": "Create Passengers Agent Group..."
   },
+  "Show Transit Lines":{
+    "zh-CN": "Show Transit Lines",
+    "en-US": "Show Transit Lines"
+  },
+  "Show Reachable Stops":{
+    "zh-CN": "Show Reachable Stops",
+    "en-US": "Show Reachable Stops"
+  },
 }
 </language>
 

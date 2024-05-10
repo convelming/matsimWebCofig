@@ -53,16 +53,17 @@ export class StopsLayer extends Layer {
       depthWrite: false,
       transparent: true,
       map: this.texture,
+      color: this.color,
     });
     this.material.onBeforeCompile = (shader) => {
       shader.fragmentShader = shader.fragmentShader.replace(
         "#include <output_fragment>",
         `
-          #if defined(USE_MAP) && defined(USE_COLOR)
+          #if defined(USE_MAP) 
             if(length(texture2D( map, vUv ).rgb) < .01){
               outgoingLight = vec3(1.0);
             }else{
-              outgoingLight = vColor.rgb;
+              outgoingLight = diffuse.rgb;
             }
           #endif
           #include <output_fragment>
@@ -71,7 +72,9 @@ export class StopsLayer extends Layer {
     };
 
     this.pickGeometry = new THREE.BoxGeometry(STOP_SIZE * 1.1, STOP_SIZE * 1.1);
-    this.pickMaterial = new THREE.MeshBasicMaterial();
+    this.pickMaterial = new THREE.MeshBasicMaterial({
+      color: this.pickLayerColor,
+    });
 
     this.labelMesh = new THREE.Sprite(
       new THREE.SpriteMaterial({
@@ -184,11 +187,7 @@ export class StopsLayer extends Layer {
 
   setPickLayerColor(pickLayerColor) {
     this.pickLayerColor = new THREE.Color(pickLayerColor);
-    if (this.pickLayerMesh) {
-      for (let i = 0; i < this.pickLayerMesh.count; i++) {
-        this.pickLayerMesh.setColorAt(i, this.pickLayerColor);
-      }
-    }
+    this.pickMaterial.setValues({ color: this.pickLayerColor });
   }
 
   setSize(size = this.size, scale = this.scale) {
@@ -211,8 +210,7 @@ export class StopsLayer extends Layer {
     }
 
     if (this.mesh) this.mesh.instanceMatrix.needsUpdate = true;
-    if (this.pickLayerMesh)
-      this.pickLayerMesh.instanceMatrix.needsUpdate = true;
+    if (this.pickLayerMesh) this.pickLayerMesh.instanceMatrix.needsUpdate = true;
     if (this.pickMesh) this.pickMesh.instanceMatrix.needsUpdate = true;
   }
 
@@ -223,12 +221,7 @@ export class StopsLayer extends Layer {
 
   setColor(color) {
     this.color = new THREE.Color(color);
-    if (this.mesh) {
-      for (let i = 0; i < this.mesh.count; i++) {
-        this.mesh.setColorAt(i, this.color);
-        this.mesh.instanceColor.needsUpdate = true;
-      }
-    }
+    this.material.setValues({ color: this.color });
   }
 
   showName() {}
@@ -243,8 +236,7 @@ export class StopsLayer extends Layer {
       if (!this.visible) return;
       if (this.updateing) return;
       this.updateing = true;
-      const { maxX, minX, maxY, minY } =
-        this.map.getWindowRangeAndWebMercator();
+      const { maxX, minX, maxY, minY } = this.map.getWindowRangeAndWebMercator();
       const wd = Math.abs(maxX - minX);
       const hd = Math.abs(maxY - minY);
       const maxX1 = maxX + wd;
@@ -252,8 +244,7 @@ export class StopsLayer extends Layer {
       const maxY1 = maxY + hd;
       const minY1 = minY - hd;
       const [maxX2, minX2, maxY2, minY2] = this.range;
-      if (maxX1 <= maxX2 && minX1 >= minX2 && maxY1 <= maxY2 && minY1 >= minY2)
-        throw new Error("当前视野范围不需要更新");
+      if (maxX1 <= maxX2 && minX1 >= minX2 && maxY1 <= maxY2 && minY1 >= minY2) throw new Error("当前视野范围不需要更新");
       if (!maxX1 || !minX1 || !maxY1 || !minY1) throw new Error("坐标不能为空");
       this.range = [maxX1, minX1, maxY1, minY1];
       const res = await getStopFacilities({
@@ -307,16 +298,8 @@ export class StopsLayer extends Layer {
     const data = this.data;
     const count = data.length;
     const mesh = new THREE.InstancedMesh(this.geometry, this.material, count);
-    const pickLayerMesh = new THREE.InstancedMesh(
-      this.pickGeometry,
-      this.pickMaterial,
-      count
-    );
-    const pickMesh = new THREE.InstancedMesh(
-      this.pickGeometry,
-      this.pickMaterial,
-      count
-    );
+    const pickLayerMesh = new THREE.InstancedMesh(this.pickGeometry, this.pickMaterial, count);
+    const pickMesh = new THREE.InstancedMesh(this.pickGeometry, this.pickMaterial, count);
 
     for (let i = 0; i < count; i++) {
       const { coord, pickColor } = data[i];
@@ -332,7 +315,7 @@ export class StopsLayer extends Layer {
       pickLayerMesh.setMatrixAt(i, matrix);
       pickMesh.setMatrixAt(i, matrix);
 
-      mesh.setColorAt(i, this.color);
+      // mesh.setColorAt(i, this.color);
       pickLayerMesh.setColorAt(i, this.pickLayerColor);
       pickMesh.setColorAt(i, pickColor);
     }
@@ -358,16 +341,12 @@ export class StopsLayer extends Layer {
       this.scene.remove(this.labelMesh);
     } else {
       const height = 0.05;
-      const width =
-        (height * this.labelData.mapWidth) / this.labelData.mapHeight;
+      const width = (height * this.labelData.mapWidth) / this.labelData.mapHeight;
 
       this.labelMesh.material.setValues({ map: this.labelData.map });
       this.labelMesh.material.needsUpdate = true;
       this.labelMesh.scale.set(width, height, 1);
-      const [x, y] = this.map.WebMercatorToCanvasXY(
-        this.labelData.x,
-        this.labelData.y
-      );
+      const [x, y] = this.map.WebMercatorToCanvasXY(this.labelData.x, this.labelData.y);
       this.labelMesh.position.set(x, y, 10);
       this.scene.add(this.labelMesh);
     }
@@ -375,14 +354,8 @@ export class StopsLayer extends Layer {
 
   // 更新选择框
   updateFrame() {
-    let [x1, y1] = this.map.WebMercatorToCanvasXY(
-      ...this.frameStartPoint,
-      ...this.center
-    );
-    let [x2, y2] = this.map.WebMercatorToCanvasXY(
-      ...this.frameEndPoint,
-      ...this.center
-    );
+    let [x1, y1] = this.map.WebMercatorToCanvasXY(...this.frameStartPoint, ...this.center);
+    let [x2, y2] = this.map.WebMercatorToCanvasXY(...this.frameEndPoint, ...this.center);
     let attrUv = [0, 0, 0, 1, 1, 1, 1, 0];
     let attrPosition = [
       Math.min(x1, x2),
@@ -399,18 +372,9 @@ export class StopsLayer extends Layer {
       0, // 左上
     ];
     let attrIndex = [0, 1, 2, 0, 2, 3];
-    this.frameGeometry.setAttribute(
-      "position",
-      new THREE.BufferAttribute(new Float32Array(attrPosition), 3)
-    );
-    this.frameGeometry.setAttribute(
-      "uv",
-      new THREE.BufferAttribute(new Float32Array(attrUv), 2)
-    );
-    this.frameGeometry.index = new THREE.BufferAttribute(
-      new Uint16Array(attrIndex),
-      1
-    );
+    this.frameGeometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(attrPosition), 3));
+    this.frameGeometry.setAttribute("uv", new THREE.BufferAttribute(new Float32Array(attrUv), 2));
+    this.frameGeometry.index = new THREE.BufferAttribute(new Uint16Array(attrIndex), 1);
     this.frameGeometry.needsUpdate = true;
     this.frameGeometry.computeBoundingSphere();
 

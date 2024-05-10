@@ -1,19 +1,24 @@
 import { Layer, MAP_EVENT } from "@/mymap";
 import * as THREE from "three";
 
-export class BusLinkLayer extends Layer {
-  name = "BusLinkLayer";
+export class BusLineLayer extends Layer {
+  name = "BusLineLayer";
   lineWidth = 10;
   color = new THREE.Color("red");
   center = null;
   data = null;
-  texture = new THREE.TextureLoader().load(
-    require("@/assets/image/link_top5.png")
-  );
+  texture = new THREE.TextureLoader().load(require("@/assets/image/link_top5.png"));
+  isDashed = false;
 
   constructor(opt) {
     super(opt);
     this.color = new THREE.Color(opt.color || this.color);
+    this.isDashed = !!opt.isDashed;
+    this.geometry = new THREE.BufferGeometry();
+    this.material = this.getLineMaterial({
+      // map: this.texture,
+      color: this.color,
+    });
   }
 
   onAdd(map) {
@@ -64,6 +69,12 @@ export class BusLinkLayer extends Layer {
     }
   }
 
+  setColor(color) {
+    this.color = new THREE.Color(color);
+    this.material.setValues({ color: this.color });
+    this.material.needsUpdate = true;
+  }
+
   setData(data) {
     try {
       const routelist = data.getRouteLink(data.route);
@@ -94,23 +105,19 @@ export class BusLinkLayer extends Layer {
     this.clearScene();
     if (!this.map) return;
     if (!this.data) return;
-    let geometry = this.getLineGeometry();
-    let material = this.getLineMaterial({
-      map: this.texture,
-      color: this.color,
-    });
+    this.geometry = this.getLineGeometry();
 
-    let mesh = new THREE.Mesh(geometry, material);
+    const mesh = new THREE.Mesh(this.geometry, this.material);
     const [x, y] = this.map.WebMercatorToCanvasXY(...this.center);
     mesh.position.set(x, y, mesh.position.z);
+
     this.scene.add(mesh);
   }
 
-  getLineMaterial({ usePickColor, ...opt }) {
+  getLineMaterial({ ...opt }) {
     const material = new THREE.MeshBasicMaterial({
       side: THREE.DoubleSide,
       transparent: true,
-      wireframe: false,
       ...opt,
     });
     material.onBeforeCompile = (shader) => {
@@ -171,31 +178,24 @@ export class BusLinkLayer extends Layer {
       shader.fragmentShader = shader.fragmentShader.replace(
         "#include <map_fragment>",
         `
-            #ifdef USE_MAP
-              float lineWidth = ${Number(this.lineWidth).toFixed(2)} * 2.0;
-              float l = mod(vLineLength, 300.0) / lineWidth ;
-              if(0.0 < l && l < 1.0){
-                vec4 sampledDiffuseColor = texture2D(map, vec2(vUv.x,  l));
-                if(sampledDiffuseColor.a > 0.6) {
-                  diffuseColor = vec4(1.0);
-                }
+          float lineWidth = ${Number(this.lineWidth).toFixed(2)};
+          #ifdef USE_MAP
+            float l = mod(vLineLength, 300.0) / (lineWidth  * 2.0);
+            if(0.0 < l && l < 1.0){
+              vec4 sampledDiffuseColor = texture2D(map, vec2(vUv.x,  l));
+              if(sampledDiffuseColor.a > 0.6) {
+                diffuseColor = vec4(1.0);
               }
-            #endif
-          `
+            }
+          #endif
+          if(${!!this.isDashed}){
+            float dl = mod(vLineLength, lineWidth * 5.0) / (lineWidth * 5.0);
+            if(0.0 < dl && dl < 0.5){
+              diffuseColor = vec4(1.0,1.0,1.0,0.0);
+            }
+          }
+        `
       );
-      if (usePickColor) {
-        shader.vertexShader = shader.vertexShader.replace(
-          "#include <color_vertex>",
-          `
-            #include <color_vertex>
-            #if defined( USE_COLOR_ALPHA )
-              vColor = vec4(pickColor,1.0);
-            #elif defined( USE_COLOR )
-              vColor = pickColor;
-            #endif
-          `
-        );
-      }
     };
     /**
      * 当用到onBeforeCompile回调的时候，
@@ -207,7 +207,6 @@ export class BusLinkLayer extends Layer {
     material.customProgramCacheKey = () => {
       return JSON.stringify({
         uuid: material.uuid,
-        usePickColor: usePickColor,
         lineWidth: this.lineWidth,
       });
     };
@@ -218,42 +217,14 @@ export class BusLinkLayer extends Layer {
     const data = this.data;
     const length = data.length;
 
-    const attrPosition = new THREE.BufferAttribute(
-      new Float32Array(length * 4 * 3 + 2 * 3),
-      3
-    );
-    const attrStartPosition = new THREE.BufferAttribute(
-      new Float32Array(length * 4 * 2 + 2 * 2),
-      2
-    );
-    const attrEndPosition = new THREE.BufferAttribute(
-      new Float32Array(length * 4 * 2 + 2 * 2),
-      2
-    );
-    const attrSide = new THREE.BufferAttribute(
-      new Float32Array(length * 4 + 2),
-      1
-    );
-    const attrIndex = new THREE.BufferAttribute(
-      new Uint16Array(length * 2 * 3 + 6),
-      1
-    );
-    const attrUv = new THREE.BufferAttribute(
-      new Float32Array(length * 4 * 2 + 2),
-      2
-    );
-    const attrPickColor = new THREE.BufferAttribute(
-      new Float32Array(length * 4 * 3 + 2 * 3),
-      3
-    );
-    const attrColor = new THREE.BufferAttribute(
-      new Float32Array(length * 4 * 3 + 2 * 3),
-      3
-    );
-    const attrLength = new THREE.BufferAttribute(
-      new Float32Array(length * 4 + 2),
-      1
-    );
+    const attrPosition = new THREE.BufferAttribute(new Float32Array(length * 4 * 3 + 2 * 3), 3);
+    const attrStartPosition = new THREE.BufferAttribute(new Float32Array(length * 4 * 2 + 2 * 2), 2);
+    const attrEndPosition = new THREE.BufferAttribute(new Float32Array(length * 4 * 2 + 2 * 2), 2);
+    const attrSide = new THREE.BufferAttribute(new Float32Array(length * 4 + 2), 1);
+    const attrIndex = new THREE.BufferAttribute(new Uint16Array(length * 2 * 3 + 6), 1);
+    const attrUv = new THREE.BufferAttribute(new Float32Array(length * 4 * 2 + 2), 2);
+    const attrColor = new THREE.BufferAttribute(new Float32Array(length * 4 * 3 + 2 * 3), 3);
+    const attrLength = new THREE.BufferAttribute(new Float32Array(length * 4 + 2), 1);
 
     for (let index = 0; index < data.length; index++) {
       const link = data[index];
@@ -280,15 +251,8 @@ export class BusLinkLayer extends Layer {
         attrLength.setX(index * 4, link.fromLength);
         attrLength.setX(index * 4 + 1, link.fromLength);
 
-        attrPickColor.setXYZ(index * 4, pickColor.r, pickColor.g, pickColor.b);
-        attrPickColor.setXYZ(
-          index * 4 + 1,
-          pickColor.r,
-          pickColor.g,
-          pickColor.b
-        );
-        attrColor.setXYZ(index * 4, color.r, color.g, color.b);
-        attrColor.setXYZ(index * 4 + 1, color.r, color.g, color.b);
+        attrColor.setXYZ(index * 4, pickColor.r, pickColor.g, pickColor.b);
+        attrColor.setXYZ(index * 4 + 1, pickColor.r, pickColor.g, pickColor.b);
       }
       // toNode
       {
@@ -303,20 +267,8 @@ export class BusLinkLayer extends Layer {
         attrLength.setX(index * 4 + 2, link.toLength);
         attrLength.setX(index * 4 + 3, link.toLength);
 
-        attrPickColor.setXYZ(
-          index * 4 + 2,
-          pickColor.r,
-          pickColor.g,
-          pickColor.b
-        );
-        attrPickColor.setXYZ(
-          index * 4 + 3,
-          pickColor.r,
-          pickColor.g,
-          pickColor.b
-        );
-        attrColor.setXYZ(index * 4 + 2, color.r, color.g, color.b);
-        attrColor.setXYZ(index * 4 + 3, color.r, color.g, color.b);
+        attrColor.setXYZ(index * 4 + 2, pickColor.r, pickColor.g, pickColor.b);
+        attrColor.setXYZ(index * 4 + 3, pickColor.r, pickColor.g, pickColor.b);
       }
 
       attrUv.setXY(index * 4, 0, 0);
@@ -340,7 +292,6 @@ export class BusLinkLayer extends Layer {
     geometry.setAttribute("side", attrSide);
     geometry.setAttribute("lineLength", attrLength);
     geometry.setAttribute("uv", attrUv);
-    geometry.setAttribute("pickColor", attrPickColor);
     geometry.setAttribute("color", attrColor);
     geometry.index = attrIndex;
     return geometry;

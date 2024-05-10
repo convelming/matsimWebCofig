@@ -20,8 +20,6 @@ class Language {
   }
 
   install(Vue, options = {}) {
-    console.log(window);
-    
     if (window && !window.$language) window.$language = this;
 
     const _self = this;

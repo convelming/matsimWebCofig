@@ -4,8 +4,10 @@
       <div class="RoutesChangeDialog__bodyer">
         <div class="row">
           <div class="col">
-            <div class="_title">{{ $l("基础方案") }}</div>
             <div class="_title">
+              <el-checkbox v-model="showOldLine">{{ $l("基础方案") }}</el-checkbox>
+            </div>
+            <div class="_tools">
               <el-color-picker size="mini" :predefine="predefineColors" v-model="oldLineColor" />
               <el-button type="primary" size="mini" circle icon="el-icon-map-location" @click="handleLocationLine(oldLine)"></el-button>
             </div>
@@ -19,8 +21,10 @@
             </div>
           </div>
           <div class="col">
-            <div class="_title">{{ $l("对比方案") }}</div>
             <div class="_title">
+              <el-checkbox v-model="showNewLine">{{ $l("对比方案") }}</el-checkbox>
+            </div>
+            <div class="_tools">
               <el-color-picker size="mini" :predefine="predefineColors" v-model="newLineColor" />
               <el-button type="primary" size="mini" circle icon="el-icon-map-location" @click="handleLocationLine(newLine)"></el-button>
             </div>
@@ -69,7 +73,7 @@
 </language>
 
 <script>
-import { BusLinkLayer } from "../../layer/BusLinkLayer";
+import { BusLineLayer } from "../../layer/BusLineLayer";
 
 import * as Bean from "@/utils/Bean";
 import { formatHour } from "@/utils/utils";
@@ -93,28 +97,54 @@ export default {
       return this.rootVue._Map;
     },
   },
+  watch: {
+    showOldLine() {
+      if (this._OldBusLineLayer) {
+        this._OldBusLineLayer.visible = this.showOldLine;
+      }
+    },
+    oldLineColor() {
+      if (this._OldBusLineLayer) {
+        this._OldBusLineLayer.setColor(this.oldLineColor);
+      }
+    },
+    showNewLine() {
+      if (this._NewBusLineLayer) {
+        this._NewBusLineLayer.visible = this.showNewLine;
+      }
+    },
+    newLineColor() {
+      if (this._NewBusLineLayer) {
+        this._NewBusLineLayer.setColor(this.newLineColor);
+      }
+    },
+  },
   data() {
     return {
       predefineColors: ["#E9CDAA", "#ff4500", "#ff8c00", "#ffd700", "#90ee90", "#00ced1", "#409eff", "#c71585"],
       s_form: {},
 
-      oldLineColor: "#ff4500",
+      showOldLine: true,
+      oldLineColor: "#E9CDAA",
       oldLine: {},
 
-      newLineColor: "#ff8c00",
+      showNewLine: true,
+      newLineColor: "#ff4500",
       newLine: {},
-
       loading1: false,
     };
   },
   created() {
-    this._OldBusLinkLayer = new BusLinkLayer({
-      zIndex: 20,
+    this._OldBusLineLayer = new BusLineLayer({
+      zIndex: 23,
       color: this.oldLineColor,
+      visible: this.showOldLine,
+      isDashed: true,
     });
-    this._NewBusLinkLayer = new BusLinkLayer({
-      zIndex: 30,
+    this._NewBusLineLayer = new BusLineLayer({
+      zIndex: 20,
       color: this.newLineColor,
+      visible: this.showNewLine,
     });
   },
   mounted() {
@@ -130,18 +160,20 @@ export default {
   },
   beforeDestroy() {
     this.handleDisable();
+    this._OldBusLineLayer.dispose();
+    this._NewBusLineLayer.dispose();
   },
   methods: {
     // 组件初始化事件
     handleEnable() {
-      this._Map.addLayer(this._OldBusLinkLayer);
-      this._Map.addLayer(this._NewBusLinkLayer);
+      this._Map.addLayer(this._OldBusLineLayer);
+      this._Map.addLayer(this._NewBusLineLayer);
       this.init();
     },
     // 组件卸载事件
     handleDisable() {
-      this._Map.removeLayer(this._OldBusLinkLayer);
-      this._Map.removeLayer(this._NewBusLinkLayer);
+      this._Map.removeLayer(this._OldBusLineLayer);
+      this._Map.removeLayer(this._NewBusLineLayer);
     },
 
     timeFormatter(row) {
@@ -157,8 +189,8 @@ export default {
       }).then((res) => {
         this.oldLine = new Bean.TransitRoute(res.data.before || {});
         this.newLine = new Bean.TransitRoute(res.data.after || {});
-        this._OldBusLinkLayer.setData(this.oldLine);
-        this._NewBusLinkLayer.setData(this.newLine);
+        this._OldBusLineLayer.setData(this.oldLine);
+        this._NewBusLineLayer.setData(this.newLine);
 
         console.log(this._Map, this.rootVue);
         if (res.data.before) {
@@ -192,6 +224,18 @@ export default {
         font-weight: bold;
         text-align: center;
         margin-bottom: 20px;
+      }
+      ._tools {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+        & > * + * {
+          margin-left: 10px;
+        }
+        .el-color-picker {
+          background-color: #fff;
+        }
       }
       ._content {
         font-size: 14px;

@@ -13,23 +13,27 @@
           <el-dropdown slot-scope="{ row }" trigger="click" @command="handleRouteMenu({ data: row, command: $event })">
             <span class="el-dropdown-link el-icon-arrow-down el-icon--right" />
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item v-for="v in route_menu1" :key="v.value" :command="v.value">{{ $l(v.label) }}</el-dropdown-item>
+              <el-dropdown-item command="线路变动信息" :disabled="!row.path">{{ $l("线路变动信息") }}</el-dropdown-item>
+              <el-dropdown-item command="站点变动信息" :disabled="!row.stop">{{ $l("站点变动信息") }}</el-dropdown-item>
+              <el-dropdown-item command="时刻表信息变动" :disabled="!row.time">{{ $l("时刻表信息变动") }}</el-dropdown-item>
+              <el-dropdown-item command="Xml信息对比">{{ $l("Xml信息对比") }}</el-dropdown-item>
+              <el-dropdown-item command="客流信息变化">{{ $l("客流信息变化") }}</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </el-table-column>
       </el-table>
       <div class="title">
         <span>{{ $l("受影响的线路") }}&nbsp;&nbsp;&nbsp;</span>
-        <el-button type="primary" size="mini" circle icon="el-icon-refresh-right" @click="getList1"></el-button>
+        <el-button type="primary" size="mini" circle icon="el-icon-refresh-right" @click="getList2"></el-button>
       </div>
-      <el-table class="small" :data="list2" border stripe v-loading="loading2">
+      <el-table class="small" :data="list2" border stripe height="300px" v-loading="loading2">
         <el-table-column :label="$l('Line')" prop="lineName" show-overflow-tooltip />
         <el-table-column :label="$l('Route')" prop="routeName" show-overflow-tooltip />
         <el-table-column width="50">
           <el-dropdown slot-scope="{ row }" trigger="click" @command="handleRouteMenu({ data: row, command: $event })">
             <span class="el-dropdown-link el-icon-arrow-down el-icon--right" />
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item v-for="v in route_menu2" :key="v.value" :command="v.value">{{ $l(v.label) }}</el-dropdown-item>
+              <el-dropdown-item command="客流信息变化">{{ $l("客流信息变化") }}</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </el-table-column>
@@ -90,7 +94,7 @@ import PassengerFlowDialog from "../dialog/PassengerFlowDialog/index.vue";
 import RoutesChangeDialog from "../dialog/RoutesChangeDialog/index.vue";
 import StopsChangeDialog from "../dialog/StopsChangeDialog/index.vue";
 
-import { changeLines } from "@/api/contrast";
+import { changeLines, affectedLines } from "@/api/contrast";
 
 import Vue from "vue";
 
@@ -140,20 +144,13 @@ export default {
     return {
       loading1: false,
       list1: [],
-      route_menu1: [
-        { value: "线路变动信息", label: "线路变动信息" },
-        { value: "站点变动信息", label: "站点变动信息" },
-        { value: "时刻表信息变动", label: "时刻表信息变动" },
-        { value: "Xml信息对比", label: "Xml信息对比" },
-        { value: "客流信息变化", label: "客流信息变化" },
-      ],
       loading2: false,
       list2: [],
-      route_menu2: [{ value: "客流信息变化", label: "客流信息变化" }],
     };
   },
   created() {
     this.getList1();
+    this.getList2();
   },
   mounted() {},
   methods: {
@@ -165,7 +162,6 @@ export default {
         name2: database2 + "/" + datasource2,
       })
         .then((res) => {
-          console.log(res);
           this.list1 = res.data;
           this.loading1 = false;
         })
@@ -175,19 +171,19 @@ export default {
         });
     },
     getList2() {
-      this.loading1 = true;
+      this.loading2 = true;
       const { database1, datasource1, database2, datasource2 } = this.$route.params;
-      return changeLines({
+      return affectedLines({
         name1: database1 + "/" + datasource1,
         name2: database2 + "/" + datasource2,
       })
         .then((res) => {
-          console.log(res);
-          this.loading1 = false;
+          this.list2 = res.data;
+          this.loading2 = false;
         })
         .catch((err) => {
-          this.list1 = [];
-          this.loading1 = false;
+          this.list2 = [];
+          this.loading2 = false;
         });
     },
     handleEnable() {},

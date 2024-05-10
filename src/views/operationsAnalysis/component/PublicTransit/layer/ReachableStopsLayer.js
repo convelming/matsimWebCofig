@@ -28,16 +28,17 @@ export class ReachableStopsLayer extends Layer {
       depthWrite: false,
       transparent: true,
       map: this.texture,
+      color: this.color,
     });
     this.material.onBeforeCompile = (shader) => {
       shader.fragmentShader = shader.fragmentShader.replace(
         "#include <output_fragment>",
         `
-          #if defined(USE_MAP) && defined(USE_COLOR)
+          #if defined(USE_MAP)
             if(length(texture2D( map, vUv ).rgb) < .01){
               outgoingLight = vec3(1.0);
             }else{
-              outgoingLight = vColor.rgb;
+              outgoingLight = diffuse.rgb;
             }
           #endif
           #include <output_fragment>
@@ -46,13 +47,21 @@ export class ReachableStopsLayer extends Layer {
     };
 
     this.pickGeometry = new THREE.BoxGeometry(STOP_SIZE * 1.1, STOP_SIZE * 1.1);
-    this.pickMaterial = new THREE.MeshBasicMaterial();
+    this.pickMaterial = new THREE.MeshBasicMaterial({
+      color: this.pickLayerColor,
+    });
+
 
     this.labelMesh = new THREE.Sprite(
       new THREE.SpriteMaterial({
         transparent: true,
       })
     );
+  }
+  
+  setPickLayerColor(pickLayerColor) {
+    this.pickLayerColor = new THREE.Color(pickLayerColor);
+    this.pickMaterial.setValues({ color: this.pickLayerColor });
   }
 
   on(type, data) {
@@ -136,8 +145,7 @@ export class ReachableStopsLayer extends Layer {
     }
 
     if (this.mesh) this.mesh.instanceMatrix.needsUpdate = true;
-    if (this.pickLayerMesh)
-      this.pickLayerMesh.instanceMatrix.needsUpdate = true;
+    if (this.pickLayerMesh) this.pickLayerMesh.instanceMatrix.needsUpdate = true;
     if (this.pickMesh) this.pickMesh.instanceMatrix.needsUpdate = true;
   }
 
@@ -168,12 +176,7 @@ export class ReachableStopsLayer extends Layer {
 
   setColor(color) {
     this.color = new THREE.Color(color);
-    if (this.mesh) {
-      for (let i = 0; i < this.mesh.count; i++) {
-        this.mesh.setColorAt(i, this.color);
-        this.mesh.instanceColor.needsUpdate = true;
-      }
-    }
+    this.material.setValues({ color: this.color });
   }
 
   clearScene() {
@@ -200,16 +203,8 @@ export class ReachableStopsLayer extends Layer {
     const data = this.data;
     const count = data.length;
     const mesh = new THREE.InstancedMesh(this.geometry, this.material, count);
-    const pickLayerMesh = new THREE.InstancedMesh(
-      this.pickGeometry,
-      this.pickMaterial,
-      count
-    );
-    const pickMesh = new THREE.InstancedMesh(
-      this.pickGeometry,
-      this.pickMaterial,
-      count
-    );
+    const pickLayerMesh = new THREE.InstancedMesh(this.pickGeometry, this.pickMaterial, count);
+    const pickMesh = new THREE.InstancedMesh(this.pickGeometry, this.pickMaterial, count);
 
     for (let i = 0; i < count; i++) {
       const { coord, pickColor } = data[i];
@@ -225,7 +220,7 @@ export class ReachableStopsLayer extends Layer {
       pickLayerMesh.setMatrixAt(i, matrix);
       pickMesh.setMatrixAt(i, matrix);
 
-      mesh.setColorAt(i, this.color);
+      // mesh.setColorAt(i, this.color);
       pickLayerMesh.setColorAt(i, this.pickLayerColor);
       pickMesh.setColorAt(i, pickColor);
     }
@@ -314,16 +309,12 @@ export class ReachableStopsLayer extends Layer {
       this.scene.remove(this.labelMesh);
     } else {
       const height = 0.05;
-      const width =
-        (height * this.labelData.mapWidth) / this.labelData.mapHeight;
+      const width = (height * this.labelData.mapWidth) / this.labelData.mapHeight;
 
       this.labelMesh.material.setValues({ map: this.labelData.map });
       this.labelMesh.material.needsUpdate = true;
       this.labelMesh.scale.set(width, height, 1);
-      const [x, y] = this.map.WebMercatorToCanvasXY(
-        this.labelData.x,
-        this.labelData.y
-      );
+      const [x, y] = this.map.WebMercatorToCanvasXY(this.labelData.x, this.labelData.y);
       this.labelMesh.position.set(x, y, 10);
       this.scene.add(this.labelMesh);
     }

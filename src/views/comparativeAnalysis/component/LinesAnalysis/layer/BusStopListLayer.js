@@ -1,11 +1,12 @@
 import { Layer, MAP_EVENT } from "@/mymap";
 import * as THREE from "three";
 import { getTextImage } from "@/mymap/utils/index";
+import { guid } from "@/utils";
 
 const STOP_SIZE = 100;
 
-export class BusStopLayer extends Layer {
-  name = "BusStopLayer";
+export class BusStopListLayer extends Layer {
+  name = "BusStopListLayer";
   size = 50;
   color = new THREE.Color(0x000000);
 
@@ -70,7 +71,7 @@ export class BusStopLayer extends Layer {
       this.handleEventListener(type);
     }
     if (type == MAP_EVENT.UPDATE_CAMERA_HEIGHT) {
-      this.setSize(this.map.cameraHeight / 40 );
+      this.setSize(this.map.cameraHeight / 40);
       this.update();
     }
     if (type == MAP_EVENT.HANDLE_MOUSE_MOVE_PICK) {
@@ -79,12 +80,12 @@ export class BusStopLayer extends Layer {
         const pickColor = new THREE.Color(data.pickColor);
         const item = this.data.find((v2) => v2.pickColor.equals(pickColor));
         if (item) {
-          if (this.labelData && item.data.stop.name == this.labelData.name) {
+          if (this.labelData && item.data.stopName == this.labelData.name) {
             labelData = this.labelData;
           } else {
             if (this.labelData) this.labelData.map.dispose();
             labelData = {};
-            const { url, width, height } = getTextImage(item.data.stop.name);
+            const { url, width, height } = getTextImage(item.data.stopName);
             const texture = new THREE.TextureLoader().load(url);
             texture.minFilter = THREE.LinearFilter;
             texture.wrapS = THREE.ClampToEdgeWrapping;
@@ -92,9 +93,9 @@ export class BusStopLayer extends Layer {
             labelData.map = texture;
             labelData.mapWidth = width;
             labelData.mapHeight = height;
-            labelData.x = item.data.stop.coord.x;
-            labelData.y = item.data.stop.coord.y;
-            labelData.name = item.data.stop.name;
+            labelData.x = item.data.coord.x;
+            labelData.y = item.data.coord.y;
+            labelData.name = item.data.stopName;
           }
         }
       }
@@ -105,7 +106,7 @@ export class BusStopLayer extends Layer {
 
   onAdd(map) {
     super.onAdd(map);
-    this.setSize(this.map.cameraHeight / 40 );
+    this.setSize(this.map.cameraHeight / 40);
     this.update();
   }
 
@@ -134,18 +135,41 @@ export class BusStopLayer extends Layer {
 
   setData(data) {
     try {
-      const center = data.center;
-      this.data = data.stops.map((v, i) => {
-        return {
-          coord: v.coord.offset(center),
-          pickColor: new THREE.Color(i + 1),
-          id: v.uuid,
-          data: v.toJSON(),
-        };
-      });
-      this.center = center.toList();
+      let maxX = 0,
+        minX = Number.MAX_SAFE_INTEGER,
+        maxY = 0,
+        minY = Number.MAX_SAFE_INTEGER;
+      const _data = [];
+      let pickColorNum = 1;
+      for (const line of data) {
+        if (line && line.stops) {
+          for (const { stop } of line.stops) {
+            const { x, y } = stop.coord;
+            if (x > maxX) maxX = x;
+            if (x < minX) minX = x;
+            if (y > maxY) maxY = y;
+            if (y < minY) minY = y;
+            const item = {
+              coord: { x, y },
+              pickColor: new THREE.Color(++pickColorNum),
+              uuid: guid(),
+              data: {
+                coord: { x, y },
+                stopId: stop.id,
+                linkId: stop.linkId,
+                stopName: stop.name,
+                routeId: line.routeId,
+              },
+            };
+            _data.push(item);
+          }
+        }
+      }
+      this.center = [(maxX + minX) / 2, (maxY + minY) / 2];
+      this.data = _data;
       this.update();
     } catch (error) {
+      console.log(error);
       this.data = [];
       this.center = [0, 0];
       this.update();
@@ -162,10 +186,11 @@ export class BusStopLayer extends Layer {
     const mesh = new THREE.InstancedMesh(this.geometry, this.material, count);
     const pickLayerMesh = new THREE.InstancedMesh(this.pickGeometry, this.pickMaterial, count);
     const pickMesh = new THREE.InstancedMesh(this.pickGeometry, this.pickMaterial, count);
+    const [cx, cy] = this.center;
     for (let i = 0; i < count; i++) {
       const { coord, pickColor } = data[i];
 
-      const positionV3 = new THREE.Vector3(coord.x, coord.y, i / count);
+      const positionV3 = new THREE.Vector3(coord.x - cx, coord.y - cy, i / count);
       const _scale = this.size / STOP_SIZE;
       const scaleV3 = new THREE.Vector3(_scale, _scale, _scale);
 
@@ -201,9 +226,9 @@ export class BusStopLayer extends Layer {
     } else {
       this.labelMesh.material.setValues({ map: this.labelData.map });
       this.labelMesh.material.needsUpdate = true;
-      this.labelMesh.scale.set((this.labelData.mapWidth * this.size) / 80, (this.labelData.mapHeight * this.size) / 80, 1);
+      this.labelMesh.scale.set((this.labelData.mapWidth * this.size) / 50, (this.labelData.mapHeight * this.size) / 50, 1);
       const [x, y] = this.map.WebMercatorToCanvasXY(this.labelData.x, this.labelData.y);
-      this.labelMesh.position.set(x, y + this.size, 10);
+      this.labelMesh.position.set(x, y + 1.5 * this.size, 10 + this.size);
       this.scene.add(this.labelMesh);
     }
   }

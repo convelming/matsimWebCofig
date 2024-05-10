@@ -4,9 +4,12 @@
       <div class="StopsChangeDialog__bodyer">
         <div class="row">
           <div class="col">
-            <div class="_title">{{ $l("基础方案") }}</div>
             <div class="_title">
+              <el-checkbox v-model="showOldLine">{{ $l("基础方案") }}</el-checkbox>
+            </div>
+            <div class="_tools">
               <el-color-picker size="mini" :predefine="predefineColors" v-model="oldLineColor" />
+              <el-button type="primary" size="mini" circle icon="el-icon-map-location" @click="handleLocationLine(oldLine)"></el-button>
             </div>
             <div class="_content">
               <div class="stop_list">
@@ -18,9 +21,12 @@
             </div>
           </div>
           <div class="col">
-            <div class="_title">{{ $l("对比方案") }}</div>
             <div class="_title">
+              <el-checkbox v-model="showNewLine">{{ $l("对比方案") }}</el-checkbox>
+            </div>
+            <div class="_tools">
               <el-color-picker size="mini" :predefine="predefineColors" v-model="newLineColor" />
+              <el-button type="primary" size="mini" circle icon="el-icon-map-location" @click="handleLocationLine(newLine)"></el-button>
             </div>
             <div class="_content">
               <div class="stop_list">
@@ -70,7 +76,6 @@
 import { BusStopLayer } from "../../layer/BusStopLayer";
 
 import * as Bean from "@/utils/Bean";
-import { formatHour } from "@/utils/utils";
 import { routeChangeInfo } from "@/api/contrast";
 
 export default {
@@ -91,15 +96,39 @@ export default {
       return this.rootVue._Map;
     },
   },
+  watch: {
+    showOldLine() {
+      if (this._OldBusStopLayer) {
+        this._OldBusStopLayer.visible = this.showOldLine;
+      }
+    },
+    oldLineColor() {
+      if (this._OldBusStopLayer) {
+        this._OldBusStopLayer.setColor(this.oldLineColor);
+      }
+    },
+    showNewLine() {
+      if (this._NewBusStopLayer) {
+        this._NewBusStopLayer.visible = this.showNewLine;
+      }
+    },
+    newLineColor() {
+      if (this._NewBusStopLayer) {
+        this._NewBusStopLayer.setColor(this.newLineColor);
+      }
+    },
+  },
   data() {
     return {
       predefineColors: ["#E9CDAA", "#ff4500", "#ff8c00", "#ffd700", "#90ee90", "#00ced1", "#409eff", "#c71585"],
       s_form: {},
 
-      oldLineColor: "#ff4500",
+      showOldLine: true,
+      oldLineColor: "#E9CDAA",
       oldLine: {},
 
-      newLineColor: "#ff8c00",
+      showNewLine: true,
+      newLineColor: "#ff4500",
       newLine: {},
 
       loading1: false,
@@ -107,12 +136,14 @@ export default {
   },
   created() {
     this._OldBusStopLayer = new BusStopLayer({
-      zIndex: 20,
+      zIndex: 30,
       color: this.oldLineColor,
+      visible: this.showOldLine,
     });
     this._NewBusStopLayer = new BusStopLayer({
-      zIndex: 30,
+      zIndex: 33,
       color: this.newLineColor,
+      visible: this.showNewLine,
     });
   },
   mounted() {
@@ -128,6 +159,8 @@ export default {
   },
   beforeDestroy() {
     this.handleDisable();
+    this._OldBusStopLayer.dispose();
+    this._NewBusStopLayer.dispose();
   },
   methods: {
     // 组件初始化事件
@@ -140,10 +173,6 @@ export default {
     handleDisable() {
       this._Map.removeLayer(this._OldBusStopLayer);
       this._Map.removeLayer(this._NewBusStopLayer);
-    },
-
-    timeFormatter(row) {
-      return formatHour(row.departureTime);
     },
     init() {
       this.loading1 = true;
@@ -163,6 +192,9 @@ export default {
         this.loading1 = false;
       });
     },
+    handleLocationLine(data) {
+      this._Map.setCenter(data.center.toList());
+    },
   },
 };
 </script>
@@ -179,10 +211,20 @@ export default {
       width: calc(50% - 10px);
       background-color: #eee;
       ._title {
-        font-size: 16px;
-        font-weight: bold;
         text-align: center;
         margin-bottom: 20px;
+      }
+      ._tools {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+        & > * + * {
+          margin-left: 10px;
+        }
+        .el-color-picker {
+          background-color: #fff;
+        }
       }
       ._content {
         font-size: 14px;

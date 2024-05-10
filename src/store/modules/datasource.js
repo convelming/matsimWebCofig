@@ -23,7 +23,6 @@ const datasource = {
       state.dataBase = dataBase;
     },
     SET_DATA_BASE_LIST(state, dataBaseList) {
-      console.log(dataBaseList);
       state.dataBaseList = dataBaseList;
     },
     SET_DATA_BASE_LIST_LOADING(state, dataBaseListLoading) {

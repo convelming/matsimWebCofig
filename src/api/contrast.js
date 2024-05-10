@@ -71,3 +71,40 @@ export function changeInfoXml(params) {
     params: params,
   });
 }
+
+
+// 受影响路线列表
+// GET /pt/contrast/affectedLines
+// 接口ID：172155424
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-172155424
+export function affectedLines(params) {
+  return request({
+    url: `/pt/contrast/affectedLines`,
+    method: "get",
+    params: params,
+  });
+}
+
+// 全部受影响路线信息
+// GET /pt/contrast/allAffectedLinesInfo
+// 接口ID：172345206
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-172345206
+export function allAffectedLinesInfo(params) {
+  return request({
+    url: `/pt/contrast/allAffectedLinesInfo`,
+    method: "get",
+    params: params,
+  });
+}
+
+// 全部受影响站点信息
+// GET /pt/contrast/allAffectedStopInfo
+// 接口ID：172545485
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-172545485
+export function allAffectedStopInfo(params) {
+  return request({
+    url: `/pt/contrast/allAffectedStopInfo`,
+    method: "get",
+    params: params,
+  });
+}
