@@ -7,7 +7,9 @@
 
 <script>
 import { guid } from "@/utils/utils";
+import RouteFlows from "../LinesAnalysis/toolbar/RouteFlows.vue";
 import LinesChangeInfo from "../LinesAnalysis/toolbar/LinesChangeInfo.vue";
+
 import BuildDetail from "../../../operationsAnalysis/component/Build3D/toolbar/buildDetail.vue";
 import CarDetail from "../../../operationsAnalysis/component/MotorizedTravel/toolbar/carDetail.vue";
 import BusDetail from "../../../operationsAnalysis/component/MotorizedTravel/toolbar/busDetail.vue";
@@ -19,9 +21,12 @@ import LineDetail from "../../../operationsAnalysis/component/Network/toolbar/li
 import NodeDetail from "../../../operationsAnalysis/component/Network/toolbar/nodeDetail.vue";
 import SelectLinkAnalysis from "../../../operationsAnalysis/component/Network/toolbar/selectLinkAnalysis.vue";
 import SelectBuildAnalysis from "../../../operationsAnalysis/component/Build3D/toolbar/selectBuildAnalysis.vue";
+
 export default {
   components: {
+    RouteFlows,
     LinesChangeInfo,
+
     BuildDetail,
     CarDetail,
     BusDetail,
@@ -38,6 +43,28 @@ export default {
     return {
       activeName: "LinesChangeInfo",
       list: [],
+      // activeName: "888504ac-3217-4854-b170-88e7881a326e",
+      // list: [
+      //   {
+      //     type: "RouteFlows",
+      //     data: {
+      //       uuid: "夜121路(泮塘总站--地铁白云公园站总站)[all-day 21:30]",
+      //       routeDetail: {
+      //         lineId: "900000167888@900000167889",
+      //         lineName: "夜121路",
+      //         routeId: "夜121路(泮塘总站--地铁白云公园站总站)[all-day 21:30]",
+      //         routeName: "夜121路(泮塘总站--地铁白云公园站总站)[all-day 21:30]",
+      //         add: false,
+      //         delete: true,
+      //         path: true,
+      //         time: true,
+      //         stop: true,
+      //         none: false,
+      //       },
+      //     },
+      //     name: "888504ac-3217-4854-b170-88e7881a326e",
+      //   },
+      // ],
     };
   },
   created() {},
@@ -47,6 +74,7 @@ export default {
     add(type, data) {
       console.log(type, data);
       switch (type) {
+        case "RouteFlows":
         case "SelectLinkAnalysis":
         case "SelectBuildAnalysis":
         case "BusDetail":

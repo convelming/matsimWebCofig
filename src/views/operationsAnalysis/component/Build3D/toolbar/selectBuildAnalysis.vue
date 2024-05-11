@@ -1,6 +1,6 @@
 <template>
   <el-collapse-item class="BusStopToolbar" :name="name">
-    <div class="collapse_item_title" slot="title">{{ title }}</div>
+    <div class="collapse_item_title" slot="title">{{ $l("selectBuildAnalysis") }} {{ buildDetail.id }}</div>
     <div class="BusStopToolbar_bodyer">
       <div class="form_item" style="align-items: center">
         <div class="form_label">{{ $l("type") }}</div>
@@ -78,9 +78,6 @@ export default {
   computed: {
     _Map() {
       return this.rootVue._Map;
-    },
-    title() {
-      return this.$l("selectBuildAnalysis") + " " + this.buildDetail.id;
     },
   },
   watch: {

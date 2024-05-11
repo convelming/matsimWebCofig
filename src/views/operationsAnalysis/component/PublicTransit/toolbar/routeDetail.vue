@@ -1,9 +1,7 @@
 <template>
   <el-collapse-item class="RouteDetail" :name="name">
     <template v-if="routeDetail">
-      <div class="collapse_item_title" slot="title">
-        {{ `${$l("Line")} ${routeDetail.line}` }}
-      </div>
+      <div class="collapse_item_title" slot="title">{{ $l("Line") }} {{ routeDetail.line }}</div>
       <div class="RouteDetail_bodyer">
         <div class="stop_title">
           <el-button type="primary" size="small" @click="handleRouteManu({ data: routeDetail, command: 'Transit Route Analysis...' })">{{ $l("Transit Route Analysis...") }}</el-button>

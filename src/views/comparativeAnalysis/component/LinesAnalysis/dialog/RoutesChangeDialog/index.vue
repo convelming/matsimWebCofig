@@ -186,20 +186,24 @@ export default {
         name1: database1 + "/" + datasource1,
         name2: database2 + "/" + datasource2,
         routeId: this.form.routeId,
-      }).then((res) => {
-        this.oldLine = new Bean.TransitRoute(res.data.before || {});
-        this.newLine = new Bean.TransitRoute(res.data.after || {});
-        this._OldBusLineLayer.setData(this.oldLine);
-        this._NewBusLineLayer.setData(this.newLine);
+      })
+        .then((res) => {
+          this.oldLine = new Bean.TransitRoute(res.data.before || {});
+          this.newLine = new Bean.TransitRoute(res.data.after || {});
+          this._OldBusLineLayer.setData(this.oldLine);
+          this._NewBusLineLayer.setData(this.newLine);
 
-        console.log(this._Map, this.rootVue);
-        if (res.data.before) {
-          this._Map.setCenter(this.oldLine.center.toList());
-        } else if (res.data.after) {
-          this._Map.setCenter(this.newLine.center.toList());
-        }
-        this.loading1 = false;
-      });
+          console.log(this._Map, this.rootVue);
+          if (res.data.before) {
+            this._Map.setCenter(this.oldLine.center.toList());
+          } else if (res.data.after) {
+            this._Map.setCenter(this.newLine.center.toList());
+          }
+          this.loading1 = false;
+        })
+        .catch(() => {
+          this.loading1 = false;
+        });
     },
     handleLocationLine(data) {
       this._Map.setCenter(data.center.toList());

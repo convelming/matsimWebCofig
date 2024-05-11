@@ -329,6 +329,15 @@ export default {
         this.showStopToolbar = true;
       }
     },
+    handleShowRouteFlows({ uuid, routeDetail }) {
+      if (this.$refs.Toolbar) {
+        this.$refs.Toolbar.add("RouteFlows", {
+          uuid: uuid,
+          routeDetail: routeDetail,
+        });
+        this.showStopToolbar = true;
+      }
+    },
   },
 };
 </script>

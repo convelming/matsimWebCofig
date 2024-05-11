@@ -9,16 +9,22 @@
             <el-option v-for="item in route_info_analysis" :key="item.value" :label="$l(item.label)" :value="item.value"> </el-option>
           </el-select>
         </div>
-        <el-radio-group style="width: 100%; display: block" v-model="s_form.single">
+        <!-- <el-radio-group style="width: 100%; display: block" v-model="s_form.single">
           <div class="row">
             <el-radio :label="true"> {{ $l("单个班车") }}</el-radio>
             <RouteSelect v-model="s_form.departureId" :options="routeOptions" valueKey="id" labelKey="id" />
           </div>
           <div class="row">
             <el-radio :label="false">{{ $l("时间段") }}</el-radio>
-            <TimeRangeSlider :value="[this.s_form.startSecond, this.s_form.endSecond]" :start.sync="s_form.startSecond" :end.sync="s_form.endSecond" />
+            <TimeRangeSlider :value="[this.s_form.startTime, this.s_form.endTime]" :start.sync="s_form.startTime" :end.sync="s_form.endTime" />
           </div>
-        </el-radio-group>
+        </el-radio-group> -->
+        <div class="row">
+          <span style="text-wrap: nowrap">{{ $l("时间段：") }}</span>
+          <TimeRangeSlider :value="[this.s_form.startTime, this.s_form.endTime]" :start.sync="s_form.startTime" :end.sync="s_form.endTime" />
+        </div>
+        <PassengersEnteringLeaving v-if="chartType == `Passengers Entering / Leaving`" :form="s_form" />
+        <RouteFlows v-if="chartType == `Route Flows`" :form="s_form" :routeInfo="form" />
       </div>
     </Dialog>
   </div>
@@ -32,11 +38,11 @@
   },
   "线路编号：":{
     "zh-CN": "线路编号：",
-    "en-US": "Line Id："
+    "en-US": "Line Id: "
   },
   "分析类型：":{
     "zh-CN": "分析类型：",
-    "en-US": "Analysis："
+    "en-US": "Analysis: "
   },
   "单个班车":{
     "zh-CN": "单个班车",
@@ -46,10 +52,17 @@
     "zh-CN": "时间段",
     "en-US": "Multiple"
   },
+  "时间段：":{
+    "zh-CN": "时间段：",
+    "en-US": "Multiple: "
+  },
 }
 </language>
 
 <script>
+import PassengersEnteringLeaving from "./PassengersEnteringLeaving.vue";
+import RouteFlows from "./RouteFlows.vue";
+
 const route_info_analysis = [
   { label: "Passengers Entering / Leaving", value: "Passengers Entering / Leaving" },
   { label: "Route Flows", value: "Route Flows" },
@@ -67,28 +80,35 @@ export default {
     },
   },
   inject: ["rootVue"],
-  components: {},
+  components: {
+    PassengersEnteringLeaving,
+    RouteFlows,
+  },
   computed: {},
   data() {
     return {
       route_info_analysis,
-      chartType: "",
+      chartType: "Passengers Entering / Leaving",
       routeOptions: [],
       s_form: {},
     };
   },
   created() {
-    console.log(this.rootVue);
-    this.init();
+    const { database1, datasource1, database2, datasource2 } = this.$route.params;
+    this.s_form = {
+      name1: database1 + "/" + datasource1,
+      name2: database2 + "/" + datasource2,
+      routeId: this.form.routeId,
+      startTime: 0,
+      endTime: 24 * 60 * 60,
+    };
   },
   mounted() {
     this.$nextTick(() => {
       this.$refs.dialog.offset(this.offset, this.offset);
     });
   },
-  methods: {
-    init() {},
-  },
+  methods: {},
 };
 </script>
 

@@ -323,9 +323,6 @@ export default {
   width: 100%;
   min-height: 300px;
   height: calc(100vh - 420px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   overflow: auto;
 }
 </style>

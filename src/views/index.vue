@@ -380,7 +380,8 @@ export default {
           this.handleShowComparativeAnalysisDialog();
           break;
         case "systemEvaluation":
-          this.handleShowSystemEvaluationDialog();
+          window.open("https://kepler.gl/demo", "_blank");
+          // this.handleShowSystemEvaluationDialog();
           break;
       }
     },

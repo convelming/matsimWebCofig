@@ -85,7 +85,6 @@ export class BusLineListLayer extends Layer {
         minX = Number.MAX_SAFE_INTEGER,
         maxY = 0,
         minY = Number.MAX_SAFE_INTEGER;
-      console.log(data);
       const _data = [];
       let pickColorNum = 1;
 
@@ -122,7 +121,6 @@ export class BusLineListLayer extends Layer {
           _data.push(routeItem);
         }
       }
-      console.log(_data);
       this.center = [(maxX + minX) / 2, (maxY + minY) / 2];
       this.data = _data;
       this.update();

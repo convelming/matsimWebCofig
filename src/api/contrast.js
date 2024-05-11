@@ -108,3 +108,27 @@ export function allAffectedStopInfo(params) {
     params: params,
   });
 }
+
+// 线路修改前后客流量
+// GET /pt/contrast/passengerInfo
+// 接口ID：172581216
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-172581216
+export function passengerInfo(params) {
+  return request({
+    url: `/pt/contrast/passengerInfo`,
+    method: "get",
+    params: params,
+  });
+}
+
+// 线路修改前后routeFlows
+// GET /pt/contrast/routeFlows
+// 接口ID：172783270
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-172783270
+export function routeFlows(params) {
+  return request({
+    url: `/pt/contrast/routeFlows`,
+    method: "get",
+    params: params,
+  });
+}

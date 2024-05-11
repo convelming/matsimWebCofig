@@ -1,6 +1,6 @@
 <template>
   <el-collapse-item class="BusStopToolbar" :name="name">
-    <div class="collapse_item_title" slot="title">{{ title }}</div>
+    <div class="collapse_item_title" slot="title">{{ $l("lineDetail") }} {{ lineDetail.id }}</div>
     <div class="BusStopToolbar_bodyer" v-loading="loading">
       <el-descriptions class="margin-top" :column="1" border size="small" labelClassName="labelClassName">
         <template slot="extra">
@@ -124,9 +124,6 @@ export default {
   computed: {
     _Map() {
       return this.rootVue._Map;
-    },
-    title() {
-      return this.$l("lineDetail") + " " + this.lineDetail.id;
     },
   },
   watch: {
