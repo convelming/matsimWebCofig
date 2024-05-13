@@ -4,11 +4,36 @@
     <div class="_bodyer">
       <div class="title">
         <span>{{ $l("Top5Routes") }}&nbsp;&nbsp;&nbsp;</span>
-        <el-button type="primary" size="mini" circle icon="el-icon-refresh-right" @click="getList1"></el-button>
+        <el-button
+          type="primary"
+          size="mini"
+          circle
+          icon="el-icon-refresh-right"
+          @click="
+            getList1();
+            getList2();
+          "
+        ></el-button>
         <el-button type="primary" size="small" @click="handleShowPassengerFlowDialog()">{{ $l("showOnChart") }}</el-button>
       </div>
-      <div class="title">
-        <TimeRangeSlider :value="[this.s_form.startTime, this.s_form.endTime]" :start.sync="s_form.startTime" :end.sync="s_form.endTime" />
+      <div class="form">
+        <div class="form_item">
+          <div class="form_label">{{ $l("基础方案：") }}</div>
+          <div class="form_value" style="display: flex; align-items: center">
+            <el-switch v-model="showOldLine" style="margin-right: 20px" />
+            <el-color-picker size="mini" :predefine="predefineColors" v-model="oldLineColor" />
+          </div>
+        </div>
+        <div class="form_item">
+          <div class="form_label">{{ $l("对比方案：") }}</div>
+          <div class="form_value" style="display: flex; align-items: center">
+            <el-switch v-model="showNewLine" style="margin-right: 20px" />
+            <el-color-picker size="mini" :predefine="predefineColors" v-model="newLineColor" />
+          </div>
+        </div>
+        <div class="form_item">
+          <TimeRangeSlider :value="[this.s_form.startTime, this.s_form.endTime]" :start.sync="s_form.startTime" :end.sync="s_form.endTime" />
+        </div>
       </div>
       <el-table class="small" :data="top5List" border stripe v-loading="loading1">
         <el-table-column prop="name" :label="$l('name')" />
@@ -44,6 +69,14 @@
   "showOnChart":{
     "zh-CN": "在图表上显示",
     "en-US": "Display on chart"
+  },
+  "基础方案：":{
+    "zh-CN": "基础方案：",
+    "en-US": "基础方案："
+  },
+  "对比方案：":{
+    "zh-CN": "对比方案：",
+    "en-US": "对比方案："
   },
 }
 </language>
@@ -104,9 +137,63 @@ export default {
       },
       immediate: true,
     },
+    s_form: {
+      handler(val) {
+        this.getList1();
+        this.getList2();
+      },
+      deep: true,
+    },
+    showOldLine() {
+      console.log("watch:showOldLine");
+      if (this._OldRouteFlowsLayer) {
+        this._OldRouteFlowsLayer.visible = this.showOldLine;
+      }
+      if (this._OldBusLineLayer) {
+        this._OldBusLineLayer.visible = this.showOldLine;
+      }
+      if (this._OldBusStopLayer) {
+        this._OldBusStopLayer.visible = this.showOldLine;
+      }
+    },
+    oldLineColor() {
+      if (this._OldRouteFlowsLayer) {
+        this._OldRouteFlowsLayer.setColor(this.oldLineColor);
+      }
+      if (this._OldBusStopLayer) {
+        this._OldBusStopLayer.setColor(this.oldLineColor);
+      }
+      if (this._OldBusLineLayer) {
+        this._OldBusLineLayer.setColor(this.oldLineColor);
+      }
+    },
+    showNewLine() {
+      if (this._NewRouteFlowsLayer) {
+        this._NewRouteFlowsLayer.visible = this.showNewLine;
+      }
+      if (this._NewBusStopLayer) {
+        this._NewBusStopLayer.visible = this.showNewLine;
+      }
+      if (this._NewBusLineLayer) {
+        this._NewBusLineLayer.visible = this.showNewLine;
+      }
+    },
+    newLineColor() {
+      if (this._NewRouteFlowsLayer) {
+        this._NewRouteFlowsLayer.setColor(this.newLineColor);
+      }
+      if (this._NewBusStopLayer) {
+        this._NewBusStopLayer.setColor(this.newLineColor);
+      }
+      if (this._NewBusLineLayer) {
+        this._NewBusLineLayer.setColor(this.newLineColor);
+      }
+    },
   },
   data() {
     return {
+      predefineColors: ["#E9CDAA", "#ff4500", "#ff8c00", "#ffd700", "#90ee90", "#00ced1", "#409eff", "#c71585"],
+
       loading1: false,
 
       sortList: [],
@@ -125,7 +212,11 @@ export default {
       newLine: {},
 
       _OldRouteFlowsLayer: null,
+      _OldBusLineLayer: null,
+      _OldBusStopLayer: null,
       _NewRouteFlowsLayer: null,
+      _NewBusLineLayer: null,
+      _NewBusStopLayer: null,
     };
   },
   created() {
@@ -138,25 +229,26 @@ export default {
     }
 
     this._OldRouteFlowsLayer = new RouteFlowsLayer({ zIndex: 10, color: this.oldLineColor, visible: this.showOldLine });
-    this._NewRouteFlowsLayer = new RouteFlowsLayer({ zIndex: 10, color: this.newLineColor, visible: this.showNewLine });
     this._OldBusLineLayer = new BusLineLayer({
-      zIndex: 23,
+      zIndex: 29,
       color: this.oldLineColor,
       visible: this.showOldLine,
       isDashed: true,
     });
-    this._NewBusLineLayer = new BusLineLayer({
-      zIndex: 20,
-      color: this.newLineColor,
-      visible: this.showNewLine,
-    });
     this._OldBusStopLayer = new BusStopLayer({
-      zIndex: 30,
+      zIndex: 39,
       color: this.oldLineColor,
       visible: this.showOldLine,
     });
+
+    this._NewRouteFlowsLayer = new RouteFlowsLayer({ zIndex: 10, color: this.newLineColor, visible: this.showNewLine });
+    this._NewBusLineLayer = new BusLineLayer({
+      zIndex: 26,
+      color: this.newLineColor,
+      visible: this.showNewLine,
+    });
     this._NewBusStopLayer = new BusStopLayer({
-      zIndex: 33,
+      zIndex: 36,
       color: this.newLineColor,
       visible: this.showNewLine,
     });
@@ -200,22 +292,22 @@ export default {
     getSortList(oldLinkObj, newLinkObj) {
       const list = [];
       for (const key in oldLinkObj) {
-        const item2 = oldLinkObj[key];
-        if (item2.value) {
+        const item = oldLinkObj[key];
+        if (item.value) {
           list.push({
             type: "old",
             name: key,
-            value: item2.value,
+            value: item.value,
           });
         }
       }
       for (const key in newLinkObj) {
-        const item2 = newLinkObj[key];
-        if (item2.value) {
+        const item = newLinkObj[key];
+        if (item.value) {
           list.push({
             type: "new",
             name: key,
-            value: item2.value,
+            value: item.value,
           });
         }
       }
@@ -266,17 +358,17 @@ export default {
         routeId: this.routeDetail.routeId,
       })
         .then((res) => {
-          this.oldLine = new Bean.TransitRoute(res.data.before || {});
-          this.newLine = new Bean.TransitRoute(res.data.after || {});
-          this._OldBusLineLayer.setData(this.oldLine);
-          this._NewBusLineLayer.setData(this.newLine);
-          this._OldBusStopLayer.setData(this.oldLine);
-          this._NewBusStopLayer.setData(this.newLine);
+          const oldLine = new Bean.TransitRoute(res.data.before || {});
+          const newLine = new Bean.TransitRoute(res.data.after || {});
+          this._OldBusLineLayer.setData(oldLine);
+          this._NewBusLineLayer.setData(newLine);
+          this._OldBusStopLayer.setData(oldLine);
+          this._NewBusStopLayer.setData(newLine);
 
           if (res.data.before) {
-            this._Map.setCenter(this.oldLine.center.toList());
+            this._Map.setCenter(oldLine.center.toList());
           } else if (res.data.after) {
-            this._Map.setCenter(this.newLine.center.toList());
+            this._Map.setCenter(newLine.center.toList());
           }
           this.loading1 = false;
         })
@@ -286,20 +378,22 @@ export default {
     },
     handleEnable() {
       this._Map.addLayer(this._OldRouteFlowsLayer);
-      this._Map.addLayer(this._NewRouteFlowsLayer);
       this._Map.addLayer(this._OldBusStopLayer);
-      this._Map.addLayer(this._NewBusStopLayer);
       this._Map.addLayer(this._OldBusLineLayer);
+
+      this._Map.addLayer(this._NewRouteFlowsLayer);
+      this._Map.addLayer(this._NewBusStopLayer);
       this._Map.addLayer(this._NewBusLineLayer);
       this.getList1();
       this.getList2();
     },
     handleDisable() {
       this._Map.removeLayer(this._OldBusStopLayer);
-      this._Map.removeLayer(this._NewBusStopLayer);
       this._Map.removeLayer(this._OldRouteFlowsLayer);
-      this._Map.removeLayer(this._NewRouteFlowsLayer);
       this._Map.removeLayer(this._OldBusLineLayer);
+
+      this._Map.removeLayer(this._NewBusStopLayer);
+      this._Map.removeLayer(this._NewRouteFlowsLayer);
       this._Map.removeLayer(this._NewBusLineLayer);
     },
     handleShowPassengerFlowDialog(data = this.routeDetail) {
@@ -310,7 +404,7 @@ export default {
       data.endTime = this.s_form.endTime;
       const _passengerFlowDialog = new PassengerFlowDialogExtend({
         propsData: { form: data, offset: this._passengerFlowDialogList.length * 20 },
-        parent: this,
+        parent: this.rootVue,
       }).$mount();
       // this._passengerFlowDialogList.push(_passengerFlowDialog);
       _passengerFlowDialog.$on("close", () => {

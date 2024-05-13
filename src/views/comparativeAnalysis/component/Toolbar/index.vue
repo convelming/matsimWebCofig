@@ -84,6 +84,7 @@ export default {
         case "NodeDetail": {
           const item = this.list.find((v) => v.data.uuid == data.uuid);
           if (item) {
+            this.data = item.data;
             this.activeName = item.name;
             break;
           }

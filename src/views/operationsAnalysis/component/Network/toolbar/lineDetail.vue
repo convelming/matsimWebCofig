@@ -213,7 +213,7 @@ export default {
       if (this._linkVolumes) return;
       this._linkVolumes = new LinkVolumesExtend({
         propsData: { linkId: this.lineDetail.id },
-        parent: this,
+        parent: this.rootVue,
       }).$mount();
       this._linkVolumes.$on("close", () => {
         this._linkVolumes.$destroy();

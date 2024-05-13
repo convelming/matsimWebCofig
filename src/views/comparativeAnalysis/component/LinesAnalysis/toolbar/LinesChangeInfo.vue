@@ -215,7 +215,7 @@ export default {
       }
       const _routesChangeDialog = new RoutesChangeDialogExtend({
         propsData: { form: data, offset: this._routesChangeDialogList.length * 20 },
-        parent: this,
+        parent: this.rootVue,
       }).$mount();
       this._routesChangeDialogList.push(_routesChangeDialog);
       _routesChangeDialog.$on("close", () => {
@@ -233,7 +233,7 @@ export default {
       }
       const _stopsChangeDialog = new StopsChangeDialogExtend({
         propsData: { form: data, offset: this._stopsChangeDialogList.length * 20 },
-        parent: this,
+        parent: this.rootVue,
       }).$mount();
       this._stopsChangeDialogList.push(_stopsChangeDialog);
       _stopsChangeDialog.$on("close", () => {
@@ -251,7 +251,7 @@ export default {
       }
       const _timetableDialog = new TimetableDialogExtend({
         propsData: { form: data, offset: this._timetableDialogList.length * 20 },
-        parent: this,
+        parent: this.rootVue,
       }).$mount();
       this._timetableDialogList.push(_timetableDialog);
       _timetableDialog.$on("close", () => {
@@ -269,7 +269,7 @@ export default {
       }
       const _xmlComparisonDialog = new XmlComparisonDialogExtend({
         propsData: { form: data, offset: this._xmlComparisonDialogList.length * 20 },
-        parent: this,
+        parent: this.rootVue,
       }).$mount();
       this._xmlComparisonDialogList.push(_xmlComparisonDialog);
       _xmlComparisonDialog.$on("close", () => {
@@ -287,7 +287,7 @@ export default {
       }
       const _passengerFlowDialog = new PassengerFlowDialogExtend({
         propsData: { form: data, offset: this._passengerFlowDialogList.length * 20 },
-        parent: this,
+        parent: this.rootVue,
       }).$mount();
       this._passengerFlowDialogList.push(_passengerFlowDialog);
       _passengerFlowDialog.$on("close", () => {

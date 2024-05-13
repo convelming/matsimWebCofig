@@ -512,7 +512,7 @@ export default {
     handleShowTransitStopLoad(data) {
       const app = new TransitStopLoadExtend({
         propsData: { form: data },
-        parent: this,
+        parent: this.rootVue,
       }).$mount();
       app.$on("close", () => {
         let index = this._transitStopLoadList.findIndex((v) => v._uid == app._uid);
@@ -525,7 +525,7 @@ export default {
     handleShowTransfers(data) {
       const app = new TransfersExtend({
         propsData: { form: data },
-        parent: this,
+        parent: this.rootVue,
       }).$mount();
       app.$on("close", () => {
         let index = this._transferList.findIndex((v) => v._uid == app._uid);
@@ -538,7 +538,7 @@ export default {
     handleShowTransitRoutesInfo(data) {
       const app = new TransitRoutesInfoExtend({
         propsData: { form: data },
-        parent: this,
+        parent: this.rootVue,
       }).$mount();
       app.$on("close", () => {
         let index = this._transitRoutesInfoList.findIndex((v) => v._uid == app._uid);
@@ -553,7 +553,7 @@ export default {
     handleShowPassengersAtStop(data) {
       const app = new PassengersAtStopExtend({
         propsData: { form: data },
-        parent: this,
+        parent: this.rootVue,
       }).$mount();
       app.$on("close", () => {
         let index = this._passengersAtStop.findIndex((v) => v._uid == app._uid);

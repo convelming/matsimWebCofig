@@ -144,7 +144,7 @@ export default {
       if (this._intersectionFlows) return;
       this._intersectionFlows = new IntersectionFlowsExtend({
         propsData: { nodeId: this.nodeDetail.id },
-        parent: this,
+        parent: this.rootVue,
       }).$mount();
       this._intersectionFlows.$on("close", () => {
         this._intersectionFlows.$destroy();
