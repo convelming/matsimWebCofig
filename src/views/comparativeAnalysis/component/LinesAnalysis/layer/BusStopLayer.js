@@ -16,7 +16,6 @@ export class BusStopLayer extends Layer {
   constructor(opt) {
     super(opt);
 
-    this.size = opt.size || this.size;
     this.data = opt.data || this.data;
     this.color = new THREE.Color(opt.color || this.color);
 
@@ -70,8 +69,7 @@ export class BusStopLayer extends Layer {
       this.handleEventListener(type);
     }
     if (type == MAP_EVENT.UPDATE_CAMERA_HEIGHT) {
-      this.setSize(this.map.cameraHeight / 40 );
-      this.update();
+      this.setSize(this.map.cameraHeight / 40);
     }
     if (type == MAP_EVENT.HANDLE_MOUSE_MOVE_PICK) {
       let labelData = null;
@@ -105,18 +103,18 @@ export class BusStopLayer extends Layer {
 
   onAdd(map) {
     super.onAdd(map);
-    this.setSize(this.map.cameraHeight / 40 );
+    this.setSize(this.map.cameraHeight / 40);
     this.update();
   }
 
   setSize(size) {
     this.size = size;
+    const _scale = this.size / STOP_SIZE;
     const data = this.data;
     const count = data.length;
     for (let i = 0; i < count; i++) {
       const { coord } = data[i];
       const positionV3 = new THREE.Vector3(coord.x, coord.y, i / count);
-      const _scale = 1;
       const scaleV3 = new THREE.Vector3(_scale, _scale, _scale);
 
       const matrix = new THREE.Matrix4();
@@ -162,11 +160,12 @@ export class BusStopLayer extends Layer {
     const mesh = new THREE.InstancedMesh(this.geometry, this.material, count);
     const pickLayerMesh = new THREE.InstancedMesh(this.pickGeometry, this.pickMaterial, count);
     const pickMesh = new THREE.InstancedMesh(this.pickGeometry, this.pickMaterial, count);
+    const _scale = this.size / STOP_SIZE;
     for (let i = 0; i < count; i++) {
       const { coord, pickColor } = data[i];
 
       const positionV3 = new THREE.Vector3(coord.x, coord.y, i / count);
-      const _scale = this.size / STOP_SIZE;
+
       const scaleV3 = new THREE.Vector3(_scale, _scale, _scale);
 
       const matrix = new THREE.Matrix4();
@@ -201,9 +200,9 @@ export class BusStopLayer extends Layer {
     } else {
       this.labelMesh.material.setValues({ map: this.labelData.map });
       this.labelMesh.material.needsUpdate = true;
-      this.labelMesh.scale.set((this.labelData.mapWidth * this.size) / 80, (this.labelData.mapHeight * this.size) / 80, 1);
+      this.labelMesh.scale.set((this.labelData.mapWidth * this.size) / 50, (this.labelData.mapHeight * this.size) / 50, 1);
       const [x, y] = this.map.WebMercatorToCanvasXY(this.labelData.x, this.labelData.y);
-      this.labelMesh.position.set(x, y + this.size, 10);
+      this.labelMesh.position.set(x, y + 1.5 * this.size, 10 + this.size);
       this.scene.add(this.labelMesh);
     }
   }

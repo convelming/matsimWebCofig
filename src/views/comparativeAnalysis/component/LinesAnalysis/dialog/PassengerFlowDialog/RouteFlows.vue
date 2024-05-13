@@ -3,7 +3,7 @@
     <el-tab-pane :label="$l('Chart')" name="Chart">
       <div ref="chart" class="chart-container" v-loading="loading">
         <div>
-          <el-button type="primary" size="small" @click="showInMap">{{ $l("showInMap") }}</el-button>
+          <el-button type="primary" size="small" @click="showOnMap">{{ $l("showOnMap") }}</el-button>
         </div>
         <div class="chart" v-html="src"></div>
       </div>
@@ -54,7 +54,7 @@
     "zh-CN": "Data",
     "en-US": "Data"
   },
-  "showInMap":{
+  "showOnMap":{
     "zh-CN": "在地图上显示",
     "en-US": "Display on map"
   },
@@ -120,6 +120,8 @@ export default {
             linkObj[key] = {
               source: v1.stop.name,
               target: v2.stop.name,
+              sourceId: v1.stop.id,
+              targetId: v2.stop.id,
               value: v2.passenger,
             };
           }
@@ -169,10 +171,10 @@ export default {
       const chart2Bottom = chart1Bottom + titleHeight;
 
       const x = d3.scalePoint(
-        nodes.map(({ name }) => name),
+        nodes.map(({ id }) => id),
         [margin, width - margin]
       );
-      const X = new Map(nodes.map(({ name }) => [name, x(name)]));
+      const X = new Map(nodes.map(({ id }) => [id, x(id)]));
       const svg = d3.create("svg").attr("width", width).attr("height", height).attr("viewBox", [0, 0, width, height]).attr("style", "width:100%;height:auto;background: #fff");
 
       const defs = svg.append("defs");
@@ -184,9 +186,9 @@ export default {
       const fromOffsetObj = {};
       const toOffsetObj = {};
 
-      nodes.forEach(({ name }) => {
-        fromOffsetObj[name] = 0;
-        toOffsetObj[name] = 0;
+      nodes.forEach(({ id }) => {
+        fromOffsetObj[id] = 0;
+        toOffsetObj[id] = 0;
       });
 
       const title_box = svg
@@ -219,13 +221,13 @@ export default {
         .attr("stroke-width", (d) => (d.value / maxValue) * step * 0.5)
         .attr("d", (d) => {
           const width = (d.value / maxValue) * step * 0.5;
-          fromOffsetObj[d.source] += width / 2;
-          toOffsetObj[d.target] += width / 2;
-          const x1 = X.get(d.source) + fromOffsetObj[d.source];
-          const x2 = X.get(d.target) - toOffsetObj[d.target];
+          fromOffsetObj[d.sourceId] += width / 2;
+          toOffsetObj[d.targetId] += width / 2;
+          const x1 = X.get(d.sourceId) + fromOffsetObj[d.sourceId];
+          const x2 = X.get(d.targetId) - toOffsetObj[d.targetId];
           const r = Math.abs(x2 - x1) / 2;
-          fromOffsetObj[d.source] += width / 2;
-          toOffsetObj[d.target] += width / 2;
+          fromOffsetObj[d.sourceId] += width / 2;
+          toOffsetObj[d.targetId] += width / 2;
           return `M${x1},${chart1Bottom}A${r},${r} 0,0,${x1 < x2 ? 1 : 0} ${x2},${chart1Bottom}`;
         });
 
@@ -237,7 +239,7 @@ export default {
         .selectAll("g")
         .data(nodes)
         .join("g")
-        .attr("transform", (d) => `translate(${X.get(d.name)},${chart1Bottom}) rotate(-90)`)
+        .attr("transform", (d) => `translate(${X.get(d.id)},${chart1Bottom}) rotate(-90)`)
         .call((g) =>
           g
             .append("circle")
@@ -264,9 +266,9 @@ export default {
       const fromOffsetObj2 = {};
       const toOffsetObj2 = {};
 
-      nodes.forEach(({ name }) => {
-        fromOffsetObj2[name] = 0;
-        toOffsetObj2[name] = 0;
+      nodes.forEach(({ id }) => {
+        fromOffsetObj2[id] = 0;
+        toOffsetObj2[id] = 0;
       });
 
       const path2 = svg
@@ -280,13 +282,13 @@ export default {
         .attr("stroke-width", (d) => (d.value / maxValue) * step * 0.5)
         .attr("d", (d) => {
           const width = (d.value / maxValue) * step * 0.5;
-          fromOffsetObj2[d.source] += width / 2;
-          toOffsetObj2[d.target] += width / 2;
-          const x1 = X.get(d.source) + fromOffsetObj2[d.source];
-          const x2 = X.get(d.target) - toOffsetObj2[d.target];
+          fromOffsetObj2[d.sourceId] += width / 2;
+          toOffsetObj2[d.targetId] += width / 2;
+          const x1 = X.get(d.sourceId) + fromOffsetObj2[d.sourceId];
+          const x2 = X.get(d.targetId) - toOffsetObj2[d.targetId];
           const r = Math.abs(x2 - x1) / 2;
-          fromOffsetObj2[d.source] += width / 2;
-          toOffsetObj2[d.target] += width / 2;
+          fromOffsetObj2[d.sourceId] += width / 2;
+          toOffsetObj2[d.targetId] += width / 2;
           return `M${x1},${chart2Bottom}A${r},${r} 0,0,${x1 < x2 ? 0 : 1} ${x2},${chart2Bottom}`;
         });
 
@@ -318,7 +320,7 @@ export default {
       const newLine = this.newLinkObj[`${from}-${to}`] || { value: 0 };
       return `old:${oldLine.value} -- new:${newLine.value}`;
     },
-    showInMap() {
+    showOnMap() {
       this.rootVue.handleShowRouteFlows({
         uuid: this.routeInfo.routeId,
         routeDetail: this.routeInfo,

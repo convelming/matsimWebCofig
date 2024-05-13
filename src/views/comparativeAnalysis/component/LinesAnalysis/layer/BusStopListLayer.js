@@ -71,8 +71,8 @@ export class BusStopListLayer extends Layer {
       this.handleEventListener(type);
     }
     if (type == MAP_EVENT.UPDATE_CAMERA_HEIGHT) {
+      console.log("update camera height");
       this.setSize(this.map.cameraHeight / 40);
-      this.update();
     }
     if (type == MAP_EVENT.HANDLE_MOUSE_MOVE_PICK) {
       let labelData = null;
@@ -111,13 +111,14 @@ export class BusStopListLayer extends Layer {
   }
 
   setSize(size) {
+    const [cx, cy] = this.center;
     this.size = size;
+    const _scale = this.size / STOP_SIZE;
     const data = this.data;
     const count = data.length;
     for (let i = 0; i < count; i++) {
       const { coord } = data[i];
-      const positionV3 = new THREE.Vector3(coord.x, coord.y, i / count);
-      const _scale = 1;
+      const positionV3 = new THREE.Vector3(coord.x - cx, coord.y - cy, i / count);
       const scaleV3 = new THREE.Vector3(_scale, _scale, _scale);
 
       const matrix = new THREE.Matrix4();
@@ -187,11 +188,11 @@ export class BusStopListLayer extends Layer {
     const pickLayerMesh = new THREE.InstancedMesh(this.pickGeometry, this.pickMaterial, count);
     const pickMesh = new THREE.InstancedMesh(this.pickGeometry, this.pickMaterial, count);
     const [cx, cy] = this.center;
+    const _scale = this.size / STOP_SIZE;
     for (let i = 0; i < count; i++) {
       const { coord, pickColor } = data[i];
 
       const positionV3 = new THREE.Vector3(coord.x - cx, coord.y - cy, i / count);
-      const _scale = this.size / STOP_SIZE;
       const scaleV3 = new THREE.Vector3(_scale, _scale, _scale);
 
       const matrix = new THREE.Matrix4();

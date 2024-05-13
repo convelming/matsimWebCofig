@@ -43,28 +43,28 @@ export default {
     return {
       activeName: "LinesChangeInfo",
       list: [],
-      // activeName: "888504ac-3217-4854-b170-88e7881a326e",
-      // list: [
-      //   {
-      //     type: "RouteFlows",
-      //     data: {
-      //       uuid: "夜121路(泮塘总站--地铁白云公园站总站)[all-day 21:30]",
-      //       routeDetail: {
-      //         lineId: "900000167888@900000167889",
-      //         lineName: "夜121路",
-      //         routeId: "夜121路(泮塘总站--地铁白云公园站总站)[all-day 21:30]",
-      //         routeName: "夜121路(泮塘总站--地铁白云公园站总站)[all-day 21:30]",
-      //         add: false,
-      //         delete: true,
-      //         path: true,
-      //         time: true,
-      //         stop: true,
-      //         none: false,
-      //       },
-      //     },
-      //     name: "888504ac-3217-4854-b170-88e7881a326e",
-      //   },
-      // ],
+      activeName: "888504ac-3217-4854-b170-88e7881a326e",
+      list: [
+        {
+          type: "RouteFlows",
+          data: {
+            uuid: "夜121路(泮塘总站--地铁白云公园站总站)[all-day 21:30]",
+            routeDetail: {
+              lineId: "900000167888@900000167889",
+              lineName: "夜121路",
+              routeId: "夜121路(泮塘总站--地铁白云公园站总站)[all-day 21:30]",
+              routeName: "夜121路(泮塘总站--地铁白云公园站总站)[all-day 21:30]",
+              add: false,
+              delete: true,
+              path: true,
+              time: true,
+              stop: true,
+              none: false,
+            },
+          },
+          name: "888504ac-3217-4854-b170-88e7881a326e",
+        },
+      ],
     };
   },
   created() {},

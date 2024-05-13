@@ -99,8 +99,8 @@ export default {
       name1: database1 + "/" + datasource1,
       name2: database2 + "/" + datasource2,
       routeId: this.form.routeId,
-      startTime: 0,
-      endTime: 24 * 60 * 60,
+      startTime: this.form.startTime || 0,
+      endTime: this.form.endTime || 24 * 60 * 60,
     };
   },
   mounted() {

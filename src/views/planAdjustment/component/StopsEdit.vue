@@ -364,6 +364,7 @@ export default {
         this._transitRouteCopy = this.transitRoute.toJSON();
         let form = this.transitRoute.stops[index];
         form.index = index + 1;
+        form.id = "";
         this.form = form;
         this.editIndex = index;
         this.rootVue.handleCenterAndZoom({

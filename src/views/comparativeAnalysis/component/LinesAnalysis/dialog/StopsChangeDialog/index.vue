@@ -187,8 +187,11 @@ export default {
         this._OldBusStopLayer.setData(this.oldLine);
         this._NewBusStopLayer.setData(this.newLine);
 
-        console.log(this._Map, this.rootVue);
-        this._Map.setCenter(this.oldLine.center.toList());
+        if (res.data.before) {
+          this._Map.setCenter(this.oldLine.center.toList());
+        } else if (res.data.after) {
+          this._Map.setCenter(this.newLine.center.toList());
+        }
         this.loading1 = false;
       });
     },

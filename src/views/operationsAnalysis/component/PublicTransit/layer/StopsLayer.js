@@ -113,7 +113,6 @@ export class StopsLayer extends Layer {
     }
     if (type == MAP_EVENT.UPDATE_CAMERA_HEIGHT) {
       this.setSize(this.map.cameraHeight / 10000);
-      this.update();
     }
     if (type == MAP_EVENT.HANDLE_PICK_LEFT && data.layerId == this.id) {
       if (this.state == STOPS_STATE_KEY.CAN_SELECT) {
