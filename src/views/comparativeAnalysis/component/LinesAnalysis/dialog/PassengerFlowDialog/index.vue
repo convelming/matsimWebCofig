@@ -25,6 +25,7 @@
         </div>
         <PassengersEnteringLeaving v-if="chartType == `Passengers Entering / Leaving`" :form="s_form" />
         <RouteFlows v-if="chartType == `Route Flows`" :form="s_form" :routeInfo="form" />
+        <RouteTimeDiagram v-if="chartType == `Route Time Diagram`" :form="s_form" :routeInfo="form" />
       </div>
     </Dialog>
   </div>
@@ -62,10 +63,12 @@
 <script>
 import PassengersEnteringLeaving from "./PassengersEnteringLeaving.vue";
 import RouteFlows from "./RouteFlows.vue";
+import RouteTimeDiagram from "./RouteTimeDiagram.vue";
 
 const route_info_analysis = [
   { label: "Passengers Entering / Leaving", value: "Passengers Entering / Leaving" },
   { label: "Route Flows", value: "Route Flows" },
+  { label: "Route Time Diagram", value: "Route Time Diagram" },
 ];
 
 export default {
@@ -83,6 +86,7 @@ export default {
   components: {
     PassengersEnteringLeaving,
     RouteFlows,
+    RouteTimeDiagram,
   },
   computed: {},
   data() {

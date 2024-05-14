@@ -50,6 +50,7 @@ export class BusStopLayer extends Layer {
         transparent: true,
       })
     );
+    this.labelMesh.center.set(0.5, -0.5);
   }
 
   on(type, data) {
@@ -202,7 +203,7 @@ export class BusStopLayer extends Layer {
       this.labelMesh.material.needsUpdate = true;
       this.labelMesh.scale.set((this.labelData.mapWidth * this.size) / 50, (this.labelData.mapHeight * this.size) / 50, 1);
       const [x, y] = this.map.WebMercatorToCanvasXY(this.labelData.x, this.labelData.y);
-      this.labelMesh.position.set(x, y + 1.5 * this.size, 10 + this.size);
+      this.labelMesh.position.set(x, y, 0);
       this.scene.add(this.labelMesh);
     }
   }

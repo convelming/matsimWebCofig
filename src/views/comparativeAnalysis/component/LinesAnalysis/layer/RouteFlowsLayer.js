@@ -1,5 +1,6 @@
 import { Layer, MAP_EVENT } from "@/mymap";
 import * as THREE from "three";
+import { getTextImage } from "@/mymap/utils/index";
 
 export class RouteFlowsLayer extends Layer {
   maxTube = 100;
@@ -21,6 +22,13 @@ export class RouteFlowsLayer extends Layer {
 
     this.material = new THREE.MeshLambertMaterial({ color: this.color });
     this.pickLayerMaterial = new THREE.MeshBasicMaterial({ color: this.pickLayerColor });
+
+    this.labelMesh = new THREE.Sprite(
+      new THREE.SpriteMaterial({
+        transparent: true,
+      })
+    );
+    this.labelMesh.center.set(0.5, -0.5);
   }
 
   on(type, data) {
@@ -38,6 +46,35 @@ export class RouteFlowsLayer extends Layer {
         mesh.position.set(x, y, mesh.position.z);
       }
       this.handleEventListener(type);
+    }
+    if (type == MAP_EVENT.HANDLE_MOUSE_MOVE_PICK) {
+      let labelData = null;
+      if (data.layerId == this.id) {
+        const pickColor = new THREE.Color(data.pickColor);
+        const item = this.data.find((v2) => v2.pickColor.equals(pickColor));
+        if (item) {
+          if (this.labelData && item.pickColor.equals(this.labelData.pickColor)) {
+            labelData = this.labelData;
+          } else {
+            if (this.labelData) this.labelData.map.dispose();
+            labelData = {};
+            const { url, width, height } = getTextImage(`${item.key}: ${item.value}`);
+            const texture = new THREE.TextureLoader().load(url);
+            texture.minFilter = THREE.LinearFilter;
+            texture.wrapS = THREE.ClampToEdgeWrapping;
+            texture.wrapT = THREE.ClampToEdgeWrapping;
+            labelData.map = texture;
+            labelData.mapWidth = width;
+            labelData.mapHeight = height;
+            labelData.x = item.center[0];
+            labelData.y = item.center[1];
+            labelData.height = item.distance / 2;
+            labelData.pickColor = item.pickColor;
+          }
+        }
+      }
+      this.labelData = labelData;
+      this.updateLabel();
     }
   }
 
@@ -78,6 +115,7 @@ export class RouteFlowsLayer extends Layer {
           const center = [(fromPoint.x + toPoint.x) / 2, (fromPoint.y + toPoint.y) / 2];
           const vector = new THREE.Vector3().subVectors(fromPoint, toPoint).angleTo(new THREE.Vector3(1, 0, 0));
           const item = {
+            key: `${fromStop.name} - ${toStop.name}`,
             pickColor: new THREE.Color(++pickColorNum),
             fromStop: stops.get(value.targetId),
             toStop: stops.get(value.sourceId),
@@ -139,6 +177,19 @@ export class RouteFlowsLayer extends Layer {
         pickMesh.userData.center = value.center;
         this.pickMeshScene.add(pickMesh);
       }
+    }
+  }
+
+  updateLabel() {
+    if (!this.labelData) {
+      this.scene.remove(this.labelMesh);
+    } else {
+      this.labelMesh.material.setValues({ map: this.labelData.map });
+      this.labelMesh.material.needsUpdate = true;
+      this.labelMesh.scale.set((this.labelData.mapWidth * this.size) / 50, (this.labelData.mapHeight * this.size) / 50, 1);
+      const [x, y] = this.map.WebMercatorToCanvasXY(this.labelData.x, this.labelData.y);
+      this.labelMesh.position.set(0, 0, 0);
+      this.scene.add(this.labelMesh);
     }
   }
 }

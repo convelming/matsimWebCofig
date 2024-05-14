@@ -3,7 +3,6 @@ import * as THREE from "three";
 import * as BufferGeometryUtils from "three/addons/utils/BufferGeometryUtils.js";
 import { getTextImage } from "@/mymap/utils/index";
 
-
 export class BusRouteLinkLayer extends Layer {
   name = "BusRouteLinkLayer";
   lineWidth = 10;
@@ -15,12 +14,8 @@ export class BusRouteLinkLayer extends Layer {
   linkData = [];
   middleLinkData = [];
   stopData = [];
-  pointTexture = new THREE.TextureLoader().load(
-    require("@/assets/image/point.png")
-  );
-  linkTexture = new THREE.TextureLoader().load(
-    require("@/assets/image/link_top5.png")
-  );
+  pointTexture = new THREE.TextureLoader().load(require("@/assets/image/point.png"));
+  linkTexture = new THREE.TextureLoader().load(require("@/assets/image/link_top5.png"));
 
   constructor(opt) {
     super(opt);
@@ -33,6 +28,7 @@ export class BusRouteLinkLayer extends Layer {
         transparent: true,
       })
     );
+    this.labelMesh.center.set(0.5, -0.5);
   }
 
   onAdd(map) {
@@ -206,13 +202,8 @@ export class BusRouteLinkLayer extends Layer {
       this.pickMeshScene.add(pickMeshMesh);
     }
     if (this.middleLinkData.length) {
-      let geometryList = this.middleLinkData.map((v) =>
-        this.getLineGeometry([v])
-      );
-      let geometry = BufferGeometryUtils.mergeBufferGeometries(
-        geometryList,
-        false
-      );
+      let geometryList = this.middleLinkData.map((v) => this.getLineGeometry([v]));
+      let geometry = BufferGeometryUtils.mergeBufferGeometries(geometryList, false);
 
       let material = this.getLineMaterial({
         usePickColor: false,
@@ -250,16 +241,9 @@ export class BusRouteLinkLayer extends Layer {
     } else {
       this.labelMesh.material.setValues({ map: this.labelData.map });
       this.labelMesh.material.needsUpdate = true;
-      this.labelMesh.scale.set(
-        (this.labelData.mapWidth * this.size) / 80,
-        (this.labelData.mapHeight * this.size) / 80,
-        1
-      );
-      const [x, y] = this.map.WebMercatorToCanvasXY(
-        this.labelData.x,
-        this.labelData.y
-      );
-      this.labelMesh.position.set(x, y + this.size, 10);
+      this.labelMesh.scale.set((this.labelData.mapWidth * this.size) / 80, (this.labelData.mapHeight * this.size) / 80, 1);
+      const [x, y] = this.map.WebMercatorToCanvasXY(this.labelData.x, this.labelData.y);
+      this.labelMesh.position.set(x, y, 0);
       this.scene.add(this.labelMesh);
     }
   }
@@ -267,10 +251,7 @@ export class BusRouteLinkLayer extends Layer {
   getPointsGeometry(data) {
     const count = data.length;
     const positions = new THREE.BufferAttribute(new Float32Array(count * 3), 3);
-    const pickColors = new THREE.BufferAttribute(
-      new Float32Array(count * 3),
-      3
-    );
+    const pickColors = new THREE.BufferAttribute(new Float32Array(count * 3), 3);
     const colors = new THREE.BufferAttribute(new Float32Array(count * 3), 3);
 
     const color = new THREE.Color(this.stopColor);
@@ -463,38 +444,14 @@ export class BusRouteLinkLayer extends Layer {
   getLineGeometry(data) {
     const length = data.length;
 
-    const attrPosition = new THREE.BufferAttribute(
-      new Float32Array(length * 4 * 3 + 2 * 3),
-      3
-    );
-    const attrStartPosition = new THREE.BufferAttribute(
-      new Float32Array(length * 4 * 2 + 2 * 2),
-      2
-    );
-    const attrEndPosition = new THREE.BufferAttribute(
-      new Float32Array(length * 4 * 2 + 2 * 2),
-      2
-    );
-    const attrSide = new THREE.BufferAttribute(
-      new Float32Array(length * 4 + 2),
-      1
-    );
-    const attrIndex = new THREE.BufferAttribute(
-      new Uint16Array(length * 2 * 3 + 6),
-      1
-    );
-    const attrUv = new THREE.BufferAttribute(
-      new Float32Array(length * 4 * 2 + 2),
-      2
-    );
-    const attrPickColor = new THREE.BufferAttribute(
-      new Float32Array(length * 4 * 3 + 2 * 3),
-      3
-    );
-    const attrLength = new THREE.BufferAttribute(
-      new Float32Array(length * 4 + 2),
-      1
-    );
+    const attrPosition = new THREE.BufferAttribute(new Float32Array(length * 4 * 3 + 2 * 3), 3);
+    const attrStartPosition = new THREE.BufferAttribute(new Float32Array(length * 4 * 2 + 2 * 2), 2);
+    const attrEndPosition = new THREE.BufferAttribute(new Float32Array(length * 4 * 2 + 2 * 2), 2);
+    const attrSide = new THREE.BufferAttribute(new Float32Array(length * 4 + 2), 1);
+    const attrIndex = new THREE.BufferAttribute(new Uint16Array(length * 2 * 3 + 6), 1);
+    const attrUv = new THREE.BufferAttribute(new Float32Array(length * 4 * 2 + 2), 2);
+    const attrPickColor = new THREE.BufferAttribute(new Float32Array(length * 4 * 3 + 2 * 3), 3);
+    const attrLength = new THREE.BufferAttribute(new Float32Array(length * 4 + 2), 1);
 
     for (let index = 0; index < data.length; index++) {
       const link = data[index];
@@ -521,12 +478,7 @@ export class BusRouteLinkLayer extends Layer {
         attrLength.setX(index * 4 + 1, link.fromLength || 0);
 
         attrPickColor.setXYZ(index * 4, pickColor.r, pickColor.g, pickColor.b);
-        attrPickColor.setXYZ(
-          index * 4 + 1,
-          pickColor.r,
-          pickColor.g,
-          pickColor.b
-        );
+        attrPickColor.setXYZ(index * 4 + 1, pickColor.r, pickColor.g, pickColor.b);
       }
       // toNode
       {
@@ -541,18 +493,8 @@ export class BusRouteLinkLayer extends Layer {
         attrLength.setX(index * 4 + 2, link.toLength || 0);
         attrLength.setX(index * 4 + 3, link.toLength || 0);
 
-        attrPickColor.setXYZ(
-          index * 4 + 2,
-          pickColor.r,
-          pickColor.g,
-          pickColor.b
-        );
-        attrPickColor.setXYZ(
-          index * 4 + 3,
-          pickColor.r,
-          pickColor.g,
-          pickColor.b
-        );
+        attrPickColor.setXYZ(index * 4 + 2, pickColor.r, pickColor.g, pickColor.b);
+        attrPickColor.setXYZ(index * 4 + 3, pickColor.r, pickColor.g, pickColor.b);
       }
 
       attrUv.setXY(index * 4, 0, 0);

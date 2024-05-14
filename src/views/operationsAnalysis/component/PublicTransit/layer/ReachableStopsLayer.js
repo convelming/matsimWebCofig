@@ -51,14 +51,14 @@ export class ReachableStopsLayer extends Layer {
       color: this.pickLayerColor,
     });
 
-
     this.labelMesh = new THREE.Sprite(
       new THREE.SpriteMaterial({
         transparent: true,
       })
     );
+    this.labelMesh.center.set(0.5, -0.5);
   }
-  
+
   setPickLayerColor(pickLayerColor) {
     this.pickLayerColor = new THREE.Color(pickLayerColor);
     this.pickMaterial.setValues({ color: this.pickLayerColor });
@@ -315,7 +315,7 @@ export class ReachableStopsLayer extends Layer {
       this.labelMesh.material.needsUpdate = true;
       this.labelMesh.scale.set(width, height, 1);
       const [x, y] = this.map.WebMercatorToCanvasXY(this.labelData.x, this.labelData.y);
-      this.labelMesh.position.set(x, y, 10);
+      this.labelMesh.position.set(x, y, 0);
       this.scene.add(this.labelMesh);
     }
   }

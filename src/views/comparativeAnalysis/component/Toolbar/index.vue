@@ -43,26 +43,26 @@ export default {
     return {
       activeName: "LinesChangeInfo",
       list: [],
-      activeName: "888504ac-3217-4854-b170-88e7881a326e",
+      activeName: "4231bd4e-831d-4705-994f-365bfc43eaf8",
       list: [
         {
           type: "RouteFlows",
           data: {
-            uuid: "夜121路(泮塘总站--地铁白云公园站总站)[all-day 21:30]",
+            uuid: "广123路(革新路总站--半岛花园总站)[all-day 07:15]",
             routeDetail: {
-              lineId: "900000167888@900000167889",
-              lineName: "夜121路",
-              routeId: "夜121路(泮塘总站--地铁白云公园站总站)[all-day 21:30]",
-              routeName: "夜121路(泮塘总站--地铁白云公园站总站)[all-day 21:30]",
+              lineId: "440100015622@440100015623",
+              lineName: "广123路",
+              routeId: "广123路(革新路总站--半岛花园总站)[all-day 07:15]",
+              routeName: "广123路(革新路总站--半岛花园总站)[all-day 07:15]",
               add: false,
-              delete: true,
-              path: true,
+              delete: false,
+              path: false,
               time: true,
-              stop: true,
+              stop: false,
               none: false,
             },
           },
-          name: "888504ac-3217-4854-b170-88e7881a326e",
+          name: "4231bd4e-831d-4705-994f-365bfc43eaf8",
         },
       ],
     };
@@ -83,6 +83,7 @@ export default {
         case "LineDetail":
         case "NodeDetail": {
           const item = this.list.find((v) => v.data.uuid == data.uuid);
+          console.log(item);
           if (item) {
             this.data = item.data;
             this.activeName = item.name;
@@ -96,6 +97,7 @@ export default {
               data: data,
               name: guid(),
             };
+            console.log(item);
             this.activeName = item.name;
             this.list.unshift(item);
           }

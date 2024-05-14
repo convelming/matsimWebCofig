@@ -9,6 +9,7 @@ export const formatTime = (date) => {
 };
 
 export const formatHour = (num) => {
+  if (Number(num) !== Number(num)) return String(num);
   const hour = Math.floor(num / 3600);
   const minute = Math.floor((num % 3600) / 60);
   const second = Math.floor(num % 60);

@@ -4,24 +4,9 @@
       <div ref="chart" class="chart-container" v-loading="loading"></div>
     </el-tab-pane>
     <el-tab-pane :label="$l('Data')" name="Data">
-      <el-table
-        class="small"
-        :data="list"
-        border
-        stripe
-        height="calc(100vh - 400px)"
-        v-loading="loading"
-      >
-        <el-table-column
-          :label="$l('Stop Name')"
-          prop="stopName"
-          show-overflow-tooltip
-        />
-        <el-table-column
-          :label="$l('Stop Id')"
-          prop="stopId"
-          show-overflow-tooltip
-        />
+      <el-table class="small" :data="list" border stripe height="calc(100vh - 400px)" v-loading="loading">
+        <el-table-column :label="$l('Stop Name')" prop="stopName" show-overflow-tooltip />
+        <el-table-column :label="$l('Stop Id')" prop="stopId" show-overflow-tooltip />
         <el-table-column :label="$l('#entering')" prop="entering" />
         <el-table-column :label="$l('#leaving')" prop="leaving" />
         <el-table-column :label="$l('#passengers')" prop="passengers" />
@@ -124,6 +109,13 @@ export default {
     },
     // 获取图表配置
     getChartOption() {
+      function changeName(name) {
+        return name
+          .split("")
+          .map((v, i) => ((i + 1) % 5 == 0 ? v + "\n" : v))
+          .join("");
+      }
+
       return {
         tooltip: {
           trigger: "axis",
@@ -136,20 +128,18 @@ export default {
         },
         grid: [
           {
-            top: 50,
+            top: 70,
             bottom: "42.5%",
             left: 50,
             right: 10,
             backgroundColor: "#ccc",
-            containLabel: true,
           },
           {
             top: "62.5%",
-            bottom: "5%",
+            bottom: 70,
             left: 50,
             right: 10,
             backgroundColor: "#ccc",
-            containLabel: true,
           },
         ],
         axisPointer: {
@@ -171,6 +161,7 @@ export default {
             axisLabel: {
               interval: 0,
               rotate: 90,
+              formatter: changeName,
             },
           },
         ],

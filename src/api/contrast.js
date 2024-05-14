@@ -72,7 +72,6 @@ export function changeInfoXml(params) {
   });
 }
 
-
 // 受影响路线列表
 // GET /pt/contrast/affectedLines
 // 接口ID：172155424
@@ -128,6 +127,18 @@ export function passengerInfo(params) {
 export function routeFlows(params) {
   return request({
     url: `/pt/contrast/routeFlows`,
+    method: "get",
+    params: params,
+  });
+}
+
+// 线路修改前后routeTimeDiagram
+// GET /pt/contrast/routeTimeDiagram
+// 接口ID：173145948
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-173145948
+export function routeTimeDiagram(params) {
+  return request({
+    url: `/pt/contrast/routeTimeDiagram`,
     method: "get",
     params: params,
   });

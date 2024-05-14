@@ -101,6 +101,7 @@
 <script>
 import * as echarts from "echarts";
 import { routeTimeDiagram } from "@/api/index";
+import { formatHour } from "@/utils/utils";
 export default {
   props: {
     lineInfo: {
@@ -285,6 +286,7 @@ export default {
         },
         tooltip: {
           trigger: "axis",
+          valueFormatter: formatHour
         },
         legend: {
           type: "scroll",

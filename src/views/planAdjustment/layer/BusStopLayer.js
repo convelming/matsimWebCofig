@@ -20,9 +20,7 @@ export class BusStopLayer extends Layer {
     this.color = new THREE.Color(opt.color || this.color);
     this.highStopColor = new THREE.Color(opt.highStopColor || this.highStopColor);
 
-    this.texture = new THREE.TextureLoader().load(
-      require("@/assets/image/point.png")
-    );
+    this.texture = new THREE.TextureLoader().load(require("@/assets/image/point.png"));
 
     this.geometry = new THREE.BufferGeometry();
     this.material = this.getMaterial({
@@ -39,10 +37,7 @@ export class BusStopLayer extends Layer {
       vertexColors: false,
       usePickColor: false,
     });
-    this.pickLayerMesh = new THREE.Points(
-      this.geometry,
-      this.pickLayerMaterial
-    );
+    this.pickLayerMesh = new THREE.Points(this.geometry, this.pickLayerMaterial);
     this.pickLayerMesh.userData.center = [0, 0];
     this.pickLayerMesh.position.set(0, 0, 0);
     this.pickLayerScene.add(this.pickLayerMesh);
@@ -60,6 +55,7 @@ export class BusStopLayer extends Layer {
         transparent: true,
       })
     );
+    this.labelMesh.center.set(0.5, -0.5);
   }
 
   on(type, data) {
@@ -82,7 +78,7 @@ export class BusStopLayer extends Layer {
       this.setSize(this.map.cameraHeight / 30);
       this.update();
     }
-    
+
     if (type == MAP_EVENT.HANDLE_PICK_LEFT && data.layerId == this.id) {
       const pickColor = new THREE.Color(data.pickColor);
       const item = this.data.find((v2) => v2.pickColor.equals(pickColor));
@@ -176,10 +172,7 @@ export class BusStopLayer extends Layer {
     let data = this.data;
     const count = data.length;
     const positions = new THREE.BufferAttribute(new Float32Array(count * 3), 3);
-    const pickColors = new THREE.BufferAttribute(
-      new Float32Array(count * 3),
-      3
-    );
+    const pickColors = new THREE.BufferAttribute(new Float32Array(count * 3), 3);
     const colors = new THREE.BufferAttribute(new Float32Array(count * 3), 3);
     const color = new THREE.Color(this.color);
     const highStopColor = new THREE.Color(this.highStopColor);
@@ -277,16 +270,9 @@ export class BusStopLayer extends Layer {
     } else {
       this.labelMesh.material.setValues({ map: this.labelData.map });
       this.labelMesh.material.needsUpdate = true;
-      this.labelMesh.scale.set(
-        (this.labelData.mapWidth * this.size) / 80,
-        (this.labelData.mapHeight * this.size) / 80,
-        1
-      );
-      const [x, y] = this.map.WebMercatorToCanvasXY(
-        this.labelData.x,
-        this.labelData.y
-      );
-      this.labelMesh.position.set(x, y + this.size, 10);
+      this.labelMesh.scale.set((this.labelData.mapWidth * this.size) / 80, (this.labelData.mapHeight * this.size) / 80, 1);
+      const [x, y] = this.map.WebMercatorToCanvasXY(this.labelData.x, this.labelData.y);
+      this.labelMesh.position.set(x, y, 0);
       this.scene.add(this.labelMesh);
     }
   }
