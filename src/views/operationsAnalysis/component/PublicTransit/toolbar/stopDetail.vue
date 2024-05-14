@@ -64,6 +64,31 @@
     "zh-CN": "Show Reachable Stops",
     "en-US": "Show Reachable Stops"
   },
+  
+  "Copy Id":{
+    "zh-CN": "Copy Id",
+    "en-US": "Copy Id"
+  },
+  "Copy Transit Line Id":{
+    "zh-CN": "Copy Transit Line Id",
+    "en-US": "Copy Transit Line Id"
+  },
+  "Show Route Details":{
+    "zh-CN": "Show Route Details",
+    "en-US": "Show Route Details"
+  },
+  "Transit Route Analysis...":{
+    "zh-CN": "Transit Route Analysis...",
+    "en-US": "Transit Route Analysis..."
+  },
+  "List Departures":{
+    "zh-CN": "List Departures",
+    "en-US": "List Departures"
+  },
+  "Create Passengers Agent Group...":{
+    "zh-CN": "Create Passengers Agent Group...",
+    "en-US": "Create Passengers Agent Group..."
+  },
 }
 </language>
 

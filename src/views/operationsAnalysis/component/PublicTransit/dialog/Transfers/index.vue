@@ -1,82 +1,45 @@
 <template>
   <div>
-    <Dialog
-      :title="$l('Transfers')"
-      visible
-      @close="$emit('close')"
-      left="center"
-      width="900px"
-    >
+    <Dialog :title="$l('Transfers')" visible @close="$emit('close')" left="center" width="900px">
       <div class="Transfers_bodyer">
         <div class="row">
           <el-popover placement="bottom" width="200" trigger="click">
-            <el-table
-              ref="stopTable"
-              class="small"
-              :data="stopList"
-              border
-              stripe
-              height="300px"
-            >
+            <el-table ref="stopTable" class="small" :data="stopList" border stripe height="300px">
               <el-table-column type="selection" width="55" align="center" />
-              <el-table-column
-                :label="$l('Transit Stop')"
-                show-overflow-tooltip
-              >
+              <el-table-column :label="$l('Transit Stop')" show-overflow-tooltip>
                 <span slot-scope="{ row }">{{ row.name }} ({{ row.id }})</span>
               </el-table-column>
             </el-table>
-            <el-button slot="reference" size="small">{{
-              $l("Analyzed Stops...")
-            }}</el-button>
+            <el-button slot="reference" size="small">{{ $l("Analyzed Stops...") }}</el-button>
           </el-popover>
-          <el-button
-            style="margin-left: 10px"
-            size="small"
-            @click="dialog2 = true"
-            >{{ $l("Lines...") }}</el-button
-          >
-          <el-button size="small" @click="dialog3 = true">{{
-            $l("Create Agent Group...")
-          }}</el-button>
+          <el-button style="margin-left: 10px" size="small" @click="dialog2 = true">{{ $l("Lines...") }}</el-button>
+          <el-button size="small" @click="dialog3 = true">{{ $l("Create Agent Group...") }}</el-button>
         </div>
         <div class="row">
-          <el-checkbox v-model="showNum">{{
-            $l("Show Numbers in Chart")
-          }}</el-checkbox>
-          <el-checkbox v-model="showPer">{{
-            $l("show Percentages in Table")
-          }}</el-checkbox>
-          <span class="text1" style="margin-left: auto; margin-right: 10px">{{
-            $l("Nultiplicator:")
-          }}</span>
-          <el-input-number
-            v-model="s_form.nultiplicator"
-            size="small"
-            :step="0.01"
-          />
+          <el-checkbox v-model="showNum">{{ $l("Show Numbers in Chart") }}</el-checkbox>
+          <el-checkbox v-model="showPer">{{ $l("show Percentages in Table") }}</el-checkbox>
+          <span class="text1" style="margin-left: auto; margin-right: 10px">{{ $l("Nultiplicator:") }}</span>
+          <el-input-number v-model="s_form.nultiplicator" size="small" :step="0.01" />
         </div>
         <div class="row">
-          <TimeRangeSlider
-            :value="[s_form.startSecond, s_form.endSecond]"
-            :start.sync="s_form.startSecond"
-            :end.sync="s_form.endSecond"
-          />
+          <TimeRangeSlider :value="[s_form.startSecond, s_form.endSecond]" :start.sync="s_form.startSecond" :end.sync="s_form.endSecond" />
         </div>
-        <!-- <div class="chart_legend_box">
+        <el-tabs v-model="activeName">
+          <el-tab-pane :label="$l('Chart')" name="Chart">
+            <!-- <div class="chart_legend_box">
           <el-checkbox v-model="showChart1">chart1</el-checkbox>
           <el-checkbox v-model="showChart2">chart2</el-checkbox>
           <el-checkbox v-model="showChart3">chart3</el-checkbox>
         </div> -->
-        <div class="chart_list_box" v-loading="loading">
-          <div class="chart_box">
-            <div class="chart" v-html="chartSrc"></div>
-          </div>
-          <!-- <div class="chart_box" v-if="showChart1">
+            <div class="chart_list_box" v-loading="loading">
+              <div class="chart_box">
+                <div class="chart" v-html="chartSrc"></div>
+              </div>
+              <!-- <div class="chart_box" v-if="showChart1">
             <div class="chart" v-html="src"></div>
             <div class="chart_name">Chart1</div>
           </div> -->
-          <!-- <div class="chart_box" v-if="showChart2">
+              <!-- <div class="chart_box" v-if="showChart2">
             <div class="chart" v-html="src"></div>
             <div class="chart_name">Chart2</div>
           </div>
@@ -84,7 +47,19 @@
             <div class="chart" v-html="src"></div>
             <div class="chart_name">Chart3</div>
           </div> -->
-        </div>
+            </div>
+          </el-tab-pane>
+          <el-tab-pane :label="$l('Data')" name="Data">
+            <el-table class="small" :data="tableList" border stripe height="calc(100vh - 400px)" :show-header="false">
+              <el-table-column prop="name" min-width="150" />
+              <el-table-column v-for="(v, i) in colList" min-width="150">
+                <template slot-scope="{ row }">
+                  {{ row.type === "header" ? v.name : getValue(dataMap, row.id, v.id) }}
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-tab-pane>
+        </el-tabs>
       </div>
     </Dialog>
 
@@ -92,92 +67,45 @@
       <el-form label-position="top" size="small" class="Transfers_dialog2">
         <el-form-item :label="$l('Group Attribute (Incoming)')">
           <el-select v-model="s_form.inconming" @change="getData">
-            <el-option
-              v-for="item in group_attribute"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
+            <el-option v-for="item in group_attribute" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
         <el-form-item :label="$l('Group Attribute (Outgoing)')">
           <el-select v-model="s_form.outgoing" @change="getData">
-            <el-option
-              v-for="item in group_attribute"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
+            <el-option v-for="item in group_attribute" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-table
-            class="small"
-            :data="chartNodeList"
-            border
-            stripe
-            height="300px"
-          >
+          <el-table class="small" :data="chartNodeList" border stripe height="300px">
             <el-table-column align="center" width="55">
-              <el-checkbox
-                slot-scope="{ row }"
-                v-model="row.show"
-                @change="updateChart"
-              ></el-checkbox>
+              <el-checkbox slot-scope="{ row }" v-model="row.show" @change="updateChart"></el-checkbox>
             </el-table-column>
-            <el-table-column
-              :label="$l('line')"
-              prop="name"
-              show-overflow-tooltip
-            >
+            <el-table-column :label="$l('line')" prop="name" show-overflow-tooltip>
               <span slot-scope="{ row }">{{ row.name }} ({{ row.id }})</span>
             </el-table-column>
             <el-table-column :label="$l('color')" width="70" align="center">
-              <el-color-picker
-                slot-scope="{ row }"
-                v-model="row.color"
-                size="small"
-                @change="updateChart"
-              />
+              <el-color-picker slot-scope="{ row }" v-model="row.color" size="small" @change="updateChart" />
             </el-table-column>
           </el-table>
         </el-form-item>
       </el-form>
     </Dialog>
 
-    <el-dialog
-      class="Transfers_dialog3"
-      :title="$l('Create Agent Group from Transferring Passengers')"
-      :visible.sync="dialog3"
-      width="500px"
-      append-to-body
-    >
+    <el-dialog class="Transfers_dialog3" :title="$l('Create Agent Group from Transferring Passengers')" :visible.sync="dialog3" width="500px" append-to-body>
       <div>
-        <el-checkbox v-model="dialog3Form.checkbox">{{
-          $l("Include Passengers that start theirtriphere")
-        }}</el-checkbox>
-        <el-checkbox v-model="dialog3Form.checkbox">{{
-          $l("Include Passengers that end their trip here")
-        }}</el-checkbox>
-        <el-checkbox v-model="dialog3Form.checkbox">{{
-          $l("Include Passengers that transfer here")
-        }}</el-checkbox>
+        <el-checkbox v-model="dialog3Form.checkbox">{{ $l("Include Passengers that start theirtriphere") }}</el-checkbox>
+        <el-checkbox v-model="dialog3Form.checkbox">{{ $l("Include Passengers that end their trip here") }}</el-checkbox>
+        <el-checkbox v-model="dialog3Form.checkbox">{{ $l("Include Passengers that transfer here") }}</el-checkbox>
         <el-radio-group v-model="dialog3Form.radioGroup">
           <el-radio label="1">{{ $l("Passengers of any line") }}</el-radio>
           <el-radio label="2">
-            <span
-              >{{ $l("Only Passengers of line") }}&nbsp;&nbsp;&nbsp;&nbsp;</span
-            >
+            <span>{{ $l("Only Passengers of line") }}&nbsp;&nbsp;&nbsp;&nbsp;</span>
             <el-select v-model="dialog3Form.select" size="small">
               <el-option :label="$l('Start/End')" value="Start/End" />
             </el-select>
           </el-radio>
         </el-radio-group>
-        <TimeRangeSlider
-          :value="[dialog3Form.startSecond, dialog3Form.endSecond]"
-          :start.sync="dialog3Form.startSecond"
-          :end.sync="dialog3Form.endSecond"
-        />
+        <TimeRangeSlider :value="[dialog3Form.startSecond, dialog3Form.endSecond]" :start.sync="dialog3Form.startSecond" :end.sync="dialog3Form.endSecond" />
       </div>
       <div slot="footer">
         <el-button size="small">{{ $l("Cancel") }}</el-button>
@@ -269,6 +197,14 @@
     "zh-CN": "Create",
     "en-US": "Create"
   },
+  "Chart":{
+    "zh-CN": "Chart",
+    "en-US": "Chart"
+  },
+  "Data":{
+    "zh-CN": "Data",
+    "en-US": "Data"
+  },
 }
 </language>
 
@@ -305,6 +241,9 @@ export default {
       chartSrc: "",
       chartData: {},
       chartNodeList: [],
+      tableList: [],
+      dataMap: [],
+      colList: [],
 
       dialog1: false,
 
@@ -322,6 +261,8 @@ export default {
       showChart1: true,
       showChart2: false,
       showChart3: false,
+
+      activeName: "Chart",
     };
   },
   created() {
@@ -343,9 +284,8 @@ export default {
       this.loading = true;
       transfers(this.s_form)
         .then(({ data }) => {
-          const nodeMap = new Map(
-            data.flatMap((d) => [d.source, d.target]).map((v) => [v.id, v])
-          );
+          const dataMap = new Map(data.map((v) => [`${v.source.id}-${v.target.id}`, v]));
+          const nodeMap = new Map(data.flatMap((d) => [d.source, d.target]).map((v) => [v.id, v]));
           const nodeList = Array.from(nodeMap.values()).map((v, i) => {
             v.color = colors[i];
             v.show = true;
@@ -353,12 +293,23 @@ export default {
           });
           this.chartNodeList = nodeList;
           this.chartData = data;
-
+          this.dataMap = dataMap;
+          this.tableList = [{ type: "header" }, ...nodeList];
+          this.colList = [...nodeList];
+          console.log(dataMap);
           this.updateChart();
         })
         .finally(() => {
           this.loading = false;
         });
+    },
+    // 获取值
+    getValue(dataMap, stopId, departureId) {
+      try {
+        return dataMap.get(`${stopId}-${departureId}`).value;
+      } catch (error) {
+        return 0;
+      }
     },
     updateChart() {
       const width = 1080;
@@ -366,17 +317,13 @@ export default {
       const innerRadius = Math.min(width, height) * 0.5 - 100;
       const outerRadius = innerRadius + 20;
 
-      const nodeList = Array.from(this.chartNodeList.values()).filter(
-        (v) => v.show
-      );
+      const nodeList = Array.from(this.chartNodeList.values()).filter((v) => v.show);
       const data = this.chartData;
 
       const nodeMap = new Map(nodeList.map((v) => [v.id, v]));
       const indexs = nodeList.map((v) => v.id);
       const indexMap = new Map(indexs.map((key, value) => [key, value]));
-      const matrix = Array.from(indexMap, () =>
-        new Array(indexMap.size).fill(0)
-      );
+      const matrix = Array.from(indexMap, () => new Array(indexMap.size).fill(0));
       for (const { source, target, value } of data) {
         console.log(indexMap.has(source.id), indexMap.has(target.id));
         if (indexMap.has(source.id) && indexMap.has(target.id)) {
@@ -410,10 +357,7 @@ export default {
         .append("path")
         .attr("id", "textId")
         .attr("fill", "none")
-        .attr(
-          "d",
-          d3.arc()({ outerRadius, startAngle: 0, endAngle: 2 * Math.PI })
-        );
+        .attr("d", d3.arc()({ outerRadius, startAngle: 0, endAngle: 2 * Math.PI }));
 
       svg
         .append("g")
@@ -450,10 +394,7 @@ export default {
         .attr("dy", -3)
         .append("textPath")
         .attr("xlink:href", "#textId")
-        .attr(
-          "startOffset",
-          (d) => ((d.startAngle + d.endAngle) / 2) * outerRadius
-        )
+        .attr("startOffset", (d) => ((d.startAngle + d.endAngle) / 2) * outerRadius)
         .text((d) => {
           const source = nodeMap.get(indexs[d.index]);
           return source.name;
@@ -461,9 +402,7 @@ export default {
 
       g.append("title").text((d) => {
         const source = nodeMap.get(indexs[d.index]);
-        return `${source.name} \nowes ${d3.sum(
-          matrix[d.index]
-        )} \nis owed ${d3.sum(matrix, (row) => row[d.index])}`;
+        return `${source.name} \nowes ${d3.sum(matrix[d.index])} \nis owed ${d3.sum(matrix, (row) => row[d.index])}`;
       });
       this.chartSrc = svg.node().outerHTML;
     },
