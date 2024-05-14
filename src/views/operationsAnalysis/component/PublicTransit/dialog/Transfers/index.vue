@@ -274,7 +274,7 @@
 
 <script>
 import * as d3 from "d3";
-import { group_attribute } from "../enum";
+import { group_attribute } from "../../enum";
 import { transfers } from "@/api/index";
 import colors from "@/utils/colors";
 export default {

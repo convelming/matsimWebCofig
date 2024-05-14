@@ -119,7 +119,8 @@ export class RouteFlowsLayer extends Layer {
             pickColor: new THREE.Color(++pickColorNum),
             fromStop: stops.get(value.targetId),
             toStop: stops.get(value.sourceId),
-            value: value.value / maxValue,
+            value: value.value,
+            proportion: value.value / maxValue,
             distance: distance,
             center: center,
             vector: vector,
@@ -151,7 +152,7 @@ export class RouteFlowsLayer extends Layer {
     if (this.data) {
       for (const value of this.data) {
         const [x, y] = this.map.WebMercatorToCanvasXY(value.center[0], value.center[1]);
-        const geometry = new THREE.TorusGeometry(value.distance / 2, value.value * this.maxTube, 16, 100, Math.PI);
+        const geometry = new THREE.TorusGeometry(value.distance / 2, value.proportion * this.maxTube, 16, 100, Math.PI);
         this.geometryList.push(geometry);
 
         const mesh = new THREE.Mesh(geometry, this.material);
@@ -182,13 +183,15 @@ export class RouteFlowsLayer extends Layer {
 
   updateLabel() {
     if (!this.labelData) {
+      console.log(this.id, this.labelData);
       this.scene.remove(this.labelMesh);
     } else {
+      console.log(this.id, this.labelData);
       this.labelMesh.material.setValues({ map: this.labelData.map });
       this.labelMesh.material.needsUpdate = true;
-      this.labelMesh.scale.set((this.labelData.mapWidth * this.size) / 50, (this.labelData.mapHeight * this.size) / 50, 1);
+      this.labelMesh.scale.set((this.labelData.mapWidth * this.map.cameraHeight) / 2500, (this.labelData.mapHeight * this.map.cameraHeight) / 2500, 1);
       const [x, y] = this.map.WebMercatorToCanvasXY(this.labelData.x, this.labelData.y);
-      this.labelMesh.position.set(0, 0, 0);
+      this.labelMesh.position.set(x, y, this.labelData.height);
       this.scene.add(this.labelMesh);
     }
   }

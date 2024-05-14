@@ -43,28 +43,28 @@ export default {
     return {
       activeName: "LinesChangeInfo",
       list: [],
-      activeName: "4231bd4e-831d-4705-994f-365bfc43eaf8",
-      list: [
-        {
-          type: "RouteFlows",
-          data: {
-            uuid: "广123路(革新路总站--半岛花园总站)[all-day 07:15]",
-            routeDetail: {
-              lineId: "440100015622@440100015623",
-              lineName: "广123路",
-              routeId: "广123路(革新路总站--半岛花园总站)[all-day 07:15]",
-              routeName: "广123路(革新路总站--半岛花园总站)[all-day 07:15]",
-              add: false,
-              delete: false,
-              path: false,
-              time: true,
-              stop: false,
-              none: false,
-            },
-          },
-          name: "4231bd4e-831d-4705-994f-365bfc43eaf8",
-        },
-      ],
+      // activeName: "4231bd4e-831d-4705-994f-365bfc43eaf8",
+      // list: [
+      //   {
+      //     type: "RouteFlows",
+      //     data: {
+      //       uuid: "广123路(革新路总站--半岛花园总站)[all-day 07:15]",
+      //       routeDetail: {
+      //         lineId: "440100015622@440100015623",
+      //         lineName: "广123路",
+      //         routeId: "广123路(革新路总站--半岛花园总站)[all-day 07:15]",
+      //         routeName: "广123路(革新路总站--半岛花园总站)[all-day 07:15]",
+      //         add: false,
+      //         delete: false,
+      //         path: false,
+      //         time: true,
+      //         stop: false,
+      //         none: false,
+      //       },
+      //     },
+      //     name: "4231bd4e-831d-4705-994f-365bfc43eaf8",
+      //   },
+      // ],
     };
   },
   created() {},

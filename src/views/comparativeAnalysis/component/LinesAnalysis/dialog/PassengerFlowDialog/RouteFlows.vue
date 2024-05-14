@@ -9,6 +9,9 @@
       </div>
     </el-tab-pane>
     <el-tab-pane :label="$l('Data')" name="Data">
+      <div style="margin-bottom: 10px">
+        <el-button type="primary" size="small" @click="handleExport">导出</el-button>
+      </div>
       <el-table class="small" :data="tableList" border stripe height="calc(100vh - 400px)" v-loading="loading" :header-cell-style="headerCellStyle" :show-header="false">
         <el-table-column :label="routeInfo.line">
           <el-table-column :label="routeInfo.routeId">
@@ -32,7 +35,7 @@
                   <span v-if="row.type == 'name'">{{ v.name }}</span>
                   <span v-else-if="row.type == 'id'">{{ v.id }}</span>
                   <div v-else :title="`${row.name} - ${v.name}`">
-                    {{ getValue(row.name, v.name) }}
+                    {{ getValue(row.id, v.id) }}
                   </div>
                 </template>
               </el-table-column>
@@ -114,9 +117,9 @@ export default {
       for (const v1 of list) {
         for (const v2 of v1.to.reverse()) {
           if (v2.stop) {
-            fromOffsetObj[v1.stop.name] = Number(fromOffsetObj[v1.stop.name] || 0) + v2.passenger;
-            toOffsetObj[v2.stop.name] = Number(toOffsetObj[v2.stop.name] || 0) + v2.passenger;
-            const key = `${v1.stop.name}-${v2.stop.name}`;
+            fromOffsetObj[v1.stop.id] = Number(fromOffsetObj[v1.stop.id] || 0) + v2.passenger;
+            toOffsetObj[v2.stop.id] = Number(toOffsetObj[v2.stop.id] || 0) + v2.passenger;
+            const key = `${v1.stop.id}-${v2.stop.id}`;
             linkObj[key] = {
               source: v1.stop.name,
               target: v2.stop.name,
@@ -326,6 +329,33 @@ export default {
         routeDetail: this.routeInfo,
       });
       this.$parent.$emit("close");
+    },
+    handleExport() {
+      const rowList = [];
+      rowList.push(`"${this.routeInfo.routeId}"`);
+      rowList.push(`"${this.routeInfo.lineName}"`);
+      rowList.push(`"${this.form.startTime} - ${this.form.endTime}"`);
+      rowList.push(`"base: ${this.form.name1}","contrast: ${this.form.name2}"`);
+      rowList.push(``);
+      rowList.push(`"","to","${this.list.map((v) => v.name).join(`","`)}"`);
+      rowList.push(`"from","","${this.list.map((v) => v.id).join(`","`)}"`);
+      for (let i = 0, l = this.list.length; i < l; i++) {
+        const to = this.list[i];
+        const colList = [to.name, to.id];
+        for (let j = 0; j < l; j++) {
+          const from = this.list[j];
+          colList.push(this.getValue(from.id, to.id));
+        }
+        rowList.push(`"${colList.join(`","`)}"`);
+      }
+      const tableText = rowList.join("\n");
+      var uri = "data:text/csv;charset=utf-8,\ufeff" + encodeURIComponent(tableText);
+      var downloadLink = document.createElement("a");
+      downloadLink.href = uri;
+      downloadLink.download = `RouteFlows_${new Date().getTime()}.csv`;
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
     },
   },
 };

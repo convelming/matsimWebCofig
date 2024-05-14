@@ -102,10 +102,10 @@ import { TransitLinesLayer } from "../layer/TransitLinesLayer";
 import { ReachableStopsLayer } from "../layer/ReachableStopsLayer";
 
 import RouteMenu from "../menu/Route.vue";
-import TransitStopLoad from "../dialog/TransitStopLoad.vue";
-import Transfers from "../dialog/Transfers.vue";
-import PassengersAtStop from "../dialog/PassengersAtStop.vue";
-import TransitRoutesInfo from "../dialog/TransitRoutesInfo.vue";
+import TransitStopLoad from "../dialog/TransitStopLoad/index.vue";
+import Transfers from "../dialog/Transfers/index.vue";
+import PassengersAtStop from "../dialog/PassengersAtStop/index.vue";
+import TransitRoutesInfo from "../dialog/TransitRoutesInfo/index.vue";
 import { one_stop_menu, many_stop_menu, route_menu } from "../enum";
 
 import { copyText } from "@/utils/utils";

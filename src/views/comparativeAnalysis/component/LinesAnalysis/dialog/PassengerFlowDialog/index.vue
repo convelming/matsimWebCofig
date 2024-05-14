@@ -23,7 +23,7 @@
           <span style="text-wrap: nowrap">{{ $l("时间段：") }}</span>
           <TimeRangeSlider :value="[this.s_form.startTime, this.s_form.endTime]" :start.sync="s_form.startTime" :end.sync="s_form.endTime" />
         </div>
-        <PassengersEnteringLeaving v-if="chartType == `Passengers Entering / Leaving`" :form="s_form" />
+        <PassengersEnteringLeaving v-if="chartType == `Passengers Entering / Leaving`" :form="s_form" :routeInfo="form" />
         <RouteFlows v-if="chartType == `Route Flows`" :form="s_form" :routeInfo="form" />
         <RouteTimeDiagram v-if="chartType == `Route Time Diagram`" :form="s_form" :routeInfo="form" />
       </div>

@@ -3,25 +3,34 @@
     <el-tab-pane :label="$l('Chart')" name="Chart">
       <div ref="chart" class="chart-container" v-loading="loading"></div>
     </el-tab-pane>
-    <!-- <el-tab-pane :label="$l('Data')" name="Data">
+    <el-tab-pane :label="$l('Data')" name="Data">
+      <div style="margin-bottom: 10px">
+        <el-button type="primary" size="small" @click="handleExport">导出</el-button>
+      </div>
       <el-table class="small" :data="tableList" border stripe height="calc(100vh - 400px)" v-loading="loading">
-        <el-table-column :label="$l('Stop Name')">
-          <el-table-column :label="routeInfo.line" prop="stopName" min-width="150" show-overflow-tooltip />
-        </el-table-column>
-        <el-table-column :label="$l('Stop Id')">
-          <el-table-column :label="routeInfo.routeId" prop="stopId" min-width="150" show-overflow-tooltip />
-        </el-table-column>
-        <el-table-column :label="$l('dep/arr')" prop="type" width="150" show-overflow-tooltip />
-        <el-table-column v-for="(v, k) in colList" :label="v.departureId" :key="k">
-          <el-table-column :label="$l('scheduled')" prop="type" width="150" show-overflow-tooltip>
-            <template slot-scope="{ row }">{{ getValue(row.stopId, v.departureId, row.type + "Scheduled") }}</template>
-          </el-table-column>
-          <el-table-column :label="$l('simulated')" prop="type" width="150" show-overflow-tooltip>
-            <template slot-scope="{ row }">{{ getValue(row.stopId, v.departureId, row.type + "Simulated") }}</template>
+        <el-table-column :label="routeInfo.routeId" prop="stopId" min-width="150" show-overflow-tooltip>
+          <el-table-column :label="routeInfo.lineName" prop="stopName" min-width="150" show-overflow-tooltip>
+            <el-table-column :label="$l('Stop Name')" prop="stopName" min-width="150" show-overflow-tooltip />
+            <el-table-column :label="$l('Stop Id')" prop="stopName" min-width="150" show-overflow-tooltip />
+            <el-table-column :label="$l('Stop Index')" prop="index" width="100" show-overflow-tooltip />
+            <el-table-column :label="$l('base/contrast')" prop="type" width="150" show-overflow-tooltip />
+
+            <el-table-column :label="$l('arrScheduled')" prop="arrScheduled" width="150" show-overflow-tooltip>
+              <template slot-scope="{ row }">{{ row.arrScheduled.join(":") }}</template>
+            </el-table-column>
+            <el-table-column :label="$l('depScheduled')" prop="depScheduled" width="150" show-overflow-tooltip>
+              <template slot-scope="{ row }">{{ row.depScheduled.join(":") }}</template>
+            </el-table-column>
+            <el-table-column :label="$l('arrSimulated')" prop="arrSimulated" width="150" show-overflow-tooltip>
+              <template slot-scope="{ row }">{{ row.arrSimulated.join(":") }}</template>
+            </el-table-column>
+            <el-table-column :label="$l('depSimulated')" prop="depSimulated" width="150" show-overflow-tooltip>
+              <template slot-scope="{ row }">{{ row.depSimulated.join(":") }}</template>
+            </el-table-column>
           </el-table-column>
         </el-table-column>
       </el-table>
-    </el-tab-pane> -->
+    </el-tab-pane>
   </el-tabs>
 </template>
 
@@ -39,21 +48,33 @@
     "zh-CN": "Stop Name",
     "en-US": "Stop Name"
   },
+  "Stop Index":{
+    "zh-CN": "Stop Index",
+    "en-US": "Stop Index"
+  },
   "Stop Id":{
     "zh-CN": "Stop Id",
     "en-US": "Stop Id"
   },
-  "dep/arr":{
-    "zh-CN": "dep/arr",
-    "en-US": "dep/arr"
+  "base/contrast":{
+    "zh-CN": "base/contrast",
+    "en-US": "base/contrast"
   },
-  "scheduled":{
-    "zh-CN": "scheduled",
-    "en-US": "scheduled"
+  "arrScheduled":{
+    "zh-CN": "arrScheduled",
+    "en-US": "arrScheduled"
   },
-  "simulated":{
-    "zh-CN": "simulated",
-    "en-US": "simulated"
+  "depScheduled":{
+    "zh-CN": "depScheduled",
+    "en-US": "depScheduled"
+  },
+  "arrSimulated":{
+    "zh-CN": "arrSimulated",
+    "en-US": "arrSimulated"
+  },
+  "depSimulated":{
+    "zh-CN": "depSimulated",
+    "en-US": "depSimulated"
   },
 }
 </language>
@@ -62,6 +83,7 @@
 import * as echarts from "echarts";
 import { routeTimeDiagram } from "@/api/contrast";
 import { formatHour } from "@/utils/utils";
+import { index } from "d3";
 export default {
   props: {
     routeInfo: {
@@ -84,7 +106,7 @@ export default {
   },
   data() {
     return {
-      activeName: "Chart",
+      activeName: "Data",
 
       oldTableList: [],
       oldRowList: [],
@@ -95,6 +117,8 @@ export default {
       newRowList: [],
       newColList: [],
       newDataMap: {},
+
+      tableList: [],
 
       loading: false,
     };
@@ -113,40 +137,50 @@ export default {
         });
       }
     },
-    changeData(data) {
-      const tableList = data[0].data
-        .map((v) => [
-          { stopId: v.stopId, stopName: v.stopName, type: "arr" },
-          { stopId: v.stopId, stopName: v.stopName, type: "dep" },
-        ])
-        .flat();
-      const rowList = data[0].data.map((v) => ({
-        stopId: v.stopId,
-        stopName: v.stopName,
-      }));
-      const colList = data.map((v) => ({
-        departureId: v.departureId,
-        time: v.time,
-      }));
-      const dataMap = {};
+    changeData(data, type) {
+      try {
+        const stopMap = new Map(data[0].data.map((v, i) => [v.stopId, { stopId: v.stopId, stopName: v.stopName, index: i + 1, type: type, arrScheduled: [], arrSimulated: [], depScheduled: [], depSimulated: [] }]));
+        const rowList = data[0].data.map((v) => ({
+          stopId: v.stopId,
+          stopName: v.stopName,
+        }));
+        const colList = data.map((v) => ({
+          departureId: v.departureId,
+          time: v.time,
+        }));
+        const dataMap = {};
+        for (const v1 of data) {
+          for (const v2 of v1.data) {
+            const key = `${v2.stopId}-${v1.departureId}`;
+            dataMap[key] = {
+              arrScheduled: v2.arrScheduled,
+              arrSimulated: v2.arrSimulated,
+              depScheduled: v2.depScheduled,
+              depSimulated: v2.depSimulated,
+            };
 
-      for (const v1 of data) {
-        for (const v2 of v1.data) {
-          const key = `${v2.stopId}-${v1.departureId}`;
-          dataMap[key] = {
-            arrScheduled: v2.arrScheduled,
-            arrSimulated: v2.arrSimulated,
-            depScheduled: v2.depScheduled,
-            depSimulated: v2.depSimulated,
-          };
+            const stop = stopMap.get(v2.stopId);
+            stop.arrScheduled.push(v2.arrScheduled);
+            stop.arrSimulated.push(v2.arrSimulated);
+            stop.depScheduled.push(v2.depScheduled);
+            stop.depSimulated.push(v2.depSimulated);
+          }
         }
+        return {
+          tableList: Array.from(stopMap.values()),
+          rowList: rowList,
+          colList: colList,
+          dataMap: dataMap,
+        };
+      } catch (error) {
+        console.log(error);
+        return {
+          tableList: [],
+          rowList: [],
+          colList: [],
+          dataMap: {},
+        };
       }
-      return {
-        tableList: tableList,
-        rowList: rowList,
-        colList: colList,
-        dataMap: dataMap,
-      };
     },
     // 请求数据
     getData() {
@@ -154,8 +188,8 @@ export default {
       this.$nextTick(() => {
         routeTimeDiagram(this.form)
           .then((res) => {
-            const oldLine = this.changeData(res.data.after);
-            const newLine = this.changeData(res.data.before);
+            const oldLine = this.changeData(res.data.before, "base");
+            const newLine = this.changeData(res.data.after, "contrast");
 
             this.oldTableList = oldLine.tableList;
             this.oldRowList = oldLine.rowList;
@@ -166,15 +200,15 @@ export default {
             this.newRowList = newLine.rowList;
             this.newColList = newLine.colList;
             this.newDataMap = newLine.dataMap;
+            console.log(oldLine.tableList, newLine.tableList);
+
+            this.tableList = [oldLine.tableList, newLine.tableList].flat();
 
             this.updateChart();
             this.loading = false;
           })
           .catch((err) => {
             this.tableList = [];
-            this.rowList = [];
-            this.colList = [];
-            this.dataMap = {};
 
             this.oldTableList = [];
             this.oldRowList = [];
@@ -208,7 +242,7 @@ export default {
           let arrSimulated = [];
           let depScheduled = [];
           let depSimulated = [];
-          this.rowList.forEach((v2) => {
+          this.oldRowList.forEach((v2) => {
             arrScheduled.push(this.getValue(this.oldDataMap, v2.stopId, v1.departureId, "arrScheduled"));
             arrSimulated.push(this.getValue(this.oldDataMap, v2.stopId, v1.departureId, "arrSimulated"));
             depScheduled.push(this.getValue(this.oldDataMap, v2.stopId, v1.departureId, "depScheduled"));
@@ -256,7 +290,7 @@ export default {
           let arrSimulated = [];
           let depScheduled = [];
           let depSimulated = [];
-          this.rowList.forEach((v2) => {
+          this.newRowList.forEach((v2) => {
             arrScheduled.push(this.getValue(this.newDataMap, v2.stopId, v1.departureId, "arrScheduled"));
             arrSimulated.push(this.getValue(this.newDataMap, v2.stopId, v1.departureId, "arrSimulated"));
             depScheduled.push(this.getValue(this.newDataMap, v2.stopId, v1.departureId, "depScheduled"));
@@ -268,30 +302,30 @@ export default {
 
           return [
             {
-              name: "base-arrScheduled" + i1,
+              name: "contrast-arrScheduled" + i1,
               type: "line",
-              yAxisIndex: 0,
+              yAxisIndex: 1,
               showSymbol: false,
               data: arrScheduled,
             },
             {
-              name: "base-arrSimulated" + i1,
+              name: "contrast-arrSimulated" + i1,
               type: "line",
-              yAxisIndex: 0,
+              yAxisIndex: 1,
               showSymbol: false,
               data: arrSimulated,
             },
             {
-              name: "base-depScheduled" + i1,
+              name: "contrast-depScheduled" + i1,
               type: "line",
-              yAxisIndex: 0,
+              yAxisIndex: 1,
               showSymbol: false,
               data: depScheduled,
             },
             {
-              name: "base-depSimulated" + i1,
+              name: "contrast-depSimulated" + i1,
               type: "line",
-              yAxisIndex: 0,
+              yAxisIndex: 1,
               showSymbol: false,
               data: depSimulated,
             },
@@ -299,8 +333,7 @@ export default {
         })
         .flat();
       const maxYAxisNum = Math.max(this.oldRowList.length, this.newRowList.length);
-      console.log([this.oldColList, this.newColList]);
-      return {
+      const options = {
         title: {
           text: `Route-Time Diagram, route=${this.form.routeId}`,
         },
@@ -308,15 +341,10 @@ export default {
           trigger: "axis",
           valueFormatter: formatHour,
         },
-        legend: {
-          type: "scroll",
-          bottom: 10,
-          data: ["arrScheduled", "arrSimulated", "depScheduled", "depSimulated"],
-        },
         grid: {
           left: "3%",
           right: "4%",
-          bottom: 10,
+          bottom: 20,
           containLabel: true,
         },
         toolbox: {
@@ -324,6 +352,18 @@ export default {
             saveAsImage: {},
           },
         },
+        dataZoom: [
+          {
+            start: 0,
+            end: 100,
+            yAxisIndex: [0, 1],
+          },
+          // {
+          //   start: 0,
+          //   end: 100,
+          //   xAxisIndex: 0,
+          // },
+        ],
         xAxis: {
           type: "value",
           min: (Math.floor(min / 3600) - 1) * 3600,
@@ -353,6 +393,7 @@ export default {
         ],
         series: [...oldSeries, ...newSeries],
       };
+      return options;
     },
     // 获取值
     getValue(dataMap, stopId, departureId, name) {
@@ -361,6 +402,43 @@ export default {
       } catch (error) {
         return "";
       }
+    },
+    // 获取值
+    getValueList(dataMap, stopId, name) {
+      try {
+        return dataMap[`${stopId}-${departureId}`][name];
+      } catch (error) {
+        return "";
+      }
+    },
+    handleExport() {
+      const rowList = [];
+      rowList.push(`"${this.routeInfo.routeId}"`);
+      rowList.push(`"${this.routeInfo.lineName}"`);
+      rowList.push(`"${this.form.startTime} - ${this.form.endTime}"`);
+      rowList.push(`"base: ${this.form.name1}","contrast: ${this.form.name2}"`);
+      rowList.push(``);
+      rowList.push(`"Stop Name","Stop Id","Stop Index","base/contrast","arrScheduled","depScheduled","arrSimulated","depSimulated"`);
+      for (const v of this.tableList) {
+        const colList = [];
+        colList.push(v.stopName);
+        colList.push(v.stopId);
+        colList.push(v.index);
+        colList.push(v.type);
+        colList.push(v.arrScheduled.join(":"));
+        colList.push(v.depScheduled.join(":"));
+        colList.push(v.arrSimulated.join(":"));
+        colList.push(v.depSimulated.join(":"));
+        rowList.push(`"${colList.join(`","`)}"`);
+      }
+      const tableText = rowList.join("\n");
+      var uri = "data:text/csv;charset=utf-8,\ufeff" + encodeURIComponent(tableText);
+      var downloadLink = document.createElement("a");
+      downloadLink.href = uri;
+      downloadLink.download = `RouteTimeDiagram_${new Date().getTime()}.csv`;
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
     },
   },
 };

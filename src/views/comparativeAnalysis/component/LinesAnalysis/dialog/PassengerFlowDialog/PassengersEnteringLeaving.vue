@@ -4,24 +4,26 @@
       <div ref="chart" class="chart-container" v-loading="loading"></div>
     </el-tab-pane>
     <el-tab-pane :label="$l('Data')" name="Data">
+      <div style="margin-bottom: 10px">
+        <el-button type="primary" size="small" @click="handleExport">导出</el-button>
+      </div>
       <el-table class="small" :data="list" border stripe height="calc(100vh - 400px)" v-loading="loading">
-        <el-table-column :label="$l('Stop Name')" prop="stopName" show-overflow-tooltip />
-        <el-table-column :label="$l('Stop Id')" prop="stopId" show-overflow-tooltip />
+        <el-table-column :label="$l('Stop Name')" prop="stopName" width="150" show-overflow-tooltip />
+        <el-table-column :label="$l('Stop Id')" prop="stopId" width="150" show-overflow-tooltip />
         <el-table-column :label="$l('#entering')" prop="entering">
-          <el-table-column :label="$l('#entering-base')" prop="entering[0]" />
-          <el-table-column :label="$l('#entering-contrast')" prop="entering[1]" />
-          <el-table-column :label="$l('#entering-actual')" prop="entering[2]" />
+          <el-table-column :label="$l('#entering-base')" width="150" prop="entering[0]" />
+          <el-table-column :label="$l('#entering-contrast')" width="150" prop="entering[1]" />
+          <el-table-column :label="$l('#entering-actual')" width="150" prop="entering[2]" />
         </el-table-column>
-
         <el-table-column :label="$l('#leaving')" prop="leaving">
-          <el-table-column :label="$l('#leaving-base')" prop="leaving[0]" />
-          <el-table-column :label="$l('#leaving-contrast')" prop="leaving[1]" />
-          <el-table-column :label="$l('#leaving-actual')" prop="leaving[2]" />
+          <el-table-column :label="$l('#leaving-base')" width="150" prop="leaving[0]" />
+          <el-table-column :label="$l('#leaving-contrast')" width="150" prop="leaving[1]" />
+          <el-table-column :label="$l('#leaving-actual')" width="150" prop="leaving[2]" />
         </el-table-column>
         <el-table-column :label="$l('#passengers')" prop="passengers">
-          <el-table-column :label="$l('#passengers-base')" prop="passengers[0]" />
-          <el-table-column :label="$l('#passengers-contrast')" prop="passengers[1]" />
-          <el-table-column :label="$l('#passengers-actual')" prop="passengers[2]" />
+          <el-table-column :label="$l('#passengers-base')" width="150" prop="passengers[0]" />
+          <el-table-column :label="$l('#passengers-contrast')" width="180" prop="passengers[1]" />
+          <el-table-column :label="$l('#passengers-actual')" width="180" prop="passengers[2]" />
         </el-table-column>
       </el-table>
     </el-tab-pane>
@@ -103,6 +105,10 @@ import { passengerEnteringAndLeaving } from "@/api/index";
 import { passengerInfo } from "@/api/contrast";
 export default {
   props: {
+    routeInfo: {
+      type: Object,
+      default: () => ({}),
+    },
     form: {
       type: Object,
       default: () => ({}),
@@ -300,6 +306,38 @@ export default {
           },
         ],
       };
+    },
+    handleExport() {
+      const rowList = [];
+      rowList.push(`"${this.routeInfo.routeId}"`);
+      rowList.push(`"${this.routeInfo.lineName}"`);
+      rowList.push(`"${this.form.startTime} - ${this.form.endTime}"`);
+      rowList.push(`"base: ${this.form.name1}","contrast: ${this.form.name2}"`);
+      rowList.push(``);
+      rowList.push(`"Stop Name","Stop Id","#entering-base","#entering-contrast","#entering-actual","#leaving-base","#leaving-contrast","#leaving-actual","#passengers-base","#passengers-contrast","#passengers-actual"`);
+      for (let i = 0, l = this.list.length; i < l; i++) {
+        const colList = [];
+        colList.push(this.list[i].stopName);
+        colList.push(this.list[i].stopId);
+        colList.push(this.list[i].entering[0] || 0);
+        colList.push(this.list[i].entering[1] || 0);
+        colList.push(this.list[i].entering[2] || 0);
+        colList.push(this.list[i].leaving[0] || 0);
+        colList.push(this.list[i].leaving[1] || 0);
+        colList.push(this.list[i].leaving[2] || 0);
+        colList.push(this.list[i].passengers[0] || 0);
+        colList.push(this.list[i].passengers[1] || 0);
+        colList.push(this.list[i].passengers[2] || 0);
+        rowList.push(`"${colList.join('","')}"`);
+      }
+      const tableText = rowList.join("\n");
+      var uri = "data:text/csv;charset=utf-8,\ufeff" + encodeURIComponent(tableText);
+      var downloadLink = document.createElement("a");
+      downloadLink.href = uri;
+      downloadLink.download = `PassengersEnteringLeaving_${new Date().getTime()}.csv`;
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
     },
   },
 };

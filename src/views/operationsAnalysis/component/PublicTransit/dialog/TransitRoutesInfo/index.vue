@@ -125,13 +125,13 @@
 </language>
 
 <script>
-import { route_info_analysis } from "../enum";
-import PassengersEnteringLeaving from "../chart/PassengersEnteringLeaving";
-import VehicleLoad from "../chart/VehicleLoad";
-import AggregatedVehicleLoad from "../chart/AggregatedVehicleLoad";
-import RouteGrid from "../chart/RouteGrid";
-import RouteFlows from "../chart/RouteFlows";
-import RouteTimeDiagram from "../chart/RouteTimeDiagram";
+import { route_info_analysis } from "../../enum";
+import PassengersEnteringLeaving from "./PassengersEnteringLeaving";
+import VehicleLoad from "./VehicleLoad";
+import AggregatedVehicleLoad from "./AggregatedVehicleLoad";
+import RouteGrid from "./RouteGrid";
+import RouteFlows from "./RouteFlows";
+import RouteTimeDiagram from "./RouteTimeDiagram";
 export default {
   props: {
     form: {

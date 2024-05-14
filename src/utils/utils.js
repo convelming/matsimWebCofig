@@ -92,3 +92,16 @@ export function selectFile() {
     input.click();
   });
 }
+
+function export_csv(list, name) {
+  const newList = list.map(res => res.join(','))
+  const data = newList.join(',\n')
+  // “\ufeff” BOM头
+  var uri = 'data:text/csv;charset=utf-8,\ufeff' + encodeURIComponent(data);
+  var downloadLink = document.createElement("a");
+  downloadLink.href = uri;
+  downloadLink.download = (name+".csv")||"temp.csv";
+  document.body.appendChild(downloadLink);
+  downloadLink.click();
+  document.body.removeChild(downloadLink);
+}
