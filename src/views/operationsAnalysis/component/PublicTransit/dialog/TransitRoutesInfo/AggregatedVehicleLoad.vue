@@ -4,24 +4,12 @@
       <div ref="chart" class="chart-container" v-loading="loading"></div>
     </el-tab-pane>
     <el-tab-pane :label="$l('Data')" name="Data">
-      <el-table
-        class="small"
-        :data="list"
-        border
-        stripe
-        height="calc(100vh - 400px)"
-        v-loading="loading"
-      >
-        <el-table-column
-          :label="$l('Stop Name')"
-          prop="stopName"
-          show-overflow-tooltip
-        />
-        <el-table-column
-          :label="$l('Stop Id')"
-          prop="stopId"
-          show-overflow-tooltip
-        />
+      <div style="margin-bottom: 10px">
+        <el-button type="primary" size="small" @click="handleExport">导出</el-button>
+      </div>
+      <el-table class="small" :data="list" border stripe height="calc(100vh - 400px)" v-loading="loading">
+        <el-table-column :label="$l('Stop Name')" prop="stopName" show-overflow-tooltip />
+        <el-table-column :label="$l('Stop Id')" prop="stopId" show-overflow-tooltip />
         <el-table-column :label="$l('min')" prop="min" />
         <el-table-column :label="$l('avg')" prop="avg" />
         <el-table-column :label="$l('max')" prop="max" />
@@ -185,6 +173,22 @@ export default {
           },
         ],
       };
+    },
+    handleExport() {
+      const rowList = [];
+      rowList.push(`"Stop Name","Stop Id","min","avg","max"`);
+      for (const v1 of this.list) {
+        const colList = [v1.stopName, v1.stopId, v1.min, v1.avg, v1.max];
+        rowList.push(`"${colList.join(`","`)}"`);
+      }
+      const tableText = rowList.join("\n");
+      var uri = "data:text/csv;charset=utf-8,\ufeff" + encodeURIComponent(tableText);
+      var downloadLink = document.createElement("a");
+      downloadLink.href = uri;
+      downloadLink.download = `RouteFlows_${new Date().getTime()}.csv`;
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
     },
   },
 };

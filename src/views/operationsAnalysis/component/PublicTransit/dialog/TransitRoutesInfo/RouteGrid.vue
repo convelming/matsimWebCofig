@@ -12,37 +12,14 @@
         <div ref="chart" class="chart-container" v-loading="loading"></div>
       </el-tab-pane>
       <el-tab-pane :label="$l('Data')" name="Data">
-        <el-table
-          class="small"
-          :data="tableList"
-          border
-          stripe
-          min-height="300px"
-          height="calc(100vh - 450px)"
-          v-loading="loading"
-        >
-          <el-table-column
-            :label="$l('Stop Name')"
-            prop="stopName"
-            show-overflow-tooltip
-            min-width="200"
-          />
-          <el-table-column
-            :label="$l('Stop Id')"
-            prop="stopId"
-            show-overflow-tooltip
-            min-width="200"
-          />
-          <el-table-column
-            v-for="(v, k) in colList"
-            :key="k"
-            :label="v + ' ' + $l('hour')"
-            show-overflow-tooltip
-            width="80"
-          >
-            <template slot-scope="{ row }">{{
-              getValue(v, row.stopName, dataName)
-            }}</template>
+        <div style="margin-bottom: 10px">
+          <el-button type="primary" size="small" @click="handleExport">导出</el-button>
+        </div>
+        <el-table class="small" :data="tableList" border stripe min-height="300px" height="calc(100vh - 500px)" v-loading="loading">
+          <el-table-column :label="$l('Stop Name')" prop="stopName" show-overflow-tooltip min-width="200" />
+          <el-table-column :label="$l('Stop Id')" prop="stopId" show-overflow-tooltip min-width="200" />
+          <el-table-column v-for="(v, k) in colList" :key="k" :label="v + ' ' + $l('hour')" show-overflow-tooltip width="80">
+            <template slot-scope="{ row }">{{ getValue(v, row.stopName, dataName) }}</template>
           </el-table-column>
         </el-table>
       </el-tab-pane>
@@ -201,9 +178,7 @@ export default {
         const times = this.form.departureId.split("_");
         subtitle = `Departrue at ${times[times.length - 1]}`;
       } else {
-        subtitle = `${this.routeOptions.length} departrue between ${formatHour(
-          this.form.startSecond
-        )} and ${formatHour(this.form.endSecond)}`;
+        subtitle = `${this.routeOptions.length} departrue between ${formatHour(this.form.startSecond)} and ${formatHour(this.form.endSecond)}`;
       }
 
       return {
@@ -272,6 +247,22 @@ export default {
       } catch (error) {
         return 0;
       }
+    },
+    handleExport() {
+      const rowList = [];
+      rowList.push(`"Stop Name","Stop Id","${this.colList.map((v) => v + "hour").join(`","`)}"`);
+      for (const v1 of this.tableList) {
+        const colList = [v1.stopName, v1.stopId, ...this.colList.map((v2) => this.getValue(v2, v1.stopName, this.dataName))];
+        rowList.push(`"${colList.join(`","`)}"`);
+      }
+      const tableText = rowList.join("\n");
+      var uri = "data:text/csv;charset=utf-8,\ufeff" + encodeURIComponent(tableText);
+      var downloadLink = document.createElement("a");
+      downloadLink.href = uri;
+      downloadLink.download = `RouteFlows_${new Date().getTime()}.csv`;
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
     },
   },
 };

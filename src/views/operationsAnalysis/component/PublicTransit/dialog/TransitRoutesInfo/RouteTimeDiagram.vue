@@ -4,60 +4,23 @@
       <div ref="chart" class="chart-container" v-loading="loading"></div>
     </el-tab-pane>
     <el-tab-pane :label="$l('Data')" name="Data">
-      <el-table
-        class="small"
-        :data="tableList"
-        border
-        stripe
-        height="calc(100vh - 400px)"
-        v-loading="loading"
-      >
+      <div style="margin-bottom: 10px">
+        <el-button type="primary" size="small" @click="handleExport">导出</el-button>
+      </div>
+      <el-table class="small" :data="tableList" border stripe height="calc(100vh - 400px)" v-loading="loading">
         <el-table-column :label="$l('Stop Name')">
-          <el-table-column
-            :label="lineInfo.line"
-            prop="stopName"
-            min-width="150"
-            show-overflow-tooltip
-          />
+          <el-table-column :label="lineInfo.line" prop="stopName" min-width="150" show-overflow-tooltip />
         </el-table-column>
         <el-table-column :label="$l('Stop Id')">
-          <el-table-column
-            :label="lineInfo.routeId"
-            prop="stopId"
-            min-width="150"
-            show-overflow-tooltip
-          />
+          <el-table-column :label="lineInfo.routeId" prop="stopId" min-width="150" show-overflow-tooltip />
         </el-table-column>
-        <el-table-column
-          :label="$l('dep/arr')"
-          prop="type"
-          width="150"
-          show-overflow-tooltip
-        />
-        <el-table-column
-          v-for="(v, k) in colList"
-          :label="v.departureId"
-          :key="k"
-        >
-          <el-table-column
-            :label="$l('scheduled')"
-            prop="type"
-            width="150"
-            show-overflow-tooltip
-          >
-            <template slot-scope="{ row }">{{
-              getValue(row.stopId, v.departureId, row.type + "Scheduled")
-            }}</template>
+        <el-table-column :label="$l('dep/arr')" prop="type" width="150" show-overflow-tooltip />
+        <el-table-column v-for="(v, k) in colList" :label="v.departureId" :key="k">
+          <el-table-column :label="$l('scheduled')" prop="type" width="150" show-overflow-tooltip>
+            <template slot-scope="{ row }">{{ getValue(row.stopId, v.departureId, row.type + "Scheduled") }}</template>
           </el-table-column>
-          <el-table-column
-            :label="$l('simulated')"
-            prop="type"
-            width="150"
-            show-overflow-tooltip
-          >
-            <template slot-scope="{ row }">{{
-              getValue(row.stopId, v.departureId, row.type + "Simulated")
-            }}</template>
+          <el-table-column :label="$l('simulated')" prop="type" width="150" show-overflow-tooltip>
+            <template slot-scope="{ row }">{{ getValue(row.stopId, v.departureId, row.type + "Simulated") }}</template>
           </el-table-column>
         </el-table-column>
       </el-table>
@@ -222,34 +185,14 @@ export default {
           let depScheduled = [];
           let depSimulated = [];
           this.rowList.forEach((v2) => {
-            arrScheduled.push(
-              this.getValue(v2.stopId, v1.departureId, "arrScheduled")
-            );
-            arrSimulated.push(
-              this.getValue(v2.stopId, v1.departureId, "arrSimulated")
-            );
-            depScheduled.push(
-              this.getValue(v2.stopId, v1.departureId, "depScheduled")
-            );
-            depSimulated.push(
-              this.getValue(v2.stopId, v1.departureId, "depSimulated")
-            );
+            arrScheduled.push(this.getValue(v2.stopId, v1.departureId, "arrScheduled"));
+            arrSimulated.push(this.getValue(v2.stopId, v1.departureId, "arrSimulated"));
+            depScheduled.push(this.getValue(v2.stopId, v1.departureId, "depScheduled"));
+            depSimulated.push(this.getValue(v2.stopId, v1.departureId, "depSimulated"));
           });
 
-          max = Math.max(
-            max,
-            ...arrScheduled,
-            ...arrSimulated,
-            ...depScheduled,
-            ...depSimulated
-          );
-          min = Math.min(
-            min,
-            ...arrScheduled,
-            ...arrSimulated,
-            ...depScheduled,
-            ...depSimulated
-          );
+          max = Math.max(max, ...arrScheduled, ...arrSimulated, ...depScheduled, ...depSimulated);
+          min = Math.min(min, ...arrScheduled, ...arrSimulated, ...depScheduled, ...depSimulated);
 
           return [
             {
@@ -286,17 +229,12 @@ export default {
         },
         tooltip: {
           trigger: "axis",
-          valueFormatter: formatHour
+          valueFormatter: formatHour,
         },
         legend: {
           type: "scroll",
           bottom: 10,
-          data: [
-            "arrScheduled",
-            "arrSimulated",
-            "depScheduled",
-            "depSimulated",
-          ],
+          data: ["arrScheduled", "arrSimulated", "depScheduled", "depSimulated"],
         },
         grid: {
           left: "3%",
@@ -337,6 +275,33 @@ export default {
       } catch (error) {
         return "";
       }
+    },
+    handleExport() {
+      const rowList = [];
+      rowList.push(
+        `"Stop Name","Stop Id","dep/arr","${this.colList
+          .map((v) => [v.departureId, ""])
+          .flat()
+          .join(`","`)}"`
+      );
+      rowList.push(
+        `"${this.lineInfo.line}","${this.lineInfo.routeId}","dep/arr","${this.colList
+          .map((v) => ["scheduled", "simulated"])
+          .flat()
+          .join(`","`)}"`
+      );
+      for (const v1 of this.tableList) {
+        const colList = [v1.stopName, v1.stopId, v1.type, ...this.colList.map((v2) => [this.getValue(v1.stopId, v2.departureId, v1.type + "Scheduled"), this.getValue(v1.stopId, v2.departureId, v1.type + "Simulated")]).flat()];
+        rowList.push(`"${colList.join(`","`)}"`);
+      }
+      const tableText = rowList.join("\n");
+      var uri = "data:text/csv;charset=utf-8,\ufeff" + encodeURIComponent(tableText);
+      var downloadLink = document.createElement("a");
+      downloadLink.href = uri;
+      downloadLink.download = `RouteFlows_${new Date().getTime()}.csv`;
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
     },
   },
 };

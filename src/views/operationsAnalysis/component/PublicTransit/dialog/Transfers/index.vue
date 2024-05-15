@@ -50,11 +50,14 @@
             </div>
           </el-tab-pane>
           <el-tab-pane :label="$l('Data')" name="Data">
+            <div style="margin-bottom: 10px">
+              <el-button type="primary" size="small" @click="handleExport">导出</el-button>
+            </div>
             <el-table class="small" :data="tableList" border stripe height="calc(100vh - 400px)" :show-header="false">
               <el-table-column prop="name" min-width="150" />
-              <el-table-column v-for="(v, i) in colList" min-width="150">
+              <el-table-column v-for="(v, i) in colList" :key="i" min-width="150">
                 <template slot-scope="{ row }">
-                  {{ row.type === "header" ? v.name : getValue(dataMap, row.id, v.id) }}
+                  {{ row.type === "header" ? v.name : getValue(dataMap, v.id, row.id) }}
                 </template>
               </el-table-column>
             </el-table>
@@ -405,6 +408,25 @@ export default {
         return `${source.name} \nowes ${d3.sum(matrix[d.index])} \nis owed ${d3.sum(matrix, (row) => row[d.index])}`;
       });
       this.chartSrc = svg.node().outerHTML;
+    },
+    handleExport() {
+      const rowList = [];
+      rowList.push(`"${["", this.colList.map((v) => v.name)].join(`","`)}"`);
+      for (const v1 of this.colList) {
+        const colList = [v1.name];
+        for (const v2 of this.colList) {
+          colList.push(this.getValue(this.dataMap, v1.id, v2.id));
+        }
+        rowList.push(`"${colList.join(`","`)}"`);
+      }
+      const tableText = rowList.join("\n");
+      var uri = "data:text/csv;charset=utf-8,\ufeff" + encodeURIComponent(tableText);
+      var downloadLink = document.createElement("a");
+      downloadLink.href = uri;
+      downloadLink.download = `RouteFlows_${new Date().getTime()}.csv`;
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
     },
   },
 };
