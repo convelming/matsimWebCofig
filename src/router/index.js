@@ -39,7 +39,10 @@ const routes = [
     name: "systemEvaluation",
     component: () => import(/* webpackChunkName: "systemEvaluation" */ "../views/systemEvaluation/index.vue"),
   },
-  {
+];
+
+if (process.env.NODE_ENV == "development") {
+  routes.push({
     path: "/test",
     name: "test",
     component: () => import(/* webpackChunkName: "test" */ "../views/test/index.vue"),
@@ -59,9 +62,14 @@ const routes = [
         name: "testpage4",
         component: () => import(/* webpackChunkName: "test" */ "../views/test/testpage4.vue"),
       },
+      {
+        path: "testpage5",
+        name: "testpage5",
+        component: () => import(/* webpackChunkName: "test" */ "../views/test/testpage5.vue"),
+      },
     ],
-  },
-];
+  });
+}
 
 const router = new VueRouter({
   routes,

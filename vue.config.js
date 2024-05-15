@@ -1,4 +1,5 @@
 const { defineConfig } = require("@vue/cli-service");
+
 module.exports = defineConfig({
   transpileDependencies: true,
   // 部署生产环境和开发环境下的URL。

@@ -2,18 +2,17 @@
   <div class="XmlComparisonDialog">
     <Dialog ref="dialog" :title="$l('Xml信息对比')" :visible="true" @close="$emit('close')" left="center" width="1300px">
       <div class="XmlComparisonDialog__bodyer">
-        <div class="row">
+        <!-- <div class="row">
           <div class="col">
             <div class="_title">{{ $l("基础方案") }}</div>
-             <!-- wrap="off" -->
             <textarea class="_content" v-model="oldXml" disabled></textarea>
           </div>
           <div class="col">
             <div class="_title">{{ $l("对比方案") }}</div>
-             <!-- wrap="off" -->
-            <textarea class="_content" v-model="oldXml" disabled></textarea>
+            <textarea class="_content" v-model="newXml" disabled></textarea>
           </div>
-        </div>
+        </div> -->
+        <code-diff class="code-diff" :old-string="oldXml" :new-string="newXml" :context="10" output-format="side-by-side" language="xml" />
       </div>
     </Dialog>
   </div>
@@ -38,7 +37,7 @@
 
 <script>
 import { changeInfoXml } from "@/api/contrast";
-
+import CodeDiff from "vue-code-diff";
 export default {
   props: {
     form: {
@@ -51,7 +50,7 @@ export default {
     },
   },
   inject: ["rootVue"],
-  components: {},
+  components: { CodeDiff },
   computed: {},
   data() {
     return {
@@ -83,6 +82,12 @@ export default {
         this.oldXml = res.data.before;
         this.newXml = res.data.after;
         this.loading1 = false;
+        this.$nextTick(() => {
+          const doc = new Mergely("#compare", {
+            lhs: res.data.before,
+            rhs: res.data.after,
+          });
+        });
       });
     },
   },
@@ -90,6 +95,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+::v-deep {
+  .code-diff {
+    width: 100% !important;
+    height: calc(100vh - 250px) !important;
+    overflow: auto !important;
+  }
+}
 .XmlComparisonDialog__bodyer {
   .row {
     display: flex;
@@ -100,19 +112,19 @@ export default {
       border-radius: 5px;
       width: calc(50% - 10px);
       background-color: #eee;
-      ._title {
-        font-size: 16px;
-        font-weight: bold;
-        text-align: center;
-        margin-bottom: 20px;
-      }
-      ._content {
-        width: 100%;
-        height: calc(100vh - 250px);
-        font-size: 14px;
-        overflow-y: scroll;
-      }
     }
+  }
+  ._title {
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  ._content {
+    width: 100%;
+    height: calc(100vh - 250px);
+    font-size: 14px;
+    overflow-y: scroll;
   }
 }
 </style>
