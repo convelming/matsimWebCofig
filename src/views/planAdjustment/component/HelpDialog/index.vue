@@ -14,12 +14,7 @@
     </div>
     <el-dialog :visible.sync="open" width="500px" append-to-body center @close="handleClose" :close-on-click-modal="false">
       <div class="body">
-        <!-- <component
-          v-show="carouselIndex == item"
-          v-for="item in pageNum"
-          :key="item"
-          :is="`page${item}`"
-        ></component> -->
+        <component v-show="carouselIndex == item" v-for="item in pageNum" :key="item" :is="`page${item}`"></component>
       </div>
       <div slot="footer" class="dialog-footer">
         <el-button size="mini" @click="handleClose">关闭</el-button>
@@ -31,25 +26,27 @@
 </template>
 
 <script>
-// import page1 from "./page1.vue";
-// import page2 from "./page2.vue";
-// import page3 from "./page3.vue";
-// import page4 from "./page4.vue";
-// import page5 from "./page5.vue";
+import page1 from "./page1.vue";
+import page2 from "./page2.vue";
+import page3 from "./page3.vue";
+import page4 from "./page4.vue";
+import page5 from "./page5.vue";
+import page6 from "./page6.vue";
 
 export default {
   components: {
-    // page1,
-    // page2,
-    // page3,
-    // page4,
-    // page5,
+    page1,
+    page2,
+    page3,
+    page4,
+    page5,
+    page6,
   },
   data() {
     return {
       open: !localStorage.getItem("HelpDialogClose"),
       carouselIndex: 1,
-      pageNum: 5,
+      pageNum: 6,
     };
   },
   watch: {

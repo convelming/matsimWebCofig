@@ -1,12 +1,18 @@
 <template>
   <div class="page1">
-    <h2>1.按住鼠标右键移动地图</h2>
-    <img class="video" src="@/assets/video/video1.gif" />
+    <h2>1. 新建或修改已有的公交优化方案，方案中可修改多条线路</h2>
+    <el-image class="video" :src="img" :preview-src-list="[img]"> </el-image>
   </div>
 </template>
 
 <script>
-export default {};
+export default {
+  data() {
+    return {
+      img: require("./images/video1.gif"),
+    };
+  },
+};
 </script>
 
 <style lang="scss" scoped>

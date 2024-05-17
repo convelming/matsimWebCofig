@@ -17,6 +17,7 @@
           <div class="item_detail">
             {{ $l("展示整个公交系统的运行现状，包括线路、发车时间，客流量信息及其OD分布等") }}
           </div>
+          <!-- <OAHelpDialog class="item_help" /> -->
         </div>
         <div @click="handleClickItem('planAdjustment')" class="item" style="background-color: #f0704b">
           <div class="item_title">
@@ -26,6 +27,7 @@
           <div class="item_detail">
             {{ $l("按照一定的策略新建或调整公交线路，站点，发车信息，实时更新线路信息。") }}
           </div>
+          <PAHelpDialog class="item_help" />
         </div>
         <div @click="handleClickItem('comparativeAnalysis')" class="item" style="background-color: #52b3ba">
           <div class="item_title">
@@ -35,6 +37,7 @@
           <div class="item_detail">
             {{ $l("根据调整优化的线路方案，呈现城市居民在线路调整后的反应，并将对比结果可视化呈现。") }}
           </div>
+          <!-- <CAHelpDialog class="item_help" /> -->
         </div>
         <div @click="handleClickItem('systemEvaluation')" class="item" style="background-color: #0070c0">
           <div class="item_title">
@@ -44,6 +47,7 @@
           <div class="item_detail">
             {{ $l("公交系统总体运行评估包括可达性。") }}
           </div>
+          <SEHelpDialog class="item_help" />
         </div>
       </div>
     </div>
@@ -273,7 +277,18 @@
 </language>
 
 <script>
+import OAHelpDialog from "./operationsAnalysis/component/HelpDialog/index2.vue";
+import PAHelpDialog from "./planAdjustment/component/HelpDialog/index2.vue";
+import CAHelpDialog from "./comparativeAnalysis/component/HelpDialog/index2.vue";
+import SEHelpDialog from "./systemEvaluation/component/HelpDialog/index2.vue";
+
 export default {
+  components: {
+    OAHelpDialog,
+    PAHelpDialog,
+    CAHelpDialog,
+    SEHelpDialog,
+  },
   data() {
     return {
       module_list: [],
@@ -365,7 +380,7 @@ export default {
       }
     },
     handleClickItem(key) {
-      if (!this.dataBase) {
+      if (!this.dataBase && key != "systemEvaluation") {
         this.handleShowDataBase(key);
         return;
       }
@@ -380,7 +395,7 @@ export default {
           this.handleShowComparativeAnalysisDialog();
           break;
         case "systemEvaluation":
-          window.open("https://kepler.gl/demo", "_blank");
+          window.open("http://192.168.60.231:23334/kepler.gl.html", "_blank");
           // this.handleShowSystemEvaluationDialog();
           break;
       }
@@ -558,6 +573,7 @@ export default {
   /* margin: -10px; */
 }
 .item {
+  position: relative;
   width: 550px;
   height: 300px;
   display: block;
@@ -589,6 +605,11 @@ export default {
     font-size: 18px;
     line-height: 20px;
     margin-top: 10px;
+  }
+  .item_help {
+    position: absolute;
+    left: 20px;
+    bottom: 20px;
   }
 }
 

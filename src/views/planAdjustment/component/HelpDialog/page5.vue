@@ -1,13 +1,20 @@
 <template>
   <div class="page5">
-    <h2>5. 点击路段，调整路段宽度，单双向道路偏移后选取详细路段输入流量</h2>
-    <img class="video" src="@/assets/video/video5.gif" />
+    <h2>3-3. 修改公交线路：线路车辆发车频率，可按时段、日期批量或单独修改发车间隔</h2>
+    <el-image class="video" :src="img" :preview-src-list="[img]"> </el-image>
   </div>
 </template>
 
 <script>
-export default {};
+export default {
+  data() {
+    return {
+      img: require("./images/video1.gif"),
+    };
+  },
+};
 </script>
+
 
 <style lang="scss" scoped>
 .page5 {

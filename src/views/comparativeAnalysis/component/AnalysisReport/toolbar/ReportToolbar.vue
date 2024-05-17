@@ -115,14 +115,19 @@ import ResidenceTime from "../dialog/ActivityAttributes/ResidenceTime.vue";
 import TravelPurpose from "../dialog/ActivityAttributes/TravelPurpose.vue";
 import TravelTime from "../dialog/ActivityAttributes/TravelTime.vue";
 import TravelMode from "../dialog/ActivityAttributes/TravelMode.vue";
+// 出行属性弹窗
+import TravelAttribute from "../dialog/TravelAttribute/index.vue";
 
 import TestDialog from "../dialog/TestDialog.vue";
 
 const TestDialogExtend = Vue.extend(TestDialog);
+
 const ResidenceTimeExtend = Vue.extend(ResidenceTime);
 const TravelPurposeExtend = Vue.extend(TravelPurpose);
 const TravelTimeExtend = Vue.extend(TravelTime);
 const TravelModeExtend = Vue.extend(TravelMode);
+
+const TravelAttributeExtend = Vue.extend(TravelAttribute);
 
 export default {
   name: "ReportToolbar",
@@ -215,10 +220,10 @@ export default {
               id: "2-5",
               label: "出行距离",
             },
-            {
-              id: "2-6",
-              label: "出行方式",
-            },
+            // {
+            //   id: "2-6",
+            //   label: "出行方式",
+            // },
           ],
         },
         {
@@ -269,7 +274,7 @@ export default {
           children: [],
         },
       ],
-      defaultCheckedKeys: ["2"],
+      defaultCheckedKeys: ["1", "2"],
       s_form: {
         startTime: 0,
         endTime: 24 * 60 * 60,
@@ -297,11 +302,12 @@ export default {
         /************* 活动属性 *************/
         case "1":
           {
+            const value = new Set(node.childNodes.filter((item) => item.checked).map((item) => item.data.id));
             //"活动属性":
-            this.showDialog(TravelPurposeExtend, {}, "TravelPurposeExtend");
-            this.showDialog(TravelTimeExtend, {}, "TravelTimeExtend");
-            this.showDialog(ResidenceTimeExtend, {}, "ResidenceTimeExtend");
-            this.showDialog(TravelModeExtend, {}, "TravelModeExtend");
+            if (value.has("1-1")) this.showDialog(TravelPurposeExtend, {}, "TravelPurposeExtend");
+            if (value.has("1-2")) this.showDialog(TravelTimeExtend, {}, "TravelTimeExtend");
+            if (value.has("1-3")) this.showDialog(ResidenceTimeExtend, {}, "ResidenceTimeExtend");
+            if (value.has("1-4")) this.showDialog(TravelModeExtend, {}, "TravelModeExtend");
           }
           break;
         case "1-1":
@@ -332,6 +338,11 @@ export default {
         case "2":
           {
             //"出行属性":
+            const value = node.childNodes.filter((item) => item.checked).map((item) => item.data.id);
+            const _dialog = this.showDialog(TravelAttributeExtend, { value: value }, "TravelAttributeExtend" + value.join(","));
+            _dialog.$on("input", (value) => {
+              console.log(value);
+            });
           }
           break;
         case "2-1":
@@ -421,6 +432,7 @@ export default {
       if (this._dialogMap.has(key)) {
         const _dialog = this._dialogMap.get(key);
         _dialog.toTop();
+        return _dialog;
       } else {
         if (this._dialogOffset > 20) this._dialogOffset = 0;
         const _dialog = new DialogClass({
@@ -433,6 +445,7 @@ export default {
           if (this._dialogMap) this._dialogMap.delete(key);
         });
         document.body.append(_dialog.$el);
+        return _dialog;
       }
     },
   },

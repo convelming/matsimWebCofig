@@ -6,13 +6,21 @@
 </template>
 
 <language>
-  {
-    "出行目的":{
-      "zh-CN": "出行目的",
-      "en-US": "Travel Purpose"
-    },
-  }
-  </language>
+{
+  "出行目的":{
+    "zh-CN": "出行目的",
+    "en-US": "Travel Purpose"
+  },
+  "基础方案":{
+    "zh-CN": "基础方案",
+    "en-US": "base"
+  },
+  "对比方案":{
+    "zh-CN": "对比方案",
+    "en-US": "contrast"
+  },
+}
+</language>
 
 <script>
 import * as echarts from "echarts";

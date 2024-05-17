@@ -1,16 +1,15 @@
 <template>
   <div class="page4">
-    <h2>4. 缩放至{{ SHOW_LINK_ZOOM }}级地图显示可录入路段</h2>
-    <img class="video" src="@/assets/video/video4.gif" />
+    <h2>4. PTAL系列分析</h2>
+    <el-image class="video" :src="img" :preview-src-list="[img]"> </el-image>
   </div>
 </template>
 
 <script>
-import { SHOW_LINK_ZOOM } from "../../index.vue";
 export default {
   data() {
     return {
-      SHOW_LINK_ZOOM,
+      img: require("./images/image5.png"),
     };
   },
 };

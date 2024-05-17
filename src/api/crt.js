@@ -47,3 +47,15 @@ export function travelMode(params) {
     params: params,
   });
 }
+
+// 出行属性
+// GET /pt/crt/travelAttribute
+// 接口ID：175194211
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-175194211
+export function travelAttribute(params) {
+  return request({
+    url: `/pt/crt/travelAttribute`,
+    method: "get",
+    params: params,
+  });
+}

@@ -1,12 +1,19 @@
 <template>
   <div class="page2">
-    <h2>2. 滑动滚轮缩放/扩大地图</h2>
-    <img class="video" src="@/assets/video/video2.gif" />
+    <h2>2. 输入线路名称，新建或选取已有线路进行修改</h2>
+    <el-image class="video" :src="img" :preview-src-list="[img]"> </el-image>
   </div>
 </template>
 
+
 <script>
-export default {};
+export default {
+  data() {
+    return {
+      img: require("./images/video2.gif"),
+    };
+  },
+};
 </script>
 
 <style lang="scss" scoped>

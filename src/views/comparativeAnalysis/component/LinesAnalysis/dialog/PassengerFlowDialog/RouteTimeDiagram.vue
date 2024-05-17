@@ -106,7 +106,7 @@ export default {
   },
   data() {
     return {
-      activeName: "Data",
+      activeName: "Chart",
 
       oldTableList: [],
       oldRowList: [],

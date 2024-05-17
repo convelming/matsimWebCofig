@@ -1,18 +1,18 @@
 <template>
   <!-- 停留时间 -->
-  <Dialog class="ResidenceTime" ref="dialog" :title="$l('停留时间')" hideMinimize :visible="true" @close="$emit('close')" left="center" width="640px">
+  <Dialog class="ResidenceTime" ref="dialog" :title="$l('停留时间')" hideMinimize :visible="true" @close="$emit('close')" left="100" width="640px">
     <div ref="chart" v-loading="loading" class="chart"></div>
   </Dialog>
 </template>
 
 <language>
-  {
-    "停留时间":{
-      "zh-CN": "停留时间",
-      "en-US": "Residence Time"
-    },
-  }
-  </language>
+{
+  "停留时间":{
+    "zh-CN": "停留时间",
+    "en-US": "Residence Time"
+  },
+}
+</language>
 
 <script>
 import * as echarts from "echarts";
@@ -119,6 +119,9 @@ export default {
           },
         ],
       };
+    },
+    toTop() {
+      this.$refs.dialog.toTop();
     },
   },
 };

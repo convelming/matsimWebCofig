@@ -6,13 +6,21 @@
 </template>
 
 <language>
-  {
-    "出行方式":{
-      "zh-CN": "出行方式",
-      "en-US": "TravelMode"
-    },
-  }
-  </language>
+{
+  "出行方式":{
+    "zh-CN": "出行方式",
+    "en-US": "TravelMode"
+  },
+  "基础方案":{
+    "zh-CN": "基础方案",
+    "en-US": "base"
+  },
+  "对比方案":{
+    "zh-CN": "对比方案",
+    "en-US": "contrast"
+  },
+}
+</language>
 
 <script>
 import * as echarts from "echarts";
@@ -69,6 +77,10 @@ export default {
       const afterList = keys.map((v) => after[v] || 0);
       const beforeList = keys.map((v) => before[v] || 0);
       return {
+        title: {
+          text: this.$l("出行方式"),
+          left: "center",
+        },
         tooltip: {
           trigger: "axis",
           axisPointer: {
@@ -76,10 +88,11 @@ export default {
           },
         },
         legend: {
-          data: keys,
+          left: "center",
+          top: 40,
         },
         grid: {
-          top: 20,
+          top: 100,
           left: 20,
           right: 20,
           bottom: 20,
@@ -99,7 +112,7 @@ export default {
         ],
         series: [
           {
-            name: "Base",
+            name: this.$l("基础方案"),
             type: "bar",
             barGap: 0,
             emphasis: {
@@ -108,7 +121,7 @@ export default {
             data: afterList,
           },
           {
-            name: "Steppe",
+            name: this.$l("对比方案"),
             type: "bar",
             emphasis: {
               focus: "series",

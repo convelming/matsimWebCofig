@@ -1,0 +1,173 @@
+<template>
+  <!-- 出行属性 -->
+  <Dialog class="TravelAttribute" ref="dialog" :title="$l('出行属性')" hideMinimize :visible="true" @close="$emit('close')" left="100" width="640px">
+    <div ref="chart" v-loading="loading" class="chart"></div>
+  </Dialog>
+</template>
+
+<language>
+{
+  "出行属性":{
+    "zh-CN": "出行属性",
+    "en-US": "Travel Attribute"
+  },
+  "在途时间":{
+    "zh-CN": "在途时间",
+    "en-US": "travel time"
+  },
+  "候车时间":{
+    "zh-CN": "候车时间",
+    "en-US": "waiting time"
+  },
+  "换乘次数":{
+    "zh-CN": "换乘次数",
+    "en-US": "transfer"
+  },
+  "费用":{
+    "zh-CN": "费用",
+    "en-US": "amount"
+  },
+  "出行距离":{
+    "zh-CN": "出行距离",
+    "en-US": "distance"
+  },
+  "基础方案":{
+    "zh-CN": "基础方案",
+    "en-US": "base"
+  },
+  "对比方案":{
+    "zh-CN": "对比方案",
+    "en-US": "contrast"
+  },
+}
+</language>
+
+<script>
+import * as echarts from "echarts";
+import { travelAttribute } from "@/api/crt.js";
+
+export default {
+  name: "TravelAttribute",
+  props: {
+    form: {
+      type: Object,
+      default: () => ({}),
+    },
+    offset: {
+      type: Number,
+      default: 0,
+    },
+  },
+  inject: ["rootVue"],
+  components: {},
+  computed: {},
+  watch: {},
+  data() {
+    return {
+      loading: true,
+    };
+  },
+  created() {},
+  mounted() {
+    this.$nextTick(() => {
+      this.$refs.dialog.offset(this.offset, this.offset);
+    });
+    const { database1, datasource1, database2, datasource2 } = this.$route.params;
+    travelAttribute({
+      name1: database1 + "/" + datasource1,
+      name2: database2 + "/" + datasource2,
+    }).then((res) => {
+      this._chart = echarts.init(this.$refs.chart);
+      this._chart.setOption(this.getChartOption(res.data), true);
+      this._chart.resize();
+
+      this.loading = false;
+    });
+  },
+  beforeDestroy() {
+    if (this._chart) {
+      this._chart.dispose();
+      this._chart = null;
+    }
+  },
+  methods: {
+    handleInput() {
+      this.$emit("input", this.checkBoxValue);
+    },
+    getChartOption(data) {
+      const { after, before, max = {} } = data;
+      const keySet = new Set(this.form.value);
+      const indicator = [],
+        afterList = [],
+        beforeList = [];
+      if (keySet.has("2-1")) {
+        indicator.push({ name: this.$l("在途时间"), max: max.travelTime });
+        afterList.push(after.travelTime);
+        beforeList.push(before.travelTime);
+      }
+      if (keySet.has("2-2")) {
+        indicator.push({ name: this.$l("候车时间"), max: max.waitingTime });
+        afterList.push(after.waitingTime);
+        beforeList.push(before.waitingTime);
+      }
+      if (keySet.has("2-3")) {
+        indicator.push({ name: this.$l("换乘次数"), max: max.transfer });
+        afterList.push(after.transfer);
+        beforeList.push(before.transfer);
+      }
+      if (keySet.has("2-4")) {
+        indicator.push({ name: this.$l("费用"), max: max.amount });
+        afterList.push(after.amount);
+        beforeList.push(before.amount);
+      }
+      if (keySet.has("2-5")) {
+        indicator.push({ name: this.$l("出行距离"), max: max.distance });
+        afterList.push(after.distance);
+        beforeList.push(before.distance);
+      }
+      return {
+        title: {
+          text: this.$l("出行属性"),
+          left: "center",
+        },
+        legend: {
+          left: "center",
+          bottom: 0,
+        },
+        radar: {
+          // shape: 'circle',
+          indicator: indicator,
+        },
+        series: [
+          {
+            name: this.$l("出行属性"),
+            type: "radar",
+            data: [
+              {
+                value: afterList,
+                name: this.$l("基础方案"),
+              },
+              {
+                value: beforeList,
+                name: this.$l("对比方案"),
+              },
+            ],
+          },
+        ],
+      };
+    },
+    toTop() {
+      this.$refs.dialog.toTop();
+    },
+  },
+};
+</script>
+
+<style lang="scss" scoped>
+.TravelAttribute {
+  .chart {
+    width: 600px;
+    height: 600px;
+  }
+}
+</style>

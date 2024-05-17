@@ -1,12 +1,18 @@
 <template>
   <div class="page2">
-    <h2>2. 滑动滚轮缩放/扩大地图</h2>
-    <img class="video" src="@/assets/video/video2.gif" />
+    <h2>2. 分析公交客流廊道</h2>
+    <el-image class="video" :src="img" :preview-src-list="[img]"> </el-image>
   </div>
 </template>
 
 <script>
-export default {};
+export default {
+  data() {
+    return {
+      img: require("./images/image2.png"),
+    };
+  },
+};
 </script>
 
 <style lang="scss" scoped>
