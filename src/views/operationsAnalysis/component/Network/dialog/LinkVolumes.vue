@@ -1,31 +1,29 @@
 <template>
-  <div>
-    <Dialog :title="$l('linkVolumes')" visible @close="$emit('close')" left="center" width="900px">
-      <div class="SelectLinkAnalysis__bodyer">
-        <div class="row">
-          <div style="margin-right: 10px">{{ $l("aggregateTo") }}</div>
-          <el-select v-model="second" @change="getData">
-            <el-option label="5 minutes" value="300" />
-            <el-option label="15 minutes" value="900" />
-            <el-option label="20 minutes" value="1200" />
-            <el-option label="30 minutes" value="1800" />
-            <el-option label="1 hour" value="3600" />
-          </el-select>
-        </div>
-        <el-tabs v-model="activeName" @tab-click="handleChange">
-          <el-tab-pane :label="$l('chart')" name="Chart">
-            <div ref="chart" class="chart-container" v-loading="loading"></div>
-          </el-tab-pane>
-          <el-tab-pane :label="$l('data')" name="Data">
-            <el-table class="small" :data="tableList" border stripe height="calc(100vh - 400px)" v-loading="loading">
-              <el-table-column prop="time" :label="$l('time')" width="200" :formatter="timeFormatter" />
-              <el-table-column prop="vehicles" :label="$l('vehicles')" />
-            </el-table>
-          </el-tab-pane>
-        </el-tabs>
+  <Dialog class="LinkVolumes" :title="$l('linkVolumes')" visible @close="$emit('close')" left="center" width="900px">
+    <div class="LinkVolumes__bodyer">
+      <div class="row">
+        <div style="margin-right: 10px">{{ $l("aggregateTo") }}</div>
+        <el-select v-model="second" @change="getData">
+          <el-option label="5 minutes" value="300" />
+          <el-option label="15 minutes" value="900" />
+          <el-option label="20 minutes" value="1200" />
+          <el-option label="30 minutes" value="1800" />
+          <el-option label="1 hour" value="3600" />
+        </el-select>
       </div>
-    </Dialog>
-  </div>
+      <el-tabs v-model="activeName" @tab-click="handleChange">
+        <el-tab-pane :label="$l('chart')" name="Chart">
+          <div ref="chart" class="chart-container" v-loading="loading"></div>
+        </el-tab-pane>
+        <el-tab-pane :label="$l('data')" name="Data">
+          <el-table class="small" :data="tableList" border stripe height="calc(100vh - 400px)" v-loading="loading">
+            <el-table-column prop="time" :label="$l('time')" width="200" :formatter="timeFormatter" />
+            <el-table-column prop="vehicles" :label="$l('vehicles')" />
+          </el-table>
+        </el-tab-pane>
+      </el-tabs>
+    </div>
+  </Dialog>
 </template>
 
 <language>
@@ -175,7 +173,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.SelectLinkAnalysis__bodyer {
+.LinkVolumes__bodyer {
   font-size: 14px;
   color: #606266;
   .row {

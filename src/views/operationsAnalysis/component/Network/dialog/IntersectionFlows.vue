@@ -1,25 +1,23 @@
 <template>
-  <div>
-    <Dialog :title="$l('IntersectionFlows')" visible @close="$emit('close')" left="center" width="900px">
-      <div class="SelectLinkAnalysis__bodyer">
-        <div class="row">
-          <TimeRangeSlider :value="[startSecond, endSecond]" :start.sync="startSecond" :end.sync="endSecond" />
-        </div>
-        <el-tabs v-model="activeName" @tab-click="handleChange">
-          <el-tab-pane :label="$l('Chart')" name="Chart">
-            <div ref="chart" class="chart-container" v-loading="loading"></div>
-          </el-tab-pane>
-          <el-tab-pane :label="$l('Data')" name="Data">
-            <el-table class="small" :data="tableList" border stripe height="calc(100vh - 400px)" v-loading="loading">
-              <el-table-column prop="fromLink.linkId" :label="$l('fromLink')" />
-              <el-table-column prop="toLink.linkId" :label="$l('toLink')" />
-              <el-table-column prop="vehicles" :label="$l('vehicles')" />
-            </el-table>
-          </el-tab-pane>
-        </el-tabs>
+  <Dialog class="IntersectionFlows" :title="$l('IntersectionFlows')" visible @close="$emit('close')" left="center" width="900px">
+    <div class="IntersectionFlows__bodyer">
+      <div class="row">
+        <TimeRangeSlider :value="[startSecond, endSecond]" :start.sync="startSecond" :end.sync="endSecond" />
       </div>
-    </Dialog>
-  </div>
+      <el-tabs v-model="activeName" @tab-click="handleChange">
+        <el-tab-pane :label="$l('Chart')" name="Chart">
+          <div ref="chart" class="chart-container" v-loading="loading"></div>
+        </el-tab-pane>
+        <el-tab-pane :label="$l('Data')" name="Data">
+          <el-table class="small" :data="tableList" border stripe height="calc(100vh - 400px)" v-loading="loading">
+            <el-table-column prop="fromLink.linkId" :label="$l('fromLink')" />
+            <el-table-column prop="toLink.linkId" :label="$l('toLink')" />
+            <el-table-column prop="vehicles" :label="$l('vehicles')" />
+          </el-table>
+        </el-tab-pane>
+      </el-tabs>
+    </div>
+  </Dialog>
 </template>
 
 <language>
@@ -169,7 +167,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.SelectLinkAnalysis__bodyer {
+.IntersectionFlows__bodyer {
   font-size: 14px;
   color: #606266;
   .row {

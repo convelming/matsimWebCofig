@@ -1,32 +1,30 @@
 <template>
-  <div class="TimetableDialog">
-    <Dialog ref="dialog" :title="$l('时刻表信息变动')" :visible="true" @close="$emit('close')" left="center" width="1300px">
-      <div class="TimetableDialog__bodyer">
-        <div class="row">
-          <div class="col">
-            <div class="_title">{{ $l("基础方案") }}</div>
-            <div class="_content">
-              <el-table v-loading="loading1" :data="oldList" height="calc(100vh - 250px)">
-                <el-table-column :label="$l('vehicleId')" width="150" prop="vehicleId" />
-                <el-table-column :label="$l('id')" prop="id" />
-                <el-table-column :label="$l('departureTime')" width="180" prop="departureTime" :formatter="timeFormatter" />
-              </el-table>
-            </div>
+  <Dialog class="TimetableDialog" ref="dialog" :title="$l('时刻表信息变动')" :visible="true" @close="$emit('close')" left="center" width="1300px">
+    <div class="TimetableDialog__bodyer">
+      <div class="row">
+        <div class="col">
+          <div class="_title">{{ $l("基础方案") }}</div>
+          <div class="_content">
+            <el-table v-loading="loading1" :data="oldList" height="calc(100vh - 250px)">
+              <el-table-column :label="$l('vehicleId')" width="150" prop="vehicleId" />
+              <el-table-column :label="$l('id')" prop="id" />
+              <el-table-column :label="$l('departureTime')" width="180" prop="departureTime" :formatter="timeFormatter" />
+            </el-table>
           </div>
-          <div class="col">
-            <div class="_title">{{ $l("对比方案") }}</div>
-            <div class="_content">
-              <el-table v-loading="loading1" :data="newList" height="calc(100vh - 250px)">
-                <el-table-column :label="$l('vehicleId')" width="150" prop="vehicleId" />
-                <el-table-column :label="$l('id')" prop="id" />
-                <el-table-column :label="$l('departureTime')" width="180" prop="departureTime" :formatter="timeFormatter" />
-              </el-table>
-            </div>
+        </div>
+        <div class="col">
+          <div class="_title">{{ $l("对比方案") }}</div>
+          <div class="_content">
+            <el-table v-loading="loading1" :data="newList" height="calc(100vh - 250px)">
+              <el-table-column :label="$l('vehicleId')" width="150" prop="vehicleId" />
+              <el-table-column :label="$l('id')" prop="id" />
+              <el-table-column :label="$l('departureTime')" width="180" prop="departureTime" :formatter="timeFormatter" />
+            </el-table>
           </div>
         </div>
       </div>
-    </Dialog>
-  </div>
+    </div>
+  </Dialog>
 </template>
 
 <language>

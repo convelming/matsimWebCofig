@@ -233,7 +233,6 @@ export default {
         name1: database1 + "/" + datasource1,
         name2: database2 + "/" + datasource2,
       }).then((affectedStops) => {
-        console.log(affectedStops);
         const data = [
           {
             routeId: "",

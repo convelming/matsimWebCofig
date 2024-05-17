@@ -1,45 +1,29 @@
 <template>
-  <div>
-    <Dialog
-      :title="$l('Passengers At Stop')"
-      visible
-      @close="$emit('close')"
-      left="center"
-      width="900px"
-    >
-      <div class="PassengersAtStop__bodyer">
-        <div class="row">
-          <el-checkbox v-model="aggregate">
-            <span style="margin-right: 10px">{{ $l("Aggregate") }}</span>
-            <el-select v-model="aggregateTime" size="mini">
-              <el-option :label="$l('15 minutes')" :value="15"> </el-option>
-              <el-option :label="$l('20 minutes')" :value="20"> </el-option>
-              <el-option :label="$l('30 minutes')" :value="30"> </el-option>
-              <el-option :label="$l('60 minutes')" :value="60"> </el-option>
-            </el-select>
-          </el-checkbox>
-        </div>
-        <el-table height="80vh" :data="tableList" border stripe>
-          <el-table-column prop="line" :label="$l('Line')" />
-          <el-table-column prop="route" :label="$l('Route')" />
-          <el-table-column prop="routeStart" :label="$l('Route Start')" />
-          <el-table-column prop="routeEnd" :label="$l('Route End')" />
-          <el-table-column
-            prop="arrivalTime"
-            :label="$l('Arrival Time')"
-            :formatter="tableFormatHour"
-          />
-          <el-table-column
-            prop="departureTime"
-            :label="$l('Departure Time')"
-            :formatter="tableFormatHour"
-          />
-          <el-table-column prop="alightingPax" :label="$l('#Alighting Pax')" />
-          <el-table-column prop="boardingPax" :label="$l('#Bording Pax')" />
-        </el-table>
+  <Dialog class="PassengersAtStop" :title="$l('Passengers At Stop')" visible @close="$emit('close')" left="center" width="900px">
+    <div class="PassengersAtStop__bodyer">
+      <div class="row">
+        <el-checkbox v-model="aggregate">
+          <span style="margin-right: 10px">{{ $l("Aggregate") }}</span>
+          <el-select v-model="aggregateTime" size="mini">
+            <el-option :label="$l('15 minutes')" :value="15"> </el-option>
+            <el-option :label="$l('20 minutes')" :value="20"> </el-option>
+            <el-option :label="$l('30 minutes')" :value="30"> </el-option>
+            <el-option :label="$l('60 minutes')" :value="60"> </el-option>
+          </el-select>
+        </el-checkbox>
       </div>
-    </Dialog>
-  </div>
+      <el-table height="80vh" :data="tableList" border stripe>
+        <el-table-column prop="line" :label="$l('Line')" />
+        <el-table-column prop="route" :label="$l('Route')" />
+        <el-table-column prop="routeStart" :label="$l('Route Start')" />
+        <el-table-column prop="routeEnd" :label="$l('Route End')" />
+        <el-table-column prop="arrivalTime" :label="$l('Arrival Time')" :formatter="tableFormatHour" />
+        <el-table-column prop="departureTime" :label="$l('Departure Time')" :formatter="tableFormatHour" />
+        <el-table-column prop="alightingPax" :label="$l('#Alighting Pax')" />
+        <el-table-column prop="boardingPax" :label="$l('#Bording Pax')" />
+      </el-table>
+    </div>
+  </Dialog>
 </template>
 
 <language>
@@ -155,7 +139,7 @@ export default {
       display: block;
     }
     .button {
-      background:#409EFF;
+      background: #409eff;
       flex-shrink: 1;
       width: 30px;
       height: 32px;

@@ -12,7 +12,7 @@
         </div>
       </div>
 
-      <span v-show="!s_show" class="close_btn">
+      <span v-show="!s_show" class="close_btn" style="padding: 0">
         <span class="el-icon-full-screen" @click.stop="handleMinimize(true)"></span>
       </span>
     </div>
@@ -20,6 +20,9 @@
 </template>
 
 <script>
+
+let zIndex = 1000;
+
 export default {
   props: {
     // 是否显示
@@ -90,7 +93,7 @@ export default {
         top: 0,
         left: 0,
       },
-      s_style2: "top: 20px; left: 20px; padding: 10px 15px;height: auto;",
+      s_zIndex: zIndex++,
     };
   },
   computed: {
@@ -106,10 +109,15 @@ export default {
       if (!!this.resize) {
         style += `resize:both;`;
       }
+      style += `z-index:${this.s_zIndex};`;
       return style;
     },
+    s_style2() {
+      return `top: 20px; left: 20px; padding: 10px 15px;height: auto;z-index:${this.s_zIndex};`;
+    },
   },
-  created() {},
+  created() {
+  },
   mounted() {
     if (this.visible) {
       this.open();
@@ -123,6 +131,7 @@ export default {
   },
   methods: {
     startMove(event) {
+      if (this.s_zIndex < zIndex) this.s_zIndex = zIndex++;
       this.moveObj = {
         s_top: event.pageY,
         s_left: event.pageX,
@@ -184,10 +193,11 @@ export default {
       }
     },
     offset(top, left) {
-      console.log(this.s_top, this.s_left);
       this.s_top += Number(top) || 0;
       this.s_left += Number(left) || 0;
-      console.log(this.s_top, this.s_left);
+    },
+    toTop() {
+      if (this.s_zIndex < zIndex) this.s_zIndex = zIndex++;
     },
   },
 };

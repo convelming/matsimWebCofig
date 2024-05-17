@@ -1,46 +1,44 @@
 <template>
-  <div class="RoutesChangeDialog">
-    <Dialog ref="dialog" :title="$l('线路变动信息')" :visible="true" @close="$emit('close')" top="40" left="40" width="400px">
-      <div class="RoutesChangeDialog__bodyer">
-        <div class="row">
-          <div class="col">
-            <div class="_title">
-              <el-checkbox v-model="showOldLine">{{ $l("基础方案") }}</el-checkbox>
-            </div>
-            <div class="_tools">
-              <el-color-picker size="mini" :predefine="predefineColors" v-model="oldLineColor" />
-              <el-button type="primary" size="mini" circle icon="el-icon-map-location" @click="handleLocationLine(oldLine)"></el-button>
-            </div>
-            <div class="_content">
-              <div class="stop_list">
-                <div class="stop_item" v-for="(v, $index) in oldLine.stops" :key="$index">
-                  <div class="index">{{ $index + 1 }}</div>
-                  <div class="name">{{ v.name }}</div>
-                </div>
+  <Dialog class="RoutesChangeDialog" ref="dialog" :title="$l('线路变动信息')" :visible="true" @close="$emit('close')" top="40" left="40" width="400px">
+    <div class="RoutesChangeDialog__bodyer">
+      <div class="row">
+        <div class="col">
+          <div class="_title">
+            <el-checkbox v-model="showOldLine">{{ $l("基础方案") }}</el-checkbox>
+          </div>
+          <div class="_tools">
+            <el-color-picker size="mini" :predefine="predefineColors" v-model="oldLineColor" />
+            <el-button type="primary" size="mini" circle icon="el-icon-map-location" @click="handleLocationLine(oldLine)"></el-button>
+          </div>
+          <div class="_content">
+            <div class="stop_list">
+              <div class="stop_item" v-for="(v, $index) in oldLine.stops" :key="$index">
+                <div class="index">{{ $index + 1 }}</div>
+                <div class="name">{{ v.name }}</div>
               </div>
             </div>
           </div>
-          <div class="col">
-            <div class="_title">
-              <el-checkbox v-model="showNewLine">{{ $l("对比方案") }}</el-checkbox>
-            </div>
-            <div class="_tools">
-              <el-color-picker size="mini" :predefine="predefineColors" v-model="newLineColor" />
-              <el-button type="primary" size="mini" circle icon="el-icon-map-location" @click="handleLocationLine(newLine)"></el-button>
-            </div>
-            <div class="_content">
-              <div class="stop_list">
-                <div class="stop_item" v-for="(v, $index) in newLine.stops" :key="$index">
-                  <div class="index">{{ $index + 1 }}</div>
-                  <div class="name">{{ v.name }}</div>
-                </div>
+        </div>
+        <div class="col">
+          <div class="_title">
+            <el-checkbox v-model="showNewLine">{{ $l("对比方案") }}</el-checkbox>
+          </div>
+          <div class="_tools">
+            <el-color-picker size="mini" :predefine="predefineColors" v-model="newLineColor" />
+            <el-button type="primary" size="mini" circle icon="el-icon-map-location" @click="handleLocationLine(newLine)"></el-button>
+          </div>
+          <div class="_content">
+            <div class="stop_list">
+              <div class="stop_item" v-for="(v, $index) in newLine.stops" :key="$index">
+                <div class="index">{{ $index + 1 }}</div>
+                <div class="name">{{ v.name }}</div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </Dialog>
-  </div>
+    </div>
+  </Dialog>
 </template>
 
 <language>

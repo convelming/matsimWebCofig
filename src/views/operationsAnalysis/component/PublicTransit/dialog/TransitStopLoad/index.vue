@@ -1,11 +1,5 @@
 <template>
-  <Dialog
-    :title="$l('Transit Stop Load')"
-    class="StopLoad"
-    :visible="true"
-    @close="$emit('close')"
-    left="center"
-  >
+  <Dialog :title="$l('Transit Stop Load')" class="TransitStopLoad" :visible="true" @close="$emit('close')" left="center">
     <div ref="StopLoadChart" class="chart" v-loading="loading"></div>
   </Dialog>
 </template>

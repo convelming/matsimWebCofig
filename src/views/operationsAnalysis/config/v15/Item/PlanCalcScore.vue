@@ -110,7 +110,12 @@
                                         <el-time-picker v-model="amItem.typicalDuration" value-format="HH:mm:ss" clearable />
                                       </el-form-item>
                                       <el-form-item :label="$l('typicalDurationScoreComputation')">
-                                        <el-switch v-model="amItem.typicalDurationScoreComputation" active-value="true" inactive-value="false" />
+                                        <el-select v-model="amItem.typicalDurationScoreComputation">
+                                          <!-- uniform | relative -->
+                                          <el-option :label="$l(`uniform`)" value="uniform" />
+                                          <el-option :label="$l(`relative`)" value="relative" />
+                                        </el-select>
+                                        <!-- <el-switch v-model="amItem.typicalDurationScoreComputation" active-value="true" inactive-value="false" /> -->
                                       </el-form-item>
                                     </div>
                                   </el-collapse-transition>

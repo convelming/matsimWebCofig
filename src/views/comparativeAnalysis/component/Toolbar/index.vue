@@ -1,5 +1,6 @@
 <template>
   <el-collapse v-model="activeName" accordion>
+    <ReportToolbar name="ReportToolbar" />
     <LinesChangeInfo name="LinesChangeInfo" />
     <component v-for="item in list" :key="item.name" :is="item.type" :name="item.name" :show="item.name == activeName" v-bind="item.data" />
   </el-collapse>
@@ -7,6 +8,9 @@
 
 <script>
 import { guid } from "@/utils/utils";
+
+import ReportToolbar from "../AnalysisReport/toolbar/ReportToolbar.vue";
+
 import RouteFlows from "../LinesAnalysis/toolbar/RouteFlows.vue";
 import LinesChangeInfo from "../LinesAnalysis/toolbar/LinesChangeInfo.vue";
 
@@ -24,6 +28,8 @@ import SelectBuildAnalysis from "../../../operationsAnalysis/component/Build3D/t
 
 export default {
   components: {
+    ReportToolbar,
+
     RouteFlows,
     LinesChangeInfo,
 
@@ -41,7 +47,7 @@ export default {
   },
   data() {
     return {
-      activeName: "LinesChangeInfo",
+      activeName: "ReportToolbar",
       list: [],
       // activeName: "4231bd4e-831d-4705-994f-365bfc43eaf8",
       // list: [

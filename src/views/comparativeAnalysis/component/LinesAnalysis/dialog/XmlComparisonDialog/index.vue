@@ -1,8 +1,7 @@
 <template>
-  <div class="XmlComparisonDialog">
-    <Dialog ref="dialog" :title="$l('Xml信息对比')" :visible="true" @close="$emit('close')" left="center" width="1300px">
-      <div class="XmlComparisonDialog__bodyer">
-        <!-- <div class="row">
+  <Dialog class="XmlComparisonDialog" ref="dialog" :title="$l('Xml信息对比')" :visible="true" @close="$emit('close')" left="center" width="1300px">
+    <div class="XmlComparisonDialog__bodyer">
+      <!-- <div class="row">
           <div class="col">
             <div class="_title">{{ $l("基础方案") }}</div>
             <textarea class="_content" v-model="oldXml" disabled></textarea>
@@ -12,10 +11,9 @@
             <textarea class="_content" v-model="newXml" disabled></textarea>
           </div>
         </div> -->
-        <code-diff class="code-diff" :old-string="oldXml" :new-string="newXml" :context="10" output-format="side-by-side" language="xml" />
-      </div>
-    </Dialog>
-  </div>
+      <code-diff class="code-diff" :old-string="oldXml" :new-string="newXml" :context="10" output-format="side-by-side" language="xml" />
+    </div>
+  </Dialog>
 </template>
 
 <language>

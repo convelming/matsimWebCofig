@@ -1,78 +1,31 @@
 <template>
-  <div class="TransitRoutesInfo">
-    <Dialog
-      :title="$l('Transit Routes Info')"
-      :visible="true"
-      @close="$emit('close')"
-      left="center"
-      width="900px"
-    >
-      <div class="TransitRoutesInfo__bodyer">
-        <div class="row">
-          {{ $l("Analyzed Route：") }}{{ this.form.routeId }}
-        </div>
-        <div class="row">
-          <span>{{ $l("Analysis：") }}</span>
-          <el-select
-            v-model="chartType"
-            size="small"
-            style="width: 100%; margin-left: 10px"
-          >
-            <el-option
-              v-for="item in route_info_analysis"
-              :key="item.value"
-              :label="$l(item.label)"
-              :value="item.value"
-            >
-            </el-option>
-          </el-select>
-        </div>
-        <el-radio-group
-          style="width: 100%; display: block"
-          v-model="s_form.single"
-        >
-          <div class="row">
-            <el-radio :label="true"> {{ $l("Single") }}</el-radio>
-            <RouteSelect
-              v-model="s_form.departureId"
-              :options="routeOptions"
-              valueKey="id"
-              labelKey="id"
-            />
-          </div>
-          <div class="row">
-            <el-radio :label="false">{{ $l("Multiple") }}</el-radio>
-            <TimeRangeSlider
-              :value="[this.s_form.startSecond, this.s_form.endSecond]"
-              :start.sync="s_form.startSecond"
-              :end.sync="s_form.endSecond"
-            />
-          </div>
-        </el-radio-group>
-        <PassengersEnteringLeaving
-          v-if="chartType == 'Passengers Entering / Leaving'"
-          :form="s_form"
-        />
-        <VehicleLoad v-if="chartType == 'Vehicle Load'" :form="s_form" />
-        <AggregatedVehicleLoad
-          v-if="chartType == 'Aggregated Vehicle Load'"
-          :form="s_form"
-        />
-        <RouteGrid v-if="chartType == 'Route Grid'" :form="s_form" />
-        <RouteFlows
-          v-if="chartType == 'Route Flows'"
-          :form="s_form"
-          :lineInfo="form"
-          :routeOptions="routeOptions"
-        />
-        <RouteTimeDiagram
-          v-if="chartType == 'Route-Time Diagram'"
-          :form="s_form"
-          :lineInfo="form"
-        />
+  <Dialog class="TransitRoutesInfo" :title="$l('Transit Routes Info')" :visible="true" @close="$emit('close')" left="center" width="900px">
+    <div class="TransitRoutesInfo__bodyer">
+      <div class="row">{{ $l("Analyzed Route：") }}{{ this.form.routeId }}</div>
+      <div class="row">
+        <span>{{ $l("Analysis：") }}</span>
+        <el-select v-model="chartType" size="small" style="width: 100%; margin-left: 10px">
+          <el-option v-for="item in route_info_analysis" :key="item.value" :label="$l(item.label)" :value="item.value"> </el-option>
+        </el-select>
       </div>
-    </Dialog>
-  </div>
+      <el-radio-group style="width: 100%; display: block" v-model="s_form.single">
+        <div class="row">
+          <el-radio :label="true"> {{ $l("Single") }}</el-radio>
+          <RouteSelect v-model="s_form.departureId" :options="routeOptions" valueKey="id" labelKey="id" />
+        </div>
+        <div class="row">
+          <el-radio :label="false">{{ $l("Multiple") }}</el-radio>
+          <TimeRangeSlider :value="[this.s_form.startSecond, this.s_form.endSecond]" :start.sync="s_form.startSecond" :end.sync="s_form.endSecond" />
+        </div>
+      </el-radio-group>
+      <PassengersEnteringLeaving v-if="chartType == 'Passengers Entering / Leaving'" :form="s_form" />
+      <VehicleLoad v-if="chartType == 'Vehicle Load'" :form="s_form" />
+      <AggregatedVehicleLoad v-if="chartType == 'Aggregated Vehicle Load'" :form="s_form" />
+      <RouteGrid v-if="chartType == 'Route Grid'" :form="s_form" />
+      <RouteFlows v-if="chartType == 'Route Flows'" :form="s_form" :lineInfo="form" :routeOptions="routeOptions" />
+      <RouteTimeDiagram v-if="chartType == 'Route-Time Diagram'" :form="s_form" :lineInfo="form" />
+    </div>
+  </Dialog>
 </template>
 
 <language>
@@ -207,7 +160,7 @@ export default {
       display: block;
     }
     .button {
-      background:#409EFF;
+      background: #409eff;
       flex-shrink: 1;
       width: 30px;
       height: 32px;

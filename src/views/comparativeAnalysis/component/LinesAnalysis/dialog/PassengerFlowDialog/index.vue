@@ -1,15 +1,14 @@
 <template>
-  <div class="PassengerFlowDialog">
-    <Dialog ref="dialog" :title="$l('客流信息变化')" :visible="true" @close="$emit('close')" left="center" width="900px">
-      <div class="PassengerFlowDialog__bodyer">
-        <div class="row">{{ $l("线路编号：") }}{{ this.form.routeId }}</div>
-        <div class="row">
-          <span style="text-wrap: nowrap">{{ $l("分析类型：") }}</span>
-          <el-select v-model="chartType" size="small" style="width: 100%; margin-left: 10px">
-            <el-option v-for="item in route_info_analysis" :key="item.value" :label="$l(item.label)" :value="item.value"> </el-option>
-          </el-select>
-        </div>
-        <!-- <el-radio-group style="width: 100%; display: block" v-model="s_form.single">
+  <Dialog class="PassengerFlowDialog" ref="dialog" :title="$l('客流信息变化')" :visible="true" @close="$emit('close')" left="center" width="900px">
+    <div class="PassengerFlowDialog__bodyer">
+      <div class="row">{{ $l("线路编号：") }}{{ this.form.routeId }}</div>
+      <div class="row">
+        <span style="text-wrap: nowrap">{{ $l("分析类型：") }}</span>
+        <el-select v-model="chartType" size="small" style="width: 100%; margin-left: 10px">
+          <el-option v-for="item in route_info_analysis" :key="item.value" :label="$l(item.label)" :value="item.value"> </el-option>
+        </el-select>
+      </div>
+      <!-- <el-radio-group style="width: 100%; display: block" v-model="s_form.single">
           <div class="row">
             <el-radio :label="true"> {{ $l("单个班车") }}</el-radio>
             <RouteSelect v-model="s_form.departureId" :options="routeOptions" valueKey="id" labelKey="id" />
@@ -19,16 +18,15 @@
             <TimeRangeSlider :value="[this.s_form.startTime, this.s_form.endTime]" :start.sync="s_form.startTime" :end.sync="s_form.endTime" />
           </div>
         </el-radio-group> -->
-        <div class="row">
-          <span style="text-wrap: nowrap">{{ $l("时间段：") }}</span>
-          <TimeRangeSlider :value="[this.s_form.startTime, this.s_form.endTime]" :start.sync="s_form.startTime" :end.sync="s_form.endTime" />
-        </div>
-        <PassengersEnteringLeaving v-if="chartType == `Passengers Entering / Leaving`" :form="s_form" :routeInfo="form" />
-        <RouteFlows v-if="chartType == `Route Flows`" :form="s_form" :routeInfo="form" />
-        <RouteTimeDiagram v-if="chartType == `Route Time Diagram`" :form="s_form" :routeInfo="form" />
+      <div class="row">
+        <span style="text-wrap: nowrap">{{ $l("时间段：") }}</span>
+        <TimeRangeSlider :value="[this.s_form.startTime, this.s_form.endTime]" :start.sync="s_form.startTime" :end.sync="s_form.endTime" />
       </div>
-    </Dialog>
-  </div>
+      <PassengersEnteringLeaving v-if="chartType == `Passengers Entering / Leaving`" :form="s_form" :routeInfo="form" />
+      <RouteFlows v-if="chartType == `Route Flows`" :form="s_form" :routeInfo="form" />
+      <RouteTimeDiagram v-if="chartType == `Route Time Diagram`" :form="s_form" :routeInfo="form" />
+    </div>
+  </Dialog>
 </template>
 
 <language>

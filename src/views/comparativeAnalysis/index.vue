@@ -6,6 +6,7 @@
           <Drawer show direction="left" :size="400">
             <el-collapse v-model="activeNames">
               <LinesAnalysis :showLayer.sync="showLayerLinesAnalysis" name="LinesAnalysis" />
+              <AnalysisReport :showLayer.sync="showLayerAnalysisReport" name="AnalysisReport" />
               <PublicTransit :showLayer.sync="showLayerPublicTransit" name="PublicTransit" />
               <MotorizedTravel :showLayer.sync="showLayerMotorizedTravel" name="MotorizedTravel" />
               <Build3D :showLayer.sync="showLayerBuild3D" name="Build3D" />
@@ -84,6 +85,8 @@ import PublicTransit from "../operationsAnalysis/component/PublicTransit/index.v
 import MotorizedTravel from "../operationsAnalysis/component/MotorizedTravel/index.vue";
 import Build3D from "../operationsAnalysis/component/Build3D/index.vue";
 import Network from "../operationsAnalysis/component/Network/index.vue";
+
+import AnalysisReport from "./component/AnalysisReport/index.vue";
 import LinesAnalysis from "./component/LinesAnalysis/index.vue";
 
 import HelpDialog from "../operationsAnalysis/component/HelpDialog/index.vue";
@@ -100,6 +103,7 @@ export default {
     Build3D,
     Network,
     LinesAnalysis,
+    AnalysisReport,
   },
   watch: {
     page_language: {
@@ -121,9 +125,10 @@ export default {
       loading: false,
       _Map: null,
       _MapLayer: null,
-      activeNames: ["LinesAnalysis", "PublicTransit", "MotorizedTravel", "Build3D", "Network"],
+      activeNames: ["LinesAnalysis", "AnalysisReport", "PublicTransit", "MotorizedTravel", "Build3D", "Network"],
 
       showLayerLinesAnalysis: true,
+      showLayerAnalysisReport: false,
       showLayerPublicTransit: false,
       showLayerMotorizedTravel: false,
       showLayerBuild3D: false,
@@ -143,6 +148,17 @@ export default {
     };
   },
   watch: {
+    showLayerAnalysisReport(val) {
+      this.$nextTick(() => {
+        if (this.$refs.Toolbar) {
+          this.$refs.Toolbar.add("AnalysisReport", {});
+          this.showStopToolbar = true;
+        }
+      });
+    },
+    showLayerLinesAnalysis(val) {
+      this.handleChangeMapCameraControls();
+    },
     showLayerPublicTransit(val) {
       this.handleChangeMapCameraControls();
     },

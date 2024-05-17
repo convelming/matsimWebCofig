@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="Transfers">
     <Dialog :title="$l('Transfers')" visible @close="$emit('close')" left="center" width="900px">
       <div class="Transfers_bodyer">
         <div class="row">
