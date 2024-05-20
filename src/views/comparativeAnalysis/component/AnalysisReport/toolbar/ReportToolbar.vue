@@ -5,8 +5,9 @@
       <div class="tree_scroll">
         <el-tree ref="tree" :data="treeData" show-checkbox node-key="id" :default-checked-keys="defaultCheckedKeys" default-expand-all>
           <div slot-scope="{ node, data }" class="tree_item">
-            <div>{{ $l(data.label) }}</div>
-            <el-button v-if="data.showView" type="text" size="small" icon="el-icon-view" @click.stop="handleShowDialog(node, data)"></el-button>
+            <div class="tree_label" v-if="data.noLang" :title="data.label">{{ data.label }}</div>
+            <div class="tree_label" v-else>{{ $l(data.label) }}</div>
+            <el-button class="tree_btn" v-if="data.showView" type="text" size="small" icon="el-icon-view" @click.stop="handleShowDialog(node, data)"></el-button>
           </div>
         </el-tree>
       </div>
@@ -103,11 +104,20 @@
     "zh-CN": "决策树2",
     "en-US": "决策树2"
   },
+  "修改的线路":{
+    "zh-CN": "修改的线路",
+    "en-US": "修改的线路"
+  },
+  "受影响的线路":{
+    "zh-CN": "受影响的线路",
+    "en-US": "受影响的线路"
+  },
 }
 </language>
 
 <script>
 import { guid } from "@/utils/utils.js";
+import { changeLines, affectedLines } from "@/api/contrast";
 
 import Vue from "vue";
 // 活动属性弹窗
@@ -117,6 +127,12 @@ import TravelTime from "../dialog/ActivityAttributes/TravelTime.vue";
 import TravelMode from "../dialog/ActivityAttributes/TravelMode.vue";
 // 出行属性弹窗
 import TravelAttribute from "../dialog/TravelAttribute/index.vue";
+// 出行者属性
+import TravelersAge from "../dialog/TravelerAttributes/TravelersAge.vue";
+import TravelersCarAvailability from "../dialog/TravelerAttributes/TravelersCarAvailability.vue";
+import TravelersCarLicense from "../dialog/TravelerAttributes/TravelersCarLicense.vue";
+import TravelersEmployed from "../dialog/TravelerAttributes/TravelersEmployed.vue";
+import TravelersSex from "../dialog/TravelerAttributes/TravelersSex.vue";
 
 import TestDialog from "../dialog/TestDialog.vue";
 
@@ -128,6 +144,12 @@ const TravelTimeExtend = Vue.extend(TravelTime);
 const TravelModeExtend = Vue.extend(TravelMode);
 
 const TravelAttributeExtend = Vue.extend(TravelAttribute);
+
+const TravelersAgeExtend = Vue.extend(TravelersAge);
+const TravelersCarAvailabilityExtend = Vue.extend(TravelersCarAvailability);
+const TravelersCarLicenseExtend = Vue.extend(TravelersCarLicense);
+const TravelersEmployedExtend = Vue.extend(TravelersEmployed);
+const TravelersSexExtend = Vue.extend(TravelersSex);
 
 export default {
   name: "ReportToolbar",
@@ -260,6 +282,7 @@ export default {
               id: "3-6",
               label: "其他",
               showView: true,
+              disabled: true,
             },
           ],
         },
@@ -273,17 +296,35 @@ export default {
           label: "决策树2",
           children: [],
         },
+        {
+          id: "6",
+          label: "修改的线路",
+          children: [],
+        },
+        {
+          id: "7",
+          label: "受影响的线路",
+          children: [],
+        },
       ],
-      defaultCheckedKeys: ["1", "2"],
+      defaultCheckedKeys: ["1", "2", "3"],
       s_form: {
         startTime: 0,
         endTime: 24 * 60 * 60,
       },
+
+      loading1: false,
+      list1: [],
+      loading2: false,
+      list2: [],
     };
   },
   created() {
     this._dialogMap = new Map();
     this._dialogOffset = 0;
+
+    this.getList1();
+    this.getList2();
   },
   mounted() {
     // 接收两个 boolean 类型的参数，1. 是否只是叶子节点，默认值为 false 2. 是否包含半选节点，默认值为 false
@@ -294,6 +335,51 @@ export default {
     this._dialogMap.clear();
   },
   methods: {
+    getList1() {
+      this.loading1 = true;
+      const { database1, datasource1, database2, datasource2 } = this.$route.params;
+      return changeLines({
+        name1: database1 + "/" + datasource1,
+        name2: database2 + "/" + datasource2,
+      })
+        .then((res) => {
+          const list = res.data.map((item) => {
+            return { ...item, id: item.routeId, label: item.routeName, noLang: true };
+          });
+          const item = this.treeData.find((v) => v.label == "修改的线路");
+          if (item) {
+            this.$set(item, "children", list);
+          }
+          console.log(this.treeData);
+          this.loading1 = false;
+        })
+        .catch((err) => {
+          this.list1 = [];
+          this.loading1 = false;
+        });
+    },
+    getList2() {
+      this.loading2 = true;
+      const { database1, datasource1, database2, datasource2 } = this.$route.params;
+      return affectedLines({
+        name1: database1 + "/" + datasource1,
+        name2: database2 + "/" + datasource2,
+      })
+        .then((res) => {
+          const list = res.data.map((item) => {
+            return { ...item, id: item.routeId, label: item.routeName, noLang: true };
+          });
+          const item = this.treeData.find((v) => v.label == "受影响的线路");
+          if (item) {
+            this.$set(item, "children", list);
+          }
+          this.loading2 = false;
+        })
+        .catch((err) => {
+          this.list2 = [];
+          this.loading2 = false;
+        });
+    },
     handleEnable() {},
     handleDisable() {},
     handleShowDialog(node, data) {
@@ -378,32 +464,43 @@ export default {
         /************* 出行属性 *************/
         case "3":
           {
+            const value = new Set(node.childNodes.filter((item) => item.checked).map((item) => item.data.id));
             //"出行者属性":
+            if (value.has("3-1")) this.showDialog(TravelersSexExtend, {}, "TravelersSexExtend");
+            if (value.has("3-2")) this.showDialog(TravelersAgeExtend, {}, "TravelersAgeExtend");
+            if (value.has("3-3")) this.showDialog(TravelersCarLicenseExtend, {}, "TravelersCarLicenseExtend");
+            if (value.has("3-4")) this.showDialog(TravelersEmployedExtend, {}, "TravelersEmployedExtend");
+            if (value.has("3-5")) this.showDialog(TravelersCarAvailabilityExtend, {}, "TravelersCarAvailabilityExtend");
           }
           break;
         case "3-1":
           {
             //"性别":
+            this.showDialog(TravelersSexExtend, {}, "TravelersSexExtend");
           }
           break;
         case "3-2":
           {
             //"年龄":
+            this.showDialog(TravelersAgeExtend, {}, "TravelersAgeExtend");
           }
           break;
         case "3-3":
           {
             //"机动车保有量":
+            this.showDialog(TravelersCarLicenseExtend, {}, "TravelersCarLicenseExtend");
           }
           break;
         case "3-4":
           {
             //"就业情况":
+            this.showDialog(TravelersEmployedExtend, {}, "TravelersEmployedExtend");
           }
           break;
         case "3-5":
           {
             //"车辆可使用情况":
+            this.showDialog(TravelersCarAvailabilityExtend, {}, "TravelersCarAvailabilityExtend");
           }
           break;
         case "3-6":
@@ -473,6 +570,15 @@ export default {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      .tree_label {
+        width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .tree_btn {
+        flex: 1;
+      }
     }
 
     .tree_scroll {

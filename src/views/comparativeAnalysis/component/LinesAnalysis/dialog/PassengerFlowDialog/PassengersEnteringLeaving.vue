@@ -179,9 +179,7 @@ export default {
             type: "shadow",
           },
         },
-        legend: {
-          data: ["#entering-base", "#entering-contrast", "#entering-actual", "#leaving-base", "#leaving-contrast", "#leaving-actual", "#passengers-base", "#passengers-contrast", "#passengers-actual"],
-        },
+        legend: {},
         grid: [
           {
             top: 70,
@@ -236,7 +234,7 @@ export default {
         ],
         series: [
           {
-            name: "#entering-base",
+            name: this.$l("#entering-base"),
             type: "bar",
             stack: "base",
             xAxisIndex: 0,
@@ -244,7 +242,7 @@ export default {
             data: this.list.map((v) => v.entering[0]),
           },
           {
-            name: "#entering-contrast",
+            name: this.$l("#entering-contrast"),
             type: "bar",
             stack: "contrast",
             xAxisIndex: 0,
@@ -252,7 +250,7 @@ export default {
             data: this.list.map((v) => v.entering[1]),
           },
           {
-            name: "#entering-actual",
+            name: this.$l("#entering-actual"),
             type: "bar",
             stack: "actual",
             xAxisIndex: 0,
@@ -260,7 +258,7 @@ export default {
             data: this.list.map((v) => v.entering[2]),
           },
           {
-            name: "#leaving-base",
+            name: this.$l("#leaving-base"),
             type: "bar",
             stack: "base",
             xAxisIndex: 0,
@@ -268,7 +266,7 @@ export default {
             data: this.list.map((v) => v.leaving[0] * -1),
           },
           {
-            name: "#leaving-contrast",
+            name: this.$l("#leaving-contrast"),
             type: "bar",
             stack: "contrast",
             xAxisIndex: 0,
@@ -276,7 +274,7 @@ export default {
             data: this.list.map((v) => v.leaving[1] * -1),
           },
           {
-            name: "#leaving-actual",
+            name: this.$l("#leaving-actual"),
             type: "bar",
             stack: "actual",
             xAxisIndex: 0,
@@ -284,21 +282,21 @@ export default {
             data: this.list.map((v) => v.leaving[2] * -1),
           },
           {
-            name: "#passengers-base",
+            name: this.$l("#passengers-base"),
             type: "bar",
             xAxisIndex: 1,
             yAxisIndex: 1,
             data: this.list.map((v) => v.passengers[0]),
           },
           {
-            name: "#passengers-contrast",
+            name: this.$l("#passengers-contrast"),
             type: "bar",
             xAxisIndex: 1,
             yAxisIndex: 1,
             data: this.list.map((v) => v.passengers[1]),
           },
           {
-            name: "#passengers-actual",
+            name: this.$l("#passengers-actual"),
             type: "bar",
             xAxisIndex: 1,
             yAxisIndex: 1,

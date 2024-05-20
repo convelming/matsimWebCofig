@@ -1,7 +1,20 @@
 <template>
   <!-- 出行方式 -->
   <Dialog class="TravelMode" ref="dialog" :title="$l('出行方式')" hideMinimize :visible="true" @close="$emit('close')" left="100" width="640px">
-    <div ref="chart" class="chart"></div>
+    <div class="toolbar">
+      <el-radio-group v-model="type" size="mini" @change="handleViewChange">
+        <el-radio-button label="Chart">{{ $l("图表") }}</el-radio-button>
+        <el-radio-button label="Detail">{{ $l("描述") }}</el-radio-button>
+      </el-radio-group>
+    </div>
+    <div class="content" v-loading="loading">
+      <transition name="el-zoom-in-center">
+        <div v-show="type == 'Chart'" ref="chart" class="chart" key="chart"></div>
+      </transition>
+      <transition name="el-zoom-in-center">
+        <div v-show="type == 'Detail'" class="detail" key="detail">{{ description }}</div>
+      </transition>
+    </div>
   </Dialog>
 </template>
 
@@ -18,6 +31,14 @@
   "对比方案":{
     "zh-CN": "对比方案",
     "en-US": "contrast"
+  },
+  "图表":{
+    "zh-CN": "图表",
+    "en-US": "Chart"
+  },
+  "描述":{
+    "zh-CN": "描述",
+    "en-US": "description"
   },
 }
 </language>
@@ -41,27 +62,35 @@ export default {
   inject: ["rootVue"],
   components: {},
   computed: {},
-  watch: {},
-  data() {
-    return {};
+  watch: {
+    page_language() {
+      this.updateChart();
+    },
   },
-  created() {},
-  mounted() {
-    this.$nextTick(() => {
-      this.$refs.dialog.offset(this.offset, this.offset);
-    });
-
+  data() {
+    return {
+      loading: true,
+      type: "Chart",
+      description: "",
+    };
+  },
+  created() {
     const { database1, datasource1, database2, datasource2 } = this.$route.params;
     travelMode({
       name1: database1 + "/" + datasource1,
       name2: database2 + "/" + datasource2,
     }).then((res) => {
-      console.log(res);
-      this._chart = echarts.init(this.$refs.chart);
-      this._chart.setOption(this.getChartOption(res.data), true);
-      this._chart.resize();
-
+      this.description = res.data.description;
+      this._chartData = { before: res.data.before, after: res.data.after };
+      this.updateChart();
       this.loading = false;
+    });
+  },
+  mounted() {
+    this.$nextTick(() => {
+      this.$refs.dialog.offset(this.offset, this.offset);
+      this._chart = echarts.init(this.$refs.chart);
+      this.updateChart();
     });
   },
   beforeDestroy() {
@@ -71,6 +100,12 @@ export default {
     }
   },
   methods: {
+    updateChart() {
+      if (this._chart && this._chartData) {
+        this._chart.setOption(this.getChartOption(this._chartData), true);
+        this._chart.resize();
+      }
+    },
     getChartOption(data) {
       const { after, before } = data;
       const keys = Array.from(new Set([Object.keys(after), Object.keys(before)].flat()));
@@ -134,15 +169,33 @@ export default {
     toTop() {
       this.$refs.dialog.toTop();
     },
+    handleViewChange() {
+      if (this._chart) this._chart.resize();
+    },
   },
 };
 </script>
 
 <style lang="scss" scoped>
 .TravelMode {
-  .chart {
+  .toolbar {
+    display: flex;
+    justify-content: center;
+    padding-bottom: 10px;
+  }
+  .content {
+    position: relative;
     width: 600px;
     height: 600px;
+  }
+  .detail,
+  .chart {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 600px;
+    height: 600px;
+    overflow-y: auto;
   }
 }
 </style>

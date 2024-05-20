@@ -14,7 +14,7 @@
     </div>
     <el-dialog :visible.sync="open" width="500px" append-to-body center @close="handleClose" :close-on-click-modal="false">
       <div class="body">
-        <component v-show="carouselIndex == item" v-for="item in pageNum" :key="item" :is="`page${item}`"></component>
+        <!-- <component v-show="carouselIndex == item" v-for="item in pageNum" :key="item" :is="`page${item}`"></component> -->
       </div>
       <div slot="footer" class="dialog-footer">
         <el-button size="mini" @click="handleClose">关闭</el-button>

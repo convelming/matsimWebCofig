@@ -1,6 +1,6 @@
 <template>
   <transition name="el-zoom-in-center">
-    <div v-show="visible" class="Dialog" :style="s_show ? s_style : s_style2">
+    <div v-show="visible" class="Dialog" :style="s_show ? s_style : s_style2" @click="toTop">
       <div v-show="s_show" class="flex_box">
         <div class="header" @mousedown="startMove">
           <span class="title">{{ title }}</span>
@@ -20,7 +20,6 @@
 </template>
 
 <script>
-
 let zIndex = 1000;
 
 export default {
@@ -116,8 +115,7 @@ export default {
       return `top: 20px; left: 20px; padding: 10px 15px;height: auto;z-index:${this.s_zIndex};`;
     },
   },
-  created() {
-  },
+  created() {},
   mounted() {
     if (this.visible) {
       this.open();
@@ -131,7 +129,7 @@ export default {
   },
   methods: {
     startMove(event) {
-      if (this.s_zIndex < zIndex) this.s_zIndex = zIndex++;
+      this.toTop();
       this.moveObj = {
         s_top: event.pageY,
         s_left: event.pageX,

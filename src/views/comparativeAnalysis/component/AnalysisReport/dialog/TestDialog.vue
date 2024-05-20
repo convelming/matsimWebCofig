@@ -1,7 +1,20 @@
 <template>
   <!-- 停留时间 -->
-  <Dialog class="ResidenceTime" ref="dialog" :title="$l('停留时间')" hideMinimize :visible="true" @close="$emit('close')" left="100" width="640px">
-    <div ref="chart" v-loading="loading" class="chart"></div>
+  <Dialog class="TravelAttribute" ref="dialog" :title="$l('停留时间')" hideMinimize :visible="true" @close="$emit('close')" left="100" width="640px">
+    <div class="toolbar">
+      <el-radio-group v-model="type" size="mini" @change="handleViewChange">
+        <el-radio-button label="Chart">{{ $l("图表") }}</el-radio-button>
+        <el-radio-button label="Detail">{{ $l("描述") }}</el-radio-button>
+      </el-radio-group>
+    </div>
+    <div class="content" v-loading="loading">
+      <transition name="el-zoom-in-center">
+        <div v-show="type == 'Chart'" ref="chart" class="chart" key="chart"></div>
+      </transition>
+      <transition name="el-zoom-in-center">
+        <div v-show="type == 'Detail'" class="detail" key="detail">{{ description }}</div>
+      </transition>
+    </div>
   </Dialog>
 </template>
 
@@ -33,29 +46,36 @@ export default {
   inject: ["rootVue"],
   components: {},
   computed: {},
-  watch: {},
+  watch: {
+    page_language() {
+      this.updateChart();
+    },
+  },
   data() {
     return {
       loading: true,
+      type: "Chart",
+      description: "",
     };
   },
-  created() {},
-  mounted() {
-    this.$nextTick(() => {
-      this.$refs.dialog.offset(this.offset, this.offset);
-    });
-
+  created() {
     const { database1, datasource1, database2, datasource2 } = this.$route.params;
     residenceTime({
       name1: database1 + "/" + datasource1,
       name2: database2 + "/" + datasource2,
     }).then((res) => {
       console.log(res);
-      this._chart = echarts.init(this.$refs.chart);
-      this._chart.setOption(this.getChartOption(res.data), true);
-      this._chart.resize();
-
+      this.description = res.data.description;
+      this._chartData = { before: res.data.before, after: res.data.after };
+      this.updateChart();
       this.loading = false;
+    });
+  },
+  mounted() {
+    this.$nextTick(() => {
+      this.$refs.dialog.offset(this.offset, this.offset);
+      this._chart = echarts.init(this.$refs.chart);
+      this.updateChart();
     });
   },
   beforeDestroy() {
@@ -65,23 +85,28 @@ export default {
     }
   },
   methods: {
+    updateChart() {
+      if (this._chart && this._chartData) {
+        this._chart.setOption(this.getChartOption(this._chartData), true);
+        this._chart.resize();
+      }
+    },
     getChartOption(data) {
       const { after, before } = data;
       const keys = Array.from(new Set([Object.keys(after), Object.keys(before)].flat()));
       const afterList = keys.map((v) => after[v] || 0);
       const beforeList = keys.map((v) => before[v] || 0);
       return {
-        tooltip: {
-          trigger: "axis",
-          axisPointer: {
-            type: "shadow",
-          },
+        title: {
+          text: this.$l("停留时间"),
+          left: "center",
         },
         legend: {
-          data: keys,
+          left: "center",
+          bottom: 0,
         },
         grid: {
-          top: 20,
+          top: 100,
           left: 20,
           right: 20,
           bottom: 20,
@@ -123,15 +148,33 @@ export default {
     toTop() {
       this.$refs.dialog.toTop();
     },
+    handleViewChange() {
+      if (this._chart) this._chart.resize();
+    },
   },
 };
 </script>
 
 <style lang="scss" scoped>
 .ResidenceTime {
-  .chart {
+  .toolbar {
+    display: flex;
+    justify-content: center;
+    padding-bottom: 10px;
+  }
+  .content {
+    position: relative;
     width: 600px;
     height: 600px;
+  }
+  .detail,
+  .chart {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 600px;
+    height: 600px;
+    overflow-y: auto;
   }
 }
 </style>
