@@ -81,7 +81,7 @@ export default {
       name2: database2 + "/" + datasource2,
     }).then((res) => {
       this.description = res.data.description;
-      this._chartData = res.data.data;
+      this._chartData = { before: res.data.before, after: res.data.after };
       this.updateChart();
       this.loading = false;
     });

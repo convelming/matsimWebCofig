@@ -129,7 +129,7 @@ export default {
             type: "pie",
             radius: "50%",
             label: {
-              formatter: "{b}: {c}\n({d}%)",
+              formatter: "{b}\n{c}({d}%)",
             },
             data: [
               { value: data.always, name: this.$l("总是可以使用") },

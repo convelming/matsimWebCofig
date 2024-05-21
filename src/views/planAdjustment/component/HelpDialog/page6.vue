@@ -10,7 +10,7 @@
 export default {
   data() {
     return {
-      img: require("./images/video1.gif"),
+      img: require("./images/video6.gif"),
     };
   },
 };

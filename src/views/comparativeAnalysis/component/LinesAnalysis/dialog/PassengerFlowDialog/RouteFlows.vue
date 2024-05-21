@@ -202,7 +202,7 @@ export default {
         .attr("text-anchor", "middle")
         .attr("x", width / 2)
         .attr("y", step + margin)
-        .text("title");
+        .text(this.routeInfo.routeId);
       const subtitle_box = svg
         .append("text")
         .attr("font-family", "sans-serif")
@@ -211,7 +211,7 @@ export default {
         .attr("x", width / 2)
         .attr("y", step * 1.5 + margin)
         .attr("dy", "1em")
-        .text(`Departrue at 12`);
+        .text("base");
 
       const path = svg
         .insert("g", "*")
@@ -303,7 +303,7 @@ export default {
         .attr("text-anchor", "middle")
         .attr("x", width / 2)
         .attr("y", height - step * 0.5 - margin)
-        .text("title");
+        .text(this.routeInfo.routeId);
       const subtitle_box2 = svg
         .append("text")
         .attr("font-family", "sans-serif")
@@ -312,7 +312,7 @@ export default {
         .attr("x", width / 2)
         .attr("y", height - step * 2 - margin)
         .attr("dy", "1em")
-        .text(`Departrue at 12`);
+        .text("contrast");
 
       return svg.node().outerHTML;
     },
