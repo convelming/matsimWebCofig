@@ -1,6 +1,6 @@
 <template>
-  <!-- 停留时间 -->
-  <Dialog class="TravelAttribute" ref="dialog" :title="$l('停留时间')" hideMinimize :visible="true" @close="$emit('close')" left="100" width="640px">
+  <!-- 出行效用决策树 -->
+  <Dialog class="TravelUtilityTree" ref="dialog" :title="$l('出行效用决策树')" hideMinimize :visible="true" @close="$emit('close')" left="100" width="640px">
     <div class="toolbar">
       <el-radio-group v-model="type" size="mini" @change="handleViewChange">
         <el-radio-button label="Chart">{{ $l("图表") }}</el-radio-button>
@@ -20,16 +20,24 @@
 
 <language>
 {
-  "停留时间":{
-    "zh-CN": "停留时间",
-    "en-US": "Residence Time"
+  "出行效用决策树":{
+    "zh-CN": "出行效用决策树",
+    "en-US": "Travel Utility Tree"
+  },
+  "图表":{
+    "zh-CN": "图表",
+    "en-US": "Chart"
+  },
+  "描述":{
+    "zh-CN": "描述",
+    "en-US": "description"
   },
 }
 </language>
 
 <script>
 import * as echarts from "echarts";
-import { residenceTime } from "@/api/crt.js";
+import { travelUtilityTree } from "@/api/crt.js";
 
 export default {
   name: "ResidenceTime",
@@ -60,13 +68,14 @@ export default {
   },
   created() {
     const { database1, datasource1, database2, datasource2 } = this.$route.params;
-    residenceTime({
+    console.log();
+    travelUtilityTree({
       name1: database1 + "/" + datasource1,
       name2: database2 + "/" + datasource2,
+      tree: JSON.stringify(this.form),
     }).then((res) => {
-      console.log(res);
       this.description = res.data.description;
-      this._chartData = { before: res.data.before, after: res.data.after };
+      this._chartData = res.data.data;
       this.updateChart();
       this.loading = false;
     });
@@ -92,13 +101,9 @@ export default {
       }
     },
     getChartOption(data) {
-      const { after, before } = data;
-      const keys = Array.from(new Set([Object.keys(after), Object.keys(before)].flat()));
-      const afterList = keys.map((v) => after[v] || 0);
-      const beforeList = keys.map((v) => before[v] || 0);
       return {
         title: {
-          text: this.$l("停留时间"),
+          text: this.$l("出行效用决策树"),
           left: "center",
         },
         legend: {
@@ -112,35 +117,18 @@ export default {
           bottom: 20,
           containLabel: true,
         },
-        xAxis: [
-          {
-            type: "category",
-            axisTick: { show: false },
-            data: keys,
-          },
-        ],
-        yAxis: [
-          {
-            type: "value",
-          },
-        ],
         series: [
           {
-            name: "Base",
-            type: "bar",
-            barGap: 0,
+            type: "sankey",
+            layout: "none",
             emphasis: {
-              focus: "series",
+              focus: "adjacency",
             },
-            data: afterList,
-          },
-          {
-            name: "Steppe",
-            type: "bar",
-            emphasis: {
-              focus: "series",
+            label: {
+              formatter: (v) => data.idMap[v.name],
             },
-            data: beforeList,
+            data: data.data,
+            links: data.links,
           },
         ],
       };
@@ -156,7 +144,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.TravelAttribute {
+.TravelUtilityTree {
   .toolbar {
     display: flex;
     justify-content: center;

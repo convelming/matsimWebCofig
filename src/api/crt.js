@@ -119,3 +119,15 @@ export function travelersSex(params) {
     params: params,
   });
 }
+
+// 决策树1（出行效用决策树）
+// POST /pt/crt/travelUtilityTree
+// 接口ID：176247048
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-176247048
+export function travelUtilityTree(data) {
+  return request({
+    url: `/pt/crt/travelUtilityTree`,
+    method: "post",
+    data: data,
+  });
+}

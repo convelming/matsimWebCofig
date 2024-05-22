@@ -3,10 +3,9 @@
     <div class="collapse_item_title" slot="title">{{ $l("ReportToolbar") }}</div>
     <div class="_bodyer">
       <div class="tree_scroll">
-        <el-tree ref="tree" :data="treeData" show-checkbox node-key="id" :default-checked-keys="defaultCheckedKeys" default-expand-all>
+        <el-tree ref="tree" :data="treeData" show-checkbox node-key="id" :default-checked-keys="defaultCheckedKeys">
           <div slot-scope="{ node, data }" class="tree_item">
-            <div class="tree_label" v-if="data.noLang" :title="data.label">{{ data.label }}</div>
-            <div class="tree_label" v-else>{{ $l(data.label) }}</div>
+            <div class="tree_label" :title="data[$l(`label`)]">{{ data[$l(`label`)] }}</div>
             <el-button class="tree_btn" v-if="data.showView" type="text" size="small" icon="el-icon-view" @click.stop="handleShowDialog(node, data)"></el-button>
           </div>
         </el-tree>
@@ -24,94 +23,10 @@
     "zh-CN": "公交出行影响对比分析报告",
     "en-US": "公交出行影响对比分析报告"
   },
-  "活动属性":{
-    "zh-CN": "活动属性",
-    "en-US": "活动属性"
-  },
-  "出行目的":{
-    "zh-CN": "出行目的",
-    "en-US": "出行目的"
-  },
-  "出行时段":{
-    "zh-CN": "出行时段",
-    "en-US": "出行时段"
-  },
-  "停留时间":{
-    "zh-CN": "停留时间",
-    "en-US": "停留时间"
-  },
-  "出行属性":{
-    "zh-CN": "出行属性",
-    "en-US": "出行属性"
-  },
-  "在途时间":{
-    "zh-CN": "在途时间",
-    "en-US": "在途时间"
-  },
-  "候车时间":{
-    "zh-CN": "候车时间",
-    "en-US": "候车时间"
-  },
-  "换乘次数":{
-    "zh-CN": "换乘次数",
-    "en-US": "换乘次数"
-  },
-  "费用":{
-    "zh-CN": "费用",
-    "en-US": "费用"
-  },
-  "出行距离":{
-    "zh-CN": "出行距离",
-    "en-US": "出行距离"
-  },
-  "出行方式":{
-    "zh-CN": "出行方式",
-    "en-US": "出行方式"
-  },
-  "出行者属性":{
-    "zh-CN": "出行者属性",
-    "en-US": "出行者属性"
-  },
-  "性别":{
-    "zh-CN": "性别",
-    "en-US": "性别"
-  },
-  "年龄":{
-    "zh-CN": "年龄",
-    "en-US": "年龄"
-  },
-  "机动车保有量":{
-    "zh-CN": "机动车保有量",
-    "en-US": "机动车保有量"
-  },
-  "就业情况":{
-    "zh-CN": "就业情况",
-    "en-US": "就业情况"
-  },
-  "车辆可使用情况":{
-    "zh-CN": "车辆可使用情况",
-    "en-US": "车辆可使用情况"
-  },
-  "其他":{
-    "zh-CN": "其他",
-    "en-US": "其他"
-  },
-  "决策树1":{
-    "zh-CN": "决策树1",
-    "en-US": "决策树1"
-  },
-  "决策树2":{
-    "zh-CN": "决策树2",
-    "en-US": "决策树2"
-  },
-  "修改的线路":{
-    "zh-CN": "修改的线路",
-    "en-US": "修改的线路"
-  },
-  "受影响的线路":{
-    "zh-CN": "受影响的线路",
-    "en-US": "受影响的线路"
-  },
+  "label":{
+    "zh-CN": "label_zh",
+    "en-US": "label_en"
+  }
 }
 </language>
 
@@ -134,6 +49,9 @@ import TravelersCarLicense from "../dialog/TravelerAttributes/TravelersCarLicens
 import TravelersEmployed from "../dialog/TravelerAttributes/TravelersEmployed.vue";
 import TravelersSex from "../dialog/TravelerAttributes/TravelersSex.vue";
 
+import TravelUtilityTree from "../dialog/TravelUtilityTree/index.vue";
+import TravelUtilityTreeData from "../dialog/TravelUtilityTree/index.json";
+
 import TestDialog from "../dialog/TestDialog.vue";
 
 const TestDialogExtend = Vue.extend(TestDialog);
@@ -150,6 +68,25 @@ const TravelersCarAvailabilityExtend = Vue.extend(TravelersCarAvailability);
 const TravelersCarLicenseExtend = Vue.extend(TravelersCarLicense);
 const TravelersEmployedExtend = Vue.extend(TravelersEmployed);
 const TravelersSexExtend = Vue.extend(TravelersSex);
+
+const TravelUtilityTreeExtend = Vue.extend(TravelUtilityTree);
+
+function setTreeId(root, rootId) {
+  root.id = rootId;
+  const _data = [root];
+  while (_data.length > 0) {
+    const node = _data.shift();
+    if (node.children) {
+      for (let i = 0, l = node.children.length; i < l; i++) {
+        const cNode = node.children[i];
+        cNode.id = `${node.id}_${i + 1}`;
+        _data.push(cNode);
+      }
+    }
+  }
+  console.log(root);
+  return root;
+}
 
 export default {
   name: "ReportToolbar",
@@ -192,122 +129,142 @@ export default {
       treeData: [
         {
           id: "1",
-          label: "活动属性",
+          label_zh: "活动属性",
+          label_en: "活动属性",
           showView: true,
           children: [
             {
               id: "1-1",
-              label: "出行目的",
+              label_zh: "出行目的",
+              label_en: "出行目的",
               showView: true,
             },
             {
               id: "1-2",
-              label: "出行时段",
+              label_zh: "出行时段",
+              label_en: "出行时段",
               showView: true,
             },
             {
               id: "1-3",
-              label: "停留时间",
+              label_zh: "停留时间",
+              label_en: "停留时间",
               showView: true,
             },
             {
               id: "1-4",
-              label: "出行方式",
+              label_zh: "出行方式",
+              label_en: "出行方式",
               showView: true,
             },
           ],
         },
         {
           id: "2",
-          label: "出行属性",
+          label_zh: "出行属性",
+          label_en: "出行属性",
           showView: true,
           children: [
             {
               id: "2-1",
-              label: "在途时间",
+              label_zh: "在途时间",
+              label_en: "在途时间",
             },
             {
               id: "2-2",
-              label: "候车时间",
+              label_zh: "候车时间",
+              label_en: "候车时间",
             },
             {
               id: "2-3",
-              label: "换乘次数",
+              label_zh: "换乘次数",
+              label_en: "换乘次数",
             },
             {
               id: "2-4",
-              label: "费用",
+              label_zh: "费用",
+              label_en: "费用",
             },
             {
               id: "2-5",
-              label: "出行距离",
+              label_zh: "出行距离",
+              label_en: "出行距离",
             },
             // {
             //   id: "2-6",
-            //   label: "出行方式",
+            //   label_zh: "出行方式",
+            //   label_en: "出行方式",
             // },
           ],
         },
         {
           id: "3",
-          label: "出行者属性",
+          label_zh: "出行者属性",
+          label_en: "出行者属性",
           showView: true,
           children: [
             {
               id: "3-1",
-              label: "性别",
+              label_zh: "性别",
+              label_en: "性别",
               showView: true,
             },
             {
               id: "3-2",
-              label: "年龄",
+              label_zh: "年龄",
+              label_en: "年龄",
               showView: true,
             },
             {
               id: "3-3",
-              label: "机动车保有量",
+              label_zh: "机动车保有量",
+              label_en: "机动车保有量",
               showView: true,
             },
             {
               id: "3-4",
-              label: "就业情况",
+              label_zh: "就业情况",
+              label_en: "就业情况",
               showView: true,
             },
             {
               id: "3-5",
-              label: "车辆可使用情况",
+              label_zh: "车辆可使用情况",
+              label_en: "车辆可使用情况",
               showView: true,
             },
             {
               id: "3-6",
-              label: "其他",
+              label_zh: "其他",
+              label_en: "其他",
               showView: true,
               disabled: true,
             },
           ],
         },
-        {
-          id: "4",
-          label: "决策树1",
-          children: [],
-        },
-        {
-          id: "5",
-          label: "决策树2",
-          children: [],
-        },
+        setTreeId(TravelUtilityTreeData, "4"),
+        setTreeId(
+          {
+            label_zh: "决策树2",
+            label_en: "决策树2",
+            children: [],
+          },
+          "5"
+        ),
         {
           id: "6",
-          label: "修改的线路",
+          label_zh: "修改的线路",
+          label_en: "修改的线路",
           children: [],
         },
         {
           id: "7",
-          label: "受影响的线路",
+          label_zh: "受影响的线路",
+          label_en: "受影响的线路",
           children: [],
         },
       ],
-      defaultCheckedKeys: ["1", "2", "3"],
+      defaultCheckedKeys: ["1", "2", "3", "4"],
       s_form: {
         startTime: 0,
         endTime: 24 * 60 * 60,
@@ -344,9 +301,9 @@ export default {
       })
         .then((res) => {
           const list = res.data.map((item) => {
-            return { ...item, id: item.routeId, label: item.routeName, noLang: true };
+            return { ...item, id: item.routeId, label_zh: item.routeName, label_en: item.routeName };
           });
-          const item = this.treeData.find((v) => v.label == "修改的线路");
+          const item = this.treeData.find((v) => v.label_zh == "修改的线路");
           if (item) {
             this.$set(item, "children", list);
           }
@@ -354,7 +311,6 @@ export default {
           this.loading1 = false;
         })
         .catch((err) => {
-          this.list1 = [];
           this.loading1 = false;
         });
     },
@@ -367,23 +323,21 @@ export default {
       })
         .then((res) => {
           const list = res.data.map((item) => {
-            return { ...item, id: item.routeId, label: item.routeName, noLang: true };
+            return { ...item, id: item.routeId, label_zh: item.routeName, label_en: item.routeName };
           });
-          const item = this.treeData.find((v) => v.label == "受影响的线路");
+          const item = this.treeData.find((v) => v.label_zh == "受影响的线路");
           if (item) {
             this.$set(item, "children", list);
           }
           this.loading2 = false;
         })
         .catch((err) => {
-          this.list2 = [];
           this.loading2 = false;
         });
     },
     handleEnable() {},
     handleDisable() {},
     handleShowDialog(node, data) {
-      console.log(node, data);
       switch (data.id) {
         /************* 活动属性 *************/
         case "1":
@@ -508,10 +462,23 @@ export default {
             //"其他":
           }
           break;
-        /************* 出行属性 *************/
+        /************* 出行效用 *************/
         case "4":
           {
-            //"决策树1":
+            //"出行效用":
+            const nodeToJSON = function (node, parent) {
+              const _item = {
+                id: node.data.id,
+                name: node.data.label_zh,
+                parent: parent,
+                checked: node.checked || node.indeterminate,
+                children: node.childNodes.map((v) => nodeToJSON(v, node.data.label_zh)).filter((v) => v.checked),
+              };
+              return _item;
+            };
+            const data = nodeToJSON(this.$refs.tree.getNode("4"));
+            console.log(data);
+            this.showDialog(TravelUtilityTreeExtend, data, "TravelUtilityTreeExtend");
           }
           break;
         case "5":
@@ -546,8 +513,7 @@ export default {
       }
     },
     handleGenerateAnalysisReport() {
-      const nood = this.$refs.tree.getRootNode();
-      console.log(nood);
+      console.log(nodeToJSON(node4));
     },
   },
 };
