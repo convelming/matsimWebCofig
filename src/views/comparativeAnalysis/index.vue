@@ -36,7 +36,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="form_item">
+                <div class="form_item" style="padding-bottom: 25px;">
                   <div class="form_label">{{ $l("时间：") }}</div>
                   <div class="form_value">
                     <TimeSlider v-model="time" :speed="60 * 60 * 4" :min="minTime" :max="maxTime"></TimeSlider>

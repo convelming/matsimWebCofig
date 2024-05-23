@@ -1,7 +1,7 @@
 <template>
   <!-- 出行效用决策树 -->
-  <Dialog class="TravelUtilityTree" ref="dialog" :title="$l('出行效用决策树')" hideMinimize :visible="true" @close="$emit('close')" left="100" width="640px">
-    <div class="toolbar">
+  <Dialog class="TravelUtilityTree" ref="dialog" :title="$l('出行效用决策树')" hideMinimize :visible="true" @close="$emit('close')" left="100" width="840px">
+    <!-- <div class="toolbar">
       <el-radio-group v-model="type" size="mini" @change="handleViewChange">
         <el-radio-button label="Chart">{{ $l("图表") }}</el-radio-button>
         <el-radio-button label="Detail">{{ $l("描述") }}</el-radio-button>
@@ -14,6 +14,10 @@
       <transition name="el-zoom-in-center">
         <div v-show="type == 'Detail'" class="detail" key="detail">{{ description }}</div>
       </transition>
+    </div> -->
+
+    <div class="content" v-loading="loading">
+      <div ref="chart" class="chart" key="chart"></div>
     </div>
   </Dialog>
 </template>
@@ -68,14 +72,14 @@ export default {
   },
   created() {
     const { database1, datasource1, database2, datasource2 } = this.$route.params;
-    console.log();
     travelUtilityTree({
       name1: database1 + "/" + datasource1,
       name2: database2 + "/" + datasource2,
       tree: JSON.stringify(this.form),
     }).then((res) => {
-      this.description = res.data.description;
-      this._chartData = res.data.data;
+      // this.description = res.data.description;
+      // this._chartData = res.data.data;
+      this._chartData = res.data;
       this.updateChart();
       this.loading = false;
     });
@@ -110,21 +114,18 @@ export default {
           left: "center",
           bottom: 0,
         },
-        grid: {
-          top: 100,
-          left: 20,
-          right: 20,
-          bottom: 20,
-          containLabel: true,
-        },
         series: [
           {
             type: "sankey",
+            top: 50,
             layout: "none",
             emphasis: {
               focus: "adjacency",
             },
             label: {
+              color: "rgba(0,0,0,0.7)",
+              fontFamily: "Arial",
+              fontSize: 10,
               formatter: (v) => data.idMap[v.name],
             },
             data: data.data,
@@ -152,17 +153,17 @@ export default {
   }
   .content {
     position: relative;
-    width: 600px;
-    height: 600px;
+    width: 800px;
+    height: calc(100vh - 150px);
+    overflow-y: auto;
+    overflow-x: hidden;
   }
-  .detail,
   .chart {
     position: absolute;
     top: 0;
     left: 0;
-    width: 600px;
-    height: 600px;
-    overflow-y: auto;
+    width: 800px;
+    height: 1200px;
   }
 }
 </style>

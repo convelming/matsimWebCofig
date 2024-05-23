@@ -466,13 +466,17 @@ export default {
         case "4":
           {
             //"出行效用":
-            const nodeToJSON = function (node, parent) {
+            const nodeToJSON = function (node, parent = null, parentId = null, depth = 0) {
               const _item = {
                 id: node.data.id,
                 name: node.data.label_zh,
+                parentId: parentId,
                 parent: parent,
+                depth: depth,
+                value: 0,
+                children: node.childNodes.map((v) => nodeToJSON(v, node.data.label_zh, node.data.id, depth + 1)).filter((v) => v.checked),
+
                 checked: node.checked || node.indeterminate,
-                children: node.childNodes.map((v) => nodeToJSON(v, node.data.label_zh)).filter((v) => v.checked),
               };
               return _item;
             };
