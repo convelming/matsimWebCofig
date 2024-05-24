@@ -131,3 +131,15 @@ export function travelUtilityTree(data) {
     data: data,
   });
 }
+
+// 决策树2（出行变化决策树）
+// POST /pt/crt/travelVariationTree
+// 接口ID：176711392
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-176711392
+export function travelVariationTree(data) {
+  return request({
+    url: `/pt/crt/travelVariationTree`,
+    method: "post",
+    data: data,
+  });
+}

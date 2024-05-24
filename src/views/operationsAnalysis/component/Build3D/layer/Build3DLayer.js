@@ -482,4 +482,5 @@ class BuildGeometry extends THREE.BufferGeometry {
       }
     }
   }
+  
 }

@@ -260,7 +260,7 @@ export default {
         },
         yAxis: {
           type: "category",
-          data: this.rowList.map((v) => v.stopName),
+          data: this.rowList.map((v) => v.stopName).reverse(),
           axisLable: {
             interval: 0,
           },

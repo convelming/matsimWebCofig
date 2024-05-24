@@ -52,6 +52,9 @@ import TravelersSex from "../dialog/TravelerAttributes/TravelersSex.vue";
 import TravelUtilityTree from "../dialog/TravelUtilityTree/index.vue";
 import TravelUtilityTreeData from "../dialog/TravelUtilityTree/index.json";
 
+import TravelVariationTree from "../dialog/TravelVariationTree/index.vue";
+import TravelVariationTreeData from "../dialog/TravelVariationTree/index.json";
+
 import TestDialog from "../dialog/TestDialog.vue";
 
 const TestDialogExtend = Vue.extend(TestDialog);
@@ -70,6 +73,7 @@ const TravelersEmployedExtend = Vue.extend(TravelersEmployed);
 const TravelersSexExtend = Vue.extend(TravelersSex);
 
 const TravelUtilityTreeExtend = Vue.extend(TravelUtilityTree);
+const TravelVariationTreeExtend = Vue.extend(TravelVariationTree);
 
 function setTreeId(root, rootId) {
   root.id = rootId;
@@ -243,14 +247,7 @@ export default {
           ],
         },
         setTreeId(TravelUtilityTreeData, "4"),
-        setTreeId(
-          {
-            label_zh: "决策树2",
-            label_en: "决策树2",
-            children: [],
-          },
-          "5"
-        ),
+        setTreeId(TravelVariationTreeData, "5"),
         {
           id: "6",
           label_zh: "修改的线路",
@@ -264,7 +261,7 @@ export default {
           children: [],
         },
       ],
-      defaultCheckedKeys: ["1", "2", "3", "4"],
+      defaultCheckedKeys: ["1", "2", "3", "4", "5"],
       s_form: {
         startTime: 0,
         endTime: 24 * 60 * 60,
@@ -462,10 +459,10 @@ export default {
             //"其他":
           }
           break;
-        /************* 出行效用 *************/
+        /************* 出行效用决策树 *************/
         case "4":
           {
-            //"出行效用":
+            //"出行效用决策树":
             const nodeToJSON = function (node, parent = null, parentId = null, depth = 0) {
               const _item = {
                 id: node.data.id,
@@ -485,9 +482,27 @@ export default {
             this.showDialog(TravelUtilityTreeExtend, data, "TravelUtilityTreeExtend");
           }
           break;
+        /************* 出行变化决策树 *************/
         case "5":
           {
-            //"决策树2":
+            //"出行变化决策树":
+            const nodeToJSON = function (node, parent = null, parentId = null, depth = 0) {
+              const _item = {
+                id: node.data.id,
+                name: node.data.label_zh,
+                parentId: parentId,
+                parent: parent,
+                depth: depth,
+                value: 0,
+                children: node.childNodes.map((v) => nodeToJSON(v, node.data.label_zh, node.data.id, depth + 1)).filter((v) => v.checked),
+
+                checked: node.checked || node.indeterminate,
+              };
+              return _item;
+            };
+            const data = nodeToJSON(this.$refs.tree.getNode("5"));
+            console.log(data);
+            this.showDialog(TravelVariationTreeExtend, data, "TravelVariationTreeExtend");
           }
           break;
         default:
@@ -517,7 +532,8 @@ export default {
       }
     },
     handleGenerateAnalysisReport() {
-      console.log(nodeToJSON(node4));
+      const data = {};
+      this.rootVue.$emit("generateAnalysisReport", data);
     },
   },
 };

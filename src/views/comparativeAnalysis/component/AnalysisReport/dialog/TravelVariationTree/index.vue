@@ -1,6 +1,6 @@
 <template>
-  <!-- 出行效用决策树 -->
-  <Dialog class="TravelUtilityTree" ref="dialog" :title="$l('出行效用决策树')" hideMinimize :visible="true" @close="$emit('close')" left="100" width="840px">
+  <!-- 出行变化决策树 -->
+  <Dialog class="TravelVariationTree" ref="dialog" :title="$l('出行变化决策树')" hideMinimize :visible="true" @close="$emit('close')" left="100" width="840px">
     <!-- <div class="toolbar">
       <el-radio-group v-model="type" size="mini" @change="handleViewChange">
         <el-radio-button label="Chart">{{ $l("图表") }}</el-radio-button>
@@ -24,9 +24,9 @@
 
 <language>
 {
-  "出行效用决策树":{
-    "zh-CN": "出行效用决策树",
-    "en-US": "Travel Utility Tree"
+  "出行变化决策树":{
+    "zh-CN": "出行变化决策树",
+    "en-US": "Travel Variation Tree"
   },
   "图表":{
     "zh-CN": "图表",
@@ -41,7 +41,7 @@
 
 <script>
 import * as echarts from "echarts";
-import { travelUtilityTree } from "@/api/crt.js";
+import { travelVariationTree } from "@/api/crt.js";
 
 export default {
   name: "ResidenceTime",
@@ -72,7 +72,7 @@ export default {
   },
   created() {
     const { database1, datasource1, database2, datasource2 } = this.$route.params;
-    travelUtilityTree({
+    travelVariationTree({
       name1: database1 + "/" + datasource1,
       name2: database2 + "/" + datasource2,
       tree: JSON.stringify(this.form),
@@ -107,7 +107,7 @@ export default {
     getChartOption(data) {
       return {
         title: {
-          text: this.$l("出行效用决策树"),
+          text: this.$l("出行变化决策树"),
           left: "center",
         },
         legend: {
@@ -146,7 +146,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.TravelUtilityTree {
+.TravelVariationTree {
   .toolbar {
     display: flex;
     justify-content: center;
