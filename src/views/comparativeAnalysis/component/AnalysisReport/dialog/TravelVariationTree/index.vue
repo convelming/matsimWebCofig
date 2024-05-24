@@ -104,15 +104,21 @@ export default {
         this._chart.resize();
       }
     },
-    getChartOption(data) {
+    getChartOption({ idMap, data, links }) {
       return {
         title: {
           text: this.$l("出行变化决策树"),
           left: "center",
         },
-        legend: {
-          left: "center",
-          bottom: 0,
+        tooltip: {
+          trigger: "item",
+          formatter: function ({ data, dataType, value }) {
+            if (dataType == "edge") {
+              return `${idMap[data.source] || data.source} -- ${idMap[data.target] || data.target}: ${Number(value).toFixed(2)}`;
+            } else if (dataType == "node") {
+              return `${idMap[data.name] || data.name}: ${Number(value).toFixed(2)}`;
+            }
+          },
         },
         series: [
           {
@@ -127,10 +133,10 @@ export default {
               color: "rgba(0,0,0,0.7)",
               fontFamily: "Arial",
               fontSize: 10,
-              formatter: (v) => data.idMap[v.name],
+              formatter: (v) => idMap[v.name] || v.name,
             },
-            data: data.data,
-            links: data.links,
+            data: data,
+            links: links,
           },
         ],
       };

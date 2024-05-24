@@ -110,9 +110,15 @@ export default {
           text: this.$l("出行效用决策树"),
           left: "center",
         },
-        legend: {
-          left: "center",
-          bottom: 0,
+        tooltip: {
+          trigger: "item",
+          formatter: function ({ data, dataType, value }) {
+            if (dataType == "edge") {
+              return `${idMap[data.source] || data.source} -- ${idMap[data.target] || data.target}: ${Number(value).toFixed(2)}`;
+            } else if (dataType == "node") {
+              return `${idMap[data.name] || data.name}: ${Number(value).toFixed(2)}`;
+            }
+          },
         },
         series: [
           {

@@ -5,12 +5,12 @@
         <div class="Drawer_row">
           <Drawer show direction="left" :size="400">
             <el-collapse v-model="activeNames">
-              <LinesAnalysis :showLayer.sync="showLayerLinesAnalysis" name="LinesAnalysis" />
-              <AnalysisReport :showLayer.sync="showLayerAnalysisReport" name="AnalysisReport" />
-              <PublicTransit :showLayer.sync="showLayerPublicTransit" name="PublicTransit" />
-              <MotorizedTravel :showLayer.sync="showLayerMotorizedTravel" name="MotorizedTravel" />
-              <Build3D :showLayer.sync="showLayerBuild3D" name="Build3D" />
-              <Network :showLayer.sync="showLayerNetwork" name="Network" />
+              <LinesAnalysis :showLayer.sync="showLayerLinesAnalysis" name="LinesAnalysis" ref="LinesAnalysis" />
+              <AnalysisReport :showLayer.sync="showLayerAnalysisReport" name="AnalysisReport" ref="AnalysisReport" />
+              <PublicTransit :showLayer.sync="showLayerPublicTransit" name="PublicTransit" ref="PublicTransit" />
+              <MotorizedTravel :showLayer.sync="showLayerMotorizedTravel" name="MotorizedTravel" ref="MotorizedTravel" />
+              <Build3D :showLayer.sync="showLayerBuild3D" name="Build3D" ref="Build3D" />
+              <Network :showLayer.sync="showLayerNetwork" name="Network" ref="Network" />
               <div style="height: 100px"></div>
             </el-collapse>
           </Drawer>
@@ -36,7 +36,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="form_item" style="padding-bottom: 25px;">
+                <div class="form_item" style="padding-bottom: 25px">
                   <div class="form_label">{{ $l("时间：") }}</div>
                   <div class="form_value">
                     <TimeSlider v-model="time" :speed="60 * 60 * 4" :min="minTime" :max="maxTime"></TimeSlider>
@@ -149,12 +149,14 @@ export default {
   },
   watch: {
     showLayerAnalysisReport(val) {
-      this.$nextTick(() => {
-        if (this.$refs.Toolbar) {
-          this.$refs.Toolbar.add("AnalysisReport", {});
+      if (this.$refs.Toolbar) {
+        if (val) {
+          this.$refs.Toolbar.activeName = "ReportToolbar";
           this.showStopToolbar = true;
+        } else if (this.$refs.Toolbar.activeName == "ReportToolbar") {
+          this.$refs.Toolbar.activeName = "";
         }
-      });
+      }
     },
     showLayerLinesAnalysis(val) {
       this.handleChangeMapCameraControls();
@@ -234,7 +236,7 @@ export default {
         zoom: 11,
         enableRotate: true,
         zoom: 15,
-        minPitch: -90,
+        // minPitch: -90,
       });
       this._Map.addLayer(this._MapLayer);
       window._Map = this._Map;

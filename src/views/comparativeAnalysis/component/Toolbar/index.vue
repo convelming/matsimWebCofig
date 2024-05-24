@@ -1,7 +1,7 @@
 <template>
-  <el-collapse v-model="activeName" accordion>
-    <ReportToolbar name="ReportToolbar" />
+  <el-collapse v-model="activeName" accordion @change="handleChangeActive">
     <LinesChangeInfo name="LinesChangeInfo" />
+    <ReportToolbar name="ReportToolbar" />
     <component v-for="item in list" :key="item.name" :is="item.type" :name="item.name" :show="item.name == activeName" v-bind="item.data" />
   </el-collapse>
 </template>
@@ -45,9 +45,10 @@ export default {
     SelectLinkAnalysis,
     SelectBuildAnalysis,
   },
+  inject: ["rootVue"],
   data() {
     return {
-      activeName: "ReportToolbar",
+      activeName: "LinesChangeInfo",
       list: [],
       // activeName: "4231bd4e-831d-4705-994f-365bfc43eaf8",
       // list: [
@@ -112,6 +113,11 @@ export default {
       if (this.list.length > 15) {
         this.list.splice(15);
       }
+    },
+    handleChangeActive(activeName) {
+      try {
+        this.rootVue.showLayerAnalysisReport = activeName === "ReportToolbar";
+      } catch (error) {}
     },
   },
 };

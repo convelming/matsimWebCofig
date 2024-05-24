@@ -48,8 +48,8 @@
       "disabled": false
     }
   ],
-  "label_zh": "出行效用",
-  "label_en": "出行效用",
+  "label_zh": "出行变化",
+  "label_en": "出行变化",
   "disabled": false,
   "showView": true
 }
