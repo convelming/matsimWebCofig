@@ -104,7 +104,7 @@ export default {
         this._chart.resize();
       }
     },
-    getChartOption(data) {
+    getChartOption({ idMap, data, links }) {
       return {
         title: {
           text: this.$l("出行效用决策树"),
@@ -133,10 +133,10 @@ export default {
               color: "rgba(0,0,0,0.7)",
               fontFamily: "Arial",
               fontSize: 10,
-              formatter: (v) => data.idMap[v.name],
+              formatter: (v) => idMap[v.name],
             },
-            data: data.data,
-            links: data.links,
+            data: data,
+            links: links,
           },
         ],
       };

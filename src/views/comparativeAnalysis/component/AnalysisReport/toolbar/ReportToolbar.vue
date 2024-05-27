@@ -335,6 +335,7 @@ export default {
     handleEnable() {},
     handleDisable() {},
     handleShowDialog(node, data) {
+      console.log(node);
       switch (data.id) {
         /************* 活动属性 *************/
         case "1":
@@ -466,12 +467,12 @@ export default {
             const nodeToJSON = function (node, parent = null, parentId = null, depth = 0) {
               const _item = {
                 id: node.data.id,
-                name: node.data.label_zh,
+                name: node.data.key,
                 parentId: parentId,
                 parent: parent,
                 depth: depth,
-                value: 0,
-                children: node.childNodes.map((v) => nodeToJSON(v, node.data.label_zh, node.data.id, depth + 1)).filter((v) => v.checked),
+                value: null,
+                children: node.childNodes.map((v) => nodeToJSON(v, node.data.key, node.data.id, depth + 1)).filter((v) => v.checked),
 
                 checked: node.checked || node.indeterminate,
               };
@@ -479,7 +480,9 @@ export default {
             };
             const data = nodeToJSON(this.$refs.tree.getNode("4"));
             console.log(data);
-            this.showDialog(TravelUtilityTreeExtend, data, "TravelUtilityTreeExtend");
+            if (data.checked) {
+              this.showDialog(TravelUtilityTreeExtend, data, "TravelUtilityTreeExtend");
+            }
           }
           break;
         /************* 出行变化决策树 *************/
@@ -489,12 +492,12 @@ export default {
             const nodeToJSON = function (node, parent = null, parentId = null, depth = 0) {
               const _item = {
                 id: node.data.id,
-                name: node.data.label_zh,
+                name: node.data.key,
                 parentId: parentId,
                 parent: parent,
                 depth: depth,
-                value: 0,
-                children: node.childNodes.map((v) => nodeToJSON(v, node.data.label_zh, node.data.id, depth + 1)).filter((v) => v.checked),
+                value: null,
+                children: node.childNodes.map((v) => nodeToJSON(v, node.data.key, node.data.id, depth + 1)).filter((v) => v.checked),
 
                 checked: node.checked || node.indeterminate,
               };
@@ -502,7 +505,9 @@ export default {
             };
             const data = nodeToJSON(this.$refs.tree.getNode("5"));
             console.log(data);
-            this.showDialog(TravelVariationTreeExtend, data, "TravelVariationTreeExtend");
+            if (data.checked) {
+              this.showDialog(TravelVariationTreeExtend, data, "TravelVariationTreeExtend");
+            }
           }
           break;
         default:
@@ -561,7 +566,7 @@ export default {
       align-items: center;
       justify-content: space-between;
       .tree_label {
-        width: 100%;
+        width: calc(100% - 50px);
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
