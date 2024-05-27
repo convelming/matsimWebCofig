@@ -169,16 +169,20 @@ export class TransitRoute {
       if (i != 0) {
         const key = `${prevStop.uuid}-${stop.uuid}`;
         const item = this._routeMap[key];
+        // console.log(`${prevStop.name}-${stop.name}`, item, item ? item.label : "");
         if (item) {
           if (item.route.length == 0) {
             list.push(item.endStop.linkId);
           } else {
             list.push(...item.route.slice(1).map((v) => v.id));
           }
+        } else {
+          list.push(stop.linkId);
         }
       }
       prevStop = stop;
     }
+    console.log(list);
     return list;
   }
 
@@ -308,7 +312,7 @@ export class TransitRoute {
         route: this.route,
         routeLink: this._routeLink,
       };
-    } catch (error) {}
+    } catch (error) { }
     return {
       line: this.line,
       routeId: this.routeId,

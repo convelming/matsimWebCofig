@@ -113,7 +113,6 @@ export default {
         clearTimeout(this.setMapCenterAndZoomTimeout);
       }
       this.setMapCenterAndZoomTimeout = setTimeout(() => {
-        debugger;
         if (this.map) {
           let [x, y] = this.center;
           x += x_offset;

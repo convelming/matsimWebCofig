@@ -303,7 +303,6 @@ export default {
       }
     },
     handleOneStopMenu({ data, command }) {
-      debugger;
       switch (command) {
         case "Stop Load...":
           this.handleShowTransitStopLoad({

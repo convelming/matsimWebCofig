@@ -141,6 +141,7 @@ export class GuangZhouLayer extends Layer {
               vec2 dir = normalize(dirB - dirA);
               vec2 normal = vec2(-dir.y, dir.x);
               float angle = acos(dot(dirB, normal));
+              if(angle < 0.2) angle = 0.2;
               return vec3(current.xy + normal * offset / sin(angle), current.z);
             }
           }

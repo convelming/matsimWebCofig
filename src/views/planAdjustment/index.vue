@@ -216,6 +216,7 @@ export default {
       datasource: "",
 
       saveLoading: false,
+      deleteLoading: false,
       _map: null,
       _LocalMapLayer: null,
       _UpBusLinkLayer: null,
