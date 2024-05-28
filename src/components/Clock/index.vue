@@ -53,7 +53,7 @@ export default {
 .Clock {
   width: 150px;
   height: 150px;
-  background: url("~@/assets/image/clock.png") no-repeat;
+  background: url("./clock.png") no-repeat;
   overflow: hidden;
   div {
     width: 100%;
@@ -63,13 +63,13 @@ export default {
     left: 0;
   }
   .h {
-    background: url("~@/assets/image/hour.png") no-repeat center center;
+    background: url("./hour.png") no-repeat center center;
   }
   .m {
-    background: url("~@/assets/image/minute.png") no-repeat center center;
+    background: url("./minute.png") no-repeat center center;
   }
   .s {
-    background: url("~@/assets/image/second.png") no-repeat center center;
+    background: url("./second.png") no-repeat center center;
   }
   .ampm {
     margin: 50% 0 0 55%;

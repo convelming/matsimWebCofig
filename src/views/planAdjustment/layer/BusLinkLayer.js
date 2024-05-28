@@ -89,21 +89,25 @@ export class BusLinkLayer extends Layer {
       this.update();
     }
   }
+  clearScene() {
+    if (this.geometry) this.geometry.dispose()
+    super.clearScene()
+  }
 
   update() {
     this.clearScene();
     if (!this.map) return;
     if (!this.data) return;
-    let geometry = this.getLineGeometry();
-    let material = this.getLineMaterial({
+    this.geometry = this.getLineGeometry();
+    this.material = this.getLineMaterial({
       map: this.texture,
       color: this.color,
     });
 
-    let mesh = new THREE.Mesh(geometry, material);
+    this.mesh = new THREE.Mesh(this.geometry, this.material);
     const [x, y] = this.map.WebMercatorToCanvasXY(...this.center);
-    mesh.position.set(x, y, mesh.position.z);
-    this.scene.add(mesh);
+    this.mesh.position.set(x, y, this.mesh.position.z);
+    this.scene.add(this.mesh);
   }
 
   getLineMaterial({ usePickColor, ...opt }) {
@@ -155,8 +159,9 @@ export class BusLinkLayer extends Layer {
             } else {
               vec2 dir = normalize(dirB - dirA);
               vec2 normal = vec2(-dir.y, dir.x);
-              float angle = acos(dot(dirB, normal));
+              float angle = mod(acos(dot(dirB, normal)), 3.14);
               if(angle < 0.2) angle = 0.2;
+              if(angle > 2.94) angle = 2.94;
               transformed = vec3(position.xy + normal * offset / sin(angle), position.z);
             }
           }
@@ -255,7 +260,6 @@ export class BusLinkLayer extends Layer {
       new Float32Array(length * 4 + 2),
       1
     );
-
     for (let index = 0; index < data.length; index++) {
       const link = data[index];
       const prevLink = index == 0 ? link : data[index - 1];

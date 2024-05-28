@@ -182,7 +182,6 @@ export class TransitRoute {
       }
       prevStop = stop;
     }
-    console.log(list);
     return list;
   }
 

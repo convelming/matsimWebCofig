@@ -90,12 +90,10 @@ import AnalysisReport from "./component/AnalysisReport/index.vue";
 import LinesAnalysis from "./component/LinesAnalysis/index.vue";
 
 import HelpDialog from "./component/HelpDialog/index.vue";
-import Clock from "@/components/Clock.vue";
 import Toolbar from "./component/Toolbar/index.vue";
 
 export default {
   components: {
-    Clock,
     HelpDialog,
     PublicTransit,
     Toolbar,

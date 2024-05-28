@@ -171,6 +171,7 @@ export class TransitLinesLayer extends Layer {
               vec2 normal = vec2(-dir.y, dir.x);
               float angle = acos(dot(dirB, normal));
               if(angle < 0.2) angle = 0.2;
+              if(angle > 2.94) angle = 2.94;
               transformed = vec3(position.xy + normal * offset / sin(angle), position.z);
             }
           }

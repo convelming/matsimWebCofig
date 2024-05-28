@@ -88,11 +88,9 @@ import MotorizedTravel from "./component/MotorizedTravel/index.vue";
 import Build3D from "./component/Build3D/index.vue";
 import Network from "./component/Network/index.vue";
 
-import Clock from "@/components/Clock.vue";
 
 export default {
   components: {
-    Clock,
     HelpDialog,
     PublicTransit,
     Toolbar,

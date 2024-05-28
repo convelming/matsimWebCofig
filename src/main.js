@@ -15,6 +15,7 @@ import RouteSelect from "@/components/RouteSelect.vue";
 import Drawer from "@/components/Drawer/index.vue";
 import ColorSelect from "@/components/ColorSelect.vue";
 import Tags from "@/components/Tags.vue";
+import Clock from "@/components/Clock/index.vue";
 
 // Vue.config.productionTip = false;
 
@@ -26,6 +27,7 @@ Vue.component("RouteSelect", RouteSelect);
 Vue.component("Drawer", Drawer);
 Vue.component("ColorSelect", ColorSelect);
 Vue.component("Tags", Tags);
+Vue.component("Clock", Clock);
 Vue.use(ElementUI);
 Vue.use(language);
 
