@@ -127,7 +127,6 @@ export class BusMotionLayer extends Layer {
   }
 
   dispose() {
-    super.dispose();
     this.worker.terminate();
   }
 

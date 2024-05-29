@@ -95,6 +95,7 @@ export class BusStopLayer extends Layer {
           if (this.labelData && item.data.stop.name == this.labelData.name) {
             labelData = this.labelData;
           } else {
+            if (this.labelData) this.labelData.map.dispose();
             labelData = {};
             const { url, width, height } = getTextImage(item.data.stop.name);
             const texture = new THREE.TextureLoader().load(url);
@@ -163,6 +164,12 @@ export class BusStopLayer extends Layer {
   setHighStopId(id) {
     this.highStopId = id;
     this.update();
+  }
+
+  dispose() {
+    if (this.labelData) this.labelData.map.dispose();
+    if (this.geometry) this.geometry.dispose();
+    if (this.texture) this.texture.dispose();
   }
 
   update() {

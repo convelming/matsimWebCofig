@@ -40,8 +40,16 @@ export class BuildFlowLayer extends Layer {
     this.data = data;
     this.update();
   }
+
   clearScene() {
     super.clearScene();
+    if (this.meshList && this.meshList.length) {
+      this.meshList.forEach((v) => v.geometry.dispose());
+      this.meshList = [];
+    }
+  }
+
+  dispose() {
     if (this.meshList && this.meshList.length) {
       this.meshList.forEach((v) => v.geometry.dispose());
       this.meshList = [];

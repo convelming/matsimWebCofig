@@ -99,6 +99,7 @@ export class ReachableStopsLayer extends Layer {
           if (this.labelData && item.data.stop.name == this.labelData.name) {
             labelData = this.labelData;
           } else {
+            if (this.labelData) this.labelData.map.dispose();
             labelData = {};
             const { url, width, height } = getTextImage(item.data.stop.name);
             const texture = new THREE.TextureLoader().load(url);

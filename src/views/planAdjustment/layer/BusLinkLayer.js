@@ -89,9 +89,15 @@ export class BusLinkLayer extends Layer {
       this.update();
     }
   }
+
   clearScene() {
-    if (this.geometry) this.geometry.dispose()
     super.clearScene()
+    if (this.geometry) this.geometry.dispose()
+  }
+
+  dispose() {
+    if (this.geometry) this.geometry.dispose();
+    if (this.texture) this.texture.dispose();
   }
 
   update() {

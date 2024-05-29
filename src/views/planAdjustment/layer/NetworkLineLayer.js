@@ -79,7 +79,6 @@ export class NetworkLineLayer extends Layer {
 
   render() {
     super.render();
-    // this.texture.offset.y -= 0.01;
   }
 
   setValues(opt) {
@@ -135,6 +134,19 @@ export class NetworkLineLayer extends Layer {
     this.pickLayerMaterial.needsUpdate = true;
   }
 
+
+
+  clearScene() {
+    super.clearScene()
+    if (this.geometry) this.geometry.dispose()
+  }
+
+  dispose() {
+    if (this.geometry) this.geometry.dispose();
+    if (this.texture) this.texture.dispose();
+  }
+
+
   update() {
     this.clearScene();
     if (!this.map) return;
@@ -143,6 +155,7 @@ export class NetworkLineLayer extends Layer {
     for (const data of this.data) {
       const [x, y] = this.map.WebMercatorToCanvasXY(...this.center);
       let geometry = this.getLineGeometry(data);
+      this.geometry = geometry;
 
       let mesh = new THREE.Mesh(geometry, this.material);
       mesh.position.set(x, y, 0);
@@ -184,8 +197,8 @@ export class NetworkLineLayer extends Layer {
         `
           #include <begin_vertex>
           float lineWidth = ${Number(
-            this.lineWidth + (pickOffset || 0)
-          ).toFixed(2)};
+          this.lineWidth + (pickOffset || 0)
+        ).toFixed(2)};
           float lineOffset = ${Number(this.lineOffset).toFixed(2)};
           float isTwoWay = ${this.isTwoWay.toFixed(1)};
           float offset = lineWidth / 2.0 * side + isTwoWay * lineOffset;

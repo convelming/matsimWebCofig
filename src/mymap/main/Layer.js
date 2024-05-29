@@ -81,6 +81,7 @@ export class Layer extends EventListener {
 
   // 地图中移除回调
   onRemove() {
+    this.map = null;
     if (this.scene) this.scene.removeFromParent();
     if (this.pickLayerScene) this.pickLayerScene.removeFromParent();
     if (this.pickMeshScene) this.pickMeshScene.removeFromParent();
@@ -91,12 +92,12 @@ export class Layer extends EventListener {
     if (this.map) this.map.removeLayer(this);
   }
 
-  beforeRender() {}
+  beforeRender() { }
 
-  afterRender() {}
+  afterRender() { }
 
   // 渲染
-  render() {}
+  render() { }
 
   // 事件回调
   on(type, data) {

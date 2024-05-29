@@ -6,6 +6,7 @@ import { Layer, MAP_EVENT } from "@/mymap/index.js";
 
 import { getGeomjson } from "@/api/index";
 
+// 整个路网一次性加载
 export class NetworkLayer2 extends Layer {
   name = "NetworkLayer2";
   color = new THREE.Color(0x909399);
@@ -45,41 +46,30 @@ export class NetworkLayer2 extends Layer {
       pickOffset: 10,
     });
 
+    this.worker = new NetworkLayerWorker();
     getGeomjson({
       selectAll: true,
     }).then((res) => {
-      const worker = new NetworkLayerWorker();
-      worker.onmessage = (event) => {
-        if (event.data.type === "end") {
-          this._timer = setInterval(() => {
-            const geometryJson = this.geometryList.shift();
-            if (!geometryJson) {
-              return;
-            }
-            const geometry = this.bufferGeometryLoader.parse(geometryJson);
-
-            const mesh = new THREE.Mesh(geometry, this.material);
-            this.scene.add(mesh);
-
-            const pickLayerMesh = new THREE.Mesh(
-              geometry,
-              this.pickLayerMaterial
-            );
-            this.pickLayerScene.add(pickLayerMesh);
-
-            const pickMesh = new THREE.Mesh(geometry, this.pickMaterial);
-            this.pickMeshScene.add(pickMesh);
-
-            this._setMeshPosition();
-          }, 100);
-        } else if (event.data.type === "progress") {
+      this.worker.onmessage = (event) => {
+        if (event.data.type === "progress") {
           const { dataList, geometryJson } = event.data.data;
+
+          const geometry = this.bufferGeometryLoader.parse(geometryJson);
+          const mesh = new THREE.Mesh(geometry, this.material);
+          this.scene.add(mesh);
+          const pickLayerMesh = new THREE.Mesh(geometry, this.pickLayerMaterial);
+          this.pickLayerScene.add(pickLayerMesh);
+          const pickMesh = new THREE.Mesh(geometry, this.pickMaterial);
+          this.pickMeshScene.add(pickMesh);
+
           this.data.push(...dataList);
-          this.geometryList.push(geometryJson);
+          this.geometryList.push(geometry);
+
+          this._setMeshPosition();
         }
       };
-      worker.onerror = (event) => {};
-      worker.postMessage({ data: res.data, center: this.center });
+      this.worker.onerror = (event) => { };
+      this.worker.postMessage({ data: res.data, center: this.center });
     });
   }
 
@@ -110,8 +100,10 @@ export class NetworkLayer2 extends Layer {
   }
 
   dispose() {
-    super.dispose();
     this.worker.terminate();
+    for (const geometry of this.geometryList) {
+      geometry.dispose();
+    }
   }
 
   show() {
@@ -194,8 +186,8 @@ export class NetworkLayer2 extends Layer {
         `
           #include <begin_vertex>
           float lineWidth = ${Number(
-            this.lineWidth + (pickOffset || 0)
-          ).toFixed(2)};
+          this.lineWidth + (pickOffset || 0)
+        ).toFixed(2)};
           float offset = lineWidth / 2.0  * side;
           transformed = lineOffset(startPosition, position, endPosition, offset);
         `

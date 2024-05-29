@@ -5,7 +5,7 @@ import NetworkLayerWorker from "../worker/NetworkLayer.worker";
 
 import { getGeomjson } from "@/api/index";
 
-
+// 根据显示区域加载路网
 export class NetworkLayer extends Layer {
   name = "NetworkLayer";
   data = null;

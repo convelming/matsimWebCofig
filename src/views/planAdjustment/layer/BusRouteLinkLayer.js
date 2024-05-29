@@ -93,6 +93,7 @@ export class BusRouteLinkLayer extends Layer {
           if (this.labelData && item.data.stop.name == this.labelData.name) {
             labelData = this.labelData;
           } else {
+            if (this.labelData.map) this.labelData.map.dispose();
             labelData = {};
             const { url, width, height } = getTextImage(item.data.stop.name);
             const texture = new THREE.TextureLoader().load(url);
@@ -154,14 +155,31 @@ export class BusRouteLinkLayer extends Layer {
     } catch (error) {
       this.stopData = [];
       this.linkData = [];
+      this.middleLinkData = [];
       this.center = [0, 0];
       this.update();
     }
   }
 
+  clearScene() {
+    super.clearScene();
+    if (this.linkGeometry) this.linkGeometry.dispose();
+    if (this.stopGeometry) this.stopGeometry.dispose();
+    if (this.middleLinkGeometry) this.middleLinkGeometry.dispose();
+  }
+
+  dispose() {
+    if (this.labelData) this.labelData.map.dispose();
+    if (this.linkGeometry) this.linkGeometry.dispose();
+    if (this.stopGeometry) this.stopGeometry.dispose();
+    if (this.middleLinkGeometry) this.middleLinkGeometry.dispose();
+    if (this.linkTexture) this.linkTexture.dispose();
+    if (this.pointTexture) this.pointTexture.dispose();
+  }
+
   update() {
-    if (!this.map) return;
     this.clearScene();
+    if (!this.map) return;
     const [x, y] = this.map.WebMercatorToCanvasXY(...this.center);
     {
       let geometry = this.getLineGeometry(this.linkData);
@@ -175,6 +193,8 @@ export class BusRouteLinkLayer extends Layer {
       let mesh = new THREE.Mesh(geometry, material);
       mesh.position.set(x, y, 0);
       this.scene.add(mesh);
+
+      this.linkGeometry = geometry;
     }
     {
       let geometry = this.getPointsGeometry(this.stopData);
@@ -200,6 +220,8 @@ export class BusRouteLinkLayer extends Layer {
       let pickMeshMesh = new THREE.Points(geometry, pickMeshMaterial);
       pickMeshMesh.position.set(x, y, 0.001);
       this.pickMeshScene.add(pickMeshMesh);
+
+      this.stopGeometry = geometry;
     }
     if (this.middleLinkData.length) {
       let geometryList = this.middleLinkData.map((v) => this.getLineGeometry([v]));
@@ -232,6 +254,8 @@ export class BusRouteLinkLayer extends Layer {
       let pickMeshMesh = new THREE.Mesh(geometry, pickMeshMaterial);
       pickMeshMesh.position.set(x, y, 0.002);
       this.pickMeshScene.add(pickMeshMesh);
+
+      this.middleLinkGeometry = geometry;
     }
   }
 

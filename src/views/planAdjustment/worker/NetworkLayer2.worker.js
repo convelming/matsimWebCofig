@@ -66,29 +66,7 @@ onmessage = function (e) {
     postMessage({
       type: "start",
     });
-    // const jsonString = JSON.stringify(postDataList[0]);
-    // // 创建 TextEncoder 对象
-    // const encoder = new TextEncoder();
-    // // 将 JSON 字符串编码成 Uint8Array
-    // const uint8array = encoder.encode(jsonString);
-     
-    // // 将 Uint8Array 转换为 ArrayBuffer
-    // const arraybuffer = uint8array.buffer;
-
-    // console.log(arraybuffer); // 输出结果为 ArrayBuffer 类型的数据
-
-    // // 创建 TextDecoder 对象
-    // const decoder = new TextDecoder();
-    
-    // // 将 ArrayBuffer 解码成字符串
-    // const string = decoder.decode(arraybuffer);
-    
-    // // 将字符串转换为 JSON 对象
-    // const jsonObject = JSON.parse(string);
-    
-    // console.log(jsonObject);
-     
-
+    // 每隔一段时间推一份数据，防止程序卡死
     const timer = setInterval(() => {
       const data = postDataList.shift();
       if (data) {
@@ -102,7 +80,7 @@ onmessage = function (e) {
         });
         clearInterval(timer);
       }
-    }, 100);
+    }, 200);
   }
 };
 

@@ -19,7 +19,6 @@
         <el-table-column :label="$l('slc')" prop="slc"></el-table-column>
         <el-table-column :label="$l('avgDist')" prop="avgDist"></el-table-column>
         <el-table-column :label="$l('passenger')" prop="passenger"></el-table-column>
-        <el-table-column :label="$l('passenger')" prop="passenger"></el-table-column>
       </el-table>
     </el-tab-pane>
   </el-tabs>
@@ -273,7 +272,6 @@ export default {
         colList.push(this.list[i].stopNum);
         colList.push(this.list[i].slc);
         colList.push(this.list[i].avgDist);
-        colList.push(this.list[i].passenger);
         colList.push(this.list[i].passenger);
         rowList.push(`"${colList.join('","')}"`);
       }

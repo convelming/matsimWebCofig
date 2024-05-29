@@ -63,6 +63,15 @@ export class GuangZhouLayer extends Layer {
     this.update();
   }
 
+  clearScene() {
+    super.clearScene()
+    if (this.geometry) this.geometry.dispose()
+  }
+
+  dispose() {
+    if (this.geometry) this.geometry.dispose();
+  }
+
   update() {
     this.clearScene();
     if (!this.map) return;
@@ -85,6 +94,8 @@ export class GuangZhouLayer extends Layer {
     const [x, y] = this.map.WebMercatorToCanvasXY(...this.data.center);
 
     const geometry = this.getGeometry();
+
+    this.geometry = geometry;
 
     const mesh = new THREE.Mesh(geometry, this.material);
     mesh.position.set(x, y, 0);

@@ -553,8 +553,8 @@ export class Map extends EventListener {
   removeLayer(layer) {
     let index = this.layers.findIndex((v) => v.id == layer.id);
     if (index > -1) {
-      layer.onRemove();
       this.layers.splice(index, 1);
+      layer.onRemove();
     }
   }
 
@@ -615,7 +615,9 @@ export class Map extends EventListener {
 
   dispose() {
     // TODO
-    for (const layer of this.layers) {
+    const layers = [...this.layers];
+    for (const layer of layers) {
+      this.removeLayer(layer)
       layer.dispose();
     }
   }
