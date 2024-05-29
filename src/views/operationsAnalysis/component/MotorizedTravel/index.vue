@@ -180,7 +180,6 @@ export default {
       modelSize: this.modelSize,
       event: {
         [MAP_EVENT.HANDLE_PICK_LEFT]: ({ data }) => {
-          console.log(data);
           this._BusMotionLayer.setSelectBusId(data.uuid);
           this.rootVue.handleShowBusDetail({
             uuid: data.uuid,
@@ -189,6 +188,7 @@ export default {
         },
       },
     });
+    console.log(this._BusMotionLayer);
     this._CarMotionLayer = new CarMotionLayer({
       zIndex: 10,
       lockSelectCar: this.lockSelectVehicle,

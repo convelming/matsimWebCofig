@@ -56,7 +56,9 @@ export class ModelPool {
               resolve([name, gltf.scene]);
             },
             null,
-            reject
+            () => {
+              resolve([name, this.defaultModel]);
+            }
           );
         })
       );
@@ -340,7 +342,7 @@ export class CarMotionPath {
   }
 }
 
-export class CarMotionPoint extends BusMotionPoint {}
+export class CarMotionPoint extends BusMotionPoint { }
 
 export function guid() {
   return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {

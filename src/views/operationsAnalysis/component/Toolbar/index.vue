@@ -33,8 +33,24 @@ export default {
   },
   data() {
     return {
-      activeName: "",
-      list: [],
+      activeName: "2bdcc25c-6f77-44cd-9bcc-e7d412d5bf30",
+      list: [
+        // {
+        //   type: "BusDetail",
+        //   data: {
+        //     busDetail: {
+        //       uuid: "a497f5a9-e15d-46e0-bb72-42512bf24cfe",
+        //       id: "南沙4路(蕉门公交总站--滨海公园站)[all-day 09:10]_09:10:30",
+        //       desireSpeed: 6.944444444444445,
+        //       startTime: 33030,
+        //       endTime: 35913.28493872348,
+        //       totalDistance: 20022.81207446862,
+        //       pickColor: 83783,
+        //     },
+        //   },
+        //   name: guid(),
+        // },
+      ],
     };
   },
   created() {},

@@ -99,10 +99,6 @@
     "zh-CN":"添加站点",
     "en-US":"添加站点"
   },
-  "确定": {
-    "zh-CN":"确定",
-    "en-US":"确定"
-  },
   "站点排序": {
     "zh-CN":"站点排序",
     "en-US":"站点排序"
@@ -115,10 +111,6 @@
     "zh-CN":"鼠标左键选择站点",
     "en-US":"鼠标左键选择站点"
   },
-  "取消": {
-    "zh-CN":"取消",
-    "en-US":"取消"
-  },
   "站点路段Id": {
     "zh-CN":"站点路段Id",
     "en-US":"站点路段Id"
@@ -126,6 +118,10 @@
   "鼠标左键选择路段": {
     "zh-CN":"鼠标左键选择路段",
     "en-US":"鼠标左键选择路段"
+  },
+  "确定": {
+    "zh-CN":"确定",
+    "en-US":"确定"
   },
   "取消": {
     "zh-CN":"取消",
@@ -147,17 +143,29 @@
     "zh-CN":"鼠标左键点击地图确定坐标",
     "en-US":"鼠标左键点击地图确定坐标"
   },
-  "取消": {
-    "zh-CN":"取消",
-    "en-US":"取消"
+  "站点编辑": {
+    "zh-CN":"站点编辑",
+    "en-US":"站点编辑"
   },
-  "确定": {
-    "zh-CN":"确定",
-    "en-US":"确定"
+  "添加站点": {
+    "zh-CN":"添加站点",
+    "en-US":"添加站点"
   },
-  "取消": {
-    "zh-CN":"取消",
-    "en-US":"取消"
+  "站点位置距离线路超过200米，是否需要进行调整？": {
+    "zh-CN":"站点位置距离线路超过200米，是否需要进行调整？",
+    "en-US":"站点位置距离线路超过200米，是否需要进行调整？"
+  },
+  "提示": {
+    "zh-CN":"提示",
+    "en-US":"提示"
+  },
+  "继续保存": {
+    "zh-CN":"继续保存",
+    "en-US":"继续保存"
+  },
+  "需要调整": {
+    "zh-CN":"需要调整",
+    "en-US":"需要调整"
   },
 }
 </language>
@@ -372,7 +380,7 @@ export default {
           zoom: 16.8,
         });
 
-        this.title = "站点编辑";
+        this.title = this.$l("站点编辑");
         this.visible = false;
         this.open = true;
         this.updateLayer();
@@ -389,7 +397,7 @@ export default {
         this.editIndex = index;
         this.transitRoute.addStop(form);
 
-        this.title = "添加站点";
+        this.title = this.$l("添加站点");
         this.visible = false;
         this.open = true;
         this.updateLayer();
@@ -425,11 +433,11 @@ export default {
           const distance = stopPoint.distanceTo(closestPoint);
           if (distance > 200) {
             await this.$confirm(
-              "站点位置距离线路超过200米，是否需要进行调整?",
-              "提示",
+              this.$l("站点位置距离线路超过200米，是否需要进行调整？"),
+              this.$l("提示"),
               {
-                confirmButtonText: "继续保存",
-                cancelButtonText: "需要调整",
+                confirmButtonText: this.$l("继续保存"),
+                cancelButtonText: this.$l("需要调整"),
                 type: "warning",
               }
             );

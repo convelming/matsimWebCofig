@@ -238,7 +238,6 @@ export class CarMotionLayer extends Layer {
   }
 
   setData(data) {
-    console.log(data);
     this.worker.postMessage({ key: "setData", data: data });
   }
 

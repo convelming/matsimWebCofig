@@ -25,6 +25,7 @@
       <PassengersEnteringLeaving v-if="chartType == `Passengers Entering / Leaving`" :form="s_form" :routeInfo="form" />
       <RouteFlows v-if="chartType == `Route Flows`" :form="s_form" :routeInfo="form" />
       <RouteTimeDiagram v-if="chartType == `Route Time Diagram`" :form="s_form" :routeInfo="form" />
+      <RouteAttributes v-if="chartType == `Route Attributes`" :form="s_form" :routeInfo="form" />
     </div>
   </Dialog>
 </template>
@@ -55,6 +56,22 @@
     "zh-CN": "时间段：",
     "en-US": "Multiple: "
   },
+  "Passengers Entering / Leaving":{
+    "zh-CN": "Passengers Entering / Leaving",
+    "en-US": "Passengers Entering / Leaving"
+  },
+  "Route Flows":{
+    "zh-CN": "Route Flows",
+    "en-US": "Route Flows"
+  },
+  "Route Time Diagram":{
+    "zh-CN": "Route Time Diagram",
+    "en-US": "Route Time Diagram"
+  },
+  "Route Attributes":{
+    "zh-CN": "Route Attributes",
+    "en-US": "Route Attributes"
+  },
 }
 </language>
 
@@ -62,11 +79,13 @@
 import PassengersEnteringLeaving from "./PassengersEnteringLeaving.vue";
 import RouteFlows from "./RouteFlows.vue";
 import RouteTimeDiagram from "./RouteTimeDiagram.vue";
+import RouteAttributes from "./RouteAttributes.vue";
 
 const route_info_analysis = [
   { label: "Passengers Entering / Leaving", value: "Passengers Entering / Leaving" },
   { label: "Route Flows", value: "Route Flows" },
   { label: "Route Time Diagram", value: "Route Time Diagram" },
+  { label: "Route Attributes", value: "Route Attributes" },
 ];
 
 export default {
@@ -85,6 +104,7 @@ export default {
     PassengersEnteringLeaving,
     RouteFlows,
     RouteTimeDiagram,
+    RouteAttributes,
   },
   computed: {},
   data() {

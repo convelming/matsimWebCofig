@@ -143,3 +143,15 @@ export function routeTimeDiagram(params) {
     params: params,
   });
 }
+
+// 线路修改前后基础属性
+// GET /pt/contrast/routeAttributes
+// 接口ID：173509299
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-173509299
+export function routeAttributes(params) {
+  return request({
+    url: `/pt/contrast/routeAttributes`,
+    method: "get",
+    params: params,
+  });
+}

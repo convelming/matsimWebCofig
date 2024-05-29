@@ -167,6 +167,66 @@
     "zh-CN":"保存方案",
     "en-US":"保存方案"
   },
+  "站点编辑": {
+    "zh-CN":"站点编辑",
+    "en-US":"站点编辑"
+  },
+  "路径编辑": {
+    "zh-CN":"路径编辑",
+    "en-US":"路径编辑"
+  },
+  "发车信息编辑": {
+    "zh-CN":"发车信息编辑",
+    "en-US":"发车信息编辑"
+  },
+  "保存成功": {
+    "zh-CN":"保存成功",
+    "en-US":"保存成功"
+  },
+  "确认删除？": {
+    "zh-CN":"确认删除？",
+    "en-US":"确认删除？"
+  },
+  "提示": {
+    "zh-CN":"提示",
+    "en-US":"提示"
+  },
+  "反转：": {
+    "zh-CN":"反转：",
+    "en-US":"反转："
+  },
+  "请输入方案名称": {
+    "zh-CN":"请输入方案名称",
+    "en-US":"请输入方案名称"
+  },
+  "提示": {
+    "zh-CN":"提示",
+    "en-US":"提示"
+  },
+  "确定": {
+    "zh-CN":"确定",
+    "en-US":"确定"
+  },
+  "取消": {
+    "zh-CN":"取消",
+    "en-US":"取消"
+  },
+  "方案名称只能使用英文字母，数字和下划线": {
+    "zh-CN":"方案名称只能使用英文字母，数字和下划线",
+    "en-US":"方案名称只能使用英文字母，数字和下划线"
+  },
+  "方案名称不能以base结尾": {
+    "zh-CN":"方案名称不能以base结尾",
+    "en-US":"方案名称不能以base结尾"
+  },
+  "方案创建成功": {
+    "zh-CN":"方案创建成功",
+    "en-US":"方案创建成功"
+  },
+  "方案保存成功": {
+    "zh-CN":"方案保存成功",
+    "en-US":"方案保存成功"
+  },
 }
 </language>
 
@@ -752,7 +812,7 @@ export default {
     // 保存 路径编辑 弹窗回调
     handleChangeStopsRoutesEdit(data) {
       let transitRoute = new Bean.TransitRoute(data);
-      this.$set(this.tlForm.obj, this.stopsEditObj.routeType, transitRoute);
+      this.$set(this.tlForm.obj, this.stopsRoutesEditObj.routeType, transitRoute);
       this._UpBusLinkLayer.setData(this.tlForm.obj.up);
       this._UpBusStopLayer.setData(this.tlForm.obj.up);
       this._DownBusLinkLayer.setData(this.tlForm.obj.down);
