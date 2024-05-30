@@ -72,7 +72,6 @@ export class BusStopListLayer extends Layer {
       this.handleEventListener(type);
     }
     if (type == MAP_EVENT.UPDATE_CAMERA_HEIGHT) {
-      console.log("update camera height");
       this.setSize(this.map.cameraHeight / 40);
     }
     if (type == MAP_EVENT.HANDLE_MOUSE_MOVE_PICK) {
@@ -133,6 +132,12 @@ export class BusStopListLayer extends Layer {
     if (this.mesh) this.mesh.instanceMatrix.needsUpdate = true;
     if (this.pickLayerMesh) this.pickLayerMesh.instanceMatrix.needsUpdate = true;
     if (this.pickMesh) this.pickMesh.instanceMatrix.needsUpdate = true;
+    
+
+    if (this.labelData && this.labelMesh) {
+      const scale = this.map.cameraHeight / 2000;
+      this.labelMesh.scale.set(this.labelData.mapWidth * scale, this.labelData.mapHeight * scale, 1);
+    }
   }
 
   setData(data) {
@@ -228,7 +233,8 @@ export class BusStopListLayer extends Layer {
     } else {
       this.labelMesh.material.setValues({ map: this.labelData.map });
       this.labelMesh.material.needsUpdate = true;
-      this.labelMesh.scale.set((this.labelData.mapWidth * this.size) / 50, (this.labelData.mapHeight * this.size) / 50, 1);
+      const scale = this.map.cameraHeight / 2000;
+      this.labelMesh.scale.set(this.labelData.mapWidth * scale, this.labelData.mapHeight * scale, 1);
       const [x, y] = this.map.WebMercatorToCanvasXY(this.labelData.x, this.labelData.y);
       this.labelMesh.position.set(x, y, 0);
       this.scene.add(this.labelMesh);

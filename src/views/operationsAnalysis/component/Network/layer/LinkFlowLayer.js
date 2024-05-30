@@ -3,13 +3,22 @@ import * as THREE from "three";
 
 export class LinkFlowLayer extends Layer {
   color = 0x0000ff;
+  height = 100;
   constructor(opt) {
     super(opt);
     this.color = opt.color || this.color;
+    this.height = opt.height || this.height;
 
     this.material = new THREE.LineBasicMaterial({
       color: this.color,
     });
+  }
+
+  setHeight(height) {
+    this.height = height;
+    for (const mesh of this.meshList) {
+      mesh.scale.set(1, 1, this.height / 100);
+    }
   }
 
   setColor(color) {
@@ -78,6 +87,7 @@ export class LinkFlowLayer extends Layer {
       // const legCenter = [legCenterV3.x, legCenterV3.y];
       const [x, y] = this.map.WebMercatorToCanvasXY(...linkCenter);
       mesh.position.set(x, y, 0);
+      mesh.scale.set(1, 1, this.height / 100);
       mesh.userData.center = linkCenter;
 
       mesh.layers.enable(SCENE_MAP.BLOOM_SCENE);

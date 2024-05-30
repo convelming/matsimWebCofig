@@ -54,12 +54,11 @@
             <el-button type="primary" size="small" @click="handleCancel">{{ $l("取消") }}</el-button>
           </div>
         </template>
-
-        <el-divider></el-divider>
+        <!-- <el-divider></el-divider>
         <div class="footer">
           <el-button type="primary" size="mini" @click="handleCreateDataSource()">{{ $l("新建方案") }}</el-button>
           <el-button type="primary" size="mini" @click="handleSaveDataSource()">{{ $l("保存方案") }}</el-button>
-        </div>
+        </div> -->
       </div>
     </Dialog>
     <!-- <Dialog :title="stopsEditObj.title" :visible.sync="stopsEditObj.open" width="auto" @close="handleCloseStopsEdit" :left="stopsEditObj.left" :width="stopsEditObj.width" resize>
@@ -70,9 +69,11 @@
     <Dialog width="450px" :title="stopsRoutesEditObj.title" :visible.sync="stopsRoutesEditObj.open" @close="handleCloseStopsRoutesEdit">
       <StopsRoutesEdit v-if="stopsRoutesEditObj.open" :transitRouteJSON="stopsRoutesEditObj.transitRouteJSON" @toEditStops="handleToEditStops" @change="handleChangeStopsRoutesEdit" />
     </Dialog>
+    
     <Dialog :title="startEditObj.title" :width="startEditObj.width" :left="startEditObj.left" :visible.sync="startEditObj.open" @close="handleCloseStartEdit">
       <StartEdit v-if="startEditObj.open" :transitRouteJSON="startEditObj.transitRouteJSON" @change="handleChangeStartEdit" />
     </Dialog>
+
     <HelpDialog />
   </div>
 </template>

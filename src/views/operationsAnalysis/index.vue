@@ -34,7 +34,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="form_item" style="padding-bottom: 25px;">
+                <div class="form_item" style="padding-bottom: 25px">
                   <div class="form_label">{{ $l("时间：") }}</div>
                   <div class="form_value">
                     <TimeSlider v-model="time" :speed="60 * 60 * 4" :min="minTime" :max="maxTime"></TimeSlider>
@@ -88,7 +88,6 @@ import MotorizedTravel from "./component/MotorizedTravel/index.vue";
 import Build3D from "./component/Build3D/index.vue";
 import Network from "./component/Network/index.vue";
 
-
 export default {
   components: {
     HelpDialog,
@@ -127,7 +126,7 @@ export default {
 
       showStopToolbar: false,
 
-      showClock: false,
+      showClock: true,
 
       time: 0,
       speed: 0,
@@ -141,6 +140,11 @@ export default {
       this.handleChangeMapCameraControls();
     },
     showLayerMotorizedTravel(val) {
+      if (val) {
+        this.speed = 5;
+      } else {
+        this.speed = 0;
+      }
       this.handleChangeMapCameraControls();
     },
     showLayerBuild3D(val) {
@@ -327,8 +331,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-::v-deep{
-  .el-collapse{
+::v-deep {
+  .el-collapse {
     border-bottom: 0;
   }
 }

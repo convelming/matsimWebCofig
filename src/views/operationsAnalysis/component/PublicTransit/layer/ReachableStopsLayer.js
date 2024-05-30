@@ -47,13 +47,14 @@ export class ReachableStopsLayer extends Layer {
     };
 
     this.pickGeometry = new THREE.BoxGeometry(STOP_SIZE * 1.1, STOP_SIZE * 1.1);
-    this.pickMaterial = new THREE.MeshBasicMaterial({
+    this.pickLayerMaterial = new THREE.MeshBasicMaterial({
       color: this.pickLayerColor,
     });
+    this.pickMeshMaterial = new THREE.MeshBasicMaterial();
 
     this.labelMesh = new THREE.Sprite(
       new THREE.SpriteMaterial({
-        transparent: true,
+        transparent: false,
       })
     );
     this.labelMesh.center.set(0.5, -0.5);
@@ -61,7 +62,7 @@ export class ReachableStopsLayer extends Layer {
 
   setPickLayerColor(pickLayerColor) {
     this.pickLayerColor = new THREE.Color(pickLayerColor);
-    this.pickMaterial.setValues({ color: this.pickLayerColor });
+    this.pickLayerMaterial.setValues({ color: this.pickLayerColor });
   }
 
   on(type, data) {
@@ -148,6 +149,12 @@ export class ReachableStopsLayer extends Layer {
     if (this.mesh) this.mesh.instanceMatrix.needsUpdate = true;
     if (this.pickLayerMesh) this.pickLayerMesh.instanceMatrix.needsUpdate = true;
     if (this.pickMesh) this.pickMesh.instanceMatrix.needsUpdate = true;
+
+
+    if (this.labelData && this.labelMesh) {
+      const scale = this.map.cameraHeight / 2000;
+      this.labelMesh.scale.set(this.labelData.mapWidth * scale, this.labelData.mapHeight * scale, 1);
+    }
   }
 
   setData(data) {
@@ -204,8 +211,8 @@ export class ReachableStopsLayer extends Layer {
     const data = this.data;
     const count = data.length;
     const mesh = new THREE.InstancedMesh(this.geometry, this.material, count);
-    const pickLayerMesh = new THREE.InstancedMesh(this.pickGeometry, this.pickMaterial, count);
-    const pickMesh = new THREE.InstancedMesh(this.pickGeometry, this.pickMaterial, count);
+    const pickLayerMesh = new THREE.InstancedMesh(this.pickGeometry, this.pickLayerMaterial, count);
+    const pickMesh = new THREE.InstancedMesh(this.pickGeometry, this.pickMeshMaterial, count);
 
     for (let i = 0; i < count; i++) {
       const { coord, pickColor } = data[i];
@@ -222,7 +229,7 @@ export class ReachableStopsLayer extends Layer {
       pickMesh.setMatrixAt(i, matrix);
 
       // mesh.setColorAt(i, this.color);
-      pickLayerMesh.setColorAt(i, this.pickLayerColor);
+      // pickLayerMesh.setColorAt(i, this.pickLayerColor);
       pickMesh.setColorAt(i, pickColor);
     }
 
@@ -309,14 +316,12 @@ export class ReachableStopsLayer extends Layer {
     if (!this.labelData) {
       this.scene.remove(this.labelMesh);
     } else {
-      const height = 0.05;
-      const width = (height * this.labelData.mapWidth) / this.labelData.mapHeight;
-
       this.labelMesh.material.setValues({ map: this.labelData.map });
       this.labelMesh.material.needsUpdate = true;
-      this.labelMesh.scale.set(width, height, 1);
+      const scale = this.map.cameraHeight / 2000;
+      this.labelMesh.scale.set(this.labelData.mapWidth * scale, this.labelData.mapHeight * scale, 1);
       const [x, y] = this.map.WebMercatorToCanvasXY(this.labelData.x, this.labelData.y);
-      this.labelMesh.position.set(x, y, 0);
+      this.labelMesh.position.set(x, y, 10);
       this.scene.add(this.labelMesh);
     }
   }

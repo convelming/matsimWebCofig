@@ -183,13 +183,12 @@ export class RouteFlowsLayer extends Layer {
 
   updateLabel() {
     if (!this.labelData) {
-      console.log(this.id, this.labelData);
       this.scene.remove(this.labelMesh);
     } else {
-      console.log(this.id, this.labelData);
       this.labelMesh.material.setValues({ map: this.labelData.map });
       this.labelMesh.material.needsUpdate = true;
-      this.labelMesh.scale.set((this.labelData.mapWidth * this.map.cameraHeight) / 2500, (this.labelData.mapHeight * this.map.cameraHeight) / 2500, 1);
+      const scale = this.map.cameraHeight / 2000;
+      this.labelMesh.scale.set(this.labelData.mapWidth * scale, this.labelData.mapHeight * scale, 1);
       const [x, y] = this.map.WebMercatorToCanvasXY(this.labelData.x, this.labelData.y);
       this.labelMesh.position.set(x, y, this.labelData.height);
       this.scene.add(this.labelMesh);

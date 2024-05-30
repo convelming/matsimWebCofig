@@ -193,6 +193,42 @@ export default {
         fromOffsetObj[id] = 0;
         toOffsetObj[id] = 0;
       });
+      
+      const lable_box = svg.append("g");
+      lable_box
+        .attr("transform", (d) => `translate(${margin},${margin + titleHeight})`)
+        .append("rect")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("width", step * 1.2)
+        .attr("height", step * 0.6)
+        .attr("fill", "#ff0000")
+      lable_box
+        .append("text")
+        .attr("font-size", step * 0.4)
+        .attr("fill", "#fff")
+        .attr("text-anchor", "middle")
+        .attr("x", step * 0.6)
+        .attr("y", step * 0.45)
+        .text("上车");
+        
+      const lable_box2 = svg.append("g");
+      lable_box2
+        .attr("transform", (d) => `translate(${margin +  step * 1.4},${margin + titleHeight})`)
+        .append("rect")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("width", step * 1.2)
+        .attr("height", step * 0.6)
+        .attr("fill", "#00ff00")
+      lable_box2
+        .append("text")
+        .attr("font-size", step * 0.4)
+        .attr("fill", "#fff")
+        .attr("text-anchor", "middle")
+        .attr("x", step * 0.6)
+        .attr("y", step * 0.45)
+        .text("下车");
 
       const title_box = svg
         .append("g")

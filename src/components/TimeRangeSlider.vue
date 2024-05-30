@@ -61,7 +61,7 @@ export default {
         this.$emit("update:end", this.s_value[1]);
         this.$emit("change", this.s_value);
         this._timeout = null;
-      }, 200);
+      }, 100);
     },
   },
 };

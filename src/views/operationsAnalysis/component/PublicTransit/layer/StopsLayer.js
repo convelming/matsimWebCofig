@@ -181,7 +181,6 @@ export class StopsLayer extends Layer {
   onAdd(map) {
     super.onAdd(map);
     this.setSize(this.map.cameraHeight / 10000);
-    console.log(this.map.cameraHeight);
     this.update();
   }
 
@@ -212,6 +211,11 @@ export class StopsLayer extends Layer {
     if (this.mesh) this.mesh.instanceMatrix.needsUpdate = true;
     if (this.pickLayerMesh) this.pickLayerMesh.instanceMatrix.needsUpdate = true;
     if (this.pickMesh) this.pickMesh.instanceMatrix.needsUpdate = true;
+    
+    if (this.labelData && this.labelMesh) {
+      const scale = this.map.cameraHeight / 2000;
+      this.labelMesh.scale.set(this.labelData.mapWidth * scale, this.labelData.mapHeight * scale, 1);
+    }
   }
 
   show() {
@@ -340,12 +344,10 @@ export class StopsLayer extends Layer {
     if (!this.labelData) {
       this.scene.remove(this.labelMesh);
     } else {
-      const height = 0.05;
-      const width = (height * this.labelData.mapWidth) / this.labelData.mapHeight;
-
       this.labelMesh.material.setValues({ map: this.labelData.map });
       this.labelMesh.material.needsUpdate = true;
-      this.labelMesh.scale.set(width, height, 1);
+      const scale = this.map.cameraHeight / 2000;
+      this.labelMesh.scale.set(this.labelData.mapWidth * scale, this.labelData.mapHeight * scale, 1);
       const [x, y] = this.map.WebMercatorToCanvasXY(this.labelData.x, this.labelData.y);
       this.labelMesh.position.set(x, y, 10);
       this.scene.add(this.labelMesh);

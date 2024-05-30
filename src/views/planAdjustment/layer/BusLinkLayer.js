@@ -14,6 +14,23 @@ export class BusLinkLayer extends Layer {
   constructor(opt) {
     super(opt);
     this.color = new THREE.Color(opt.color || this.color);
+
+    this.material = this.getLineMaterial({
+      map: this.texture,
+      color: this.color,
+      usePickColor: false,
+    });
+
+    this.pickLayerMaterial = this.getLineMaterial({
+      pickOffset: 10,
+      usePickColor: false,
+    });
+
+    this.pickMaterial = this.getLineMaterial({
+      vertexColors: true,
+      usePickColor: true,
+      pickOffset: 10,
+    });
   }
 
   onAdd(map) {
@@ -39,7 +56,11 @@ export class BusLinkLayer extends Layer {
       this.handleEventListener(type);
     }
     if (type == MAP_EVENT.HANDLE_PICK_LEFT && data.layerId == this.id) {
-      this.handleEventListener(type, data);
+      const pickColor = new THREE.Color(data.pickColor);
+      const item = this.data.find((v2) => v2.pickColor.equals(pickColor));
+      if (item) {
+        this.handleEventListener(type, item.data);
+      }
     }
     if (type == MAP_EVENT.UPDATE_CAMERA_HEIGHT) {
       this.setLineWidth(this.map.cameraHeight / 130);
@@ -105,15 +126,21 @@ export class BusLinkLayer extends Layer {
     if (!this.map) return;
     if (!this.data) return;
     this.geometry = this.getLineGeometry();
-    this.material = this.getLineMaterial({
-      map: this.texture,
-      color: this.color,
-    });
+
+    const [x, y] = this.map.WebMercatorToCanvasXY(...this.center);
 
     this.mesh = new THREE.Mesh(this.geometry, this.material);
-    const [x, y] = this.map.WebMercatorToCanvasXY(...this.center);
     this.mesh.position.set(x, y, this.mesh.position.z);
     this.scene.add(this.mesh);
+
+    this.pickLayerMesh = new THREE.Mesh(this.geometry, this.pickLayerMaterial);
+    this.pickLayerMesh.position.set(x, y, this.mesh.position.z);
+    this.pickLayerScene.add(this.mesh);
+
+
+    this.pickMesh = new THREE.Mesh(this.geometry, this.pickMaterial);
+    this.pickMesh.position.set(x, y, this.mesh.position.z);
+    this.pickMeshScene.add(this.pickMesh);
   }
 
   getLineMaterial({ usePickColor, ...opt }) {

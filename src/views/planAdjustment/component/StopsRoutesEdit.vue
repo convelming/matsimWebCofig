@@ -192,6 +192,15 @@ export default {
     this.transitRoute = new Bean.TransitRoute(this.transitRouteJSON);
     if (this._linkLayer) {
       this._linkLayer.setData(this.transitRoute);
+      this._linkLayer.addEventListener(MAP_EVENT.HANDLE_PICK_LEFT, (res) => {
+        console.log(res);
+        // const stop = new Bean.Stops(res.data);
+        // let key = this.transitRoute.getStopsRouteKeyByStops(stop);
+        // if (key) {
+        //   this.stopsRouteId = key;
+        //   this.handleChangestopsRouteId(key);
+        // }
+      });
     }
     if (this._stopLayer) {
       this._stopLayer.setData(this.transitRoute);

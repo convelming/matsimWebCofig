@@ -65,7 +65,7 @@ export default {
       this._timeout = setTimeout(() => {
         this.$emit("input", val);
         this._timeout = null;
-      }, 200);
+      }, 100);
     },
   },
 };

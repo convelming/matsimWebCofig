@@ -7,13 +7,13 @@
       <div class="form_item">
         <div class="form_label">{{ $l("width") }}</div>
         <div class="form_value">
-          <el-slider :disabled="!s_showLayer" v-model="width" :min="0" :max="100" :step="1" />
+          <el-slider :disabled="!s_showLayer" v-model="width" :min="0" :max="20" :step="1" />
         </div>
       </div>
       <div class="form_item">
         <div class="form_label">{{ $l("offset") }}</div>
         <div class="form_value">
-          <el-slider :disabled="!s_showLayer" v-model="offset" :min="0" :max="100" :step="1" />
+          <el-slider :disabled="!s_showLayer" v-model="offset" :min="0" :max="20" :step="1" />
         </div>
       </div>
       <div class="form_item">
@@ -27,6 +27,7 @@
       <div class="form_item" style="align-items: center">
         <el-switch :disabled="!s_showLayer" style="width: 100%" v-model="showNode" :active-text="$l('showNode')"></el-switch>
         <!-- <el-color-picker :disabled="!s_showLayer" :title="$l('color')" size="mini" :predefine="predefineColors" v-model="color" /> -->
+        <div :disabled="!s_showLayer" :title="$l('selectLine')" :class="{ active: canSelect, disabled: !s_showLayer }" class="icon_button el-icon-circle-close" @click="s_showLayer && handleClearSelect()"></div>
         <div :disabled="!s_showLayer" :title="$l('selectLine')" :class="{ active: canSelect, disabled: !s_showLayer }" class="icon_button el-icon-aim" @click="s_showLayer && handleCanSelect(!canSelect)"></div>
       </div>
     </div>
@@ -121,7 +122,7 @@ export default {
       _NetworkNodeLayer: null,
 
       colors: 0,
-      width: 10,
+      width: 1,
       offset: 0,
       color: "#E9CDAA",
       showNode: false,
@@ -196,6 +197,9 @@ export default {
       } else {
         this._NetworkLayer.removeEventListener(MAP_EVENT.HANDLE_PICK_LEFT, this._NetworkLayerEventId);
       }
+    },
+    handleClearSelect() {
+      this.$rootVue.$emit("clearSelectNetwork");
     },
   },
 };

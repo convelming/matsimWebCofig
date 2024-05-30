@@ -183,7 +183,6 @@ export class StopsLayer extends Layer {
     }
 
     if (type == MAP_EVENT.UPDATE_CAMERA_ROTATE) {
-      console.log(data.newPitch);
       this.setPitch(data.newPitch);
     }
   }
@@ -247,6 +246,11 @@ export class StopsLayer extends Layer {
       this.selectMaterial.setValues({ size: this.scale * this.size });
       this.selectMaterial.needsUpdate = true;
     }
+
+    if (this.labelData && this.labelMesh) {
+      const scale = this.map.cameraHeight / 2000;
+      this.labelMesh.scale.set(this.labelData.mapWidth * scale, this.labelData.mapHeight * scale, 1);
+    }
   }
 
   show() {
@@ -270,9 +274,9 @@ export class StopsLayer extends Layer {
     this.selectMaterial.needsUpdate = true;
   }
 
-  showName() {}
+  showName() { }
 
-  hideName() {}
+  hideName() { }
 
   async update() {
     if (this.updateTimeout) return;
@@ -389,7 +393,8 @@ export class StopsLayer extends Layer {
     } else {
       this.labelMesh.material.setValues({ map: this.labelData.map });
       this.labelMesh.material.needsUpdate = true;
-      this.labelMesh.scale.set((this.labelData.mapWidth * this.size * this.scale) / 80, (this.labelData.mapHeight * this.size * this.scale) / 80, 1);
+      const scale = this.map.cameraHeight / 2000;
+      this.labelMesh.scale.set(this.labelData.mapWidth * scale, this.labelData.mapHeight * scale, 1);
       const [x, y] = this.map.WebMercatorToCanvasXY(this.labelData.x, this.labelData.y);
       this.labelMesh.position.set(x, y, 10);
       this.scene.add(this.labelMesh);

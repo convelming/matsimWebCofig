@@ -199,10 +199,46 @@ export default {
           toOffsetObj[d.target] += width / 2;
           return `M${x1},${height - marginBottom}A${r},${r} 0,0,${x1 < x2 ? 1 : 0} ${x2},${height - marginBottom}`;
         });
+      const lable_box = svg.append("g");
+      lable_box
+        .attr("transform", (d) => `translate(${marginLeft},${marginTop})`)
+        .append("rect")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("width", step * 1.2)
+        .attr("height", step * 0.6)
+        .attr("fill", "#ff0000")
+      lable_box
+        .append("text")
+        .attr("font-size", step * 0.4)
+        .attr("fill", "#fff")
+        .attr("text-anchor", "middle")
+        .attr("x", step * 0.6)
+        .attr("y", step * 0.45)
+        .text("上车");
+        
+      const lable_box2 = svg.append("g");
+      lable_box2
+        .attr("transform", (d) => `translate(${marginLeft +  step * 1.4},${marginTop})`)
+        .append("rect")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("width", step * 1.2)
+        .attr("height", step * 0.6)
+        .attr("fill", "#00ff00")
+      lable_box2
+        .append("text")
+        .attr("font-size", step * 0.4)
+        .attr("fill", "#fff")
+        .attr("text-anchor", "middle")
+        .attr("x", step * 0.6)
+        .attr("y", step * 0.45)
+        .text("下车");
+
       const title_box = svg.append("g");
       title_box
         .append("text")
-        .attr("font-family", "sans-serif")
+
         .attr("font-size", step * 0.6)
         .attr("text-anchor", "middle")
         .attr("x", width / 2)
@@ -236,7 +272,7 @@ export default {
       // Add a text label and a dot for each node.
       const label = svg
         .append("g")
-        .attr("font-family", "sans-serif")
+
         .attr("font-size", step * 0.25)
         .attr("text-anchor", "end")
         .selectAll("g")

@@ -134,7 +134,7 @@ export default {
 
       showStopToolbar: true,
 
-      showClock: false,
+      showClock: true,
 
       time: 0,
       speed: 0,
@@ -163,6 +163,11 @@ export default {
       this.handleChangeMapCameraControls();
     },
     showLayerMotorizedTravel(val) {
+      if (val) {
+        this.speed = 5;
+      } else {
+        this.speed = 0;
+      }
       this.handleChangeMapCameraControls();
     },
     showLayerBuild3D(val) {

@@ -12,10 +12,10 @@
         <div @click="handleClickItem('operationsAnalysis')" class="item" style="background-color: yellowgreen">
           <div class="item_title">
             <img class="item_icon" src="@/assets/image/公交.svg" />
-            <span>{{ $l("公交运行分析") }}</span>
+            <span>{{ $l("MATSim webViz") }}</span>
           </div>
           <div class="item_detail">
-            {{ $l("展示整个公交系统的运行现状，包括线路、发车时间，客流量信息及其OD分布等") }}
+            {{ $l("加载指定项目的matsim模型可视化，分析整个城市区域居民出行活动及交通系统运行情况") }}
           </div>
           <!-- <OAHelpDialog class="item_help" /> -->
         </div>
@@ -272,6 +272,14 @@
   "公交系统总体运行评估包括可达性。": {
     "zh-CN":"公交系统总体运行评估包括可达性。",
     "en-US":"公交系统总体运行评估包括可达性。",
+  },
+  "MATSim webViz": {
+    "zh-CN":"MATSim webViz",
+    "en-US":"MATSim webViz",
+  },
+  "加载指定项目的matsim模型可视化，分析整个城市区域居民出行活动及交通系统运行情况": {
+    "zh-CN":"加载指定项目的matsim模型可视化，分析整个城市区域居民出行活动及交通系统运行情况",
+    "en-US":"加载指定项目的matsim模型可视化，分析整个城市区域居民出行活动及交通系统运行情况",
   },
 }
 </language>

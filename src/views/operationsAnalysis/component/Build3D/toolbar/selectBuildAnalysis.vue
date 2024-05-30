@@ -85,10 +85,10 @@ export default {
       handler(val) {
         if (val) {
           setTimeout(() => {
-            this.rootVue.$emit("setSelectLine", this.lineDetail);
+            this.rootVue.$emit("setSelectedBuild", this.buildDetail);
           }, 200);
         } else {
-          this.rootVue.$emit("setSelectLine", {});
+          this.rootVue.$emit("setSelectedBuild", {});
         }
 
         this.$nextTick(() => {

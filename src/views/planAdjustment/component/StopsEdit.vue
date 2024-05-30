@@ -35,9 +35,7 @@
         <el-form-item :label="$l('站点名称')">
           <template v-if="selectStop">
             <el-form-item :label="$l('鼠标左键选择站点')" label-width="9em">
-              <el-button type="text" @click="handleCloseSelectStop">{{
-                $l("取消")
-              }}</el-button>
+              <el-button type="text" @click="handleCloseSelectStop">{{ $l("取消") }}</el-button>
             </el-form-item>
           </template>
           <el-input v-else v-model="form.name">
@@ -47,9 +45,7 @@
         <el-form-item :label="$l('站点路段Id')">
           <template v-if="selectLink">
             <el-form-item :label="$l('鼠标左键选择路段')" label-width="9em">
-              <el-button type="text" @click="handleCloseSelectLink">{{
-                $l("取消")
-              }}</el-button>
+              <el-button type="text" @click="handleCloseSelectLink">{{ $l("取消") }}</el-button>
             </el-form-item>
             <el-form-item :label="$l('路段线宽')">
               <el-slider class="lineWidth" :min="1" v-model="lineWidth" @change="handleChangeLineWidth" />
@@ -65,9 +61,7 @@
         <el-form-item :label="$l('站点坐标')">
           <template v-if="selectAddress">
             <el-form-item :label="$l('鼠标左键点击地图确定坐标')" label-width="13em">
-              <el-button type="text" @click="handleCloseSelectAddress">{{
-                $l("取消")
-              }}</el-button>
+              <el-button type="text" @click="handleCloseSelectAddress">{{ $l("取消") }}</el-button>
             </el-form-item>
           </template>
           <el-input v-else :value="`${form.coord.lng},${form.coord.lat}`" disabled>
@@ -75,9 +69,7 @@
           </el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleSave">{{
-            $l("确定")
-          }}</el-button>
+          <el-button type="primary" @click="handleSave">{{ $l("确定") }}</el-button>
           <el-button @click="handleCancel">{{ $l("取消") }}</el-button>
         </el-form-item>
       </el-form>
@@ -280,89 +272,82 @@ export default {
     handleCloseSelectLink() {
       if (this._networkLayer) {
         this._networkLayer.hide();
-        this._networkLayer.removeEventListener(MAP_EVENT.HANDLE_PICK_LEFT);
+        this._networkLayer.removeEventListener(MAP_EVENT.HANDLE_PICK_LEFT, this._networkLayerEventId);
       }
       if (this._networkLineLayer) {
         this._networkLineLayer.hide();
-        this._networkLineLayer.removeEventListener(MAP_EVENT.HANDLE_PICK_LEFT);
+        this._networkLineLayer.removeEventListener(MAP_EVENT.HANDLE_PICK_LEFT, this._networkLineLayerEventId);
       }
+      this._networkLayerEventId = null;
+      this._networkLineLayerEventId = null;
       this.selectLink = false;
     },
     handleSelectLink() {
+      this.handleCloseSelectAddress();
+      // this.handleCloseSelectLink();
+      this.handleCloseSelectStop();
       if (this._networkLayer && this._networkLineLayer) {
         this._networkLayer.show();
-        this._networkLayer.addEventListener(
-          MAP_EVENT.HANDLE_PICK_LEFT,
-          (res) => {
-            this._networkLineLayer.setData(res.data.id);
-          }
-        );
+        this._networkLayerEventId = this._networkLayer.addEventListener(MAP_EVENT.HANDLE_PICK_LEFT, (res) => {
+          this._networkLineLayer.setData(res.data.id);
+        });
         this._networkLineLayer.show();
         this._networkLineLayer.setData(null);
-        this._networkLineLayer.addEventListener(
-          MAP_EVENT.HANDLE_PICK_LEFT,
-          (res) => {
-            this.form.linkId = res.data.id;
-            this.transitRoute.addLinkMap(new Bean.RouteLinkItem(res.data));
-            this.updateLayer();
-            this.handleCloseSelectLink();
-          }
-        );
+        this._networkLineLayerEventId = this._networkLineLayer.addEventListener(MAP_EVENT.HANDLE_PICK_LEFT, (res) => {
+          this.form.linkId = res.data.id;
+          this.transitRoute.addLinkMap(new Bean.RouteLinkItem(res.data));
+          this.updateLayer();
+          this.handleCloseSelectLink();
+        });
         this.selectLink = true;
       }
     },
     handleCloseSelectAddress() {
       if (this._map) {
-        this._map.removeEventListener(
-          MAP_EVENT.HANDLE_CLICK_LEFT,
-          this._mapEventId
-        );
-        this._mapEventId = null;
-        this.selectAddress = false;
+        this._map.removeEventListener(MAP_EVENT.HANDLE_CLICK_LEFT, this._mapEventId);
       }
+      this._mapEventId = null;
+      this.selectAddress = false;
     },
     handleSelectAddress() {
+      // this.handleCloseSelectAddress();
+      this.handleCloseSelectLink();
+      this.handleCloseSelectStop();
       if (this._map) {
         this.selectAddress = true;
-        this._mapEventId = this._map.addEventListener(
-          MAP_EVENT.HANDLE_CLICK_LEFT,
-          (res) => {
-            this.form.coord = new Bean.Coord({
-              x: res.data.webMercatorXY[0],
-              y: res.data.webMercatorXY[1],
-            });
-            this.updateLayer();
-            this.handleCloseSelectAddress();
-          }
-        );
+        this._mapEventId = this._map.addEventListener(MAP_EVENT.HANDLE_CLICK_LEFT, (res) => {
+          this.form.coord = new Bean.Coord({
+            x: res.data.webMercatorXY[0],
+            y: res.data.webMercatorXY[1],
+          });
+          this.updateLayer();
+          this.handleCloseSelectAddress();
+        });
       }
     },
     handleCloseSelectStop() {
       if (this._allStopLayer) {
         this._allStopLayer.hide();
-        this._allStopLayer.removeEventListener(
-          MAP_EVENT.HANDLE_PICK_LEFT,
-          this._allStopLayerEventId
-        );
-        this._allStopLayerEventId = null;
-        this.selectStop = false;
+        this._allStopLayer.removeEventListener(MAP_EVENT.HANDLE_PICK_LEFT, this._allStopLayerEventId);
       }
+      this._allStopLayerEventId = null;
+      this.selectStop = false;
     },
     handleSelectStop() {
+      this.handleCloseSelectAddress();
+      this.handleCloseSelectLink();
+      // this.handleCloseSelectStop();
       if (this._allStopLayer) {
         this.selectStop = true;
-        this._allStopLayerEventId = this._allStopLayer.addEventListener(
-          MAP_EVENT.HANDLE_PICK_LEFT,
-          (res) => {
-            let stop = new Bean.Stops(res.data);
-            stop.index = this.form.index;
-            stop.id = null;
-            this.form = stop;
-            this.transitRoute.changeStop(stop, this.editIndex);
-            this.updateLayer();
-            this.handleCloseSelectStop();
-          }
-        );
+        this._allStopLayerEventId = this._allStopLayer.addEventListener(MAP_EVENT.HANDLE_PICK_LEFT, (res) => {
+          let stop = new Bean.Stops(res.data);
+          stop.index = this.form.index;
+          stop.id = null;
+          this.form = stop;
+          this.transitRoute.changeStop(stop, this.editIndex);
+          this.updateLayer();
+          this.handleCloseSelectStop();
+        });
         this._allStopLayer.show();
       }
     },
@@ -411,36 +396,20 @@ export default {
         const valid = await this.$refs["form"].validate();
         if (valid) {
           const line = this.transitRoute.getLinkMap(this.form.linkId);
-          const lineStartPoint = new THREE.Vector3(
-            line.fromCoord.x,
-            line.fromCoord.y,
-            0
-          );
-          const lineEndPoint = new THREE.Vector3(
-            line.toCoord.x,
-            line.toCoord.y,
-            0
-          );
+          const lineStartPoint = new THREE.Vector3(line.fromCoord.x, line.fromCoord.y, 0);
+          const lineEndPoint = new THREE.Vector3(line.toCoord.x, line.toCoord.y, 0);
           const line3 = new THREE.Line3(lineStartPoint, lineEndPoint);
-          const stopPoint = new THREE.Vector3(
-            this.form.coord.x,
-            this.form.coord.y,
-            0
-          );
+          const stopPoint = new THREE.Vector3(this.form.coord.x, this.form.coord.y, 0);
 
           const closestPoint = new THREE.Vector3();
           line3.closestPointToPoint(stopPoint, true, closestPoint);
           const distance = stopPoint.distanceTo(closestPoint);
           if (distance > 200) {
-            await this.$confirm(
-              this.$l("站点位置距离线路超过200米，是否需要进行调整？"),
-              this.$l("提示"),
-              {
-                confirmButtonText: this.$l("继续保存"),
-                cancelButtonText: this.$l("需要调整"),
-                type: "warning",
-              }
-            );
+            await this.$confirm(this.$l("站点位置距离线路超过200米，是否需要进行调整？"), this.$l("提示"), {
+              confirmButtonText: this.$l("继续保存"),
+              cancelButtonText: this.$l("需要调整"),
+              type: "warning",
+            });
           }
           let formIndex = this.form.index;
           let stop = new Bean.Stops(this.form.toJSON());
@@ -477,10 +446,7 @@ export default {
         this._linkLayer.setData(this.transitRoute);
       }
       if (this._stopLayer) {
-        this._stopLayer.setData(
-          this.transitRoute,
-          this.form ? this.form.uuid : null
-        );
+        this._stopLayer.setData(this.transitRoute, this.form ? this.form.uuid : null);
       }
     },
   },

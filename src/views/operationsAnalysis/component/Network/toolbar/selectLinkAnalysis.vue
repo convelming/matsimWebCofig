@@ -9,6 +9,12 @@
         </div>
       </div>
       <div class="form_item" style="align-items: center">
+        <div class="form_label">{{ $l("height") }}</div>
+        <div class="form_value">
+          <el-slider style="padding: 0 calc(2em - 10px) 20px calc(2em - 10px)" v-model="height" :min="0" :max="100" :marks="marks" :format-tooltip="(v) => `${v}%`" />
+        </div>
+      </div>
+      <div class="form_item" style="align-items: center">
         <div class="form_label">{{ $l("color") }}</div>
         <el-color-picker size="mini" :predefine="predefineColors" v-model="color" />
       </div>
@@ -25,6 +31,10 @@
   "time":{
     "zh-CN": "时间：",
     "en-US": "Time: "
+  },
+  "height":{
+    "zh-CN": "高度：",
+    "en-US": "Height: "
   },
   "color":{
     "zh-CN": "Color: ",
@@ -88,6 +98,11 @@ export default {
         this._LinkFlowLayer.setColor(val);
       },
     },
+    height: {
+      handler(val) {
+        this._LinkFlowLayer.setHeight(val);
+      },
+    },
   },
   data() {
     return {
@@ -99,10 +114,18 @@ export default {
       color: "#ff4500",
       startTime: 0,
       endTime: 24 * 3600,
+
+      height: 30,
+
+      marks: {
+        0: "0%",
+        50: "50%",
+        100: "100%",
+      },
     };
   },
   created() {
-    this._LinkFlowLayer = new LinkFlowLayer({ zIndex: 100, color: this.color });
+    this._LinkFlowLayer = new LinkFlowLayer({ zIndex: 100, color: this.color, height: this.height });
     this.getDetail();
   },
   beforeDestroy() {

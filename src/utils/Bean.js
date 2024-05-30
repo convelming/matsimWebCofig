@@ -218,6 +218,7 @@ export class TransitRoute {
         _routeMap[key] = new StopsRouteItem({
           startStop: prevStop.toJSON(),
           endStop: stop.toJSON(),
+          routeIds: route,
           route: route.map((v) => this.getLinkMap(v)),
           label: label,
           key: key,
@@ -240,6 +241,14 @@ export class TransitRoute {
     if (index != -1 && index < this.stops.length + 1) {
       const stops2 = this.stops[index + 1];
       return `${stops.uuid}-${stops2.uuid}`;
+    }
+    return null;
+  }
+  getStopsRouteKeyByRoute(route) {
+    const list = Object.values(this._routeMap)
+    const item = list.find((v) => v.routeIds.indexOf(route) > -1);
+    if (item) {
+      return `${item.startStop.uuid}-${item.endStop.uuid}`;
     }
     return null;
   }
@@ -546,6 +555,7 @@ export class StopsRouteItem {
     opt = ObjectAssign(opt, new StopsRouteItemParams());
     this.startStop = new Stops(opt.startStop);
     this.endStop = new Stops(opt.endStop);
+    this.routeIds = opt.routeIds;
     this.route = opt.route.map((v) => new RouteLinkItem(v));
     this.label = opt.label;
     this.key = opt.key;
