@@ -23,6 +23,7 @@ export class BusLinkLayer extends Layer {
 
     this.pickLayerMaterial = this.getLineMaterial({
       pickOffset: 10,
+      color: this.pickLayerColor,
       usePickColor: false,
     });
 
@@ -31,6 +32,18 @@ export class BusLinkLayer extends Layer {
       usePickColor: true,
       pickOffset: 10,
     });
+  }
+
+  setColor(color) {
+    this.color = new THREE.Color(color);
+    this.material.setValues({ color: this.color });
+    this.material.needsUpdate = true;
+  }
+
+  setPickLayerColor(pickLayerColor){
+    this.pickLayerColor = pickLayerColor;
+    this.pickLayerMaterial.setValues({ color: this.pickLayerColor });
+    this.pickLayerMaterial.needsUpdate = true;
   }
 
   onAdd(map) {
@@ -69,7 +82,6 @@ export class BusLinkLayer extends Layer {
 
   render() {
     super.render();
-    // this.texture.offset.y -= 0.01;
   }
 
   setLineWidth(lineWidth) {
@@ -125,6 +137,7 @@ export class BusLinkLayer extends Layer {
     this.clearScene();
     if (!this.map) return;
     if (!this.data) return;
+
     this.geometry = this.getLineGeometry();
 
     const [x, y] = this.map.WebMercatorToCanvasXY(...this.center);
@@ -135,7 +148,7 @@ export class BusLinkLayer extends Layer {
 
     this.pickLayerMesh = new THREE.Mesh(this.geometry, this.pickLayerMaterial);
     this.pickLayerMesh.position.set(x, y, this.mesh.position.z);
-    this.pickLayerScene.add(this.mesh);
+    this.pickLayerScene.add(this.pickLayerMesh);
 
 
     this.pickMesh = new THREE.Mesh(this.geometry, this.pickMaterial);

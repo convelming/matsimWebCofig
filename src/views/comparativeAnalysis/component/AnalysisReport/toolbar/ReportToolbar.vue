@@ -11,7 +11,7 @@
         </el-tree>
       </div>
       <div class="btn_list">
-        <el-button type="primary" size="small" @click="handleGenerateAnalysisReport">分析报告生成</el-button>
+        <el-button type="primary" size="small" @click="handleGenerateAnalysisReport" :loading="reportLoading">分析报告生成</el-button>
       </div>
     </div>
   </el-collapse-item>
@@ -32,7 +32,7 @@
 
 <script>
 import { guid } from "@/utils/utils.js";
-import { changeLines, affectedLines } from "@/api/contrast";
+import { changeLines, affectedLines, genReports } from "@/api/contrast";
 
 import Vue from "vue";
 // 活动属性弹窗
@@ -254,12 +254,12 @@ export default {
           label_en: "修改的线路",
           children: [],
         },
-        {
-          id: "7",
-          label_zh: "受影响的线路",
-          label_en: "受影响的线路",
-          children: [],
-        },
+        // {
+        //   id: "7",
+        //   label_zh: "受影响的线路",
+        //   label_en: "受影响的线路",
+        //   children: [],
+        // },
       ],
       defaultCheckedKeys: ["1", "2", "3", "4", "5"],
       s_form: {
@@ -271,6 +271,7 @@ export default {
       list1: [],
       loading2: false,
       list2: [],
+      reportLoading: false,
     };
   },
   created() {
@@ -283,10 +284,12 @@ export default {
   mounted() {
     // 接收两个 boolean 类型的参数，1. 是否只是叶子节点，默认值为 false 2. 是否包含半选节点，默认值为 false
     // console.log(this.$refs.tree.getCheckedNodes());
+    this.rootVue.$on("generateAnalysisReport", this.handleGenerateAnalysisReport);
   },
   beforeDestroy() {
     this.handleDisable();
     this._dialogMap.clear();
+    this.rootVue.$off("generateAnalysisReport", this.handleGenerateAnalysisReport);
   },
   methods: {
     getList1() {
@@ -536,9 +539,36 @@ export default {
         return _dialog;
       }
     },
-    handleGenerateAnalysisReport() {
-      const data = {};
-      this.rootVue.$emit("generateAnalysisReport", data);
+    handleGenerateAnalysisReport(cb) {
+      if (this.reportLoading) return;
+      this.reportLoading = true;
+      const changeRouteList = this.$refs.tree
+        .getNode("6")
+        .childNodes.filter((v) => v.checked)
+        .map((v) => v.data.id);
+      const { database1, datasource1, database2, datasource2 } = this.$route.params;
+      return genReports({
+        name1: database1 + "/" + datasource1,
+        name2: database2 + "/" + datasource2,
+        routeIds: changeRouteList,
+      })
+        .then((res) => {
+          const a = document.createElement("a");
+          a.href = `/pt/crt/downloadReports/${res.data}`;
+          a.download = res.data;
+          a.style = "position: fixed;top: -100vh;left: -100vw;";
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          cb(true);
+          this.reportLoading = false;
+        })
+        .catch((err) => {
+          console.log(err);
+          this.$message.error(err.msg);
+          cb(false);
+          this.reportLoading = false;
+        });
     },
   },
 };

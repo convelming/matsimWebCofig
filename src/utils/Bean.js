@@ -244,7 +244,7 @@ export class TransitRoute {
     }
     return null;
   }
-  getStopsRouteKeyByRoute(route) {
+  getStopsRouteKeyByLink(route) {
     const list = Object.values(this._routeMap)
     const item = list.find((v) => v.routeIds.indexOf(route) > -1);
     if (item) {

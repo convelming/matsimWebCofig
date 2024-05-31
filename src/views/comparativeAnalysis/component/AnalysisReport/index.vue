@@ -10,7 +10,7 @@
       </div>
 
       <div class="btn_list">
-        <el-button type="primary" size="small" @click="">分析报告生成</el-button>
+        <el-button type="primary" size="small" @click="handleGenerateAnalysisReport">分析报告生成</el-button>
       </div>
     </div>
   </el-collapse-item>
@@ -82,6 +82,9 @@ export default {
     },
     // 组件卸载事件
     handleDisable() {},
+    handleGenerateAnalysisReport() {
+      this.rootVue.$emit("generateAnalysisReport");
+    },
   },
 };
 </script>

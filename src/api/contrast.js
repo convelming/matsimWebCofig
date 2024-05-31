@@ -155,3 +155,15 @@ export function routeAttributes(params) {
     params: params,
   });
 }
+
+// 报告生成
+// POST /pt/crt/genReports
+// 接口ID：178633127
+// 接口地址：https://www.apifox.cn/link/project/3709845/apis/api-178633127
+export function genReports(data) {
+  return request({
+    url: `/pt/crt/genReports`,
+    method: "post",
+    data: data,
+  });
+}
