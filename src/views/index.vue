@@ -3,7 +3,7 @@
     <div class="root">
       <div class="module">
         <el-dropdown class="language" @command="changeLanguage" placement="top-start" trigger="click">
-          <div class="module_menu">{{ {'zh-CN':'中文（简体）','en-US':'English'}[page_language] }}<i class="el-icon-arrow-down el-icon--right"></i></div>
+          <div class="module_menu">{{ { "zh-CN": "中文（简体）", "en-US": "English" }[page_language] }}<i class="el-icon-arrow-down el-icon--right"></i></div>
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item command="zh-CN" :disabled="page_language == 'zh-CN'">中文（简体）</el-dropdown-item>
             <!-- <el-dropdown-item command="zh_MO" :disabled="page_language == 'zh-MO'">中文（繁體）</el-dropdown-item> -->
@@ -92,7 +92,7 @@
           <template slot-scope="{ row }">
             <el-button :disabled="row.runStatus != '已运行' || row.loadStatus != '已加载'" type="primary" size="mini" @click="handleOperationsAnalysisToDetail(row)">{{ $l("查看") }}</el-button>
             <!-- <el-button type="primary" size="mini" :disabled="row.noRun" :loading="row.runStatus == '运行中'" @click="handleOperationsAnalysisRun(row)">{{ $l("运行") }}</el-button> -->
-            <el-button type="primary" size="mini" :disabled="row.noLoad" :loading="row.loadStatus == '加载中'" @click="handleOperationsAnalysisLoad(row)">{{ $l("加载") }}</el-button>
+            <el-button type="primary" size="mini" :disabled="row.noLoad || row.loadStatus == '已加载'" :loading="row.loadStatus == '加载中'" @click="handleOperationsAnalysisLoad(row)">{{ $l("加载") }}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -115,7 +115,7 @@
           <template slot-scope="{ row }">
             <el-button v-if="!row.noRun" :disabled="row.loadStatus != '已加载'" type="primary" size="mini" @click="handlePlanAdjustmentToDetail(row)">{{ $l("修改") }}</el-button>
             <el-button v-if="!row.noRun" type="primary" size="mini" :loading="row.runStatus == '运行中'" @click="handleOperationsAnalysisRun(row)">{{ $l("运行") }}</el-button>
-            <el-button type="primary" size="mini" :disabled="row.noLoad" :loading="row.loadStatus == '加载中'" @click="handlePlanAdjustmentLoad(row)">{{ $l("加载") }}</el-button>
+            <el-button type="primary" size="mini" :disabled="row.noLoad || row.loadStatus == '已加载'" :loading="row.loadStatus == '加载中'" @click="handlePlanAdjustmentLoad(row)">{{ $l("加载") }}</el-button>
             <el-button v-if="!row.noRun" type="primary" size="mini" @click="handleDelect(row)">{{ $l("删除") }}</el-button>
           </template>
         </el-table-column>
@@ -148,7 +148,7 @@
         <el-table-column :label="$l('操作')" width="180">
           <template slot-scope="{ row }">
             <!-- <el-button v-if="!row.noRun" type="primary" size="mini" :loading="row.runStatus == '运行中'" @click="handleOperationsAnalysisRun(row)">{{ $l("运行") }}</el-button> -->
-            <el-button type="primary" size="mini" :disabled="row.noLoad" :loading="row.loadStatus == '加载中'" @click="handleOperationsAnalysisLoad(row)">{{ $l("加载") }}</el-button>
+            <el-button type="primary" size="mini" :disabled="row.noLoad || row.loadStatus == '已加载'" :loading="row.loadStatus == '加载中'" @click="handleOperationsAnalysisLoad(row)">{{ $l("加载") }}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -172,7 +172,7 @@
         <el-table-column :label="$l('操作')" width="180">
           <template slot-scope="{ row }">
             <!-- <el-button :disabled="row.loadStatus != '已加载'" type="primary" size="mini" @click="handleSystemEvaluationToDetail(row)">{{ $l("查看") }}</el-button> -->
-            <el-button type="primary" size="mini" :disabled="row.noLoad" :loading="row.loadStatus == '加载中'" @click="handleSystemEvaluationLoad(row)">{{ $l("加载") }}</el-button>
+            <el-button type="primary" size="mini" :disabled="row.noLoad || row.loadStatus == '已加载'" :loading="row.loadStatus == '加载中'" @click="handleSystemEvaluationLoad(row)">{{ $l("加载") }}</el-button>
           </template>
         </el-table-column>
       </el-table>

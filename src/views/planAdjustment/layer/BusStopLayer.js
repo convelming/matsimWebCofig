@@ -250,11 +250,11 @@ export class BusStopLayer extends Layer {
         `
           #if defined( USE_MAP )
             vec4 textColor = texture2D( map, uv );
-            float length = (textColor.r + textColor.g + textColor.b) / 3.0;
+            float length = (textColor.r + textColor.g + textColor.b) / 3.0  ;
             if(length < 0.5){
               outgoingLight = vec3(1.0);
             }else{
-              outgoingLight = diffuse.rgb;
+              outgoingLight = vColor.rgb;
             }
           #endif
           #include <output_fragment>
