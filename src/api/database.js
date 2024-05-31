@@ -109,3 +109,15 @@ export function getConfig(params) {
     params: params,
   });
 }
+
+// 删除方案
+// DELETE /pt/main/delScheme
+// 接口ID：179335509
+// 接口地址：https://www.apifox.cn/link/project/3709845/apis/api-179335509
+export function delScheme(params) {
+  return request({
+    url: `/pt/main/delScheme`,
+    method: "delete",
+    params: params,
+  });
+}

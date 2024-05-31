@@ -34,6 +34,7 @@ export class StopsLayer extends Layer {
   frameStartPoint = [0, 0];
   frameEndPoint = [0, 0];
   texture = new THREE.TextureLoader().load(require("@/assets/image/point.png"));
+  texture2 = new THREE.TextureLoader().load(require("@/assets/image/bus_icon.png"));
   texture3D = new THREE.TextureLoader().load(require("@/assets/image/公交站牌.png"));
 
   constructor(opt) {
@@ -46,8 +47,6 @@ export class StopsLayer extends Layer {
     this.selectColor = new THREE.Color(opt.selectColor || this.selectColor);
     this.frameColor = new THREE.Color(opt.frameColor || this.frameColor);
     this.frameOpacity = opt.frameOpacity || this.frameOpacity;
-
-    this.texture = opt.texture || this.texture;
 
     this.geometry = new THREE.BufferGeometry();
     this.material = this.getStopMaterial({
@@ -117,6 +116,7 @@ export class StopsLayer extends Layer {
     }
     if (type == MAP_EVENT.UPDATE_CAMERA_HEIGHT) {
       this.setSize(this.map.cameraHeight / 80);
+      this.setPitch(this.pitch);
       this.update();
     }
     if (type == MAP_EVENT.HANDLE_PICK_LEFT && data.layerId == this.id) {
@@ -185,6 +185,7 @@ export class StopsLayer extends Layer {
     if (type == MAP_EVENT.UPDATE_CAMERA_ROTATE) {
       this.setPitch(data.newPitch);
     }
+
   }
 
   onAdd(map) {
@@ -209,7 +210,7 @@ export class StopsLayer extends Layer {
         this.pickMesh.position.setZ(this.size * this.scale * 0.5);
       }
     } else {
-      this.material.setValues({ map: this.texture });
+      this.material.setValues({ map: this.map.zoom > 15 ? this.texture2 : this.texture });
       this.material.needsUpdate = true;
       if (this.mesh) {
         this.mesh.position.setZ(0);
@@ -286,6 +287,7 @@ export class StopsLayer extends Layer {
       if (!this.visible) return;
       if (this.updateing) return;
       this.updateing = true;
+
       const { maxX, minX, maxY, minY } = this.map.getWindowRangeAndWebMercator();
       const wd = Math.abs(maxX - minX);
       const hd = Math.abs(maxY - minY);
@@ -437,7 +439,9 @@ export class StopsLayer extends Layer {
         "#include <output_fragment>",
         `
           #if defined( USE_MAP )
-            if(length(texture2D( map, uv ).rgb) < .01){
+            vec4 textColor = texture2D( map, uv );
+            float length = (textColor.r + textColor.g + textColor.b) / 3.0;
+            if(length < 0.5){
               outgoingLight = vec3(1.0);
             }else{
               outgoingLight = diffuse.rgb;

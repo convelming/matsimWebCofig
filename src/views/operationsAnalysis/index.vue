@@ -214,7 +214,7 @@ export default {
         rootId: "mapRoot",
         zoom: 11,
         enableRotate: true,
-        // zoom: 15,
+        zoom: 16,
         // minPitch: -90,
       });
       this._Map.addLayer(this._MapLayer);

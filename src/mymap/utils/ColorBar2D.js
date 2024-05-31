@@ -2,37 +2,7 @@ import * as THREE from "three";
 
 let ColorBar2DInstance = null;
 
-const defaultColors = {
-  0: "#313695",
-  // 10: "#313695",
-
-  10: "#4575b4",
-  // 20: "#4575b4",
-
-  20: "#74add1",
-  // 50: "#74add1",
-
-  50: "#abd9e9",
-  // 66: "#abd9e9",
-
-  66: "#e0f3f8",
-  // 120: "#ffffbf",
-
-  120: "#ffffbf",
-  // 360: "#fee090",
-
-  360: "#fee090",
-  // 560: "#fdae61",
-
-  560: "#fdae61",
-  // 666: "#f46d43",
-
-  666: "#f46d43",
-  // 999: "#d73027",
-
-  999: "#d73027",
-  // 200: "#a50026",
-};
+const defaultColors = { 0: "#313695", 0.4: "#74add1", 0.6: "#e0f3f8", 0.75: "#ffffbf", 0.85: "#fdae61", 0.95: "#f46d43", 1: "#a50026" };
 
 export class ColorBar2D {
   static width = 1024;
@@ -75,7 +45,7 @@ export class ColorBar2D {
   // 渐变颜色条图
   drowColorBar(colors = defaultColors) {
     //颜色条的颜色分布
-    const values = Object.keys(colors).map((v) => Number(v));
+    const values = Object.keys(colors).map((v) => Number(v)).sort();
     const maxValue = values[values.length - 1];
     const minValue = values[0];
 

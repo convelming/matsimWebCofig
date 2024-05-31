@@ -4,6 +4,7 @@
     <div class="BusStopToolbar_bodyer" v-loading="loading">
       <el-descriptions class="margin-top" :column="1" border size="small" labelClassName="labelClassName">
         <template slot="extra">
+          <el-button type="primary" size="mini" icon="el-icon-aim" circle @click="handleChangeMapCenter"></el-button>
           <el-button type="primary" size="mini" @click="handleMenu({ data: resData, command: 'intersectionFlows' })">{{ $l("intersectionFlows") }}</el-button>
         </template>
         <el-descriptions-item label="Node Id">{{ resData.id }}</el-descriptions-item>
@@ -151,6 +152,11 @@ export default {
         this._intersectionFlows = null;
       });
       document.body.append(this._intersectionFlows.$el);
+    },
+    handleChangeMapCenter() {
+      const coord = this.resData;
+      console.log([coord.x, coord.y]);
+      this.rootVue._Map.setCenter([coord.x, coord.y]);
     },
   },
 };

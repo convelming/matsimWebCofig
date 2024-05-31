@@ -2,13 +2,19 @@
   <el-collapse-item class="BusStopToolbar" :name="name">
     <div class="collapse_item_title" slot="title">{{ $l("selectLinkAnalysis") }} {{ lineDetail.id }}</div>
     <div class="BusStopToolbar_bodyer">
-      <div class="form_item" style="align-items: center">
+      <!-- <div class="form_item" style="align-items: center">
+        <div class="form_label"></div>
+        <div class="form_value">
+          <el-button type="primary" size="mini" icon="el-icon-aim" circle @click="handleChangeMapCenter"></el-button>
+        </div>
+      </div> -->
+      <div class="form_item">
         <div class="form_label">{{ $l("time") }}</div>
         <div class="form_value">
           <TimeRangeSlider :value="[startTime, endTime]" :start.sync="startTime" :end.sync="endTime" @change="getDetail" />
         </div>
       </div>
-      <div class="form_item" style="align-items: center">
+      <div class="form_item">
         <div class="form_label">{{ $l("height") }}</div>
         <div class="form_value">
           <el-slider style="padding: 0 calc(2em - 10px) 20px calc(2em - 10px)" v-model="height" :min="0" :max="100" :marks="marks" :format-tooltip="(v) => `${v}%`" />

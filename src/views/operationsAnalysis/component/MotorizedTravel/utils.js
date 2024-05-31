@@ -38,6 +38,10 @@ export class ModelPool {
     // Roadster: "/models/Roadster.gltf",
     // Sports: "/models/Sports.gltf",
     // Taxi: "/models/Taxi.gltf",
+    
+    bus: "/models/Bus.gltf",
+    subway: "/models/Bus.gltf",
+    ferry: "/models/Bus.gltf",
   };
 
   // 默认模型

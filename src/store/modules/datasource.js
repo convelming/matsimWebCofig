@@ -5,6 +5,7 @@ import {
   runMatsim,
   addScheme,
   saveScheme,
+  delScheme
 } from "@/api/database";
 
 const datasource = {
@@ -44,6 +45,9 @@ const datasource = {
     },
     SET_DATA_SOURCE_LOAD_STATUS(state, { index, loadStatus }) {
       state.dataSourceList[index].loadStatus = loadStatus;
+    },
+    DELETE_DATA_SOURCE(state, { index }) {
+      state.dataSourceList.splice(index, 1);
     },
   },
 
@@ -119,6 +123,19 @@ const datasource = {
           });
         }
         await loadScheme({
+          key: name,
+        });
+      } finally {
+        dispatch("getDataSourceList", state.dataBase);
+      }
+    },
+    async deleteDataSource({ commit, state, dispatch }, { name }) {
+      try {
+        let index = state.dataSourceList.findIndex((v) => v.name === name);
+        if (index > -1) {
+          commit("DELETE_DATA_SOURCE", { index });
+        }
+        await delScheme({
           key: name,
         });
       } finally {

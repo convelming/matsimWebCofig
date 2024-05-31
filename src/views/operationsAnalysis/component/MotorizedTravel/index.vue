@@ -188,7 +188,6 @@ export default {
         },
       },
     });
-    console.log(this._BusMotionLayer);
     this._CarMotionLayer = new CarMotionLayer({
       zIndex: 10,
       lockSelectCar: this.lockSelectVehicle,

@@ -31,6 +31,7 @@ export default {
     SelectLinkAnalysis,
     SelectBuildAnalysis,
   },
+  inject: ["rootVue"],
   data() {
     return {
       activeName: "2bdcc25c-6f77-44cd-9bcc-e7d412d5bf30",
@@ -53,9 +54,13 @@ export default {
       ],
     };
   },
-  created() {},
+  created() {
+    this.rootVue.$on("clearSelectNetwork", this.handleClearSelectNetwork);
+  },
   mounted() {},
-  beforeDestroy() {},
+  beforeDestroy() {
+    this.rootVue.$off("clearSelectNetwork", this.handleClearSelectNetwork);
+  },
   methods: {
     add(type, data) {
       console.log(type, data);
@@ -87,6 +92,13 @@ export default {
       }
       if (this.list.length > 15) {
         this.list.splice(15);
+      }
+    },
+    handleClearSelectNetwork() {
+      console.log("clearSelectNetwork");
+      let item = this.list.find((v) => v.name == this.activeName);
+      if (item && item.type == "SelectLinkAnalysis") {
+        this.activeName = "";
       }
     },
   },

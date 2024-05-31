@@ -83,7 +83,7 @@ export class NetworkLayer extends Layer {
     // });
   }
 
-  handleGetNetworkTileCallback(data) {}
+  handleGetNetworkTileCallback(data) { }
 
   setSelectLine(lineId) {
     console.log("setSelectLine", lineId);
@@ -205,7 +205,7 @@ export class NetworkLayer extends Layer {
 
     const [row, col] = [Math.floor(((EARTH_RADIUS + mapCenterX) * Math.pow(2, zoom)) / (EARTH_RADIUS * 2)), Math.floor(((EARTH_RADIUS - mapCenterY) * Math.pow(2, zoom)) / (EARTH_RADIUS * 2))];
     const tileSize = (EARTH_RADIUS * 2) / Math.pow(2, zoom);
-    const radius = Math.ceil(width / tileSize);
+    const radius = 0// Math.ceil(width / tileSize);
 
     const max_row_col = Math.pow(2, zoom);
     let rowStart = row - radius;
@@ -256,7 +256,6 @@ export class NetworkLayer extends Layer {
     //   const list = noLoadTileList.splice(0, 30);
     //   await Promise.all(list.map((v) => v.load(() => ++this.pickColorNum)));
     // }
-    console.log("this.selectLine.show", this.selectLine);
     if (this.selectLine.show) {
       const { line, tile, mesh } = this.selectLine;
       const [x, y] = this.map.WebMercatorToCanvasXY(tile.x, tile.y);
@@ -264,7 +263,6 @@ export class NetworkLayer extends Layer {
       this.scene.add(mesh);
     }
 
-    console.log("this.selectNode.show", this.selectNode);
     if (this.selectNode.show) {
       const { node, tile, mesh } = this.selectNode;
       const [x, y] = this.map.WebMercatorToCanvasXY(node.coord.x + tile.x, node.coord.y + tile.y);
@@ -403,15 +401,15 @@ export class NetworkTile {
         }
         this._geometry = new NetworkGeometry(data, this._flowNum);
 
-        this._baseMaterial.uniforms.flowMax.value = this._geometry.flowMax;
-        this._baseMaterial.uniforms.flowMin.value = this._geometry.flowMin;
-        this._baseMaterial.needsUpdate = true;
-        this._pickLayerMaterial.uniforms.flowMax.value = this._geometry.flowMax;
-        this._pickLayerMaterial.uniforms.flowMin.value = this._geometry.flowMin;
-        this._pickLayerMaterial.needsUpdate = true;
-        this._pickMeshMaterial.uniforms.flowMax.value = this._geometry.flowMax;
-        this._pickMeshMaterial.uniforms.flowMin.value = this._geometry.flowMin;
-        this._pickMeshMaterial.needsUpdate = true;
+        // this._baseMaterial.uniforms.flowMax.value = this._geometry.flowMax;
+        // this._baseMaterial.uniforms.flowMin.value = this._geometry.flowMin;
+        // this._baseMaterial.needsUpdate = true;
+        // this._pickLayerMaterial.uniforms.flowMax.value = this._geometry.flowMax;
+        // this._pickLayerMaterial.uniforms.flowMin.value = this._geometry.flowMin;
+        // this._pickLayerMaterial.needsUpdate = true;
+        // this._pickMeshMaterial.uniforms.flowMax.value = this._geometry.flowMax;
+        // this._pickMeshMaterial.uniforms.flowMin.value = this._geometry.flowMin;
+        // this._pickMeshMaterial.needsUpdate = true;
 
         this._baseMesh = new THREE.Mesh(this._geometry, this._baseMaterial);
         this._pickLayerMesh = new THREE.Mesh(this._geometry, this._pickLayerMaterial);
@@ -484,6 +482,7 @@ export class NetworkTile {
   setColors(colors) {
     this._colors = colors || ColorBar2D.defaultColors;
     this._baseMaterial.uniforms.colorBar.value = ColorBar2D.instance.drowColorBar(this._colors);
+    console.log(this._baseMaterial.uniforms.colorBar.value);
     this._baseMaterial.needsUpdate = true;
   }
 
@@ -682,8 +681,10 @@ export class NetworkGeometry extends THREE.BufferGeometry {
   }
 
   setFlowNum(flowNum) {
-    this.flowNum = String(flowNum);
-    this.setAttribute("flow", this.flowsMap.get(String(this.flowNum)) || NetworkGeometry.nullFlows);
+    if (this.flowNum != String(flowNum)) {
+      this.flowNum = String(flowNum);
+      this.setAttribute("flow", this.flowsMap.get(String(this.flowNum)) || NetworkGeometry.nullFlows);
+    }
   }
 
   toJSON() {
@@ -762,7 +763,7 @@ export class NetworkMaterial extends THREE.Material {
         },
       },
       flowMax: {
-        value: Number.MAX_SAFE_INTEGER,
+        value: 1,
       },
       flowMin: {
         value: 0,
@@ -841,7 +842,7 @@ export class NetworkMaterial extends THREE.Material {
         #include <logdepthbuf_fragment>
         
         #ifdef USE_COLOR_BAR
-          vec4 barDiffuseColor = texture2D(colorBar.map, vec2(vFlow / colorBar.range, 0.5));
+          vec4 barDiffuseColor = texture2D(colorBar.map, vec2(vFlow / colorBar.range , 0.5));
           diffuseColor = barDiffuseColor;
         #endif
 
@@ -862,15 +863,5 @@ export class NetworkMaterial extends THREE.Material {
       }
     `;
     this.setValues(params);
-  }
-
-  textureOffset(func) {
-    try {
-      const [x1, y1] = this.uniforms.map.value.offset.toArray();
-      const [x2, y2] = func(x1, y1);
-      this.uniforms.map.value.offset.set(x2, y2);
-      this.uniforms.map.value.updateMatrix();
-      this.uniforms.uvTransform.value.copy(this.uniforms.map.value.matrix);
-    } catch (error) {}
   }
 }

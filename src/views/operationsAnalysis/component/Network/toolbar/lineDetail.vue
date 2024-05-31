@@ -4,6 +4,8 @@
     <div class="BusStopToolbar_bodyer" v-loading="loading">
       <el-descriptions class="margin-top" :column="1" border size="small" labelClassName="labelClassName">
         <template slot="extra">
+          <el-button type="primary" size="mini" icon="el-icon-aim" circle @click="handleChangeMapCenter"></el-button>
+
           <el-button type="primary" size="mini" @click="handleMenu({ data: resData, command: 'selectLinkAnalysis' })">{{ $l("selectLinkAnalysis") }}</el-button>
           <!-- <el-button type="primary" size="mini" @click="handleMenu({ data: resData, command: 'transitLinesOnLink' })">Transit Lines On Link</el-button> -->
           <el-button type="primary" size="mini" @click="handleMenu({ data: resData, command: 'linkVolumes' })">{{ $l("linkVolumes") }}</el-button>
@@ -220,6 +222,11 @@ export default {
         this._linkVolumes = null;
       });
       document.body.append(this._linkVolumes.$el);
+    },
+    handleChangeMapCenter() {
+      const coord = this.resData.fromCoord;
+      console.log([coord.x, coord.y]);
+      this.rootVue._Map.setCenter([coord.x, coord.y]);
     },
   },
 };

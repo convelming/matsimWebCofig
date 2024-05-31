@@ -83,7 +83,7 @@
         <el-table-column :label="$l('操作')" width="250">
           <template slot-scope="{ row }">
             <el-button :disabled="row.runStatus != '已运行' || row.loadStatus != '已加载'" type="primary" size="mini" @click="handleOperationsAnalysisToDetail(row)">{{ $l("查看") }}</el-button>
-            <el-button type="primary" size="mini" :disabled="row.noRun" :loading="row.runStatus == '运行中'" @click="handleOperationsAnalysisRun(row)">{{ $l("运行") }}</el-button>
+            <!-- <el-button type="primary" size="mini" :disabled="row.noRun" :loading="row.runStatus == '运行中'" @click="handleOperationsAnalysisRun(row)">{{ $l("运行") }}</el-button> -->
             <el-button type="primary" size="mini" :disabled="row.noLoad" :loading="row.loadStatus == '加载中'" @click="handleOperationsAnalysisLoad(row)">{{ $l("加载") }}</el-button>
           </template>
         </el-table-column>
@@ -91,7 +91,7 @@
     </el-dialog>
 
     <!-- 线路方案调整 -->
-    <el-dialog class="tabel_dialog" :title="$l('线路方案调整')" :visible.sync="planAdjustmentDialog.show" width="600px">
+    <el-dialog class="tabel_dialog" :title="$l('线路方案调整')" :visible.sync="planAdjustmentDialog.show" width="700px">
       <div class="tabel_toolbar">
         <el-button type="primary" size="mini" icon="el-icon-refresh-right" @click="handleGetDateSourceList()">{{ $l("刷新列表") }}</el-button>
         <el-button type="primary" size="mini" icon="el-icon-add" @click="handlePlanAdjustmentCreate()">{{ $l("新建方案") }}</el-button>
@@ -102,10 +102,12 @@
         <el-table-column prop="loadStatus" :label="$l('方案状态')">
           <template slot-scope="{ row }">{{ row.loadStatus }} / {{ row.runStatus }}</template>
         </el-table-column>
-        <el-table-column :label="$l('操作')" width="180">
+        <el-table-column :label="$l('操作')" width="350">
           <template slot-scope="{ row }">
-            <el-button :disabled="row.loadStatus != '已加载'" type="primary" size="mini" @click="handlePlanAdjustmentToDetail(row)">{{ $l("修改") }}</el-button>
+            <el-button v-if="!row.noRun" :disabled="row.loadStatus != '已加载'" type="primary" size="mini" @click="handlePlanAdjustmentToDetail(row)">{{ $l("修改") }}</el-button>
+            <el-button v-if="!row.noRun" type="primary" size="mini" :loading="row.runStatus == '运行中'" @click="handleOperationsAnalysisRun(row)">{{ $l("运行") }}</el-button>
             <el-button type="primary" size="mini" :disabled="row.noLoad" :loading="row.loadStatus == '加载中'" @click="handlePlanAdjustmentLoad(row)">{{ $l("加载") }}</el-button>
+            <el-button v-if="!row.noRun" type="primary" size="mini" @click="handleDelect(row)">{{ $l("删除") }}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -135,7 +137,7 @@
         </el-table-column>
         <el-table-column :label="$l('操作')" width="180">
           <template slot-scope="{ row }">
-            <el-button type="primary" size="mini" :disabled="row.noRun" :loading="row.runStatus == '运行中'" @click="handleOperationsAnalysisRun(row)">{{ $l("运行") }}</el-button>
+            <!-- <el-button v-if="!row.noRun" type="primary" size="mini" :loading="row.runStatus == '运行中'" @click="handleOperationsAnalysisRun(row)">{{ $l("运行") }}</el-button> -->
             <el-button type="primary" size="mini" :disabled="row.noLoad" :loading="row.loadStatus == '加载中'" @click="handleOperationsAnalysisLoad(row)">{{ $l("加载") }}</el-button>
           </template>
         </el-table-column>
@@ -158,7 +160,7 @@
         </el-table-column>
         <el-table-column :label="$l('操作')" width="180">
           <template slot-scope="{ row }">
-            <el-button :disabled="row.loadStatus != '已加载'" type="primary" size="mini" @click="handleSystemEvaluationToDetail(row)">{{ $l("查看") }}</el-button>
+            <!-- <el-button :disabled="row.loadStatus != '已加载'" type="primary" size="mini" @click="handleSystemEvaluationToDetail(row)">{{ $l("查看") }}</el-button> -->
             <el-button type="primary" size="mini" :disabled="row.noLoad" :loading="row.loadStatus == '加载中'" @click="handleSystemEvaluationLoad(row)">{{ $l("加载") }}</el-button>
           </template>
         </el-table-column>
@@ -519,6 +521,9 @@ export default {
         params: { database1: database1, datasource1: datasource1, database2: database2, datasource2: datasource2 },
       }).href;
       window.open(href, "_blank");
+    },
+    handleDelect(row) {
+      this.$store.dispatch("deleteDataSource", row);
     },
   },
 };

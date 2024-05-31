@@ -61,6 +61,7 @@ class BusMotionWorker {
             worldPosition: start.toJSON(),
             position: [x0, y0],
             rotation: rotation.toArray(),
+            modelName: v1.modelName
           },
           busDetail: busDetail,
         });
@@ -114,6 +115,8 @@ class BusMotionWorker {
           totalDistance: path.totalDistance,
           // 拾取颜色
           pickColor: pickColorNum++,
+
+          modelName: v1.mode || "bus"
         };
         const { startTime, endTime } = bus;
         for (let index = startTime; index < endTime + timeSpeed; index += timeSpeed) {
