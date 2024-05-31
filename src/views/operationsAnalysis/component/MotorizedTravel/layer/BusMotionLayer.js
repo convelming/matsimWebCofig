@@ -127,6 +127,7 @@ export class BusMotionLayer extends Layer {
   }
 
   dispose() {
+    super.dispose();
     this.worker.terminate();
   }
 
@@ -158,14 +159,14 @@ export class BusMotionLayer extends Layer {
     const runBusList = [];
     const attrPoitions = [];
     const attrPickColors = [];
-    // const modelName = "Bus";
+    const modelName = "Bus";
 
     this.scene.remove(this.coneMesh);
 
     for (let i = 0; i < num; i++) {
       let model = this.runBusList[i];
       if (list[i] && list[i].busDetail.uuid == this.selectBusId) {
-        const { position, worldPosition, modelName } = list[i].runDetail;
+        const { position, worldPosition } = list[i].runDetail;
         this.coneMesh.position.set(position[0], position[1], this.modelSize * 7);
         const scale = this.modelSize * 0.1;
         this.coneMesh.scale.set(scale, scale, scale);

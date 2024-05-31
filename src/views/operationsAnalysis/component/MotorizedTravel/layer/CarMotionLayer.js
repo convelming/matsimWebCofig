@@ -216,26 +216,7 @@ export class CarMotionLayer extends Layer {
       this.handleEventListener(MAP_EVENT.HANDLE_PICK_LEFT, data.carDetail);
     }
   }
-
-  clearScene() {
-    this.runCarList.forEach((v) => {
-      const car = this.carMap.get(v);
-      if (car.model) ModelPool.instance.still(car.modelName, car.model);
-      car.isShow = false;
-      car.model = null;
-    });
-
-    this.carMap.clear();
-    this.runCarList.length = 0;
-    this.timeObj.forEach((v) => (v.length = 0));
-    this.timeObj.clear();
-
-    this.pickGeometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array([]), 3));
-    this.pickGeometry.setAttribute("color", new THREE.BufferAttribute(new Float32Array([]), 3));
-    this.coneMesh.removeFromParent();
-    if (this.scene) this.scene.remove(...this.scene.children);
-  }
-
+  
   setData(data) {
     this.worker.postMessage({ key: "setData", data: data });
   }
