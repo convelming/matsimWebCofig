@@ -2,7 +2,14 @@
   <div class="back">
     <div class="root">
       <div class="module">
-        <div class="module_menu" @click="handleShowDataBase">{{ dataBase || $l("请选择基准MATSIM模型") }}<i class="el-icon-arrow-down el-icon--right"></i></div>
+        <el-dropdown class="language" @command="changeLanguage" placement="top-start" trigger="click">
+          <div class="module_menu">{{ {'zh-CN':'中文（简体）','en-US':'English'}[page_language] }}<i class="el-icon-arrow-down el-icon--right"></i></div>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item command="zh-CN" :disabled="page_language == 'zh-CN'">中文（简体）</el-dropdown-item>
+            <!-- <el-dropdown-item command="zh_MO" :disabled="page_language == 'zh-MO'">中文（繁體）</el-dropdown-item> -->
+            <el-dropdown-item command="en-US" :disabled="page_language == 'en-US'">English</el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
       </div>
       <div class="title">
         <img class="logo" src="@/assets/image/favicon.png" alt="" />
@@ -72,6 +79,7 @@
     <!-- 公交运行分析 -->
     <el-dialog class="tabel_dialog" :title="$l('公交运行分析')" :visible.sync="operationsAnalysisDialog.show" width="600px">
       <div class="tabel_toolbar">
+        <el-button type="primary" size="mini" icon="el-icon-arrow-left" @click="handleToSelectDataBase('operationsAnalysis')">{{ $l("返回上一级") }}</el-button>
         <el-button type="primary" size="mini" icon="el-icon-refresh-right" @click="handleGetDateSourceList()">{{ $l("刷新列表") }}</el-button>
       </div>
       <el-table height="400" :data="dataSourceList" border stripe v-loading="dateSourceListLoading">
@@ -93,6 +101,7 @@
     <!-- 线路方案调整 -->
     <el-dialog class="tabel_dialog" :title="$l('线路方案调整')" :visible.sync="planAdjustmentDialog.show" width="700px">
       <div class="tabel_toolbar">
+        <el-button type="primary" size="mini" icon="el-icon-arrow-left" @click="handleToSelectDataBase('planAdjustment')">{{ $l("返回上一级") }}</el-button>
         <el-button type="primary" size="mini" icon="el-icon-refresh-right" @click="handleGetDateSourceList()">{{ $l("刷新列表") }}</el-button>
         <el-button type="primary" size="mini" icon="el-icon-add" @click="handlePlanAdjustmentCreate()">{{ $l("新建方案") }}</el-button>
       </div>
@@ -116,6 +125,7 @@
     <!-- 方案对比分析 -->
     <el-dialog class="tabel_dialog" :title="$l('方案对比分析')" :visible.sync="comparativeAnalysisDialog.show" width="900px">
       <div class="tabel_toolbar">
+        <el-button type="primary" size="mini" icon="el-icon-arrow-left" @click="handleToSelectDataBase('comparativeAnalysis')">{{ $l("返回上一级") }}</el-button>
         <el-button type="primary" size="mini" icon="el-icon-refresh-right" @click="handleGetDateSourceList()">{{ $l("刷新列表") }}</el-button>
       </div>
       <el-table height="400" :data="dataSourceList" border stripe v-loading="dateSourceListLoading">
@@ -150,6 +160,7 @@
     <!-- 公交运营评估 -->
     <el-dialog class="tabel_dialog" :title="$l('公交运营评估')" :visible.sync="systemEvaluationDialog.show" width="600px">
       <div class="tabel_toolbar">
+        <el-button type="primary" size="mini" icon="el-icon-arrow-left" @click="handleToSelectDataBase('systemEvaluation')">{{ $l("返回上一级") }}</el-button>
         <el-button type="primary" size="mini" icon="el-icon-refresh-right" @click="handleGetDateSourceList()">{{ $l("刷新列表") }}</el-button>
       </div>
       <el-table height="400" :data="dataSourceList" border stripe v-loading="dateSourceListLoading">
@@ -175,65 +186,73 @@
     "zh-CN":"公交运行分析",
     "en-US":"公交运行分析",
   },
+  "刷新列表": {
+    "zh-CN":"刷新列表",
+    "en-US":"Refresh",
+  },
+  "返回上一级": {
+    "zh-CN":"返回上一级",
+    "en-US":"Return",
+  },
   "新建方案": {
     "zh-CN":"新建方案",
-    "en-US":"新建方案",
+    "en-US":"New Scheme",
   },
   "保存方案": {
     "zh-CN":"保存方案",
-    "en-US":"保存方案",
+    "en-US":"Save Scheme",
   },
   "方案创建成功": {
     "zh-CN":"方案创建成功",
-    "en-US":"方案创建成功",
+    "en-US":"Created successfully",
   },
   "方案保存成功": {
     "zh-CN":"方案保存成功",
-    "en-US":"方案保存成功",
+    "en-US":"Save successfully",
   },
   "请输入方案名称": {
     "zh-CN":"请输入方案名称",
-    "en-US":"请输入方案名称",
+    "en-US":"Please enter the scheme name",
   },
   "方案名称只能使用英文字母，数字和下划线": {
     "zh-CN":"方案名称只能使用英文字母，数字和下划线",
-    "en-US":"方案名称只能使用英文字母，数字和下划线",
+    "en-US":"The scheme name can only use English letters, numbers, and underscores",
   },
   "方案名称不能以base结尾": {
     "zh-CN":"方案名称不能以base结尾",
-    "en-US":"方案名称不能以base结尾",
+    "en-US":"The scheme name cannot end with base",
   },
   "方案名称": {
     "zh-CN":"方案名称",
-    "en-US":"方案名称",
+    "en-US":"Scheme name",
   },
   "方案简介": {
     "zh-CN":"方案简介",
-    "en-US":"方案简介",
+    "en-US":"Scheme introduction",
   },
   "方案状态": {
     "zh-CN":"方案状态",
-    "en-US":"方案状态",
+    "en-US":"Scheme state",
   },
   "基准名称": {
     "zh-CN":"基准名称",
-    "en-US":"基准名称",
+    "en-US":"Benchmark name",
   },
   "运行状态": {
     "zh-CN":"运行状态",
-    "en-US":"运行状态",
+    "en-US":"Run state",
   },
   "加载状态": {
     "zh-CN":"加载状态",
-    "en-US":"加载状态",
+    "en-US":"Load state",
   },
   "基础方案": {
     "zh-CN":"基础方案",
-    "en-US":"基础方案",
+    "en-US":"Base",
   },
   "对比方案": {
     "zh-CN":"对比方案",
-    "en-US":"对比方案",
+    "en-US":"Comparison",
   },
   "请选择基准MATSIM模型": {
     "zh-CN":"请选择基准MATSIM模型",
@@ -524,6 +543,31 @@ export default {
     },
     handleDelect(row) {
       this.$store.dispatch("deleteDataSource", row);
+    },
+    handleToSelectDataBase(key) {
+      this.handleShowDataBase(key);
+      switch (key) {
+        case "operationsAnalysis":
+          this.operationsAnalysisDialog.show = false;
+          this.operationsAnalysisDialog.dataSource = "";
+          break;
+        case "planAdjustment":
+          this.planAdjustmentDialog.show = false;
+          this.planAdjustmentDialog.dataSource = "";
+          break;
+        case "comparativeAnalysis":
+          this.comparativeAnalysisDialog.show = false;
+          this.comparativeAnalysisDialog.dataSource1 = "";
+          this.comparativeAnalysisDialog.dataSource2 = "";
+          break;
+        case "systemEvaluation":
+          this.systemEvaluationDialog.show = false;
+          this.systemEvaluationDialog.dataSource = "";
+          break;
+      }
+    },
+    changeLanguage(lan) {
+      this.$setLanguage(lan);
     },
   },
 };

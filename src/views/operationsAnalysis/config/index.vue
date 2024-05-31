@@ -10,7 +10,7 @@
           </div>
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item command="zh-CN" :disabled="page_language == 'zh-CN'">中文（简体）</el-dropdown-item>
-            <el-dropdown-item command="zh_MO" :disabled="page_language == 'zh-MO'">中文（繁體）</el-dropdown-item>
+            <!-- <el-dropdown-item command="zh_MO" :disabled="page_language == 'zh-MO'">中文（繁體）</el-dropdown-item> -->
             <el-dropdown-item command="en-US" :disabled="page_language == 'en-US'">English</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>

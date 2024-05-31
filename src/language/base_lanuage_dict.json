@@ -1,143 +1,143 @@
 {
   "暂无数据": {
     "zh-CN": "暂无数据",
-    "en-US": "暂无数据"
+    "en-US": "No data"
   },
   "没有更多了": {
     "zh-CN": "没有更多了",
-    "en-US": "没有更多了"
+    "en-US": "No more"
   },
   "操作成功！": {
     "zh-CN": "操作成功！",
-    "en-US": "操作成功！"
+    "en-US": "Successful!"
   },
   "提示": {
     "zh-CN": "提示",
-    "en-US": "提示"
+    "en-US": "Prompt"
   },
   "加载中...": {
     "zh-CN": "加载中...",
-    "en-US": "加载中..."
+    "en-US": "Loading..."
   },
   "下载文件出现错误，请联系管理员！": {
     "zh-CN": "下载文件出现错误，请联系管理员！",
-    "en-US": "下载文件出现错误，请联系管理员！"
+    "en-US": "There was an error downloading the file. Please contact the administrator!"
   },
   "正在下载数据，请稍候": {
     "zh-CN": "正在下载数据，请稍候",
-    "en-US": "正在下载数据，请稍候"
+    "en-US": "Downloading data, please wait"
   },
   "系统接口连接异常": {
     "zh-CN": "系统接口连接异常",
-    "en-US": "系统接口连接异常"
+    "en-US": "Abnormal system interface connection"
   },
   "系统接口请求超时": {
     "zh-CN": "系统接口请求超时",
-    "en-US": "系统接口请求超时"
+    "en-US": "System interface request timeout"
   },
   "请求失败，状态码": {
     "zh-CN": "请求失败，状态码",
-    "en-US": "请求失败，状态码"
+    "en-US": "Request failed with status code"
   },
   "无效的会话，或者会话已过期，请重新登录": {
     "zh-CN": "无效的会话，或者会话已过期，请重新登录",
-    "en-US": "无效的会话，或者会话已过期，请重新登录"
+    "en-US": "Invalid session, or session has expired, please log in again"
   },
   "登录状态已过期，请重新登录": {
     "zh-CN": "登录状态已过期，请重新登录",
-    "en-US": "登录状态已过期，请重新登录"
+    "en-US": "Login status has expired, please log in again"
   },
   "系统提示": {
     "zh-CN": "系统提示",
-    "en-US": "系统提示"
+    "en-US": "System prompt"
   },
   "数据正在处理，请勿重复提交": {
     "zh-CN": "数据正在处理，请勿重复提交",
-    "en-US": "数据正在处理，请勿重复提交"
+    "en-US": "Data is being processed, please do not resubmit"
   },
   "网络异常401": {
     "zh-CN": "认证失败，无法访问系统资源",
-    "en-US": "认证失败，无法访问系统资源"
+    "en-US": "Authentication failed, unable to access system resources"
   },
   "网络异常200": {
     "zh-CN": "网络异常200",
-    "en-US": "网络异常200"
+    "en-US": "Network exception 200"
   },
   "网络异常403": {
     "zh-CN": "当前操作没有权限",
-    "en-US": "当前操作没有权限"
+    "en-US": "The current operation does not have permission"
   },
   "网络异常404": {
     "zh-CN": "访问资源不存在",
-    "en-US": "访问资源不存在"
+    "en-US": "Accessing resource does not exist"
   },
   "网络异常default": {
     "zh-CN": "系统未知错误，请反馈给管理员",
-    "en-US": "系统未知错误，请反馈给管理员"
+    "en-US": "Unknown system error, please provide feedback to the administrator"
   },
 
   "刷新列表": {
     "zh-CN": "刷新列表",
-    "en-US": "刷新列表"
+    "en-US": "Refresh List "
   },
   "保存": {
     "zh-CN": "保存",
-    "en-US": "保存"
+    "en-US": "Save"
   },
   "取消": {
     "zh-CN": "取消",
-    "en-US": "取消"
+    "en-US": "Cancel"
   },
   "备注": {
     "zh-CN": "备注",
-    "en-US": "备注"
+    "en-US": "Remarks"
   },
   "操作": {
     "zh-CN": "操作",
-    "en-US": "操作"
+    "en-US": "Operation"
   },
   "修改": {
     "zh-CN": "修改",
-    "en-US": "修改"
+    "en-US": "Edit"
   },
   "确定": {
     "zh-CN": "确定",
-    "en-US": "确定"
+    "en-US": "Confirm"
   },
   "新增": {
     "zh-CN": "新增",
-    "en-US": "新增"
+    "en-US": "Add"
   },
   "删除": {
     "zh-CN": "删除",
-    "en-US": "删除"
+    "en-US": "Delete"
   },
   "类型": {
     "zh-CN": "类型",
-    "en-US": "类型"
+    "en-US": "Type"
   },
   "编辑": {
     "zh-CN": "编辑",
-    "en-US": "编辑"
+    "en-US": "Edit"
   },
   "警告": {
     "zh-CN": "警告",
-    "en-US": "警告"
+    "en-US": "Warning"
   },
   "查看": {
     "zh-CN": "查看",
-    "en-US": "查看"
+    "en-US": "Check"
   },
   "运行": {
     "zh-CN": "运行",
-    "en-US": "运行"
+    "en-US": "Run"
   },
   "加载": {
     "zh-CN": "加载",
-    "en-US": "加载"
+    "en-US": "Load"
   },
   "分/秒": {
     "zh-CN": "分/秒",
-    "en-US": "分/秒"
+    "en-US": "m/s"
   }
 }
