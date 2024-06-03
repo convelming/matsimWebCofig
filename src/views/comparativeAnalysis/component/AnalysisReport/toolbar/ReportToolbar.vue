@@ -276,7 +276,6 @@ export default {
   },
   created() {
     this._dialogMap = new Map();
-    this._dialogOffset = 0;
 
     this.getList1();
     this.getList2();
@@ -288,8 +287,9 @@ export default {
   },
   beforeDestroy() {
     this.handleDisable();
-    this._dialogMap.clear();
     this.rootVue.$off("generateAnalysisReport", this.handleGenerateAnalysisReport);
+    this._dialogMap.values().forEach((v) => v.$destroy());
+    this._dialogMap.clear();
   },
   methods: {
     getList1() {
@@ -484,7 +484,7 @@ export default {
             const data = nodeToJSON(this.$refs.tree.getNode("4"));
             console.log(data);
             if (data.checked) {
-              this.showDialog(TravelUtilityTreeExtend, data, "TravelUtilityTreeExtend");
+              this.showDialog2(TravelUtilityTreeExtend, data, "TravelUtilityTreeExtend");
             }
           }
           break;
@@ -509,7 +509,7 @@ export default {
             const data = nodeToJSON(this.$refs.tree.getNode("5"));
             console.log(data);
             if (data.checked) {
-              this.showDialog(TravelVariationTreeExtend, data, "TravelVariationTreeExtend");
+              this.showDialog2(TravelVariationTreeExtend, data, "TravelVariationTreeExtend");
             }
           }
           break;
@@ -522,12 +522,28 @@ export default {
     showDialog(DialogClass, data, key) {
       if (this._dialogMap.has(key)) {
         const _dialog = this._dialogMap.get(key);
+        _dialog.show();
         _dialog.toTop();
         return _dialog;
       } else {
-        if (this._dialogOffset > 20) this._dialogOffset = 0;
         const _dialog = new DialogClass({
-          propsData: { form: data, offset: ++this._dialogOffset * 20 },
+          propsData: { form: data, offset: this._dialogMap.size * 40 },
+          parent: this.rootVue,
+        }).$mount();
+        this._dialogMap.set(key, _dialog);
+        document.body.append(_dialog.$el);
+        return _dialog;
+      }
+    },
+    showDialog2(DialogClass, data, key) {
+      if (this._dialogMap.has(key)) {
+        const _dialog = this._dialogMap.get(key);
+        _dialog.show();
+        _dialog.toTop();
+        return _dialog;
+      } else {
+        const _dialog = new DialogClass({
+          propsData: { form: data, offset: this._dialogMap.size * 40 },
           parent: this.rootVue,
         }).$mount();
         this._dialogMap.set(key, _dialog);

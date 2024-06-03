@@ -1,6 +1,6 @@
 <template>
   <!-- 出行效用决策树 -->
-  <Dialog class="TravelUtilityTree" ref="dialog" :title="$l('出行效用决策树')" hideMinimize :visible="true" @close="$emit('close')" left="100" width="840px">
+  <Dialog class="TravelUtilityTree" ref="dialog" :title="$l('出行效用决策树')" hideMinimize :visible="s_show" @close="close" :left="100 + this.offset / 2" :top="20 + this.offset" width="840px">
     <!-- <div class="toolbar">
       <el-radio-group v-model="type" size="mini" @change="handleViewChange">
         <el-radio-button label="Chart">{{ $l("图表") }}</el-radio-button>
@@ -65,6 +65,7 @@ export default {
   },
   data() {
     return {
+      s_show: true,
       loading: true,
       type: "Chart",
       description: "",
@@ -85,11 +86,7 @@ export default {
     });
   },
   mounted() {
-    this.$nextTick(() => {
-      this.$refs.dialog.offset(this.offset, this.offset);
-      this._chart = echarts.init(this.$refs.chart);
-      this.updateChart();
-    });
+    this.show();
   },
   beforeDestroy() {
     if (this._chart) {
@@ -98,6 +95,17 @@ export default {
     }
   },
   methods: {
+    show() {
+      this.s_show = true;
+      this.$nextTick(() => {
+        this._chart = echarts.init(this.$refs.chart);
+        this.updateChart();
+      });
+    },
+    close() {
+      this.s_show = false;
+      this.$emit("close");
+    },
     updateChart() {
       if (this._chart && this._chartData) {
         this._chart.setOption(this.getChartOption(this._chartData), true);
