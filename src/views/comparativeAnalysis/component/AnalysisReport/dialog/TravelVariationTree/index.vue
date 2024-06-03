@@ -1,6 +1,6 @@
 <template>
   <!-- 出行变化决策树 -->
-  <Dialog class="TravelVariationTree" ref="dialog" :title="$l('出行变化决策树')" hideMinimize :visible="s_show" @close="close" :left="100 + this.offset / 2" :top="20 + this.offset" width="840px">
+  <Dialog class="TravelVariationTree" ref="dialog" :title="$l('出行变化决策树')" hideMinimize :visible="s_show" @close="close" :left="100 + this.offset" :top="20 + this.offset" width="840px">
     <!-- <div class="toolbar">
       <el-radio-group v-model="type" size="mini" @change="handleViewChange">
         <el-radio-button label="Chart">{{ $l("图表") }}</el-radio-button>

@@ -1,6 +1,6 @@
 <template>
   <!-- 出行者性别 -->
-  <Dialog class="TravelersSex" ref="dialog" :title="$l('出行者性别')" hideMinimize :visible="s_show" @close="close" :left="100 + this.offset / 2" :top="20 + this.offset" width="640px">
+  <Dialog class="TravelersSex" ref="dialog" :title="$l('出行者性别')" hideMinimize :visible="s_show" @close="close" :left="100 + this.offset" :top="20 + this.offset" width="640px">
     <div class="toolbar">
       <el-radio-group v-model="type" size="mini" @change="handleViewChange">
         <el-radio-button label="Chart">{{ $l("图表") }}</el-radio-button>
