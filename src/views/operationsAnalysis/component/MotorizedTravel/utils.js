@@ -38,10 +38,9 @@ export class ModelPool {
     // Roadster: "/models/Roadster.gltf",
     // Sports: "/models/Sports.gltf",
     // Taxi: "/models/Taxi.gltf",
-    
-    bus: "/models/Bus.gltf",
-    subway: "/models/Bus.gltf",
-    ferry: "/models/Bus.gltf",
+
+    Subway: "/models/Subway.gltf",
+    Ferry: "/models/Bus.gltf",
   };
 
   // 默认模型
@@ -57,6 +56,7 @@ export class ModelPool {
           loader.load(
             url,
             (gltf) => {
+              console.log(name, gltf.scene);
               resolve([name, gltf.scene]);
             },
             null,
@@ -94,6 +94,7 @@ export class ModelPool {
     }
   }
 }
+
 
 export class BusMotionPath {
   constructor(opt = []) {
@@ -347,6 +348,11 @@ export class CarMotionPath {
 }
 
 export class CarMotionPoint extends BusMotionPoint { }
+
+
+export class SubwayMotionPath extends BusMotionPath { }
+
+export class SubwayMotionPoint extends BusMotionPoint { }
 
 export function guid() {
   return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {

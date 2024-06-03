@@ -29,6 +29,9 @@
                   </div>
                   <div class="form_item">
                     <div class="form_label">{{ $l("速度：") }}</div>
+                    <div class="form_label">
+                      <div class="play_btn" :class="timePlay ? 'el-icon-video-pause' : 'el-icon-video-play'" :title="timePlay ? $l('pause') : $l('play')" @click="timePlay = !timePlay"></div>
+                    </div>
                     <div class="form_value">
                       <el-slider style="padding: 0 calc(2em - 10px)" v-model="speed" :step="0.1" :min="0" :max="30" :marks="speedMarks" :format-tooltip="formatSpeed"> </el-slider>
                     </div>
@@ -128,6 +131,7 @@ export default {
 
       showClock: true,
 
+      timePlay: true,
       time: 0,
       speed: 0,
       minTime: 0,
@@ -141,8 +145,10 @@ export default {
     },
     showLayerMotorizedTravel(val) {
       if (val) {
+        this.timePlay = true;
         this.speed = 5;
       } else {
+        this.timePlay = false;
         this.speed = 0;
       }
       this.handleChangeMapCameraControls();
@@ -170,6 +176,7 @@ export default {
     this.handleChangeMapCameraControls();
 
     this._timeInterval = setInterval(() => {
+      if (!this.timePlay) return;
       this.time += this.formatSpeed(this.speed);
       if (this.time > this.maxTime) {
         this.time = this.minTime;
@@ -215,7 +222,7 @@ export default {
         zoom: 11,
         enableRotate: true,
         zoom: 16,
-        // minPitch: -90,
+        minPitch: -90,
       });
       this._Map.addLayer(this._MapLayer);
       window._Map = this._Map;
@@ -268,6 +275,15 @@ export default {
         this.$refs.Toolbar.add("BusDetail", {
           uuid: uuid,
           busDetail: busDetail,
+        });
+        this.showStopToolbar = true;
+      }
+    },
+    handleShowSubwayDetail({ uuid, subwayDetail }) {
+      if (this.$refs.Toolbar) {
+        this.$refs.Toolbar.add("SubwayDetail", {
+          uuid: uuid,
+          subwayDetail: subwayDetail,
         });
         this.showStopToolbar = true;
       }
@@ -380,6 +396,11 @@ export default {
       .form_value {
         width: 100%;
       }
+    }
+    .play_btn {
+      cursor: pointer;
+      color: #409eff;
+      font-size: 20px;
     }
   }
 

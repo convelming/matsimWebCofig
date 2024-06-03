@@ -25,6 +25,8 @@ export class CarMotionLayer extends Layer {
     this.lockSelectVehicle = opt.lockSelectVehicle || this.lockSelectVehicle;
     this.modelSize = opt.modelSize || this.modelSize;
 
+    this.carGroup = new THREE.Group();
+
     this.pickLayerMaterial = new THREE.PointsMaterial({
       size: this.modelSize * 5,
       transparent: true,
@@ -46,6 +48,7 @@ export class CarMotionLayer extends Layer {
 
     this.pickMeshMesh = new THREE.Points(this.pickGeometry, this.pickMeshMaterial);
 
+    this.scene.add(this.carGroup);
     this.pickLayerScene.add(this.pickLayerMesh);
     this.pickMeshScene.add(this.pickMeshMesh);
 
@@ -78,14 +81,16 @@ export class CarMotionLayer extends Layer {
     this.worker.addEventListener("error", (error) => {
       console.log(error);
     });
+
+    ModelPool.instance.defaultModel
   }
 
   on(type, data) {
     if (type == MAP_EVENT.UPDATE_CENTER) {
       const [x, y] = this.map.WebMercatorToCanvasXY(...this.center);
-      this.scene.position.set(x, y, this.scene.position.z);
-      this.pickLayerScene.position.set(x, y, this.pickLayerScene.position.z);
-      this.pickMeshScene.position.set(x, y, this.pickMeshScene.position.z);
+      this.carGroup.position.set(x, y, 0);
+      this.pickLayerMesh.position.set(x, y, 0);
+      this.pickMeshMesh.position.set(x, y, 0);
     }
 
     if (type == MAP_EVENT.HANDLE_PICK_LEFT && data.layerId == this.id) {
@@ -156,7 +161,7 @@ export class CarMotionLayer extends Layer {
     const attrPickColors = [];
     const modelName = "SUV";
 
-    this.scene.remove(this.coneMesh);
+    this.carGroup.remove(this.coneMesh);
     for (let i = 0; i < num; i++) {
       let model = this.runCarList[i];
       if (list[i] && list[i].carDetail.uuid == this.selectCarId) {
@@ -164,7 +169,7 @@ export class CarMotionLayer extends Layer {
         this.coneMesh.position.set(position[0], position[1], this.modelSize * 7);
         const scale = this.modelSize * 0.1;
         this.coneMesh.scale.set(scale, scale, scale);
-        this.scene.add(this.coneMesh);
+        this.carGroup.add(this.coneMesh);
         // if (this.lockSelectCar) {
         //   const eventId = this.map.addEventListener(MAP_EVENT.LAYER_AFTER_RENDER, () => {
         //     this.map.setCenter(worldPosition);
@@ -173,14 +178,14 @@ export class CarMotionLayer extends Layer {
         // }
       } else if (i > this.maxCarNum || !list[i]) {
         if (model) {
-          this.scene.remove(model);
+          this.carGroup.remove(model);
           ModelPool.instance.still(modelName, model);
         }
         continue;
       }
       if (!model) {
         model = ModelPool.instance.take(modelName);
-        this.scene.add(model);
+        this.carGroup.add(model);
       }
       const scale = this.modelSize * 0.005;
       model.scale.set(scale, scale, scale);

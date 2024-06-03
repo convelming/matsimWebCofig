@@ -25,6 +25,8 @@ export class BusMotionLayer extends Layer {
     this.lockSelectBus = opt.lockSelectBus || this.lockSelectBus;
     this.modelSize = opt.modelSize || this.modelSize;
 
+    this.busGroup = new THREE.Group();
+
     this.pickLayerMaterial = new THREE.PointsMaterial({
       size: this.modelSize * 10,
       transparent: true,
@@ -46,6 +48,7 @@ export class BusMotionLayer extends Layer {
 
     this.pickMeshMesh = new THREE.Points(this.pickGeometry, this.pickMeshMaterial);
 
+    this.scene.add(this.busGroup);
     this.pickLayerScene.add(this.pickLayerMesh);
     this.pickMeshScene.add(this.pickMeshMesh);
 
@@ -78,14 +81,16 @@ export class BusMotionLayer extends Layer {
     this.worker.addEventListener("error", (error) => {
       console.log(error);
     });
+
+    ModelPool.instance.defaultModel
   }
 
   on(type, data) {
     if (type == MAP_EVENT.UPDATE_CENTER) {
       const [x, y] = this.map.WebMercatorToCanvasXY(...this.center);
-      this.scene.position.set(x, y, this.scene.position.z);
-      this.pickLayerScene.position.set(x, y, this.pickLayerScene.position.z);
-      this.pickMeshScene.position.set(x, y, this.pickMeshScene.position.z);
+      this.busGroup.position.set(x, y, 0);
+      this.pickLayerMesh.position.set(x, y, 0);
+      this.pickMeshMesh.position.set(x, y, 0);
     }
 
     if (type == MAP_EVENT.HANDLE_PICK_LEFT && data.layerId == this.id) {
@@ -161,7 +166,7 @@ export class BusMotionLayer extends Layer {
     const attrPickColors = [];
     const modelName = "Bus";
 
-    this.scene.remove(this.coneMesh);
+    this.busGroup.remove(this.coneMesh);
 
     for (let i = 0; i < num; i++) {
       let model = this.runBusList[i];
@@ -170,7 +175,7 @@ export class BusMotionLayer extends Layer {
         this.coneMesh.position.set(position[0], position[1], this.modelSize * 7);
         const scale = this.modelSize * 0.1;
         this.coneMesh.scale.set(scale, scale, scale);
-        this.scene.add(this.coneMesh);
+        this.busGroup.add(this.coneMesh);
         // if (this.lockSelectBus) {
         //   const eventId = this.map.addEventListener(MAP_EVENT.LAYER_AFTER_RENDER, () => {
         //     this.map.setCenter(worldPosition);
@@ -179,14 +184,14 @@ export class BusMotionLayer extends Layer {
         // }
       } else if (i > this.maxBusNum || !list[i]) {
         if (model) {
-          this.scene.remove(model);
+          this.busGroup.remove(model);
           ModelPool.instance.still(modelName, model);
         }
         continue;
       }
       if (!model) {
         model = ModelPool.instance.take(modelName);
-        this.scene.add(model);
+        this.busGroup.add(model);
       }
       const scale = this.modelSize * 0.005;
       model.scale.set(scale, scale, scale);

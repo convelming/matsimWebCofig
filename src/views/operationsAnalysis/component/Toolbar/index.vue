@@ -9,6 +9,7 @@ import { guid } from "@/utils/utils";
 import BuildDetail from "../Build3D/toolbar/buildDetail.vue";
 import CarDetail from "../MotorizedTravel/toolbar/carDetail.vue";
 import BusDetail from "../MotorizedTravel/toolbar/busDetail.vue";
+import SubwayDetail from "../MotorizedTravel/toolbar/subwayDetail.vue";
 import RouteDetail from "../PublicTransit/toolbar/routeDetail.vue";
 import StopAndRoute from "../PublicTransit/toolbar/stopAndRoute.vue";
 import StopDetail from "../PublicTransit/toolbar/stopDetail.vue";
@@ -22,6 +23,7 @@ export default {
     BuildDetail,
     CarDetail,
     BusDetail,
+    SubwayDetail,
     RouteDetail,
     StopAndRoute,
     StopDetail,

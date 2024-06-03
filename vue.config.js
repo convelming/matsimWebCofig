@@ -20,8 +20,8 @@ module.exports = defineConfig({
     proxy: {
       "/": {
         ws: false,
-        target: `http://192.168.31.134:23105`, // 本地调试
-        // target: `http://192.168.60.231:23105`, // 测试服
+        // target: `http://192.168.31.134:23105`, // 本地调试
+        target: `http://192.168.60.231:23105`, // 测试服
         changeOrigin: true,
         // pathRewrite: {
         //   "/": "/",

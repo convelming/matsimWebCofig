@@ -13,7 +13,8 @@
       <div class="form_item">
         <div class="form_label">{{ $l("显示图层：") }}</div>
         <div class="form_value">
-          <el-checkbox :disabled="!s_showLayer" v-model="showBus3DLayer" @change="handleShowBus3DLayer">{{ $l("公交车") }}</el-checkbox>
+          <el-checkbox :disabled="!s_showLayer" v-model="showBus3DLayer" @change="handleShowBus3DLayer($event);handleShowSubway3DLayer($event)">{{ $l("公交车") }}</el-checkbox>
+          <!-- <el-checkbox :disabled="!s_showLayer" v-model="showSubway3DLayer" @change="handleShowSubway3DLayer">地铁</el-checkbox> -->
           <el-checkbox :disabled="!s_showLayer" v-model="showCar3DLayer" @change="handleShowCar3DLayer">{{ $l("私家车") }}</el-checkbox>
         </div>
       </div>
@@ -97,8 +98,9 @@
 <script>
 import { MAP_EVENT } from "@/mymap/index.js";
 import { BusMotionLayer } from "./layer/BusMotionLayer";
+import { SubwayMotionLayer } from "./layer/SubwayMotionLayer";
 import { CarMotionLayer } from "./layer/CarMotionLayer";
-import { getBusPath, getCarPath } from "@/api/index";
+import { getBusPath, getCarPath, getSubwayPath } from "@/api/index";
 
 export default {
   props: ["name", "showLayer"],
@@ -122,18 +124,21 @@ export default {
     lockSelectVehicle: {
       handler(val) {
         this._BusMotionLayer.lockSelectBus = val;
+        this._SubwayMotionLayer.lockSelectSubway = val;
         this._CarMotionLayer.lockSelectCar = val;
       },
     },
     maxVehicleNum: {
       handler(val) {
         this._BusMotionLayer.maxBusNum = val;
+        this._SubwayMotionLayer.maxSubwayNum = val;
         this._CarMotionLayer.maxCarNum = val;
       },
     },
     modelSize: {
       handler(val) {
         this._BusMotionLayer.setModelSize(val);
+        this._SubwayMotionLayer.setModelSize(val);
         this._CarMotionLayer.setModelSize(val);
       },
     },
@@ -155,11 +160,13 @@ export default {
       s_showLayer: false,
 
       lockSelectVehicle: true,
-      showBus3DLayer: true,
-      showCar3DLayer: true,
+      showBus3DLayer: false,
+      showSubway3DLayer: true,
+      showCar3DLayer: false,
       maxVehicleNum: 2000,
 
       _BusMotionLayer: null,
+      _SubwayMotionLayer: null,
       _CarMotionLayer: null,
 
       modelSize: 5,
@@ -188,6 +195,21 @@ export default {
         },
       },
     });
+    this._SubwayMotionLayer = new SubwayMotionLayer({
+      zIndex: 10,
+      lockSelectSubway: this.lockSelectVehicle,
+      maxSubwayNum: this.maxVehicleNum,
+      modelSize: this.modelSize,
+      event: {
+        [MAP_EVENT.HANDLE_PICK_LEFT]: ({ data }) => {
+          this._SubwayMotionLayer.setSelectSubwayId(data.uuid);
+          this.rootVue.handleShowSubwayDetail({
+            uuid: data.uuid,
+            subwayDetail: data,
+          });
+        },
+      },
+    });
     this._CarMotionLayer = new CarMotionLayer({
       zIndex: 10,
       lockSelectCar: this.lockSelectVehicle,
@@ -210,6 +232,13 @@ export default {
         this._BusData = null;
       }
     });
+    getSubwayPath().then((res) => {
+      this._SubwayData = res.data;
+      if (this.s_showLayer) {
+        this._SubwayMotionLayer.setData(this._SubwayData);
+        this._SubwayData = null;
+      }
+    });
     getCarPath().then((res) => {
       this._CarData = res.data;
       if (this.s_showLayer) {
@@ -230,6 +259,7 @@ export default {
   beforeDestroy() {
     this.handleDisable();
     this._BusMotionLayer.dispose();
+    this._SubwayMotionLayer.dispose();
     this._CarMotionLayer.dispose();
   },
   methods: {
@@ -254,6 +284,23 @@ export default {
         }
       } catch (error) {}
     },
+    handleShowSubway3DLayer(val) {
+      try {
+        if (val) {
+          if (this._SubwayData) {
+            this._SubwayMotionLayer.setData(this._SubwayData);
+            this._SubwayData = null;
+          }
+          this.rootVue.$on("setSelectedSubway", (subwayDetail) => {
+            this._SubwayMotionLayer.setSelectSubwayId(subwayDetail.uuid);
+          });
+          this._Map.addLayer(this._SubwayMotionLayer);
+        } else {
+          this.rootVue.$off("setSelectedSubway");
+          this._Map.removeLayer(this._SubwayMotionLayer);
+        }
+      } catch (error) {}
+    },
     handleShowCar3DLayer(val) {
       try {
         if (val) {
@@ -274,17 +321,21 @@ export default {
     // 组件初始化事件
     handleEnable() {
       this.handleShowBus3DLayer(this.showBus3DLayer);
+      this.handleShowSubway3DLayer(this.showBus3DLayer);
+      // this.handleShowSubway3DLayer(this.showSubway3DLayer);
       this.handleShowCar3DLayer(this.showCar3DLayer);
       this.rootVue.$on("timeChange", this.handleTimeChange);
     },
     // 组件卸载事件
     handleDisable() {
       this.handleShowBus3DLayer(false);
+      this.handleShowSubway3DLayer(false);
       this.handleShowCar3DLayer(false);
       this.rootVue.$off("timeChange", this.handleTimeChange);
     },
     handleTimeChange(time) {
       if (this._BusMotionLayer) this._BusMotionLayer.setTime(time);
+      if (this._SubwayMotionLayer) this._SubwayMotionLayer.setTime(time);
       if (this._CarMotionLayer) this._CarMotionLayer.setTime(time);
     },
     // 格式化速度
