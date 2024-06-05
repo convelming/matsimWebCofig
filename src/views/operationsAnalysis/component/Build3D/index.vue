@@ -1,7 +1,10 @@
 <template>
   <el-collapse-item class="BusStopForm" :name="name">
     <div class="el-collapse-item__title" slot="title">
-      <el-checkbox :value="s_showLayer" @change="handleChangeShowLayer">{{ $l("3D建筑") }}</el-checkbox>
+      <el-checkbox :value="s_showLayer" @change="handleChangeShowLayer">
+        <span>{{ $l("3D建筑") }}</span>
+        <span v-if="loading" class="el-icon-loading" style="margin-left: 10px;"></span>
+      </el-checkbox>
     </div>
     <div class="form">
       <div class="form_item">
@@ -79,6 +82,8 @@ export default {
       buildColor: "#E9CDAA",
       buildOpacity: 0.8,
       _Build3DLayer: null,
+
+      loading: false,
     };
   },
   created() {
@@ -94,6 +99,10 @@ export default {
             uuid: data.pickColorNum,
             buildDetail: data,
           });
+        },
+        [MAP_EVENT.LAYER_LOADING]: ({ data }) => {
+          console.log(data);
+          this.loading = data;
         },
       },
     });

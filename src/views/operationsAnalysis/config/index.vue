@@ -26,7 +26,7 @@
       <span>{{ $l("切换视图") }}</span>
     </div>
     <div class="toolbar">
-      <a class="btn2" style="font-size: 20px; color: red !important" target="_blank" href="https://doc.weixin.qq.com/sheet/e3_AdQA8Aa_ADMt1qh97LkSHer6ALqI2?scode=APwA6gfEAA0aeGdABPAdQA8Aa_ADM&tab=psngzw">
+      <a class="btn2" style="font-size: 16px; font-weight: bold; color: red !important" target="_blank" href="https://doc.weixin.qq.com/sheet/e3_AdQA8Aa_ADMt1qh97LkSHer6ALqI2?scode=APwA6gfEAA0aeGdABPAdQA8Aa_ADM&tab=psngzw">
         <div class="text">BUG</div>
       </a>
       <div class="btn2" @click="handleScrollTop()">
@@ -217,17 +217,17 @@ a {
     background: #fff;
     box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
     border-radius: 50%;
-    width: 64px;
-    height: 64px;
+    width: 50px;
+    height: 50px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     color: #268bff;
-    font-size: 16px;
+    font-size: 12px;
     .icon {
-      width: 24px;
-      height: 24px;
+      width: 20px;
+      height: 20px;
       object-fit: cover;
     }
   }

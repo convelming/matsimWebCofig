@@ -10,10 +10,10 @@
           <el-time-picker v-model="form.startTime" value-format="HH:mm:ss" clearable />
         </el-form-item>
         <el-form-item :label="$l('endTime')">
-          <el-time-picker v-model="form.endTime" value-format="HH:mm:ss" clearable />
+          <el-time-picker v-model="form.endTime" :min="timeStringToNumber(form.startTime)" value-format="HH:mm:ss" clearable />
         </el-form-item>
         <el-form-item :label="$l('timeStepSize')">
-          <el-time-picker v-model="form.timeStepSize" value-format="HH:mm:ss" clearable />
+          <el-time-picker v-model="form.timeStepSize" :max="timeStringToNumber(form.endTime) - timeStringToNumber(form.startTime)" value-format="HH:mm:ss" clearable />
         </el-form-item>
         <el-form-item :label="$l('simStarttimeInterpretation')">
           <el-select v-model="form.simStarttimeInterpretation" clearable>
@@ -490,6 +490,18 @@ export default {
         },
         nodes: nodes,
       });
+    },
+    timeStringToNumber(str) {
+      let arr = str.split(":");
+      if (arr.length == 3) {
+        return parseInt(arr[0]) * 3600 + parseInt(arr[1]) * 60 + parseInt(arr[2]);
+      } else if (arr.length == 2) {
+        return parseInt(arr[0]) * 60 + parseInt(arr[1]);
+      } else if (arr.length == 1) {
+        return parseInt(arr[0]);
+      } else {
+        return 0;
+      }
     },
   },
 };

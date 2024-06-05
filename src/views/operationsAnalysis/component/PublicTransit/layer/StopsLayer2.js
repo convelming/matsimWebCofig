@@ -299,6 +299,7 @@ export class StopsLayer extends Layer {
       if (maxX1 <= maxX2 && minX1 >= minX2 && maxY1 <= maxY2 && minY1 >= minY2) throw new Error("当前视野范围不需要更新");
       if (!maxX1 || !minX1 || !maxY1 || !minY1) throw new Error("坐标不能为空");
       this.range = [maxX1, minX1, maxY1, minY1];
+      this.handleEventListener(MAP_EVENT.LAYER_LOADING, true);
       const res = await getStopFacilities({
         xyarr: [
           [maxX1, minY1],
@@ -307,6 +308,7 @@ export class StopsLayer extends Layer {
           [minX1, minY1],
         ],
       });
+      this.handleEventListener(MAP_EVENT.LAYER_LOADING, false);
 
       this.clearScene();
       const center = new Bean.Coord({

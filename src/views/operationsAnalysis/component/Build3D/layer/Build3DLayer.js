@@ -16,6 +16,7 @@ export class Build3DLayer extends Layer {
   builds = {};
   selectBuildId = null;
   selectBuildTile = null;
+  loadingNum = 0;
 
   constructor(opt) {
     super(opt);
@@ -126,6 +127,12 @@ export class Build3DLayer extends Layer {
     this.material.needsUpdate = true;
   }
 
+  handleLoading(flag) {
+    console.log(this.loadingNum, flag);
+    this.loadingNum += flag;
+    this.handleEventListener(MAP_EVENT.LAYER_LOADING, this.loadingNum > 0);
+  }
+
   async loadMesh() {
     this.updateTimeout = null;
     this.clearScene();
@@ -161,7 +168,8 @@ export class Build3DLayer extends Layer {
           this.tileMap[key] = tile;
         }
         if (tile.loadStatus == 1) {
-          tile.load(() => ++this.pickColorNum);
+          this.handleLoading(1);
+          tile.load(() => ++this.pickColorNum).then(() => this.handleLoading(-1));
         }
         const [x, y] = this.map.WebMercatorToCanvasXY(tile.x, tile.y);
 
@@ -482,5 +490,5 @@ class BuildGeometry extends THREE.BufferGeometry {
       }
     }
   }
-  
+
 }

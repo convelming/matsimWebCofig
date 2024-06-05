@@ -227,7 +227,6 @@ export default {
     handleChangeView() {
       if (this.type == "editor") {
         this.form = this.getForm(this.$refs.Editor.getXml());
-        console.log(this.form);
         this.type = "item";
       } else {
         this.$refs.Editor.setXml(this.getXml(this.form));
@@ -331,9 +330,10 @@ export default {
   margin: auto;
   width: 100%;
   height: calc(100vh - 90px);
-  overflow-y: scroll;
+  overflow-y: auto;
   background: #f4f6fa;
   .list {
+    box-sizing: border-box;
     margin: auto;
     width: 100%;
     max-width: 1400px;

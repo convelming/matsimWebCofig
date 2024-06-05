@@ -10,7 +10,7 @@
                 <el-input-number v-model="form.BrainExpBeta" :min="0" :step="0.1" controls-position="right" />
               </el-form-item>
               <el-form-item :label="$l('PathSizeLogitBeta')">
-                <el-input-number v-model="form.PathSizeLogitBeta" :min="0" :step="0.1" controls-position="right" />
+                <el-input-number v-model="form.PathSizeLogitBeta" :min="0" :step="0.1" :max="1" controls-position="right" />
               </el-form-item>
               <el-form-item :label="$l('fractionOfIterationsToStartScoreMSA')">
                 <el-input v-model="form.fractionOfIterationsToStartScoreMSA" clearable />

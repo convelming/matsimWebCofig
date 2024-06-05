@@ -67,13 +67,13 @@
               <el-switch v-model="form.dumpDataAtEnd" active-value="true" inactive-value="false" />
             </el-form-item>
             <el-form-item :label="$l('writeEventsInterval')">
-              <el-input-number v-model="form.writeEventsInterval" :min="0" :step="1" step-strictly controls-position="right" />
+              <el-input-number v-model="form.writeEventsInterval" :min="0" :step="1" :max="Number(form.lastIteration) - Number(form.firstIteration)" step-strictly controls-position="right" />
             </el-form-item>
             <el-form-item :label="$l('writePlansInterval')">
-              <el-input-number v-model="form.writePlansInterval" :min="0" :step="1" step-strictly controls-position="right" />
+              <el-input-number v-model="form.writePlansInterval" :min="0" :step="1" :max="Number(form.lastIteration) - Number(form.firstIteration)" step-strictly controls-position="right" />
             </el-form-item>
             <el-form-item :label="$l('writeTripsInterval')">
-              <el-input-number v-model="form.writeTripsInterval" :min="0" :step="1" step-strictly controls-position="right" />
+              <el-input-number v-model="form.writeTripsInterval" :min="0" :step="1" :max="Number(form.lastIteration) - Number(form.firstIteration)" step-strictly controls-position="right" />
             </el-form-item>
             <el-form-item :label="$l('snapshotFormat')">
               <el-select v-model="form.snapshotFormat" clearable>

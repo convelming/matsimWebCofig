@@ -102,23 +102,24 @@ export class RouteFlowsLayer extends Layer {
   }
 
   setData(stops, data, maxValue) {
+    console.log(stops, data);
     try {
       const _data = [];
       let pickColorNum = 1;
       for (const value of Object.values(data)) {
-        const fromStop = stops.get(value.targetId);
-        const toStop = stops.get(value.sourceId);
+        const fromStop = stops.get(value.sourceId);
+        const toStop = stops.get(value.targetId);
         if (fromStop && toStop && value.value > 0) {
           const fromPoint = new THREE.Vector3(fromStop.x, fromStop.y, 0);
           const toPoint = new THREE.Vector3(toStop.x, toStop.y, 0);
           const distance = fromPoint.distanceTo(toPoint);
           const center = [(fromPoint.x + toPoint.x) / 2, (fromPoint.y + toPoint.y) / 2];
-          const vector = new THREE.Vector3().subVectors(fromPoint, toPoint).angleTo(new THREE.Vector3(1, 0, 0));
+          const vector = new THREE.Vector2(toStop.x - fromStop.x, toStop.y - fromStop.y).angle();
           const item = {
             key: `${fromStop.name} - ${toStop.name}`,
             pickColor: new THREE.Color(++pickColorNum),
-            fromStop: stops.get(value.targetId),
-            toStop: stops.get(value.sourceId),
+            fromStop: stops.get(value.sourceId),
+            toStop: stops.get(value.targetId),
             value: value.value,
             proportion: value.value / maxValue,
             distance: distance,
@@ -129,8 +130,10 @@ export class RouteFlowsLayer extends Layer {
         }
       }
       this.data = _data;
+      console.log(_data);
       this.update();
     } catch (error) {
+      console.log(error);
       this.data = [];
       this.update();
     }

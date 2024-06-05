@@ -16,10 +16,11 @@ export class NetworkLayer extends Layer {
   lineWidth = 6;
   lineOffset = 6;
   time = 0;
-
+  
   material = null;
   pickLayerMaterial = null;
   pickMaterial = null;
+  loadingNum = 0;
 
   tileMap = {};
 
@@ -193,6 +194,12 @@ export class NetworkLayer extends Layer {
     super.onAdd(map);
     this.loadMesh();
   }
+  
+  handleLoading(flag) {
+    console.log(this.loadingNum, flag);
+    this.loadingNum += flag;
+    this.handleEventListener(MAP_EVENT.LAYER_LOADING, this.loadingNum > 0);
+  }
 
   async loadMesh() {
     this.updateTimeout = null;
@@ -238,7 +245,8 @@ export class NetworkLayer extends Layer {
         }
         if (tile.loadStatus == 1) {
           // noLoadTileList.push(tile);
-          tile.load(() => ++this.pickColorNum);
+          this.handleLoading(1);
+          tile.load(() => ++this.pickColorNum).then(() => this.handleLoading(-1));
         }
         const [x, y] = this.map.WebMercatorToCanvasXY(tile.x, tile.y);
         tile.baseScene.position.set(x, y, 0);

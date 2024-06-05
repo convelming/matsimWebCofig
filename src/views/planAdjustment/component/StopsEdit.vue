@@ -12,6 +12,7 @@
         <div class="box2">
           <div class="stop_list">
             <div class="stop_item" v-for="(v, $index) in transitRoute.stops" :key="$index">
+              <!-- <div><el-checkbox v-model="checked"></el-checkbox></div> -->
               <div class="index">{{ $index + 1 }}</div>
               <div class="name">{{ v.name }}</div>
               <div class="btn_box">

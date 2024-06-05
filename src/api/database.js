@@ -121,3 +121,18 @@ export function delScheme(params) {
     params: params,
   });
 }
+
+
+// 复制方案 
+// GET /pt/main/copyScheme
+// 接口ID：181422784
+// 接口地址：https://www.apifox.cn/link/project/3709845/apis/api-181422784
+export function copyScheme(params) {
+  return request({
+    url: `/pt/main/copyScheme`,
+    method: "get",
+    params: params,
+  });
+}
+
+

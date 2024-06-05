@@ -1,7 +1,10 @@
 <template>
   <el-collapse-item class="MotorizedTravel" :name="name">
     <div class="el-collapse-item__title" slot="title">
-      <el-checkbox :value="s_showLayer" @change="handleChangeShowLayer">{{ $l("机动化出行") }}</el-checkbox>
+      <el-checkbox :value="s_showLayer" @change="handleChangeShowLayer">
+        <span>{{ $l("机动化出行") }}</span>
+        <span v-if="loading" class="el-icon-loading" style="margin-left: 10px"></span>
+      </el-checkbox>
     </div>
     <div class="form">
       <div class="form_item">
@@ -13,7 +16,15 @@
       <div class="form_item">
         <div class="form_label">{{ $l("显示图层：") }}</div>
         <div class="form_value">
-          <el-checkbox :disabled="!s_showLayer" v-model="showBus3DLayer" @change="handleShowBus3DLayer($event);handleShowSubway3DLayer($event)">{{ $l("公交车") }}</el-checkbox>
+          <el-checkbox
+            :disabled="!s_showLayer"
+            v-model="showBus3DLayer"
+            @change="
+              handleShowBus3DLayer($event);
+              handleShowSubway3DLayer($event);
+            "
+            >{{ $l("公交车") }}</el-checkbox
+          >
           <!-- <el-checkbox :disabled="!s_showLayer" v-model="showSubway3DLayer" @change="handleShowSubway3DLayer">地铁</el-checkbox> -->
           <el-checkbox :disabled="!s_showLayer" v-model="showCar3DLayer" @change="handleShowCar3DLayer">{{ $l("私家车") }}</el-checkbox>
         </div>
@@ -176,6 +187,8 @@ export default {
       minTime: 0,
       maxTime: 3600 * 28,
       speedMarks: {},
+
+      loading: false,
     };
   },
   created() {
@@ -225,27 +238,6 @@ export default {
         },
       },
     });
-    getBusPath().then((res) => {
-      this._BusData = res.data;
-      if (this.s_showLayer) {
-        this._BusMotionLayer.setData(this._BusData);
-        this._BusData = null;
-      }
-    });
-    getSubwayPath().then((res) => {
-      this._SubwayData = res.data;
-      if (this.s_showLayer) {
-        this._SubwayMotionLayer.setData(this._SubwayData);
-        this._SubwayData = null;
-      }
-    });
-    getCarPath().then((res) => {
-      this._CarData = res.data;
-      if (this.s_showLayer) {
-        this._CarMotionLayer.setData(this._CarData);
-        this._CarData = null;
-      }
-    });
   },
   mounted() {
     this._interval = setInterval(() => {
@@ -263,6 +255,38 @@ export default {
     this._CarMotionLayer.dispose();
   },
   methods: {
+    getData() {
+      if (this.loading) return;
+      this.loading = true;
+      let list = [];
+      if (!this._BusDataLoaded) list.push(this.getBusPath());
+      if (!this._SubwayDataLoaded) list.push(this.getSubwayPath());
+      if (!this._CarDataLoaded) list.push(this.getCarPath());
+      Promise.all(list).finally(() => {
+        this.loading = false;
+      });
+    },
+    async getBusPath() {
+      try {
+        const res = await getBusPath();
+        this._BusMotionLayer.setData(res.data);
+        this._BusDataLoaded = true;
+      } catch (error) {}
+    },
+    async getSubwayPath() {
+      try {
+        const res = await getSubwayPath();
+        this._SubwayMotionLayer.setData(res.data);
+        this._SubwayDataLoaded = true;
+      } catch (error) {}
+    },
+    async getCarPath() {
+      try {
+        const res = await getCarPath();
+        this._CarMotionLayer.setData(res.data);
+        this._CarDataLoaded = true;
+      } catch (error) {}
+    },
     handleChangeShowLayer(value) {
       this.s_showLayer = value;
       this.$emit("update:showLayer", value);
@@ -270,10 +294,6 @@ export default {
     handleShowBus3DLayer(val) {
       try {
         if (val) {
-          if (this._BusData) {
-            this._BusMotionLayer.setData(this._BusData);
-            this._BusData = null;
-          }
           this.rootVue.$on("setSelectedBus", (busDetail) => {
             this._BusMotionLayer.setSelectBusId(busDetail.uuid);
           });
@@ -287,10 +307,6 @@ export default {
     handleShowSubway3DLayer(val) {
       try {
         if (val) {
-          if (this._SubwayData) {
-            this._SubwayMotionLayer.setData(this._SubwayData);
-            this._SubwayData = null;
-          }
           this.rootVue.$on("setSelectedSubway", (subwayDetail) => {
             this._SubwayMotionLayer.setSelectSubwayId(subwayDetail.uuid);
           });
@@ -304,10 +320,6 @@ export default {
     handleShowCar3DLayer(val) {
       try {
         if (val) {
-          if (this._CarData) {
-            this._CarMotionLayer.setData(this._CarData);
-            this._CarData = null;
-          }
           this.rootVue.$on("setSelectedCar", (carDetail) => {
             this._CarMotionLayer.setSelectCarId(carDetail.uuid);
           });
@@ -320,6 +332,7 @@ export default {
     },
     // 组件初始化事件
     handleEnable() {
+      this.getData();
       this.handleShowBus3DLayer(this.showBus3DLayer);
       this.handleShowSubway3DLayer(this.showBus3DLayer);
       // this.handleShowSubway3DLayer(this.showSubway3DLayer);

@@ -1,7 +1,10 @@
 <template>
   <el-collapse-item class="BusStopForm" :name="name">
     <div class="el-collapse-item__title" slot="title">
-      <el-checkbox :value="s_showLayer" @change="handleChangeShowLayer">{{ $l("公共交通") }}</el-checkbox>
+      <el-checkbox :value="s_showLayer" @change="handleChangeShowLayer">
+        <span>{{ $l("公共交通") }}</span>
+        <span v-if="loading" class="el-icon-loading" style="margin-left: 10px"></span>
+      </el-checkbox>
     </div>
     <div class="form">
       <div class="form_item">
@@ -10,7 +13,7 @@
           <el-slider :disabled="!s_showLayer" v-model="stopScale" :min="1" :max="20"></el-slider>
         </div>
       </div>
-      <div class="form_item" style="align-items: center;justify-content: flex-end;">
+      <div class="form_item" style="align-items: center; justify-content: flex-end">
         <!-- <el-switch :disabled="!s_showLayer" style="width: 100%" v-model="showStopName" :active-text="$l('显示站点名称')"></el-switch> -->
         <el-color-picker :disabled="!s_showLayer" :title="$l('公交站点颜色')" size="mini" :predefine="predefineColors" v-model="stopColor" />
         <!-- <div aria-disabled="" :title="$l('公交线路查询')" :class="{ active: sreachLine, disabled: !s_showLayer }" class="icon_button icon_stop" @click="s_showLayer && handleSreachStop(!sreachLine)">
@@ -52,6 +55,7 @@
 </language>
 
 <script>
+import { MAP_EVENT } from "@/mymap";
 import { STOPS_STATE_KEY, STOPS_EVENT, StopsLayer } from "./layer/StopsLayer2";
 import { LINK_EVENT, LINK_STATE_KEY, LinkLayer } from "./layer/LinkLayer";
 
@@ -118,6 +122,8 @@ export default {
 
       _StopsLayer: undefined,
       _LinkLayer: undefined,
+
+      loading: false,
     };
   },
   created() {
@@ -127,6 +133,11 @@ export default {
       showName: this.showStopName,
       color: this.stopColor,
       scale: this.stopScale,
+      event: {
+        [MAP_EVENT.LAYER_LOADING]: ({ data }) => {
+          this.loading = data;
+        },
+      },
     });
     this._LinkLayer = new LinkLayer({
       zIndex: 20,
@@ -152,6 +163,7 @@ export default {
     handleEnable() {
       this._Map.addLayer(this._StopsLayer);
       this._Map.addLayer(this._LinkLayer);
+      this._StopsLayer.update();
     },
     handleDisable() {
       this.handleSelectStop(false);

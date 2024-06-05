@@ -5,7 +5,8 @@ import {
   runMatsim,
   addScheme,
   saveScheme,
-  delScheme
+  delScheme,
+  copyScheme
 } from "@/api/database";
 
 const datasource = {
@@ -107,6 +108,15 @@ const datasource = {
     async createDataSource({ commit, state, dispatch }, { base, key }) {
       try {
         const res = await addScheme({ base, key });
+        return res;
+      } catch (error) {
+      } finally {
+        dispatch("getDataSourceList", state.dataBase);
+      }
+    },
+    async copyDataSource({ commit, state, dispatch }, { source, target }) {
+      try {
+        const res = await copyScheme({ source, target });
         return res;
       } catch (error) {
       } finally {

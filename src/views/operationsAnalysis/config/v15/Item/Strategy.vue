@@ -31,7 +31,15 @@
                     <el-collapse-transition>
                       <div class="collapse_item_content" v-show="item.open">
                         <el-form-item :label="$l('strategyName')">
-                          <el-input v-model="item.strategyName" clearable></el-input>
+                          <!-- <el-input v-model="item.strategyName" clearable></el-input> -->
+                          <el-select v-model="item.strategyName" clearable>
+                            <el-option :label="$l('ReRoute')" value="ReRoute" />
+                            <el-option :label="$l('TimeAllocationMutator')" value="TimeAllocationMutator" />
+                            <el-option :label="$l('TimeAllocationMutator_ReRoute')" value="TimeAllocationMutator_ReRoute" />
+                            <el-option :label="$l('ChangeSingleTripMode')" value="ChangeSingleTripMode" />
+                            <el-option :label="$l('ChangeTripMode')" value="ChangeTripMode" />
+                            <el-option :label="$l('SubtourModeChoice')" value="SubtourModeChoice" />
+                          </el-select>
                         </el-form-item>
                         <el-form-item :label="$l('weight')">
                           <el-input v-model="item.weight" clearable></el-input>
@@ -78,7 +86,15 @@
                     <el-collapse-transition>
                       <div class="collapse_item_content" v-show="item.open">
                         <el-form-item :label="$l('strategyName')">
-                          <el-input v-model="item.strategyName" clearable></el-input>
+                          <!-- <el-input v-model="item.strategyName" clearable></el-input> -->
+                          <el-select v-model="item.strategyName" clearable>
+                            <el-option :label="$l('SelectRandom')" value="SelectRandom" />
+                            <el-option :label="$l('BestScore')" value="BestScore" />
+                            <el-option :label="$l('KeepLastSelected')" value="KeepLastSelected" />
+                            <el-option :label="$l('ChangeExpBeta')" value="ChangeExpBeta" />
+                            <el-option :label="$l('SelectExpBeta')" value="SelectExpBeta" />
+                            <el-option :label="$l('SelectPathSizeLogit')" value="SelectPathSizeLogit" />
+                          </el-select>
                         </el-form-item>
                         <el-form-item :label="$l('weight')">
                           <el-input v-model="item.weight" clearable></el-input>
@@ -184,6 +200,54 @@
   "subpopulation": {
     "zh-CN":"子出行群体ID",
     "en-US":"subpopulation"
+  },
+  "ReRoute": {
+    "zh-CN":"ReRoute",
+    "en-US":"ReRoute"
+  },
+  "TimeAllocationMutator": {
+    "zh-CN":"TimeAllocationMutator",
+    "en-US":"TimeAllocationMutator"
+  },
+  "TimeAllocationMutator_ReRoute": {
+    "zh-CN":"TimeAllocationMutator_ReRoute",
+    "en-US":"TimeAllocationMutator_ReRoute"
+  },
+  "ChangeSingleTripMode": {
+    "zh-CN":"ChangeSingleTripMode",
+    "en-US":"ChangeSingleTripMode"
+  },
+  "ChangeTripMode": {
+    "zh-CN":"ChangeTripMode",
+    "en-US":"ChangeTripMode"
+  },
+  "SubtourModeChoice": {
+    "zh-CN":"SubtourModeChoice",
+    "en-US":"SubtourModeChoice"
+  },
+  "SelectRandom": {
+    "zh-CN":"SelectRandom",
+    "en-US":"SelectRandom"
+  },
+  "BestScore": {
+    "zh-CN":"BestScore",
+    "en-US":"BestScore"
+  },
+  "KeepLastSelected": {
+    "zh-CN":"KeepLastSelected",
+    "en-US":"KeepLastSelected"
+  },
+  "ChangeExpBeta": {
+    "zh-CN":"ChangeExpBeta",
+    "en-US":"ChangeExpBeta"
+  },
+  "SelectExpBeta": {
+    "zh-CN":"SelectExpBeta",
+    "en-US":"SelectExpBeta"
+  },
+  "SelectPathSizeLogit": {
+    "zh-CN":"SelectPathSizeLogit",
+    "en-US":"SelectPathSizeLogit"
   },
 }
 </language>

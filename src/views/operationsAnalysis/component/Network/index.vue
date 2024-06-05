@@ -1,7 +1,10 @@
 <template>
   <el-collapse-item class="BusStopForm" :name="name">
     <div class="el-collapse-item__title" slot="title">
-      <el-checkbox :value="s_showLayer" @change="handleChangeShowLayer">{{ $l("network") }}</el-checkbox>
+      <el-checkbox :value="s_showLayer" @change="handleChangeShowLayer">
+        <span>{{ $l("network") }}</span>
+        <span v-if="loading" class="el-icon-loading" style="margin-left: 10px"></span>
+      </el-checkbox>
     </div>
     <div class="form">
       <div class="form_item">
@@ -147,6 +150,8 @@ export default {
       canSelect: false,
 
       colorsList: ColorList,
+
+      loading: false,
     };
   },
   created() {
@@ -157,6 +162,11 @@ export default {
       lineOffset: this.offset,
       colors: this.getLayerColors(this.colorsList[this.colors]),
       showNode: this.showNode,
+      event: {
+        [MAP_EVENT.LAYER_LOADING]: ({ data }) => {
+          this.loading = data;
+        },
+      },
     });
   },
   mounted() {

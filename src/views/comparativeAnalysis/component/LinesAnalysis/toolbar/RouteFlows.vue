@@ -330,7 +330,12 @@ export default {
           const { linkObj: oldLinkObj, maxPassenger: oldMaxPassenger } = this.getListObj(res.data.before);
           const { linkObj: newLinkObj, maxPassenger: newMaxPassenger } = this.getListObj(res.data.after);
 
-          this.stopMap = new Map(res.data.stops.map((v) => [v.id, v]));
+          this.stopMap = new Map(
+            res.data.stops.map((v, i) => {
+              v.index = i;
+              return [v.id, v];
+            })
+          );
           this.oldLinkObj = oldLinkObj;
           this.newLinkObj = newLinkObj;
           this.sortList = this.getSortList(oldLinkObj, newLinkObj);

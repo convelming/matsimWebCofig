@@ -111,11 +111,12 @@
         <el-table-column prop="loadStatus" :label="$l('方案状态')">
           <template slot-scope="{ row }">{{ row.loadStatus }} / {{ row.runStatus }}</template>
         </el-table-column>
-        <el-table-column :label="$l('操作')" width="350">
+        <el-table-column :label="$l('操作')" width="400">
           <template slot-scope="{ row }">
             <el-button v-if="!row.noRun" :disabled="row.loadStatus != '已加载'" type="primary" size="mini" @click="handlePlanAdjustmentToDetail(row)">{{ $l("修改") }}</el-button>
             <el-button v-if="!row.noRun" type="primary" size="mini" :loading="row.runStatus == '运行中'" @click="handleOperationsAnalysisRun(row)">{{ $l("运行") }}</el-button>
             <el-button type="primary" size="mini" :disabled="row.noLoad || row.loadStatus == '已加载'" :loading="row.loadStatus == '加载中'" @click="handlePlanAdjustmentLoad(row)">{{ $l("加载") }}</el-button>
+            <el-button v-if="!row.noRun" type="primary" size="mini" @click="handleCopy(row)">{{ $l("克隆") }}</el-button>
             <el-button v-if="!row.noRun" type="primary" size="mini" @click="handleDelect(row)">{{ $l("删除") }}</el-button>
           </template>
         </el-table-column>
@@ -293,6 +294,14 @@
   "公交系统总体运行评估包括可达性。": {
     "zh-CN":"公交系统总体运行评估包括可达性。",
     "en-US":"公交系统总体运行评估包括可达性。",
+  },
+  "克隆": {
+    "zh-CN":"克隆",
+    "en-US":"克隆",
+  },
+  "方案克隆成功": {
+    "zh-CN":"方案克隆成功",
+    "en-US":"方案克隆成功",
   },
   "MATSim webViz": {
     "zh-CN":"MATSim webViz",
@@ -543,6 +552,35 @@ export default {
     },
     handleDelect(row) {
       this.$store.dispatch("deleteDataSource", row);
+    },
+    async handleCopy(row) {
+      try {
+        const { value, action } = await this.$prompt(this.$l("请输入方案名称"), this.$l("提示"), {
+          confirmButtonText: this.$l("确定"),
+          cancelButtonText: this.$l("取消"),
+          inputValidator: (value) => {
+            if (!value) {
+              return this.$l("请输入方案名称");
+            }
+            if (!/^[a-zA-Z0-9_]+$/.test(value)) {
+              return this.$l("方案名称只能使用英文字母，数字和下划线");
+            }
+            if (value.slice(-4).toLowerCase() == "base") {
+              return this.$l("方案名称不能以base结尾");
+            }
+            return true;
+          },
+        });
+        if (action == "confirm") {
+          const data = await this.$store.dispatch("copyDataSource", {
+            source: row.name,
+            target: this.dataBase + "/" + value,
+          });
+          if (data.code == 200) {
+            this.$message.success(this.$l("方案克隆成功"));
+          }
+        }
+      } catch (error) {}
     },
     handleToSelectDataBase(key) {
       this.handleShowDataBase(key);

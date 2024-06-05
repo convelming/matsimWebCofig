@@ -55,6 +55,7 @@ export const MAP_EVENT = {
   LAYER_BEFORE_RENDER: "layer:before:render",
   // 图层渲染后
   LAYER_AFTER_RENDER: "layer:after:render",
+  LAYER_LOADING: "layer:loading",
 };
 
 export const MAP_ZOOM_RANGE = {

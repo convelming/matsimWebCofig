@@ -239,7 +239,7 @@ export default {
         zoom: 11,
         enableRotate: true,
         zoom: 15,
-        // minPitch: -90,
+        minPitch: -90,
       });
       this._Map.addLayer(this._MapLayer);
       window._Map = this._Map;
