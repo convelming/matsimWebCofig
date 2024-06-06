@@ -13,7 +13,7 @@
       </div>
       <div class="title">
         <img class="logo" src="@/assets/image/favicon.png" alt="" />
-        <span>{{ $l("城市公交路线规划平台") }}</span>
+        <span>{{ $l("智慧公交线网仿真与在线优化平台") }}</span>
       </div>
       <div class="list">
         <div @click="handleClickItem('operationsAnalysis')" class="item" style="background-color: yellowgreen">
@@ -258,6 +258,10 @@
   "请选择基准MATSIM模型": {
     "zh-CN":"请选择基准MATSIM模型",
     "en-US":"请选择基准MATSIM模型",
+  },
+  "智慧公交线网仿真与在线优化平台": {
+    "zh-CN":"智慧公交线网仿真与在线优化平台",
+    "en-US":"智慧公交线网仿真与在线优化平台",
   },
   "城市公交路线规划平台": {
     "zh-CN":"城市公交路线规划平台",

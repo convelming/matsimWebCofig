@@ -38,6 +38,7 @@
 </language>
 
 <script>
+import { guid } from "@/utils/utils";
 import * as echarts from "echarts";
 import { vehicleLoad } from "@/api/index";
 export default {
@@ -77,9 +78,12 @@ export default {
     },
     // 请求数据
     getData() {
+      let _requestId = guid();
+      this._requestId = _requestId;
       this.loading = true;
       vehicleLoad(this.form)
         .then((res) => {
+          if (this._requestId != _requestId) return;
           const obj = {};
           for (const [key, value] of Object.entries(res.data)) {
             for (const stop of value) {
@@ -94,6 +98,7 @@ export default {
           this.loading = false;
         })
         .catch((err) => {
+          if (this._requestId != _requestId) return;
           this.list = [];
           this.timeList = [];
           this.updateChart();

@@ -13,14 +13,20 @@
           <el-slider :disabled="!s_showLayer" v-model="stopScale" :min="1" :max="20"></el-slider>
         </div>
       </div>
-      <div class="form_item" style="align-items: center; justify-content: flex-end">
+      <div class="form_item">
+        <div class="form_label">{{ $l("图标颜色：") }}</div>
+        <div class="form_value">
+          <el-color-picker :disabled="!s_showLayer" :title="$l('公交站点颜色')" size="mini" :predefine="predefineColors" v-model="stopColor" />
+        </div>
+      </div>
+      <!-- <div class="form_item" style="align-items: center; justify-content: flex-end"> -->
         <!-- <el-switch :disabled="!s_showLayer" style="width: 100%" v-model="showStopName" :active-text="$l('显示站点名称')"></el-switch> -->
-        <el-color-picker :disabled="!s_showLayer" :title="$l('公交站点颜色')" size="mini" :predefine="predefineColors" v-model="stopColor" />
+        <!-- <el-color-picker :disabled="!s_showLayer" :title="$l('公交站点颜色')" size="mini" :predefine="predefineColors" v-model="stopColor" /> -->
         <!-- <div aria-disabled="" :title="$l('公交线路查询')" :class="{ active: sreachLine, disabled: !s_showLayer }" class="icon_button icon_stop" @click="s_showLayer && handleSreachStop(!sreachLine)">
           <img class="img" src="@/assets/image/地图 (2).svg" alt="" />
         </div> -->
-        <div :title="$l('公交站点选取')" :class="{ active: selectStop, disabled: !s_showLayer }" class="icon_button el-icon-aim" @click="s_showLayer && handleSelectStop(!selectStop)"></div>
-      </div>
+        <!-- <div :title="$l('公交站点选取')" :class="{ active: selectStop, disabled: !s_showLayer }" class="icon_button el-icon-aim" @click="s_showLayer && handleSelectStop(!selectStop)"></div> -->
+      <!-- </div> -->
     </div>
   </el-collapse-item>
 </template>
@@ -34,6 +40,10 @@
   "图标大小：":{
     "zh-CN": "图标大小：",
     "en-US": "图标大小："
+  },
+  "图标颜色：":{
+    "zh-CN": "图标颜色：",
+    "en-US": "图标颜色："
   },
   "显示站点名称":{
     "zh-CN": "显示站点名称",
@@ -161,6 +171,7 @@ export default {
       this.$emit("update:showLayer", value);
     },
     handleEnable() {
+      this.handleSelectStop(true);
       this._Map.addLayer(this._StopsLayer);
       this._Map.addLayer(this._LinkLayer);
       this._StopsLayer.update();

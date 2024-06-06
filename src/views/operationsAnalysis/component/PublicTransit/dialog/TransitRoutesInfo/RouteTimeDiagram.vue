@@ -62,6 +62,7 @@
 </language>
 
 <script>
+import { guid } from "@/utils/utils";
 import * as echarts from "echarts";
 import { routeTimeDiagram } from "@/api/index";
 import { formatHour } from "@/utils/utils";
@@ -111,10 +112,13 @@ export default {
     },
     // 请求数据
     getData() {
+      let _requestId = guid();
+      this._requestId = _requestId;
       this.loading = true;
       this.$nextTick(() => {
         routeTimeDiagram(this.form)
           .then((res) => {
+            if (this._requestId != _requestId) return;
             const tableList = res.data[0].data
               .map((v) => [
                 {
@@ -158,6 +162,7 @@ export default {
             this.loading = false;
           })
           .catch((err) => {
+            if (this._requestId != _requestId) return;
             this.tableList = [];
             this.rowList = [];
             this.colList = [];

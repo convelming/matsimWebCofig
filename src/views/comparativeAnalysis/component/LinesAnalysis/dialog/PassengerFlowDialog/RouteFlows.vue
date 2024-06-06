@@ -166,12 +166,12 @@ export default {
 
       const step = 100;
       const margin = step / 4;
-      const titleHeight = step * 2;
       const labelHeight = step * 2;
       const width = (nodes.length - 1) * step + margin * 2;
+      const titleHeight = width / 30 * 5;
       const height = width + titleHeight * 2 + labelHeight;
       const chart1Bottom = width / 2 + titleHeight;
-      const chart2Bottom = chart1Bottom + titleHeight;
+      const chart2Bottom = chart1Bottom + labelHeight;
 
       const x = d3.scalePoint(
         nodes.map(({ id }) => id),
@@ -193,59 +193,59 @@ export default {
         fromOffsetObj[id] = 0;
         toOffsetObj[id] = 0;
       });
-      
+
       const lable_box = svg.append("g");
       lable_box
-        .attr("transform", (d) => `translate(${margin},${margin + titleHeight})`)
+        .attr("transform", (d) => `translate(${width / 30},${(width / 30) * 5})`)
         .append("rect")
         .attr("x", 0)
         .attr("y", 0)
-        .attr("width", step * 1.2)
-        .attr("height", step * 0.6)
-        .attr("fill", "#ff0000")
+        .attr("width", (width / 30) * 2)
+        .attr("height", (width / 30) * 1)
+        .attr("fill", "#ff0000");
       lable_box
         .append("text")
-        .attr("font-size", step * 0.4)
+        .attr("font-size", width / 50)
         .attr("fill", "#fff")
         .attr("text-anchor", "middle")
-        .attr("x", step * 0.6)
-        .attr("y", step * 0.45)
+        .attr("x", width / 30)
+        .attr("y", (width / 30) * 0.7)
         .text("上车");
-        
+
       const lable_box2 = svg.append("g");
       lable_box2
-        .attr("transform", (d) => `translate(${margin +  step * 1.4},${margin + titleHeight})`)
+        .attr("transform", (d) => `translate(${(width / 30) * 3.5},${(width / 30) * 5})`)
         .append("rect")
         .attr("x", 0)
         .attr("y", 0)
-        .attr("width", step * 1.2)
-        .attr("height", step * 0.6)
-        .attr("fill", "#00ff00")
+        .attr("width", (width / 30) * 2)
+        .attr("height", (width / 30) * 1)
+        .attr("fill", "#00ff00");
       lable_box2
         .append("text")
-        .attr("font-size", step * 0.4)
+        .attr("font-size", width / 50)
         .attr("fill", "#fff")
         .attr("text-anchor", "middle")
-        .attr("x", step * 0.6)
-        .attr("y", step * 0.45)
+        .attr("x", width / 30)
+        .attr("y", (width / 30) * 0.7)
         .text("下车");
 
       const title_box = svg
         .append("g")
         .append("text")
         .attr("font-family", "sans-serif")
-        .attr("font-size", step * 0.6)
+        .attr("font-size", width / 30)
         .attr("text-anchor", "middle")
         .attr("x", width / 2)
-        .attr("y", step + margin)
+        .attr("y", (width / 30) * 2)
         .text(this.routeInfo.routeId);
       const subtitle_box = svg
         .append("text")
         .attr("font-family", "sans-serif")
-        .attr("font-size", step * 0.4)
+        .attr("font-size", width / 40)
         .attr("text-anchor", "middle")
         .attr("x", width / 2)
-        .attr("y", step * 1.5 + margin)
+        .attr("y", (width / 30) * 3)
         .attr("dy", "1em")
         .text("base");
 
@@ -335,18 +335,18 @@ export default {
         .append("g")
         .append("text")
         .attr("font-family", "sans-serif")
-        .attr("font-size", step * 0.6)
+        .attr("font-size", width / 30)
         .attr("text-anchor", "middle")
         .attr("x", width / 2)
-        .attr("y", height - step * 0.5 - margin)
+        .attr("y", height - (width / 30) * 2)
         .text(this.routeInfo.routeId);
       const subtitle_box2 = svg
         .append("text")
         .attr("font-family", "sans-serif")
-        .attr("font-size", step * 0.4)
+        .attr("font-size", width / 40)
         .attr("text-anchor", "middle")
         .attr("x", width / 2)
-        .attr("y", height - step * 2 - margin)
+        .attr("y", height - (width / 30) * 5)
         .attr("dy", "1em")
         .text("contrast");
 

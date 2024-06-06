@@ -49,52 +49,72 @@
     "en-US": "Stop Id"
   },
   "#entering":{
-    "zh-CN": "#entering",
+    "zh-CN": "上车人数",
     "en-US": "#entering"
   },
   "#entering-base":{
-    "zh-CN": "#entering-base",
+    "zh-CN": "上车人数-基础",
     "en-US": "#entering-base"
   },
   "#entering-contrast":{
-    "zh-CN": "#entering-contrast",
+    "zh-CN": "上车人数-对比",
     "en-US": "#entering-contrast"
   },
   "#entering-actual":{
-    "zh-CN": "#entering-actual",
+    "zh-CN": "上车人数-实际",
     "en-US": "#entering-actual"
   },
   "#leaving":{
-    "zh-CN": "#leaving",
+    "zh-CN": "下车人数",
     "en-US": "#leaving"
   },
   "#leaving-base":{
-    "zh-CN": "#leaving-base",
+    "zh-CN": "下车人数-基础",
     "en-US": "#leaving-base"
   },
   "#leaving-contrast":{
-    "zh-CN": "#leaving-contrast",
+    "zh-CN": "下车人数-对比",
     "en-US": "#leaving-contrast"
   },
   "#leaving-actual":{
-    "zh-CN": "#leaving-actual",
+    "zh-CN": "下车人数-实际",
     "en-US": "#leaving-actual"
   },
   "#passengers":{
-    "zh-CN": "#passengers",
+    "zh-CN": "载客量",
     "en-US": "#passengers"
   },
   "#passengers-base":{
-    "zh-CN": "#passengers-base",
+    "zh-CN": "载客量-基础",
     "en-US": "#passengers-base"
   },
   "#passengers-contrast":{
-    "zh-CN": "#passengers-contrast",
+    "zh-CN": "载客量-对比",
     "en-US": "#passengers-contrast"
   },
   "#passengers-actual":{
-    "zh-CN": "#passengers-actual",
+    "zh-CN": "载客量-实际",
     "en-US": "#passengers-actual"
+  },
+  "站点上下客信息":{
+    "zh-CN": "站点上下客信息",
+    "en-US": "站点上下客信息"
+  },
+  "车上乘客量":{
+    "zh-CN": "车上乘客量",
+    "en-US": "车上乘客量"
+  },
+  "base":{
+    "zh-CN": "基础",
+    "en-US": "base"
+  },
+  "contrast":{
+    "zh-CN": "对比",
+    "en-US": "contrast"
+  },
+  "actual":{
+    "zh-CN": "实际",
+    "en-US": "actual"
   },
 }
 </language>
@@ -103,6 +123,7 @@
 import * as echarts from "echarts";
 import { passengerEnteringAndLeaving } from "@/api/index";
 import { passengerInfo } from "@/api/contrast";
+import { color } from "d3";
 export default {
   props: {
     routeInfo: {
@@ -173,23 +194,96 @@ export default {
       }
 
       return {
+        title: [
+          {
+            text: this.$l("站点上下客信息"),
+            left: "center",
+            top: 40,
+            textStyle: {
+              fontSize: 14,
+            },
+          },
+          {
+            text: this.$l("车上乘客量"),
+            left: "center",
+            top: "61%",
+            textStyle: {
+              fontSize: 14,
+            },
+          },
+          {
+            text: this.$l("#entering").split("").join("\n"),
+            left: 0,
+            top: "20%",
+            textStyle: {
+              fontSize: 14,
+            },
+          },
+          {
+            text: this.$l("#leaving").split("").join("\n"),
+            left: 0,
+            top: "40%",
+            textStyle: {
+              fontSize: 14,
+            },
+          },
+          {
+            text: this.$l("#passengers").split("").join("\n"),
+            left: 0,
+            top: "72%",
+            textStyle: {
+              fontSize: 14,
+            },
+          },
+        ],
         tooltip: {
           trigger: "axis",
           axisPointer: {
             type: "shadow",
           },
+
+          formatter(params, ticket) {
+            const obj = {};
+            for (const v of params) {
+              let [name1, name2] = v.seriesId.split("-");
+              if (!obj[name2]) obj[name2] = { marker: v.marker, data: {} };
+              obj[name2].data[name1] = v.data;
+            }
+            let l1 = [];
+            for (const k1 in obj) {
+              const v1 = obj[k1];
+              const l2 = [];
+              for (const k2 in v1.data) {
+                const v2 = v1.data[k2];
+                l2.push(`
+                  <div>
+                    <span style="display: inline-block;width: 100px;padding-left: 10px;">${k2}：</span>
+                    <span style="display: inline-block;width: 50px;text-align:right">${v2}</span>
+                  </div>
+                `);
+              }
+              l1.push(`
+                <div style="font-weight: bold;font-size:14px;">
+                  ${v1.marker}
+                  <span>${k1}</span>
+                </div>
+                <div style="font-size:12px;">\n${l2.join("\n")}\n</div>
+              `);
+            }
+            return l1.join("<br/>\n");
+          },
         },
         legend: {},
         grid: [
           {
-            top: 70,
+            top: 80,
             bottom: "42.5%",
             left: 50,
             right: 10,
             backgroundColor: "#ccc",
           },
           {
-            top: "62.5%",
+            top: "67.5%",
             bottom: 70,
             left: 50,
             right: 10,
@@ -234,7 +328,9 @@ export default {
         ],
         series: [
           {
-            name: this.$l("#entering-base"),
+            id: this.$l("#entering-base"),
+            name: this.$l("base"),
+            color: "#91cc75",
             type: "bar",
             stack: "base",
             xAxisIndex: 0,
@@ -242,7 +338,10 @@ export default {
             data: this.list.map((v) => v.entering[0]),
           },
           {
-            name: this.$l("#entering-contrast"),
+            id: this.$l("#entering-contrast"),
+            name: this.$l("contrast"),
+            text: "1233",
+            color: "#fac858",
             type: "bar",
             stack: "contrast",
             xAxisIndex: 0,
@@ -250,7 +349,9 @@ export default {
             data: this.list.map((v) => v.entering[1]),
           },
           {
-            name: this.$l("#entering-actual"),
+            id: this.$l("#entering-actual"),
+            name: this.$l("actual"),
+            color: "#ee6666",
             type: "bar",
             stack: "actual",
             xAxisIndex: 0,
@@ -258,7 +359,9 @@ export default {
             data: this.list.map((v) => v.entering[2]),
           },
           {
-            name: this.$l("#leaving-base"),
+            id: this.$l("#leaving-base"),
+            name: this.$l("base"),
+            color: "#91cc75",
             type: "bar",
             stack: "base",
             xAxisIndex: 0,
@@ -266,7 +369,9 @@ export default {
             data: this.list.map((v) => v.leaving[0] * -1),
           },
           {
-            name: this.$l("#leaving-contrast"),
+            id: this.$l("#leaving-contrast"),
+            name: this.$l("contrast"),
+            color: "#fac858",
             type: "bar",
             stack: "contrast",
             xAxisIndex: 0,
@@ -274,7 +379,9 @@ export default {
             data: this.list.map((v) => v.leaving[1] * -1),
           },
           {
-            name: this.$l("#leaving-actual"),
+            id: this.$l("#leaving-actual"),
+            name: this.$l("actual"),
+            color: "#ee6666",
             type: "bar",
             stack: "actual",
             xAxisIndex: 0,
@@ -282,21 +389,27 @@ export default {
             data: this.list.map((v) => v.leaving[2] * -1),
           },
           {
-            name: this.$l("#passengers-base"),
+            id: this.$l("#passengers-base"),
+            name: this.$l("base"),
+            color: "#91cc75",
             type: "bar",
             xAxisIndex: 1,
             yAxisIndex: 1,
             data: this.list.map((v) => v.passengers[0]),
           },
           {
-            name: this.$l("#passengers-contrast"),
+            id: this.$l("#passengers-contrast"),
+            name: this.$l("contrast"),
+            color: "#fac858",
             type: "bar",
             xAxisIndex: 1,
             yAxisIndex: 1,
             data: this.list.map((v) => v.passengers[1]),
           },
           {
-            name: this.$l("#passengers-actual"),
+            id: this.$l("#passengers-actual"),
+            name: this.$l("actual"),
+            color: "#ee6666",
             type: "bar",
             xAxisIndex: 1,
             yAxisIndex: 1,

@@ -27,12 +27,19 @@
           <ColorSelect :disabled="!s_showLayer" v-model="colors" :colorsList="colorsList" />
         </div>
       </div>
-      <div class="form_item" style="align-items: center">
-        <el-switch :disabled="!s_showLayer" style="width: 100%" v-model="showNode" :active-text="$l('showNode')"></el-switch>
-        <!-- <el-color-picker :disabled="!s_showLayer" :title="$l('color')" size="mini" :predefine="predefineColors" v-model="color" /> -->
-        <div :title="$l('selectLine')" :class="{ disabled: !s_showLayer }" class="icon_button el-icon-circle-close" @click="s_showLayer && handleClearSelect()"></div>
-        <div :title="$l('selectLine')" :class="{ active: canSelect, disabled: !s_showLayer }" class="icon_button el-icon-aim" @click="s_showLayer && handleCanSelect(!canSelect)"></div>
+      <div class="form_item">
+        <div class="form_label">
+          <div>{{ $l("showNode") }}</div>
+        </div>
+        <div class="form_value">
+          <el-switch :disabled="!s_showLayer" style="width: 100%" v-model="showNode"></el-switch>
+        </div>
       </div>
+      <!-- <div class="form_item" style="align-items: center"> -->
+        <!-- <el-color-picker :disabled="!s_showLayer" :title="$l('color')" size="mini" :predefine="predefineColors" v-model="color" /> -->
+        <!-- <div :title="$l('selectLine')" :class="{ disabled: !s_showLayer }" class="icon_button el-icon-circle-close" @click="s_showLayer && handleClearSelect()"></div>
+        <div :title="$l('selectLine')" :class="{ active: canSelect, disabled: !s_showLayer }" class="icon_button el-icon-aim" @click="s_showLayer && handleCanSelect(!canSelect)"></div> -->
+      <!-- </div> -->
     </div>
   </el-collapse-item>
 </template>
@@ -56,8 +63,8 @@
     "en-US": "Color: "
   },
   "showNode":{
-    "zh-CN": "显示节点",
-    "en-US": "Show Nodes"
+    "zh-CN": "显示节点：",
+    "en-US": "Show Nodes："
   },
   "selectLine":{
     "zh-CN": "选择路段",
@@ -71,22 +78,22 @@ import { MAP_EVENT } from "@/mymap";
 import { NetworkLayer } from "./layer/NetworkLayer";
 
 const ColorList = [
-  ["#313695", "#74add1", "#e0f3f8", "#ffffbf", "#fdae61", "#f46d43", "#a50026"],
-  ["rgb(254, 224, 210)", "rgb(252, 187, 161)", "rgb(252, 146, 114)", "rgb(251, 106, 74)", "rgb(239, 59, 44)", "rgb(203, 24, 29)", "rgb(153, 0, 13)"],
-  ["rgb(251, 234, 215)", "rgb(249, 219, 195)", "rgb(247, 212, 175)", "rgb(245, 195, 153)", "rgb(245, 183, 133)", "rgb(241, 165, 102)", "rgb(237, 135, 52)"],
-  ["rgb(251, 234, 215)", "rgb(248, 230, 196)", "rgb(247, 212, 175)", "rgb(243, 212, 155)", "rgb(245, 199, 133)", "rgb(241, 185, 102)", "rgb(237, 161, 52)"],
-  ["rgb(249, 241, 217)", "rgb(248, 230, 196)", "rgb(245, 225, 177)", "rgb(243, 212, 155)", "rgb(239, 209, 139)", "rgb(235, 197, 108)", "rgb(227, 179, 60)"],
-  ["rgb(249, 245, 217)", "rgb(247, 239, 197)", "rgb(245, 233, 177)", "rgb(241, 229, 157)", "rgb(239, 223, 139)", "rgb(235, 215, 108)", "rgb(227, 201, 60)"],
-  ["rgb(240, 248, 213)", "rgb(235, 244, 190)", "rgb(222, 237, 169)", "rgb(221, 233, 147)", "rgb(215, 227, 124)", "rgb(205, 221, 92)", "rgb(187, 209, 38)"],
-  ["rgb(240, 248, 213)", "rgb(225, 241, 191)", "rgb(222, 237, 169)", "rgb(205, 233, 147)", "rgb(195, 227, 124)", "rgb(181, 221, 92)", "rgb(155, 209, 38)"],
-  ["rgb(223, 247, 213)", "rgb(207, 243, 189)", "rgb(193, 239, 169)", "rgb(177, 235, 147)", "rgb(161, 233, 124)", "rgb(137, 227, 92)", "rgb(96, 217, 38)"],
-  ["rgb(215, 245, 223)", "rgb(193, 241, 207)", "rgb(173, 235, 191)", "rgb(151, 231, 175)", "rgb(131, 225, 161)", "rgb(100, 219, 137)", "rgb(48, 205, 96)"],
-  ["rgb(211, 242, 236)", "rgb(188, 234, 227)", "rgb(171, 229, 211)", "rgb(149, 223, 201)", "rgb(129, 215, 191)", "rgb(106, 209, 179)", "rgb(42, 189, 147)"],
-  ["rgb(211, 242, 236)", "rgb(188, 234, 227)", "rgb(163, 227, 223)", "rgb(139, 219, 215)", "rgb(116, 213, 207)", "rgb(82, 201, 195)", "rgb(24, 183, 175)"],
-  ["rgb(207, 243, 245)", "rgb(186, 233, 242)", "rgb(163, 225, 238)", "rgb(135, 223, 231)", "rgb(112, 217, 227)", "rgb(86, 211, 221)", "rgb(16, 191, 207)"],
-  ["rgb(211, 240, 246)", "rgb(186, 233, 242)", "rgb(163, 225, 238)", "rgb(143, 219, 235)", "rgb(119, 207, 229)", "rgb(97, 199, 224)", "rgb(28, 181, 215)"],
-  ["rgb(211, 240, 246)", "rgb(186, 233, 242)", "rgb(163, 225, 238)", "rgb(143, 211, 231)", "rgb(119, 207, 229)", "rgb(97, 199, 224)", "rgb(30, 169, 207)"],
-  ["rgb(209, 227, 243)", "rgb(185, 211, 237)", "rgb(161, 197, 229)", "rgb(137, 181, 223)", "rgb(108, 165, 215)", "rgb(78, 145, 207)", "rgb(18, 108, 191)"],
+  ["#313695", "#74add1", "#e0f3f8", "#fdae61", "#f46d43", "#a50026"],
+  ["rgb(254, 224, 210)", "rgb(252, 187, 161)", "rgb(252, 146, 114)", "rgb(239, 59, 44)", "rgb(203, 24, 29)", "rgb(153, 0, 13)"],
+  ["rgb(251, 234, 215)", "rgb(249, 219, 195)", "rgb(247, 212, 175)", "rgb(245, 183, 133)", "rgb(241, 165, 102)", "rgb(237, 135, 52)"],
+  ["rgb(251, 234, 215)", "rgb(248, 230, 196)", "rgb(247, 212, 175)", "rgb(245, 199, 133)", "rgb(241, 185, 102)", "rgb(237, 161, 52)"],
+  ["rgb(249, 241, 217)", "rgb(248, 230, 196)", "rgb(245, 225, 177)", "rgb(239, 209, 139)", "rgb(235, 197, 108)", "rgb(227, 179, 60)"],
+  ["rgb(249, 245, 217)", "rgb(247, 239, 197)", "rgb(245, 233, 177)", "rgb(239, 223, 139)", "rgb(235, 215, 108)", "rgb(227, 201, 60)"],
+  ["rgb(240, 248, 213)", "rgb(235, 244, 190)", "rgb(222, 237, 169)", "rgb(215, 227, 124)", "rgb(205, 221, 92)", "rgb(187, 209, 38)"],
+  ["rgb(240, 248, 213)", "rgb(225, 241, 191)", "rgb(222, 237, 169)", "rgb(195, 227, 124)", "rgb(181, 221, 92)", "rgb(155, 209, 38)"],
+  ["rgb(223, 247, 213)", "rgb(207, 243, 189)", "rgb(193, 239, 169)", "rgb(161, 233, 124)", "rgb(137, 227, 92)", "rgb(96, 217, 38)"],
+  ["rgb(215, 245, 223)", "rgb(193, 241, 207)", "rgb(173, 235, 191)", "rgb(131, 225, 161)", "rgb(100, 219, 137)", "rgb(48, 205, 96)"],
+  ["rgb(211, 242, 236)", "rgb(188, 234, 227)", "rgb(171, 229, 211)", "rgb(129, 215, 191)", "rgb(106, 209, 179)", "rgb(42, 189, 147)"],
+  ["rgb(211, 242, 236)", "rgb(188, 234, 227)", "rgb(163, 227, 223)", "rgb(116, 213, 207)", "rgb(82, 201, 195)", "rgb(24, 183, 175)"],
+  ["rgb(207, 243, 245)", "rgb(186, 233, 242)", "rgb(163, 225, 238)", "rgb(112, 217, 227)", "rgb(86, 211, 221)", "rgb(16, 191, 207)"],
+  ["rgb(211, 240, 246)", "rgb(186, 233, 242)", "rgb(163, 225, 238)", "rgb(119, 207, 229)", "rgb(97, 199, 224)", "rgb(28, 181, 215)"],
+  ["rgb(211, 240, 246)", "rgb(186, 233, 242)", "rgb(163, 225, 238)", "rgb(119, 207, 229)", "rgb(97, 199, 224)", "rgb(30, 169, 207)"],
+  ["rgb(209, 227, 243)", "rgb(185, 211, 237)", "rgb(161, 197, 229)", "rgb(108, 165, 215)", "rgb(78, 145, 207)", "rgb(18, 108, 191)"],
 ];
 
 export default {
@@ -184,9 +191,36 @@ export default {
   methods: {
     getLayerColors(colors) {
       try {
-        return { 0: colors[0], 0.4: colors[1], 0.6: colors[2], 0.75: colors[3], 0.85: colors[4], 0.95: colors[5], 1: colors[6] };
+        return {
+          0: colors[0],
+          0.4: colors[0],
+          0.4: colors[1],
+          0.6: colors[1],
+          0.6: colors[2],
+          0.75: colors[2],
+          0.75: colors[3],
+          0.85: colors[3],
+          0.85: colors[4],
+          0.95: colors[4],
+          0.95: colors[5],
+          1: colors[5],
+        };
       } catch (error) {
-        return { 0: "#313695", 0.4: "#74add1", 0.6: "#e0f3f8", 0.75: "#ffffbf", 0.85: "#fdae61", 0.95: "#f46d43", 1: "#a50026" };
+        colors = ["#313695", "#74add1", "#e0f3f8", "#fdae61", "#f46d43", "#a50026"];
+        return {
+          0: colors[0],
+          0.4: colors[0],
+          0.4: colors[1],
+          0.6: colors[1],
+          0.6: colors[2],
+          0.75: colors[2],
+          0.75: colors[3],
+          0.85: colors[3],
+          0.85: colors[4],
+          0.95: colors[4],
+          0.95: colors[5],
+          1: colors[5],
+        };
       }
     },
     handleChangeShowLayer(value) {
@@ -196,7 +230,7 @@ export default {
     // 组件初始化事件
     handleEnable() {
       this._Map.addLayer(this._NetworkLayer);
-      this.handleCanSelect(this.canSelect);
+      this.handleCanSelect(true);
       this.rootVue.$on("timeChange", this.handleTimeChange);
       this.rootVue.$on("setSelectLine", this.handleSetSelectLine);
       this.rootVue.$on("setSelectNode", this.handleSetSelectNode);
@@ -204,6 +238,7 @@ export default {
     // 组件卸载事件
     handleDisable() {
       this._Map.removeLayer(this._NetworkLayer);
+      this.handleCanSelect(false);
       this.rootVue.$off("timeChange", this.handleTimeChange);
       this.rootVue.$off("setSelectLine", this.handleSetSelectLine);
       this.rootVue.$off("setSelectNode", this.handleSetSelectNode);

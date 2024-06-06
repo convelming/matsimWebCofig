@@ -35,7 +35,7 @@ export class ReachableStopsLayer extends Layer {
         "#include <output_fragment>",
         `
           #if defined(USE_MAP)
-            vec4 textColor = texture2D( map, uv );
+            vec4 textColor = texture2D( map, vUv );
             float length = (textColor.r + textColor.g + textColor.b) / 3.0  ;
             if(length < 0.5){
               outgoingLight = vec3(1.0);

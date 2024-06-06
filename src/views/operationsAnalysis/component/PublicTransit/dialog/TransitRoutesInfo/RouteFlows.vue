@@ -56,6 +56,7 @@
 </language>
 
 <script>
+import { guid } from "@/utils/utils";
 import * as d3 from "d3";
 import { routeFlows } from "@/api/index";
 import { formatHour } from "@/utils/utils";
@@ -106,9 +107,12 @@ export default {
     },
     // 请求数据
     getData() {
+      let _requestId = guid();
+      this._requestId = _requestId;
       this.loading = true;
       routeFlows(this.form)
         .then((res) => {
+          if (this._requestId != _requestId) return;
           const list = [];
           const linkObj = {};
           const fromOffsetObj = {};
@@ -140,6 +144,7 @@ export default {
           console.log(this.linkObj);
         })
         .catch((err) => {
+          if (this._requestId != _requestId) return;
           this.list = [];
           this.linkObj = {};
           this.src = this.getChart();
@@ -153,6 +158,7 @@ export default {
       const maxValue = this.maxPassenger <= 0 ? 1 : this.maxPassenger;
 
       const step = 100;
+      console.log("getChart", step);
       const marginTop = step * 2;
       const marginBottom = step * 2;
       const marginLeft = step / 4;
@@ -200,49 +206,49 @@ export default {
           return `M${x1},${height - marginBottom}A${r},${r} 0,0,${x1 < x2 ? 1 : 0} ${x2},${height - marginBottom}`;
         });
       const lable_box = svg.append("g");
+
       lable_box
-        .attr("transform", (d) => `translate(${marginLeft},${marginTop})`)
+        .attr("transform", (d) => `translate(${width / 30},${(width / 30) * 5})`)
         .append("rect")
         .attr("x", 0)
         .attr("y", 0)
-        .attr("width", step * 1.2)
-        .attr("height", step * 0.6)
-        .attr("fill", "#ff0000")
+        .attr("width", (width / 30) * 2)
+        .attr("height", (width / 30) * 1)
+        .attr("fill", "#ff0000");
       lable_box
         .append("text")
-        .attr("font-size", step * 0.4)
+        .attr("font-size", width / 50)
         .attr("fill", "#fff")
         .attr("text-anchor", "middle")
-        .attr("x", step * 0.6)
-        .attr("y", step * 0.45)
+        .attr("x", width / 30)
+        .attr("y", (width / 30) * 0.7)
         .text("上车");
-        
+
       const lable_box2 = svg.append("g");
       lable_box2
-        .attr("transform", (d) => `translate(${marginLeft +  step * 1.4},${marginTop})`)
+        .attr("transform", (d) => `translate(${(width / 30) * 3.5},${(width / 30) * 5})`)
         .append("rect")
         .attr("x", 0)
         .attr("y", 0)
-        .attr("width", step * 1.2)
-        .attr("height", step * 0.6)
-        .attr("fill", "#00ff00")
+        .attr("width", (width / 30) * 2)
+        .attr("height", (width / 30) * 1)
+        .attr("fill", "#00ff00");
       lable_box2
         .append("text")
-        .attr("font-size", step * 0.4)
+        .attr("font-size", width / 50)
         .attr("fill", "#fff")
         .attr("text-anchor", "middle")
-        .attr("x", step * 0.6)
-        .attr("y", step * 0.45)
+        .attr("x", width / 30)
+        .attr("y", (width / 30) * 0.7)
         .text("下车");
 
       const title_box = svg.append("g");
       title_box
         .append("text")
-
-        .attr("font-size", step * 0.6)
+        .attr("font-size", width / 30)
         .attr("text-anchor", "middle")
         .attr("x", width / 2)
-        .attr("y", step)
+        .attr("y", (width / 30) * 2)
         .text(this.form.routeId);
       if (this.form.single) {
         const times = this.form.departureId.split("_");
@@ -250,10 +256,10 @@ export default {
         title_box
           .append("text")
           .attr("font-family", "sans-serif")
-          .attr("font-size", step * 0.4)
+          .attr("font-size", width / 40)
           .attr("text-anchor", "middle")
           .attr("x", width / 2)
-          .attr("y", step * 1.5)
+          .attr("y", (width / 30) * 3)
           .attr("dy", "1em")
           .text(subtitle);
       } else {
@@ -261,10 +267,10 @@ export default {
         title_box
           .append("text")
           .attr("font-family", "sans-serif")
-          .attr("font-size", step * 0.4)
+          .attr("font-size", width / 40)
           .attr("text-anchor", "middle")
           .attr("x", width / 2)
-          .attr("y", step * 1.5)
+          .attr("y", (width / 30) * 3)
           .attr("dy", "1em")
           .text(subtitle);
       }

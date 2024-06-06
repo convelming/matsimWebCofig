@@ -14,7 +14,7 @@ const BUILD_ZOOM = 11;
 export class NetworkLayer extends Layer {
   colors = ColorBar2D.defaultColors;
   lineWidth = 6;
-  lineOffset = 6;
+  lineOffset = 0;
   time = 0;
   
   material = null;
@@ -61,30 +61,7 @@ export class NetworkLayer extends Layer {
         })
       ),
     };
-
-    // this.worker = new CarMotionLayerWorker();
-    // this.worker.onmessage = (event) => {
-    //   const { key, data } = event.data;
-    //   switch (key) {
-    //     case "getNetworkTile":
-    //       this.handleGetNetworkTileCallback(data);
-    //       break;
-    //   }
-    // };
-    // this.worker.addEventListener("error", (error) => {
-    //   console.log(error);
-    // });
-
-    // this.worker.postMessage({
-    //   key: "getNetworkTile",
-    //   data: {
-    //     row: 1668,
-    //     col: 888,
-    //   },
-    // });
   }
-
-  handleGetNetworkTileCallback(data) { }
 
   setSelectLine(lineId) {
     console.log("setSelectLine", lineId);

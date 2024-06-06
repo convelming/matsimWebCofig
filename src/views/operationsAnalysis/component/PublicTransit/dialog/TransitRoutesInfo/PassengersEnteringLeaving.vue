@@ -37,21 +37,22 @@
     "en-US": "Stop Id"
   },
   "#entering":{
-    "zh-CN": "#entering",
+    "zh-CN": "上车人数",
     "en-US": "#entering"
   },
   "#leaving":{
-    "zh-CN": "#leaving",
+    "zh-CN": "下车人数",
     "en-US": "#leaving"
   },
   "#passengers":{
-    "zh-CN": "#passengers",
+    "zh-CN": "载客量",
     "en-US": "#passengers"
   },
 }
 </language>
 
 <script>
+import { guid } from "@/utils/utils";
 import * as echarts from "echarts";
 import { passengerEnteringAndLeaving } from "@/api/index";
 export default {
@@ -90,14 +91,18 @@ export default {
     },
     // 请求数据
     getData() {
+      let _requestId = guid();
+      this._requestId = _requestId;
       this.loading = true;
       passengerEnteringAndLeaving(this.form)
         .then((res) => {
+          if (this._requestId != _requestId) return;
           this.list = res.data || [];
           this.updateChart();
           this.loading = false;
         })
         .catch((err) => {
+          if (this._requestId != _requestId) return;
           this.list = [];
           this.updateChart();
           this.loading = false;
@@ -120,6 +125,32 @@ export default {
       }
 
       return {
+        title: [
+          {
+            text: this.$l("#entering").split("").join("\n"),
+            left: 0,
+            top: "20%",
+            textStyle: {
+              fontSize: 14,
+            },
+          },
+          {
+            text: this.$l("#leaving").split("").join("\n"),
+            left: 0,
+            top: "40%",
+            textStyle: {
+              fontSize: 14,
+            },
+          },
+          {
+            text: this.$l("#passengers").split("").join("\n"),
+            left: 0,
+            top: "72%",
+            textStyle: {
+              fontSize: 14,
+            },
+          },
+        ],
         tooltip: {
           trigger: "axis",
           axisPointer: {
@@ -127,7 +158,7 @@ export default {
           },
         },
         legend: {
-          data: ["entering", "leaving", "passengers"],
+          data: [this.$l("#entering"), this.$l("#leaving"), this.$l("#passengers")],
         },
         grid: [
           {
@@ -138,7 +169,7 @@ export default {
             backgroundColor: "#ccc",
           },
           {
-            top: "62.5%",
+            top: "67.5%",
             bottom: 70,
             left: 50,
             right: 10,
@@ -181,19 +212,19 @@ export default {
         ],
         series: [
           {
-            name: "entering",
+            name: this.$l("#entering"),
             type: "bar",
             stack: "Total",
             data: this.list.map((v) => v.entering),
           },
           {
-            name: "leaving",
+            name: this.$l("#leaving"),
             type: "bar",
             stack: "Total",
             data: this.list.map((v) => v.leaving * -1),
           },
           {
-            name: "passengers",
+            name: this.$l("#passengers"),
             type: "bar",
             xAxisIndex: 1,
             yAxisIndex: 1,
