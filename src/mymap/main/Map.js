@@ -402,6 +402,10 @@ export class Map extends EventListener {
 
   // 设置相机视线与地图平面的夹角、相机与正南方向的夹角
   setPitchAndRotation(pitch = this.pitch, rotation = this.rotation) {
+    const oldPitch = this.pitch;
+    const oldRotation = this.rotation;
+    if (pitch > 90) pitch = 90;
+    if (pitch < this.minPitch) pitch = this.minPitch;
     // 相机视线与地图平面的夹角
     this.pitch = pitch;
     // 相机与正南方向的夹角
@@ -418,6 +422,13 @@ export class Map extends EventListener {
       this.cameraControls.target.set(0, 0, 0);
       this.cameraControls.update();
     }
+
+    this.on(MAP_EVENT.UPDATE_CAMERA_ROTATE, {
+      oldPitch: oldPitch,
+      newPitch: this.pitch,
+      oldRotation: oldRotation,
+      newRotation: this.rotation,
+    });
   }
 
   // 添加地图摄像机控制器

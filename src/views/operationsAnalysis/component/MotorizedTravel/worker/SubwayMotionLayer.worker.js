@@ -8,7 +8,6 @@ class SubwayMotionWorker {
   timeSpeed = 60 * 1;
 
   getSubwayByUuid({ uuid }) {
-    console.log(uuid);
     for (const { pathId, subwayId, ...subwayDetail } of this.subwayMap.values()) {
       if (uuid == subwayDetail.uuid) {
         const path = this.pathMap.get(pathId);
@@ -19,7 +18,6 @@ class SubwayMotionWorker {
   }
 
   getSubwayByColor({ pickColor }) {
-    console.log(pickColor);
     for (const { pathId, subwayId, ...subwayDetail } of this.subwayMap.values()) {
       if (pickColor > 0 && pickColor == subwayDetail.pickColor) {
         const path = this.pathMap.get(pathId);

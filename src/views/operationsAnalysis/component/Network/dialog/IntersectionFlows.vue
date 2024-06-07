@@ -109,7 +109,6 @@ export default {
     // 更新图表
     updateChart() {
       if (this._chart) {
-        console.log(this.getChartOption());
         this._chart.setOption(this.getChartOption(), true);
         this._chart.resize();
       }

@@ -37,6 +37,8 @@ import NodeMenu, { node_menu } from "../menu/Node.vue";
 import { getNodeById } from "@/api/index";
 import IntersectionFlows from "../dialog/IntersectionFlows.vue";
 
+import { SelectStopLayer } from "../layer/SelectNodeLayer.js";
+
 import Vue from "vue";
 
 const IntersectionFlowsExtend = Vue.extend(IntersectionFlows);
@@ -66,14 +68,6 @@ export default {
   watch: {
     show: {
       handler(val) {
-        if (val) {
-          setTimeout(() => {
-            this.rootVue.$emit("setSelectNode", this.nodeDetail);
-          }, 200);
-        } else {
-          this.rootVue.$emit("setSelectNode", {});
-        }
-
         this.$nextTick(() => {
           this._interval = setInterval(() => {
             if (!this._Map) return;
@@ -96,7 +90,16 @@ export default {
       resData: {},
       showMenu: false,
       menuStyle: "top:100px;left:100px;z-index:1000;",
+      stopColor: "#ff8c00",
+
+      _SelectStopLayer: undefined,
     };
+  },
+  created() {
+    this._SelectStopLayer = new SelectStopLayer({
+      zIndex: 100,
+      color: this.stopColor,
+    });
   },
   mounted() {
     this.getDetail();
@@ -111,6 +114,7 @@ export default {
       getNodeById({ nodeId: this.nodeDetail.id })
         .then((res) => {
           this.resData = res.data;
+          this._SelectStopLayer.setData(this.resData);
           this.loading = false;
         })
         .finally(() => {
@@ -120,10 +124,14 @@ export default {
     handleEnable() {
       this._MapEvnetId1 = this._Map.addEventListener(MAP_EVENT.HANDLE_CLICK_RIGHT, this.handleOpenMenu);
       window.addEventListener("mousedown", this.handleCloseMenu);
+
+      this._Map.addLayer(this._SelectStopLayer);
     },
     handleDisable() {
       this._Map.removeEventListener(MAP_EVENT.HANDLE_CLICK_RIGHT, this._MapEvnetId1);
       window.removeEventListener("mousedown", this.handleCloseMenu);
+
+      this._Map.removeLayer(this._SelectStopLayer);
     },
     handleOpenMenu(res) {
       this.menuStyle = `top: ${res.data.event.pageY + 10}px; left: ${res.data.event.pageX - 30}px;z-index:1000;`;
@@ -155,7 +163,6 @@ export default {
     },
     handleChangeMapCenter() {
       const coord = this.resData;
-      console.log([coord.x, coord.y]);
       this.rootVue._Map.setCenter([coord.x, coord.y]);
     },
   },

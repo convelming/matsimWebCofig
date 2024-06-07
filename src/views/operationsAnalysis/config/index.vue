@@ -102,7 +102,6 @@ export default {
     };
   },
   created() {
-    console.log(ConfigBodyerV15);
     const { database, datasource } = this.$route.params;
     this.$store.dispatch("setDataBase", database);
     this.$store.dispatch("setDataSource", database + "/" + datasource);

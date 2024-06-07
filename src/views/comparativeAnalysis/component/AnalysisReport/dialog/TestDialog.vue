@@ -64,7 +64,6 @@ export default {
       name1: database1 + "/" + datasource1,
       name2: database2 + "/" + datasource2,
     }).then((res) => {
-      console.log(res);
       this.description = res.data.description;
       this._chartData = { before: res.data.before, after: res.data.after };
       this.updateChart();

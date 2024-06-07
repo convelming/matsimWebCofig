@@ -145,7 +145,6 @@ export default {
       deep: true,
     },
     showOldLine() {
-      console.log("watch:showOldLine");
       if (this._OldRouteFlowsLayer) {
         this._OldRouteFlowsLayer.visible = this.showOldLine;
       }

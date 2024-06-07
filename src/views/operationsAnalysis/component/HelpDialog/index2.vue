@@ -33,7 +33,8 @@ export default {
   },
   data() {
     return {
-      open: !localStorage.getItem("HelpDialogClose"),
+      // open: !localStorage.getItem("HelpDialogClose"),
+      open: false,
       carouselIndex: 1,
       pageNum: 6,
     };
@@ -48,7 +49,7 @@ export default {
   methods: {
     handleClose() {
       this.open = false;
-      localStorage.setItem("HelpDialogClose", true);
+      // localStorage.setItem("HelpDialogClose", true);
     },
     handleNext() {
       this.$refs.carousel.next();

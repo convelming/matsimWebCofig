@@ -194,7 +194,6 @@ export default {
       this._linkLayer.setData(this.transitRoute);
       this._linkLayer.addEventListener(MAP_EVENT.HANDLE_PICK_LEFT, (res) => {
         let key = this.transitRoute.getStopsRouteKeyByLink(res.data.id);
-        console.log(key);
         if (key) {
           this.stopsRouteId = key;
           this.handleChangestopsRouteId(key);

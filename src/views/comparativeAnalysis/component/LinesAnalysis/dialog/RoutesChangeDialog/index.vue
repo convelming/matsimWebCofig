@@ -191,7 +191,6 @@ export default {
           this._OldBusLineLayer.setData(this.oldLine);
           this._NewBusLineLayer.setData(this.newLine);
 
-          console.log(this._Map, this.rootVue);
           if (res.data.before) {
             this._Map.setCenter(this.oldLine.center.toList());
           } else if (res.data.after) {

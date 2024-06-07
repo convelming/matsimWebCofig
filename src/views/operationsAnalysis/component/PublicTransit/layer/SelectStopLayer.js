@@ -12,7 +12,7 @@ export class SelectStopLayer extends Layer {
   data = [];
   center = [0, 0];
   color = new THREE.Color(0xffa500);
-  texture = new THREE.TextureLoader().load(require("@/assets/image/point.png"));
+  texture = new THREE.TextureLoader().load(require("@/assets/image/point1.png"));
 
   constructor(opt) {
     super(opt);
@@ -26,19 +26,13 @@ export class SelectStopLayer extends Layer {
       depthWrite: false,
       transparent: true,
       map: this.texture,
+      color: this.color
     });
     this.material.onBeforeCompile = (shader) => {
       shader.fragmentShader = shader.fragmentShader.replace(
         "#include <output_fragment>",
         `
-          #if defined(USE_MAP) && defined(USE_COLOR)
-            outgoingLight = vColor.rgb;
-            if(length(texture2D( map, vUv ).rgb) > 0.6){
-              diffuseColor.a = 1.0;
-            }else{
-              diffuseColor.a = 0.0;
-            }
-          #endif
+          outgoingLight = diffuse.rgb;
           #include <output_fragment>
         `
       );
@@ -76,12 +70,8 @@ export class SelectStopLayer extends Layer {
 
   setColor(color) {
     this.color = new THREE.Color(color);
-    if (this.mesh) {
-      for (let i = 0; i < this.mesh.count; i++) {
-        this.mesh.setColorAt(i, this.color);
-        this.mesh.instanceColor.needsUpdate = true;
-      }
-    }
+    this.material.setValues({ color: this.color });
+    this.material.needsUpdate = true;
   }
 
   setSize(size = this.size, scale = this.scale) {
@@ -203,6 +193,5 @@ export class SelectStopLayer extends Layer {
     this.scene.add(mesh);
     this.pickLayerScene.add(pickLayerMesh);
     this.pickMeshScene.add(pickMesh);
-    console.log(mesh);
   }
 }

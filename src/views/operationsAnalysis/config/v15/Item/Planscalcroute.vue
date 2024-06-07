@@ -218,7 +218,7 @@ export default {
   methods: {
     getForm(xml) {
       const json = xmlToJson(xml);
-      const form = defaultForm;
+      const form = JSON.parse(JSON.stringify(defaultForm));
       function getTeleportedMode(node) {
         const obj = {
           uuid: guid(),

@@ -19,7 +19,6 @@ export default {
     };
   },
   created() {
-    console.log(process.env.NODE_ENV);
     this.$store.dispatch("setDataBase", "guangzhou");
     this.$store.dispatch("setDataSource", "guangzhou/base");
     this.init();
@@ -29,7 +28,6 @@ export default {
     init() {
       this.loading1 = true;
       changeInfoXml({ name1: "guangzhou/base", name2: "guangzhou/xxxx6", routeId: "223路(白云花园总站--白云路总站)[all-day 16:15]" }).then((res) => {
-        console.log(res);
         this.oldXml = res.data.before;
         this.newXml = res.data.after;
         this.loading1 = false;

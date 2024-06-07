@@ -222,7 +222,6 @@ export class BusMotionLayer extends Layer {
   }
 
   handleGetBusByColorCallback(data) {
-    console.log("handleGetBusByColorCallback", data);
     if (data) {
       this.handleEventListener(MAP_EVENT.HANDLE_PICK_LEFT, data.busDetail);
     }

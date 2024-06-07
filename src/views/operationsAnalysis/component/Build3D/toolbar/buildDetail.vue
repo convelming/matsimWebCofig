@@ -181,7 +181,6 @@ export default {
         .then((res) => {
           res.data.activitiesList = Object.values(res.data.activities || {});
           this.resData = res.data;
-          console.log(res);
         })
         .finally(() => {
           this.loading = false;

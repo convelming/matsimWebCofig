@@ -299,7 +299,6 @@ export default {
           this.dataMap = dataMap;
           this.tableList = [{ type: "header" }, ...nodeList];
           this.colList = [...nodeList];
-          console.log(dataMap);
           this.updateChart();
         })
         .finally(() => {
@@ -328,12 +327,10 @@ export default {
       const indexMap = new Map(indexs.map((key, value) => [key, value]));
       const matrix = Array.from(indexMap, () => new Array(indexMap.size).fill(0));
       for (const { source, target, value } of data) {
-        console.log(indexMap.has(source.id), indexMap.has(target.id));
         if (indexMap.has(source.id) && indexMap.has(target.id)) {
           matrix[indexMap.get(source.id)][indexMap.get(target.id)] += value;
         }
       }
-      console.log(matrix);
       // 创建 chord （）
       const chord = d3
         .chordDirected()

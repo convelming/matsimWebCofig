@@ -227,7 +227,6 @@ export default {
           ];
         })
         .flat();
-      console.log();
       return {
         title: {
           text: `Route-Time Diagram, route=${this.form.routeId}`,

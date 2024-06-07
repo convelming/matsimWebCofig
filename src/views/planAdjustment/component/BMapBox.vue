@@ -1,11 +1,10 @@
 <template>
-  <div class="BMapBox" :style="{ width: `${s_width}%` }">
+  <div class="BMapBox">
     <div id="bmap_container"></div>
     <!-- <Dialog :appendBody="false" title="站点列表" visible :left="(windowWidth * s_width) / 100 + 20" resize="500px" width="300px" hideClose hideMinimize>
       <div id="r-result"></div>
     </Dialog> -->
     <div id="r-result"></div>
-    <div class="left" @mousedown="startMove"></div>
   </div>
 </template>
 
@@ -31,10 +30,7 @@ export default {
     },
   },
   data() {
-    return {
-      s_width: 50,
-      windowWidth: 0,
-    };
+    return {};
   },
   watch: {
     center: {
@@ -49,6 +45,15 @@ export default {
       },
       deep: true,
     },
+    busName: {
+      handler(val) {
+        this.s_busName = val;
+        if (this.busline) {
+          this.busline.getBusList(this.s_busName);
+        }
+      },
+      immediate: true,
+    },
   },
   beforeDestroy() {
     if (this.busline) {
@@ -59,7 +64,7 @@ export default {
     }
   },
   created() {
-    this.windowWidth = document.body.clientWidth;
+    this.s_busName = this.busName;
   },
   mounted() {
     this.map = new BMapGL.Map("bmap_container"); // 创建Map实例
@@ -78,7 +83,6 @@ export default {
     // this.map.addEventListener("moveend", (event) => {
     //   this.handleUpdateCenterAndZoom();
     // });
-
     this.busline = new BMapGL.BusLineSearch(this.map, {
       renderOptions: { map: this.map, panel: "r-result", autoViewport: true },
       onGetBusListComplete: (result) => {
@@ -104,7 +108,7 @@ export default {
       },
     });
     this.$nextTick(() => {
-      this.busline.getBusList(this.busName);
+      this.busline.getBusList(this.s_busName);
     });
   },
   methods: {
@@ -149,21 +153,6 @@ export default {
         this.centerAndZoomTimeout = null;
       }, 200);
     },
-    startMove(event) {
-      this.s_width = (1 - event.pageX / window.innerWidth) * 100;
-      document.body.addEventListener("mousemove", this.moveing);
-      document.body.addEventListener("mouseup", this.endMove);
-      document.body.addEventListener("mouseleave", this.endMove);
-    },
-    moveing(event) {
-      this.s_width = (1 - event.pageX / window.innerWidth) * 100;
-      // this.moveObj.left = event.pageX - this.moveObj.s_left;
-      // this.moveObj.top = event.pageY - this.moveObj.s_top;
-    },
-    endMove(event) {
-      document.body.removeEventListener("mousemove", this.moveing);
-      document.body.removeEventListener("mouseleave", this.endMove);
-    },
   },
 };
 </script>
@@ -172,20 +161,10 @@ export default {
 .BMapBox {
   position: relative;
   box-sizing: border-box;
-  padding-left: 5px;
   user-select: none;
   overflow: hidden;
-  .left {
-    position: absolute;
-    left: 0;
-    top: 0;
-    height: 100%;
-    width: 5px;
-    z-index: 10;
-    background-color: #000;
-
-    cursor: ew-resize;
-  }
+  width: 100%;
+  height: 100%;
   #bmap_container {
     width: 100%;
     height: 100%;

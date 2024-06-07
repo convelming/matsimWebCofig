@@ -236,7 +236,6 @@ export default {
     },
     handleScrollTop() {
       if (this.$refs.scrollView) {
-        console.log(this.$refs.scrollView);
         this.$refs.scrollView.scrollTo(0, 0);
       }
     },
@@ -362,8 +361,8 @@ export default {
       color: #000;
       font-weight: 600;
       background: #fff;
-      position: sticky;
-      top: -5px;
+      // position: sticky;
+      // top: -5px;
       z-index: 1000;
       line-height: 40px;
     }
@@ -373,8 +372,8 @@ export default {
           display: flex;
           align-items: center;
           background: #fff;
-          position: sticky;
-          top: 35px;
+          // position: sticky;
+          // top: 35px;
           z-index: 990;
           cursor: pointer;
           line-height: 40px;

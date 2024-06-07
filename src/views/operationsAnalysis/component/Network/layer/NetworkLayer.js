@@ -7,8 +7,6 @@ import { getTileNetwork } from "@/api/index.js";
 
 import { guid } from "@/utils/utils";
 
-import NetworkLayerWorker from "../worker/NetworkLayer3.worker";
-
 const BUILD_ZOOM = 11;
 
 export class NetworkLayer extends Layer {
@@ -16,7 +14,7 @@ export class NetworkLayer extends Layer {
   lineWidth = 6;
   lineOffset = 0;
   time = 0;
-  
+
   material = null;
   pickLayerMaterial = null;
   pickMaterial = null;
@@ -47,24 +45,9 @@ export class NetworkLayer extends Layer {
         })
       ),
     };
-    this.selectNode = {
-      show: false,
-      tile: null,
-      node: null,
-      center: [0, 0],
-      mesh: new THREE.Mesh(
-        new THREE.PlaneGeometry(100, 100),
-        new THREE.MeshBasicMaterial({
-          map: NetworkTile.noodMap,
-          color: 0xffa500,
-          transparent: true,
-        })
-      ),
-    };
   }
 
   setSelectLine(lineId) {
-    console.log("setSelectLine", lineId);
     for (const tile of Object.values(this.tileMap)) {
       const lineItem = tile.getLineById(lineId);
       if (lineItem) {
@@ -78,21 +61,6 @@ export class NetworkLayer extends Layer {
       }
     }
     this.scene.remove(this.selectLine.mesh);
-  }
-
-  setSelectNode(nodeId) {
-    console.log("setSelectNode", nodeId);
-    for (const tile of Object.values(this.tileMap)) {
-      const nodeItem = tile.getNodeById(nodeId);
-      if (nodeItem) {
-        this.selectNode.tile = tile;
-        this.selectNode.node = nodeItem;
-        this.selectNode.show = true;
-        this.loadMesh();
-        return;
-      }
-    }
-    this.selectNode.show = false;
   }
 
   setShowNode(showNode) {
@@ -125,7 +93,6 @@ export class NetworkLayer extends Layer {
     this.selectLine.mesh.material.needsUpdate = true;
 
     const scale = lineWidth / 100;
-    this.selectNode.mesh.scale.set(scale, scale, 1);
   }
 
   setLineOffset(lineOffset) {
@@ -155,7 +122,6 @@ export class NetworkLayer extends Layer {
         const lineItem = tile.getLineByPickColor(pickColorNum);
         const nodeItem = tile.getNodeByPickColor(pickColorNum);
         const nodeList = Object.keys(tile._nodeData);
-        console.log(pickColorNum, nodeList[0], nodeList[nodeList.length - 1]);
         if (lineItem) {
           this.handleEventListener(type, lineItem);
           break;
@@ -171,9 +137,8 @@ export class NetworkLayer extends Layer {
     super.onAdd(map);
     this.loadMesh();
   }
-  
+
   handleLoading(flag) {
-    console.log(this.loadingNum, flag);
     this.loadingNum += flag;
     this.handleEventListener(MAP_EVENT.LAYER_LOADING, this.loadingNum > 0);
   }
@@ -189,7 +154,7 @@ export class NetworkLayer extends Layer {
 
     const [row, col] = [Math.floor(((EARTH_RADIUS + mapCenterX) * Math.pow(2, zoom)) / (EARTH_RADIUS * 2)), Math.floor(((EARTH_RADIUS - mapCenterY) * Math.pow(2, zoom)) / (EARTH_RADIUS * 2))];
     const tileSize = (EARTH_RADIUS * 2) / Math.pow(2, zoom);
-    const radius = 0// Math.ceil(width / tileSize);
+    const radius = Math.ceil(width / tileSize);
 
     const max_row_col = Math.pow(2, zoom);
     let rowStart = row - radius;
@@ -201,8 +166,6 @@ export class NetworkLayer extends Layer {
     if (colStart < 0) colStart = 0;
     let colEnd = col + radius + 1;
     if (colEnd > max_row_col) colEnd = max_row_col;
-
-    const noLoadTileList = [];
 
     for (let i = rowStart; i < rowEnd; i++) {
       for (let j = colStart; j < colEnd; j++) {
@@ -248,14 +211,6 @@ export class NetworkLayer extends Layer {
       this.scene.add(mesh);
     }
 
-    if (this.selectNode.show) {
-      const { node, tile, mesh } = this.selectNode;
-      const [x, y] = this.map.WebMercatorToCanvasXY(node.coord.x + tile.x, node.coord.y + tile.y);
-      mesh.position.set(x, y, 1.5);
-      const scale = this.lineWidth / 100;
-      mesh.scale.set(scale, scale, 1);
-      this.scene.add(mesh);
-    }
   }
 }
 
@@ -467,7 +422,6 @@ export class NetworkTile {
   setColors(colors) {
     this._colors = colors || ColorBar2D.defaultColors;
     this._baseMaterial.uniforms.colorBar.value = ColorBar2D.instance.drowColorBar(this._colors);
-    console.log(this._baseMaterial.uniforms.colorBar.value);
     this._baseMaterial.needsUpdate = true;
   }
 

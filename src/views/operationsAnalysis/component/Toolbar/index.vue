@@ -65,7 +65,6 @@ export default {
   },
   methods: {
     add(type, data) {
-      console.log(type, data);
       switch (type) {
         case "SelectLinkAnalysis":
         case "SelectBuildAnalysis":
@@ -97,7 +96,6 @@ export default {
       }
     },
     handleClearSelectNetwork() {
-      console.log("clearSelectNetwork");
       let item = this.list.find((v) => v.name == this.activeName);
       if (item && item.type == "SelectLinkAnalysis") {
         this.activeName = "";

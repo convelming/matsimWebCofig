@@ -88,7 +88,6 @@ function setTreeId(root, rootId) {
       }
     }
   }
-  console.log(root);
   return root;
 }
 
@@ -307,7 +306,6 @@ export default {
           if (item) {
             this.$set(item, "children", list);
           }
-          console.log(this.treeData);
           this.loading1 = false;
         })
         .catch((err) => {
@@ -338,7 +336,6 @@ export default {
     handleEnable() {},
     handleDisable() {},
     handleShowDialog(node, data) {
-      console.log(node);
       switch (data.id) {
         /************* 活动属性 *************/
         case "1":
@@ -482,7 +479,6 @@ export default {
               return _item;
             };
             const data = nodeToJSON(this.$refs.tree.getNode("4"));
-            console.log(data);
             if (data.checked) {
               this.showDialog2(TravelUtilityTreeExtend, data, "TravelUtilityTreeExtend");
             }
@@ -507,7 +503,6 @@ export default {
               return _item;
             };
             const data = nodeToJSON(this.$refs.tree.getNode("5"));
-            console.log(data);
             if (data.checked) {
               this.showDialog2(TravelVariationTreeExtend, data, "TravelVariationTreeExtend");
             }

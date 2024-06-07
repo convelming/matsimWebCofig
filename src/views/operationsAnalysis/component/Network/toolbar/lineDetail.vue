@@ -225,7 +225,6 @@ export default {
     },
     handleChangeMapCenter() {
       const coord = this.resData.fromCoord;
-      console.log([coord.x, coord.y]);
       this.rootVue._Map.setCenter([coord.x, coord.y]);
     },
   },

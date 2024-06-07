@@ -18,7 +18,6 @@ export class Build3DLayer extends Layer {
 
   constructor(opt) {
     super(opt);
-    console.log(new THREE.Color("#ff4500").getHex());
     this.builds = {};
     this.buildColor = opt.buildColor || this.buildColor;
     this.buildOpacity = opt.buildOpacity || this.buildOpacity;
@@ -123,7 +122,6 @@ export class Build3DLayer extends Layer {
             .then((res) => {
               if (res.loadStatus == 2) {
                 const [x, y] = this.map.WebMercatorToCanvasXY(res.x, res.y);
-                console.log(x, y);
                 res.baseMesh.position.set(x, y, 0);
                 this.scene.add(res.baseMesh);
 

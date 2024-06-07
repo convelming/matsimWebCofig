@@ -93,7 +93,6 @@ export default {
       buildOpacity: this.buildOpacity,
       event: {
         [MAP_EVENT.HANDLE_PICK_LEFT]: ({ data }) => {
-          console.log(data);
           this._Build3DLayer.setSelectBuildId(data.pickColorNum);
           this.rootVue.handleShowBuildDetail({
             uuid: data.pickColorNum,
@@ -101,7 +100,6 @@ export default {
           });
         },
         [MAP_EVENT.LAYER_LOADING]: ({ data }) => {
-          console.log(data);
           this.loading = data;
         },
       },

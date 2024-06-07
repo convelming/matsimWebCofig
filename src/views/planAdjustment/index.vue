@@ -1,10 +1,15 @@
 <template>
   <div class="index">
-    <div class="map_box">
-      <div class="cell" id="mapRoot"></div>
-      <transition name="el-zoom-in-right">
-        <BMapBox ref="bmapBox" v-if="bMapBoxObj.open" class="cell" :busName="bMapBoxObj.busName" :center="bMapBoxObj.center" :zoom="bMapBoxObj.zoom" @centerAndZoom="handleCenterAndZoom"></BMapBox>
-      </transition>
+    <div class="grid_root">
+      <div class="Drawer_row">
+        <div></div>
+        <div class="mapBox">
+          <div id="mapRoot"></div>
+        </div>
+        <Drawer :show.sync="bMapBoxObj.open" direction="right" :size="bMapBoxObj.width">
+          <BMapBox ref="bmapBox" :busName="bMapBoxObj.busName" :center="bMapBoxObj.center" :zoom="bMapBoxObj.zoom" @centerAndZoom="handleCenterAndZoom"></BMapBox>
+        </Drawer>
+      </div>
     </div>
     <Dialog :visible="openSetting" width="350px" hideClose hideMinimize>
       <div class="setting_box">
@@ -61,15 +66,13 @@
         </div> -->
       </div>
     </Dialog>
-    <!-- <Dialog :title="stopsEditObj.title" :visible.sync="stopsEditObj.open" width="auto" @close="handleCloseStopsEdit" :left="stopsEditObj.left" :width="stopsEditObj.width" resize>
-      <StopsEdit v-if="stopsEditObj.open" :transitRouteJSON="stopsEditObj.transitRouteJSON" @change="handleChangeStopsEdit" />
-    </Dialog> -->
+
     <StopsEdit v-if="stopsEditObj.open" :left="stopsEditObj.left" :width="stopsEditObj.width" @close="handleCloseStopsEdit" @change="handleChangeStopsEdit" :transitRouteJSON="stopsEditObj.transitRouteJSON" />
 
     <Dialog width="450px" :title="stopsRoutesEditObj.title" :visible.sync="stopsRoutesEditObj.open" @close="handleCloseStopsRoutesEdit">
       <StopsRoutesEdit v-if="stopsRoutesEditObj.open" :transitRouteJSON="stopsRoutesEditObj.transitRouteJSON" @toEditStops="handleToEditStops" @change="handleChangeStopsRoutesEdit" />
     </Dialog>
-    
+
     <Dialog :title="startEditObj.title" :width="startEditObj.width" :left="startEditObj.left" :visible.sync="startEditObj.open" @close="handleCloseStartEdit">
       <StartEdit v-if="startEditObj.open" :transitRouteJSON="startEditObj.transitRouteJSON" @change="handleChangeStartEdit" />
     </Dialog>
@@ -234,13 +237,7 @@
 <script>
 import "@/mymap/style.css";
 
-import {
-  Map,
-  MAP_EVENT,
-  LocalMapLayer,
-  MAP_LAYER_STYLE,
-  LocalMapTile,
-} from "@/mymap/index.js";
+import { Map, MAP_EVENT, LocalMapLayer, MAP_LAYER_STYLE, LocalMapTile } from "@/mymap/index.js";
 
 import { getByLineId, saveByLine, deleteTransitLine } from "@/api/index";
 
@@ -303,6 +300,7 @@ export default {
       openSetting: true,
 
       bMapBoxObj: {
+        width: 400,
         open: false,
         busName: "",
         zoom: 16,
@@ -333,10 +331,7 @@ export default {
     tlForm: {
       handler(val) {
         if (val) {
-          sessionStorage.setItem(
-            this.datasource + "_tlForm",
-            JSON.stringify(val)
-          );
+          sessionStorage.setItem(this.datasource + "_tlForm", JSON.stringify(val));
         }
       },
       deep: true,
@@ -494,14 +489,19 @@ export default {
     // 恢复上一次编辑未保存的数据
     revertData() {
       try {
-        let tlForm = JSON.parse(
-          sessionStorage.getItem(this.datasource + "_tlForm")
-        );
+        let tlForm = JSON.parse(sessionStorage.getItem(this.datasource + "_tlForm"));
         if (tlForm && tlForm.obj) {
           this.tlForm = {
             id: tlForm.id,
             name: tlForm.name,
             obj: new Bean.TransitLine(tlForm.obj),
+          };
+          this.bMapBoxObj = {
+            width: document.body.clientWidth / 2,
+            open: this.bMapBoxObj.open,
+            busName: this.tlForm.obj.name,
+            center: this._map ? this._map.center : [12604071, 2640970],
+            zoom: this._map ? this._map.zoom : 16,
           };
 
           this._UpBusLinkLayer.setData(this.tlForm.obj.up);
@@ -536,6 +536,14 @@ export default {
           if (res.data && res.data.lineId) {
             let obj = new Bean.TransitLine(res.data);
             this.tlForm.obj = obj;
+            this.bMapBoxObj = {
+              width: document.body.clientWidth / 2,
+              open: this.bMapBoxObj.open,
+              busName: this.tlForm.obj.name,
+              center: this._map ? this._map.center : [12604071, 2640970],
+              zoom: this._map ? this._map.zoom : 16,
+            };
+            this.setFitZoomAndCenterByTransitRoute();
           } else {
             throw new Error("获取线路详情失败");
           }
@@ -557,7 +565,7 @@ export default {
           this._UpBusStopLayer.show();
           this._DownBusLinkLayer.show();
           this._DownBusStopLayer.show();
-          this.setFitZoomAndCenterByTransitRoute();
+          // this.setFitZoomAndCenterByTransitRoute();
         });
     },
     // 根据线路设置地图的缩放和中心点
@@ -600,30 +608,18 @@ export default {
     handleOpenStopsEdit(routeType) {
       this.openSetting = false;
       const transitRoute = this.tlForm.obj[routeType];
-      this.bMapBoxObj = {
-        open: true,
-        busName: this.tlForm.obj.name,
-        center: this._map.center,
-        zoom: this._map.zoom,
-      };
       this.$nextTick(() => {
-        let right = 20;
-        let left = 20;
-        if (this.$refs.bmapBox.$el) {
-          right = this.$refs.bmapBox.$el.clientWidth + 20;
-          left =
-            document.body.clientWidth -
-            this.$refs.bmapBox.$el.clientWidth -
-            320;
-        }
+        // let left = 20;
+        // if (this.$refs.bmapBox.$el) {
+        //   left = document.body.clientWidth / 2 - 320;
+        // }
         this.stopsEditObj = {
           title: `${transitRoute.routeId} - ${this.$l("站点编辑")}`,
           open: true,
           routeType: routeType,
           transitRouteJSON: transitRoute.toJSON(),
-          right: right,
           width: "300px",
-          left: left,
+          left: 20,
         };
       });
 
@@ -634,17 +630,12 @@ export default {
 
       this._EditBusLinkLayer.show();
       this._EditBusStopLayer.show();
-      this.setFitZoomAndCenterByTransitRoute(transitRoute);
+      // this.setFitZoomAndCenterByTransitRoute(transitRoute);
     },
     // 关闭 站点编辑 弹窗回调
     handleCloseStopsEdit() {
       this.openSetting = true;
-      this.bMapBoxObj = {
-        open: false,
-        busName: "",
-        center: this._map.center,
-        zoom: this._map.zoom,
-      };
+      this.bMapBoxObj.open = false;
       this.stopsEditObj = {
         title: this.$l("站点编辑"),
         open: false,
@@ -662,7 +653,7 @@ export default {
 
       this._EditBusLinkLayer.setData();
       this._EditBusStopLayer.setData();
-      this.setFitZoomAndCenterByTransitRoute();
+      // this.setFitZoomAndCenterByTransitRoute();
     },
     // 保存 站点编辑 弹窗回调
     handleChangeStopsEdit(data) {
@@ -678,12 +669,6 @@ export default {
     handleOpenStopsRoutesEdit(routeType) {
       this.openSetting = false;
       const transitRoute = this.tlForm.obj[routeType];
-      this.bMapBoxObj = {
-        open: true,
-        busName: this.tlForm.obj.name,
-        center: this._map.center,
-        zoom: this._map.zoom,
-      };
       this.stopsRoutesEditObj = {
         title: `${transitRoute.routeId} - ${this.$l("路径编辑")}`,
         open: true,
@@ -697,17 +682,12 @@ export default {
 
       this._EditBusLinkLayer.show();
       this._EditBusStopLayer.show();
-      this.setFitZoomAndCenterByTransitRoute(transitRoute);
+      // this.setFitZoomAndCenterByTransitRoute(transitRoute);
     },
     // 关闭 路径编辑 弹窗回调
     handleCloseStopsRoutesEdit() {
       this.openSetting = true;
-      this.bMapBoxObj = {
-        open: false,
-        busName: "",
-        center: this._map.center,
-        zoom: this._map.zoom,
-      };
+      this.bMapBoxObj.open = false;
       this.stopsRoutesEditObj = {
         title: this.$l("路径编辑"),
         open: false,
@@ -733,7 +713,7 @@ export default {
       this._NetworkLineLayer.hide();
       this._NetworkLineLayer.removeEventListener(MAP_EVENT.HANDLE_PICK_LEFT);
 
-      this.setFitZoomAndCenterByTransitRoute();
+      // this.setFitZoomAndCenterByTransitRoute();
     },
     // 路径编辑 弹窗 跳转到 站点编辑 弹窗
     handleToEditStops() {
@@ -741,12 +721,7 @@ export default {
       {
         // this.handleCloseStopsRoutesEdit();
         // this.openSetting = true;
-        // this.bMapBoxObj = {
-        //   open: false,
-        //   busName: "",
-        //   center: this._map.center,
-        //   zoom: this._map.zoom,
-        // };
+        // this.bMapBoxObj.open = false;
         this.stopsRoutesEditObj = {
           title: this.$l("路径编辑"),
           open: false,
@@ -778,26 +753,19 @@ export default {
         // this.handleOpenStopsEdit(routeType);
         this.openSetting = false;
         const transitRoute = this.tlForm.obj[routeType];
-        // this.bMapBoxObj = {
-        //   open: true,
-        //   busName: this.tlForm.obj.name,
-        //   center: this._map.center,
-        //   zoom: this._map.zoom,
-        // };
-        let left = 20;
-        if (this.$refs.bmapBox.$el) {
-          left =
-            document.body.clientWidth -
-            this.$refs.bmapBox.$el.clientWidth -
-            320;
-        }
+
+        // this.bMapBoxObj.open = false;
+        // let left = 20;
+        // if (this.$refs.bmapBox.$el) {
+        //   left = document.body.clientWidth - this.$refs.bmapBox.$el.clientWidth - 320;
+        // }
         this.stopsEditObj = {
           title: `${transitRoute.routeId} - ${this.$l("站点编辑")}`,
           open: true,
           routeType: routeType,
           transitRouteJSON: transitRoute.toJSON(),
           width: "300px",
-          left: left,
+          left: 20,
         };
 
         this._UpBusLinkLayer.hide();
@@ -807,7 +775,7 @@ export default {
 
         this._EditBusLinkLayer.show();
         this._EditBusStopLayer.show();
-        this.setFitZoomAndCenterByTransitRoute(transitRoute);
+        // this.setFitZoomAndCenterByTransitRoute(transitRoute);
       }
     },
     // 保存 路径编辑 弹窗回调
@@ -868,7 +836,7 @@ export default {
 
       this._EditBusLinkLayer.setData();
       this._EditBusStopLayer.setData();
-      this.setFitZoomAndCenterByTransitRoute();
+      // this.setFitZoomAndCenterByTransitRoute();
     },
     // 保存 发车信息编辑 弹窗回调
     handleChangeStartEdit(data) {
@@ -936,26 +904,22 @@ export default {
     },
     async handleCreateDataSource() {
       try {
-        const { value, action } = await this.$prompt(
-          this.$l("请输入方案名称"),
-          this.$l("提示"),
-          {
-            confirmButtonText: this.$l("确定"),
-            cancelButtonText: this.$l("取消"),
-            inputValidator: (value) => {
-              if (!value) {
-                return this.$l("请输入方案名称");
-              }
-              if (!/^[a-zA-Z0-9_]+$/.test(value)) {
-                return this.$l("方案名称只能使用英文字母，数字和下划线");
-              }
-              if (value.slice(-4).toLowerCase() == "base") {
-                return this.$l("方案名称不能以base结尾");
-              }
-              return true;
-            },
-          }
-        );
+        const { value, action } = await this.$prompt(this.$l("请输入方案名称"), this.$l("提示"), {
+          confirmButtonText: this.$l("确定"),
+          cancelButtonText: this.$l("取消"),
+          inputValidator: (value) => {
+            if (!value) {
+              return this.$l("请输入方案名称");
+            }
+            if (!/^[a-zA-Z0-9_]+$/.test(value)) {
+              return this.$l("方案名称只能使用英文字母，数字和下划线");
+            }
+            if (value.slice(-4).toLowerCase() == "base") {
+              return this.$l("方案名称不能以base结尾");
+            }
+            return true;
+          },
+        });
         if (action == "confirm") {
           const data = await this.$store.dispatch("saveDataSource", {
             key: value,
@@ -1008,18 +972,17 @@ export default {
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-  #mapRoot {
-    overflow: hidden;
+  .grid_root {
+    width: 100vw;
+    height: 100vh;
   }
-  .map_box {
+
+  .mapBox {
     position: relative;
     width: 100%;
     height: 100%;
-    display: table;
-    z-index: 20;
-    table-layout: fixed;
-    .cell {
-      display: table-cell;
+    #mapRoot {
+      width: 100%;
       height: 100%;
     }
   }

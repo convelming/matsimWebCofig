@@ -52,7 +52,6 @@ export default {
       //     zIndex: 200,
       //   })
       // );
-      console.log(l1.pickNum);
     },
   },
 };

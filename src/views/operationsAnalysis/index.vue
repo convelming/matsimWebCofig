@@ -16,6 +16,7 @@
             <div></div>
             <div class="mapBox">
               <Clock v-show="showClock" class="mapClock" :time="time" />
+              <Luopan class="mapLuopan" />
               <div id="mapRoot"></div>
             </div>
             <Drawer show direction="bottom" :size="180">
@@ -204,17 +205,17 @@ export default {
       return Math.floor(speed * 100) / 100;
     },
     handleChangeMapCameraControls() {
-      let enableRotate = false;
-      // enableRotate = enableRotate || this.showLayerPublicTransit;
-      enableRotate = enableRotate || this.showLayerMotorizedTravel;
-      enableRotate = enableRotate || this.showLayerBuild3D;
-      enableRotate = enableRotate || this.showLayerNetwork;
-      if (enableRotate) {
-        this._Map.enableRotate = true;
-      } else {
-        this._Map.enableRotate = false;
-        this._Map.setPitchAndRotation(90, 0);
-      }
+      // let enableRotate = false;
+      // // enableRotate = enableRotate || this.showLayerPublicTransit;
+      // enableRotate = enableRotate || this.showLayerMotorizedTravel;
+      // enableRotate = enableRotate || this.showLayerBuild3D;
+      // enableRotate = enableRotate || this.showLayerNetwork;
+      // if (enableRotate) {
+      //   this._Map.enableRotate = true;
+      // } else {
+      //   this._Map.enableRotate = false;
+      //   this._Map.setPitchAndRotation(90, 0);
+      // }
     },
     initMap() {
       this._Map = new Map({
@@ -222,7 +223,7 @@ export default {
         zoom: 11,
         enableRotate: true,
         zoom: 16,
-        minPitch: -90,
+        // minPitch: -90,
       });
       this._Map.addLayer(this._MapLayer);
       window._Map = this._Map;
@@ -416,6 +417,12 @@ export default {
     .mapClock {
       position: absolute;
       top: 10px;
+      right: 10px;
+      z-index: 1000;
+    }
+    .mapLuopan {
+      position: absolute;
+      bottom: 80px;
       right: 10px;
       z-index: 1000;
     }

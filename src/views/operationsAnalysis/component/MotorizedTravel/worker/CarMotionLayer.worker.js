@@ -8,7 +8,6 @@ class CarMotionWorker {
   timeSpeed = 60 * 1;
 
   getCarByUuid({ uuid }) {
-    console.log(uuid);
     for (const { carId, path, ...carDetail } of this.carMap.values()) {
       if (uuid == carDetail.uuid) {
         return { carDetail, path: path.toJSON() };
@@ -18,7 +17,6 @@ class CarMotionWorker {
   }
 
   getCarByColor({ pickColor }) {
-    console.log(pickColor);
     for (const { carId, path, ...carDetail } of this.carMap.values()) {
       if (pickColor > 0 && pickColor == carDetail.pickColor) {
         return { carDetail, path: path.toJSON() };

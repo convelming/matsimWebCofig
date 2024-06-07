@@ -574,7 +574,7 @@ export default {
   methods: {
     getForm(xml) {
       const json = xmlToJson(xml);
-      const form = defaultForm;
+      const form = JSON.parse(JSON.stringify(defaultForm));
       function getActivityPOrMode(node) {
         const obj = {
           uuid: guid(),
@@ -620,7 +620,6 @@ export default {
           form[node.attrs.name] = node.attrs.value;
         } else if (node.name == "parameterset" && node.attrs.type == "scoringParameters") {
           const item = getScoring(node);
-          console.log(item);
           item.index = form.Scoring.length + 1;
           item.name = item.index;
           item.type = `Scoring`;
@@ -684,28 +683,6 @@ export default {
                   })),
               };
             })
-            // ...v.ActivityOrMode.map((v2) => {
-            //   const typeMap = {
-            //     Activity: "activityParams",
-            //     Mode: "modeParams",
-            //   };
-            //   const nodesMap = {
-            //     Activity: ["activityType", "closingTime", "earliestEndTime", "latestStartTime", "minimalDuration", "openingTime", "priority", "scoringThisActivityAtAll", "typicalDuration", "typicalDurationScoreComputation"],
-            //     Mode: ["constant", "dailyMonetaryConstant", "dailyUtilityConstant", "marginalUtilityOfDistance_util_m", "marginalUtilityOfTraveling_util_hr", "mode", "monetaryDistanceRate"],
-            //   };
-            //   return {
-            //     name: "parameterset",
-            //     attrs: {
-            //       type: typeMap[v2.type],
-            //     },
-            //     nodes: nodesMap[v2.type]
-            //       .filter((v3) => v2[v3] !== "" && v2[v3] !== null && v2[v3] !== "null")
-            //       .map((v3) => ({
-            //         name: "param",
-            //         attrs: { name: v3, value: v2[v3] },
-            //       })),
-            //   };
-            // })
           );
 
           return {

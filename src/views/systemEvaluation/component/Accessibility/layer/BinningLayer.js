@@ -63,7 +63,6 @@ export class BinningLayer extends Layer {
     this.worker.addEventListener("error", (error) => {
       console.log(error);
     });
-    console.log(this);
   }
 
   onAdd(map) {

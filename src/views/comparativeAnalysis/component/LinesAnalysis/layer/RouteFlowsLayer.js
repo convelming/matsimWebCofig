@@ -102,7 +102,6 @@ export class RouteFlowsLayer extends Layer {
   }
 
   setData(stops, data, maxValue) {
-    console.log(stops, data);
     try {
       const _data = [];
       let pickColorNum = 1;
@@ -130,7 +129,6 @@ export class RouteFlowsLayer extends Layer {
         }
       }
       this.data = _data;
-      console.log(_data);
       this.update();
     } catch (error) {
       console.log(error);

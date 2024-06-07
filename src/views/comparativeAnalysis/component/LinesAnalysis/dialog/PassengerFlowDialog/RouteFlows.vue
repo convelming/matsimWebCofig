@@ -140,7 +140,6 @@ export default {
       this.loading = true;
       routeFlows(this.form)
         .then((res) => {
-          console.log(res);
           const { linkObj: oldLinkObj, maxPassenger: oldMaxPassenger } = this.getListObj(res.data.before);
           const { linkObj: newLinkObj, maxPassenger: newMaxPassenger } = this.getListObj(res.data.after);
           this.list = res.data.stops;
@@ -148,7 +147,6 @@ export default {
           this.newLinkObj = newLinkObj;
           this.maxPassenger = Math.max(oldMaxPassenger, newMaxPassenger);
           this.src = this.getChart();
-          console.log(this.oldLinkObj, this.newLinkObj);
           this.loading = false;
         })
         .catch((err) => {

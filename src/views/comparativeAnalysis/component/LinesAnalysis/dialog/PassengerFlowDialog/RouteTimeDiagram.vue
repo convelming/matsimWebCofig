@@ -200,8 +200,6 @@ export default {
             this.newRowList = newLine.rowList;
             this.newColList = newLine.colList;
             this.newDataMap = newLine.dataMap;
-            console.log(oldLine.tableList, newLine.tableList);
-
             this.tableList = [oldLine.tableList, newLine.tableList].flat();
 
             this.updateChart();

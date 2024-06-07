@@ -168,7 +168,6 @@ export default {
         },
         this._chart_data
       );
-      console.log(this._chart_data);
       const keySet = new Set(labels);
       const indicator = [],
         afterList = [],

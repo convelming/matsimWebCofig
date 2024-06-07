@@ -42,7 +42,6 @@ export function jsonToXml({ nodes = [], attrs = {}, name = "" }) {
 }
 
 export function strToList(str, separator) {
-  console.log(str instanceof String);
   if (!str || !str.split) return [];
   return str.split(separator).filter((v) => v);
 }

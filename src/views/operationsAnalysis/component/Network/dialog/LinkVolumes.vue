@@ -99,7 +99,6 @@ export default {
             time: form.second * i,
             vehicles: v,
           }));
-          console.log(res);
           this.updateChart();
           this.loading = false;
         })

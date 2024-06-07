@@ -55,8 +55,6 @@ export default {
     },
   },
   mounted() {
-    console.log("this is current codemirror object", this.codemirror);
-    console.log(this.$refs.myCm);
     // you can use this.codemirror to do something...
   },
 };

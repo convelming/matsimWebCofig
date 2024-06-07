@@ -79,7 +79,6 @@ export default {
   beforeDestroy() {},
   methods: {
     add(type, data) {
-      console.log(type, data);
       switch (type) {
         case "RouteFlows":
         case "SelectLinkAnalysis":
@@ -90,7 +89,6 @@ export default {
         case "LineDetail":
         case "NodeDetail": {
           const item = this.list.find((v) => v.data.uuid == data.uuid);
-          console.log(item);
           if (item) {
             this.data = item.data;
             this.activeName = item.name;
@@ -104,7 +102,6 @@ export default {
               data: data,
               name: guid(),
             };
-            console.log(item);
             this.activeName = item.name;
             this.list.unshift(item);
           }

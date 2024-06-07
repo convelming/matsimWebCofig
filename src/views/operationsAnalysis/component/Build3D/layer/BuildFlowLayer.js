@@ -63,7 +63,6 @@ export class BuildFlowLayer extends Layer {
     console.time("update");
 
     const { facility, legs } = this.data;
-    console.log(this.data);
 
     // const geoList = new Array(legs.length).fill(null);
     const { coord } = facility;

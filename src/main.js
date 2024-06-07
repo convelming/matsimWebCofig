@@ -16,6 +16,7 @@ import Drawer from "@/components/Drawer/index.vue";
 import ColorSelect from "@/components/ColorSelect.vue";
 import Tags from "@/components/Tags.vue";
 import Clock from "@/components/Clock/index.vue";
+import Luopan from "@/mymap/components/Luopan/index.vue";
 
 // Vue.config.productionTip = false;
 
@@ -28,6 +29,7 @@ Vue.component("Drawer", Drawer);
 Vue.component("ColorSelect", ColorSelect);
 Vue.component("Tags", Tags);
 Vue.component("Clock", Clock);
+Vue.component("Luopan", Luopan);
 Vue.use(ElementUI);
 Vue.use(language);
 

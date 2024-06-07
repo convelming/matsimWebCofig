@@ -216,7 +216,6 @@ export class CarMotionLayer extends Layer {
   }
 
   handleGetCarByColorCallback(data) {
-    console.log("handleGetCarByColorCallback", data);
     if (data) {
       this.handleEventListener(MAP_EVENT.HANDLE_PICK_LEFT, data.carDetail);
     }

@@ -147,7 +147,6 @@ export default {
   watch: {
     // stopId: {
     //   handler(val) {
-    //     console.log(val);
     //     this.getStopDetail();
     //   },
     //   immediate: true,

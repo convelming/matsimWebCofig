@@ -8,7 +8,6 @@ class BusMotionWorker {
   timeSpeed = 60 * 1;
 
   getBusByUuid({ uuid }) {
-    console.log(uuid);
     for (const { pathId, busId, ...busDetail } of this.busMap.values()) {
       if (uuid == busDetail.uuid) {
         const path = this.pathMap.get(pathId);
@@ -19,7 +18,6 @@ class BusMotionWorker {
   }
 
   getBusByColor({ pickColor }) {
-    console.log(pickColor);
     for (const { pathId, busId, ...busDetail } of this.busMap.values()) {
       if (pickColor > 0 && pickColor == busDetail.pickColor) {
         const path = this.pathMap.get(pathId);
@@ -147,7 +145,6 @@ onmessage = function (e) {
       this.postMessage({ key: key, data: worker.getBusByColor(data) });
       break;
     case "getBusByUuid":
-      console.log(key, data);
       this.postMessage({ key: key, data: worker.getBusByUuid(data) });
       break;
   }

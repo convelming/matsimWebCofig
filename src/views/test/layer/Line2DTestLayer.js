@@ -14,13 +14,10 @@ export class Line2DTestLayer extends Layer {
     geometry.setAttribute("pickColor", new THREE.Float32BufferAttribute(colors, 3));
     geometry.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
     geometry.setAttribute("arr", new THREE.Float32BufferAttribute(colors, 3));
-    console.log(geometry);
 
     // const matrix4 = new THREE.Matrix4();
     // matrix4.setPosition(new THREE.Vector3(250, 0, 0));
-    // console.log(matrix4);
     // geometry.applyMatrix4(matrix4);
-    // console.log(geometry);
 
     const mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ color: 0xff00cc, vertexColors: true }));
     // mesh.rotateZ(Math.PI * 1.5);

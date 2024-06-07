@@ -60,7 +60,6 @@ export class PTALLayer extends Layer {
       this.center = [this.col * size, this.row * size];
       this.data = data;
 
-      console.log(this);
       this.update();
     });
   }
@@ -71,7 +70,6 @@ export class PTALLayer extends Layer {
     const geometryList = [];
     for (let j = s_col; j < e_col; j += segm) {
       for (let i = s_row; i < e_row; i += segm) {
-        // console.log(i, j);
         let value = 0;
         let index = 0;
         for (let k = 0; k < segm; k++) {
@@ -86,7 +84,6 @@ export class PTALLayer extends Layer {
         }
         if (index > 0) {
           const colorStr = this.getColorByValue(value / index);
-          console.log(value / index, colorStr);
           const color = new THREE.Color(colorStr);
           const attrColor = new Array(4).fill([color.r, color.g, color.b]).flat();
 
@@ -107,7 +104,6 @@ export class PTALLayer extends Layer {
     const geometry = BufferGeometryUtils.mergeBufferGeometries(geometryList, false);
     // geometry.computeBoundingSphere();
 
-    console.log(geometry.attributes);
     const material = new THREE.MeshBasicMaterial({
       vertexColors: true,
       transparent: false,

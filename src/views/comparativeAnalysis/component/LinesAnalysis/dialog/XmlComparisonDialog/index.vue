@@ -58,7 +58,6 @@ export default {
     };
   },
   created() {
-    console.log(this.rootVue);
     this.init();
   },
   mounted() {
@@ -76,7 +75,6 @@ export default {
         name2: database2 + "/" + datasource2,
         routeId: this.form.routeId,
       }).then((res) => {
-        console.log(res);
         this.oldXml = res.data.before;
         this.newXml = res.data.after;
         this.loading1 = false;

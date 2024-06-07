@@ -36,7 +36,6 @@ export class LinkFlowLayer extends Layer {
     console.time("update");
 
     const { link, legs } = this.data;
-    console.log(this.data);
 
     // const geoList = new Array(legs.length).fill(null);
     const { center, fromCoord, toCoord } = link;

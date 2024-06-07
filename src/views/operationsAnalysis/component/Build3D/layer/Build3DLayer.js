@@ -55,7 +55,6 @@ export class Build3DLayer extends Layer {
     for (const tile of Object.values(this.tileMap)) {
       const item = tile.getBuildByPickColor(selectBuildId);
       if (item) {
-        console.log(item);
         this.selectBuildId = selectBuildId;
         this.selectBuildTile = tile;
         const geometryOld = this.coneMesh.geometry;
@@ -128,7 +127,6 @@ export class Build3DLayer extends Layer {
   }
 
   handleLoading(flag) {
-    console.log(this.loadingNum, flag);
     this.loadingNum += flag;
     this.handleEventListener(MAP_EVENT.LAYER_LOADING, this.loadingNum > 0);
   }

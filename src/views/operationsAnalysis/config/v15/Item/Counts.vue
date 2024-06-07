@@ -181,7 +181,7 @@ export default {
   methods: {
     getForm(xml) {
       const json = xmlToJson(xml);
-      const form = defaultForm;
+      const form = JSON.parse(JSON.stringify(defaultForm));
       const nodes = json.nodes[0].nodes;
       for (const node of nodes) {
         if (node.name == "param") {

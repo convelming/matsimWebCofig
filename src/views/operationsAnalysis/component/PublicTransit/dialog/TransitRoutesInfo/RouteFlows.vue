@@ -141,7 +141,6 @@ export default {
           this.maxPassenger = Math.max(...[...Object.values(fromOffsetObj), ...Object.values(toOffsetObj)]);
           this.src = this.getChart();
           this.loading = false;
-          console.log(this.linkObj);
         })
         .catch((err) => {
           if (this._requestId != _requestId) return;
@@ -158,7 +157,6 @@ export default {
       const maxValue = this.maxPassenger <= 0 ? 1 : this.maxPassenger;
 
       const step = 100;
-      console.log("getChart", step);
       const marginTop = step * 2;
       const marginBottom = step * 2;
       const marginLeft = step / 4;

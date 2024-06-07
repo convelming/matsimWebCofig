@@ -233,7 +233,6 @@ export default {
       this.handleCanSelect(true);
       this.rootVue.$on("timeChange", this.handleTimeChange);
       this.rootVue.$on("setSelectLine", this.handleSetSelectLine);
-      this.rootVue.$on("setSelectNode", this.handleSetSelectNode);
     },
     // 组件卸载事件
     handleDisable() {
@@ -241,13 +240,9 @@ export default {
       this.handleCanSelect(false);
       this.rootVue.$off("timeChange", this.handleTimeChange);
       this.rootVue.$off("setSelectLine", this.handleSetSelectLine);
-      this.rootVue.$off("setSelectNode", this.handleSetSelectNode);
     },
     handleSetSelectLine(data) {
       if (this._NetworkLayer) this._NetworkLayer.setSelectLine(data.id);
-    },
-    handleSetSelectNode(data) {
-      if (this._NetworkLayer) this._NetworkLayer.setSelectNode(data.id);
     },
     handleTimeChange(time) {
       if (this._NetworkLayer) this._NetworkLayer.setTime(time);
@@ -256,7 +251,6 @@ export default {
       this.canSelect = value;
       if (value) {
         this._NetworkLayerEventId = this._NetworkLayer.addEventListener(MAP_EVENT.HANDLE_PICK_LEFT, ({ data }) => {
-          console.log(data);
           this.selectItem = data;
           if (data.type == "line") {
             this.rootVue.handleShowLineDetail({ uuid: data.uuid, lineDetail: data });
@@ -269,7 +263,6 @@ export default {
       }
     },
     handleClearSelect() {
-      console.log("clearSelectNetwork");
       this.rootVue.$emit("clearSelectNetwork");
     },
   },

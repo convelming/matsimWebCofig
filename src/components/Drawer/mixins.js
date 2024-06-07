@@ -9,9 +9,12 @@ export default {
       default: 0,
     },
   },
-  watch:{
-    show(){
+  watch: {
+    show() {
       this.handleShow(this.show)
+    },
+    size() {
+      this.s_size = this.size
     }
   },
   computed: {

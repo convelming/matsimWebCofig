@@ -138,7 +138,6 @@ export default {
         id: this.carDetail.id,
         vehicleId: this.carDetail.vehicleId,
       }).then((res) => {
-        console.log(res);
         const { paths, ...departure } = res.data;
         // 创建路径SVG
         this.departure = departure;

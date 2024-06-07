@@ -204,7 +204,6 @@ export default {
         this.prevStop.leaving = this._leaving;
         this.prevStop.passengers = this._passengers;
 
-        console.log("上客量：" + this._entering, "下客量：" + this._leaving, "当前载客量：" + this._passengers);
       }
       // 伪造站点上下客流量
 

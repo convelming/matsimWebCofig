@@ -13,7 +13,7 @@
         </div>
         <div class="stops_table">
           <el-table class="small" :data="routeDetail.stops" border stripe height="250">
-            <el-table-column :label="$l('Id')" prop="id" show-overflow-tooltip />
+            <el-table-column :label="$l('Route')" prop="route" show-overflow-tooltip />
             <el-table-column :label="$l('Name')" prop="name" show-overflow-tooltip />
             <el-table-column width="50">
               <el-dropdown slot-scope="{ row }" trigger="click" @command="handleOneStopMenu({ data: row, command: $event })">
@@ -52,6 +52,10 @@
   "Id":{
     "zh-CN": "Id",
     "en-US": "Id"
+  },
+  "Route":{
+    "zh-CN": "Route",
+    "en-US": "Route"
   },
   "Name":{
     "zh-CN": "Name",
@@ -144,7 +148,6 @@ export default {
   watch: {
     routeId: {
       handler(val) {
-        console.log(val);
         this.getRouteList();
       },
       immediate: true,

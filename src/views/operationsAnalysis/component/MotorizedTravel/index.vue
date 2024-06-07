@@ -171,9 +171,9 @@ export default {
       s_showLayer: false,
 
       lockSelectVehicle: true,
-      showBus3DLayer: false,
+      showBus3DLayer: true,
       showSubway3DLayer: true,
-      showCar3DLayer: false,
+      showCar3DLayer: true,
       maxVehicleNum: 2000,
 
       _BusMotionLayer: null,

@@ -47,7 +47,6 @@ export class ModelPool {
   defaultModel = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshBasicMaterial({ color: 0x00ff00 }));
 
   constructor() {
-    console.log("ModelPool constructor");
     const loader = new GLTFLoader();
     const pList = [];
     for (const [name, url] of Object.entries(this.modelsUrl)) {
@@ -56,7 +55,6 @@ export class ModelPool {
           loader.load(
             url,
             (gltf) => {
-              console.log(name, gltf.scene);
               resolve([name, gltf.scene]);
             },
             null,

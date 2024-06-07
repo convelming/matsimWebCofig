@@ -22,11 +22,9 @@ export default {
   created() {},
   mounted() {
     import("./d3ChartData.json").then((res) => {
-      console.log(res.default.data);
       // this.src2 = this.getChart2(res.default.data);
     });
     import("./d3ChartData2.json").then((res) => {
-      console.log(res.data);
       const list = [];
       const linkObj = {};
       const fromOffsetObj = {};
@@ -53,7 +51,6 @@ export default {
       this.list = list;
       this.linkObj = linkObj;
       this.maxPassenger = Math.max(...[...Object.values(fromOffsetObj), ...Object.values(toOffsetObj)]);
-      console.log(this.list, this.linkObj, this.maxPassenger);
       this.src = this.getChart2();
     });
   },
