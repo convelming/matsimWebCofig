@@ -11,7 +11,7 @@
             <textarea class="_content" v-model="newXml" disabled></textarea>
           </div>
         </div> -->
-      <code-diff class="code-diff" :old-string="oldXml" :new-string="newXml" :context="10" output-format="side-by-side" language="xml" />
+      <code-diff class="code-diff" :old-string="oldXml" :new-string="newXml" output-format="side-by-side" :context="100"  />
     </div>
   </Dialog>
 </template>
@@ -78,12 +78,6 @@ export default {
         this.oldXml = res.data.before;
         this.newXml = res.data.after;
         this.loading1 = false;
-        this.$nextTick(() => {
-          const doc = new Mergely("#compare", {
-            lhs: res.data.before,
-            rhs: res.data.after,
-          });
-        });
       });
     },
   },
