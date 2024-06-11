@@ -83,7 +83,6 @@
 import * as echarts from "echarts";
 import { routeTimeDiagram } from "@/api/contrast";
 import { formatHour } from "@/utils/utils";
-import { index } from "d3";
 export default {
   props: {
     routeInfo: {

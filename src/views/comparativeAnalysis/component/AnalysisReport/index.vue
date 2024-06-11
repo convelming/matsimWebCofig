@@ -5,13 +5,17 @@
     </div>
     <div class="form">
       <div class="form_item">
-        <div class="form_label"></div>
-        <div class="form_value" style="display: flex; align-items: center"></div>
+        <div class="form_label">语言模型</div>
+        <div class="form_value">
+          <el-select v-model="lanModel">
+            <el-option label="qwen:7b" value="qwen:7b"> </el-option>
+          </el-select>
+        </div>
       </div>
 
-      <div class="btn_list">
+      <!-- <div class="btn_list">
         <el-button type="primary" size="small" @click="handleGenerateAnalysisReport">分析报告生成</el-button>
-      </div>
+      </div> -->
     </div>
   </el-collapse-item>
 </template>
@@ -21,6 +25,10 @@
   "公交出行影响对比分析报告":{
     "zh-CN": "公交出行影响对比分析报告",
     "en-US": "公交出行影响对比分析报告"
+  },
+  "语言模型":{
+    "zh-CN": "语言模型",
+    "en-US": "语言模型"
   },
 }
 </language>
@@ -51,6 +59,7 @@ export default {
     return {
       loaded: false,
       s_showLayer: true,
+      lanModel: "qwen:7b",
     };
   },
   created() {

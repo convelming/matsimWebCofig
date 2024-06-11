@@ -1,13 +1,13 @@
 <template>
   <div class="amap-luopan">
     <div class="amap-luopan">
-      <div class="amap-compass" @click.stop="handlePointers" :style="s_style">
+      <div class="amap-compass" @mousedown="goTouchstart('handlePointers')" @mouseup="goTouchend('handlePointers')" :style="s_style">
         <div class="amap-pointers"></div>
       </div>
-      <div class="amap-pitchUp" @click.stop="handlePitchUp"></div>
-      <div class="amap-pitchDown" @click.stop="handlePitchDown"></div>
-      <div class="amap-rotateLeft" @click.stop="handleRotateLeft"></div>
-      <div class="amap-rotateRight" @click.stop="handleRotateRight"></div>
+      <div class="amap-pitchUp" @mousedown="goTouchstart('handlePitchUp')" @mouseup="goTouchend('handlePitchUp')"></div>
+      <div class="amap-pitchDown" @mousedown="goTouchstart('handlePitchDown')" @mouseup="goTouchend('handlePitchDown')"></div>
+      <div class="amap-rotateLeft" @mousedown="goTouchstart('handleRotateLeft')" @mouseup="goTouchend('handleRotateLeft')"></div>
+      <div class="amap-rotateRight" @mousedown="goTouchstart('handleRotateRight')" @mouseup="goTouchend('handleRotateRight')"></div>
     </div>
   </div>
 </template>
@@ -46,6 +46,31 @@ export default {
     this.handleDisable();
   },
   methods: {
+    goTouchstart(type) {
+      console.log(type);
+      let _this = this;
+      clearTimeout(_this._timeOutEvent);
+      _this._timeOutEvent = setTimeout(function () {
+        _this._timeOutEvent = 0;
+        //  处理长按事件...
+        _this._longCheckInterval = setInterval(function () {
+          _this[type](1);
+        }, 50);
+      }, 500);
+    },
+    goTouchend(type) {
+      console.log(type);
+      let _this = this;
+      clearTimeout(_this._timeOutEvent);
+      if (_this._timeOutEvent !== 0) {
+        //  处理单击事件
+        _this[type](5);
+      }
+      if (_this._longCheckInterval !== 0) {
+        clearInterval(_this._longCheckInterval);
+        _this._longCheckInterval = 0;
+      }
+    },
     // 组件初始化事件
     handleEnable() {
       this._MapEvnetId1 = this._Map.addEventListener(MAP_EVENT.UPDATE_CAMERA_ROTATE, this.handleMapUpdateCameraRotate);
@@ -63,24 +88,24 @@ export default {
     handlePointers() {
       this._Map.setPitchAndRotation(90, 0);
     },
-    handlePitchUp() {
-      const pitch = this._Map.pitch - 5;
+    handlePitchUp(step) {
+      const pitch = this._Map.pitch - step;
       const rotation = this._Map.rotation;
       this._Map.setPitchAndRotation(pitch, rotation);
     },
-    handlePitchDown() {
-      const pitch = this._Map.pitch + 5;
+    handlePitchDown(step) {
+      const pitch = this._Map.pitch + step;
       const rotation = this._Map.rotation;
       this._Map.setPitchAndRotation(pitch, rotation);
     },
-    handleRotateLeft() {
+    handleRotateLeft(step) {
       const pitch = this._Map.pitch;
-      const rotation = this._Map.rotation - 5;
+      const rotation = this._Map.rotation - step;
       this._Map.setPitchAndRotation(pitch, rotation);
     },
-    handleRotateRight() {
+    handleRotateRight(step) {
       const pitch = this._Map.pitch;
-      const rotation = this._Map.rotation + 5;
+      const rotation = this._Map.rotation + step;
       this._Map.setPitchAndRotation(pitch, rotation);
     },
   },

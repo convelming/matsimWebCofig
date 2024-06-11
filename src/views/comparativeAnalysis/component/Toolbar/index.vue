@@ -1,5 +1,5 @@
 <template>
-  <el-collapse v-model="activeName" accordion @change="handleChangeActive">
+  <el-collapse :value="activeName" @input="handleChangeActive" accordion>
     <LinesChangeInfo name="LinesChangeInfo" />
     <ReportToolbar name="ReportToolbar" />
     <component v-for="item in list" :key="item.name" :is="item.type" :name="item.name" :show="item.name == activeName" v-bind="item.data" />
@@ -17,6 +17,7 @@ import LinesChangeInfo from "../LinesAnalysis/toolbar/LinesChangeInfo.vue";
 import BuildDetail from "../../../operationsAnalysis/component/Build3D/toolbar/buildDetail.vue";
 import CarDetail from "../../../operationsAnalysis/component/MotorizedTravel/toolbar/carDetail.vue";
 import BusDetail from "../../../operationsAnalysis/component/MotorizedTravel/toolbar/busDetail.vue";
+import SubwayDetail from "../../../operationsAnalysis/component/MotorizedTravel/toolbar/subwayDetail.vue";
 import RouteDetail from "../../../operationsAnalysis/component/PublicTransit/toolbar/routeDetail.vue";
 import StopAndRoute from "../../../operationsAnalysis/component/PublicTransit/toolbar/stopAndRoute.vue";
 import StopDetail from "../../../operationsAnalysis/component/PublicTransit/toolbar/stopDetail.vue";
@@ -35,6 +36,7 @@ export default {
 
     BuildDetail,
     CarDetail,
+    SubwayDetail,
     BusDetail,
     RouteDetail,
     StopAndRoute,
@@ -85,6 +87,7 @@ export default {
         case "SelectBuildAnalysis":
         case "BusDetail":
         case "CarDetail":
+        case "SubwayDetail":
         case "BuildDetail":
         case "LineDetail":
         case "NodeDetail": {
@@ -114,7 +117,15 @@ export default {
     handleChangeActive(activeName) {
       try {
         this.rootVue.showLayerAnalysisReport = activeName === "ReportToolbar";
+
+        const index = this.list.findIndex((v) => v.name == activeName);
+        if (index > -1) {
+          const item = this.list[index];
+          this.list.splice(index, 1);
+          this.list.unshift(item);
+        }
       } catch (error) {}
+      this.activeName = activeName;
     },
   },
 };
