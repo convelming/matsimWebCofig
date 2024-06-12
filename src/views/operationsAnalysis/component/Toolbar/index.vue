@@ -1,5 +1,5 @@
 <template>
-  <el-collapse v-model="activeName" accordion>
+  <el-collapse :value="activeName" @input="handleChangeActive" accordion>
     <component v-for="item in list" :key="item.name" :is="item.type" :name="item.name" :show="item.name == activeName" v-bind="item.data" />
   </el-collapse>
 </template>
@@ -70,6 +70,7 @@ export default {
         case "SelectBuildAnalysis":
         case "BusDetail":
         case "CarDetail":
+        case "SubwayDetail":
         case "BuildDetail":
         case "LineDetail":
         case "NodeDetail": {
@@ -100,6 +101,17 @@ export default {
       if (item && item.type == "SelectLinkAnalysis") {
         this.activeName = "";
       }
+    },
+    handleChangeActive(activeName) {
+      try {
+        const index = this.list.findIndex((v) => v.name == activeName);
+        if (index > -1) {
+          const item = this.list[index];
+          this.list.splice(index, 1);
+          this.list.unshift(item);
+        }
+      } catch (error) {}
+      this.activeName = activeName;
     },
   },
 };

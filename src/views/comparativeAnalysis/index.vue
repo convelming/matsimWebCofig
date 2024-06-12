@@ -297,6 +297,15 @@ export default {
         this.showStopToolbar = true;
       }
     },
+    handleShowSubwayDetail({ uuid, subwayDetail }) {
+      if (this.$refs.Toolbar) {
+        this.$refs.Toolbar.add("SubwayDetail", {
+          uuid: uuid,
+          subwayDetail: subwayDetail,
+        });
+        this.showStopToolbar = true;
+      }
+    },
     handleShowCarDetail({ uuid, carDetail }) {
       if (this.$refs.Toolbar) {
         this.$refs.Toolbar.add("CarDetail", {

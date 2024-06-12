@@ -1,27 +1,42 @@
 <template>
-  <Dialog class="RoutesChangeDialog" ref="dialog" :title="$l('线路变动信息')" :visible="true" @close="$emit('close')" top="40" left="40" width="600px">
+  <Dialog class="RoutesChangeDialog" ref="dialog" :title="$l('线路变动信息')" :visible="true" @close="$emit('close')" top="40" left="40" width="400px">
     <div class="RoutesChangeDialog__bodyer">
-      <el-row :gutter="20">
-        <el-col :span="12" :offset="0">
+      <div class="row">
+        <div class="col">
           <div class="_title">
             <el-checkbox v-model="showOldLine">{{ $l("基础方案") }}</el-checkbox>
           </div>
           <div class="_tools">
-            <el-color-picker size="mini" :predefine="predefineColors" v-model="oldLineColor" style="margin-right: 20px" />
+            <el-color-picker size="mini" :predefine="predefineColors" v-model="oldLineColor" />
             <el-button type="primary" size="mini" circle icon="el-icon-map-location" @click="handleLocationLine(oldLine)"></el-button>
           </div>
-        </el-col>
-        <el-col :span="12" :offset="0">
+          <div class="_content">
+            <div class="stop_list">
+              <div class="stop_item" v-for="(v, $index) in oldLine.stops" :key="$index">
+                <div class="index">{{ $index + 1 }}</div>
+                <div class="name">{{ v.name }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col">
           <div class="_title">
             <el-checkbox v-model="showNewLine">{{ $l("对比方案") }}</el-checkbox>
           </div>
           <div class="_tools">
-            <el-color-picker size="mini" :predefine="predefineColors" v-model="newLineColor" style="margin-right: 20px" />
+            <el-color-picker size="mini" :predefine="predefineColors" v-model="newLineColor" />
             <el-button type="primary" size="mini" circle icon="el-icon-map-location" @click="handleLocationLine(newLine)"></el-button>
           </div>
-        </el-col>
-      </el-row>
-      <code-diff class="code-diff" :old-string="oldText" :new-string="newText" output-format="side-by-side" :context="100" isShowNoChange/>
+          <div class="_content">
+            <div class="stop_list">
+              <div class="stop_item" v-for="(v, $index) in newLine.stops" :key="$index">
+                <div class="index">{{ $index + 1 }}</div>
+                <div class="name">{{ v.name }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </Dialog>
 </template>
@@ -34,14 +49,14 @@
   },
   "基础方案":{
     "zh-CN": "基础方案",
-    "en-US": "Basic Programs"
+    "en-US": "基础方案"
   },
   "对比方案":{
     "zh-CN": "对比方案",
-    "en-US": "Comparative Programs"
+    "en-US": "对比方案"
   },
   "vehicleId":{
-    "zh-CN": "车辆标识",
+    "zh-CN": "vehicleId",
     "en-US": "vehicleId"
   },
   "id":{
@@ -49,14 +64,13 @@
     "en-US": "id"
   },
   "departureTime":{
-    "zh-CN": "出发时间",
+    "zh-CN": "departureTime",
     "en-US": "departureTime"
   },
 }
 </language>
 
 <script>
-import CodeDiff from "vue-code-diff";
 import { BusLineLayer } from "../../layer/BusLineLayer";
 
 import * as Bean from "@/utils/Bean";
@@ -75,7 +89,7 @@ export default {
     },
   },
   inject: ["rootVue"],
-  components: { CodeDiff },
+  components: {},
   computed: {
     _Map() {
       return this.rootVue._Map;
@@ -111,13 +125,10 @@ export default {
       showOldLine: true,
       oldLineColor: "#E9CDAA",
       oldLine: {},
-      oldText: "",
 
       showNewLine: true,
       newLineColor: "#ff4500",
       newLine: {},
-      newText: "",
-
       loading1: false,
     };
   },
@@ -176,12 +187,7 @@ export default {
       })
         .then((res) => {
           this.oldLine = new Bean.TransitRoute(res.data.before || {});
-          this.oldText = this.oldLine.stops.map((v, i) => `${i + 1}. ${v.name}`).join("\n");
-          console.log(this.oldText);
           this.newLine = new Bean.TransitRoute(res.data.after || {});
-          this.newText = this.newLine.stops.map((v, i) => `${i + 1}. ${v.name}`).join("\n");
-          console.log(this.newText);
-
           this._OldBusLineLayer.setData(this.oldLine);
           this._NewBusLineLayer.setData(this.newLine);
 
@@ -204,24 +210,62 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-::v-deep {
-  .code-diff {
-    width: 100% !important;
-    height: auto !important;
-    max-height: calc(100vh - 250px) !important;
-    overflow: auto !important;
-  }
-}
 .RoutesChangeDialog__bodyer {
-  ._title {
-    text-align: center;
-    padding-bottom: 20px;
-  }
-  ._tools {
+  .row {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    padding-bottom: 20px;
+    justify-content: space-between;
+    .col {
+      box-sizing: border-box;
+      padding: 10px;
+      border-radius: 5px;
+      width: calc(50% - 10px);
+      background-color: #eee;
+      ._title {
+        font-size: 16px;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      ._tools {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+        & > * + * {
+          margin-left: 10px;
+        }
+        .el-color-picker {
+          background-color: #fff;
+        }
+      }
+      ._content {
+        font-size: 14px;
+        .stop_item {
+          display: flex;
+          font-size: 12px;
+          .index {
+            flex-shrink: 0;
+            width: 2.5em;
+          }
+          .name {
+            width: 100%;
+          }
+          .btn_box {
+            flex-shrink: 0;
+            padding: 0 10px;
+            .edit_btn {
+              cursor: pointer;
+              color: #409eff;
+            }
+            .delete_btn {
+              cursor: pointer;
+              margin-left: 10px;
+              color: #f56c6c;
+            }
+          }
+        }
+      }
+    }
   }
 }
 </style>
