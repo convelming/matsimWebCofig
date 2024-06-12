@@ -24,11 +24,11 @@
   },
   "基础方案":{
     "zh-CN": "基础方案",
-    "en-US": "基础方案"
+    "en-US": "Basic Programs"
   },
   "对比方案":{
     "zh-CN": "对比方案",
-    "en-US": "对比方案"
+    "en-US": "Comparative Programs"
   },
 }
 </language>

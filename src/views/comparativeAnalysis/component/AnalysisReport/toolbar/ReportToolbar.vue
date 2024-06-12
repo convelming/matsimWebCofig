@@ -21,7 +21,7 @@
 {
   "ReportToolbar":{
     "zh-CN": "公交出行影响对比分析报告",
-    "en-US": "公交出行影响对比分析报告"
+    "en-US": "Transit Travel Impact Comparison Analysis Report"
   },
   "label":{
     "zh-CN": "label_zh",

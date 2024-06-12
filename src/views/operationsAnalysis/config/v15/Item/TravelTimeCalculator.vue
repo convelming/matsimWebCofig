@@ -52,67 +52,67 @@
 <language>
 {
   "analyzedModes": {
-    "zh-CN":"analyzedModes",
+    "zh-CN":"分析模式",
     "en-US":"analyzedModes"
   },
   "calculateLinkToLinkTravelTimes": {
-    "zh-CN":"calculateLinkToLinkTravelTimes",
+    "zh-CN":"计算线路到线路行程时间",
     "en-US":"calculateLinkToLinkTravelTimes"
   },
   "calculateLinkTravelTimes": {
-    "zh-CN":"calculateLinkTravelTimes",
+    "zh-CN":"计算线路行程时间",
     "en-US":"calculateLinkTravelTimes"
   },
   "filterModes": {
-    "zh-CN":"filterModes",
+    "zh-CN":"筛选模式",
     "en-US":"filterModes"
   },
   "maxTime": {
-    "zh-CN":"maxTime",
+    "zh-CN":"最大时间",
     "en-US":"maxTime"
   },
   "separateModes": {
-    "zh-CN":"separateModes",
+    "zh-CN":"单独模式",
     "en-US":"separateModes"
   },
   "travelTimeAggregator": {
-    "zh-CN":"travelTimeAggregator",
+    "zh-CN":"线程时间汇总",
     "en-US":"travelTimeAggregator"
   },
   "optimistic": {
-    "zh-CN":"optimistic",
+    "zh-CN":"乐观",
     "en-US":"optimistic"
   },
   "experimental_LastMile": {
-    "zh-CN":"experimental_LastMile",
+    "zh-CN":"实验性_最后一英里",
     "en-US":"experimental_LastMile"
   },
   "travelTimeBinSize": {
-    "zh-CN":"travelTimeBinSize",
+    "zh-CN":"行驶持续时间",
     "en-US":"travelTimeBinSize"
   },
   "travelTimeCalculator": {
-    "zh-CN":"travelTimeCalculator",
+    "zh-CN":"行驶时间计算器",
     "en-US":"travelTimeCalculator"
   },
   "TravelTimeCalculatorArray": {
-    "zh-CN":"TravelTimeCalculatorArray",
+    "zh-CN":"行驶时间计算数组",
     "en-US":"TravelTimeCalculatorArray"
   },
   "TravelTimeCalculatorHashMap": {
-    "zh-CN":"TravelTimeCalculatorHashMap",
+    "zh-CN":"行驶时间计算HashMap",
     "en-US":"TravelTimeCalculatorHashMap"
   },
   "travelTimeGetter": {
-    "zh-CN":"travelTimeGetter",
+    "zh-CN":"行驶时间获取器",
     "en-US":"travelTimeGetter"
   },
   "average": {
-    "zh-CN":"average",
+    "zh-CN":"平均数",
     "en-US":"average"
   },
   "linearinterpolation": {
-    "zh-CN":"linearinterpolation",
+    "zh-CN":"线性插值",
     "en-US":"linearinterpolation"
   },
 }

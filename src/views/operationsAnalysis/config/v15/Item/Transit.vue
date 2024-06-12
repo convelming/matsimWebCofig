@@ -62,7 +62,7 @@
     "en-US":"DijkstraBased"
   },
   "SwissRailRaptor": {
-    "zh-CN":"SwissRailRaptor",
+    "zh-CN":"瑞士铁路公司",
     "en-US":"SwissRailRaptor"
   },
   "transitLinesAttributesFile": {

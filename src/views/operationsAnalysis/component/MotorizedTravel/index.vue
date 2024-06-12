@@ -77,31 +77,31 @@
 {
   "机动化出行":{
     "zh-CN": "机动化出行",
-    "en-US": "机动化出行"
+    "en-US": "Motorized travel"
   },
   "视角跟随：":{
     "zh-CN": "视角跟随：",
-    "en-US": "视角跟随："
+    "en-US": "Perspective Following："
   },
   "显示图层：":{
     "zh-CN": "显示图层：",
-    "en-US": "显示图层："
+    "en-US": "Show Layers："
   },
   "公交车":{
     "zh-CN": "公交车",
-    "en-US": "公交车"
+    "en-US": "town bus"
   },
   "私家车":{
     "zh-CN": "私家车",
-    "en-US": "私家车"
+    "en-US": "private car"
   },
   "车辆大小：":{
     "zh-CN": "车辆大小：",
-    "en-US": "车辆大小："
+    "en-US": "Vehicle size："
   },
   "最大显示数量：":{
     "zh-CN": "最大显示数量：",
-    "en-US": "最大显示数量："
+    "en-US": "Maximum Display Quantity："
   },
 }
 </language>

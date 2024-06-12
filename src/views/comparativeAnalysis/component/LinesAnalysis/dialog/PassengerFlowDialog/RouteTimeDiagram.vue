@@ -37,43 +37,43 @@
 <language>
 {
   "Chart":{
-    "zh-CN": "Chart",
+    "zh-CN": "图表",
     "en-US": "Chart"
   },
   "Data":{
-    "zh-CN": "Data",
+    "zh-CN": "数据",
     "en-US": "Data"
   },
   "Stop Name":{
-    "zh-CN": "Stop Name",
+    "zh-CN": "站名",
     "en-US": "Stop Name"
   },
   "Stop Index":{
-    "zh-CN": "Stop Index",
+    "zh-CN": "站点索引",
     "en-US": "Stop Index"
   },
   "Stop Id":{
-    "zh-CN": "Stop Id",
+    "zh-CN": "站点编号",
     "en-US": "Stop Id"
   },
   "base/contrast":{
-    "zh-CN": "base/contrast",
+    "zh-CN": "基色/对比色",
     "en-US": "base/contrast"
   },
   "arrScheduled":{
-    "zh-CN": "arrScheduled",
+    "zh-CN": "安排日程",
     "en-US": "arrScheduled"
   },
   "depScheduled":{
-    "zh-CN": "depScheduled",
+    "zh-CN": "部署计划",
     "en-US": "depScheduled"
   },
   "arrSimulated":{
-    "zh-CN": "arrSimulated",
+    "zh-CN": "排列模拟",
     "en-US": "arrSimulated"
   },
   "depSimulated":{
-    "zh-CN": "depSimulated",
+    "zh-CN": "描绘模拟",
     "en-US": "depSimulated"
   },
 }

@@ -29,59 +29,59 @@
 <language>
 {
   "Passengers At Stop":{
-    "zh-CN": "Passengers At Stop",
+    "zh-CN": "停靠站点的乘客",
     "en-US": "Passengers At Stop"
   },
   "Aggregate":{
-    "zh-CN": "Aggregate",
+    "zh-CN": "总计",
     "en-US": "Aggregate"
   },
   "15 minutes":{
-    "zh-CN": "15 minutes",
+    "zh-CN": "15 分钟",
     "en-US": "15 minutes"
   },
   "20 minutes'":{
-    "zh-CN": "20 minutes'",
+    "zh-CN": "20 分钟",
     "en-US": "20 minutes'"
   },
   "30 minutes":{
-    "zh-CN": "30 minutes",
+    "zh-CN": "30 分钟",
     "en-US": "30 minutes"
   },
   "60 minutes":{
-    "zh-CN": "60 minutes",
+    "zh-CN": "60 分钟",
     "en-US": "60 minutes"
   },
   "Line":{
-    "zh-CN": "Line",
+    "zh-CN": "线路",
     "en-US": "Line"
   },
   "Route":{
-    "zh-CN": "Route",
+    "zh-CN": "路线",
     "en-US": "Route"
   },
   "Route Start":{
-    "zh-CN": "Route Start",
+    "zh-CN": "路线起点",
     "en-US": "Route Start"
   },
   "Route End":{
-    "zh-CN": "Route End",
+    "zh-CN": "路线终点",
     "en-US": "Route End"
   },
   "Arrival Time":{
-    "zh-CN": "Arrival Time",
+    "zh-CN": "抵达时间",
     "en-US": "Arrival Time"
   },
   "Departure Time":{
-    "zh-CN": "Departure Time",
+    "zh-CN": "出发时间",
     "en-US": "Departure Time"
   },
   "#Alighting Pax":{
-    "zh-CN": "#Alighting Pax",
+    "zh-CN": "#下车的乘客",
     "en-US": "#Alighting Pax"
   },
   "#Bording Pax":{
-    "zh-CN": "#Bording Pax",
+    "zh-CN": "#上车的乘客",
     "en-US": "#Bording Pax"
   },
 }

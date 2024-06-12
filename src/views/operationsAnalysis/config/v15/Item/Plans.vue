@@ -59,11 +59,11 @@
     "en-US":"networkRouteType"
   },
   "LinkNetworkRoute": {
-    "zh-CN":"LinkNetworkRoute",
+    "zh-CN":"线路网络路线",
     "en-US":"LinkNetworkRoute"
   },
   "CompressedNetworkRoute": {
-    "zh-CN":"CompressedNetworkRoute",
+    "zh-CN":"压缩网络路线",
     "en-US":"CompressedNetworkRoute"
   },
   "handlingOfPlansWithoutRoutingMode": {

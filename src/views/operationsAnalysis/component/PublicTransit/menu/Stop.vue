@@ -40,59 +40,59 @@
 <language>
 {
   "Stop":{
-    "zh-CN": "Stop",
+    "zh-CN": "站点",
     "en-US": "Stop"
   },
   "Copy Id":{
-    "zh-CN": "Copy Id",
+    "zh-CN": "复制编号",
     "en-US": "Copy Id"
   },
   "Copy Name":{
-    "zh-CN": "Copy Name",
+    "zh-CN": "复制名称",
     "en-US": "Copy Name"
   },
   "Copy Link Id":{
-    "zh-CN": "Copy Link Id",
+    "zh-CN": "复制路线编号",
     "en-US": "Copy Link Id"
   },
   "Transit Stop Details":{
-    "zh-CN": "Transit Stop Details",
+    "zh-CN": "中转站详情",
     "en-US": "Transit Stop Details"
   },
   "Stop Load...":{
-    "zh-CN": "Stop Load...",
+    "zh-CN": "站点加载...",
     "en-US": "Stop Load..."
   },
   "Transfers At Stop...":{
-    "zh-CN": "Transfers At Stop...",
+    "zh-CN": "中转站...",
     "en-US": "Transfers At Stop..."
   },
   "Passengers At Stop":{
-    "zh-CN": "Passengers At Stop",
+    "zh-CN": "停靠站点的乘客",
     "en-US": "Passengers At Stop"
   },
   "stops selected":{
-    "zh-CN": "stops selected",
+    "zh-CN": "选择站点",
     "en-US": "stops selected"
   },
   "Copy Name":{
-    "zh-CN": "Copy Name",
+    "zh-CN": "复制名称",
     "en-US": "Copy Name"
   },
   "Copy Link Id":{
-    "zh-CN": "Copy Link Id",
+    "zh-CN": "复制路线编号",
     "en-US": "Copy Link Id"
   },
   "Transit Stop Details":{
-    "zh-CN": "Transit Stop Details",
+    "zh-CN": "中转站详情",
     "en-US": "Transit Stop Details"
   },
   "Stop Load...":{
-    "zh-CN": "Stop Load...",
+    "zh-CN": "站点加载...",
     "en-US": "Stop Load..."
   },
   "Transfers At Stop...":{
-    "zh-CN": "Transfers At Stop...",
+    "zh-CN": "中转站...",
     "en-US": "Transfers At Stop..."
   },
 }

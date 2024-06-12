@@ -28,7 +28,7 @@
 <language>
 {
   "selectBuildAnalysis":{
-    "zh-CN": "Select Build Analysis",
+    "zh-CN": "选择构建分析",
     "en-US": "Select Build Analysis"
   },
   "color":{
@@ -45,11 +45,11 @@
   },
   "startInBuild":{
     "zh-CN": "从建筑出发",
-    "en-US": "从建筑出发"
+    "en-US": "From Architecture"
   },
   "endInBuild":{
     "zh-CN": "最终到达建筑",
-    "en-US": "最终到达建筑"
+    "en-US": "Final arrival at the building"
   }
 }
 </language>

@@ -69,62 +69,62 @@
 {
   "建筑详情":{
     "zh-CN": "建筑详情",
-    "en-US": "建筑详情"
+    "en-US": "Building Details"
   },
   "建筑ID：":{
     "zh-CN": "建筑ID：",
-    "en-US": "建筑ID："
+    "en-US": "Building ID："
   },
   "坐标：":{
     "zh-CN": "坐标：",
-    "en-US": "坐标："
+    "en-US": "coordinates："
   },
   "描述：":{
     "zh-CN": "描述：",
-    "en-US": "描述："
+    "en-US": "descriptive："
   },
   "linkId：":{
     "zh-CN": "linkId：",
-    "en-US": "linkId："
+    "en-US": "路段 Id："
   },
   "楼层数：":{
     "zh-CN": "楼层数：",
-    "en-US": "楼层数："
+    "en-US": "Number of floors："
   },
   "高度：":{
     "zh-CN": "高度：",
-    "en-US": "高度："
+    "en-US": "heights："
   },
   "面积：":{
     "zh-CN": "面积：",
-    "en-US": "面积："
+    "en-US": "sizes："
   },
   "小类名称：":{
     "zh-CN": "小类名称：",
-    "en-US": "小类名称："
+    "en-US": "Subcategory Name："
   },
   "中类名称：":{
     "zh-CN": "中类名称：",
-    "en-US": "中类名称："
+    "en-US": "Medium Name："
   },
   "大类名称：":{
     "zh-CN": "大类名称：",
-    "en-US": "大类名称："
+    "en-US": "Category name："
   },
   "场地类型":{
     "zh-CN": "场地类型",
-    "en-US": "场地类型"
+    "en-US": "Type of site"
   },
   "开放时间":{
     "zh-CN": "开放时间",
-    "en-US": "开放时间"
+    "en-US": "opening hours"
   },
   "容量":{
     "zh-CN": "容量",
-    "en-US": "容量"
+    "en-US": "capacities"
   },
   "selectBuildAnalysis":{
-    "zh-CN": "Select Build Analysis",
+    "zh-CN": "选择构建分析",
     "en-US": "Select Build Analysis"
   },
 }

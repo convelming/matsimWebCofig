@@ -44,27 +44,27 @@
     "en-US":"facilitiesSource"
   },
   "none": {
-    "zh-CN":"none",
+    "zh-CN":"无",
     "en-US":"none"
   },
   "fromFile": {
-    "zh-CN":"fromFile",
+    "zh-CN":"来自文件",
     "en-US":"fromFile"
   },
   "setInScenario": {
-    "zh-CN":"setInScenario",
+    "zh-CN":"设置场景",
     "en-US":"setInScenario"
   },
   "onePerActivityLinkInPlansFile": {
-    "zh-CN":"onePerActivityLinkInPlansFile",
+    "zh-CN":"每个活动一个线路计划文件",
     "en-US":"onePerActivityLinkInPlansFile"
   },
   "onePerActivityLinkInPlansFileExceptWhenCoordinatesAreGiven": {
-    "zh-CN":"onePerActivityLinkInPlansFileExceptWhenCoordinatesAreGiven",
+    "zh-CN":"计划文件中的每个活动线路一个，但给出坐标时除外",
     "en-US":"onePerActivityLinkInPlansFileExceptWhenCoordinatesAreGiven"
   },
   "onePerActivityLocationInPlansFile": {
-    "zh-CN":"onePerActivityLocationInPlansFile",
+    "zh-CN":"每个活动地点一个 在图纸文件中",
     "en-US":"onePerActivityLocationInPlansFile"
   },
   "idPrefix": {

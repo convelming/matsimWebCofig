@@ -18,7 +18,7 @@
 <language>
 {
   "Transit Route Analysis...":{
-    "zh-CN": "Transit Route Analysis...",
+    "zh-CN": "交通路线分析...",
     "en-US": "Transit Route Analysis..."
   },
 }

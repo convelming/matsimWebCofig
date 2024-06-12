@@ -45,48 +45,48 @@
 <language>
 {
   "Stop":{
-    "zh-CN": "Stop",
+    "zh-CN": "站点",
     "en-US": "Stop"
   },
   "Line":{
-    "zh-CN": "Line",
+    "zh-CN": "线路",
     "en-US": "Line"
   },
   "Route":{
-    "zh-CN": "Route",
+    "zh-CN": "路线",
     "en-US": "Route"
   },
   "Show Transit Lines":{
-    "zh-CN": "Show Transit Lines",
+    "zh-CN": "显示交通线路",
     "en-US": "Show Transit Lines"
   },
   "Show Reachable Stops":{
-    "zh-CN": "Show Reachable Stops",
+    "zh-CN": "显示可到达的站点",
     "en-US": "Show Reachable Stops"
   },
   
   "Copy Id":{
-    "zh-CN": "Copy Id",
+    "zh-CN": "复制编号",
     "en-US": "Copy Id"
   },
   "Copy Transit Line Id":{
-    "zh-CN": "Copy Transit Line Id",
+    "zh-CN": "复制公交线路编号",
     "en-US": "Copy Transit Line Id"
   },
   "Show Route Details":{
-    "zh-CN": "Show Route Details",
+    "zh-CN": "显示路线详情",
     "en-US": "Show Route Details"
   },
   "Transit Route Analysis...":{
-    "zh-CN": "Transit Route Analysis...",
+    "zh-CN": "交通路线分析...",
     "en-US": "Transit Route Analysis..."
   },
   "List Departures":{
-    "zh-CN": "List Departures",
+    "zh-CN": "出发名单",
     "en-US": "List Departures"
   },
   "Create Passengers Agent Group...":{
-    "zh-CN": "Create Passengers Agent Group...",
+    "zh-CN": "创建乘客代理组...",
     "en-US": "Create Passengers Agent Group..."
   },
 }

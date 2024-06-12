@@ -31,31 +31,31 @@
 <language>
 {
   "Chart":{
-    "zh-CN": "Chart",
+    "zh-CN": "图表",
     "en-US": "Chart"
   },
   "Data":{
-    "zh-CN": "Data",
+    "zh-CN": "数据",
     "en-US": "Data"
   },
   "Stop Name":{
-    "zh-CN": "Stop Name",
+    "zh-CN": "站名",
     "en-US": "Stop Name"
   },
   "Stop Id":{
-    "zh-CN": "Stop Id",
+    "zh-CN": "站点编号",
     "en-US": "Stop Id"
   },
   "dep/arr":{
-    "zh-CN": "dep/arr",
+    "zh-CN": "部/组",
     "en-US": "dep/arr"
   },
   "scheduled":{
-    "zh-CN": "scheduled",
+    "zh-CN": "预定",
     "en-US": "scheduled"
   },
   "simulated":{
-    "zh-CN": "simulated",
+    "zh-CN": "模拟",
     "en-US": "simulated"
   },
 }

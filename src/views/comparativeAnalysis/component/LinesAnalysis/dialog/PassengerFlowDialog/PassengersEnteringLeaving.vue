@@ -33,19 +33,19 @@
 <language>
 {
   "Chart":{
-    "zh-CN": "Chart",
+    "zh-CN": "图表",
     "en-US": "Chart"
   },
   "Data":{
-    "zh-CN": "Data",
+    "zh-CN": "数据",
     "en-US": "Data"
   },
   "Stop Name":{
-    "zh-CN": "Stop Name",
+    "zh-CN": "站名",
     "en-US": "Stop Name"
   },
   "Stop Id":{
-    "zh-CN": "Stop Id",
+    "zh-CN": "站点编号",
     "en-US": "Stop Id"
   },
   "#entering":{

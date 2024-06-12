@@ -77,15 +77,15 @@
     "en-US":"none"
   },
   "accessEgressModeToLink": {
-    "zh-CN":"accessEgressModeToLink",
+    "zh-CN":"访问出口方式至线路",
     "en-US":"accessEgressModeToLink"
   },
   "walkConstantTimeToLink": {
-    "zh-CN":"walkConstantTimeToLink",
+    "zh-CN":"步行固定时间至线路",
     "en-US":"walkConstantTimeToLink"
   },
   "accessEgressModeToLinkPlusTimeConstant": {
-    "zh-CN":"accessEgressModeToLinkPlusTimeConstant",
+    "zh-CN":"访问出口方式至线路时间常数",
     "en-US":"accessEgressModeToLinkPlusTimeConstant"
   },
   "clearDefaultTeleportedModeParams": {

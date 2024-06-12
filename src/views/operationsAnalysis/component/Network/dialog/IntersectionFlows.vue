@@ -23,31 +23,31 @@
 <language>
 {
   "IntersectionFlows":{
-    "zh-CN": "IntersectionFlows",
+    "zh-CN": "交叉口流量",
     "en-US": "IntersectionFlows"
   },
   "Chart":{
-    "zh-CN": "Chart",
+    "zh-CN": "图表",
     "en-US": "Chart"
   },
   "Data":{
-    "zh-CN": "Data",
+    "zh-CN": "数据",
     "en-US": "Data"
   },
   "aggregateTo":{
-    "zh-CN": "Aggregate To",
+    "zh-CN": "汇总至",
     "en-US": "Aggregate To"
   },
   "vehicles":{
-    "zh-CN": "#Vehicles",
+    "zh-CN": "#车辆",
     "en-US": "#Vehicles"
   },
   "fromLink":{
-    "zh-CN": "From Link",
+    "zh-CN": "来自路段",
     "en-US": "From Link"
   },
   "toLink":{
-    "zh-CN": "To Link",
+    "zh-CN": "前往路段",
     "en-US": "To Link"
   },
 }

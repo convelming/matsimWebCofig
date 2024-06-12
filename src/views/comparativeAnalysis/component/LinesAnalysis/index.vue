@@ -35,39 +35,39 @@
 {
   "线路比对分析":{
     "zh-CN": "线路比对分析",
-    "en-US": "线路比对分析"
+    "en-US": "Line comparison analysis"
   },
   "所有修改线路：":{
     "zh-CN": "所有修改线路：",
-    "en-US": "所有修改线路："
+    "en-US": "All modified lines："
   },
   "修改前线路颜色":{
     "zh-CN": "修改前线路颜色",
-    "en-US": "修改前线路颜色"
+    "en-US": "Line color before modification"
   },
   "修改后线路颜色":{
     "zh-CN": "修改后线路颜色",
-    "en-US": "修改后线路颜色"
+    "en-US": "Modified Line Colors"
   },
   "（虚线为修改前线路， 实线为修改后线路）":{
     "zh-CN": "（虚线为修改前线路， 实线为修改后线路）",
-    "en-US": "（虚线为修改前线路， 实线为修改后线路）"
+    "en-US": "(Dashed lines are pre-modification lines, solid lines are post-modification lines)"
   },
   "受影响线路：":{
     "zh-CN": "受影响线路：",
-    "en-US": "受影响线路："
+    "en-US": "Affected Lines："
   },
   "受影响线路颜色":{
     "zh-CN": "受影响线路颜色",
-    "en-US": "受影响线路颜色"
+    "en-US": "Affected Line Colors"
   },
   "受影响站点：":{
     "zh-CN": "受影响站点：",
-    "en-US": "受影响站点："
+    "en-US": "Affected stations："
   },
   "受影响站点颜色":{
     "zh-CN": "受影响站点颜色",
-    "en-US": "受影响站点颜色"
+    "en-US": "Affected site colors"
   }
 }
 </language>

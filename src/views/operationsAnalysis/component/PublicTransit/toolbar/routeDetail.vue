@@ -42,59 +42,59 @@
 <language>
 {
   "Line":{
-    "zh-CN": "Line",
+    "zh-CN": "线路",
     "en-US": "Line"
   },
   "Transit Route Analysis...":{
-    "zh-CN": "Transit Route Analysis...",
+    "zh-CN": "交通路线分析...",
     "en-US": "Transit Route Analysis..."
   },
   "Id":{
-    "zh-CN": "Id",
+    "zh-CN": "编号",
     "en-US": "Id"
   },
   "Route":{
-    "zh-CN": "Route",
+    "zh-CN": "路线",
     "en-US": "Route"
   },
   "Name":{
-    "zh-CN": "Name",
+    "zh-CN": "名称",
     "en-US": "Name"
   },
   "Copy Id":{
-    "zh-CN": "Copy Id",
+    "zh-CN": "复制编号",
     "en-US": "Copy Id"
   },
   "Copy Name":{
-    "zh-CN": "Copy Name",
+    "zh-CN": "复制名称",
     "en-US": "Copy Name"
   },
   "Copy Link Id":{
-    "zh-CN": "Copy Link Id",
+    "zh-CN": "复制线路编号",
     "en-US": "Copy Link Id"
   },
   "Transit Stop Details":{
-    "zh-CN": "Transit Stop Details",
+    "zh-CN": "中转站详情",
     "en-US": "Transit Stop Details"
   },
   "Stop Load...":{
-    "zh-CN": "Stop Load...",
+    "zh-CN": "站点加载...",
     "en-US": "Stop Load..."
   },
   "Transfers At Stop...":{
-    "zh-CN": "Transfers At Stop...",
+    "zh-CN": "中转站详情...",
     "en-US": "Transfers At Stop..."
   },
   "Passengers At Stop":{
-    "zh-CN": "Passengers At Stop",
+    "zh-CN": "停靠站点的乘客",
     "en-US": "Passengers At Stop"
   },
   "Show Transit Lines":{
-    "zh-CN": "Show Transit Lines",
+    "zh-CN": "显示交通线路",
     "en-US": "Show Transit Lines"
   },
   "Show Reachable Stops":{
-    "zh-CN": "Show Reachable Stops",
+    "zh-CN": "显示可到达的站点",
     "en-US": "Show Reachable Stops"
   },
 }

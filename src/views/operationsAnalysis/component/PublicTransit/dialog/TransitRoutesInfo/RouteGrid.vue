@@ -30,35 +30,35 @@
 <language>
 {
   "Show：":{
-    "zh-CN": "Show：",
+    "zh-CN": "显示：",
     "en-US": "Show："
   },
   "entering":{
-    "zh-CN": "entering",
+    "zh-CN": "进入",
     "en-US": "entering"
   },
   "leaving":{
-    "zh-CN": "leaving",
+    "zh-CN": "离开",
     "en-US": "leaving"
   },
   "Chart":{
-    "zh-CN": "Chart",
+    "zh-CN": "图表",
     "en-US": "Chart"
   },
   "Data":{
-    "zh-CN": "Data",
+    "zh-CN": "数据",
     "en-US": "Data"
   },
   "Stop Name":{
-    "zh-CN": "Stop Name",
+    "zh-CN": "站名",
     "en-US": "Stop Name"
   },
   "Stop Id":{
-    "zh-CN": "Stop Id",
+    "zh-CN": "站点编号",
     "en-US": "Stop Id"
   },
   "hour":{
-    "zh-CN": "hour",
+    "zh-CN": "时",
     "en-US": "hour"
   },
 }
