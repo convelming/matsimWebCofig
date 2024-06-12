@@ -192,9 +192,10 @@ export const MAP_LAYER_STYLE = {
     get url() {
       // const token =
       //   "pk.eyJ1IjoiaGR4MTQ3IiwiYSI6ImNsYWdwajMyMDEwejAzb251MTd4aXV3dWUifQ._QFvRrJtFKNJ5cOdmoRzTQ";
-      const token =
-        "pk.eyJ1IjoiemFjaHlhbmc4MyIsImEiOiJja211MjRsbm4waXMwMm5wZDE3d3BuZjBuIn0.lcRS0kbOWjzFw-UikwbyHQ";
-      return `https://api.mapbox.com/v4/mapbox.satellite/${this.zoom}/${this.row}/${this.col}.png256?access_token=${token}`;
+      // const token =
+      //   "pk.eyJ1IjoiemFjaHlhbmc4MyIsImEiOiJja211MjRsbm4waXMwMm5wZDE3d3BuZjBuIn0.lcRS0kbOWjzFw-UikwbyHQ";
+      // return `https://api.mapbox.com/v4/mapbox.satellite/${this.zoom}/${this.row}/${this.col}.png256?access_token=${token}`;
+      return `https://api.mapbox.com/styles/v1/convel/ck8frzi262yko1invkvbif5aw/tiles/512/${this.zoom}/${this.row}/${this.col}@2x?access_token=pk.eyJ1IjoiY29udmVsIiwiYSI6ImNsaHB4cXA2MDBicGIzam1zb25zdGtiOHAifQ.UuaTujcOQlxywCJWWZ0SSg`
     }
   },
 };
@@ -243,9 +244,8 @@ export class LocalMapLayer extends Layer {
     if (!this._menuDoc) {
       const menuDoc = document.createElement("div");
       menuDoc.classList.add("LocalMapLayer_menu", "hide");
-      menuDoc.style = `width: ${
-        Object.values(this.styleMap).length * 50 + 30
-      }px;`;
+      menuDoc.style = `width: ${Object.values(this.styleMap).length * 50 + 30
+        }px;`;
 
       const openHideBtn = document.createElement("div");
       openHideBtn.classList.add("open_hide_btn");
@@ -388,7 +388,7 @@ export class LocalMapLayer extends Layer {
     const zoom = this.zoom;
     const [mapCenterX, mapCenterY] = this.map.center;
     const { far, fov } = this.map.camera;
-    const width = far / Math.cos((Math.PI * fov) / 180);
+    const width = far / (Math.cos((Math.PI * fov) / 180) * 2);
 
     const [row, col] = [
       Math.floor(

@@ -91,7 +91,7 @@ export default {
         case "BuildDetail":
         case "LineDetail":
         case "NodeDetail": {
-          const item = this.list.find((v) => v.data.uuid == data.uuid);
+          const item = this.list.find((v) => v.data.uuid == data.uuid && type == v.type);
           if (item) {
             this.data = item.data;
             this.activeName = item.name;

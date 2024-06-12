@@ -7,8 +7,7 @@ const STOP_SIZE = 80;
 
 export class SelectStopLayer extends Layer {
   name = "SelectStopLayer";
-  size = 0.3;
-  scale = 6;
+  scale = 1;
   data = [];
   center = [0, 0];
   color = new THREE.Color(0xffa500);
@@ -17,7 +16,6 @@ export class SelectStopLayer extends Layer {
   constructor(opt) {
     super(opt);
 
-    this.size = opt.size || this.size;
     this.scale = opt.scale || this.scale;
     this.color = new THREE.Color(opt.color || this.color);
 
@@ -44,7 +42,7 @@ export class SelectStopLayer extends Layer {
 
   onAdd(map) {
     super.onAdd(map);
-    this.setSize(this.map.cameraHeight / 10000);
+    this.setSize();
     this.update();
   }
 
@@ -64,7 +62,7 @@ export class SelectStopLayer extends Layer {
       }
     }
     if (type == MAP_EVENT.UPDATE_CAMERA_HEIGHT) {
-      this.setSize(this.map.cameraHeight / 10000);
+      this.setSize();
     }
   }
 
@@ -74,15 +72,13 @@ export class SelectStopLayer extends Layer {
     this.material.needsUpdate = true;
   }
 
-  setSize(size = this.size, scale = this.scale) {
-    this.size = size;
-    this.scale = scale;
+  setSize() {
+    const _scale = this.map.cameraHeight / 1800 * this.scale
     const data = this.data;
     const count = data.length;
     for (let i = 0; i < count; i++) {
       const { coord } = data[i];
       const positionV3 = new THREE.Vector3(coord.x, coord.y, i / count);
-      const _scale = scale * size;
       const scaleV3 = new THREE.Vector3(_scale, _scale, _scale);
 
       const matrix = new THREE.Matrix4();
@@ -161,11 +157,11 @@ export class SelectStopLayer extends Layer {
       count
     );
 
+    const _scale = this.map.cameraHeight / 1800 * this.scale
     for (let i = 0; i < count; i++) {
       const { coord, pickColor } = data[i];
 
       const positionV3 = new THREE.Vector3(coord.x, coord.y, i / count);
-      const _scale = this.scale * this.size;
       const scaleV3 = new THREE.Vector3(_scale, _scale, _scale);
 
       const matrix = new THREE.Matrix4();

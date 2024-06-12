@@ -130,9 +130,9 @@ export default {
       showLayerMotorizedTravel: false,
       showLayerBuild3D: false,
       showLayerNetwork: false,
-      showLayerActivity3D: true,
+      showLayerActivity3D: false,
 
-      showStopToolbar: false,
+      showStopToolbar: true,
 
       showClock: true,
 
@@ -232,7 +232,7 @@ export default {
         enableRotate: true,
         zoom: 16,
         // minPitch: -90,
-        // center: [12606757, 2651434],
+        center: [12640240, 2610674.2],
       });
       this._Map.addLayer(this._MapLayer);
       window._Map = this._Map;
@@ -348,6 +348,15 @@ export default {
         this.$refs.Toolbar.add("SelectBuildAnalysis", {
           uuid: uuid,
           buildDetail: buildDetail,
+        });
+        this.showStopToolbar = true;
+      }
+    },
+    handleShowActivityDetail({ uuid, activityDetail }) {
+      if (this.$refs.Toolbar) {
+        this.$refs.Toolbar.add("ActivityDetail", {
+          uuid: uuid,
+          activityDetail: activityDetail,
         });
         this.showStopToolbar = true;
       }

@@ -3,6 +3,7 @@ import { Message, MessageBox } from "element-ui";
 import { tansParams } from "./index";
 import store from "@/store";
 import language from "@/language/index";
+import { guid } from "@/utils/utils";
 
 // 是否显示重新登录
 export let isRelogin = {
@@ -32,6 +33,8 @@ service.interceptors.request.use(
     if (!config.isNoBatasource) {
       headers["Datasource"] = store.getters.dataSource;
     }
+
+    headers["uuid"] = guid();
 
     config.headers = headers;
     // get请求映射params参数
@@ -124,7 +127,7 @@ service.interceptors.response.use(
       message = language.internationalize("系统接口请求超时");
     } else if (message.includes("Request failed with status code")) {
       message =
-      language.internationalize("请求失败，状态码") +
+        language.internationalize("请求失败，状态码") +
         message.substr(message.length - 3);
     }
     if (!error.config.noMsg) Message.error(message);

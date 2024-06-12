@@ -21,6 +21,12 @@
         <div class="form_label">{{ $l("color") }}</div>
         <el-color-picker size="mini" :predefine="predefineColors" v-model="color" />
       </div>
+      <div class="form_item">
+        <div class="form_label">{{ $l("height") }}</div>
+        <div class="form_value">
+          <el-slider style="padding: 0 calc(2em - 10px) 20px calc(2em - 10px)" v-model="height" :min="0" :max="100" :marks="marks" :format-tooltip="(v) => `${v}%`" />
+        </div>
+      </div>
     </div>
   </el-collapse-item>
 </template>
@@ -34,6 +40,10 @@
   "color":{
     "zh-CN": "颜色：",
     "en-US": "Color: "
+  },
+  "height":{
+    "zh-CN": "高度：",
+    "en-US": "Height: "
   },
   "time":{
     "zh-CN": "时间：",
@@ -110,10 +120,15 @@ export default {
         this._BuildFlowLayer.setColor(val);
       },
     },
+    height: {
+      handler(val) {
+        this._BuildFlowLayer.setHeight(val);
+      },
+    },
   },
   data() {
     return {
-      predefineColors: ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc'],
+      predefineColors: ["#5470c6", "#91cc75", "#fac858", "#ee6666", "#73c0de", "#3ba272", "#fc8452", "#9a60b4", "#ea7ccc"],
 
       loading: true,
       resData: {},
@@ -121,11 +136,12 @@ export default {
       color: "#ff4500",
       startTime: 0,
       endTime: 24 * 3600,
+      height: 30,
       type: "start",
     };
   },
   created() {
-    this._BuildFlowLayer = new BuildFlowLayer({ zIndex: 100, color: this.color });
+    this._BuildFlowLayer = new BuildFlowLayer({ zIndex: 100, color: this.color, height: this.height });
     this.getDetail();
   },
   beforeDestroy() {

@@ -32,10 +32,8 @@ class Activity3DMotionWorker {
       const activityId = Symbol(v1.personId);
       const activity = {
         actType: v1.actType,
-        coord: {
-          x: v1.coord.x - center[0],
-          y: v1.coord.y - center[1],
-        },
+        coord: { ...v1.coord },
+        point: [v1.coord.x - center[0], v1.coord.y - center[1]],
         endTime: v1.endTime,
         startTime: v1.startTime,
         personId: v1.personId,
@@ -69,7 +67,7 @@ class Activity3DMotionWorker {
     for (const activityKey of _activityKeys) {
       const v1 = this.activityMap.get(activityKey);
       const { startTime, endTime } = v1;
-      if (time >= startTime && time <= endTime) runActivityList.push(v1);
+      if (time >= startTime && time <= endTime) runActivityList.push(JSON.parse(JSON.stringify(v1)));
       if (runActivityList.length >= maxNum) break;
     }
     return {

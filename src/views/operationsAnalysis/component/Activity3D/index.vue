@@ -111,10 +111,10 @@ export default {
       event: {
         [MAP_EVENT.HANDLE_PICK_LEFT]: ({ data }) => {
           console.log(data);
-          // this.rootVue.handleShowBuildDetail({
-          //   uuid: data.pickColorNum,
-          //   buildDetail: data,
-          // });
+          this.rootVue.handleShowActivityDetail({
+            uuid: data.pickColor,
+            activityDetail: data,
+          });
         },
       },
     });
@@ -160,15 +160,11 @@ export default {
     // 组件初始化事件
     handleEnable() {
       this.getData();
-      this.rootVue.$on("setSelectedBuild", (busDetail) => {
-        this._Activity3DLayer.setSelectBuildId(busDetail.pickColorNum);
-      });
       this._Map.addLayer(this._Activity3DLayer);
       this.rootVue.$on("timeChange", this.handleTimeChange);
     },
     // 组件卸载事件
     handleDisable() {
-      this.rootVue.$off("setSelectedBuild");
       this._Map.removeLayer(this._Activity3DLayer);
       this.rootVue.$off("timeChange", this.handleTimeChange);
     },

@@ -129,7 +129,7 @@
     "en-US": "Transit Stop"
   },
   "Analyzed Stops...":{
-    "zh-CN": "Analyzed Stops...",
+    "zh-CN": "分析的站点...",
     "en-US": "Analyzed Stops..."
   },
   "Lines...":{
@@ -181,7 +181,7 @@
     "en-US": "Include Passengers that transfer here"
   },
   "Passengers of any line":{
-    "zh-CN": "任何线路的乘客,
+    "zh-CN": "任何线路的乘客",
     "en-US": "Passengers of any line"
   },
   "Only Passengers of line":{

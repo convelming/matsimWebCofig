@@ -131,9 +131,9 @@ export class Activity3DLayer extends Layer {
   }
 
   handleRenderCallback({ time, maxNum, center, list }) {
-    console.log("handleRenderCallback");
+    // console.log("handleRenderCallback");
     this.center = center;
-    const _scale = this.map.cameraHeight / 4000;
+    const _scale = this.map.cameraHeight / 4000 * this.scale;
 
     if (!this.mesh || this.mesh.count != this.maxNum) {
       this.clearScene();
@@ -152,8 +152,8 @@ export class Activity3DLayer extends Layer {
     for (let i = 0; i < maxNum; i++) {
       const activity = list[i];
       if (activity) {
-        const { coord, pickColor, actType } = activity;
-        const positionV3 = new THREE.Vector3(coord.x, coord.y, i / maxNum);
+        const { point, pickColor, actType } = activity;
+        const positionV3 = new THREE.Vector3(point[0], point[1], i / maxNum);
         const scaleV3 = new THREE.Vector3(_scale, _scale, _scale);
         const matrix = new THREE.Matrix4();
         matrix.compose(positionV3, new THREE.Quaternion(), scaleV3);
