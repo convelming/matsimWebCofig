@@ -55,31 +55,31 @@
 {
   "居住人口": {
     "zh-CN": "居住人口",
-    "en-US": "居住人口"
+    "en-US": "Resident population"
   },
   "就业人口": {
     "zh-CN": "就业人口",
-    "en-US": "就业人口"
+    "en-US": "employed population"
   },
   "出行OD": {
     "zh-CN": "出行OD",
-    "en-US": "出行OD"
+    "en-US": "travels OD"
   },
   "站点数量": {
     "zh-CN": "站点数量",
-    "en-US": "站点数量"
+    "en-US": "Number of stop"
   },
   "站点客流": {
     "zh-CN": "站点客流",
-    "en-US": "站点客流"
+    "en-US": "stop traffic"
   },
   "客流廊道": {
     "zh-CN": "客流廊道",
-    "en-US": "客流廊道"
+    "en-US": "passenger corridor"
   },
   "覆盖范围": {
     "zh-CN": "覆盖范围",
-    "en-US": "覆盖范围"
+    "en-US": "Coverage"
   },
 }
 </language>

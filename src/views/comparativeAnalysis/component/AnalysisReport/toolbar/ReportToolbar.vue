@@ -11,7 +11,7 @@
         </el-tree>
       </div>
       <div class="btn_list">
-        <el-button type="primary" size="small" @click="handleGenerateAnalysisReport" :loading="reportLoading">分析报告生成</el-button>
+        <el-button type="primary" size="small" @click="handleGenerateAnalysisReport" :loading="reportLoading">{{ $l('分析报告生成') }}</el-button>
       </div>
     </div>
   </el-collapse-item>
@@ -26,6 +26,10 @@
   "label":{
     "zh-CN": "label_zh",
     "en-US": "label_en"
+  },
+  "分析报告生成":{
+    "zh-CN": "分析报告生成",
+    "en-US": "Analysis report generation"
   }
 }
 </language>
@@ -133,31 +137,31 @@ export default {
         {
           id: "1",
           label_zh: "活动属性",
-          label_en: "活动属性",
+          label_en: "Activity Attributes",
           showView: true,
           children: [
             {
               id: "1-1",
               label_zh: "出行目的",
-              label_en: "出行目的",
+              label_en: "travel destination",
               showView: true,
             },
             {
               id: "1-2",
               label_zh: "出行时段",
-              label_en: "出行时段",
+              label_en: "travel time",
               showView: true,
             },
             {
               id: "1-3",
               label_zh: "停留时间",
-              label_en: "停留时间",
+              label_en: "dwell time",
               showView: true,
             },
             {
               id: "1-4",
               label_zh: "出行方式",
-              label_en: "出行方式",
+              label_en: "Mode of travel",
               showView: true,
             },
           ],
@@ -165,33 +169,33 @@ export default {
         {
           id: "2",
           label_zh: "出行属性",
-          label_en: "出行属性",
+          label_en: "Travel Attributes",
           showView: true,
           children: [
             {
               id: "2-1",
               label_zh: "在途时间",
-              label_en: "在途时间",
+              label_en: "time in transit",
             },
             {
               id: "2-2",
               label_zh: "候车时间",
-              label_en: "候车时间",
+              label_en: "waiting time",
             },
             {
               id: "2-3",
               label_zh: "换乘次数",
-              label_en: "换乘次数",
+              label_en: "Number of transfers",
             },
             {
               id: "2-4",
               label_zh: "费用",
-              label_en: "费用",
+              label_en: "cost",
             },
             {
               id: "2-5",
               label_zh: "出行距离",
-              label_en: "出行距离",
+              label_en: "Travel distance",
             },
             // {
             //   id: "2-6",
@@ -203,43 +207,43 @@ export default {
         {
           id: "3",
           label_zh: "出行者属性",
-          label_en: "出行者属性",
+          label_en: "Traveler Attributes",
           showView: true,
           children: [
             {
               id: "3-1",
               label_zh: "性别",
-              label_en: "性别",
+              label_en: "gender",
               showView: true,
             },
             {
               id: "3-2",
               label_zh: "年龄",
-              label_en: "年龄",
+              label_en: "age",
               showView: true,
             },
             {
               id: "3-3",
               label_zh: "机动车保有量",
-              label_en: "机动车保有量",
+              label_en: "motor vehicle ownership",
               showView: true,
             },
             {
               id: "3-4",
               label_zh: "就业情况",
-              label_en: "就业情况",
+              label_en: "Employment",
               showView: true,
             },
             {
               id: "3-5",
               label_zh: "车辆可使用情况",
-              label_en: "车辆可使用情况",
+              label_en: "Vehicle serviceability",
               showView: true,
             },
             {
               id: "3-6",
               label_zh: "其他",
-              label_en: "其他",
+              label_en: "other",
               showView: true,
               disabled: true,
             },
@@ -250,7 +254,7 @@ export default {
         {
           id: "6",
           label_zh: "修改的线路",
-          label_en: "修改的线路",
+          label_en: "Modified lines",
           children: [],
         },
         // {
@@ -571,13 +575,13 @@ export default {
           document.body.appendChild(a);
           a.click();
           document.body.removeChild(a);
-          cb(true);
+          typeof cb === "function" && cb(true);
           this.reportLoading = false;
         })
         .catch((err) => {
           console.log(err);
           this.$message.error(err.msg);
-          cb(false);
+          typeof cb === "function"&& cb(false);
           this.reportLoading = false;
         });
     },

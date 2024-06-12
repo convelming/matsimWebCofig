@@ -215,11 +215,12 @@ export default {
         name1: database1 + "/" + datasource1,
         name2: database2 + "/" + datasource2,
       }).then((changeLines) => {
-        this._OldBusLineListLayer.setData(changeLines.data.before || []);
-        this._OldBusStopListLayer.setData(changeLines.data.before || []);
+        console.log('changeLines',changeLines);
+        this._OldBusLineListLayer.setData(changeLines?.data?.before || []);
+        this._OldBusStopListLayer.setData(changeLines?.data?.before || []);
 
-        this._NewBusLineListLayer.setData(changeLines.data.after || []);
-        this._NewBusStopListLayer.setData(changeLines.data.after || []);
+        this._NewBusLineListLayer.setData(changeLines?.data?.after || []);
+        this._NewBusStopListLayer.setData(changeLines?.data?.after || []);
       });
 
       allAffectedLinesInfo({

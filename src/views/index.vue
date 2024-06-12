@@ -154,7 +154,7 @@
         </el-table-column>
       </el-table>
       <div style="display: flex; justify-content: center; margin-top: 20px">
-        <el-button type="primary" size="small" @click="handleComparativeAnalysisToDetail()" :disabled="!comparativeAnalysisDialog.dataSource1 || !comparativeAnalysisDialog.dataSource2">确定</el-button>
+        <el-button type="primary" size="small" @click="handleComparativeAnalysisToDetail()" :disabled="!comparativeAnalysisDialog.dataSource1 || !comparativeAnalysisDialog.dataSource2">{{ $l("确认") }}</el-button>
       </div>
     </el-dialog>
 
@@ -185,7 +185,7 @@
 {
   "公交运行分析": {
     "zh-CN":"公交运行分析",
-    "en-US":"公交运行分析",
+    "en-US":"Analysis of Public Transportation Operations",
   },
   "刷新列表": {
     "zh-CN":"刷新列表",
@@ -257,64 +257,68 @@
   },
   "请选择基准MATSIM模型": {
     "zh-CN":"请选择基准MATSIM模型",
-    "en-US":"请选择基准MATSIM模型",
+    "en-US":"Please select the baseline MATSIM model",
   },
   "智慧公交线网仿真与在线优化平台": {
     "zh-CN":"智慧公交线网仿真与在线优化平台",
-    "en-US":"智慧公交线网仿真与在线优化平台",
+    "en-US":"Intelligent bus route network simulation and online optimization platform",
   },
   "城市公交路线规划平台": {
     "zh-CN":"城市公交路线规划平台",
-    "en-US":"城市公交路线规划平台",
+    "en-US":"Urban Bus Route Planning Platform",
   },
   "展示整个公交系统的运行现状，包括线路、发车时间，客流量信息及其OD分布等": {
     "zh-CN":"展示整个公交系统的运行现状，包括线路、发车时间，客流量信息及其OD分布等",
-    "en-US":"展示整个公交系统的运行现状，包括线路、发车时间，客流量信息及其OD分布等",
+    "en-US":"Demonstrate the current status of the entire transit system, including routes, departure times, passenger flow information and its OD distribution, etc.",
   },
   "线路方案调整": {
     "zh-CN":"线路方案调整",
-    "en-US":"线路方案调整",
+    "en-US":"Route program adjustment",
   },
   "按照一定的策略新建或调整公交线路，站点，发车信息，实时更新线路信息。": {
     "zh-CN":"按照一定的策略新建或调整公交线路，站点，发车信息，实时更新线路信息。",
-    "en-US":"按照一定的策略新建或调整公交线路，站点，发车信息，实时更新线路信息。",
+    "en-US":"New or adjusted bus routes, stops, and departure information according to certain strategies, and real-time updated route information.",
   },
   "方案对比分析": {
     "zh-CN":"方案对比分析",
-    "en-US":"方案对比分析",
+    "en-US":"Comparative Analysis of Scenarios",
   },
   "根据调整优化的线路方案，呈现城市居民在线路调整后的反应，并将对比结果可视化呈现。": {
     "zh-CN":"根据调整优化的线路方案，呈现城市居民在线路调整后的反应，并将对比结果可视化呈现。",
-    "en-US":"根据调整优化的线路方案，呈现城市居民在线路调整后的反应，并将对比结果可视化呈现。",
+    "en-US":"According to the adjusted and optimized route scheme, presenting the reaction of urban residents after the route adjustment, and visualizing the comparison results.",
   },
   "公交系统评估": {
     "zh-CN":"公交系统评估",
-    "en-US":"公交系统评估",
+    "en-US":"Public transportation system assessment",
   },
   "公交运营评估": {
     "zh-CN":"公交运营评估",
-    "en-US":"公交运营评估",
+    "en-US":"Public Transportation Operations Assessment",
   },
   "公交系统总体运行评估包括可达性。": {
     "zh-CN":"公交系统总体运行评估包括可达性。",
-    "en-US":"公交系统总体运行评估包括可达性。",
+    "en-US":"The overall operational assessment of the transit system includes accessibility.",
   },
   "克隆": {
     "zh-CN":"克隆",
-    "en-US":"克隆",
+    "en-US":"clones",
   },
   "方案克隆成功": {
     "zh-CN":"方案克隆成功",
-    "en-US":"方案克隆成功",
+    "en-US":"Program cloning success",
   },
   "MATSim webViz": {
-    "zh-CN":"MATSim webViz",
+    "zh-CN":"MATSim 网络虚拟化",
     "en-US":"MATSim webViz",
   },
   "加载指定项目的matsim模型可视化，分析整个城市区域居民出行活动及交通系统运行情况": {
     "zh-CN":"加载指定项目的matsim模型可视化，分析整个城市区域居民出行活动及交通系统运行情况",
-    "en-US":"加载指定项目的matsim模型可视化，分析整个城市区域居民出行活动及交通系统运行情况",
+    "en-US":"Load the matsim model visualization of a given project to analyze the travel activities of residents and the operation of the transportation system in the entire urban area.",
   },
+  "确认":{
+    "zh-CN":"确认",
+    "en-US":"confirm",
+  }
 }
 </language>
 

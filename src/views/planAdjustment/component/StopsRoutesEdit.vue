@@ -69,47 +69,47 @@
 {
   "请选择路段": {
     "zh-CN":"请选择路段",
-    "en-US":"请选择路段"
+    "en-US":"Please select a road section"
   },
   "重选": {
     "zh-CN":"重选",
-    "en-US":"重选"
+    "en-US":"reelect"
   },
   "编辑站点": {
     "zh-CN":"编辑站点",
-    "en-US":"编辑站点"
+    "en-US":"Edit stop"
   },
   "出发站点：": {
     "zh-CN":"出发站点：",
-    "en-US":"出发站点："
+    "en-US":"Departure stop："
   },
   "到达站点：": {
     "zh-CN":"到达站点：",
-    "en-US":"到达站点："
+    "en-US":"Arrival stop："
   },
   "编辑方式：": {
     "zh-CN":"编辑方式：",
-    "en-US":"编辑方式："
+    "en-US":"Edit style："
   },
   "按点选择": {
     "zh-CN":"按点选择",
-    "en-US":"按点选择"
+    "en-US":"tap select"
   },
   "按路段选择": {
     "zh-CN":"按路段选择",
-    "en-US":"按路段选择"
+    "en-US":"Select by roadway"
   },
   "路段线宽：": {
     "zh-CN":"路段线宽：",
-    "en-US":"路段线宽："
+    "en-US":"section line width："
   },
   "路段偏移：": {
     "zh-CN":"路段偏移：",
-    "en-US":"路段偏移："
+    "en-US":"section offset："
   },
   "必经路段：": {
     "zh-CN":"必经路段：",
-    "en-US":"必经路段："
+    "en-US":"mandatory section："
   },
   "Id": {
     "zh-CN":"Id",
@@ -117,27 +117,27 @@
   },
   "起点": {
     "zh-CN":"起点",
-    "en-US":"起点"
+    "en-US":"starting point"
   },
   "终点": {
     "zh-CN":"终点",
-    "en-US":"终点"
+    "en-US":"ending point"
   },
   "检查站点间线段连续性": {
     "zh-CN":"检查站点间线段连续性",
-    "en-US":"检查站点间线段连续性"
+    "en-US":"Check line continuity between sites"
   },
   "当前站点间线段不是连续的": {
     "zh-CN":"当前站点间线段不是连续的",
-    "en-US":"当前站点间线段不是连续的"
+    "en-US":"Line segments are not continuous between current stations"
   },
   "保存站点路径": {
     "zh-CN":"保存站点路径",
-    "en-US":"保存站点路径"
+    "en-US":"Save site path"
   },
   "保存成功": {
     "zh-CN":"保存成功",
-    "en-US":"保存成功"
+    "en-US":"Save Success"
   },
 }
 </language>

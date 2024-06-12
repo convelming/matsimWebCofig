@@ -3,62 +3,62 @@
     {
       "children": [
         {
-          "label_zh": "公交-私家车",
+          "label_zh": "Public transportation - private cars",
           "label_en": "公交-私家车",
           "key": "BUS_TO_CAR",
           "disabled": false
         },
         {
-          "label_zh": "私家车-公交",
+          "label_zh": "Private car - public transportation",
           "label_en": "私家车-公交",
           "key": "CAR_TO_BUS",
           "disabled": false
         },
         {
           "label_zh": "公交-步行",
-          "label_en": "公交-步行",
+          "label_en": "Public transportation - walking",
           "key": "BUS_TO_WALK",
           "disabled": false
         },
         {
           "label_zh": "步行-公交",
-          "label_en": "步行-公交",
+          "label_en": "Walking - Public Transportation",
           "key": "WALK_TO_BUS",
           "disabled": false
         },
         {
           "label_zh": "私家车-步行",
-          "label_en": "私家车-步行",
+          "label_en": "Private car - walking",
           "key": "CAR_TO_WALK",
           "disabled": false
         },
         {
           "label_zh": "步行-私家车",
-          "label_en": "步行-私家车",
+          "label_en": "Walking - Private Car",
           "key": "WALK_TO_CAR",
           "disabled": false
         }
       ],
       "label_zh": "出行方式变化",
-      "label_en": "出行方式变化",
+      "label_en": "Changes in travel patterns",
       "key": "出行方式变化",
       "disabled": false
     },
     {
       "label_zh": "出行路径变化",
-      "label_en": "出行路径变化",
+      "label_en": "Changes in travel paths",
       "key": "出行路径变化",
       "disabled": false
     },
     {
       "label_zh": "出行时间变化",
-      "label_en": "出行时间变化",
+      "label_en": "Change in travel time",
       "key": "出行时间变化",
       "disabled": false
     }
   ],
   "label_zh": "出行变化",
-  "label_en": "出行变化",
+  "label_en": "Travel changes",
   "key": "出行变化",
   "disabled": false,
   "showView": true

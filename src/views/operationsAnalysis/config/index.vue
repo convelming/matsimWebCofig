@@ -57,35 +57,35 @@
 {
   "用户指南": {
     "zh-CN": "用户指南",
-    "en-US": "用户指南"
+    "en-US": "User Guide"
   },
   "切换语言": {
     "zh-CN": "切换语言",
-    "en-US": "切换语言"
+    "en-US": "Switch Language"
   },
   "切换视图": {
     "zh-CN": "切换视图",
-    "en-US": "切换视图"
+    "en-US": "Toggle View"
   },
   "顶部": {
     "zh-CN": "顶部",
-    "en-US": "顶部"
+    "en-US": "top"
   },
   "上传": {
     "zh-CN": "上传",
-    "en-US": "上传"
+    "en-US": "upload"
   },
   "刷新": {
     "zh-CN": "刷新",
-    "en-US": "刷新"
+    "en-US": "refresh"
   },
   "运行": {
     "zh-CN": "运行",
-    "en-US": "运行"
+    "en-US": "operation"
   },
   "下载": {
     "zh-CN": "下载",
-    "en-US": "下载"
+    "en-US": "download"
   },
 }
 </language>
