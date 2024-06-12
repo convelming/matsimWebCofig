@@ -31,7 +31,7 @@
 <language>
 {
   "selectLinkAnalysis":{
-    "zh-CN": "选择链接分析",
+    "zh-CN": "选择路段分析",
     "en-US": "Select Link Analysis"
   },
   "time":{

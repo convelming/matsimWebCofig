@@ -59,7 +59,7 @@
     "en-US": "Vehicle Load"
   },
   "Aggregated Vehicle Load":{
-    "zh-CN": "车辆总负载",
+    "zh-CN": "车辆总加载",
     "en-US": "Aggregated Vehicle Load"
   },
   "Route Grid":{
