@@ -31,63 +31,63 @@
 <language>
 {
   "lineDetail":{
-    "zh-CN": "Line Detail",
+    "zh-CN": "线路详情",
     "en-US": "Line Detail"
   },
   "selectLinkAnalysis":{
-    "zh-CN": "Select Link Analysis",
+    "zh-CN": "选择路段分析",
     "en-US": "Select Link Analysis"
   },
   "linkVolumes":{
-    "zh-CN": "Link Volumes",
+    "zh-CN": "路段卷",
     "en-US": "Link Volumes"
   },
   "linkId":{
-    "zh-CN": "Link Id",
+    "zh-CN": "路段 Id",
     "en-US": "Link Id"
   },
   "fromNodeId":{
-    "zh-CN": "From Node Id",
+    "zh-CN": "来自节点 Id",
     "en-US": "From Node Id"
   },
   "toNodeId":{
-    "zh-CN": "To Node Id",
+    "zh-CN": "前往节点 Id",
     "en-US": "To Node Id"
   },
   "allowedTransportNode":{
-    "zh-CN": "Allowed Transport Node",
+    "zh-CN": "允许的传输节点",
     "en-US": "Allowed Transport Node"
   },
   "length":{
-    "zh-CN": "Length",
+    "zh-CN": "长度",
     "en-US": "Length"
   },
   "capacity":{
-    "zh-CN": "Capacity",
+    "zh-CN": "容量",
     "en-US": "Capacity"
   },
   "freeSpeed":{
-    "zh-CN": "Free Speed",
+    "zh-CN": "免费速度",
     "en-US": "Free Speed"
   },
   "numberOfLanes":{
-    "zh-CN": "Number of Lanes",
+    "zh-CN": "车道数",
     "en-US": "Number of Lanes"
   },
   "origid":{
-    "zh-CN": "origid",
+    "zh-CN": "出发点",
     "en-US": "origid"
   },
   "type":{
-    "zh-CN": "type",
+    "zh-CN": "类型",
     "en-US": "type"
   },
   "originId":{
-    "zh-CN": "originId",
+    "zh-CN": "出发点Id",
     "en-US": "originId"
   },
   "storageCapacityUsedInQsim":{
-    "zh-CN": "storageCapacityUsedInQsim",
+    "zh-CN": "Qsim 中使用的存储容量",
     "en-US": "storageCapacityUsedInQsim"
   },
 }

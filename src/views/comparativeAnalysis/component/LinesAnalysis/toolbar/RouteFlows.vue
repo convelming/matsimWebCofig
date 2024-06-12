@@ -47,23 +47,23 @@
 <language>
 {
   "RouteFlows":{
-    "zh-CN": "Route Flows",
+    "zh-CN": "路线流量",
     "en-US": "Route Flows"
   },
   "Top5Routes":{
-    "zh-CN": "Top 5 Routes",
+    "zh-CN": "5 条最佳路线",
     "en-US": "Top 5 Routes"
   },
   "name":{
-    "zh-CN": "name",
+    "zh-CN": "名称",
     "en-US": "name"
   },
   "type":{
-    "zh-CN": "type",
+    "zh-CN": "类型",
     "en-US": "type"
   },
   "value":{
-    "zh-CN": "value",
+    "zh-CN": "值",
     "en-US": "value"
   },
   "showOnChart":{
@@ -72,11 +72,11 @@
   },
   "基础方案：":{
     "zh-CN": "基础方案：",
-    "en-US": "基础方案："
+    "en-US": "base："
   },
   "对比方案：":{
     "zh-CN": "对比方案：",
-    "en-US": "对比方案："
+    "en-US": "contrast："
   },
 }
 </language>

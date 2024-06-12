@@ -21,11 +21,11 @@
 <language>
 {
   "nodeDetail":{
-    "zh-CN": "Node Detail",
+    "zh-CN": "节点详情",
     "en-US": "Node Detail"
   },
   "intersectionFlows":{
-    "zh-CN": "Intersection Flows",
+    "zh-CN": "交叉口流量",
     "en-US": "Intersection Flows"
   },
 }

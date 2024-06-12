@@ -11,11 +11,11 @@
 <language>
 {
   "selectLinkAnalysis":{
-    "zh-CN": "Select Link Analysis",
+    "zh-CN": "选择路段分析",
     "en-US": "Select Link Analysis"
   },
   "linkVolumes":{
-    "zh-CN": "Link Volumes",
+    "zh-CN": "路段卷",
     "en-US": "Link Volumes"
   },
 }

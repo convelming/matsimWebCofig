@@ -7,7 +7,7 @@
 <language>
 {
   "Transit Stop Load":{
-    "zh-CN": "Transit Stop Load",
+    "zh-CN": "转运站加载",
     "en-US": "Transit Stop Load"
   },
 }

@@ -67,11 +67,11 @@
 {
   "车辆信息：":{
     "zh-CN": "车辆信息：",
-    "en-US": "车辆信息："
+    "en-US": "Vehicle Info："
   },
   "运行速度：":{
     "zh-CN": "运行速度：",
-    "en-US": "运行速度："
+    "en-US": "running speed："
   },
   "km/h":{
     "zh-CN": "km/h",
@@ -79,7 +79,7 @@
   },
   "总里程：":{
     "zh-CN": "总里程：",
-    "en-US": "总里程："
+    "en-US": "total mileage："
   },
   "km":{
     "zh-CN": "km",
@@ -87,31 +87,31 @@
   },
   "行驶里程：":{
     "zh-CN": "行驶里程：",
-    "en-US": "行驶里程："
+    "en-US": "mileage："
   },
   "当前载客量：":{
     "zh-CN": "当前载客量：",
-    "en-US": "当前载客量："
+    "en-US": "Current capacity："
   },
   "人":{
     "zh-CN": "人",
-    "en-US": "人"
+    "en-US": "man"
   },
   "上一个停靠站点：":{
     "zh-CN": "上一个停靠站点：",
-    "en-US": "上一个停靠站点："
+    "en-US": "Previous stop："
   },
   "上一个站点上客量：":{
     "zh-CN": "上一个站点上客量：",
-    "en-US": "上一个站点上客量："
+    "en-US": "Previous site loading："
   },
   "上一个站点下客量：":{
     "zh-CN": "上一个站点下客量：",
-    "en-US": "上一个站点下客量："
+    "en-US": "Previous site drop-offs："
   },
   "下一个停靠站点：":{
     "zh-CN": "下一个停靠站点：",
-    "en-US": "下一个停靠站点："
+    "en-US": "Next stop："
   },
 }
 </language>

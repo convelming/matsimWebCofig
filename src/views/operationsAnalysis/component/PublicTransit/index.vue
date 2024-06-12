@@ -35,31 +35,31 @@
 {
   "公共交通":{
     "zh-CN": "公共交通",
-    "en-US": "公共交通"
+    "en-US": "public transport"
   },
   "图标大小：":{
     "zh-CN": "图标大小：",
-    "en-US": "图标大小："
+    "en-US": "icons size："
   },
   "图标颜色：":{
     "zh-CN": "图标颜色：",
-    "en-US": "图标颜色："
+    "en-US": "icon color："
   },
   "显示站点名称":{
     "zh-CN": "显示站点名称",
-    "en-US": "显示站点名称"
+    "en-US": "Show site name"
   },
   "公交站点颜色":{
     "zh-CN": "公交站点颜色",
-    "en-US": "公交站点颜色"
+    "en-US": "Bus Stop Colors"
   },
   "公交线路查询":{
     "zh-CN": "公交线路查询",
-    "en-US": "公交线路查询"
+    "en-US": "Bus Route Search"
   },
   "公交站点选取":{
     "zh-CN": "公交站点选取",
-    "en-US": "公交站点选取"
+    "en-US": "Bus Stop Selection"
   },
 }
 </language>

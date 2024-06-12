@@ -34,7 +34,7 @@
 <language>
 {
   "isAbleToOverwritePtInteractionParams": {
-    "zh-CN":"isAbleToOverwritePtInteractionParams",
+    "zh-CN":"可覆盖点互动参数",
     "en-US":"isAbleToOverwritePtInteractionParams"
   },
   "isGeneratingBoardingDeniedEvent": {

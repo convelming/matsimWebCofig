@@ -46,43 +46,43 @@
 {
   "线路比对分析":{
     "zh-CN": "线路比对分析",
-    "en-US": "线路比对分析"
+    "en-US": "Line comparison analysis"
   },
   "修改的线路":{
     "zh-CN": "修改的线路",
-    "en-US": "修改的线路"
+    "en-US": "Modified lines"
   },
   "受影响的线路":{
     "zh-CN": "受影响的线路",
-    "en-US": "受影响的线路"
+    "en-US": "Lines affected"
   },
   "Line":{
-    "zh-CN": "Line",
+    "zh-CN": "线",
     "en-US": "Line"
   },
   "Route":{
-    "zh-CN": "Route",
+    "zh-CN": "路线",
     "en-US": "Route"
   },
   "线路变动信息":{
     "zh-CN": "线路变动信息",
-    "en-US": "线路变动信息"
+    "en-US": "Line Change Information"
   },
   "站点变动信息":{
     "zh-CN": "站点变动信息",
-    "en-US": "站点变动信息"
+    "en-US": "Information on site changes"
   },
   "时刻表信息变动":{
     "zh-CN": "时刻表信息变动",
-    "en-US": "时刻表信息变动"
+    "en-US": "Timetable information changes"
   },
   "Xml信息对比":{
     "zh-CN": "Xml信息对比",
-    "en-US": "Xml信息对比"
+    "en-US": "Xml Information Comparison"
   },
   "客流信息变化":{
     "zh-CN": "客流信息变化",
-    "en-US": "客流信息变化"
+    "en-US": "Changes in passenger flow information"
   },
 }
 </language>

@@ -31,47 +31,47 @@
 <language>
 {
   "Transit Routes Info":{
-    "zh-CN": "Transit Routes Info",
+    "zh-CN": "公交线路信息",
     "en-US": "Transit Routes Info"
   },
   "Analyzed Route：":{
-    "zh-CN": "Analyzed Route：",
+    "zh-CN": "分析路线：",
     "en-US": "Analyzed Route："
   },
   "Analysis：":{
-    "zh-CN": "Analysis：",
+    "zh-CN": "分析：",
     "en-US": "Analysis："
   },
   "Single":{
-    "zh-CN": "Single",
+    "zh-CN": "单个",
     "en-US": "Single"
   },
   "Multiple":{
-    "zh-CN": "Multiple",
+    "zh-CN": "多个",
     "en-US": "Multiple"
   },
   "Passengers Entering / Leaving":{
-    "zh-CN": "Passengers Entering / Leaving",
+    "zh-CN": "乘客进出",
     "en-US": "Passengers Entering / Leaving"
   },
   "Vehicle Load":{
-    "zh-CN": "Vehicle Load",
+    "zh-CN": "车辆加载",
     "en-US": "Vehicle Load"
   },
   "Aggregated Vehicle Load":{
-    "zh-CN": "Aggregated Vehicle Load",
+    "zh-CN": "车辆总加载",
     "en-US": "Aggregated Vehicle Load"
   },
   "Route Grid":{
-    "zh-CN": "Route Grid",
+    "zh-CN": "路线图",
     "en-US": "Route Grid"
   },
   "Route Flows":{
-    "zh-CN": "Route Flows",
+    "zh-CN": "路线流量",
     "en-US": "Route Flows"
   },
   "Route-Time Diagram":{
-    "zh-CN": "Route-Time Diagram",
+    "zh-CN": "路线-时间图",
     "en-US": "Route-Time Diagram"
   },
 }

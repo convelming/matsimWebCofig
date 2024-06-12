@@ -235,15 +235,15 @@
 "en-US":"trafficDynamics"
 },
 "queue": {
-"zh-CN":"queue",
+"zh-CN":"队伍",
 "en-US":"queue"
 },
 "withHoles": {
-"zh-CN":"withHoles",
+"zh-CN":"带孔",
 "en-US":"withHoles"
 },
 "kinematicWaves": {
-"zh-CN":"kinematicWaves",
+"zh-CN":"运动波",
 "en-US":"kinematicWaves"
 },
 "usingFastCapacityUpdate": {
@@ -255,15 +255,15 @@
 "en-US":"vehicleBehavior"
 },
 "teleport": {
-"zh-CN":"teleport",
+"zh-CN":"瞬间移动",
 "en-US":"teleport"
 },
 "wait": {
-"zh-CN":"wait",
+"zh-CN":"等待",
 "en-US":"wait"
 },
 "exception": {
-"zh-CN":"exception",
+"zh-CN":"例外情况",
 "en-US":"exception"
 },
 "vehiclesSource": {
@@ -275,11 +275,11 @@
 "en-US":"defaultVehicle"
 },
 "modeVehicleTypesFromVehiclesData": {
-"zh-CN":"modeVehicleTypesFromVehiclesData",
+"zh-CN":"车辆数据中的车辆类型模式",
 "en-US":"modeVehicleTypesFromVehiclesData"
 },
 "fromVehiclesData": {
-"zh-CN":"fromVehiclesData",
+"zh-CN":"来自车辆数据",
 "en-US":"fromVehiclesData"
 },
 "snapshotperiod": {
@@ -295,7 +295,7 @@
 "en-US":"缺省"
 },
 "withLinkAttributes": {
-"zh-CN":"withLinkAttributes",
+"zh-CN":"带线路属性",
 "en-US":"withLinkAttributes"
 },
 "snapshotStyle": {
@@ -303,23 +303,23 @@
 "en-US":"snapshotStyle"
 },
 "equiDist": {
-"zh-CN":"equiDist",
+"zh-CN":"等距",
 "en-US":"equiDist"
 },
 "queue": {
-"zh-CN":"queue",
+"zh-CN":"队伍",
 "en-US":"queue"
 },
 "withHoles": {
-"zh-CN":"withHoles",
+"zh-CN":"带孔",
 "en-US":"withHoles"
 },
 "withHolesAndShowHoles": {
-"zh-CN":"withHolesAndShowHoles",
+"zh-CN":"带孔和显示孔",
 "en-US":"withHolesAndShowHoles"
 },
 "kinematicWaves": {
-"zh-CN":"kinematicWaves",
+"zh-CN":"运动波",
 "en-US":"kinematicWaves"
 },
 }

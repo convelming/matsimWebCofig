@@ -31,7 +31,7 @@
 <language>
 {
   "selectLinkAnalysis":{
-    "zh-CN": "Select Link Analysis",
+    "zh-CN": "选择路段分析",
     "en-US": "Select Link Analysis"
   },
   "time":{
@@ -43,8 +43,8 @@
     "en-US": "Height: "
   },
   "color":{
-    "zh-CN": "Color: ",
-    "en-US": "颜色："
+    "zh-CN": "颜色: ",
+    "en-US": "Color："
   },
 }
 </language>

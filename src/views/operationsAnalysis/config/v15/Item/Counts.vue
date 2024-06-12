@@ -65,7 +65,7 @@
     "en-US":"distanceFilter"
   },
   "distanceFilterCenterNode": {
-    "zh-CN":"distanceFilterCenterNode",
+    "zh-CN":"距离筛选中心节点",
     "en-US":"distanceFilterCenterNode"
   },
   "filterModes": {
@@ -97,7 +97,7 @@
     "en-US":"txt"
   },
   "all": {
-    "zh-CN":"all",
+    "zh-CN":"全部",
     "en-US":"all"
   },
   "writeCountsInterval": {

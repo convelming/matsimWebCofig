@@ -46,23 +46,23 @@
 {
   "私家车详情":{
     "zh-CN": "私家车详情",
-    "en-US": "私家车详情"
+    "en-US": "Private car details"
   },
   "行程ID：":{
     "zh-CN": "行程ID：",
-    "en-US": "行程ID："
+    "en-US": "itinerary ID："
   },
   "车辆ID：":{
     "zh-CN": "车辆ID：",
-    "en-US": "车辆ID："
+    "en-US": "traffic ID："
   },
   "人员：":{
     "zh-CN": "人员：",
-    "en-US": "人员："
+    "en-US": "officers："
   },
   "行程总里程：":{
     "zh-CN": "行程总里程：",
-    "en-US": "行程总里程："
+    "en-US": "Total distance traveled："
   },
   "km":{
     "zh-CN": "km",
@@ -70,11 +70,11 @@
   },
   "行程开始时间：":{
     "zh-CN": "行程开始时间：",
-    "en-US": "行程开始时间："
+    "en-US": "Journey start time："
   },
   "行程结束时间：":{
     "zh-CN": "行程结束时间：",
-    "en-US": "行程结束时间："
+    "en-US": "Journey end time："
   },
 }
 </language>

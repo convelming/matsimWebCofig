@@ -121,11 +121,11 @@
 <language>
 {
   "Transfers":{
-    "zh-CN": "Transfers",
+    "zh-CN": "转站",
     "en-US": "Transfers"
   },
   "Transit Stop":{
-    "zh-CN": "Transit Stop",
+    "zh-CN": "中转站",
     "en-US": "Transit Stop"
   },
   "Analyzed Stops...":{
@@ -133,79 +133,79 @@
     "en-US": "Analyzed Stops..."
   },
   "Lines...":{
-    "zh-CN": "Lines...",
+    "zh-CN": "线路...",
     "en-US": "Lines..."
   },
   "Create Agent Group...":{
-    "zh-CN": "Create Agent Group...",
+    "zh-CN": "创建代理组...",
     "en-US": "Create Agent Group..."
   },
   "Show Numbers in Chart":{
-    "zh-CN": "Show Numbers in Chart",
+    "zh-CN": "图表中显示数字",
     "en-US": "Show Numbers in Chart"
   },
   "show Percentages in Table":{
-    "zh-CN": "show Percentages in Table",
+    "zh-CN": "在表中显示百分比",
     "en-US": "show Percentages in Table"
   },
   "Nultiplicator:":{
-    "zh-CN": "Nultiplicator:",
+    "zh-CN": "乘法器:",
     "en-US": "Nultiplicator:"
   },
   "Group Attribute (Incoming)":{
-    "zh-CN": "Group Attribute (Incoming)",
+    "zh-CN": "组属性（传入）",
     "en-US": "Group Attribute (Incoming)"
   },
   "Group Attribute (Outgoing)":{
-    "zh-CN": "Group Attribute (Outgoing)",
+    "zh-CN": "组属性（传出））",
     "en-US": "Group Attribute (Outgoing)"
   },
   "color":{
-    "zh-CN": "color",
+    "zh-CN": "颜色",
     "en-US": "color"
   },
   "Create Agent Group from Transferring Passengers":{
-    "zh-CN": "Create Agent Group from Transferring Passengers",
+    "zh-CN": "从中转乘客中创建代理组",
     "en-US": "Create Agent Group from Transferring Passengers"
   },
   "Include Passengers that start theirtriphere":{
-    "zh-CN": "Include Passengers that start theirtriphere",
+    "zh-CN": "包括从这里出发的乘客",
     "en-US": "Include Passengers that start theirtriphere"
   },
   "Include Passengers that end their trip here":{
-    "zh-CN": "Include Passengers that end their trip here",
+    "zh-CN": "包括在此处结束行程的乘客",
     "en-US": "Include Passengers that end their trip here"
   },
   "Include Passengers that transfer here":{
-    "zh-CN": "Include Passengers that transfer here",
+    "zh-CN": "包括在此换乘的乘客",
     "en-US": "Include Passengers that transfer here"
   },
   "Passengers of any line":{
-    "zh-CN": "Passengers of any line",
+    "zh-CN": "任何线路的乘客,
     "en-US": "Passengers of any line"
   },
   "Only Passengers of line":{
-    "zh-CN": "Only Passengers of line",
+    "zh-CN": "只限线路乘客",
     "en-US": "Only Passengers of line"
   },
   "Start/End":{
-    "zh-CN": "Start/End",
+    "zh-CN": "起点/终点",
     "en-US": "Start/End"
   },
   "Cancel":{
-    "zh-CN": "Cancel",
+    "zh-CN": "取消",
     "en-US": "Cancel"
   },
   "Create":{
-    "zh-CN": "Create",
+    "zh-CN": "创建",
     "en-US": "Create"
   },
   "Chart":{
-    "zh-CN": "Chart",
+    "zh-CN": "图表",
     "en-US": "Chart"
   },
   "Data":{
-    "zh-CN": "Data",
+    "zh-CN": "数据",
     "en-US": "Data"
   },
 }

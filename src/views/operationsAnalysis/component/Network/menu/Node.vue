@@ -11,7 +11,7 @@
 <language>
 {
   "intersectionFlows":{
-    "zh-CN": "Intersection Flows",
+    "zh-CN": "交叉口流量",
     "en-US": "Intersection Flows"
   },
 }

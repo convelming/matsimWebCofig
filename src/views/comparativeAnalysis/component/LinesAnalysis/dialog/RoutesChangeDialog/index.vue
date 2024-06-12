@@ -34,14 +34,14 @@
   },
   "基础方案":{
     "zh-CN": "基础方案",
-    "en-US": "基础方案"
+    "en-US": "Basic Programs"
   },
   "对比方案":{
     "zh-CN": "对比方案",
-    "en-US": "对比方案"
+    "en-US": "Comparative Programs"
   },
   "vehicleId":{
-    "zh-CN": "vehicleId",
+    "zh-CN": "车辆标识",
     "en-US": "vehicleId"
   },
   "id":{
@@ -49,7 +49,7 @@
     "en-US": "id"
   },
   "departureTime":{
-    "zh-CN": "departureTime",
+    "zh-CN": "出发时间",
     "en-US": "departureTime"
   },
 }

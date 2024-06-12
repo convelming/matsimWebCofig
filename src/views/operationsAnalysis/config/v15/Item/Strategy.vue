@@ -130,11 +130,11 @@
     "en-US":"ExternalExeTmpFileRootDir"
   },
   "Parametersets: Innovation": {
-    "zh-CN":"Parametersets: Innovation",
+    "zh-CN":"参数集：创新",
     "en-US":"Parametersets: Innovation"
   },
   "Innovation": {
-    "zh-CN":"Innovation",
+    "zh-CN":"创新",
     "en-US":"Innovation"
   },
   "strategyName": {
@@ -146,7 +146,7 @@
     "en-US":"weight"
   },
   "subpopulation": {
-    "zh-CN":"subpopulation",
+    "zh-CN":"子群",
     "en-US":"subpopulation"
   },
   "fractionOfIterationsToDisableInnovation": {
@@ -162,23 +162,23 @@
     "en-US":"planSelectorForRemoval"
   },
   "WorstPlanSelector": {
-    "zh-CN":"WorstPlanSelector",
+    "zh-CN":"最差方案选择器",
     "en-US":"WorstPlanSelector"
   },
   "SelectRandom": {
-    "zh-CN":"SelectRandom",
+    "zh-CN":"随机选择",
     "en-US":"SelectRandom"
   },
   "SelectExpBetaforRemoval": {
-    "zh-CN":"SelectExpBetaforRemoval",
+    "zh-CN":"选择指数删除",
     "en-US":"SelectExpBetaforRemoval"
   },
   "ChangeExpBetaForRemoval": {
-    "zh-CN":"ChangeExpBetaForRemoval",
+    "zh-CN":"更改指数删除除",
     "en-US":"ChangeExpBetaForRemoval"
   },
   "PathSizeLogitSelectorForRemoval": {
-    "zh-CN":"PathSizeLogitSelectorForRemoval",
+    "zh-CN":"移除路径尺寸日志选择器",
     "en-US":"PathSizeLogitSelectorForRemoval"
   },
   "Parametersets: Selection": {
@@ -202,51 +202,51 @@
     "en-US":"subpopulation"
   },
   "ReRoute": {
-    "zh-CN":"ReRoute",
+    "zh-CN":"重定路线",
     "en-US":"ReRoute"
   },
   "TimeAllocationMutator": {
-    "zh-CN":"TimeAllocationMutator",
+    "zh-CN":"时间分配突变器",
     "en-US":"TimeAllocationMutator"
   },
   "TimeAllocationMutator_ReRoute": {
-    "zh-CN":"TimeAllocationMutator_ReRoute",
+    "zh-CN":"时间分配互变器_重定路线",
     "en-US":"TimeAllocationMutator_ReRoute"
   },
   "ChangeSingleTripMode": {
-    "zh-CN":"ChangeSingleTripMode",
+    "zh-CN":"更改单程模式",
     "en-US":"ChangeSingleTripMode"
   },
   "ChangeTripMode": {
-    "zh-CN":"ChangeTripMode",
+    "zh-CN":"更改行程模式",
     "en-US":"ChangeTripMode"
   },
   "SubtourModeChoice": {
-    "zh-CN":"SubtourModeChoice",
+    "zh-CN":"小路模式选择",
     "en-US":"SubtourModeChoice"
   },
   "SelectRandom": {
-    "zh-CN":"SelectRandom",
+    "zh-CN":"随机选择",
     "en-US":"SelectRandom"
   },
   "BestScore": {
-    "zh-CN":"BestScore",
+    "zh-CN":"最佳评分",
     "en-US":"BestScore"
   },
   "KeepLastSelected": {
-    "zh-CN":"KeepLastSelected",
+    "zh-CN":"保存最后选择",
     "en-US":"KeepLastSelected"
   },
   "ChangeExpBeta": {
-    "zh-CN":"ChangeExpBeta",
+    "zh-CN":"变化指数",
     "en-US":"ChangeExpBeta"
   },
   "SelectExpBeta": {
-    "zh-CN":"SelectExpBeta",
+    "zh-CN":"选择指数",
     "en-US":"SelectExpBeta"
   },
   "SelectPathSizeLogit": {
-    "zh-CN":"SelectPathSizeLogit",
+    "zh-CN":"选择路径大小记录",
     "en-US":"SelectPathSizeLogit"
   },
 }

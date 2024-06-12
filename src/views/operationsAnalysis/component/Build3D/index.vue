@@ -31,11 +31,11 @@
   },
   "建筑颜色：":{
     "zh-CN": "建筑颜色：",
-    "en-US": "建筑颜色："
+    "en-US": "Building Colors："
   },
   "建筑透明度：":{
     "zh-CN": "建筑透明度：",
-    "en-US": "建筑透明度："
+    "en-US": "Architectural transparency："
   }
 }
 </language>

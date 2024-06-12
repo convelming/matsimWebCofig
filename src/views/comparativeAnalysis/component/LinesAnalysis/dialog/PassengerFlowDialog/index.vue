@@ -57,19 +57,19 @@
     "en-US": "Multiple: "
   },
   "Passengers Entering / Leaving":{
-    "zh-CN": "Passengers Entering / Leaving",
+    "zh-CN": "乘客进出",
     "en-US": "Passengers Entering / Leaving"
   },
   "Route Flows":{
-    "zh-CN": "Route Flows",
+    "zh-CN": "路线流量",
     "en-US": "Route Flows"
   },
   "Route Time Diagram":{
-    "zh-CN": "Route Time Diagram",
+    "zh-CN": "路线时间图",
     "en-US": "Route Time Diagram"
   },
   "Route Attributes":{
-    "zh-CN": "Route Attributes",
+    "zh-CN": "路线属性",
     "en-US": "Route Attributes"
   },
 }

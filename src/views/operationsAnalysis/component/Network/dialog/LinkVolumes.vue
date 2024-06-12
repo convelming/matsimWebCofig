@@ -29,27 +29,27 @@
 <language>
 {
   "linkVolumes":{
-    "zh-CN": "Link Volumes",
+    "zh-CN": "路段卷",
     "en-US": "Link Volumes"
   },
   "chart":{
-    "zh-CN": "Chart",
+    "zh-CN": "图表",
     "en-US": "Chart"
   },
   "data":{
-    "zh-CN": "Data",
+    "zh-CN": "数据",
     "en-US": "Data"
   },
   "vehicles":{
-    "zh-CN": "#Vehicles",
+    "zh-CN": "#车辆",
     "en-US": "#Vehicles"
   },
   "time":{
-    "zh-CN": "Time",
+    "zh-CN": "时间",
     "en-US": "Time"
   },
   "aggregateTo":{
-    "zh-CN": "Aggregate To",
+    "zh-CN": "汇总至",
     "en-US": "Aggregate To"
   },
 }
