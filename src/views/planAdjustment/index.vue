@@ -85,151 +85,151 @@
 {
   "路线名称": {
     "zh-CN":"路线名称",
-    "en-US":"路线名称"
+    "en-US":"Route name"
   },
   "有无上下行": {
     "zh-CN":"有无上下行",
-    "en-US":"有无上下行"
+    "en-US":"With or without up and down"
   },
   "上行名称": {
     "zh-CN":"上行名称",
-    "en-US":"上行名称"
+    "en-US":"Uplink name"
   },
   "上行路线站点编辑": {
     "zh-CN":"上行路线站点编辑",
-    "en-US":"上行路线站点编辑"
+    "en-US":"Upper Route Stations Edit"
   },
   "点击打开站点编辑": {
     "zh-CN":"点击打开站点编辑",
-    "en-US":"点击打开站点编辑"
+    "en-US":"Click to open the site editor"
   },
   "上行路线路径编辑": {
     "zh-CN":"上行路线路径编辑",
-    "en-US":"上行路线路径编辑"
+    "en-US":"Uplink Route Path Editor"
   },
   "点击打开路径编辑": {
     "zh-CN":"点击打开路径编辑",
-    "en-US":"点击打开路径编辑"
+    "en-US":"Click to open the path editor"
   },
   "上行路线发车编辑": {
     "zh-CN":"上行路线发车编辑",
-    "en-US":"上行路线发车编辑"
+    "en-US":"Upward Route Departure Edit"
   },
   "点击编辑发车信息": {
     "zh-CN":"点击编辑发车信息",
-    "en-US":"点击编辑发车信息"
+    "en-US":"Click to edit departure information"
   },
   "按上行路线反正生成下行路线": {
     "zh-CN":"按上行路线反正生成下行路线",
-    "en-US":"按上行路线反正生成下行路线"
+    "en-US":"Generate downward routes by upward routes anyway"
   },
   "下行名称": {
     "zh-CN":"下行名称",
-    "en-US":"下行名称"
+    "en-US":"Downstream name"
   },
   "下行路线站点编辑": {
     "zh-CN":"下行路线站点编辑",
-    "en-US":"下行路线站点编辑"
+    "en-US":"Down-Route Stations Edit"
   },
   "点击打开站点编辑": {
     "zh-CN":"点击打开站点编辑",
-    "en-US":"点击打开站点编辑"
+    "en-US":"Click to open the site editor"
   },
   "下行路线路径编辑": {
     "zh-CN":"下行路线路径编辑",
-    "en-US":"下行路线路径编辑"
+    "en-US":"Down-Route Path Editor"
   },
   "点击打开路径编辑": {
     "zh-CN":"点击打开路径编辑",
-    "en-US":"点击打开路径编辑"
+    "en-US":"Click to open the path editor"
   },
   "下行路线发车编辑": {
     "zh-CN":"下行路线发车编辑",
-    "en-US":"下行路线发车编辑"
+    "en-US":"Down-Route Departure Edit"
   },
   "点击编辑发车信息": {
     "zh-CN":"点击编辑发车信息",
-    "en-US":"点击编辑发车信息"
+    "en-US":"Click to edit departure information"
   },
   "删除": {
     "zh-CN":"删除",
-    "en-US":"删除"
+    "en-US":"delete"
   },
   "保存": {
     "zh-CN":"保存",
-    "en-US":"保存"
+    "en-US":"save"
   },
   "取消": {
     "zh-CN":"取消",
-    "en-US":"取消"
+    "en-US":"cancel"
   },
   "新建方案": {
     "zh-CN":"新建方案",
-    "en-US":"新建方案"
+    "en-US":"New scheme"
   },
   "保存方案": {
     "zh-CN":"保存方案",
-    "en-US":"保存方案"
+    "en-US":"Save scheme"
   },
   "站点编辑": {
     "zh-CN":"站点编辑",
-    "en-US":"站点编辑"
+    "en-US":"Stop edit"
   },
   "路径编辑": {
     "zh-CN":"路径编辑",
-    "en-US":"路径编辑"
+    "en-US":"Path edit"
   },
   "发车信息编辑": {
     "zh-CN":"发车信息编辑",
-    "en-US":"发车信息编辑"
+    "en-US":"Departure Info Edit"
   },
   "保存成功": {
     "zh-CN":"保存成功",
-    "en-US":"保存成功"
+    "en-US":"Save Success"
   },
   "确认删除？": {
     "zh-CN":"确认删除？",
-    "en-US":"确认删除？"
+    "en-US":"Confirm delete？"
   },
   "提示": {
     "zh-CN":"提示",
-    "en-US":"提示"
+    "en-US":"Tips"
   },
   "反转：": {
     "zh-CN":"反转：",
-    "en-US":"反转："
+    "en-US":"reverse："
   },
   "请输入方案名称": {
     "zh-CN":"请输入方案名称",
-    "en-US":"请输入方案名称"
+    "en-US":"Please enter the name of the program"
   },
   "提示": {
     "zh-CN":"提示",
-    "en-US":"提示"
+    "en-US":"Tips"
   },
   "确定": {
     "zh-CN":"确定",
-    "en-US":"确定"
+    "en-US":"confirm"
   },
   "取消": {
     "zh-CN":"取消",
-    "en-US":"取消"
+    "en-US":"cancel"
   },
   "方案名称只能使用英文字母，数字和下划线": {
     "zh-CN":"方案名称只能使用英文字母，数字和下划线",
-    "en-US":"方案名称只能使用英文字母，数字和下划线"
+    "en-US":"Only letters, numbers and underscores may be used in program names"
   },
   "方案名称不能以base结尾": {
     "zh-CN":"方案名称不能以base结尾",
-    "en-US":"方案名称不能以base结尾"
+    "en-US":"Program names cannot end in base"
   },
   "方案创建成功": {
     "zh-CN":"方案创建成功",
-    "en-US":"方案创建成功"
+    "en-US":"Program creation success"
   },
   "方案保存成功": {
     "zh-CN":"方案保存成功",
-    "en-US":"方案保存成功"
+    "en-US":"Program saving success"
   },
 }
 </language>

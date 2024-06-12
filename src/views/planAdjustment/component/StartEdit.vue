@@ -73,123 +73,123 @@
 {
   "新增": {
     "zh-CN":"新增",
-    "en-US":"新增"
+    "en-US":"add"
   },
   "删除": {
     "zh-CN":"删除",
-    "en-US":"删除"
+    "en-US":"delete"
   },
   "类型": {
     "zh-CN":"类型",
-    "en-US":"类型"
+    "en-US":"type"
   },
   "开始时间": {
     "zh-CN":"开始时间",
-    "en-US":"开始时间"
+    "en-US":"Start time"
   },
   "结束时间": {
     "zh-CN":"结束时间",
-    "en-US":"结束时间"
+    "en-US":"End time"
   },
   "发车间隔": {
     "zh-CN":"发车间隔",
-    "en-US":"发车间隔"
+    "en-US":"departure interval"
   },
   "车型": {
     "zh-CN":"车型",
-    "en-US":"车型"
+    "en-US":"vehicle type"
   },
   "请输入关键词": {
     "zh-CN":"请输入关键词",
-    "en-US":"请输入关键词"
+    "en-US":"Please enter keywords"
   },
   "备注": {
     "zh-CN":"备注",
-    "en-US":"备注"
+    "en-US":"remark"
   },
   "操作": {
     "zh-CN":"操作",
-    "en-US":"操作"
+    "en-US":"operate"
   },
   "修改": {
     "zh-CN":"修改",
-    "en-US":"修改"
+    "en-US":"edit"
   },
   "删除": {
     "zh-CN":"删除",
-    "en-US":"删除"
+    "en-US":"delete"
   },
   "确定": {
     "zh-CN":"确定",
-    "en-US":"确定"
+    "en-US":"confirm"
   },
   "取消": {
     "zh-CN":"取消",
-    "en-US":"取消"
+    "en-US":"cancel"
   },
   "运营类型": {
     "zh-CN":"运营类型",
-    "en-US":"运营类型"
+    "en-US":"Operation Type"
   },
   "发班类型": {
     "zh-CN":"发班类型",
-    "en-US":"发班类型"
+    "en-US":"Shift Type"
   },
   "开始时间": {
     "zh-CN":"开始时间",
-    "en-US":"开始时间"
+    "en-US":"Start time"
   },
   "请选择开始时间": {
     "zh-CN":"请选择开始时间",
-    "en-US":"请选择开始时间"
+    "en-US":"Please select start time"
   },
   "请选择结束时间": {
     "zh-CN":"请选择结束时间",
-    "en-US":"请选择结束时间"
+    "en-US":"Please select end time"
   },
   "备注": {
     "zh-CN":"备注",
-    "en-US":"备注"
+    "en-US":"remark"
   },
   "请输入内容": {
     "zh-CN":"请输入内容",
-    "en-US":"请输入内容"
+    "en-US":"Please enter content"
   },
   "类型不能为空": {
     "zh-CN":"类型不能为空",
-    "en-US":"类型不能为空"
+    "en-US":"Type cannot be null"
   },
   "开始时间不能为空": {
     "zh-CN":"开始时间不能为空",
-    "en-US":"开始时间不能为空"
+    "en-US":"The start time cannot be null"
   },
   "结束时间不能为空": {
     "zh-CN":"结束时间不能为空",
-    "en-US":"结束时间不能为空"
+    "en-US":"The end time cannot be null"
   },
   "时间间隔不能为空": {
     "zh-CN":"时间间隔不能为空",
-    "en-US":"时间间隔不能为空"
+    "en-US":"The time interval cannot be null"
   },
   "车型不能为空": {
     "zh-CN":"车型不能为空",
-    "en-US":"车型不能为空"
+    "en-US":"Model cannot be null"
   },
   "添加发车信息": {
     "zh-CN":"添加发车信息",
-    "en-US":"添加发车信息"
+    "en-US":"Add departure info"
   },
   "编辑发车信息": {
     "zh-CN":"编辑发车信息",
-    "en-US":"编辑发车信息"
+    "en-US":"Edit dispatch info"
   },
   "是否确认删除发车信息？": {
     "zh-CN":"是否确认删除发车信息？",
-    "en-US":"是否确认删除发车信息？"
+    "en-US":"Do confirm the deletion of the dispatch info？"
   },
   "警告": {
     "zh-CN":"警告",
-    "en-US":"警告"
+    "en-US":"warn"
   },
 }
 </language>

@@ -38,39 +38,39 @@
     "en-US":"isAbleToOverwritePtInteractionParams"
   },
   "isGeneratingBoardingDeniedEvent": {
-    "zh-CN":"isGeneratingBoardingDeniedEvent",
+    "zh-CN":"是否产生登机拒绝事件",
     "en-US":"isGeneratingBoardingDeniedEvent"
   },
   "isUsingOpportunityCostOfTimeForLocationChoice": {
-    "zh-CN":"isUsingOpportunityCostOfTimeForLocationChoice",
+    "zh-CN":"地点选择是否使用时间机会成本",
     "en-US":"isUsingOpportunityCostOfTimeForLocationChoice"
   },
   "logitScaleParamForPlansRemoval": {
-    "zh-CN":"logitScaleParamForPlansRemoval",
+    "zh-CN":"将其记录为计划移除的缩放参数",
     "en-US":"logitScaleParamForPlansRemoval"
   },
   "vspDefaultsCheckingLevel": {
-    "zh-CN":"vspDefaultsCheckingLevel",
+    "zh-CN":"vsp 默认检查级别",
     "en-US":"vspDefaultsCheckingLevel"
   },
   "ignore": {
-    "zh-CN":"ignore",
+    "zh-CN":"忽略",
     "en-US":"ignore"
   },
   "info": {
-    "zh-CN":"info",
+    "zh-CN":"信息",
     "en-US":"info"
   },
   "warn": {
-    "zh-CN":"warn",
+    "zh-CN":"警告",
     "en-US":"warn"
   },
   "abort": {
-    "zh-CN":"abort",
+    "zh-CN":"中止",
     "en-US":"abort"
   },
   "writingOutputEvents": {
-    "zh-CN":"writingOutputEvents",
+    "zh-CN":"写入输出事件",
     "en-US":"writingOutputEvents"
   },
 }

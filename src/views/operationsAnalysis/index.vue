@@ -63,19 +63,19 @@
 {
   "时钟：":{
     "zh-CN": "时钟：",
-    "en-US": "时钟："
+    "en-US": "clock："
   },
   "速度：":{
     "zh-CN": "速度：",
-    "en-US": "速度："
+    "en-US": "speed："
   },
   "时间：":{
     "zh-CN": "时间：",
-    "en-US": "时间："
+    "en-US": "time："
   },
   "分/秒":{
     "zh-CN": "分/秒",
-    "en-US": "分/秒"
+    "en-US": "Min/s"
   },
 }
 </language>

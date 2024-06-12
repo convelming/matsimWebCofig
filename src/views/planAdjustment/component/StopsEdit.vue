@@ -82,83 +82,83 @@
 {
   "站点列表": {
     "zh-CN":"站点列表",
-    "en-US":"站点列表"
+    "en-US":"Stop list"
   },
   "沿线公交站点": {
     "zh-CN":"沿线公交站点",
-    "en-US":"沿线公交站点"
+    "en-US":"Bus stops along the route"
   },
   "添加站点": {
     "zh-CN":"添加站点",
-    "en-US":"添加站点"
+    "en-US":"Add stop"
   },
   "站点排序": {
     "zh-CN":"站点排序",
-    "en-US":"站点排序"
+    "en-US":"Stop Sort"
   },
   "站点名称": {
     "zh-CN":"站点名称",
-    "en-US":"站点名称"
+    "en-US":"Stop Name"
   },
   "鼠标左键选择站点": {
     "zh-CN":"鼠标左键选择站点",
-    "en-US":"鼠标左键选择站点"
+    "en-US":"Left mouse button to select stop"
   },
   "站点路段Id": {
     "zh-CN":"站点路段Id",
-    "en-US":"站点路段Id"
+    "en-US":"Stop Section Id"
   },
   "鼠标左键选择路段": {
     "zh-CN":"鼠标左键选择路段",
-    "en-US":"鼠标左键选择路段"
+    "en-US":"Left mouse button to select section"
   },
   "确定": {
     "zh-CN":"确定",
-    "en-US":"确定"
+    "en-US":"confirm"
   },
   "取消": {
     "zh-CN":"取消",
-    "en-US":"取消"
+    "en-US":"cancel"
   },
   "路段线宽": {
     "zh-CN":"路段线宽",
-    "en-US":"路段线宽"
+    "en-US":"Section line widths"
   },
   "路段偏移": {
     "zh-CN":"路段偏移",
-    "en-US":"路段偏移"
+    "en-US":"Section offset"
   },
   "站点坐标": {
     "zh-CN":"站点坐标",
-    "en-US":"站点坐标"
+    "en-US":"stop coordinates"
   },
   "鼠标左键点击地图确定坐标": {
     "zh-CN":"鼠标左键点击地图确定坐标",
-    "en-US":"鼠标左键点击地图确定坐标"
+    "en-US":"Left mouse button click on the map to determine the coordinates"
   },
   "站点编辑": {
     "zh-CN":"站点编辑",
-    "en-US":"站点编辑"
+    "en-US":"stop edit"
   },
   "添加站点": {
     "zh-CN":"添加站点",
-    "en-US":"添加站点"
+    "en-US":"add stop"
   },
   "站点位置距离线路超过200米，是否需要进行调整？": {
     "zh-CN":"站点位置距离线路超过200米，是否需要进行调整？",
-    "en-US":"站点位置距离线路超过200米，是否需要进行调整？"
+    "en-US":"Is the site location more than 200 meters from the line and does it need to be adjusted？"
   },
   "提示": {
     "zh-CN":"提示",
-    "en-US":"提示"
+    "en-US":"Tips"
   },
   "继续保存": {
     "zh-CN":"继续保存",
-    "en-US":"继续保存"
+    "en-US":"Continue to save"
   },
   "需要调整": {
     "zh-CN":"需要调整",
-    "en-US":"需要调整"
+    "en-US":"Need to adjust"
   },
 }
 </language>

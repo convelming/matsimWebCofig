@@ -8,7 +8,7 @@
 {
   "请输入关键词": {
     "zh-CN":"请输入关键词",
-    "en-US":"请输入关键词"
+    "en-US":"Please enter keyword"
   },
 }
 </language>

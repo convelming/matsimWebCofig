@@ -38,11 +38,11 @@
 {
   "公交可达性分析": {
     "zh-CN": "公交可达性分析",
-    "en-US": "公交可达性分析"
+    "en-US": "Public Transportation Accessibility Analysis"
   },
   "数据类型：": {
     "zh-CN": "数据类型：",
-    "en-US": "数据类型："
+    "en-US": "data type："
   },
   "PTAL": {
     "zh-CN": "PTAL",
@@ -50,19 +50,19 @@
   },
   "需求端": {
     "zh-CN": "需求端",
-    "en-US": "需求端"
+    "en-US": "demand side"
   },
   "供给端": {
     "zh-CN": "供给端",
-    "en-US": "供给端"
+    "en-US": "supply side"
   },
   "网格边长(x100m)：": {
     "zh-CN": "网格边长(x100m)：",
-    "en-US": "网格边长(x100m)："
+    "en-US": "mesh edge length(x100m)："
   },
   "网格颜色：": {
     "zh-CN": "网格颜色：",
-    "en-US": "网格颜色："
+    "en-US": "Grid Color："
   },
 }
 </language>

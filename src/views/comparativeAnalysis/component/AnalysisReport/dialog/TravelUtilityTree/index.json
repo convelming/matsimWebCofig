@@ -6,67 +6,67 @@
           "children": [
             {
               "label_zh": "性别",
-              "label_en": "性别",
+              "label_en": "Gender",
               "key": "性别",
               "disabled": false
             },
             {
               "label_zh": "年龄",
-              "label_en": "年龄",
+              "label_en": "age",
               "key": "年龄",
               "disabled": false
             },
             {
               "label_zh": "职业",
-              "label_en": "职业",
+              "label_en": "careers",
               "key": "职业",
               "disabled": false
             },
             {
               "label_zh": "收入",
-              "label_en": "收入",
+              "label_en": "incomes",
               "key": "收入",
               "disabled": false
             },
             {
               "label_zh": "学历",
-              "label_en": "学历",
+              "label_en": "education attainment",
               "key": "学历",
               "disabled": false
             },
             {
               "label_zh": "驾照拥有情况",
-              "label_en": "驾照拥有情况",
+              "label_en": "Possession of driver's license",
               "key": "驾照拥有情况",
               "disabled": false
             },
             {
               "label_zh": "公交月卡拥有情况",
-              "label_en": "公交月卡拥有情况",
+              "label_en": "Public Transportation Monthly Pass Ownership",
               "key": "公交月卡拥有情况",
               "disabled": false
             },
             {
               "label_zh": "共享单车月卡拥有情况",
-              "label_en": "共享单车月卡拥有情况",
+              "label_en": "Shared Bike Monthly Pass Ownership",
               "key": "共享单车月卡拥有情况",
               "disabled": false
             },
             {
               "label_zh": "用车频率",
-              "label_en": "用车频率",
+              "label_en": "frequency of use",
               "key": "用车频率",
               "disabled": false
             },
             {
               "label_zh": "出行频率",
-              "label_en": "出行频率",
+              "label_en": "Travel frequency",
               "key": "出行频率",
               "disabled": false
             }
           ],
           "label_zh": "个人属性",
-          "label_en": "个人属性",
+          "label_en": "Personal Attributes",
           "key": "个人属性",
           "disabled": false
         },
@@ -74,49 +74,49 @@
           "children": [
             {
               "label_zh": "家庭成员数量",
-              "label_en": "家庭成员数量",
+              "label_en": "Number of family members",
               "key": "家庭成员数量",
               "disabled": false
             },
             {
               "label_zh": "小汽车保有量",
-              "label_en": "小汽车保有量",
+              "label_en": "Small car ownership",
               "key": "小汽车保有量",
               "disabled": false
             },
             {
               "label_zh": "电动车保有量",
-              "label_en": "电动车保有量",
+              "label_en": "Electric vehicle ownership",
               "key": "电动车保有量",
               "disabled": false
             },
             {
               "label_zh": "自行车保有量",
-              "label_en": "自行车保有量",
+              "label_en": "Bicycle ownership",
               "key": "自行车保有量",
               "disabled": false
             },
             {
               "label_zh": "驾驶员人数",
-              "label_en": "驾驶员人数",
+              "label_en": "Number of drivers",
               "key": "驾驶员人数",
               "disabled": false
             },
             {
               "label_zh": "住房类型",
-              "label_en": "住房类型",
+              "label_en": "Type of housing",
               "key": "住房类型",
               "disabled": false
             }
           ],
           "label_zh": "家庭属性",
-          "label_en": "家庭属性",
+          "label_en": "Family attributes",
           "key": "家庭属性",
           "disabled": false
         }
       ],
       "label_zh": "出行者属性",
-      "label_en": "出行者属性",
+      "label_en": "Traveler Attributes",
       "key": "出行者属性",
       "disabled": false
     },
@@ -126,19 +126,19 @@
           "children": [
             {
               "label_zh": "出发时间",
-              "label_en": "出发时间",
+              "label_en": "departure time",
               "key": "出发时间",
               "disabled": false
             },
             {
               "label_zh": "到达时间",
-              "label_en": "到达时间",
+              "label_en": "arrival time",
               "key": "到达时间",
               "disabled": false
             }
           ],
           "label_zh": "回家",
-          "label_en": "回家",
+          "label_en": "return home",
           "key": "回家",
           "disabled": false
         },
@@ -146,19 +146,19 @@
           "children": [
             {
               "label_zh": "出发时间",
-              "label_en": "出发时间",
+              "label_en": "departure time",
               "key": "出发时间",
               "disabled": false
             },
             {
               "label_zh": "到达时间",
-              "label_en": "到达时间",
+              "label_en": "arrival time",
               "key": "到达时间",
               "disabled": false
             }
           ],
           "label_zh": "工作",
-          "label_en": "工作",
+          "label_en": "work",
           "key": "工作",
           "disabled": false
         },
@@ -166,19 +166,19 @@
           "children": [
             {
               "label_zh": "出发时间",
-              "label_en": "出发时间",
+              "label_en": "departure time",
               "key": "出发时间",
               "disabled": false
             },
             {
               "label_zh": "到达时间",
-              "label_en": "到达时间",
+              "label_en": "departure time",
               "key": "到达时间",
               "disabled": false
             }
           ],
           "label_zh": "上学",
-          "label_en": "上学",
+          "label_en": "attend school",
           "key": "上学",
           "disabled": false
         },
@@ -186,19 +186,19 @@
           "children": [
             {
               "label_zh": "出发时间",
-              "label_en": "出发时间",
+              "label_en": "departure time",
               "key": "出发时间",
               "disabled": false
             },
             {
               "label_zh": "到达时间",
-              "label_en": "到达时间",
+              "label_en": "departure time",
               "key": "到达时间",
               "disabled": false
             }
           ],
           "label_zh": "娱乐",
-          "label_en": "娱乐",
+          "label_en": "diversion",
           "key": "娱乐",
           "disabled": false
         },
@@ -206,19 +206,19 @@
           "children": [
             {
               "label_zh": "出发时间",
-              "label_en": "出发时间",
+              "label_en": "departure time",
               "key": "出发时间",
               "disabled": false
             },
             {
               "label_zh": "到达时间",
-              "label_en": "到达时间",
+              "label_en": "arrival time",
               "key": "到达时间",
               "disabled": false
             }
           ],
           "label_zh": "接送",
-          "label_en": "接送",
+          "label_en": "shuttle",
           "key": "接送",
           "disabled": false
         },
@@ -226,19 +226,19 @@
           "children": [
             {
               "label_zh": "出发时间",
-              "label_en": "出发时间",
+              "label_en": "departure time",
               "key": "出发时间",
               "disabled": false
             },
             {
               "label_zh": "到达时间",
-              "label_en": "到达时间",
+              "label_en": "arrival time",
               "key": "到达时间",
               "disabled": false
             }
           ],
           "label_zh": "业务",
-          "label_en": "业务",
+          "label_en": "transaction",
           "key": "业务",
           "disabled": false
         },
@@ -246,25 +246,25 @@
           "children": [
             {
               "label_zh": "出发时间",
-              "label_en": "出发时间",
+              "label_en": "departure time",
               "key": "出发时间",
               "disabled": false
             },
             {
               "label_zh": "到达时间",
-              "label_en": "到达时间",
+              "label_en": "arrival time",
               "key": "到达时间",
               "disabled": false
             }
           ],
           "label_zh": "其他活动",
-          "label_en": "其他活动",
+          "label_en": "Other activities",
           "key": "其他活动",
           "disabled": false
         }
       ],
       "label_zh": "出行活动属性",
-      "label_en": "出行活动属性",
+      "label_en": "Their travel activity attributes",
       "key": "出行活动属性",
       "disabled": false
     },
@@ -274,73 +274,73 @@
           "children": [
             {
               "label_zh": "在途时间",
-              "label_en": "在途时间",
+              "label_en": "time in transit",
               "key": "在途时间",
               "disabled": false
             },
             {
               "label_zh": "出行距离",
-              "label_en": "出行距离",
+              "label_en": "Travel distance",
               "key": "出行距离",
               "disabled": false
             },
             {
               "label_zh": "换乘次数",
-              "label_en": "换乘次数",
+              "label_en": "Number of transfers",
               "key": "换乘次数",
               "disabled": false
             },
             {
               "label_zh": "候车时间",
-              "label_en": "候车时间",
+              "label_en": "waiting time",
               "key": "候车时间",
               "disabled": false
             },
             {
               "label_zh": "费用",
-              "label_en": "费用",
+              "label_en": "cost",
               "key": "费用",
               "disabled": false
             },
             {
               "label_zh": "首班车时间",
-              "label_en": "首班车时间",
+              "label_en": "first bus time",
               "key": "首班车时间",
               "disabled": false
             },
             {
               "label_zh": "末班车时间",
-              "label_en": "末班车时间",
+              "label_en": "last bus time",
               "key": "末班车时间",
               "disabled": false
             },
             {
               "label_zh": "安全性",
-              "label_en": "安全性",
+              "label_en": "safety",
               "key": "安全性",
               "disabled": false
             },
             {
               "label_zh": "舒适性",
-              "label_en": "舒适性",
+              "label_en": "comfortableness",
               "key": "舒适性",
               "disabled": false
             },
             {
               "label_zh": "可靠性",
-              "label_en": "可靠性",
+              "label_en": "dependability",
               "key": "可靠性",
               "disabled": false
             },
             {
               "label_zh": "准时性",
-              "label_en": "准时性",
+              "label_en": "punctuality",
               "key": "准时性",
               "disabled": false
             }
           ],
           "label_zh": "公交",
-          "label_en": "公交",
+          "label_en": "mass transit",
           "key": "公交",
           "disabled": false
         },
@@ -348,73 +348,73 @@
           "children": [
             {
               "label_zh": "在途时间",
-              "label_en": "在途时间",
+              "label_en": "time in transit",
               "key": "在途时间",
               "disabled": false
             },
             {
               "label_zh": "出行距离",
-              "label_en": "出行距离",
+              "label_en": "Travel distance",
               "key": "出行距离",
               "disabled": false
             },
             {
               "label_zh": "换乘次数",
-              "label_en": "换乘次数",
+              "label_en": "Number of transfers",
               "key": "换乘次数",
               "disabled": false
             },
             {
               "label_zh": "候车时间",
-              "label_en": "候车时间",
+              "label_en": "waiting time",
               "key": "候车时间",
               "disabled": false
             },
             {
               "label_zh": "费用",
-              "label_en": "费用",
+              "label_en": "cost",
               "key": "费用",
               "disabled": false
             },
             {
               "label_zh": "首班车时间",
-              "label_en": "首班车时间",
+              "label_en": "first bus time",
               "key": "首班车时间",
               "disabled": false
             },
             {
               "label_zh": "末班车时间",
-              "label_en": "末班车时间",
+              "label_en": "last bus time",
               "key": "末班车时间",
               "disabled": false
             },
             {
               "label_zh": "安全性",
-              "label_en": "安全性",
+              "label_en": "safety",
               "key": "安全性",
               "disabled": false
             },
             {
               "label_zh": "舒适性",
-              "label_en": "舒适性",
+              "label_en": "comfortableness",
               "key": "舒适性",
               "disabled": false
             },
             {
               "label_zh": "可靠性",
-              "label_en": "可靠性",
+              "label_en": "dependability",
               "key": "可靠性",
               "disabled": false
             },
             {
               "label_zh": "准时性",
-              "label_en": "准时性",
+              "label_en": "punctuality",
               "key": "准时性",
               "disabled": false
             }
           ],
           "label_zh": "私家车",
-          "label_en": "私家车",
+          "label_en": "private car",
           "key": "私家车",
           "disabled": false
         },
@@ -422,79 +422,79 @@
           "children": [
             {
               "label_zh": "在途时间",
-              "label_en": "在途时间",
+              "label_en": "time in transit",
               "key": "在途时间",
               "disabled": false
             },
             {
               "label_zh": "出行距离",
-              "label_en": "出行距离",
+              "label_en": "Travel distance",
               "key": "出行距离",
               "disabled": false
             },
             {
               "label_zh": "换乘次数",
-              "label_en": "换乘次数",
+              "label_en": "Number of transfers",
               "key": "换乘次数",
               "disabled": false
             },
             {
               "label_zh": "候车时间",
-              "label_en": "候车时间",
+              "label_en": "waiting time",
               "key": "候车时间",
               "disabled": false
             },
             {
               "label_zh": "费用",
-              "label_en": "费用",
+              "label_en": "cost",
               "key": "费用",
               "disabled": false
             },
             {
               "label_zh": "首班车时间",
-              "label_en": "首班车时间",
+              "label_en": "first bus time",
               "key": "首班车时间",
               "disabled": false
             },
             {
               "label_zh": "末班车时间",
-              "label_en": "末班车时间",
+              "label_en": "last bus time",
               "key": "末班车时间",
               "disabled": false
             },
             {
               "label_zh": "安全性",
-              "label_en": "安全性",
+              "label_en": "safety",
               "key": "安全性",
               "disabled": false
             },
             {
               "label_zh": "舒适性",
-              "label_en": "舒适性",
+              "label_en": "comfortableness",
               "key": "舒适性",
               "disabled": false
             },
             {
               "label_zh": "可靠性",
-              "label_en": "可靠性",
+              "label_en": "dependability",
               "key": "可靠性",
               "disabled": false
             },
             {
               "label_zh": "准时性",
-              "label_en": "准时性",
+              "label_en": "punctuality",
               "key": "准时性",
               "disabled": false
             }
           ],
           "label_zh": "步行",
-          "label_en": "步行",
+          "label_en": "go on foot",
           "key": "步行",
           "disabled": false
         }
       ],
       "label_zh": "出行方式属性",
-      "label_en": "出行方式属性",
+      "label_en": "Travel mode attributes",
       "key": "出行方式属性",
       "disabled": false
     },
@@ -502,19 +502,19 @@
       "children": [
         {
           "label_zh": "交通管制",
-          "label_en": "交通管制",
+          "label_en": "traffic control",
           "key": "交通管制",
           "disabled": false
         },
         {
           "label_zh": "价格政策",
-          "label_en": "价格政策",
+          "label_en": "pricing policy",
           "key": "价格政策",
           "disabled": false
         }
       ],
       "label_zh": "政策属性",
-      "label_en": "政策属性",
+      "label_en": "Policy attributes",
       "key": "政策属性",
       "disabled": false
     },
@@ -524,37 +524,37 @@
           "children": [
             {
               "label_zh": "天气信息",
-              "label_en": "天气信息",
+              "label_en": "Weather Information",
               "key": "天气信息",
               "disabled": false
             },
             {
               "label_zh": "公交等候时间",
-              "label_en": "公交等候时间",
+              "label_en": "mass transit等候时间",
               "key": "公交等候时间",
               "disabled": false
             },
             {
               "label_zh": "交通管制信息",
-              "label_en": "交通管制信息",
+              "label_en": "traffic control信息",
               "key": "交通管制信息",
               "disabled": false
             },
             {
               "label_zh": "道路延误信息",
-              "label_en": "道路延误信息",
+              "label_en": "Road delay info",
               "key": "道路延误信息",
               "disabled": false
             },
             {
               "label_zh": "停车场信息",
-              "label_en": "停车场信息",
+              "label_en": "Parking Info",
               "key": "停车场信息",
               "disabled": false
             }
           ],
           "label_zh": "信息发布",
-          "label_en": "信息发布",
+          "label_en": "Info Release",
           "key": "信息发布",
           "disabled": false
         },
@@ -562,25 +562,25 @@
           "children": [
             {
               "label_zh": "信息接受途径",
-              "label_en": "信息接受途径",
+              "label_en": "Access to info",
               "key": "信息接受途径",
               "disabled": false
             },
             {
               "label_zh": "信息相信程度",
-              "label_en": "信息相信程度",
+              "label_en": "Degree of confidence in info",
               "key": "信息相信程度",
               "disabled": false
             }
           ],
           "label_zh": "信息获取",
-          "label_en": "信息获取",
+          "label_en": "Access to info",
           "key": "信息获取",
           "disabled": false
         }
       ],
       "label_zh": "信息属性",
-      "label_en": "信息属性",
+      "label_en": "Info Attributes",
       "key": "信息属性",
       "disabled": false
     },
@@ -590,31 +590,31 @@
           "children": [
             {
               "label_zh": "天气",
-              "label_en": "天气",
+              "label_en": "climatic",
               "key": "天气",
               "disabled": false
             },
             {
               "label_zh": "气温",
-              "label_en": "气温",
+              "label_en": "temperatures",
               "key": "气温",
               "disabled": false
             },
             {
               "label_zh": "空气质量",
-              "label_en": "空气质量",
+              "label_en": "air quality",
               "key": "空气质量",
               "disabled": false
             },
             {
               "label_zh": "地形地貌",
-              "label_en": "地形地貌",
+              "label_en": "topography",
               "key": "地形地貌",
               "disabled": false
             }
           ],
           "label_zh": "气象、地理属性",
-          "label_en": "气象、地理属性",
+          "label_en": "Meteorological, geographical attributes",
           "key": "气象、地理属性",
           "disabled": false
         },
@@ -624,37 +624,37 @@
               "children": [
                 {
                   "label_zh": "居住人口密度",
-                  "label_en": "居住人口密度",
+                  "label_en": "Residential population density",
                   "key": "居住人口密度",
                   "disabled": false
                 },
                 {
                   "label_zh": "就业人口密度",
-                  "label_en": "就业人口密度",
+                  "label_en": "Employment density",
                   "key": "就业人口密度",
                   "disabled": false
                 }
               ],
               "label_zh": "土地混合使用程度",
-              "label_en": "土地混合使用程度",
+              "label_en": "Extent of mixed land use",
               "key": "土地混合使用程度",
               "disabled": false
             },
             {
               "label_zh": "职住平衡程度",
-              "label_en": "职住平衡程度",
+              "label_en": "Degree of work-life balance",
               "key": "职住平衡程度",
               "disabled": false
             },
             {
               "label_zh": "居住地与其他场所距离",
-              "label_en": "居住地与其他场所距离",
+              "label_en": "Distance of residence from other places",
               "key": "居住地与其他场所距离",
               "disabled": false
             }
           ],
           "label_zh": "用地属性",
-          "label_en": "用地属性",
+          "label_en": "Site Properties",
           "key": "用地属性",
           "disabled": false
         },
@@ -662,49 +662,49 @@
           "children": [
             {
               "label_zh": "街道宽度",
-              "label_en": "街道宽度",
+              "label_en": "Street width",
               "key": "街道宽度",
               "disabled": false
             },
             {
               "label_zh": "人行道密度",
-              "label_en": "人行道密度",
+              "label_en": "Sidewalk density",
               "key": "人行道密度",
               "disabled": false
             },
             {
               "label_zh": "自行车道密度",
-              "label_en": "自行车道密度",
+              "label_en": "Bike lane density",
               "key": "自行车道密度",
               "disabled": false
             },
             {
               "label_zh": "路网密度",
-              "label_en": "路网密度",
+              "label_en": "Road network density",
               "key": "路网密度",
               "disabled": false
             },
             {
               "label_zh": "岔路口密度",
-              "label_en": "岔路口密度",
+              "label_en": "Fork in the road density",
               "key": "岔路口密度",
               "disabled": false
             },
             {
               "label_zh": "沿街商业布置",
-              "label_en": "沿街商业布置",
+              "label_en": "Commercial arrangement along the street",
               "key": "沿街商业布置",
               "disabled": false
             },
             {
               "label_zh": "街区安全氛围",
-              "label_en": "街区安全氛围",
+              "label_en": "Neighborhood Safety Climate",
               "key": "街区安全氛围",
               "disabled": false
             }
           ],
           "label_zh": "街区设计",
-          "label_en": "街区设计",
+          "label_en": "Neighborhood design",
           "key": "街区设计",
           "disabled": false
         },
@@ -712,31 +712,31 @@
           "children": [
             {
               "label_zh": "人口密度",
-              "label_en": "人口密度",
+              "label_en": "population density",
               "key": "人口密度",
               "disabled": false
             },
             {
               "label_zh": "公交覆盖率",
-              "label_en": "公交覆盖率",
+              "label_en": "Public transportation coverage",
               "key": "公交覆盖率",
               "disabled": false
             },
             {
               "label_zh": "停车资源",
-              "label_en": "停车资源",
+              "label_en": "Parking resources",
               "key": "停车资源",
               "disabled": false
             },
             {
               "label_zh": "空间多样性",
-              "label_en": "空间多样性",
+              "label_en": "Spatial diversity",
               "key": "空间多样性",
               "disabled": false
             }
           ],
           "label_zh": "资源属性",
-          "label_en": "资源属性",
+          "label_en": "Resource Properties",
           "key": "资源属性",
           "disabled": false
         },
@@ -744,7 +744,7 @@
           "children": [
             {
               "label_zh": "媒体宣传",
-              "label_en": "媒体宣传",
+              "label_en": "Media Outreach",
               "key": "媒体宣传",
               "disabled": false
             },
@@ -752,19 +752,19 @@
               "children": [
                 {
                   "label_zh": "领导意见",
-                  "label_en": "领导意见",
+                  "label_en": "Leadership comments",
                   "key": "领导意见",
                   "disabled": false
                 },
                 {
                   "label_zh": "机构意见",
-                  "label_en": "机构意见",
+                  "label_en": "Institutional views",
                   "key": "机构意见",
                   "disabled": false
                 }
               ],
               "label_zh": "上级影响",
-              "label_en": "上级影响",
+              "label_en": "influence of superiors",
               "key": "上级影响",
               "disabled": false
             },
@@ -772,43 +772,43 @@
               "children": [
                 {
                   "label_zh": "家人意见",
-                  "label_en": "家人意见",
+                  "label_en": "Views of the family",
                   "key": "家人意见",
                   "disabled": false
                 },
                 {
                   "label_zh": "朋友意见",
-                  "label_en": "朋友意见",
+                  "label_en": "Opinions of friends",
                   "key": "朋友意见",
                   "disabled": false
                 }
               ],
               "label_zh": "同级影响",
-              "label_en": "同级影响",
+              "label_en": "Peer impact",
               "key": "同级影响",
               "disabled": false
             },
             {
               "label_zh": "环保理念",
-              "label_en": "环保理念",
+              "label_en": "Environmental Philosophy",
               "key": "环保理念",
               "disabled": false
             }
           ],
           "label_zh": "社会属性",
-          "label_en": "社会属性",
+          "label_en": "social property",
           "key": "社会属性",
           "disabled": false
         }
       ],
       "label_zh": "环境属性",
-      "label_en": "环境属性",
+      "label_en": "Environmental Properties",
       "key": "环境属性",
       "disabled": false
     }
   ],
   "label_zh": "出行效用",
-  "label_en": "出行效用",
+  "label_en": "travel utility",
   "key": "出行效用",
   "disabled": false,
   "showView": true

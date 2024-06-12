@@ -24,11 +24,11 @@
 {
   "公交出行影响对比分析报告":{
     "zh-CN": "公交出行影响对比分析报告",
-    "en-US": " Transit Travel Impact Comparison Analysis Report"
+    "en-US": "Transit Travel Impact Comparison Analysis Report"
   },
   "语言模型":{
     "zh-CN": "语言模型",
-    "en-US": "语言模型"
+    "en-US": "language model"
   },
 }
 </language>
