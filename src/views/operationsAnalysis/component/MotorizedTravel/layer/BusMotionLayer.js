@@ -82,7 +82,6 @@ export class BusMotionLayer extends Layer {
       console.log(error);
     });
 
-    ModelPool.instance.defaultModel
   }
 
   on(type, data) {

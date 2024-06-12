@@ -451,3 +451,39 @@ export function getEndInFacilities(params) {
     method: "get",
   });
 }
+
+// 查询全部活动开始位置
+// GET /pt/person/getAllActivity
+// 接口ID：158593009
+// 接口地址：https://www.apifox.cn/link/project/3709845/apis/api-158593009
+export function getAllActivity(params) {
+  return request({
+    url: `/pt/person/getAllActivity`,
+    params: params,
+    method: "get",
+  });
+}
+
+// 查询person出行计划
+// GET /pt/person/getPlan
+// 接口ID：157457699
+// 接口地址：https://www.apifox.cn/link/project/3709845/apis/api-157457699
+export function getPlan(params) {
+  return request({
+    url: `/pt/person/getPlan`,
+    params: params,
+    method: "get",
+  });
+}
+
+// 查询所有活动类型
+// GET /pt/person/getAllActivityType
+// 接口ID：182747540
+// 接口地址：https://www.apifox.cn/link/project/3709845/apis/api-182747540
+export function getAllActivityType(params) {
+  return request({
+    url: `/pt/person/getAllActivityType`,
+    params: params,
+    method: "get",
+  });
+}

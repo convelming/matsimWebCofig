@@ -322,11 +322,11 @@ export class StopsLayer extends Layer {
       pickMesh.setMatrixAt(i, matrix);
 
       // mesh.setColorAt(i, this.color);
-      pickLayerMesh.setColorAt(i, this.pickLayerColor);
+      // pickLayerMesh.setColorAt(i, this.pickLayerColor);
       pickMesh.setColorAt(i, pickColor);
     }
 
-    let [x, y] = this.map.WebMercatorToCanvasXY(...this.center);
+    const [x, y] = this.map.WebMercatorToCanvasXY(...this.center);
 
     mesh.position.set(x, y, 0);
     pickLayerMesh.position.set(x, y, 0);

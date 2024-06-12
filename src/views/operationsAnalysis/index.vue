@@ -9,6 +9,7 @@
               <MotorizedTravel :showLayer.sync="showLayerMotorizedTravel" name="MotorizedTravel" />
               <Build3D :showLayer.sync="showLayerBuild3D" name="Build3D" />
               <Network :showLayer.sync="showLayerNetwork" name="Network" />
+              <Activity3D :showLayer.sync="showLayerActivity3D" name="Activity3D" />
               <div style="height: 100px"></div>
             </el-collapse>
           </Drawer>
@@ -91,6 +92,7 @@ import Toolbar from "./component/Toolbar/index.vue";
 import MotorizedTravel from "./component/MotorizedTravel/index.vue";
 import Build3D from "./component/Build3D/index.vue";
 import Network from "./component/Network/index.vue";
+import Activity3D from "./component/Activity3D/index.vue";
 
 export default {
   components: {
@@ -100,6 +102,7 @@ export default {
     MotorizedTravel,
     Build3D,
     Network,
+    Activity3D,
   },
   watch: {
     page_language: {
@@ -121,12 +124,13 @@ export default {
       loading: false,
       _Map: null,
       _MapLayer: null,
-      activeNames: ["PublicTransit", "MotorizedTravel", "Build3D", "Network"],
+      activeNames: ["PublicTransit", "MotorizedTravel", "Build3D", "Network", "Activity3D"],
 
       showLayerPublicTransit: false,
       showLayerMotorizedTravel: false,
       showLayerBuild3D: false,
       showLayerNetwork: false,
+      showLayerActivity3D: true,
 
       showStopToolbar: false,
 
@@ -158,6 +162,9 @@ export default {
       this.handleChangeMapCameraControls();
     },
     showLayerNetwork(val) {
+      this.handleChangeMapCameraControls();
+    },
+    showLayerActivity3D(val) {
       this.handleChangeMapCameraControls();
     },
   },
@@ -210,6 +217,7 @@ export default {
       // enableRotate = enableRotate || this.showLayerMotorizedTravel;
       // enableRotate = enableRotate || this.showLayerBuild3D;
       // enableRotate = enableRotate || this.showLayerNetwork;
+      // enableRotate = enableRotate || this.showLayerActivity3D;
       // if (enableRotate) {
       //   this._Map.enableRotate = true;
       // } else {
@@ -224,6 +232,7 @@ export default {
         enableRotate: true,
         zoom: 16,
         // minPitch: -90,
+        // center: [12606757, 2651434],
       });
       this._Map.addLayer(this._MapLayer);
       window._Map = this._Map;
