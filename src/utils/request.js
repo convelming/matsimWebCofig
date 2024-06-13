@@ -34,7 +34,7 @@ service.interceptors.request.use(
       headers["Datasource"] = store.getters.dataSource;
     }
 
-    headers["uuid"] = guid();
+    headers["Uuid"] = guid();
 
     config.headers = headers;
     // get请求映射params参数

@@ -48,7 +48,7 @@ export class StopsLayer extends Layer {
 
     this.texture = opt.texture || this.texture;
 
-    this.geometry = new THREE.BoxGeometry(STOP_SIZE, STOP_SIZE);
+    this.geometry = new THREE.PlaneGeometry(STOP_SIZE, STOP_SIZE);
     this.material = new THREE.MeshBasicMaterial({
       depthWrite: false,
       transparent: true,
@@ -73,7 +73,7 @@ export class StopsLayer extends Layer {
       );
     };
 
-    this.pickGeometry = new THREE.BoxGeometry(STOP_SIZE * 1.1, STOP_SIZE * 1.1);
+    this.pickGeometry = new THREE.PlaneGeometry(STOP_SIZE * 1.1, STOP_SIZE * 1.1);
     this.pickMaterial = new THREE.MeshBasicMaterial({
       color: this.pickLayerColor,
     });

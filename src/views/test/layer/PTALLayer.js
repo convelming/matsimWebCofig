@@ -3,6 +3,7 @@ import * as THREE from "three";
 
 import * as BufferGeometryUtils from "three/addons/utils/BufferGeometryUtils.js";
 
+import axios from "axios";
 export class PTALLayer extends Layer {
   name = "PTALLayer";
 
@@ -24,13 +25,13 @@ export class PTALLayer extends Layer {
   }
 
   setData() {
-    import("@/assets/data/hpPTAL.json").then((res) => {
+    axios.get("./data/hpPTAL.json").then((res) => {
       const size = 110;
       const rowList = [];
       const colList = [];
       const data = {};
 
-      res.default.features.forEach((v1) => {
+      res.data.features.forEach((v1) => {
         const centerX = [];
         const centerY = [];
         v1.geometry.coordinates.flat(2).forEach((v2) => {
@@ -79,7 +80,7 @@ export class PTALLayer extends Layer {
             try {
               value += data[`${_row}_${_col}`].properties.AI_all;
               index++;
-            } catch (error) {}
+            } catch (error) { }
           }
         }
         if (index > 0) {

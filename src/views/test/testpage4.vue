@@ -6,6 +6,7 @@
 </template>
 
 <script>
+import axios from "axios";
 import * as d3 from "d3";
 export default {
   name: "ComponentName",
@@ -21,15 +22,15 @@ export default {
   },
   created() {},
   mounted() {
-    import("./d3ChartData.json").then((res) => {
-      // this.src2 = this.getChart2(res.default.data);
+    axios.get("./d3ChartData.json").then((res) => {
+      // this.src2 = this.getChart2(res.data.data);
     });
-    import("./d3ChartData2.json").then((res) => {
+    axios.get("./d3ChartData2.json").then((res) => {
       const list = [];
       const linkObj = {};
       const fromOffsetObj = {};
       const toOffsetObj = {};
-      for (const v1 of res.data) {
+      for (const v1 of res.data.data) {
         list.push({
           ...v1.stop,
           enter: v1.enter,

@@ -39,7 +39,27 @@ export default {
   data() {
     return {
       activeName: "",
+      // activeName: "c99bd891-f971-401b-9602-da776f58cad8",
       list: [
+        // {
+        //   type: "ActivityDetail",
+        //   data: {
+        //     uuid: 612,
+        //     activityDetail: {
+        //       actType: "home",
+        //       coord: {
+        //         x: 12635571,
+        //         y: 2610971,
+        //       },
+        //       point: [28814, -40463],
+        //       endTime: 27000,
+        //       startTime: 0,
+        //       personId: "6c9edbb3-4a24-466b-88e8-d8e75bf1e2ce",
+        //       pickColor: 612,
+        //     },
+        //   },
+        //   name: "c99bd891-f971-401b-9602-da776f58cad8",
+        // },
       ],
     };
   },
@@ -53,6 +73,7 @@ export default {
   methods: {
     add(type, data) {
       switch (type) {
+        case "ActivityDetail":
         case "SelectLinkAnalysis":
         case "SelectBuildAnalysis":
         case "BusDetail":
@@ -60,7 +81,6 @@ export default {
         case "SubwayDetail":
         case "BuildDetail":
         case "LineDetail":
-        case "ActivityDetail":
         case "NodeDetail": {
           const item = this.list.find((v) => v.data.uuid == data.uuid && type == v.type);
           if (item) {

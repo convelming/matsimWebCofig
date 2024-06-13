@@ -19,7 +19,7 @@
         <div @click="handleClickItem('operationsAnalysis')" class="item" style="background-color: yellowgreen">
           <div class="item_title">
             <img class="item_icon" src="@/assets/image/公交.svg" />
-            <span>{{ $l("MATSim webViz") }}</span>
+            <span>MATSim webViz</span>
           </div>
           <div class="item_detail">
             {{ $l("加载指定项目的matsim模型可视化，分析整个城市区域居民出行活动及交通系统运行情况") }}
@@ -308,7 +308,7 @@
     "en-US":"Program cloning success",
   },
   "MATSim webViz": {
-    "zh-CN":"MATSim 网络虚拟化",
+    "zh-CN":"MATSim webViz",
     "en-US":"MATSim webViz",
   },
   "加载指定项目的matsim模型可视化，分析整个城市区域居民出行活动及交通系统运行情况": {

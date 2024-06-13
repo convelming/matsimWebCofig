@@ -1,12 +1,13 @@
 import { Layer, MAP_EVENT, OutlineLayer, SCENE_MAP } from "@/mymap";
 import * as THREE from "three";
+import axios from "axios";
 
 export class LinkFlowLayer extends Layer {
   constructor(opt) {
     super(opt);
 
-    import("@/assets/data/linkflow.v2.json").then((res) => {
-      this.data = res.default.data;
+    axios.get("./data/linkflow.v2.json").then((res) => {
+      this.data = res.data.data;
       this.update();
     });
   }

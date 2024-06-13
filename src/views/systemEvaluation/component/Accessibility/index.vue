@@ -68,6 +68,7 @@
 </language>
 
 <script>
+import axios from "axios";
 import { ColorList } from "@/components/ColorSelect.vue";
 import { BinningLayer } from "./layer/BinningLayer";
 export default {
@@ -141,8 +142,8 @@ export default {
       segm: this.binningSize,
       valueFunc: (value) => value.properties.AI_all,
     });
-    import("@/assets/data/hpPTAL.json").then((res) => {
-      this._BinningLayer.setData(res.default);
+    axios.get("./data/hpPTAL.json").then((res) => {
+      this._BinningLayer.setData(res.data);
     });
   },
   mounted() {

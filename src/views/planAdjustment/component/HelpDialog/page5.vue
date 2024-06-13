@@ -9,7 +9,7 @@
 export default {
   data() {
     return {
-      img: require("./images/video5.gif"),
+      img: require("@/assets/helpImages/planAdjustment/video5.gif"),
     };
   },
 };

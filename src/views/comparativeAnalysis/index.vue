@@ -11,6 +11,7 @@
               <MotorizedTravel :showLayer.sync="showLayerMotorizedTravel" name="MotorizedTravel" ref="MotorizedTravel" />
               <Build3D :showLayer.sync="showLayerBuild3D" name="Build3D" ref="Build3D" />
               <Network :showLayer.sync="showLayerNetwork" name="Network" ref="Network" />
+              <Activity3D :showLayer.sync="showLayerActivity3D" name="Activity3D" />
               <div style="height: 100px"></div>
             </el-collapse>
           </Drawer>
@@ -86,6 +87,7 @@ import PublicTransit from "../operationsAnalysis/component/PublicTransit/index.v
 import MotorizedTravel from "../operationsAnalysis/component/MotorizedTravel/index.vue";
 import Build3D from "../operationsAnalysis/component/Build3D/index.vue";
 import Network from "../operationsAnalysis/component/Network/index.vue";
+import Activity3D from "../operationsAnalysis/component/Activity3D/index.vue";
 
 import AnalysisReport from "./component/AnalysisReport/index.vue";
 import LinesAnalysis from "./component/LinesAnalysis/index.vue";
@@ -103,6 +105,7 @@ export default {
     Network,
     LinesAnalysis,
     AnalysisReport,
+    Activity3D,
   },
   watch: {
     page_language: {
@@ -124,7 +127,7 @@ export default {
       loading: false,
       _Map: null,
       _MapLayer: null,
-      activeNames: ["LinesAnalysis", "AnalysisReport", "PublicTransit", "MotorizedTravel", "Build3D", "Network"],
+      activeNames: ["LinesAnalysis", "AnalysisReport", "PublicTransit", "MotorizedTravel", "Build3D", "Network", "Activity3D"],
 
       showLayerLinesAnalysis: true,
       showLayerAnalysisReport: false,
@@ -132,6 +135,7 @@ export default {
       showLayerMotorizedTravel: false,
       showLayerBuild3D: false,
       showLayerNetwork: false,
+      showLayerActivity3D: false,
 
       showStopToolbar: true,
 
@@ -175,6 +179,9 @@ export default {
       this.handleChangeMapCameraControls();
     },
     showLayerNetwork(val) {
+      this.handleChangeMapCameraControls();
+    },
+    showLayerActivity3D(val) {
       this.handleChangeMapCameraControls();
     },
   },
@@ -239,7 +246,7 @@ export default {
         rootId: "mapRoot",
         zoom: 11,
         enableRotate: true,
-        zoom: 15,
+        // zoom: 15,
         // minPitch: -90,
       });
       this._Map.addLayer(this._MapLayer);
@@ -356,6 +363,15 @@ export default {
         this.$refs.Toolbar.add("SelectBuildAnalysis", {
           uuid: uuid,
           buildDetail: buildDetail,
+        });
+        this.showStopToolbar = true;
+      }
+    },
+    handleShowActivityDetail({ uuid, activityDetail }) {
+      if (this.$refs.Toolbar) {
+        this.$refs.Toolbar.add("ActivityDetail", {
+          uuid: uuid,
+          activityDetail: activityDetail,
         });
         this.showStopToolbar = true;
       }

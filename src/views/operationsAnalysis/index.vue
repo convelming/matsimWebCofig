@@ -86,9 +86,9 @@ import { Map, LocalMapLayer } from "@/mymap/index.js";
 
 import HelpDialog from "./component/HelpDialog/index.vue";
 
-import PublicTransit from "./component/PublicTransit/index.vue";
 import Toolbar from "./component/Toolbar/index.vue";
 
+import PublicTransit from "./component/PublicTransit/index.vue";
 import MotorizedTravel from "./component/MotorizedTravel/index.vue";
 import Build3D from "./component/Build3D/index.vue";
 import Network from "./component/Network/index.vue";
@@ -230,9 +230,9 @@ export default {
         rootId: "mapRoot",
         zoom: 11,
         enableRotate: true,
-        zoom: 16,
+        // zoom: 16,
         // minPitch: -90,
-        center: [12640240, 2610674.2],
+        // center: [12635571, 2610971],
       });
       this._Map.addLayer(this._MapLayer);
       window._Map = this._Map;

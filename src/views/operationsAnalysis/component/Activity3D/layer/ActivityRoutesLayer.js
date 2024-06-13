@@ -48,24 +48,27 @@ export class ActivityRoutesLayer extends Layer {
     this.legScale = opt.legScale || this.legScale;
     this.legColor = new THREE.Color(opt.legColor || this.legColor);
 
-    this.actGeometry = new THREE.BoxGeometry(SIZE, SIZE);
+    this.actGeometry = new THREE.PlaneGeometry(SIZE, SIZE);
     this.actMaterial = this.getActMaterial({
-      depthWrite: false,
+      // depthWrite: false,
       transparent: true,
       map: this.actTexture,
       color: this.actColor,
     });
-    this.actGeometry2 = new THREE.BoxGeometry(SIZE, SIZE);
+    this.actGeometry2 = new THREE.CylinderGeometry(SIZE / 2, SIZE / 2);
     this.actMaterial2 = new THREE.MeshBasicMaterial({
-      depthWrite: false,
+      // depthWrite: false,
       transparent: true,
       color: this.actColor,
+      opacity: 0.8,
     });
 
     this.legMaterial = this.getLegMaterial({
+      // depthWrite: false,
+      side: THREE.DoubleSide,
+      transparent: true,
       map: this.legTexture,
       color: this.legColor,
-      usePickColor: true,
     });
 
     this.scaleScene = new THREE.Group();
@@ -153,8 +156,9 @@ export class ActivityRoutesLayer extends Layer {
       }
       this.actMesh = new THREE.InstancedMesh(this.actGeometry, this.actMaterial, this.actList.length * 2);
       this.actMesh2 = new THREE.InstancedMesh(this.actGeometry2, this.actMaterial2, this.actList.length);
+      this.actMesh.position.set(0, 0, 2);
       this.scaleScene.add(this.actMesh);
-      // this.scaleScene.add(this.actMesh2);
+      this.scaleScene.add(this.actMesh2);
     }
     // 路径
     {
@@ -184,7 +188,10 @@ export class ActivityRoutesLayer extends Layer {
     if (this.actMesh) {
       const _scale = this.map.cameraHeight / 4000 * this.actScale;
       for (let i = 0, l = this.actList.length * 2; i < l; i++) {
-        const { point, pickColor, startTime, endTime } = this.actList[Math.floor(i / 2)];
+        const item = this.actList[Math.floor(i / 2)]
+        const { point, pickColor } = item;
+        const startTime = Number(item.startTime);
+        const endTime = Number(item.endTime);
         const z = i % 2 == 0 ? startTime / 60 : endTime / 60;
         const positionV3 = new THREE.Vector3(point[0], point[1], z);
         const scaleV3 = new THREE.Vector3(_scale, _scale, 1);
@@ -194,9 +201,13 @@ export class ActivityRoutesLayer extends Layer {
 
 
         if (i % 2 == 0) {
-          const scaleV3_2 = new THREE.Vector3(_scale, _scale, (endTime - startTime) / 60);
+          const height = Math.abs(endTime - startTime) / 60;
+          const positionV3_2 = new THREE.Vector3(point[0], point[1], startTime / 60 + height / 2);
+          const scaleV3_2 = new THREE.Vector3(_scale, height, _scale);
+          const rotation_2 = new THREE.Quaternion()
+          rotation_2.setFromAxisAngle(new THREE.Vector3(1, 0, 0), Math.PI / 2);
           const matrix_2 = new THREE.Matrix4();
-          matrix_2.compose(positionV3, new THREE.Quaternion(), scaleV3_2);
+          matrix_2.compose(positionV3_2, rotation_2, scaleV3_2);
           this.actMesh2.setMatrixAt(Math.floor(i / 2), matrix_2);
         }
       }
@@ -245,9 +256,6 @@ export class ActivityRoutesLayer extends Layer {
   }
   getLegMaterial({ usePickColor, ...opt }) {
     const material = new THREE.MeshBasicMaterial({
-      side: THREE.DoubleSide,
-      transparent: true,
-      wireframe: false,
       ...opt,
     });
     material.onBeforeCompile = (shader) => {

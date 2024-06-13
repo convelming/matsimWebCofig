@@ -20,7 +20,7 @@ export class SelectStopLayer extends Layer {
     this.scale = opt.scale || this.scale;
     this.color = new THREE.Color(opt.color || this.color);
 
-    this.geometry = new THREE.BoxGeometry(STOP_SIZE, STOP_SIZE);
+    this.geometry = new THREE.PlaneGeometry(STOP_SIZE, STOP_SIZE);
     this.material = new THREE.MeshBasicMaterial({
       depthWrite: false,
       transparent: true,

@@ -9,7 +9,7 @@
 export default {
   data() {
     return {
-      img: require("./images/image4.gif"),
+      img: require("@/assets/helpImages/comparativeAnalysis/image4.gif"),
     };
   },
 };

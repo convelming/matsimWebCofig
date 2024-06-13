@@ -10,9 +10,9 @@
 import { guid } from "@/utils/utils";
 
 import ReportToolbar from "../AnalysisReport/toolbar/ReportToolbar.vue";
+import LinesChangeInfo from "../LinesAnalysis/toolbar/LinesChangeInfo.vue";
 
 import RouteFlows from "../LinesAnalysis/toolbar/RouteFlows.vue";
-import LinesChangeInfo from "../LinesAnalysis/toolbar/LinesChangeInfo.vue";
 
 import BuildDetail from "../../../operationsAnalysis/component/Build3D/toolbar/buildDetail.vue";
 import CarDetail from "../../../operationsAnalysis/component/MotorizedTravel/toolbar/carDetail.vue";
@@ -26,13 +26,14 @@ import LineDetail from "../../../operationsAnalysis/component/Network/toolbar/li
 import NodeDetail from "../../../operationsAnalysis/component/Network/toolbar/nodeDetail.vue";
 import SelectLinkAnalysis from "../../../operationsAnalysis/component/Network/toolbar/selectLinkAnalysis.vue";
 import SelectBuildAnalysis from "../../../operationsAnalysis/component/Build3D/toolbar/selectBuildAnalysis.vue";
+import ActivityDetail from "../../../operationsAnalysis/component/Activity3D/toolbar/ActivityDetail.vue";
 
 export default {
   components: {
     ReportToolbar,
+    LinesChangeInfo,
 
     RouteFlows,
-    LinesChangeInfo,
 
     BuildDetail,
     CarDetail,
@@ -46,6 +47,7 @@ export default {
     NodeDetail,
     SelectLinkAnalysis,
     SelectBuildAnalysis,
+    ActivityDetail,
   },
   inject: ["rootVue"],
   data() {
@@ -83,6 +85,8 @@ export default {
     add(type, data) {
       switch (type) {
         case "RouteFlows":
+
+        case "ActivityDetail":
         case "SelectLinkAnalysis":
         case "SelectBuildAnalysis":
         case "BusDetail":
