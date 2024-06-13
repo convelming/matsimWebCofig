@@ -57,10 +57,9 @@ export class NetworkLayer extends Layer {
         const geometry = new NetworkGeometry([lineItem], 0);
         this.selectLine.mesh.geometry = geometry;
         this.loadMesh();
-        return;
+        break;
       }
     }
-    this.scene.remove(this.selectLine.mesh);
   }
 
   setShowNode(showNode) {
@@ -186,7 +185,7 @@ export class NetworkLayer extends Layer {
         if (tile.loadStatus == 1) {
           // noLoadTileList.push(tile);
           this.handleLoading(1);
-          tile.load(() => ++this.pickColorNum).then(() => this.handleLoading(-1));
+          tile.load(this).then(() => this.handleLoading(-1));
         }
         const [x, y] = this.map.WebMercatorToCanvasXY(tile.x, tile.y);
         tile.baseScene.position.set(x, y, 0);
@@ -209,6 +208,8 @@ export class NetworkLayer extends Layer {
       const [x, y] = this.map.WebMercatorToCanvasXY(tile.x, tile.y);
       mesh.position.set(x, y, 1.5);
       this.scene.add(mesh);
+    } else if (this.selectLine.mesh) {
+      this.scene.remove(this.selectLine.mesh);
     }
 
   }
@@ -309,7 +310,7 @@ export class NetworkTile {
     this._pickMeshNodeMesh = null;
   }
 
-  async load(getPickColorFunc) {
+  async load(layer) {
     try {
       this._loadStatus = 4;
       const { data } = await getTileNetwork({ x: this._row, y: this._col });
@@ -318,7 +319,7 @@ export class NetworkTile {
         this._nodeData = {};
         const nodeObj = {};
         for (const v of data) {
-          v.pickColorNum = getPickColorFunc();
+          v.pickColorNum = ++layer.pickColorNum;
           v.type = "line";
           v.uuid = guid();
           v.id = v.linkId;
@@ -327,13 +328,13 @@ export class NetworkTile {
           const fromNode = { coord: v.fromCoord, id: v.fromNodeId, type: "node", uuid: guid() };
           const toNode = { coord: v.toCoord, id: v.toNodeId, type: "node", uuid: guid() };
           if (!nodeObj[fromNode.id]) {
-            const pickColorNum = getPickColorFunc();
+            const pickColorNum = ++layer.pickColorNum;
             fromNode.pickColorNum = pickColorNum;
             this._nodeData[pickColorNum] = fromNode;
             nodeObj[fromNode.id] = true;
           }
           if (!nodeObj[toNode.id]) {
-            const pickColorNum = getPickColorFunc();
+            const pickColorNum = ++layer.pickColorNum;
             toNode.pickColorNum = pickColorNum;
             this._nodeData[pickColorNum] = toNode;
             nodeObj[toNode.id] = true;

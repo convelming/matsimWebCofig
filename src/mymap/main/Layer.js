@@ -57,6 +57,18 @@ export class Layer extends EventListener {
     // });
   }
 
+
+  // 设置图层的显示层级
+  setZIndex(zIndex) {
+    this.zIndex = zIndex;
+    this.scene.renderOrder = this.zIndex;
+    this.scene.position.z = this.zIndex / 100;
+    this.pickLayerScene.renderOrder = this.zIndex;
+    this.pickLayerScene.position.z = this.zIndex / 100;
+    this.pickLayerScene.renderOrder = this.zIndex;
+    this.pickMeshScene.position.z = this.zIndex / 100;
+  }
+
   // 获取拾取物体图层颜色
   getPickMeshColor() {
     return new THREE.Color(++this.pickColorNum);
