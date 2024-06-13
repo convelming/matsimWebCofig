@@ -30,7 +30,7 @@ export default {
       showLayerBuild3D: false,
       showLayerNetwork: false,
       showLayerActivity3D: false,
-      showLayerGeoJSON: false,
+      showLayerGeoJSON: true,
 
       showStopToolbar: false,
 
@@ -134,7 +134,7 @@ export default {
         rootId: "mapRoot",
         zoom: 11,
         enableRotate: true,
-        // zoom: 16,
+        zoom: 16,
         // minPitch: -90,
         // center: [12635571, 2610971],
       });

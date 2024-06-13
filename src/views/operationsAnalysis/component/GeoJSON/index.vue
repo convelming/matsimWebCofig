@@ -7,7 +7,7 @@
       </el-checkbox>
     </div>
     <div class="form">
-      <div class="form_item">
+      <!-- <div class="form_item">
         <div class="form_label">{{ $l("最多显示人数：") }}</div>
         <div class="form_value">
           <el-input-number style="width: 100%" :disabled="!s_showLayer" size="small" v-model="maxNum" :min="0" :step="1" step-strictly> </el-input-number>
@@ -21,7 +21,7 @@
             <el-color-picker :disabled="!s_showLayer" size="mini" :predefine="predefineColors" v-model="v.color" />
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
   </el-collapse-item>
 </template>
@@ -67,36 +67,14 @@ export default {
         }
       },
     },
-    activityTypeList: {
-      handler(val) {
-        if (this._GeoJSONLayer) {
-          this._GeoJSONLayer.setColors(val);
-        }
-      },
-      deep: true,
-    },
-    scale(val) {
-      if (this._GeoJSONLayer) {
-        this._GeoJSONLayer.setScale(val);
-      }
-    },
-    maxNum() {
-      if (this._GeoJSONLayer) {
-        this._GeoJSONLayer.setMaxNum(val);
-      }
-    },
   },
   data() {
     return {
       predefineColors: ["#5470c6", "#91cc75", "#fac858", "#ee6666", "#73c0de", "#3ba272", "#fc8452", "#9a60b4", "#ea7ccc"],
       s_showLayer: true,
       color: "#5470c6",
-      scale: 1,
-      maxNum: 10000,
 
       _GeoJSONLayer: null,
-
-      activityTypeList: [],
 
       loading: false,
     };
@@ -104,7 +82,7 @@ export default {
   created() {
     this.s_showLayer = this.showLayer;
     this._GeoJSONLayer = new GeoJSONLayer({
-      colors: this.activityTypeList,
+      zIndex: 20,
     });
   },
   mounted() {
@@ -128,15 +106,10 @@ export default {
     // 组件初始化事件
     handleEnable() {
       this._Map.addLayer(this._GeoJSONLayer);
-      this.rootVue.$on("timeChange", this.handleTimeChange);
     },
     // 组件卸载事件
     handleDisable() {
       this._Map.removeLayer(this._GeoJSONLayer);
-      this.rootVue.$off("timeChange", this.handleTimeChange);
-    },
-    handleTimeChange(time) {
-      if (this._GeoJSONLayer) this._GeoJSONLayer.setTime(time);
     },
   },
 };

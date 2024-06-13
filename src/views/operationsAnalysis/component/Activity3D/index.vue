@@ -105,6 +105,7 @@ export default {
   created() {
     this.s_showLayer = this.showLayer;
     this._Activity3DLayer = new Activity3DLayer({
+      zIndex: 20,
       colors: this.activityTypeList,
       scale: this.scale,
       maxNum: this.maxNum,
