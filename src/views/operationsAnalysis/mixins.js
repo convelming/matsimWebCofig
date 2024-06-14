@@ -23,7 +23,7 @@ export default {
       _Map: null,
       _MapLayer: null,
       activeNames: ["PublicTransit", "MotorizedTravel", "Build3D", "Network", "Activity3D","GeoJSON"],
-      activeNames: ["GeoJSON"],
+      // activeNames: ["GeoJSON"],
 
       showLayerPublicTransit: false,
       showLayerMotorizedTravel: false,

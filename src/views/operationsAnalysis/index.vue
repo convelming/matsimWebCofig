@@ -17,11 +17,43 @@
           <div class="Drawer_col">
             <div></div>
             <div class="mapBox">
-              <Clock v-show="showClock" class="mapClock" :time="time" />
-              <Luopan class="mapLuopan" />
+              <!-- 新版时间钟&&地图选择&&速度调节&&更多功能 -->
+              <NewClock v-show="showClock" class="mapClock" :time="time">
+                <template slot="Luopan">
+                  <Luopan class="mapLuopan" />
+                </template>
+                <template slot="bottom">
+                  <div class="bottom">
+                    <div class="form">
+                      <div class="form_item" style="padding-bottom: 25px">
+                        <!-- <div class="form_label">{{ $l("时间：") }}</div> -->
+                        <div class="form_value">
+                          <TimeSlider v-model="time" :speed="60 * 60 * 4" :min="minTime" :max="maxTime"></TimeSlider>
+                        </div>
+
+                      </div>
+                    </div>
+                    <el-dropdown @command="speedCommand" placement="top-start" trigger="click">
+                      <div class="speed">
+                        <img class="icon" src="@/assets/image/speed_icon.png">
+                        <span>X{{ speed }}</span>
+                      </div>
+                      <el-dropdown-menu slot="dropdown">
+                        <el-dropdown-item v-for="item in speedList" :command="item" :key="item"
+                          :disabled="speed === item">速度 X{{ item }} </el-dropdown-item>
+                      </el-dropdown-menu>
+                    </el-dropdown>
+                  </div>
+                </template>
+              </NewClock>
+              <!-- 旧版时钟&&地图选择 -->
+              <!-- <Luopan class="mapLuopan" />  
+              <Clock v-show="showClock" :time="time" />  -->
               <div id="mapRoot"></div>
             </div>
-            <Drawer show direction="bottom" :size="180">
+
+            <!-- 旧版时间速度调节 -->
+            <!-- <Drawer show direction="bottom" :size="180">
               <div class="form">
                 <div class="form_flex">
                   <div class="form_item">
@@ -47,7 +79,7 @@
                   </div>
                 </div>
               </div>
-            </Drawer>
+            </Drawer> -->
           </div>
           <Drawer :show.sync="showStopToolbar" direction="right" :size="400">
             <!-- <Toolbar ref="Toolbar" /> -->
@@ -55,7 +87,8 @@
           </Drawer>
         </div>
       </div>
-      <HelpDialog />
+      <!-- 旧版更多功能 -->
+      <!-- <HelpDialog /> -->
     </template>
   </div>
 </template>
@@ -89,7 +122,7 @@ import mixins from "./mixins";
 import HelpDialog from "./component/HelpDialog/index.vue";
 
 import Toolbar from "./component/Toolbar/index.vue";
-
+import NewClock from '../comparativeAnalysis/component/NewClock.vue'
 import PublicTransit from "./component/PublicTransit/index.vue";
 import MotorizedTravel from "./component/MotorizedTravel/index.vue";
 import Build3D from "./component/Build3D/index.vue";
@@ -107,8 +140,26 @@ export default {
     Network,
     Activity3D,
     GeoJSON,
+    NewClock
   },
   mixins: [mixins],
+  data() {
+    return {
+      speedList: [
+        0,
+        0.5,
+        1,
+        2,
+        4,
+        10,
+      ]
+    }
+  },
+  methods: {
+    speedCommand(value) {
+      this.speed = value
+    },
+  }
 };
 </script>
 
@@ -118,15 +169,18 @@ export default {
     border-bottom: 0;
   }
 }
+
 .index {
   position: relative;
   width: 100vw;
   height: 100vh;
   overflow: hidden;
+
   .grid_root {
     width: 100vw;
     height: 100vh;
   }
+
   .map_box {
     position: relative;
     z-index: 20;
@@ -141,12 +195,15 @@ export default {
     justify-content: center;
     padding: 10px 10px 0px 20px;
     font-size: 13px;
-    & > * + * {
+
+    &>*+* {
       margin-top: 10px;
     }
+
     .form_flex {
       display: flex;
-      .form_item + .form_item {
+
+      .form_item+.form_item {
         margin-top: 0;
       }
     }
@@ -155,14 +212,17 @@ export default {
       width: 100%;
       display: flex;
       line-height: 40px;
+
       .form_label {
         flex-shrink: 0;
         padding-right: 10px;
       }
+
       .form_value {
         width: 100%;
       }
     }
+
     .play_btn {
       position: relative;
       top: 3px;
@@ -181,22 +241,56 @@ export default {
 
   .mapBox {
     position: relative;
+
     .mapClock {
       position: absolute;
       top: 10px;
       right: 10px;
       z-index: 1000;
     }
+
     .mapLuopan {
       position: absolute;
       bottom: 80px;
       right: 10px;
       z-index: 1000;
     }
+
     #mapRoot {
       width: 100%;
       height: 100%;
     }
+  }
+}
+
+.bottom {
+  display: flex;
+  align-items: center;
+}
+
+.speed {
+  height: 26px;
+  background: rgba(0, 0, 0, 0.05);
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 10px;
+  gap: 8px;
+
+  .icon {
+    width: 18px;
+    height: 18px;
+
+  }
+
+  .text {
+    color: #434343;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 20px;
+
   }
 }
 </style>

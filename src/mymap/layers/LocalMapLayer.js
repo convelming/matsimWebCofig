@@ -244,11 +244,11 @@ export class LocalMapLayer extends Layer {
     if (!this._menuDoc) {
       const menuDoc = document.createElement("div");
       menuDoc.classList.add("LocalMapLayer_menu", "hide");
-      menuDoc.style = `width: ${Object.values(this.styleMap).length * 50 + 30
+      menuDoc.style = `height: ${Object.values(this.styleMap).length * 50 -10
         }px;`;
 
-      const openHideBtn = document.createElement("div");
-      openHideBtn.classList.add("open_hide_btn");
+      const openHideBtn = document.getElementById("map-switch");
+      // openHideBtn.classList.add("open_hide_btn");
       openHideBtn.onclick = (event) => {
         if (menuDoc.classList.contains("hide")) {
           menuDoc.classList.remove("hide");
@@ -256,7 +256,7 @@ export class LocalMapLayer extends Layer {
           menuDoc.classList.add("hide");
         }
       };
-      menuDoc.append(openHideBtn);
+      // menuDoc.append(openHideBtn);
       const itemDocList = [];
       for (const [key, value] of Object.entries(this.styleMap)) {
         const itemDoc = document.createElement("img");
@@ -329,7 +329,9 @@ export class LocalMapLayer extends Layer {
       this.loadMesh();
       this.setShowZoom(this.zoom);
       this.setMeshPosition(this.map.center);
-      this.map.rootDoc.append(this.menuDoc);
+      if(document.getElementById('map-switch-list')){
+        document.getElementById('map-switch-list').append(this.menuDoc)
+      }
     }
   }
 

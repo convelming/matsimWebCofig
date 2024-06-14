@@ -1,37 +1,39 @@
 .LocalMapLayer_menu {
-  position: absolute;
+  position:absolute;
   z-index: 999;
-  bottom: 20px;
-  right: 20px;
-  height: 50px;
-  width: 330px;
-  display: flex;
-  align-items: center;
+  top: 40px;
+  left: 0px;
+  height: 390px;
+  width: 40px;
   overflow: hidden;
   background: #00000038;
   transition: width 0.3s;
   border-radius: 5px;
   box-shadow: 0 0px 15px rgba(255, 255, 255, 0.8);
+  padding: 10px;
 }
 .LocalMapLayer_menu.hide {
-  width: 20px !important;
+  /* width: 50px !important; */
+  height: 0px !important;
+  padding: 0px !important;
 }
 .LocalMapLayer_menu .open_hide_btn {
   position: relative;
   cursor: pointer;
   display: block;
-  height: 100%;
-  width: 20px;
-  flex-shrink: 0;
-  color: #fff;
-  font-weight: bold;
-  transition: transform 0.3s;
-  transform: rotate(180deg);
+  /* height: 100%; */
+  height: 50px;
+  width: 50px;
+  /* flex-shrink: 0; */
+  /* color: #fff; */
+  /* font-weight: bold; */
+  /* transition: transform 0.3s; */
+  /* transform: rotate(180deg); */
 }
 .LocalMapLayer_menu.hide .open_hide_btn {
   transform: rotate(0);
 }
-.LocalMapLayer_menu .open_hide_btn::before,
+/* .LocalMapLayer_menu .open_hide_btn::before,
 .LocalMapLayer_menu .open_hide_btn::after {
   position: absolute;
   top: 50%;
@@ -43,7 +45,7 @@
   width: 8px;
   height: 8px;
   transform: translate(0, -50%) rotate(45deg);
-}
+} */
 .LocalMapLayer_menu .open_hide_btn::before {
   left: 5px;
 }
@@ -56,9 +58,11 @@
   display: block;
   height: 40px;
   width: 40px;
-  margin-left: 10px;
   border-radius: 5px;
   border: 2px solid transparent;
+}
+.LocalMapLayer_menu .item + .item{
+  margin-top: 10px;
 }
 .LocalMapLayer_menu .item.active {
   border-color: #fff;

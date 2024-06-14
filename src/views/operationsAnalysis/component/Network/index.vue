@@ -14,13 +14,17 @@
       <div class="form_item">
         <div class="form_label">{{ $l("width") }}</div>
         <div class="form_value">
-          <el-slider :disabled="!s_showLayer" v-model="width" :min="0" :max="20" :step="1" />
+          <!-- <el-slider :disabled="!s_showLayer" v-model="width" :min="0" :max="20" :step="1" /> -->
+          <el-input-number class="input-number" style="width: 100%" size="small"
+          :disabled="!s_showLayer" v-model="width" :min="0" :max="20" :step="1"  step-strictly> </el-input-number>
         </div>
       </div>
       <div class="form_item">
         <div class="form_label">{{ $l("offset") }}</div>
         <div class="form_value">
-          <el-slider :disabled="!s_showLayer" v-model="offset" :min="0" :max="20" :step="1" />
+          <!-- <el-slider :disabled="!s_showLayer" v-model="offset" :min="0" :max="20" :step="1" /> -->
+          <el-input-number class="input-number" style="width: 100%" size="small"
+          :disabled="!s_showLayer" v-model="offset" :min="0" :max="20" :step="1"  step-strictly> </el-input-number>
         </div>
       </div>
       <div class="form_item">
@@ -292,7 +296,7 @@ export default {
       align-items: center;
 
       ::v-deep .el-checkbox__input {
-        display: none;
+        padding-left: 10px;
       }
 
       ::v-deep .el-checkbox__label {
@@ -384,6 +388,62 @@ export default {
     }
   }
 }
+::v-deep .input-number {
+  
+.el-input-number__decrease,
+.el-input-number__increase {
+  border: none;
+  background-color: transparent;
+}
+
+.el-input__inner {
+  border: none;
+  background: rgba(0, 0, 0, 0.05);
+  padding: 0;
+  margin: 0 39px;
+  width: calc(100% - 78px);
+}
+
+.el-icon-minus,
+.el-icon-plus {
+  width: 30px;
+  height: 30px;
+
+  &::before {
+    display: none;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 30px;
+    height: 30px;
+    background: url('@/assets/image/minus_icon.png') no-repeat center center;
+    background-size: 100% 100%;
+  }
+
+  &:hover {
+    &::after {
+      background-image: url('@/assets/image/minus_icon_a.png');
+    }
+  }
+}
+
+.el-icon-plus {
+  &::after {
+    background-image: url('@/assets/image/push_icon.png');
+  }
+
+  &:hover {
+    &::after {
+      background-image: url('@/assets/image/push_icon_a.png');
+    }
+  }
+}
+}
+
 ::v-deep .el-collapse-item__arrow{
   position: relative;
   width: 16px;
