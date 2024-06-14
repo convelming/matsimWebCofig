@@ -33,19 +33,8 @@ export class GeoJSONLayer extends Layer {
   setPointScale(pointScale) {
     this.pointScale = pointScale;
     this.scene.traverse(item => {
-      if (item.isInstancedMesh && (item.userData.type == "Point" || item.userData.type == "MultiPoint")) {
-        for (let i = 0, l = item.count; i < l; i++) {
-          const matrix = new THREE.Matrix4();
-          item.getMatrixAt(i, matrix);
-          matrix.set(
-            pointScale, 0, 0, matrix.elements[12],
-            0, pointScale, 0, matrix.elements[13],
-            0, 0, pointScale, matrix.elements[14],
-            0, 0, 0, 1
-          )
-          item.setMatrixAt(i, matrix);
-        }
-        item.instanceMatrix.needsUpdate = true;
+      if (item.isMesh && item.userData.type == "PointItem") {
+        item.scale.set(pointScale, pointScale, 1);
       }
     });
   }
@@ -140,6 +129,7 @@ export class GeoJSONLayer extends Layer {
 
   loadGeoJson(data, parentCrs, center) {
     if (data.type === "FeatureCollection") {
+      console.log("FeatureCollection");
       const { features, crs, ...other } = data;
       return this.getFeatureCollection(features, crs || parentCrs, center, other);
     } else if (data.type === "Feature") {
@@ -193,30 +183,24 @@ export class GeoJSONLayer extends Layer {
     return mesh;
   }
   getMultiPoint(coordinates, crs, center, other) {
-    const mesh = new THREE.InstancedMesh(this.pointGeometry, this.pointMaterial, coordinates.length);
-    mesh.count
+    const scene = new THREE.Group();
     const _scale = this.pointScale;
     const coordSys = crs.properties.name.match(/EPSG::\d+/)[0].replace("::", ":");
-
     for (let i = 0; i < coordinates.length; i++) {
       let [x, y] = coordinates[i];
       if (coordSys !== "EPSG:3857") {
         [x, y] = proj4(coordSys, "EPSG:3857", [x, y]);
       }
       const point = [x - center[0], y - center[1]];
-
-      const positionV3 = new THREE.Vector3(point[0], point[1], 0.1 / coordinates.length);
-      const scaleV3 = new THREE.Vector3(_scale, _scale, _scale);
-
-      const matrix = new THREE.Matrix4();
-      matrix.compose(positionV3, new THREE.Quaternion(), scaleV3);
-
-      mesh.setMatrixAt(i, matrix);
+      const mesh = new THREE.Mesh(this.pointGeometry, this.pointMaterial);
+      mesh.position.set(point[0], point[1], 0.1 / coordinates.length);
+      mesh.scale.set(_scale, _scale, 1);
+      mesh.userData.type = "PointItem"
+      scene.add(mesh);
     }
-    mesh.instanceMatrix.needsUpdate = true;
-    mesh.userData = { ...other, crs, center };
-    mesh.position.set(0, 0, 0.3)
-    return mesh;
+    scene.userData = { ...other, crs, center };
+    scene.position.set(0, 0, 0.3);
+    return scene;
   }
 
   getMultiLineString(coordinates, crs, center, other) {
@@ -486,7 +470,6 @@ export class GeoJSONLayer extends Layer {
     mesh.position.set(0, 0, 0.1)
     return mesh;
   }
-
 
 }
 

@@ -435,6 +435,7 @@ export class Map extends EventListener {
   initCameraControls() {
     // 设置相机控件轨道控制器OrbitControls
     this.cameraControls = new OrbitControls(this.camera, this.renderer.domElement);
+    // this.cameraControls.enableDamping = true;
     // 启用或禁用摄像机水平或垂直旋转。默认值为true。
     // 请注意，可以通过将PolarAngle或者AzimuthAngle的min和max设置为相同的值来禁用单个轴， 这将使得水平旋转或垂直旋转固定为所设置的值。
     this.cameraControls.enableRotate = this._enableRotate;
