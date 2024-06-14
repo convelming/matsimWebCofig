@@ -136,7 +136,7 @@ export default {
         enableRotate: true,
         zoom: 16,
         // minPitch: -90,
-        // center: [12635571, 2610971],
+        center: [ 12636623.734089389443398, 2642681.88545402046293 ],
       });
       this._Map.addLayer(this._MapLayer);
       window._Map = this._Map;

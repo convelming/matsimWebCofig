@@ -7,21 +7,41 @@
       </el-checkbox>
     </div>
     <div class="form">
-      <!-- <div class="form_item">
-        <div class="form_label">{{ $l("最多显示人数：") }}</div>
-        <div class="form_value">
-          <el-input-number style="width: 100%" :disabled="!s_showLayer" size="small" v-model="maxNum" :min="0" :step="1" step-strictly> </el-input-number>
-        </div>
-      </div>
-      <div class="form_item">
-        <div class="form_label">{{ $l("颜色：") }}</div>
-        <div class="form_value">
-          <div class="color_item" v-for="(v, i) in activityTypeList" :key="i">
-            <div class="color_title">{{ v.name }}</div>
-            <el-color-picker :disabled="!s_showLayer" size="mini" :predefine="predefineColors" v-model="v.color" />
+      <div class="file_list" v-for="(item, index) in geoJSONList" :key="index">
+        <div class="file_item">
+          <div class="file_row">
+            <div style="width: 100%; padding: 0 10px">{{ item.name }}</div>
+            <div class="file_btn" style="width: 81px">
+              <el-switch v-model="item.show" :title="item.show ? $l('hideGeoJSON') : $l('showGeoJSON')" @change="handleChange('show', index, $event)"> </el-switch>
+            </div>
+          </div>
+          <div class="file_row">
+            <div style="width: 100%; padding: 0 10px">
+              <el-slider :disabled="!s_showLayer" :title="$l('pointScale')" style="padding: 0 calc(2em - 10px)" v-model="item.labelParams.pointScale" :step="1" :min="1" :max="30" @change="handleChange('pointScale', index, $event)"> </el-slider>
+            </div>
+            <div class="file_btn">
+              <el-color-picker :disabled="!s_showLayer" :title="$l('pointColor')" size="mini" :predefine="predefineColors" v-model="item.labelParams.pointColor" @change="handleChange('pointColor', index, $event)" />
+            </div>
+            <div class="file_btn">
+              <el-color-picker :disabled="!s_showLayer" :title="$l('polygonColor')" size="mini" :predefine="predefineColors" v-model="item.labelParams.polygonColor" @change="handleChange('polygonColor', index, $event)" />
+            </div>
+          </div>
+          <div class="file_row">
+            <div style="width: 100%; padding: 0 10px">
+              <el-slider :disabled="!s_showLayer" :title="$l('lineWidth')" style="padding: 0 calc(2em - 10px)" v-model="item.labelParams.lineWidth" :step="1" :min="1" :max="30" @change="handleChange('lineWidth', index, $event)"> </el-slider>
+            </div>
+            <div class="file_btn">
+              <el-color-picker :disabled="!s_showLayer" :title="$l('lineColor')" size="mini" :predefine="predefineColors" v-model="item.labelParams.lineColor" @change="handleChange('lineColor', index, $event)" />
+            </div>
+            <div class="file_btn">
+              <el-button type="danger" icon="el-icon-delete" size="mini" circle :title="$l('deleteGeoJSON')" @click="removeGeoJSON(index)"></el-button>
+            </div>
           </div>
         </div>
-      </div> -->
+      </div>
+      <div class="btn_list" style="text-align: right">
+        <el-button type="primary" size="mini" @click="handleSelectFile">{{ $l("导入GeoJSON") }}</el-button>
+      </div>
     </div>
   </el-collapse-item>
 </template>
@@ -40,12 +60,49 @@
     "zh-CN": "颜色：",
     "en-US": "Color："
   },
+  "导入GeoJSON":{
+    "zh-CN": "导入GeoJSON",
+    "en-US": "import GeoJSON"
+  },
+  "pointScale":{
+    "zh-CN": "点大小",
+    "en-US": "Point Scale"
+  },
+  "pointColor":{
+    "zh-CN": "点颜色",
+    "en-US": "Point Color"
+  },
+  "polygonColor":{
+    "zh-CN": "多边形颜色",
+    "en-US": "Polygon Color"
+  },
+  "lineWidth":{
+    "zh-CN": "线段宽度",
+    "en-US": "Line Width"
+  },
+  "lineColor":{
+    "zh-CN": "线段颜色",
+    "en-US": "Line Color"
+  },
+  "deleteGeoJSON":{
+    "zh-CN": "删除GeoJSON",
+    "en-US": "Delete GeoJSON"
+  },
+  "hideGeoJSON":{
+    "zh-CN": "隐藏GeoJSON",
+    "en-US": "Hide GeoJSON"
+  },
+  "showGeoJSON":{
+    "zh-CN": "显示GeoJSON",
+    "en-US": "Show GeoJSON"
+  },
 }
 </language>
 
 <script>
 import { MAP_EVENT } from "@/mymap";
 import { GeoJSONLayer } from "./layer/GeoJSONLayer";
+import { guid } from "@/utils/utils";
 
 export default {
   props: ["name", "showLayer"],
@@ -73,17 +130,13 @@ export default {
       predefineColors: ["#5470c6", "#91cc75", "#fac858", "#ee6666", "#73c0de", "#3ba272", "#fc8452", "#9a60b4", "#ea7ccc"],
       s_showLayer: true,
       color: "#5470c6",
-
-      _GeoJSONLayer: null,
+      geoJSONList: [],
 
       loading: false,
     };
   },
   created() {
     this.s_showLayer = this.showLayer;
-    this._GeoJSONLayer = new GeoJSONLayer({
-      zIndex: 20,
-    });
   },
   mounted() {
     this._interval = setInterval(() => {
@@ -96,20 +149,112 @@ export default {
   },
   beforeDestroy() {
     this.handleDisable();
-    this._GeoJSONLayer.dispose();
+    for (const item of this.geoJSONList) {
+      item._layer.dispose();
+    }
   },
   methods: {
+    removeGeoJSON(index) {
+      let item = this.geoJSONList[index];
+      if (item) {
+        this.geoJSONList.splice(index, 1);
+        item._layer.removeFromParent();
+        item._layer.dispose();
+      }
+    },
+    addGeoJSON(file) {
+      const labelParams = {
+        zIndex: 20,
+        pointColor: "#ffa500",
+        pointScale: 1,
+        lineColor: "#ffa500",
+        lineWidth: 10,
+        polygonColor: "#ffa500",
+      };
+      const item = {
+        uuid: guid(),
+        name: file.name,
+        show: true,
+        labelParams: labelParams,
+        _file: file,
+        _layer: new GeoJSONLayer(labelParams),
+      };
+      this.geoJSONList.push(item);
+
+      let reader = new FileReader();
+      // 传入需要被转换的文本流 file,这个是转字符串的关键方法
+      reader.readAsText(file);
+      // onload是异步的,封装的话可以用promise
+      reader.onload = () => {
+        // 输出字符串
+        item._layer.setData(JSON.parse(reader.result));
+      };
+      if (this._Map) {
+        if (this.s_showLayer && item.show) {
+          this._Map.addLayer(item._layer);
+        } else {
+          item._layer.removeFromParent();
+        }
+      }
+    },
     handleChangeShowLayer(value) {
       this.s_showLayer = value;
       this.$emit("update:showLayer", value);
     },
     // 组件初始化事件
     handleEnable() {
-      this._Map.addLayer(this._GeoJSONLayer);
+      for (const item of this.geoJSONList) {
+        if (item.show) this._Map.addLayer(item._layer);
+      }
     },
     // 组件卸载事件
     handleDisable() {
-      this._Map.removeLayer(this._GeoJSONLayer);
+      for (const item of this.geoJSONList) {
+        item._layer.removeFromParent();
+      }
+    },
+    handleSelectFile() {
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = ".geojson";
+      input.style = "position:absolute;width:0;height:0;top: -100px;";
+      document.body.appendChild(input);
+      input.onchange = (e) => {
+        const file = e.target.files[0];
+        this.addGeoJSON(file);
+        document.body.removeChild(input);
+      };
+      input.click();
+    },
+    handleChange(type, index, value) {
+      const item = this.geoJSONList[index];
+      if (!item) return;
+      switch (type) {
+        case "show":
+          if (value && this._Map) {
+            this._Map.addLayer(item._layer);
+          } else {
+            item._layer.removeFromParent();
+          }
+          break;
+        case "pointScale":
+          item._layer.setPointScale(value);
+          break;
+        case "pointColor":
+          item._layer.setPointColor(value);
+          break;
+        case "polygonColor":
+          item._layer.setPolygonColor(value);
+          break;
+        case "lineWidth":
+          item._layer.setLineWidth(value);
+          break;
+        case "lineColor":
+          item._layer.setLineColor(value);
+          break;
+        default:
+          break;
+      }
     },
   },
 };
@@ -126,59 +271,37 @@ export default {
     padding-left: 10px;
   }
   .form {
-    box-sizing: border-box;
-    width: 100%;
     padding: 10px 10px 0px 20px;
-
-    .form_item {
-      width: 100%;
+  }
+  .file_list {
+    padding-bottom: 20px;
+    .file_item {
+      box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+      border: 1px solid #ebeef5;
+      border-radius: 4px;
+    }
+    .file_row {
+      height: 40px;
       display: flex;
-      line-height: 40px;
-      & + .form_item {
-        margin-top: 10px;
+      align-items: center;
+      & + .file_row {
+        border-top: 1px solid #ebeef5;
       }
-      .form_label {
+      .file_btn {
         flex-shrink: 0;
-        padding-right: 10px;
-      }
-      .form_value {
-        width: 100%;
-      }
-    }
-  }
-  .icon_button {
-    cursor: pointer;
-    flex-shrink: 0;
-    margin-left: 10px;
-    width: 28px;
-    height: 28px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid #e6e6e6;
-    border-radius: 4px;
-    &.active {
-      background-color: rgba($color: #409eff, $alpha: 1);
-      color: #ffffff;
-    }
-    &.disabled {
-      cursor: no-drop;
-    }
-    &.icon_stop {
-      .img {
-        width: 20px;
-        height: 20px;
-        display: block;
-        object-fit: cover;
-        padding: 4px;
+        height: 40px;
+        width: 40px;
+        border-left: 1px solid #ebeef5;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
     }
   }
-
-  .color_item {
+  .btn_list {
     display: flex;
+    justify-content: flex-end;
     align-items: center;
-    justify-content: space-between;
   }
 }
 </style>
