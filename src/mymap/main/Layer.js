@@ -101,7 +101,9 @@ export class Layer extends EventListener {
 
   // 从地图中移除
   removeFromParent() {
-    if (this.map) this.map.removeLayer(this);
+    if (this.map) {
+      this.map.removeLayer(this);
+    }
   }
 
   beforeRender() { }
