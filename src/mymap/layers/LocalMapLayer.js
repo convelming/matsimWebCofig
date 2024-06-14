@@ -282,7 +282,7 @@ export class LocalMapLayer extends Layer {
 
   constructor(opt) {
     super(opt);
-    this.tileClass = opt.tileClass || MAP_LAYER_STYLE.MAP_TILER_BASIC;
+    this.tileClass = opt.tileClass || MAP_LAYER_STYLE.MAPBOX;
     this.styleMap = opt.styleMap || MAP_LAYER_STYLE;
 
     this.setStyleMap(this.styleMap);

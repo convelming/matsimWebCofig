@@ -64,17 +64,17 @@
       <div class="form_item">
         <div class="form_label">{{ $l("车辆大小：") }}</div>
         <div class="form_value">
-          <!-- <el-slider :disabled="!s_showLayer" style="padding: 0 calc(2em - 10px)" v-model="modelSize" :step="1" :min="1"
-            :max="30"> </el-slider> -->
-            <el-input-number class="input-number" style="width: 100%" :disabled="!s_showLayer" size="small"
-            v-model="maxVehicleNum" :min="1" :max="30" :step="1" step-strictly> </el-input-number>
+           <el-slider :disabled="!s_showLayer" style="padding: 0 calc(2em - 10px)" v-model="modelSize" :step="1" :min="1"
+            :max="20"> </el-slider>
+<!--            <el-input-number class="input-number" style="width: 100%" :disabled="!s_showLayer" size="small"-->
+<!--            v-model="modelSize" :min="1" :max="30" :step="1" step-strictly> </el-input-number>-->
         </div>
       </div>
       <div class="form_item">
         <div class="form_label">{{ $l("最大显示数量：") }}</div>
         <div class="form_value">
           <el-input-number class="input-number" style="width: 100%" :disabled="!s_showLayer" size="small"
-            v-model="maxVehicleNum" :min="0" :step="1" step-strictly> </el-input-number>
+            v-model="maxVehicleNum" :min="0" :step="100" step-strictly> </el-input-number>
         </div>
       </div>
       <!-- <div class="form_item">
@@ -210,18 +210,18 @@ export default {
       showBus3DLayer: true,
       showSubway3DLayer: true,
       showCar3DLayer: true,
-      maxVehicleNum: 2000,
+      maxVehicleNum: 20000,
 
       _BusMotionLayer: null,
       _SubwayMotionLayer: null,
       _CarMotionLayer: null,
 
-      modelSize: 5,
+      modelSize: 3,
 
       time: 0,
-      speed: 2.5,
+      speed: 1.0,
       minTime: 0,
-      maxTime: 3600 * 28,
+      maxTime: 3600 * 24,
       speedMarks: {},
 
       loading: false,
