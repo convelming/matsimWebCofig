@@ -1,11 +1,8 @@
 <template>
   <div>
-    <!-- <el-tabs v-model="activeName" >
-    <el-tab-pane label="用户管理" name="first">用户管理</el-tab-pane>
-    <el-tab-pane label="配置管理" name="second">配置管理</el-tab-pane>
-    <el-tab-pane label="角色管理" name="third">角色管理</el-tab-pane>
-    <el-tab-pane label="定时任务补偿" name="fourth">定时任务补偿</el-tab-pane>
-  </el-tabs> -->
+    <!-- <el-tabs v-model="tabActiveName">
+      <el-tab-pane v-for="item in tabList" :label="$l(`${item.name}`)" :name="item.name"></el-tab-pane>
+    </el-tabs> -->
     <el-collapse :value="activeName" @input="handleChangeActive" accordion>
       <LinesChangeInfo name="LinesChangeInfo" />
       <ReportToolbar name="ReportToolbar" />
@@ -15,6 +12,38 @@
   </div>
 
 </template>
+<language>
+  {
+    "线路比对分析":{
+      "zh-CN": "线路比对分析",
+      "en-US": "Line comparison analysis"
+    },
+    "公交出行影响对比分析报告":{
+      "zh-CN": "公交出行影响对比分析报告",
+      "en-US": "Transit Travel Impact Comparison Analysis Report"
+    },
+  
+    "公共交通":{
+    "zh-CN": "公共交通",
+    "en-US": "public transport"
+  },
+  "机动化出行":{
+    "zh-CN": "机动化出行",
+    "en-US": "Motorized travel"
+  },
+  "3D建筑":{
+    "zh-CN": "3D建筑",
+    "en-US": "3DBuilding"
+  },
+  "路网":{
+    "zh-CN": "路网",
+    "en-US": "Network"
+  },"活动":{
+    "zh-CN": "活动",
+    "en-US": "Activity3D"
+  }
+  }
+  </language>
 
 <script>
 import { guid } from "@/utils/utils";
@@ -63,7 +92,32 @@ export default {
   data() {
     return {
       activeName: "LinesChangeInfo",
+      tabActiveName:"LinesChangeInfo",
+      type: "",
       list: [],
+      tabList:[
+        {name:'线路比对分析'
+          ,type:['LinesChangeInfo']
+        },
+        {name:'公交出行影响对比分析报告'
+          ,type:['ReportToolbar']
+        },
+        {
+          name:'公共交通',
+          type:['ReportToolbar']
+        },{
+          name:'3D建筑',
+        },
+        {
+          name:'机动化出行'
+        },
+        {
+          name:'路网',
+        }
+        ,{
+          name:'活动'
+        }
+      ]
       // activeName: "4231bd4e-831d-4705-994f-365bfc43eaf8",
       // list: [
       //   {
