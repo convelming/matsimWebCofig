@@ -12,6 +12,7 @@
               <Build3D :showLayer.sync="showLayerBuild3D" name="Build3D" ref="Build3D" />
               <Network :showLayer.sync="showLayerNetwork" name="Network" ref="Network" />
               <Activity3D :showLayer.sync="showLayerActivity3D" name="Activity3D" />
+              <GeoJSON :showLayer.sync="showLayerGeoJSON" name="GeoJSON" />
               <div style="height: 100px"></div>
             </el-collapse>
           </Drawer>
@@ -26,30 +27,29 @@
                 <template slot="bottom">
                   <div class="bottom">
                     <div class="form">
-                    <div class="form_item" style="padding-bottom: 25px">
-                      <!-- <div class="form_label">{{ $l("时间：") }}</div> -->
-                      <div class="form_value">
-                        <TimeSlider v-model="time" :speed="60 * 60 * 4" :min="minTime" :max="maxTime"></TimeSlider>
+                      <div class="form_item" style="padding-bottom: 25px">
+                        <!-- <div class="form_label">{{ $l("时间：") }}</div> -->
+                        <div class="form_value">
+                          <TimeSlider v-model="time" :speed="60 * 60 * 4" :min="minTime" :max="maxTime"></TimeSlider>
+                        </div>
                       </div>
-                      
                     </div>
-                  </div>
-                  <el-dropdown  @command="speedCommand" placement="top-start" trigger="click">
-                  <div class="speed">
-                        <img class="icon" src="@/assets/image/speed_icon.png">
+                    <el-dropdown @command="speedCommand" placement="top-start" trigger="click">
+                      <div class="speed">
+                        <img class="icon" src="@/assets/image/speed_icon.png" />
                         <span>X{{ speed }}</span>
                       </div>
                       <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item v-for="item in speedList" :command="item" :key="item" :disabled="speed === item">速度  X{{ item }} </el-dropdown-item>
-                </el-dropdown-menu>
+                        <el-dropdown-item v-for="item in speedList" :command="item" :key="item" :disabled="speed === item">速度 X{{ item }} </el-dropdown-item>
+                      </el-dropdown-menu>
                     </el-dropdown>
                   </div>
                 </template>
               </NewClock>
               <!-- 旧版时钟&&地图选择 -->
-               <!-- <Luopan class="mapLuopan" />  
+              <!-- <Luopan class="mapLuopan" />  
               <Clock v-show="showClock" :time="time" />  -->
-               
+
               <div id="mapRoot"></div>
             </div>
             <!-- 旧版时间速度调节 -->
@@ -116,7 +116,7 @@
 
 <script>
 import "@/mymap/style.css";
-import NewClock from './component/NewClock.vue'
+import NewClock from "./component/NewClock.vue";
 import mixins from "../operationsAnalysis/mixins";
 
 import PublicTransit from "../operationsAnalysis/component/PublicTransit/index.vue";
@@ -124,6 +124,7 @@ import MotorizedTravel from "../operationsAnalysis/component/MotorizedTravel/ind
 import Build3D from "../operationsAnalysis/component/Build3D/index.vue";
 import Network from "../operationsAnalysis/component/Network/index.vue";
 import Activity3D from "../operationsAnalysis/component/Activity3D/index.vue";
+import GeoJSON from "../operationsAnalysis/component/GeoJSON/index.vue";
 
 import AnalysisReport from "./component/AnalysisReport/index.vue";
 import LinesAnalysis from "./component/LinesAnalysis/index.vue";
@@ -139,31 +140,25 @@ export default {
     Build3D,
     Network,
     Activity3D,
+    GeoJSON,
 
     AnalysisReport,
     LinesAnalysis,
 
     HelpDialog,
     Toolbar,
-    NewClock
+    NewClock,
   },
 
   data() {
     return {
-      activeNames: ["LinesAnalysis", "AnalysisReport", "PublicTransit", "MotorizedTravel", "Build3D", "Network", "Activity3D"],
+      activeNames: ["LinesAnalysis", "AnalysisReport", "PublicTransit", "MotorizedTravel", "Build3D", "Network", "Activity3D", "GeoJSON"],
 
       showLayerLinesAnalysis: true,
       showLayerAnalysisReport: false,
 
       permanentList: [],
-      speedList:[
-        0,
-        0.5,
-        1,
-        2,
-        4,
-        10,
-      ]
+      speedList: [0, 0.5, 1, 2, 4, 10],
     };
   },
   watch: {
@@ -192,8 +187,8 @@ export default {
     this.$store.dispatch("setDataSource", database1 + "/" + datasource1);
   },
   methods: {
-    speedCommand(value){
-        this.speed = value
+    speedCommand(value) {
+      this.speed = value;
     },
     handleShowRouteFlows({ uuid, routeDetail }) {
       if (this.$refs.Toolbar) {
@@ -241,14 +236,14 @@ export default {
     // padding: 10px 10px 0px 20px;
     font-size: 13px;
 
-    &>*+* {
+    & > * + * {
       margin-top: 10px;
     }
 
     .form_flex {
       display: flex;
 
-      .form_item+.form_item {
+      .form_item + .form_item {
         margin-top: 0;
       }
     }
@@ -309,7 +304,7 @@ export default {
   }
 }
 
-.bottom{
+.bottom {
   display: flex;
   align-items: center;
 }
@@ -326,7 +321,6 @@ export default {
   .icon {
     width: 18px;
     height: 18px;
-
   }
 
   .text {
@@ -334,7 +328,6 @@ export default {
     font-size: 16px;
     font-weight: 400;
     line-height: 20px;
-
   }
 }
 </style>
