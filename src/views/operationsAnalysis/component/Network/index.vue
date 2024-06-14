@@ -1,9 +1,13 @@
 <template>
-  <el-collapse-item class="BusStopForm" :name="name">
+  <el-collapse-item class="BusStopForm" :name="name" :class="[s_showLayer ? 'showLayer' : '']">
     <div class="el-collapse-item__title" slot="title">
-      <el-checkbox :value="s_showLayer" @change="handleChangeShowLayer">
-        <span>{{ $l("network") }}</span>
-        <span v-if="loading" class="el-icon-loading" style="margin-left: 10px"></span>
+      <el-checkbox class="checkbox flex-align-center" :value="s_showLayer" @change="handleChangeShowLayer">
+        <div class=" flex-align-center">
+          <img class="item_icon" v-show="s_showLayer" src="@/assets/image/road_network_icon_a.png" />
+          <img class="item_icon" v-show="!s_showLayer" src="@/assets/image/road_network_icon.png" />
+          <span>{{ $l("network") }}</span>
+          <span v-if="loading" class="el-icon-loading" style="margin-left: 10px"></span>
+        </div>
       </el-checkbox>
     </div>
     <div class="form">
@@ -32,12 +36,12 @@
           <div>{{ $l("showNode") }}</div>
         </div>
         <div class="form_value">
-          <el-switch :disabled="!s_showLayer" style="width: 100%" v-model="showNode"></el-switch>
+          <el-switch :disabled="!s_showLayer"  v-model="showNode"></el-switch>
         </div>
       </div>
       <!-- <div class="form_item" style="align-items: center"> -->
-        <!-- <el-color-picker :disabled="!s_showLayer" :title="$l('color')" size="mini" :predefine="predefineColors" v-model="color" /> -->
-        <!-- <div :title="$l('selectLine')" :class="{ disabled: !s_showLayer }" class="icon_button el-icon-circle-close" @click="s_showLayer && handleClearSelect()"></div>
+      <!-- <el-color-picker :disabled="!s_showLayer" :title="$l('color')" size="mini" :predefine="predefineColors" v-model="color" /> -->
+      <!-- <div :title="$l('selectLine')" :class="{ disabled: !s_showLayer }" class="icon_button el-icon-circle-close" @click="s_showLayer && handleClearSelect()"></div>
         <div :title="$l('selectLine')" :class="{ active: canSelect, disabled: !s_showLayer }" class="icon_button el-icon-aim" @click="s_showLayer && handleCanSelect(!canSelect)"></div> -->
       <!-- </div> -->
     </div>
@@ -76,7 +80,6 @@
 <script>
 import { MAP_EVENT } from "@/mymap";
 import { NetworkLayer } from "./layer/NetworkLayer";
-
 const ColorList = [
   ["#313695", "#74add1", "#e0f3f8", "#fdae61", "#f46d43", "#a50026"],
   ["rgb(254, 224, 210)", "rgb(252, 187, 161)", "rgb(252, 146, 114)", "rgb(239, 59, 44)", "rgb(203, 24, 29)", "rgb(153, 0, 13)"],
@@ -274,31 +277,64 @@ export default {
     white-space: nowrap;
   }
 }
+
 .BusStopForm {
-  .el-collapse-item__title {
-    padding-left: 10px;
+  padding: 0 12px;
+  padding-top: 12px;
+
+  ::v-deep .el-collapse-item__header {
+    border-color: transparent;
   }
+
+  .el-collapse-item__title {
+    .checkbox {
+      display: flex;
+      align-items: center;
+
+      ::v-deep .el-checkbox__input {
+        display: none;
+      }
+
+      ::v-deep .el-checkbox__label {
+        font-size: 16px;
+        font-weight: 500;
+
+        .item_icon {
+          width: 18px;
+          height: 18px;
+          margin-right: 7px;
+        }
+      }
+    }
+
+  }
+
   .form {
     box-sizing: border-box;
     width: 100%;
-    padding: 10px 10px 0px 20px;
+    padding-top: 10px;
 
     .form_item {
       width: 100%;
       display: flex;
       line-height: 40px;
-      & + .form_item {
-        margin-top: 10px;
+
+      &+.form_item {
+        margin-top: 12px;
       }
+
       .form_label {
         flex-shrink: 0;
         padding-right: 10px;
       }
+
       .form_value {
         width: 100%;
+        text-align: right;
       }
     }
   }
+
   .icon_button {
     cursor: pointer;
     flex-shrink: 0;
@@ -310,13 +346,16 @@ export default {
     justify-content: center;
     border: 1px solid #e6e6e6;
     border-radius: 4px;
+
     &.active {
       background-color: rgba($color: #409eff, $alpha: 1);
       color: #ffffff;
     }
+
     &.disabled {
       cursor: no-drop;
     }
+
     &.icon_stop {
       .img {
         width: 20px;
@@ -327,5 +366,45 @@ export default {
       }
     }
   }
+}
+
+::v-deep .is-active {
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 6px;
+}
+
+.showLayer {
+  ::v-deep .is-active {
+    background-color: #D2D6E5;
+    border-radius: 6px;
+  }
+  ::v-deep .el-collapse-item__arrow{
+    &::after{
+      background-image:url('@/assets/image/right_icon_a.png')
+    }
+  }
+}
+::v-deep .el-collapse-item__arrow{
+  position: relative;
+  width: 16px;
+  height: 16px;
+  background-color: transparent;
+  &::before{
+    display: none;
+  }
+  &::after{
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 16px;
+    height: 16px;
+    background:url('@/assets/image/right_icon.png') no-repeat center center;
+    background-size: 100% 100%; 
+  }
+}
+.flex-align-center {
+  display: flex;
+  align-items: center;
 }
 </style>

@@ -1,24 +1,33 @@
 <template>
-  <el-collapse-item class="BusStopForm" :name="name">
+  <el-collapse-item class="BusStopForm" :name="name" :class="[s_showLayer ? 'showLayer' : '']">
     <div class="el-collapse-item__title" slot="title">
-      <el-checkbox :value="s_showLayer" @change="handleChangeShowLayer">
-        <span>{{ $l("3D建筑") }}</span>
-        <span v-if="loading" class="el-icon-loading" style="margin-left: 10px;"></span>
+      <el-checkbox class="checkbox flex-align-center" :value="s_showLayer" @change="handleChangeShowLayer">
+        <div class=" flex-align-center">
+          <img class="item_icon" v-show="s_showLayer" src="@/assets/image/Build3D_icon_a.png" />
+          <img class="item_icon" v-show="!s_showLayer" src="@/assets/image/Build3D_icon.png" />
+          <span>{{ $l("3D建筑") }}</span>
+          <span v-if="loading" class="el-icon-loading" style="margin-left: 10px"></span>
+        </div>
       </el-checkbox>
     </div>
     <div class="form">
       <div class="form_item">
         <div class="form_label">{{ $l("建筑颜色：") }}</div>
         <div class="form_value">
-          <el-color-picker :disabled="!s_showLayer" size="mini" :predefine="predefineColors" v-model="buildColor" />
+          <div class="color-picker  flex-align-center">
+            <el-color-picker :disabled="!s_showLayer" size="mini" :predefine="predefineColors" v-model="buildColor" />
+            <el-input size="small " style="margin-left: 10px;" :disabled="!s_showLayer" v-model="buildColor"></el-input>
+            <el-input-number class="input-number" style="width: 100%;margin:0 10px;" :disabled="!s_showLayer"
+              size="small" v-model="buildOpacity" :min="0" :max="100" :step="1" step-strictly> </el-input-number>%
+          </div>
         </div>
       </div>
-      <div class="form_item">
+      <!-- <div class="form_item">
         <div class="form_label">{{ $l("建筑透明度：") }}</div>
         <div class="form_value">
           <el-slider :disabled="!s_showLayer" v-model="buildOpacity" :min="0" :max="1" :step="0.1" />
         </div>
-      </div>
+      </div> -->
     </div>
   </el-collapse-item>
 </template>
@@ -71,7 +80,7 @@ export default {
     },
     buildOpacity(val) {
       if (this._Build3DLayer) {
-        this._Build3DLayer.setBuildOpacity(val);
+        this._Build3DLayer.setBuildOpacity(Math.round(val / 100 * 100) / 100);
       }
     },
   },
@@ -80,7 +89,7 @@ export default {
       predefineColors: ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc'],
       s_showLayer: true,
       buildColor: "#E9CDAA",
-      buildOpacity: 0.8,
+      buildOpacity: 80,
       _Build3DLayer: null,
 
       loading: false,
@@ -90,7 +99,7 @@ export default {
     this.s_showLayer = this.showLayer;
     this._Build3DLayer = new Build3DLayer({
       buildColor: this.buildColor,
-      buildOpacity: this.buildOpacity,
+      buildOpacity: this.buildOpacity * 100,
       event: {
         [MAP_EVENT.HANDLE_PICK_LEFT]: ({ data }) => {
           this._Build3DLayer.setSelectBuildId(data.pickColorNum);
@@ -145,31 +154,64 @@ export default {
     white-space: nowrap;
   }
 }
+
 .BusStopForm {
-  .el-collapse-item__title {
-    padding-left: 10px;
+  padding: 0 12px;
+  padding-top: 12px;
+
+  ::v-deep .el-collapse-item__header {
+    border-color: transparent;
   }
+
+  .el-collapse-item__title {
+    .checkbox {
+      display: flex;
+      align-items: center;
+
+      ::v-deep .el-checkbox__input {
+        display: none;
+      }
+
+      ::v-deep .el-checkbox__label {
+        font-size: 16px;
+        font-weight: 500;
+
+        .item_icon {
+          width: 18px;
+          height: 18px;
+          margin-right: 7px;
+        }
+      }
+    }
+
+  }
+
   .form {
     box-sizing: border-box;
     width: 100%;
-    padding: 10px 10px 0px 20px;
+    padding-top: 10px;
 
     .form_item {
       width: 100%;
       display: flex;
       line-height: 40px;
-      & + .form_item {
-        margin-top: 10px;
+
+      &+.form_item {
+        margin-top: 12px;
       }
+
       .form_label {
         flex-shrink: 0;
         padding-right: 10px;
       }
+
       .form_value {
         width: 100%;
+        text-align: right;
       }
     }
   }
+
   .icon_button {
     cursor: pointer;
     flex-shrink: 0;
@@ -181,13 +223,16 @@ export default {
     justify-content: center;
     border: 1px solid #e6e6e6;
     border-radius: 4px;
+
     &.active {
       background-color: rgba($color: #409eff, $alpha: 1);
       color: #ffffff;
     }
+
     &.disabled {
       cursor: no-drop;
     }
+
     &.icon_stop {
       .img {
         width: 20px;
@@ -198,5 +243,112 @@ export default {
       }
     }
   }
+}
+
+::v-deep .is-active {
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 6px;
+}
+
+.showLayer {
+  ::v-deep .is-active {
+    background-color: #D2D6E5;
+    border-radius: 6px;
+  }
+
+  ::v-deep .el-collapse-item__arrow {
+    &::after {
+      background-image: url('@/assets/image/right_icon_a.png')
+    }
+  }
+}
+
+::v-deep .input-number {
+
+  .el-input-number__decrease,
+  .el-input-number__increase {
+    border: none;
+    background-color: transparent;
+  }
+
+  .el-input__inner {
+    border: none;
+    background: rgba(0, 0, 0, 0.05);
+    padding: 0;
+    margin: 0 39px;
+    width: calc(100% - 78px);
+  }
+
+  .el-icon-minus,
+  .el-icon-plus {
+    width: 30px;
+    height: 30px;
+
+    &::before {
+      display: none;
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 30px;
+      height: 30px;
+      background: url('@/assets/image/minus_icon.png') no-repeat center center;
+      background-size: 100% 100%;
+    }
+
+    &:hover {
+      &::after {
+        background-image: url('@/assets/image/minus_icon_a.png');
+      }
+    }
+  }
+
+  .el-icon-plus {
+    &::after {
+      background-image: url('@/assets/image/push_icon.png');
+    }
+
+    &:hover {
+      &::after {
+        background-image: url('@/assets/image/push_icon_a.png');
+      }
+    }
+  }
+}
+
+.color-picker {
+  background: rgba(0, 0, 0, 0.05);
+  padding: 0 8px;
+  border-radius: 6px;
+}
+
+::v-deep .el-collapse-item__arrow {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  background-color: transparent;
+
+  &::before {
+    display: none;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 16px;
+    height: 16px;
+    background: url('@/assets/image/right_icon.png') no-repeat center center;
+    background-size: 100% 100%;
+  }
+}
+
+.flex-align-center {
+  display: flex;
+  align-items: center;
 }
 </style>

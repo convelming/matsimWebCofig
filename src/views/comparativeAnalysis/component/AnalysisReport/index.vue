@@ -1,7 +1,13 @@
 <template>
-  <el-collapse-item class="BusStopForm" :name="name">
+  <el-collapse-item class="BusStopForm" :name="name" :class="[s_showLayer ? 'showLayer' : '']">
     <div class="el-collapse-item__title" slot="title">
-      <el-checkbox :value="s_showLayer" @change="handleChangeShowLayer">{{ $l("公交出行影响对比分析报告") }}</el-checkbox>
+      <el-checkbox class="checkbox flex-align-center" :value="s_showLayer" @change="handleChangeShowLayer">
+        <div class="flex-align-center">
+          <img class="item_icon" v-show="s_showLayer" src="@/assets/image/AnalysisReport_icon_a.png" />
+          <img class="item_icon" v-show="!s_showLayer" src="@/assets/image/AnalysisReport_icon.png" />
+          <span>{{ $l("公交出行影响对比分析报告") }}</span>
+        </div>
+      </el-checkbox>
     </div>
     <div class="form">
       <div class="form_item">
@@ -105,8 +111,34 @@ export default {
   }
 }
 .BusStopForm {
+  padding: 0 12px;
+  padding-top: 12px;
+  ::v-deep .el-collapse-item__header {
+    border-color: transparent;
+  }
+
   .el-collapse-item__title {
-    padding-left: 10px;
+
+    .checkbox {
+      display: flex;
+      align-items: center;
+
+      ::v-deep .el-checkbox__input {
+        display: none;
+      }
+
+      ::v-deep .el-checkbox__label {
+        font-size: 16px;
+        font-weight: 500;
+
+        .item_icon {
+          width: 18px;
+          height: 18px;
+          margin-right: 7px;
+        }
+      }
+    }
+
   }
   .form {
     box-sizing: border-box;
@@ -118,7 +150,7 @@ export default {
       display: flex;
       line-height: 40px;
       & + .form_item {
-        margin-top: 10px;
+        margin-top: 12px;
       }
       .form_label {
         flex-shrink: 0;
@@ -126,6 +158,8 @@ export default {
       }
       .form_value {
         width: 100%;
+        display: flex;
+        flex-direction: row-reverse;
       }
     }
     .form_tip {
@@ -170,5 +204,48 @@ export default {
     display: flex;
     justify-content: flex-end;
   }
+}
+::v-deep .is-active {
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 6px;
+}
+
+.showLayer {
+  ::v-deep .is-active {
+    background-color: #D2D6E5;
+    border-radius: 6px;
+  }
+
+  ::v-deep .el-collapse-item__arrow {
+    &::after {
+      background-image: url('@/assets/image/right_icon_a.png')
+    }
+  }
+}
+::v-deep .el-collapse-item__arrow {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  background-color: transparent;
+
+  &::before {
+    display: none;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 16px;
+    height: 16px;
+    background: url('@/assets/image/right_icon.png') no-repeat center center;
+    background-size: 100% 100%;
+  }
+}
+
+.flex-align-center {
+  display: flex;
+  align-items: center;
 }
 </style>
