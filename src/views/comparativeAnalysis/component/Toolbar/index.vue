@@ -1,9 +1,19 @@
 <template>
-  <el-collapse :value="activeName" @input="handleChangeActive" accordion>
-    <LinesChangeInfo name="LinesChangeInfo" />
-    <ReportToolbar name="ReportToolbar" />
-    <component v-for="item in list" :key="item.name" :is="item.type" :name="item.name" :show="item.name == activeName" v-bind="item.data" />
-  </el-collapse>
+  <div>
+    <!-- <el-tabs v-model="activeName" >
+    <el-tab-pane label="用户管理" name="first">用户管理</el-tab-pane>
+    <el-tab-pane label="配置管理" name="second">配置管理</el-tab-pane>
+    <el-tab-pane label="角色管理" name="third">角色管理</el-tab-pane>
+    <el-tab-pane label="定时任务补偿" name="fourth">定时任务补偿</el-tab-pane>
+  </el-tabs> -->
+    <el-collapse :value="activeName" @input="handleChangeActive" accordion>
+      <LinesChangeInfo name="LinesChangeInfo" />
+      <ReportToolbar name="ReportToolbar" />
+      <component v-for="item in list" :key="item.name" :is="item.type" :name="item.name" :show="item.name == activeName"
+        v-bind="item.data" />
+    </el-collapse>
+  </div>
+
 </template>
 
 <script>
@@ -78,9 +88,9 @@ export default {
       // ],
     };
   },
-  created() {},
-  mounted() {},
-  beforeDestroy() {},
+  created() { },
+  mounted() { },
+  beforeDestroy() { },
   methods: {
     add(type, data) {
       switch (type) {
@@ -128,7 +138,7 @@ export default {
           this.list.splice(index, 1);
           this.list.unshift(item);
         }
-      } catch (error) {}
+      } catch (error) { }
       this.activeName = activeName;
     },
   },

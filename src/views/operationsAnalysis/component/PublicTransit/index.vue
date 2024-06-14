@@ -1,9 +1,13 @@
 <template>
-  <el-collapse-item class="BusStopForm" :name="name">
+  <el-collapse-item class="BusStopForm" :name="name" :class="[s_showLayer ? 'showLayer' : '']">
     <div class="el-collapse-item__title" slot="title">
-      <el-checkbox :value="s_showLayer" @change="handleChangeShowLayer">
-        <span>{{ $l("公共交通") }}</span>
-        <span v-if="loading" class="el-icon-loading" style="margin-left: 10px"></span>
+      <el-checkbox class="checkbox flex-align-center" :value="s_showLayer" @change="handleChangeShowLayer">
+        <div class=" flex-align-center">
+          <img class="item_icon" v-show="s_showLayer" src="@/assets/image/PublicTransit_icon_a.png" />
+          <img class="item_icon" v-show="!s_showLayer" src="@/assets/image/PublicTransit_icon.png" />
+          <span>{{ $l("公共交通") }}</span>
+          <span v-if="loading" class="el-icon-loading" style="margin-left: 10px"></span>
+        </div>
       </el-checkbox>
     </div>
     <div class="form">
@@ -16,16 +20,21 @@
       <div class="form_item">
         <div class="form_label">{{ $l("图标颜色：") }}</div>
         <div class="form_value">
-          <el-color-picker :disabled="!s_showLayer" :title="$l('公交站点颜色')" size="mini" :predefine="predefineColors" v-model="stopColor" />
+          <div class="color-picker  flex-align-center">
+            <el-color-picker :disabled="!s_showLayer" :title="$l('公交站点颜色')" size="mini" :predefine="predefineColors"
+            v-model="stopColor" />
+            <el-input size="small " style="margin-left: 10px;" :disabled="!s_showLayer" v-model="stopColor"></el-input>
+          </div>
+         
         </div>
       </div>
       <!-- <div class="form_item" style="align-items: center; justify-content: flex-end"> -->
-        <!-- <el-switch :disabled="!s_showLayer" style="width: 100%" v-model="showStopName" :active-text="$l('显示站点名称')"></el-switch> -->
-        <!-- <el-color-picker :disabled="!s_showLayer" :title="$l('公交站点颜色')" size="mini" :predefine="predefineColors" v-model="stopColor" /> -->
-        <!-- <div aria-disabled="" :title="$l('公交线路查询')" :class="{ active: sreachLine, disabled: !s_showLayer }" class="icon_button icon_stop" @click="s_showLayer && handleSreachStop(!sreachLine)">
+      <!-- <el-switch :disabled="!s_showLayer" style="width: 100%" v-model="showStopName" :active-text="$l('显示站点名称')"></el-switch> -->
+      <!-- <el-color-picker :disabled="!s_showLayer" :title="$l('公交站点颜色')" size="mini" :predefine="predefineColors" v-model="stopColor" /> -->
+      <!-- <div aria-disabled="" :title="$l('公交线路查询')" :class="{ active: sreachLine, disabled: !s_showLayer }" class="icon_button icon_stop" @click="s_showLayer && handleSreachStop(!sreachLine)">
           <img class="img" src="@/assets/image/地图 (2).svg" alt="" />
         </div> -->
-        <!-- <div :title="$l('公交站点选取')" :class="{ active: selectStop, disabled: !s_showLayer }" class="icon_button el-icon-aim" @click="s_showLayer && handleSelectStop(!selectStop)"></div> -->
+      <!-- <div :title="$l('公交站点选取')" :class="{ active: selectStop, disabled: !s_showLayer }" class="icon_button el-icon-aim" @click="s_showLayer && handleSelectStop(!selectStop)"></div> -->
       <!-- </div> -->
     </div>
   </el-collapse-item>
@@ -231,30 +240,62 @@ export default {
 
 <style lang="scss" scoped>
 .BusStopForm {
-  .el-collapse-item__title {
-    padding-left: 10px;
+  padding: 0 12px;
+  padding-top: 12px;
+  
+  ::v-deep .el-collapse-item__header {
+    border-color: transparent;
   }
+
+  .el-collapse-item__title {
+    .checkbox {
+      display: flex;
+      align-items: center;
+
+      ::v-deep .el-checkbox__input {
+        display: none;
+      }
+
+      ::v-deep .el-checkbox__label {
+        font-size: 16px;
+        font-weight: 500;
+
+        .item_icon {
+          width: 18px;
+          height: 18px;
+          margin-right: 7px;
+        }
+      }
+    }
+
+  }
+
   .form {
     box-sizing: border-box;
     width: 100%;
-    padding: 10px 10px 0px 20px;
+    padding-top: 10px;
 
     .form_item {
       width: 100%;
       display: flex;
       line-height: 40px;
-      & + .form_item {
-        margin-top: 10px;
+
+      &+.form_item {
+        margin-top: 12px;
       }
+
       .form_label {
         flex-shrink: 0;
         padding-right: 10px;
       }
+
       .form_value {
         width: 100%;
+        text-align: right;
       }
     }
   }
+
   .icon_button {
     cursor: pointer;
     flex-shrink: 0;
@@ -266,13 +307,16 @@ export default {
     justify-content: center;
     border: 1px solid #e6e6e6;
     border-radius: 4px;
+
     &.active {
       background-color: rgba($color: #409eff, $alpha: 1);
       color: #ffffff;
     }
+
     &.disabled {
       cursor: no-drop;
     }
+
     &.icon_stop {
       .img {
         width: 20px;
@@ -284,4 +328,48 @@ export default {
     }
   }
 }
+::v-deep .is-active {
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 6px;
+  }
+.showLayer {
+  ::v-deep .is-active {
+    background-color: #D2D6E5;
+    border-radius: 6px;
+  }
+  ::v-deep .el-collapse-item__arrow{
+    &::after{
+      background-image:url('@/assets/image/right_icon_a.png')
+    }
+  }
+}
+.color-picker{
+  background: rgba(0, 0, 0, 0.05);
+  padding:0 8px;
+  border-radius: 6px;
+}
+::v-deep .el-collapse-item__arrow{
+  position: relative;
+  width: 16px;
+  height: 16px;
+  background-color: transparent;
+  &::before{
+    display: none;
+  }
+  &::after{
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 16px;
+    height: 16px;
+    background:url('@/assets/image/right_icon.png') no-repeat center center;
+    background-size: 100% 100%; 
+  }
+}
+.flex-align-center {
+  display: flex;
+  align-items: center;
+}
+
 </style>
