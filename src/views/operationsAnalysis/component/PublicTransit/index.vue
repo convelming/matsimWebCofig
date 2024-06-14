@@ -124,7 +124,7 @@ export default {
       s_showLayer: false,
 
       showStopName: false,
-      stopColor: "#409eff",
+      stopColor: "#2656C6",
       stopScale: 3,
 
       sreachLine: false,
@@ -253,7 +253,7 @@ export default {
       align-items: center;
 
       ::v-deep .el-checkbox__input {
-        display: none;
+        padding-left: 10px;
       }
 
       ::v-deep .el-checkbox__label {

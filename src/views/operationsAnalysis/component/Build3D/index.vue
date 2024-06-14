@@ -88,7 +88,7 @@ export default {
     return {
       predefineColors: ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc'],
       s_showLayer: true,
-      buildColor: "#E9CDAA",
+      buildColor: "#126282",
       buildOpacity: 80,
       _Build3DLayer: null,
 
@@ -169,7 +169,7 @@ export default {
       align-items: center;
 
       ::v-deep .el-checkbox__input {
-        display: none;
+        padding-left: 10px;
       }
 
       ::v-deep .el-checkbox__label {

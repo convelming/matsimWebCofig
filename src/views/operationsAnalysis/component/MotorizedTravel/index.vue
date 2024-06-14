@@ -66,7 +66,7 @@
         <div class="form_value">
           <!-- <el-slider :disabled="!s_showLayer" style="padding: 0 calc(2em - 10px)" v-model="modelSize" :step="1" :min="1"
             :max="30"> </el-slider> -->
-            <el-input-number class="input-number" style="width: 100%" :disabled="!modelSizer" size="small"
+            <el-input-number class="input-number" style="width: 100%" :disabled="!s_showLayer" size="small"
             v-model="maxVehicleNum" :min="1" :max="30" :step="1" step-strictly> </el-input-number>
         </div>
       </div>
@@ -425,7 +425,7 @@ export default {
       align-items: center;
 
       ::v-deep .el-checkbox__input {
-        display: none;
+        padding-left: 10px;
       }
 
       ::v-deep .el-checkbox__label {

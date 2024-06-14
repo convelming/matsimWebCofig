@@ -13,29 +13,43 @@
       <div class="form_item">
         <div class="form_label">{{ $l("所有修改线路：") }}</div>
         <div class="form_value">
-          <div class="flex-align-center">
-            <el-switch :disabled="!s_showLayer" v-model="showChangeRoute" style="margin-right: 20px" />
-            <div class="color-picker  flex-align-center">
-              <el-color-picker :disabled="!s_showLayer" :title="$l('修改前线路颜色')" size="mini" :predefine="predefineColors"
-                v-model="oldLinkColor" />
-              <el-input size="small " style="margin-left: 10px;" :disabled="!s_showLayer"
-                v-model="oldLinkColor"></el-input>
-            </div>
-            <div style="margin-left: 10px;" class="color-picker  flex-align-center">
-              <el-color-picker :disabled="!s_showLayer" :title="$l('修改后线路颜色')" size="mini" :predefine="predefineColors"
-                v-model="newLinkColor" />
-              <el-input size="small " style="margin-left: 10px;" :disabled="!s_showLayer"
-                v-model="newLinkColor"></el-input>
-            </div>
+
+          <el-switch :disabled="!s_showLayer" v-model="showChangeRoute" style="margin-right: 20px" />
+
+
+        </div>
+      </div>
+      <div class="form_item">
+        <div class="form_label">{{ $l("修改前：") }}</div>
+        <div class="form_value">
+          <div class="color-picker  flex-align-center">
+            <el-color-picker :disabled="!s_showLayer" :title="$l('修改前线路颜色')" size="mini" :predefine="predefineColors"
+              v-model="oldLinkColor" />
+            <el-input size="small " style="margin-left: 10px;" :disabled="!s_showLayer"
+              v-model="oldLinkColor"></el-input>
           </div>
         </div>
       </div>
-      <div class="form_tip">{{ $l("（虚线为修改前线路， 实线为修改后线路）") }}</div>
       <div class="form_item">
+        <div class="form_label">{{ $l("修改后：") }}</div>
+        <div class="form_value">
+          <div style="margin-left: 10px;" class="color-picker  flex-align-center">
+            <el-color-picker :disabled="!s_showLayer" :title="$l('修改后线路颜色')" size="mini" :predefine="predefineColors"
+              v-model="newLinkColor" />
+            <el-input size="small " style="margin-left: 10px;" :disabled="!s_showLayer"
+              v-model="newLinkColor"></el-input>
+          </div>
+        </div>
+      </div>
+      <!-- <div class="form_tip">{{ $l("（虚线为修改前线路， 实线为修改后线路）") }}</div> -->
+
+
+      <div class="form_item">  
+        <el-switch :disabled="!s_showLayer" v-model="showAffectedRoutes" style="margin-right: 20px" />
         <div class="form_label">{{ $l("受影响线路：") }}</div>
         <div class="form_value">
           <div class="flex-align-center">
-            <el-switch :disabled="!s_showLayer" v-model="showAffectedRoutes" style="margin-right: 20px" />
+          
             <div class="color-picker  flex-align-center">
               <el-color-picker :disabled="!s_showLayer" :title="$l('受影响线路颜色')" size="mini" :predefine="predefineColors"
                 v-model="affectedLinkColor" />
@@ -46,10 +60,11 @@
         </div>
       </div>
       <div class="form_item">
+        <el-switch :disabled="!s_showLayer" v-model="showAffectedStop" style="margin-right: 20px" />
         <div class="form_label">{{ $l("受影响站点：") }}</div>
         <div class="form_value">
           <div class="flex-align-center">
-            <el-switch :disabled="!s_showLayer" v-model="showAffectedStop" style="margin-right: 20px" />
+     
             <div class="color-picker  flex-align-center">
               <el-color-picker :disabled="!s_showLayer" :title="$l('受影响站点颜色')" size="mini" :predefine="predefineColors"
                 v-model="affectedStopColor" />
@@ -100,6 +115,14 @@
   "受影响站点颜色":{
     "zh-CN": "受影响站点颜色",
     "en-US": "Affected site colors"
+  },
+  "修改前：":{
+    "zh-CN": "修改前：",
+    "en-US": "before modification"
+  },
+  "修改后：":{
+    "zh-CN": "修改后：",
+    "en-US": "after modification"
   }
 }
 </language>
@@ -191,8 +214,8 @@ export default {
       showAffectedRoutes: true,
       showAffectedStop: true,
 
-      oldLinkColor: "#E9CDAA",
-      newLinkColor: "#ff4500",
+      oldLinkColor: "#3860FD",
+      newLinkColor: "#727583",
       affectedLinkColor: "#c71585",
       affectedStopColor: "#409eff",
 
@@ -326,7 +349,7 @@ export default {
       align-items: center;
 
       ::v-deep .el-checkbox__input {
-        display: none;
+        padding-left: 10px;
       }
 
       ::v-deep .el-checkbox__label {
