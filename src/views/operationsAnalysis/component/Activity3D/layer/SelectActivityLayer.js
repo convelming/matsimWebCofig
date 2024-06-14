@@ -21,7 +21,7 @@ export class SelectActivityLayer extends Layer {
 
     this.texture = opt.texture || this.texture;
 
-    this.geometry = new THREE.BoxGeometry(SIZE, SIZE);
+    this.geometry = new THREE.PlaneGeometry(SIZE, SIZE);
     this.material = new THREE.MeshBasicMaterial({
       depthWrite: false,
       transparent: true,

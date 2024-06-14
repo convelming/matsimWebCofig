@@ -8,8 +8,6 @@ import { getTileFacilities } from "@/api/index";
 
 const BUILD_ZOOM = 11;
 
-let PICK_COLOR_NUM = 1;
-
 export class Build3DLayer extends Layer {
   name = "Build3DLayer";
   buildColor = "#ff4500";
@@ -72,7 +70,7 @@ export class Build3DLayer extends Layer {
         this.coneMesh.needsUpdate = true;
         geometryOld.dispose();
         this.loadMesh();
-        break
+        break;
       }
     }
   }
@@ -170,7 +168,7 @@ export class Build3DLayer extends Layer {
         }
         if (tile.loadStatus == 1) {
           this.handleLoading(1);
-          tile.load().then(() => this.handleLoading(-1));
+          tile.load(this).then(() => this.handleLoading(-1));
         }
         const [x, y] = this.map.WebMercatorToCanvasXY(tile.x, tile.y);
 
@@ -205,7 +203,7 @@ export class Build3DLayer extends Layer {
         this.coneMesh.scale.set(1, 1, 0.000001);
       }
       this.scene.add(this.coneMesh);
-    } else {
+    } else if (this.coneMesh) {
       this.scene.remove(this.coneMesh);
     }
   }
@@ -274,7 +272,7 @@ class BuildTile {
     this._pickBuildMesh = new THREE.Mesh(this._geometry, pickBuildMeterial);
   }
 
-  async load() {
+  async load(layer) {
     try {
       this._loadStatus = 4;
       if (this._geometry) {
@@ -284,7 +282,7 @@ class BuildTile {
       if (data && data.length > 0) {
         const geometryList = [];
         for (const v of data) {
-          v.pickColorNum = ++PICK_COLOR_NUM;
+          v.pickColorNum = ++layer.pickColorNum;
           const pickColor = new THREE.Color(v.pickColorNum);
           const shapes = [
             {
