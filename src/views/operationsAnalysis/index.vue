@@ -4,7 +4,7 @@
       <div class="grid_root">
         <div class="Drawer_row">
           <Drawer show direction="left" :size="400">
-            <el-collapse v-model="activeNames">
+            <el-collapse v-model="activeNames" >
               <PublicTransit :showLayer.sync="showLayerPublicTransit" name="PublicTransit" />
               <MotorizedTravel :showLayer.sync="showLayerMotorizedTravel" name="MotorizedTravel" />
               <Build3D :showLayer.sync="showLayerBuild3D" name="Build3D" />

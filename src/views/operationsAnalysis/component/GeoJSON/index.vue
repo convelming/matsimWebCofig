@@ -1,9 +1,13 @@
 <template>
   <el-collapse-item class="BusStopForm" :name="name">
     <div class="el-collapse-item__title" slot="title">
-      <el-checkbox :value="s_showLayer" @change="handleChangeShowLayer">
-        <span>{{ $l("导入GeoJSON") }}</span>
-        <span v-if="loading" class="el-icon-loading" style="margin-left: 10px"></span>
+      <el-checkbox class="checkbox flex-align-center" :value="s_showLayer" @change="handleChangeShowLayer">
+        <div class="flex-align-center">
+          <img class="item_icon" v-show="s_showLayer" src="@/assets/image/road_network_icon_a.png" />
+          <img class="item_icon" v-show="!s_showLayer" src="@/assets/image/road_network_icon.png" />
+          <span>{{ $l("导入GeoJSON") }}</span>
+          <span v-if="loading" class="el-icon-loading" style="margin-left: 10px"></span>
+        </div>
       </el-checkbox>
     </div>
     <div class="form">
@@ -34,13 +38,13 @@
               <el-color-picker :disabled="!s_showLayer" :title="$l('lineColor')" size="mini" :predefine="predefineColors" v-model="item.labelParams.lineColor" @change="handleChange('lineColor', index, $event)" />
             </div>
             <div class="file_btn">
-              <el-button type="danger" icon="el-icon-delete" size="mini" circle :title="$l('deleteGeoJSON')" @click="removeGeoJSON(index)"></el-button>
+              <el-button :disabled="!s_showLayer" type="danger" icon="el-icon-delete" size="mini" circle :title="$l('deleteGeoJSON')" @click="removeGeoJSON(index)"></el-button>
             </div>
           </div>
         </div>
       </div>
       <div class="btn_list" style="text-align: right">
-        <el-button type="primary" size="mini" @click="handleSelectFile">{{ $l("导入GeoJSON") }}</el-button>
+        <el-button :disabled="!s_showLayer" type="primary" size="mini" @click="handleSelectFile">{{ $l("导入GeoJSON") }}</el-button>
       </div>
     </div>
   </el-collapse-item>
@@ -267,11 +271,39 @@ export default {
   }
 }
 .BusStopForm {
-  .el-collapse-item__title {
-    padding-left: 10px;
+  padding: 0 12px;
+  padding-top: 12px;
+
+  ::v-deep .el-collapse-item__header {
+    border-color: transparent;
   }
+
+  .el-collapse-item__title {
+    .checkbox {
+      display: flex;
+      align-items: center;
+
+      ::v-deep .el-checkbox__input {
+        display: none;
+      }
+
+      ::v-deep .el-checkbox__label {
+        font-size: 16px;
+        font-weight: 500;
+
+        .item_icon {
+          width: 18px;
+          height: 18px;
+          margin-right: 7px;
+        }
+      }
+    }
+  }
+
   .form {
-    padding: 10px 10px 0px 20px;
+    box-sizing: border-box;
+    width: 100%;
+    padding-top: 10px;
   }
   .file_list {
     padding-bottom: 20px;
@@ -303,5 +335,45 @@ export default {
     justify-content: flex-end;
     align-items: center;
   }
+}
+
+::v-deep .is-active {
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 6px;
+}
+
+.showLayer {
+  ::v-deep .is-active {
+    background-color: #d2d6e5;
+    border-radius: 6px;
+  }
+  ::v-deep .el-collapse-item__arrow {
+    &::after {
+      background-image: url("@/assets/image/right_icon_a.png");
+    }
+  }
+}
+::v-deep .el-collapse-item__arrow {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  background-color: transparent;
+  &::before {
+    display: none;
+  }
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 16px;
+    height: 16px;
+    background: url("@/assets/image/right_icon.png") no-repeat center center;
+    background-size: 100% 100%;
+  }
+}
+.flex-align-center {
+  display: flex;
+  align-items: center;
 }
 </style>
