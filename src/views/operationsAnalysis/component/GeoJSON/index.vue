@@ -1,10 +1,10 @@
 <template>
-  <el-collapse-item class="BusStopForm" :name="name">
+  <el-collapse-item class="GeoJSON" :name="name">
     <div class="el-collapse-item__title" slot="title">
       <el-checkbox class="checkbox flex-align-center" :value="s_showLayer" @change="handleChangeShowLayer">
         <div class="flex-align-center">
-          <img class="item_icon" v-show="s_showLayer" src="@/assets/image/road_network_icon_a.png" />
-          <img class="item_icon" v-show="!s_showLayer" src="@/assets/image/road_network_icon.png" />
+          <img class="item_icon" v-show="s_showLayer" src="@/assets/image/road_map_icon_a.png" />
+          <img class="item_icon" v-show="!s_showLayer" src="@/assets/image/road_map_icon.png" />
           <span>{{ $l("导入GeoJSON") }}</span>
           <span v-if="loading" class="el-icon-loading" style="margin-left: 10px"></span>
         </div>
@@ -264,13 +264,15 @@ export default {
 };
 </script>
 
+
 <style lang="scss" scoped>
 ::v-deep {
   .el-slider__marks-text {
     white-space: nowrap;
   }
 }
-.BusStopForm {
+
+.GeoJSON {
   padding: 0 12px;
   padding-top: 12px;
 
@@ -284,7 +286,7 @@ export default {
       align-items: center;
 
       ::v-deep .el-checkbox__input {
-        display: none;
+        padding-left: 10px;
       }
 
       ::v-deep .el-checkbox__label {
@@ -304,36 +306,67 @@ export default {
     box-sizing: border-box;
     width: 100%;
     padding-top: 10px;
-  }
-  .file_list {
-    padding-bottom: 20px;
-    .file_item {
-      box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-      border: 1px solid #ebeef5;
-      border-radius: 4px;
+
+    & > * + * {
+      margin-top: 12px;
     }
-    .file_row {
-      height: 40px;
+
+    .form_flex {
       display: flex;
-      align-items: center;
-      & + .file_row {
-        border-top: 1px solid #ebeef5;
+
+      .form_item + .form_item {
+        margin-top: 0;
       }
-      .file_btn {
+    }
+
+    .form_item {
+      width: 100%;
+      display: flex;
+      line-height: 40px;
+
+      .form_label {
         flex-shrink: 0;
-        height: 40px;
-        width: 40px;
-        border-left: 1px solid #ebeef5;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        padding-right: 10px;
+      }
+
+      .form_value {
+        width: 100%;
+        text-align: right;
+
+        .layer {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          cursor: pointer;
+          .text2 {
+            color: rgba(0, 0, 0, 0.3);
+          }
+
+          .icon {
+            width: 20px;
+            height: 20px;
+          }
+        }
       }
     }
   }
-  .btn_list {
+
+  .icon_button {
+    cursor: pointer;
+    flex-shrink: 0;
+    margin-left: 10px;
+    width: 28px;
+    height: 28px;
     display: flex;
-    justify-content: flex-end;
     align-items: center;
+    justify-content: center;
+    border: 1px solid #e6e6e6;
+    border-radius: 4px;
+
+    &.active {
+      background-color: rgba($color: #409eff, $alpha: 1);
+      color: #ffffff;
+    }
   }
 }
 
@@ -347,20 +380,79 @@ export default {
     background-color: #d2d6e5;
     border-radius: 6px;
   }
+
   ::v-deep .el-collapse-item__arrow {
     &::after {
       background-image: url("@/assets/image/right_icon_a.png");
     }
   }
 }
+
+::v-deep .input-number {
+  .el-input-number__decrease,
+  .el-input-number__increase {
+    border: none;
+    background-color: transparent;
+  }
+
+  .el-input__inner {
+    border: none;
+    background: rgba(0, 0, 0, 0.05);
+    padding: 0;
+    margin: 0 39px;
+    width: calc(100% - 78px);
+  }
+
+  .el-icon-minus,
+  .el-icon-plus {
+    width: 30px;
+    height: 30px;
+
+    &::before {
+      display: none;
+    }
+
+    &::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 30px;
+      height: 30px;
+      background: url("@/assets/image/minus_icon.png") no-repeat center center;
+      background-size: 100% 100%;
+    }
+
+    &:hover {
+      &::after {
+        background-image: url("@/assets/image/minus_icon_a.png");
+      }
+    }
+  }
+
+  .el-icon-plus {
+    &::after {
+      background-image: url("@/assets/image/push_icon.png");
+    }
+
+    &:hover {
+      &::after {
+        background-image: url("@/assets/image/push_icon_a.png");
+      }
+    }
+  }
+}
+
 ::v-deep .el-collapse-item__arrow {
   position: relative;
   width: 16px;
   height: 16px;
   background-color: transparent;
+
   &::before {
     display: none;
   }
+
   &::after {
     content: "";
     position: absolute;
@@ -372,6 +464,7 @@ export default {
     background-size: 100% 100%;
   }
 }
+
 .flex-align-center {
   display: flex;
   align-items: center;

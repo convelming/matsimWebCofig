@@ -29,12 +29,12 @@ export default {
 <style lang="scss" scoped>
 .Drawer {
   height: var(--drawer-size);
-  padding-bottom: var(--bar-size);
+  margin-bottom: var(--bar-size);
   .content {
-    padding-bottom: var(--bar-size);
+    // margin-bottom: var(--bar-size);
   }
   .bar {
-    left: 0;
+    left: calc(-1 * var(--bar-size));
     bottom: 0;
     width: 100%;
     height: var(--bar-size);

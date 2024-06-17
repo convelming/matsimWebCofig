@@ -84,6 +84,7 @@ export default {
       this._Map.removeEventListener(MAP_EVENT.UPDATE_CAMERA_ROTATE, this._MapEvnetId1);
     },
     handleMapUpdateCameraRotate({ data }) {
+      console.log(data);
       this.pitch = data.newPitch;
       this.rotation = data.newRotation;
     },

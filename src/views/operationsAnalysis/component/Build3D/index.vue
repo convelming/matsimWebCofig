@@ -2,7 +2,7 @@
   <el-collapse-item class="BusStopForm" :name="name" :class="[s_showLayer ? 'showLayer' : '']">
     <div class="el-collapse-item__title" slot="title">
       <el-checkbox class="checkbox flex-align-center" :value="s_showLayer" @change="handleChangeShowLayer">
-        <div class=" flex-align-center">
+        <div class="flex-align-center">
           <img class="item_icon" v-show="s_showLayer" src="@/assets/image/Build3D_icon_a.png" />
           <img class="item_icon" v-show="!s_showLayer" src="@/assets/image/Build3D_icon.png" />
           <span>{{ $l("3D建筑") }}</span>
@@ -14,11 +14,10 @@
       <div class="form_item">
         <div class="form_label">{{ $l("建筑颜色：") }}</div>
         <div class="form_value">
-          <div class="color-picker  flex-align-center">
+          <div class="color-picker flex-align-center">
             <el-color-picker :disabled="!s_showLayer" size="mini" :predefine="predefineColors" v-model="buildColor" />
-            <el-input size="small " style="margin-left: 10px;" :disabled="!s_showLayer" v-model="buildColor"></el-input>
-            <el-input-number class="input-number" style="width: 100%;margin:0 10px;" :disabled="!s_showLayer"
-              size="small" v-model="buildOpacity" :min="0" :max="100" :step="1" step-strictly> </el-input-number>%
+            <el-input size="small " style="margin-left: 10px" :disabled="!s_showLayer" v-model="buildColor"></el-input>
+            <el-input-number class="input-number" style="width: 100%; margin: 0 10px" :disabled="!s_showLayer" size="small" v-model="buildOpacity" :min="0" :max="100" :step="1" step-strictly> </el-input-number>%
           </div>
         </div>
       </div>
@@ -80,13 +79,13 @@ export default {
     },
     buildOpacity(val) {
       if (this._Build3DLayer) {
-        this._Build3DLayer.setBuildOpacity(Math.round(val / 100 * 100) / 100);
+        this._Build3DLayer.setBuildOpacity(Math.round((val / 100) * 100) / 100);
       }
     },
   },
   data() {
     return {
-      predefineColors: ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc'],
+      predefineColors: ["#5470c6", "#91cc75", "#fac858", "#ee6666", "#73c0de", "#3ba272", "#fc8452", "#9a60b4", "#ea7ccc"],
       s_showLayer: true,
       buildColor: "#E9CDAA",
       buildOpacity: 80,
@@ -169,7 +168,7 @@ export default {
       align-items: center;
 
       ::v-deep .el-checkbox__input {
-        display: none;
+        padding-left: 10px;
       }
 
       ::v-deep .el-checkbox__label {
@@ -183,7 +182,6 @@ export default {
         }
       }
     }
-
   }
 
   .form {
@@ -191,14 +189,22 @@ export default {
     width: 100%;
     padding-top: 10px;
 
+    & > * + * {
+      margin-top: 12px;
+    }
+
+    .form_flex {
+      display: flex;
+
+      .form_item + .form_item {
+        margin-top: 0;
+      }
+    }
+
     .form_item {
       width: 100%;
       display: flex;
       line-height: 40px;
-
-      &+.form_item {
-        margin-top: 12px;
-      }
 
       .form_label {
         flex-shrink: 0;
@@ -208,6 +214,21 @@ export default {
       .form_value {
         width: 100%;
         text-align: right;
+
+        .layer {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          cursor: pointer;
+          .text2 {
+            color: rgba(0, 0, 0, 0.3);
+          }
+
+          .icon {
+            width: 20px;
+            height: 20px;
+          }
+        }
       }
     }
   }
@@ -228,20 +249,6 @@ export default {
       background-color: rgba($color: #409eff, $alpha: 1);
       color: #ffffff;
     }
-
-    &.disabled {
-      cursor: no-drop;
-    }
-
-    &.icon_stop {
-      .img {
-        width: 20px;
-        height: 20px;
-        display: block;
-        object-fit: cover;
-        padding: 4px;
-      }
-    }
   }
 }
 
@@ -252,19 +259,18 @@ export default {
 
 .showLayer {
   ::v-deep .is-active {
-    background-color: #D2D6E5;
+    background-color: #d2d6e5;
     border-radius: 6px;
   }
 
   ::v-deep .el-collapse-item__arrow {
     &::after {
-      background-image: url('@/assets/image/right_icon_a.png')
+      background-image: url("@/assets/image/right_icon_a.png");
     }
   }
 }
 
 ::v-deep .input-number {
-
   .el-input-number__decrease,
   .el-input-number__increase {
     border: none;
@@ -289,40 +295,34 @@ export default {
     }
 
     &::after {
-      content: '';
+      content: "";
       position: absolute;
       left: 0;
       top: 0;
       width: 30px;
       height: 30px;
-      background: url('@/assets/image/minus_icon.png') no-repeat center center;
+      background: url("@/assets/image/minus_icon.png") no-repeat center center;
       background-size: 100% 100%;
     }
 
     &:hover {
       &::after {
-        background-image: url('@/assets/image/minus_icon_a.png');
+        background-image: url("@/assets/image/minus_icon_a.png");
       }
     }
   }
 
   .el-icon-plus {
     &::after {
-      background-image: url('@/assets/image/push_icon.png');
+      background-image: url("@/assets/image/push_icon.png");
     }
 
     &:hover {
       &::after {
-        background-image: url('@/assets/image/push_icon_a.png');
+        background-image: url("@/assets/image/push_icon_a.png");
       }
     }
   }
-}
-
-.color-picker {
-  background: rgba(0, 0, 0, 0.05);
-  padding: 0 8px;
-  border-radius: 6px;
 }
 
 ::v-deep .el-collapse-item__arrow {
@@ -336,13 +336,13 @@ export default {
   }
 
   &::after {
-    content: '';
+    content: "";
     position: absolute;
     left: 0;
     top: 0;
     width: 16px;
     height: 16px;
-    background: url('@/assets/image/right_icon.png') no-repeat center center;
+    background: url("@/assets/image/right_icon.png") no-repeat center center;
     background-size: 100% 100%;
   }
 }

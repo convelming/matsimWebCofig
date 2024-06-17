@@ -24,7 +24,7 @@ export default {
       if (this.s_show) {
         style += `--drawer-size:${this.s_size + this.m_size}px;`;
       } else {
-        style += `--drawer-size:${barSize};`;
+        style += `--drawer-size:${0};`;
       }
       return style;
     },

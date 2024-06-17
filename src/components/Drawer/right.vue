@@ -4,12 +4,7 @@
       <slot></slot>
     </div>
     <div class="bar" @mousedown="startMove">
-      <div
-        class="show_btn"
-        :class="{ hide: !s_show }"
-        @click.stop="handleShow(!s_show)"
-        @mousedown.stop
-      ></div>
+      <div class="show_btn" :class="{ hide: !s_show }" @click.stop="handleShow(!s_show)" @mousedown.stop></div>
     </div>
   </div>
 </template>
@@ -29,12 +24,12 @@ export default {
 <style lang="scss" scoped>
 .Drawer {
   width: var(--drawer-size);
-  padding-left: var(--bar-size);
+  margin-left: var(--bar-size);
   .content {
-    padding-left: var(--bar-size);
+    // margin-left: var(--bar-size);
   }
   .bar {
-    left: 0;
+    left: calc(-1 * var(--bar-size));
     bottom: 0;
     height: 100%;
     width: var(--bar-size);
