@@ -465,17 +465,17 @@ export class Map extends EventListener {
       this.camera.updateProjectionMatrix();
       this.setZoom(zoom, true);
 
-      const [px, py, pz] = this.camera.position;
+      const [px, py, pz] = new THREE.Vector3().subVectors(this.camera.position, this.cameraControls.target);
       let pitch = Math.round(Math.asin(py / height) * (180 / Math.PI));
       let rotation = Math.round(Math.atan(px / pz) * (180 / Math.PI));
 
-      if (px > 0 && pz > 0) {
+      if (px >= 0 && pz >= 0) {
         rotation = rotation;
-      } else if (px > 0 && pz < 0) {
+      } else if (px >= 0 && pz < 0) {
         rotation = 180 + rotation;
       } else if (px < 0 && pz < 0) {
         rotation = 180 + rotation;
-      } else if (px < 0 && pz > 0) {
+      } else if (px < 0 && pz >= 0) {
         rotation = 360 + rotation;
       }
       if (Math.abs(this.pitch - pitch) > 1 || Math.abs(this.rotation - rotation) > 1) {
