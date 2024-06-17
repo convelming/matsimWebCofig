@@ -19,45 +19,33 @@
       <div class="form_item">
         <div class="form_label">{{ $l("修改前：") }}</div>
         <div class="form_value">
-          <div class="color-picker flex-align-center">
-            <el-color-picker :disabled="!s_showLayer" :title="$l('修改前线路颜色')" size="mini" :predefine="predefineColors" v-model="oldLinkColor" />
-            <el-input size="small " style="margin-left: 10px" :disabled="!s_showLayer" v-model="oldLinkColor"></el-input>
-          </div>
+          <ColorPicker :disabled="!s_showLayer" :title="$l('公交站点颜色')" size="mini" :predefine="predefineColors" v-model="oldLinkColor" />
         </div>
       </div>
       <div class="form_item">
         <div class="form_label">{{ $l("修改后：") }}</div>
         <div class="form_value">
-          <div style="margin-left: 10px" class="color-picker flex-align-center">
-            <el-color-picker :disabled="!s_showLayer" :title="$l('修改后线路颜色')" size="mini" :predefine="predefineColors" v-model="newLinkColor" />
-            <el-input size="small " style="margin-left: 10px" :disabled="!s_showLayer" v-model="newLinkColor"></el-input>
-          </div>
+          <ColorPicker :disabled="!s_showLayer" :title="$l('公交站点颜色')" size="mini" :predefine="predefineColors" v-model="newLinkColor" />
         </div>
       </div>
       <!-- <div class="form_tip">{{ $l("（虚线为修改前线路， 实线为修改后线路）") }}</div> -->
 
       <div class="form_item">
-        <el-switch :disabled="!s_showLayer" v-model="showAffectedRoutes" style="margin-right: 20px" />
+        <div class="form_label">
+          <el-switch :disabled="!s_showLayer" v-model="showAffectedRoutes"/>
+        </div>
         <div class="form_label">{{ $l("受影响线路：") }}</div>
         <div class="form_value">
-          <div class="flex-align-center">
-            <div class="color-picker flex-align-center">
-              <el-color-picker :disabled="!s_showLayer" :title="$l('受影响线路颜色')" size="mini" :predefine="predefineColors" v-model="affectedLinkColor" />
-              <el-input size="small " style="margin-left: 10px" :disabled="!s_showLayer" v-model="affectedLinkColor"></el-input>
-            </div>
-          </div>
+          <ColorPicker :disabled="!s_showLayer" :title="$l('受影响线路颜色')" size="mini" :predefine="predefineColors" v-model="affectedLinkColor" />
         </div>
       </div>
       <div class="form_item">
-        <el-switch :disabled="!s_showLayer" v-model="showAffectedStop" style="margin-right: 20px" />
+        <div class="form_label">
+          <el-switch :disabled="!s_showLayer" v-model="showAffectedStop"/>
+        </div>
         <div class="form_label">{{ $l("受影响站点：") }}</div>
         <div class="form_value">
-          <div class="flex-align-center">
-            <div class="color-picker flex-align-center">
-              <el-color-picker :disabled="!s_showLayer" :title="$l('受影响站点颜色')" size="mini" :predefine="predefineColors" v-model="affectedStopColor" />
-              <el-input size="small " style="margin-left: 10px" :disabled="!s_showLayer" v-model="affectedStopColor"></el-input>
-            </div>
-          </div>
+          <ColorPicker :disabled="!s_showLayer" :title="$l('受影响站点颜色')" size="mini" :predefine="predefineColors" v-model="affectedStopColor" />
         </div>
       </div>
     </div>

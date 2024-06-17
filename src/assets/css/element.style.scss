@@ -104,7 +104,7 @@
     padding-top: 10px;
 
     & > * + * {
-      margin-top: 12px;
+      margin-top: 5px;
     }
 
     .form_flex {
@@ -118,7 +118,7 @@
     .form_item {
       width: 100%;
       display: flex;
-      line-height: 40px;
+      line-height: 36px;
 
       .form_label {
         flex-shrink: 0;
