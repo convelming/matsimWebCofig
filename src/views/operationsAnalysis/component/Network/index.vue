@@ -1,8 +1,8 @@
 <template>
-  <el-collapse-item class="BusStopForm" :name="name" :class="[s_showLayer ? 'showLayer' : '']">
+  <el-collapse-item class="my_collapse_item" :name="name" :class="{ active: s_showLayer }">
     <div class="el-collapse-item__title" slot="title">
       <el-checkbox class="checkbox flex-align-center" :value="s_showLayer" @change="handleChangeShowLayer">
-        <div class=" flex-align-center">
+        <div class="flex-align-center">
           <img class="item_icon" v-show="s_showLayer" src="@/assets/image/road_network_icon_a.png" />
           <img class="item_icon" v-show="!s_showLayer" src="@/assets/image/road_network_icon.png" />
           <span>{{ $l("network") }}</span>
@@ -15,16 +15,14 @@
         <div class="form_label">{{ $l("width") }}</div>
         <div class="form_value">
           <!-- <el-slider :disabled="!s_showLayer" v-model="width" :min="0" :max="20" :step="1" /> -->
-          <el-input-number class="input-number" style="width: 100%" size="small"
-          :disabled="!s_showLayer" v-model="width" :min="0" :max="20" :step="1"  step-strictly> </el-input-number>
+          <el-input-number class="my_input_number_1" style="width: 100%" size="medium" :disabled="!s_showLayer" v-model="width" :min="0" :max="20" :step="1" step-strictly> </el-input-number>
         </div>
       </div>
       <div class="form_item">
         <div class="form_label">{{ $l("offset") }}</div>
         <div class="form_value">
           <!-- <el-slider :disabled="!s_showLayer" v-model="offset" :min="0" :max="20" :step="1" /> -->
-          <el-input-number class="input-number" style="width: 100%" size="small"
-          :disabled="!s_showLayer" v-model="offset" :min="0" :max="20" :step="1"  step-strictly> </el-input-number>
+          <el-input-number class="my_input_number_1" style="width: 100%" size="medium" :disabled="!s_showLayer" v-model="offset" :min="0" :max="20" :step="1" step-strictly> </el-input-number>
         </div>
       </div>
       <div class="form_item">
@@ -40,7 +38,7 @@
           <div>{{ $l("showNode") }}</div>
         </div>
         <div class="form_value">
-          <el-switch :disabled="!s_showLayer"  v-model="showNode"></el-switch>
+          <el-switch :disabled="!s_showLayer" v-model="showNode"></el-switch>
         </div>
       </div>
       <!-- <div class="form_item" style="align-items: center"> -->
@@ -150,7 +148,7 @@ export default {
   },
   data() {
     return {
-      predefineColors: ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc'],
+      predefineColors: ["#5470c6", "#91cc75", "#fac858", "#ee6666", "#73c0de", "#3ba272", "#fc8452", "#9a60b4", "#ea7ccc"],
       s_showLayer: true,
 
       _NetworkLayer: null,
@@ -282,186 +280,7 @@ export default {
   }
 }
 
-.BusStopForm {
-  padding: 0 12px;
-  padding-top: 12px;
-
-  ::v-deep .el-collapse-item__header {
-    border-color: transparent;
-  }
-
-  .el-collapse-item__title {
-    .checkbox {
-      display: flex;
-      align-items: center;
-
-      ::v-deep .el-checkbox__input {
-        padding-left: 10px;
-      }
-
-      ::v-deep .el-checkbox__label {
-        font-size: 16px;
-        font-weight: 500;
-
-        .item_icon {
-          width: 18px;
-          height: 18px;
-          margin-right: 7px;
-        }
-      }
-    }
-
-  }
-
-  .form {
-    box-sizing: border-box;
-    width: 100%;
-    padding-top: 10px;
-
-    .form_item {
-      width: 100%;
-      display: flex;
-      line-height: 40px;
-
-      &+.form_item {
-        margin-top: 12px;
-      }
-
-      .form_label {
-        flex-shrink: 0;
-        padding-right: 10px;
-      }
-
-      .form_value {
-        width: 100%;
-        text-align: right;
-      }
-    }
-  }
-
-  .icon_button {
-    cursor: pointer;
-    flex-shrink: 0;
-    margin-left: 10px;
-    width: 28px;
-    height: 28px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid #e6e6e6;
-    border-radius: 4px;
-
-    &.active {
-      background-color: rgba($color: #409eff, $alpha: 1);
-      color: #ffffff;
-    }
-
-    &.disabled {
-      cursor: no-drop;
-    }
-
-    &.icon_stop {
-      .img {
-        width: 20px;
-        height: 20px;
-        display: block;
-        object-fit: cover;
-        padding: 4px;
-      }
-    }
-  }
-}
-
-::v-deep .is-active {
-  background-color: rgba(0, 0, 0, 0.05);
-  border-radius: 6px;
-}
-
-.showLayer {
-  ::v-deep .is-active {
-    background-color: #D2D6E5;
-    border-radius: 6px;
-  }
-  ::v-deep .el-collapse-item__arrow{
-    &::after{
-      background-image:url('@/assets/image/right_icon_a.png')
-    }
-  }
-}
-::v-deep .input-number {
-  
-.el-input-number__decrease,
-.el-input-number__increase {
-  border: none;
-  background-color: transparent;
-}
-
-.el-input__inner {
-  border: none;
-  background: rgba(0, 0, 0, 0.05);
-  padding: 0;
-  margin: 0 39px;
-  width: calc(100% - 78px);
-}
-
-.el-icon-minus,
-.el-icon-plus {
-  width: 30px;
-  height: 30px;
-
-  &::before {
-    display: none;
-  }
-
-  &::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 30px;
-    height: 30px;
-    background: url('@/assets/image/minus_icon.png') no-repeat center center;
-    background-size: 100% 100%;
-  }
-
-  &:hover {
-    &::after {
-      background-image: url('@/assets/image/minus_icon_a.png');
-    }
-  }
-}
-
-.el-icon-plus {
-  &::after {
-    background-image: url('@/assets/image/push_icon.png');
-  }
-
-  &:hover {
-    &::after {
-      background-image: url('@/assets/image/push_icon_a.png');
-    }
-  }
-}
-}
-
-::v-deep .el-collapse-item__arrow{
-  position: relative;
-  width: 16px;
-  height: 16px;
-  background-color: transparent;
-  &::before{
-    display: none;
-  }
-  &::after{
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 16px;
-    height: 16px;
-    background:url('@/assets/image/right_icon.png') no-repeat center center;
-    background-size: 100% 100%; 
-  }
+.my_collapse_item {
 }
 .flex-align-center {
   display: flex;

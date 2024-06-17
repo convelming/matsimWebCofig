@@ -1,8 +1,8 @@
 <template>
-  <el-collapse-item class="BusStopForm" :name="name" :class="[s_showLayer ? 'showLayer' : '']">
+  <el-collapse-item class="my_collapse_item" :name="name" :class="{ active: s_showLayer }">
     <div class="el-collapse-item__title" slot="title">
       <el-checkbox class="checkbox flex-align-center" :value="s_showLayer" @change="handleChangeShowLayer">
-        <div class=" flex-align-center">
+        <div class="flex-align-center">
           <img class="item_icon" v-show="s_showLayer" src="@/assets/image/PublicTransit_icon_a.png" />
           <img class="item_icon" v-show="!s_showLayer" src="@/assets/image/PublicTransit_icon.png" />
           <span>{{ $l("公共交通") }}</span>
@@ -20,12 +20,7 @@
       <div class="form_item">
         <div class="form_label">{{ $l("图标颜色：") }}</div>
         <div class="form_value">
-          <div class="color-picker  flex-align-center">
-            <el-color-picker :disabled="!s_showLayer" :title="$l('公交站点颜色')" size="mini" :predefine="predefineColors"
-            v-model="stopColor" />
-            <el-input size="small " style="margin-left: 10px;" :disabled="!s_showLayer" v-model="stopColor"></el-input>
-          </div>
-         
+          <ColorPicker :disabled="!s_showLayer" :title="$l('公交站点颜色')" size="mini" :predefine="predefineColors" v-model="stopColor" />
         </div>
       </div>
       <!-- <div class="form_item" style="align-items: center; justify-content: flex-end"> -->
@@ -137,7 +132,7 @@ export default {
       selectStop: false,
       selectBusStopList: [],
 
-      predefineColors: ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc'],
+      predefineColors: ["#5470c6", "#91cc75", "#fac858", "#ee6666", "#73c0de", "#3ba272", "#fc8452", "#9a60b4", "#ea7ccc"],
 
       _StopsLayer: undefined,
       _LinkLayer: undefined,
@@ -239,137 +234,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.BusStopForm {
-  padding: 0 12px;
-  padding-top: 12px;
-  
-  ::v-deep .el-collapse-item__header {
-    border-color: transparent;
-  }
-
-  .el-collapse-item__title {
-    .checkbox {
-      display: flex;
-      align-items: center;
-
-      ::v-deep .el-checkbox__input {
-        padding-left: 10px;
-      }
-
-      ::v-deep .el-checkbox__label {
-        font-size: 16px;
-        font-weight: 500;
-
-        .item_icon {
-          width: 18px;
-          height: 18px;
-          margin-right: 7px;
-        }
-      }
-    }
-
-  }
-
-  .form {
-    box-sizing: border-box;
-    width: 100%;
-    padding-top: 10px;
-
-    .form_item {
-      width: 100%;
-      display: flex;
-      line-height: 40px;
-
-      &+.form_item {
-        margin-top: 12px;
-      }
-
-      .form_label {
-        flex-shrink: 0;
-        padding-right: 10px;
-      }
-
-      .form_value {
-        width: 100%;
-        text-align: right;
-      }
-    }
-  }
-
-  .icon_button {
-    cursor: pointer;
-    flex-shrink: 0;
-    margin-left: 10px;
-    width: 28px;
-    height: 28px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid #e6e6e6;
-    border-radius: 4px;
-
-    &.active {
-      background-color: rgba($color: #409eff, $alpha: 1);
-      color: #ffffff;
-    }
-
-    &.disabled {
-      cursor: no-drop;
-    }
-
-    &.icon_stop {
-      .img {
-        width: 20px;
-        height: 20px;
-        display: block;
-        object-fit: cover;
-        padding: 4px;
-      }
-    }
-  }
+.my_collapse_item {
 }
-::v-deep .is-active {
-    background-color: rgba(0, 0, 0, 0.05);
-    border-radius: 6px;
-  }
-.showLayer {
-  ::v-deep .is-active {
-    background-color: #D2D6E5;
-    border-radius: 6px;
-  }
-  ::v-deep .el-collapse-item__arrow{
-    &::after{
-      background-image:url('@/assets/image/right_icon_a.png')
-    }
-  }
-}
-.color-picker{
-  background: rgba(0, 0, 0, 0.05);
-  padding:0 8px;
-  border-radius: 6px;
-}
-::v-deep .el-collapse-item__arrow{
-  position: relative;
-  width: 16px;
-  height: 16px;
-  background-color: transparent;
-  &::before{
-    display: none;
-  }
-  &::after{
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 16px;
-    height: 16px;
-    background:url('@/assets/image/right_icon.png') no-repeat center center;
-    background-size: 100% 100%; 
-  }
-}
+
 .flex-align-center {
   display: flex;
   align-items: center;
 }
-
 </style>

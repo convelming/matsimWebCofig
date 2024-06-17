@@ -3,8 +3,8 @@
     <template v-if="!loading">
       <div class="grid_root">
         <div class="Drawer_row">
-          <Drawer show direction="left" :size="400">
-            <el-collapse v-model="activeNames" >
+          <Drawer class="left_toolber" show direction="left" :size="400">
+            <el-collapse v-model="activeNames">
               <PublicTransit :showLayer.sync="showLayerPublicTransit" name="PublicTransit" />
               <MotorizedTravel :showLayer.sync="showLayerMotorizedTravel" name="MotorizedTravel" />
               <Build3D :showLayer.sync="showLayerBuild3D" name="Build3D" />
@@ -30,17 +30,15 @@
                         <div class="form_value">
                           <TimeSlider v-model="time" :speed="60 * 60 * 4" :min="minTime" :max="maxTime"></TimeSlider>
                         </div>
-
                       </div>
                     </div>
                     <el-dropdown @command="speedCommand" placement="top-start" trigger="click">
                       <div class="speed">
-                        <img class="icon" src="@/assets/image/speed_icon.png">
+                        <img class="icon" src="@/assets/image/speed_icon.png" />
                         <span>X{{ speed }}</span>
                       </div>
                       <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item v-for="item in speedList" :command="item" :key="item"
-                          :disabled="speed === item">速度 X{{ item }} </el-dropdown-item>
+                        <el-dropdown-item v-for="item in speedList" :command="item" :key="item" :disabled="speed === item">速度 X{{ item }} </el-dropdown-item>
                       </el-dropdown-menu>
                     </el-dropdown>
                   </div>
@@ -122,7 +120,7 @@ import mixins from "./mixins";
 import HelpDialog from "./component/HelpDialog/index.vue";
 
 import Toolbar from "./component/Toolbar/index.vue";
-import NewClock from '../comparativeAnalysis/component/NewClock.vue'
+import NewClock from "../comparativeAnalysis/component/NewClock.vue";
 import PublicTransit from "./component/PublicTransit/index.vue";
 import MotorizedTravel from "./component/MotorizedTravel/index.vue";
 import Build3D from "./component/Build3D/index.vue";
@@ -140,26 +138,19 @@ export default {
     Network,
     Activity3D,
     GeoJSON,
-    NewClock
+    NewClock,
   },
   mixins: [mixins],
   data() {
     return {
-      speedList: [
-        0,
-        0.5,
-        1,
-        2,
-        4,
-        10,
-      ]
-    }
+      speedList: [0, 0.5, 1, 2, 4, 10],
+    };
   },
   methods: {
     speedCommand(value) {
-      this.speed = value
+      this.speed = value;
     },
-  }
+  },
 };
 </script>
 
@@ -167,6 +158,14 @@ export default {
 ::v-deep {
   .el-collapse {
     border-bottom: 0;
+  }
+
+  .left_toolber {
+    background-color: #eef2fd;
+    .el-input__inner,
+    .el-collapse-item__wrap {
+      background-color: #eef2fd;
+    }
   }
 }
 
@@ -196,14 +195,14 @@ export default {
     padding: 10px 10px 0px 20px;
     font-size: 13px;
 
-    &>*+* {
+    & > * + * {
       margin-top: 10px;
     }
 
     .form_flex {
       display: flex;
 
-      .form_item+.form_item {
+      .form_item + .form_item {
         margin-top: 0;
       }
     }
@@ -282,7 +281,6 @@ export default {
   .icon {
     width: 18px;
     height: 18px;
-
   }
 
   .text {
@@ -290,7 +288,6 @@ export default {
     font-size: 16px;
     font-weight: 400;
     line-height: 20px;
-
   }
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <el-collapse-item class="BusStopForm" :name="name" :class="[s_showLayer ? 'showLayer' : '']">
+  <el-collapse-item class="my_collapse_item" :name="name" :class="{ active: s_showLayer }">
     <div class="el-collapse-item__title" slot="title">
       <el-checkbox class="checkbox flex-align-center" :value="s_showLayer" @change="handleChangeShowLayer">
         <div class="flex-align-center">
@@ -13,48 +13,37 @@
       <div class="form_item">
         <div class="form_label">{{ $l("所有修改线路：") }}</div>
         <div class="form_value">
-
           <el-switch :disabled="!s_showLayer" v-model="showChangeRoute" style="margin-right: 20px" />
-
-
         </div>
       </div>
       <div class="form_item">
         <div class="form_label">{{ $l("修改前：") }}</div>
         <div class="form_value">
-          <div class="color-picker  flex-align-center">
-            <el-color-picker :disabled="!s_showLayer" :title="$l('修改前线路颜色')" size="mini" :predefine="predefineColors"
-              v-model="oldLinkColor" />
-            <el-input size="small " style="margin-left: 10px;" :disabled="!s_showLayer"
-              v-model="oldLinkColor"></el-input>
+          <div class="color-picker flex-align-center">
+            <el-color-picker :disabled="!s_showLayer" :title="$l('修改前线路颜色')" size="mini" :predefine="predefineColors" v-model="oldLinkColor" />
+            <el-input size="small " style="margin-left: 10px" :disabled="!s_showLayer" v-model="oldLinkColor"></el-input>
           </div>
         </div>
       </div>
       <div class="form_item">
         <div class="form_label">{{ $l("修改后：") }}</div>
         <div class="form_value">
-          <div style="margin-left: 10px;" class="color-picker  flex-align-center">
-            <el-color-picker :disabled="!s_showLayer" :title="$l('修改后线路颜色')" size="mini" :predefine="predefineColors"
-              v-model="newLinkColor" />
-            <el-input size="small " style="margin-left: 10px;" :disabled="!s_showLayer"
-              v-model="newLinkColor"></el-input>
+          <div style="margin-left: 10px" class="color-picker flex-align-center">
+            <el-color-picker :disabled="!s_showLayer" :title="$l('修改后线路颜色')" size="mini" :predefine="predefineColors" v-model="newLinkColor" />
+            <el-input size="small " style="margin-left: 10px" :disabled="!s_showLayer" v-model="newLinkColor"></el-input>
           </div>
         </div>
       </div>
       <!-- <div class="form_tip">{{ $l("（虚线为修改前线路， 实线为修改后线路）") }}</div> -->
 
-
-      <div class="form_item">  
+      <div class="form_item">
         <el-switch :disabled="!s_showLayer" v-model="showAffectedRoutes" style="margin-right: 20px" />
         <div class="form_label">{{ $l("受影响线路：") }}</div>
         <div class="form_value">
           <div class="flex-align-center">
-          
-            <div class="color-picker  flex-align-center">
-              <el-color-picker :disabled="!s_showLayer" :title="$l('受影响线路颜色')" size="mini" :predefine="predefineColors"
-                v-model="affectedLinkColor" />
-              <el-input size="small " style="margin-left: 10px;" :disabled="!s_showLayer"
-                v-model="affectedLinkColor"></el-input>
+            <div class="color-picker flex-align-center">
+              <el-color-picker :disabled="!s_showLayer" :title="$l('受影响线路颜色')" size="mini" :predefine="predefineColors" v-model="affectedLinkColor" />
+              <el-input size="small " style="margin-left: 10px" :disabled="!s_showLayer" v-model="affectedLinkColor"></el-input>
             </div>
           </div>
         </div>
@@ -64,12 +53,9 @@
         <div class="form_label">{{ $l("受影响站点：") }}</div>
         <div class="form_value">
           <div class="flex-align-center">
-     
-            <div class="color-picker  flex-align-center">
-              <el-color-picker :disabled="!s_showLayer" :title="$l('受影响站点颜色')" size="mini" :predefine="predefineColors"
-                v-model="affectedStopColor" />
-              <el-input size="small " style="margin-left: 10px;" :disabled="!s_showLayer"
-                v-model="affectedStopColor"></el-input>
+            <div class="color-picker flex-align-center">
+              <el-color-picker :disabled="!s_showLayer" :title="$l('受影响站点颜色')" size="mini" :predefine="predefineColors" v-model="affectedStopColor" />
+              <el-input size="small " style="margin-left: 10px" :disabled="!s_showLayer" v-model="affectedStopColor"></el-input>
             </div>
           </div>
         </div>
@@ -207,7 +193,7 @@ export default {
   data() {
     return {
       loaded: false,
-      predefineColors: ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc'],
+      predefineColors: ["#5470c6", "#91cc75", "#fac858", "#ee6666", "#73c0de", "#3ba272", "#fc8452", "#9a60b4", "#ea7ccc"],
       s_showLayer: true,
 
       showChangeRoute: true,
@@ -270,7 +256,7 @@ export default {
         name1: database1 + "/" + datasource1,
         name2: database2 + "/" + datasource2,
       }).then((changeLines) => {
-        console.log('changeLines', changeLines);
+        console.log("changeLines", changeLines);
         this._OldBusLineListLayer.setData(changeLines?.data?.before || []);
         this._OldBusStopListLayer.setData(changeLines?.data?.before || []);
 
@@ -334,124 +320,7 @@ export default {
   }
 }
 
-.BusStopForm {
-  padding: 0 12px;
-  padding-top: 12px;
-
-  ::v-deep .el-collapse-item__header {
-    border-color: transparent;
-  }
-
-  .el-collapse-item__title {
-
-    .checkbox {
-      display: flex;
-      align-items: center;
-
-      ::v-deep .el-checkbox__input {
-        padding-left: 10px;
-      }
-
-      ::v-deep .el-checkbox__label {
-        font-size: 16px;
-        font-weight: 500;
-
-        .item_icon {
-          width: 18px;
-          height: 18px;
-          margin-right: 7px;
-        }
-      }
-    }
-
-  }
-
-  .form {
-    box-sizing: border-box;
-    width: 100%;
-    padding: 10px 10px 0px 20px;
-
-    .form_item {
-      width: 100%;
-      display: flex;
-      padding-top: 10px;
-
-      &+.form_item {
-        margin-top: 12px;
-      }
-
-      .form_label {
-        flex-shrink: 0;
-        padding-right: 10px;
-      }
-
-      .form_value {
-        width: 100%;
-        display: flex;
-        flex-direction: row-reverse;
-      }
-    }
-
-    .form_tip {
-      font-size: 12px;
-      color: #555;
-      padding-left: 2em;
-
-      &+.form_item {
-        margin-top: 10px;
-      }
-    }
-  }
-
-  .icon_button {
-    cursor: pointer;
-    flex-shrink: 0;
-    margin-left: 10px;
-    width: 28px;
-    height: 28px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid #e6e6e6;
-    border-radius: 4px;
-
-    &.active {
-      background-color: rgba($color: #409eff, $alpha: 1);
-      color: #ffffff;
-    }
-
-    &.disabled {
-      cursor: no-drop;
-    }
-
-    &.icon_stop {
-      .img {
-        width: 20px;
-        height: 20px;
-        display: block;
-        object-fit: cover;
-        padding: 4px;
-      }
-    }
-  }
-}
-
-::v-deep .is-active {
-  background-color: rgba(0, 0, 0, 0.05);
-  border-radius: 6px;
-}
-
-.showLayer {
-  ::v-deep .is-active {
-    background-color: #D2D6E5;
-    border-radius: 6px;
-  }
-
-  ::v-deep .el-collapse-item__arrow {
-    &::after {
-      background-image: url('@/assets/image/right_icon_a.png')
-    }
-  }
+.my_collapse_item {
 }
 
 .color-picker {
@@ -459,84 +328,6 @@ export default {
   padding: 4px 8px;
   border-radius: 6px;
   width: 120px;
-}
-
-::v-deep .input-number {
-
-  .el-input-number__decrease,
-  .el-input-number__increase {
-    border: none;
-    background-color: transparent;
-  }
-
-  .el-input__inner {
-    border: none;
-    background: rgba(0, 0, 0, 0.05);
-    padding: 0;
-    margin: 0 39px;
-    width: calc(100% - 78px);
-  }
-
-  .el-icon-minus,
-  .el-icon-plus {
-    width: 30px;
-    height: 30px;
-
-    &::before {
-      display: none;
-    }
-
-    &::after {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 30px;
-      height: 30px;
-      background: url('@/assets/image/minus_icon.png') no-repeat center center;
-      background-size: 100% 100%;
-    }
-
-    &:hover {
-      &::after {
-        background-image: url('@/assets/image/minus_icon_a.png');
-      }
-    }
-  }
-
-  .el-icon-plus {
-    &::after {
-      background-image: url('@/assets/image/push_icon.png');
-    }
-
-    &:hover {
-      &::after {
-        background-image: url('@/assets/image/push_icon_a.png');
-      }
-    }
-  }
-}
-
-::v-deep .el-collapse-item__arrow {
-  position: relative;
-  width: 16px;
-  height: 16px;
-  background-color: transparent;
-
-  &::before {
-    display: none;
-  }
-
-  &::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 16px;
-    height: 16px;
-    background: url('@/assets/image/right_icon.png') no-repeat center center;
-    background-size: 100% 100%;
-  }
 }
 
 .flex-align-center {

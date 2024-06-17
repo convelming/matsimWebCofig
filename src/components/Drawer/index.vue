@@ -57,6 +57,9 @@ export default {
   position: relative;
   box-sizing: border-box;
   .content {
+    &::-webkit-scrollbar {
+      display: none;
+    }
     overflow-y: auto;
     overflow-x: hidden;
     position: absolute;
