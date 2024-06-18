@@ -1,7 +1,7 @@
 <template>
-  <el-collapse-item class="BusRoutes" :name="name">
-    <div class="collapse_item_title" slot="title">{{ $l("线路比对分析") }}</div>
-    <div class="_bodyer">
+  <el-collapse-item class="toolbar_item my_collapse_item2" :name="name">
+    <div class="toolbar_item_header" slot="title">{{ $l("线路比对分析") }}</div>
+    <div class="toolbar_item_bodyer">
       <div class="title">
         <span>{{ $l("修改的线路") }}&nbsp;&nbsp;&nbsp;</span>
         <el-button type="primary" size="mini" circle icon="el-icon-refresh-right" @click="getList1"></el-button>
@@ -105,7 +105,7 @@ const XmlComparisonDialogExtend = Vue.extend(XmlComparisonDialog);
 const PassengerFlowDialogExtend = Vue.extend(PassengerFlowDialog);
 
 export default {
-  name: "BusRoutes",
+  name: "toolbar_item",
   inject: ["rootVue"],
   props: {
     name: {
@@ -304,15 +304,15 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.BusRoutes {
+.toolbar_item {
   font-size: 13px;
-  .collapse_item_title {
+  .toolbar_item_header {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     padding: 0 20px;
   }
-  ._bodyer {
+  .toolbar_item_bodyer {
     padding: 0 20px;
     .title {
       font-size: 18px;

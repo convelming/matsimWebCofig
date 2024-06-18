@@ -158,7 +158,6 @@ export default {
       showLayerAnalysisReport: false,
 
       permanentList: [],
-      speedList: [0, 0.5, 1, 2, 4, 10],
     };
   },
   watch: {
@@ -171,6 +170,7 @@ export default {
           this.$refs.Toolbar.activeName = "";
         }
       }
+      this.handleChangeMapCameraControls();
     },
     showLayerLinesAnalysis(val) {
       this.handleChangeMapCameraControls();

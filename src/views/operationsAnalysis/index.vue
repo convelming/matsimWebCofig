@@ -3,7 +3,7 @@
     <template v-if="!loading">
       <div class="grid_root">
         <div class="Drawer_row">
-          <Drawer class="left_toolber" show direction="left" :size="400">
+          <Drawer class="left_toolber" show direction="left" :size="300">
             <el-collapse v-model="activeNames">
               <PublicTransit :showLayer.sync="showLayerPublicTransit" name="PublicTransit" />
               <MotorizedTravel :showLayer.sync="showLayerMotorizedTravel" name="MotorizedTravel" />
@@ -79,7 +79,7 @@
               </div>
             </Drawer> -->
           </div>
-          <Drawer :show.sync="showStopToolbar" direction="right" :size="400">
+          <Drawer class="right_toolber" :show.sync="showStopToolbar" direction="right" :size="300">
             <!-- <Toolbar ref="Toolbar" /> -->
             <Toolbar ref="Toolbar" />
           </Drawer>
@@ -142,9 +142,7 @@ export default {
   },
   mixins: [mixins],
   data() {
-    return {
-      speedList: [0, 0.5, 1, 2, 4, 10],
-    };
+    return {};
   },
   methods: {
     speedCommand(value) {
@@ -166,6 +164,9 @@ export default {
     .el-collapse-item__wrap {
       background-color: #eef2fd;
     }
+  }
+  .right_toolber{
+    background-color: #eef2fd;
   }
 }
 

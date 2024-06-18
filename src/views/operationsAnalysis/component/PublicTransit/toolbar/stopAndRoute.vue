@@ -1,7 +1,7 @@
 <template>
-  <el-collapse-item class="BusStopToolbar" :name="name">
-    <div class="collapse_item_title" slot="title">{{ title }}</div>
-    <div class="BusStopToolbar_bodyer">
+  <el-collapse-item class="toolbar_item my_collapse_item2" :name="name">
+    <div class="toolbar_item_header" slot="title">{{ title }}</div>
+    <div class="toolbar_item_bodyer">
       <!-- <div class="stop_name">{{ $l("Stop Name") }}</div> -->
       <div class="stop_title">
         <div>{{ stopList.length }} {{ $l("Stops") }}</div>
@@ -577,14 +577,14 @@ export default {
     color: #409eff;
   }
 }
-.BusStopToolbar {
-  .collapse_item_title {
+.toolbar_item {
+  .toolbar_item_header {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     padding: 0 20px;
   }
-  .BusStopToolbar_bodyer {
+  .toolbar_item_bodyer {
     padding: 0 20px;
     .stop_name {
       font-size: 16px;

@@ -35,7 +35,7 @@
                 </div>
                 <div class="collapse_list">
                   <div class="collapse_item" v-for="(item, index) in form.Scoring" :key="item.uuid">
-                    <div class="collapse_item_title" :class="{ open: item.open }" @click="item.open = !item.open">
+                    <div class="toolbar_item_header" :class="{ open: item.open }" @click="item.open = !item.open">
                       <div class="el-icon-arrow-right"></div>
                       <div class="text">{{ `${$l(item.type)} ${index}` }}</div>
                       <div class="el-icon-delete" @click.stop="handleDeleteScoring(item.uuid)"></div>
@@ -75,7 +75,7 @@
                             <div class="collapse_list">
                               <template v-for="(amItem, amIndex) in item.Activitys">
                                 <div class="collapse_item" :key="amItem.uuid" v-if="amItem.type == 'Activity'">
-                                  <div class="collapse_item_title" :class="{ open: amItem.open }" @click="amItem.open = !amItem.open" style="top: 155px; z-index: 970">
+                                  <div class="toolbar_item_header" :class="{ open: amItem.open }" @click="amItem.open = !amItem.open" style="top: 155px; z-index: 970">
                                     <div class="el-icon-arrow-right"></div>
                                     <div class="text">{{ `${$l(amItem.type)} ${amIndex}` }}</div>
                                     <div class="el-icon-delete" @click.stop="handleDeleteActivity(item.uuid, amItem.uuid)"></div>
@@ -129,7 +129,7 @@
                             <div class="collapse_list">
                               <template v-for="(amItem, amIndex) in item.Modes">
                                 <div class="collapse_item" :key="amItem.uuid" v-if="amItem.type == 'Mode'">
-                                  <div class="collapse_item_title" :class="{ open: amItem.open }" @click="amItem.open = !amItem.open" style="top: 155px; z-index: 970">
+                                  <div class="toolbar_item_header" :class="{ open: amItem.open }" @click="amItem.open = !amItem.open" style="top: 155px; z-index: 970">
                                     <div class="el-icon-arrow-right"></div>
                                     <div class="text">{{ `${$l(amItem.type)} ${amIndex}` }}</div>
                                     <div class="el-icon-delete" @click.stop="handleDeleteMode(item.uuid, amItem.uuid)"></div>

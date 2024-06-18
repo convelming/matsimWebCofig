@@ -22,7 +22,7 @@ export default {
       loading: false,
       _Map: null,
       _MapLayer: null,
-      activeNames: ["PublicTransit", "MotorizedTravel", "Build3D", "Network", "Activity3D","GeoJSON"],
+      activeNames: ["PublicTransit", "MotorizedTravel", "Build3D", "Network", "Activity3D", "GeoJSON"],
       // activeNames: ["GeoJSON"],
 
       showLayerPublicTransit: false,
@@ -30,9 +30,9 @@ export default {
       showLayerBuild3D: false,
       showLayerNetwork: false,
       showLayerActivity3D: false,
-      showLayerGeoJSON: true,
+      showLayerGeoJSON: false,
 
-      showStopToolbar: false,
+      showStopToolbar: true,
 
       showClock: true,
 
@@ -42,6 +42,8 @@ export default {
       minTime: 0,
       maxTime: 3600 * 28,
       speedMarks: {},
+
+      speedList: [0, 0.5, 1, 2, 4, 100],
     };
   },
   watch: {
@@ -115,19 +117,14 @@ export default {
       return Math.floor(speed * 100) / 100;
     },
     handleChangeMapCameraControls() {
-      // let enableRotate = false;
-      // // enableRotate = enableRotate || this.showLayerPublicTransit;
-      // enableRotate = enableRotate || this.showLayerMotorizedTravel;
-      // enableRotate = enableRotate || this.showLayerBuild3D;
-      // enableRotate = enableRotate || this.showLayerNetwork;
-      // enableRotate = enableRotate || this.showLayerActivity3D;
-      // enableRotate = enableRotate || this.showLayerGeoJSON;
-      // if (enableRotate) {
-      //   this._Map.enableRotate = true;
-      // } else {
-      //   this._Map.enableRotate = false;
-      //   this._Map.setPitchAndRotation(90, 0);
-      // }
+      let enableRotate = true;
+      if (this.showLayerPublicTransit) enableRotate = false;
+      if (enableRotate) {
+        this._Map.enableRotate = true;
+      } else {
+        this._Map.enableRotate = false;
+        this._Map.setPitchAndRotation(90, 0);
+      }
     },
     initMap() {
       this._Map = new Map({
@@ -136,7 +133,7 @@ export default {
         enableRotate: true,
         zoom: 16,
         // minPitch: -90,
-        center: [ 12636623.734089389443398, 2642681.88545402046293 ],
+        center: [12636623.734089389443398, 2642681.88545402046293],
       });
       this._Map.addLayer(this._MapLayer);
       window._Map = this._Map;

@@ -19,33 +19,33 @@
       <div class="form_item">
         <div class="form_label">{{ $l("修改前：") }}</div>
         <div class="form_value">
-          <ColorPicker :disabled="!s_showLayer" :title="$l('公交站点颜色')" size="mini" :predefine="predefineColors" v-model="oldLinkColor" />
+          <ColorPicker :disabled="!s_showLayer" :title="$l('公交站点颜色')" :predefine="predefineColors" v-model="oldLinkColor" />
         </div>
       </div>
       <div class="form_item">
         <div class="form_label">{{ $l("修改后：") }}</div>
         <div class="form_value">
-          <ColorPicker :disabled="!s_showLayer" :title="$l('公交站点颜色')" size="mini" :predefine="predefineColors" v-model="newLinkColor" />
+          <ColorPicker :disabled="!s_showLayer" :title="$l('公交站点颜色')" :predefine="predefineColors" v-model="newLinkColor" />
         </div>
       </div>
       <!-- <div class="form_tip">{{ $l("（虚线为修改前线路， 实线为修改后线路）") }}</div> -->
 
       <div class="form_item">
         <div class="form_label">
-          <el-switch :disabled="!s_showLayer" v-model="showAffectedRoutes"/>
+          <el-switch :disabled="!s_showLayer" v-model="showAffectedRoutes" />
         </div>
         <div class="form_label">{{ $l("受影响线路：") }}</div>
         <div class="form_value">
-          <ColorPicker :disabled="!s_showLayer" :title="$l('受影响线路颜色')" size="mini" :predefine="predefineColors" v-model="affectedLinkColor" />
+          <ColorPicker :disabled="!s_showLayer" :title="$l('受影响线路颜色')" :predefine="predefineColors" v-model="affectedLinkColor" />
         </div>
       </div>
       <div class="form_item">
         <div class="form_label">
-          <el-switch :disabled="!s_showLayer" v-model="showAffectedStop"/>
+          <el-switch :disabled="!s_showLayer" v-model="showAffectedStop" />
         </div>
         <div class="form_label">{{ $l("受影响站点：") }}</div>
         <div class="form_value">
-          <ColorPicker :disabled="!s_showLayer" :title="$l('受影响站点颜色')" size="mini" :predefine="predefineColors" v-model="affectedStopColor" />
+          <ColorPicker :disabled="!s_showLayer" :title="$l('受影响站点颜色')" :predefine="predefineColors" v-model="affectedStopColor" />
         </div>
       </div>
     </div>

@@ -1,7 +1,7 @@
 <template>
-  <el-collapse-item class="CarDetail" :name="name">
-    <div class="collapse_item_title" slot="title">{{ $l("建筑详情") }} {{ buildDetail.id }}</div>
-    <div class="_bodyer" v-loading="loading">
+  <el-collapse-item class="toolbar_item my_collapse_item2" :name="name">
+    <div class="toolbar_item_header" slot="title">{{ $l("建筑详情") }} {{ buildDetail.id }}</div>
+    <div class="toolbar_item_bodyer" v-loading="loading">
       <div class="form" v-if="resData">
         <div class="form_item" style="justify-content: flex-end">
           <el-button type="primary" size="mini" @click="handleMenu({ data: resData, command: 'selectBuildAnalysis' })">{{ $l("selectBuildAnalysis") }}</el-button>
@@ -204,15 +204,15 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.CarDetail {
+.toolbar_item {
   font-size: 13px;
-  .collapse_item_title {
+  .toolbar_item_header {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     padding: 0 20px;
   }
-  ._bodyer {
+  .toolbar_item_bodyer {
     padding: 0 20px;
     .form {
       width: 100%;

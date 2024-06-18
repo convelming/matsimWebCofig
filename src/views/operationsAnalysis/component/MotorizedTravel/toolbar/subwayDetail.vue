@@ -1,6 +1,6 @@
 <template>
-  <el-collapse-item class="SubwayDetail" :name="name">
-    <div class="collapse_item_title" slot="title">
+  <el-collapse-item class="toolbar_item my_collapse_item2" :name="name">
+    <div class="toolbar_item_header" slot="title">
       {{ subwayDetail.id.split(")")[0] + ")" }}
     </div>
     <div class="_bodyer" v-loading="loading">
@@ -311,9 +311,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.SubwayDetail {
+.toolbar_item {
   font-size: 13px;
-  .collapse_item_title {
+  .toolbar_item_header {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;

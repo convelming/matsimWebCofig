@@ -1,9 +1,9 @@
 <template>
-  <el-collapse-item class="BusDetail" :name="name">
-    <div class="collapse_item_title" slot="title">
+  <el-collapse-item class="toolbar_item my_collapse_item2" :name="name">
+    <div class="toolbar_item_header" slot="title">
       {{ busDetail.id.split(")")[0] + ")" }}
     </div>
-    <div class="_bodyer" v-loading="loading">
+    <div class="toolbar_item_bodyer" v-loading="loading">
       <div class="form" v-if="departure">
         <!-- <div class="form_item">
           <div class="form_label">{{ $l("路线：") }}</div>
@@ -310,15 +310,15 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.BusDetail {
+.toolbar_item {
   font-size: 13px;
-  .collapse_item_title {
+  .toolbar_item_header {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     padding: 0 20px;
   }
-  ._bodyer {
+  .toolbar_item_bodyer {
     padding: 0 20px;
     .form {
       width: 100%;

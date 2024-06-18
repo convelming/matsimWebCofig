@@ -62,7 +62,7 @@ export default {
   background: rgba(0, 0, 0, 0.05);
   padding: 0px 8px;
   border-radius: 6px;
-  width: 130px;
+  width: 120px;
   height: 36px;
   display: inline-flex;
   align-items: center;

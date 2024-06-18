@@ -34,7 +34,7 @@
                 </div>
                 <div class="collapse_list">
                   <div class="collapse_item" v-for="(item, index) in form.TeleportedMode" :key="item.uuid">
-                    <div class="collapse_item_title" :class="{ open: item.open }" @click="item.open = !item.open">
+                    <div class="toolbar_item_header" :class="{ open: item.open }" @click="item.open = !item.open">
                       <div class="el-icon-arrow-right"></div>
                       <div class="text">{{ `${$l(item.type)} ${index}` }}</div>
                       <div class="el-icon-delete" @click.stop="handleDeleteTeleportedMode(item.uuid)"></div>

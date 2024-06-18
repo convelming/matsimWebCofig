@@ -41,11 +41,6 @@
           <el-switch :disabled="!s_showLayer" v-model="showNode"></el-switch>
         </div>
       </div>
-      <!-- <div class="form_item" style="align-items: center"> -->
-      <!-- <el-color-picker :disabled="!s_showLayer" :title="$l('color')" size="mini" :predefine="predefineColors" v-model="color" /> -->
-      <!-- <div :title="$l('selectLine')" :class="{ disabled: !s_showLayer }" class="icon_button el-icon-circle-close" @click="s_showLayer && handleClearSelect()"></div>
-        <div :title="$l('selectLine')" :class="{ active: canSelect, disabled: !s_showLayer }" class="icon_button el-icon-aim" @click="s_showLayer && handleCanSelect(!canSelect)"></div> -->
-      <!-- </div> -->
     </div>
   </el-collapse-item>
 </template>
@@ -266,9 +261,6 @@ export default {
       } else {
         this._NetworkLayer.removeEventListener(MAP_EVENT.HANDLE_PICK_LEFT, this._NetworkLayerEventId);
       }
-    },
-    handleClearSelect() {
-      this.rootVue.$emit("clearSelectNetwork");
     },
   },
 };

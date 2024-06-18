@@ -1,7 +1,7 @@
 <template>
-  <el-collapse-item class="ReportToolbar" :name="name">
-    <div class="collapse_item_title" slot="title">{{ $l("ReportToolbar") }}</div>
-    <div class="_bodyer">
+  <el-collapse-item class="toolbar_item my_collapse_item2" :name="name">
+    <div class="toolbar_item_header" slot="title">{{ $l("ReportToolbar") }}</div>
+    <div class="toolbar_item_bodyer">
       <div class="tree_scroll">
         <el-tree ref="tree" :data="treeData" show-checkbox node-key="id" :default-checked-keys="defaultCheckedKeys">
           <div slot-scope="{ node, data }" class="tree_item">
@@ -590,15 +590,15 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.ReportToolbar {
+.toolbar_item {
   font-size: 13px;
-  .collapse_item_title {
+  .toolbar_item_header {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     padding: 0 20px;
   }
-  ._bodyer {
+  .toolbar_item_bodyer {
     padding: 0 20px;
     .btn_list {
       padding-top: 20px;

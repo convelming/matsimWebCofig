@@ -201,10 +201,34 @@
     }
   }
 
+  .el-collapse-item__content {
+    padding-bottom: 20px;
+    border-bottom: 2px solid #bbc0cf;
+  }
+
   &.active {
     .is-active {
       background-color: #d2d6e5;
       border-radius: 6px;
     }
+  }
+}
+
+.my_collapse_item2 {
+  background-color: #eef2fd;
+
+  .el-collapse-item__wrap,
+  .el-collapse-item__content,
+  .el-collapse-item__header {
+    background-color: transparent;
+    border-color: transparent;
+  }
+
+  .el-collapse-item__header:not(.is-active) {
+    border-bottom: 2px dotted #bbc0cf;
+  }
+  .el-collapse-item__content {
+    padding-bottom: 20px;
+    border-bottom: 2px dotted #bbc0cf;
   }
 }

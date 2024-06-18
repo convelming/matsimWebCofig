@@ -1,6 +1,6 @@
 <template>
-  <el-collapse-item class="RouteDepartures" :name="name">
-    <div class="RouteDepartures_bodyer">
+  <el-collapse-item class="toolbar_item my_collapse_item2" :name="name">
+    <div class="toolbar_item_bodyer">
       <div class="stop_title">
         <el-button
           type="primary"
@@ -35,14 +35,14 @@ export default {};
     color: #409eff;
   }
 }
-.RouteDepartures {
-  .collapse_item_title {
+.toolbar_item {
+  .toolbar_item_header {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     padding: 0 20px;
   }
-  .RouteDepartures_bodyer {
+  .toolbar_item_bodyer {
     padding: 0 20px;
     .stop_name {
       font-size: 16px;

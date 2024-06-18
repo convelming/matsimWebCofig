@@ -368,7 +368,7 @@ export default {
     }
     .collapse_list {
       .collapse_item {
-        .collapse_item_title {
+        .toolbar_item_header {
           display: flex;
           align-items: center;
           background: #fff;

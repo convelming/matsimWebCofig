@@ -1,10 +1,10 @@
 <template>
-  <el-collapse-item class="BusStopToolbar" :name="name">
+  <el-collapse-item class="toolbar_item my_collapse_item2" :name="name">
     <template v-if="stopDetail">
-      <div class="collapse_item_title" slot="title">
+      <div class="toolbar_item_header" slot="title">
         {{ `${$l("Stop")} ${stopDetail.name}(${stopDetail.id})` }}
       </div>
-      <div class="BusStopToolbar_bodyer">
+      <div class="toolbar_item_bodyer">
         <div class="stop_title">
           <div>{{ stopDetail.name }}</div>
           <el-color-picker size="mini" :predefine="predefineColors" v-model="stopColor" />
@@ -267,7 +267,7 @@ export default {
       showTransitRoutesInfo: false,
       formTransitRoutesInfo: undefined,
 
-      predefineColors: ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc'],
+      predefineColors: ["#5470c6", "#91cc75", "#fac858", "#ee6666", "#73c0de", "#3ba272", "#fc8452", "#9a60b4", "#ea7ccc"],
 
       _SelectStopLayer: undefined,
       _TransitLinesLayer: undefined,
@@ -482,14 +482,14 @@ export default {
     color: #409eff;
   }
 }
-.BusStopToolbar {
-  .collapse_item_title {
+.toolbar_item {
+  .toolbar_item_header {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     padding: 0 20px;
   }
-  .BusStopToolbar_bodyer {
+  .toolbar_item_bodyer {
     padding: 0 20px;
     .stop_name {
       font-size: 16px;

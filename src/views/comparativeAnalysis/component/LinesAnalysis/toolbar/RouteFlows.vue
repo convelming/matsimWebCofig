@@ -1,7 +1,7 @@
 <template>
-  <el-collapse-item class="RouteFlows" :name="name">
-    <div class="collapse_item_title" slot="title">{{ $l("RouteFlows") }} {{ this.routeDetail.routeId }}</div>
-    <div class="_bodyer">
+  <el-collapse-item class="toolbar_item my_collapse_item2" :name="name">
+    <div class="toolbar_item_header" slot="title">{{ $l("RouteFlows") }} {{ this.routeDetail.routeId }}</div>
+    <div class="toolbar_item_bodyer">
       <div class="title">
         <span>{{ $l("Top5Routes") }}&nbsp;&nbsp;&nbsp;</span>
         <el-button
@@ -426,15 +426,15 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.RouteFlows {
+.toolbar_item {
   font-size: 13px;
-  .collapse_item_title {
+  .toolbar_item_header {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     padding: 0 20px;
   }
-  ._bodyer {
+  .toolbar_item_bodyer {
     padding: 0 20px;
     .title {
       font-size: 18px;
