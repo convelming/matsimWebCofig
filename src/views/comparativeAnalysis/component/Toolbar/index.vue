@@ -25,6 +25,24 @@
         <component v-for="item in AnalysisReport.list" :show="item.name == AnalysisReport.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" />
       </el-collapse>
     </div>
+    <div class="toolbar-bodyer" v-show="activeModel === PublicTransit.name">
+      <!-- <div class="toolbar-search">
+        <el-select v-model="" value-key="" placeholder="" clearable filterable @change=""> </el-select>
+      </div> -->
+      <el-collapse class="toolbar-collapse" v-model="PublicTransit.activeName" accordion>
+        <!-- <el-collapse class="toolbar-collapse" :value="PublicTransit.activeName" @input="handleChangeActive" accordion> -->
+        <component v-for="item in PublicTransit.list" :show="item.name == PublicTransit.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" />
+      </el-collapse>
+    </div>
+    <div class="toolbar-bodyer" v-show="activeModel === MotorizedTravel.name">
+      <!-- <div class="toolbar-search">
+        <el-select v-model="" value-key="" placeholder="" clearable filterable @change=""> </el-select>
+      </div> -->
+      <el-collapse class="toolbar-collapse" v-model="MotorizedTravel.activeName" accordion>
+        <!-- <el-collapse class="toolbar-collapse" :value="MotorizedTravel.activeName" @input="handleChangeActive" accordion> -->
+        <component v-for="item in MotorizedTravel.list" :show="item.name == MotorizedTravel.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" />
+      </el-collapse>
+    </div>
     <div class="toolbar-bodyer" v-show="activeModel === Build3D.name">
       <!-- <div class="toolbar-search">
         <el-select v-model="" value-key="" placeholder="" clearable filterable @change=""> </el-select>

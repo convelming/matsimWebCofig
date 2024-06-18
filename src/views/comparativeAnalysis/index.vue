@@ -3,7 +3,7 @@
     <template v-if="!loading">
       <div class="grid_root">
         <div class="Drawer_row">
-          <Drawer class="left_toolber" show direction="left" :size="400">
+          <Drawer class="left_toolber" show direction="left" :size="300">
             <el-collapse v-model="activeNames">
               <LinesAnalysis :showLayer.sync="showLayerLinesAnalysis" name="LinesAnalysis" ref="LinesAnalysis" />
               <AnalysisReport :showLayer.sync="showLayerAnalysisReport" name="AnalysisReport" ref="AnalysisReport" />
@@ -81,7 +81,7 @@
               </div>
             </Drawer> -->
           </div>
-          <Drawer :show.sync="showStopToolbar" direction="right" :size="400">
+          <Drawer :show.sync="showStopToolbar" direction="right" :size="300">
             <!-- <Toolbar ref="Toolbar" /> -->
             <Toolbar ref="Toolbar" :permanent-list="permanentList" />
           </Drawer>
@@ -156,6 +156,8 @@ export default {
 
       showLayerLinesAnalysis: true,
       showLayerAnalysisReport: false,
+      
+      showStopToolbar: true,
 
       permanentList: [],
     };

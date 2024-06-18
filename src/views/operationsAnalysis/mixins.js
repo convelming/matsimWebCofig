@@ -32,7 +32,7 @@ export default {
       showLayerActivity3D: false,
       showLayerGeoJSON: false,
 
-      showStopToolbar: true,
+      showStopToolbar: false,
 
       showClock: true,
 
