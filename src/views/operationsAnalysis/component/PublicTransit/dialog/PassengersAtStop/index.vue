@@ -12,7 +12,7 @@
           </el-select>
         </el-checkbox>
       </div>
-      <el-table height="80vh" :data="tableList" border stripe>
+      <el-table class="small" height="80vh" :data="tableList" border stripe>
         <el-table-column prop="line" :label="$l('Line')" />
         <el-table-column prop="route" :label="$l('Route')" />
         <el-table-column prop="routeStart" :label="$l('Route Start')" />

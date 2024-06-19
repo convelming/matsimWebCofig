@@ -8,7 +8,7 @@
         <el-color-picker size="mini" :predefine="predefineColors" v-model="stopColor" />
       </div>
       <div class="stops_table">
-        <el-table class="small" :data="stopList" border stripe height="250">
+        <el-table class="small my_tabel" :data="stopList" border stripe height="250">
           <el-table-column :label="$l('Route')" prop="route" show-overflow-tooltip />
           <el-table-column :label="$l('Name')" prop="name" show-overflow-tooltip />
           <el-table-column width="50">
@@ -27,7 +27,7 @@
         </el-select>
       </div>
       <div class="routes_table">
-        <el-table class="small" :data="routeList" border stripe height="250">
+        <el-table class="small my_tabel" :data="routeList" border stripe height="250">
           <el-table-column :label="$l('Line')" prop="line" show-overflow-tooltip />
           <el-table-column :label="$l('Route')" prop="routeId" show-overflow-tooltip />
           <el-table-column width="50">
@@ -327,7 +327,7 @@ export default {
       showTransitRoutesInfo: false,
       formTransitRoutesInfo: undefined,
 
-      predefineColors: ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc'],
+      predefineColors: ["#5470c6", "#91cc75", "#fac858", "#ee6666", "#73c0de", "#3ba272", "#fc8452", "#9a60b4", "#ea7ccc"],
 
       _SelectStopLayer: undefined,
       _TransitLinesLayer: undefined,
@@ -489,7 +489,7 @@ export default {
           }
           break;
         case "Transit Stop Details":
-          this.rootVue.handleShowStopAndRoute(data);
+          this.rootVue.handleShowStopAndRoute(data.map((v) => v.id));
           break;
       }
     },

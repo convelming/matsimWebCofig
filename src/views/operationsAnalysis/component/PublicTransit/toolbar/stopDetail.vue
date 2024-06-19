@@ -15,7 +15,7 @@
           </el-select>
         </div>
         <div class="routes_table">
-          <el-table class="small" :data="routeList" border stripe height="250">
+          <el-table class="small my_tabel" :data="routeList" border stripe height="250">
             <el-table-column :label="$l('Line')" prop="line" show-overflow-tooltip />
             <el-table-column :label="$l('Route')" prop="routeId" show-overflow-tooltip />
             <el-table-column width="50">

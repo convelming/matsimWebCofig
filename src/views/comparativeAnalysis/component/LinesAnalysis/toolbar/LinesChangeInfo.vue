@@ -6,7 +6,7 @@
         <span>{{ $l("修改的线路") }}&nbsp;&nbsp;&nbsp;</span>
         <el-button type="primary" size="mini" circle icon="el-icon-refresh-right" @click="getList1"></el-button>
       </div>
-      <el-table class="small" :data="list1" border stripe height="300px" v-loading="loading1">
+      <el-table class="small my_tabel" :data="list1" border stripe height="300px" v-loading="loading1">
         <el-table-column :label="$l('Line')" prop="lineName" show-overflow-tooltip />
         <el-table-column :label="$l('Route')" prop="routeName" show-overflow-tooltip />
         <el-table-column width="50">
@@ -26,7 +26,7 @@
         <span>{{ $l("受影响的线路") }}&nbsp;&nbsp;&nbsp;</span>
         <el-button type="primary" size="mini" circle icon="el-icon-refresh-right" @click="getList2"></el-button>
       </div>
-      <el-table class="small" :data="list2" border stripe height="300px" v-loading="loading2">
+      <el-table class="small my_tabel" :data="list2" border stripe height="300px" v-loading="loading2">
         <el-table-column :label="$l('Line')" prop="lineName" show-overflow-tooltip />
         <el-table-column :label="$l('Route')" prop="routeName" show-overflow-tooltip />
         <el-table-column width="50">

@@ -77,7 +77,21 @@
       <StartEdit v-if="startEditObj.open" :transitRouteJSON="startEditObj.transitRouteJSON" @change="handleChangeStartEdit" />
     </Dialog>
 
-    <HelpDialog />
+    <div class="HelpBtnList">
+      <div class="_flex">
+        <div class="el-icon-question" @click="showHelpDialog = true"></div>
+        <a class="bug" href="https://doc.weixin.qq.com/sheet/e3_AdQA8Aa_ADMt1qh97LkSHer6ALqI2?scode=APwA6gfEAA0aeGdABPAdQA8Aa_ADM&tab=f2oofj" target="_blank">BUG</a>
+        <el-dropdown class="language" @command="changeLanguage" placement="top-start" trigger="click">
+          <img src="@/assets/image/locale.svg" style="width: 100%; height: 100%" />
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item command="zh-CN" :disabled="page_language == 'zh-CN'">中文（简体）</el-dropdown-item>
+            <!-- <el-dropdown-item command="zh_MO" :disabled="page_language == 'zh-MO'">中文（繁體）</el-dropdown-item> -->
+            <el-dropdown-item command="en-US" :disabled="page_language == 'en-US'">English</el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
+      </div>
+    </div>
+    <HelpDialog :visible.sync="showHelpDialog" />
   </div>
 </template>
 
@@ -273,6 +287,8 @@ export default {
       database: "",
       datasource: "",
 
+      showHelpDialog: false,
+
       saveLoading: false,
       deleteLoading: false,
       _map: null,
@@ -359,6 +375,9 @@ export default {
     this._map.dispose();
   },
   methods: {
+    changeLanguage(lan) {
+      this.$setLanguage(lan);
+    },
     // 初始化地图
     initMap() {
       this._map = new Map({
@@ -987,13 +1006,6 @@ export default {
     }
   }
 
-  .HelpDialog {
-    bottom: 20px;
-    left: 20px;
-    position: absolute;
-    z-index: 20;
-  }
-
   .lineOffset {
     bottom: 100px;
     left: 20px;
@@ -1002,6 +1014,50 @@ export default {
     ::v-deep .el-slider__runway {
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.04);
     }
+  }
+}
+
+.HelpBtnList {
+  bottom: 20px;
+  left: 20px;
+  position: absolute;
+  z-index: 20;
+  ._flex {
+    display: flex;
+    align-items: center;
+  }
+  .el-icon-question {
+    color: #409eff;
+    font-size: 40px;
+    cursor: pointer;
+  }
+  .bug {
+    box-sizing: border-box;
+    width: 40px;
+    height: 40px;
+    margin-left: 20px;
+    border-radius: 50%;
+    background-color: #f56c6c;
+    color: #fff;
+    font-weight: bold;
+    text-align: center;
+    line-height: 40px;
+    font-size: 12px;
+    text-decoration: none;
+    display: block;
+  }
+  .language {
+    box-sizing: border-box;
+    width: 40px;
+    height: 40px;
+    margin-left: 20px;
+    border-radius: 50%;
+    background-color: #e6a23c;
+    color: #fff;
+    display: block;
+    padding: 5px;
+    box-sizing: border-box;
+    cursor: pointer;
   }
 }
 </style>

@@ -1,9 +1,20 @@
 <template>
   <div class="Help">
     <img class="icon" src="@/assets/image/question_icon.png" />
-    <span class="text">帮助</span>
+    <span class="text">{{ $l("帮助") }}</span>
   </div>
 </template>
+
+
+<language>
+{
+  "帮助":{
+    "zh-CN": "帮助",
+    "en-US": "Help"
+  },
+}
+</language>
+
 
 <script>
 export default {

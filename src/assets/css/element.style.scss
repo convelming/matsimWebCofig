@@ -232,3 +232,22 @@
     border-bottom: 2px dotted #bbc0cf;
   }
 }
+
+.my_tabel {
+  border: 1px solid #bbc0cf !important;
+  background-color: #eef2fd;
+  border-radius: 4px;
+  overflow: hidden;
+  .el-table__cell {
+    border-color: #bbc0cf !important;
+    background-color: #eef2fd;
+  }
+
+  th.el-table__cell {
+    background: #ccd4ea;
+    color: #000;
+  }
+  td.el-table__cell {
+    background-color: #eef2fd !important;
+  }
+}

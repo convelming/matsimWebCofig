@@ -17,76 +17,16 @@
           <div class="Drawer_col">
             <div></div>
             <div class="mapBox">
-              <!-- 新版时间钟&&地图选择&&速度调节&&更多功能 -->
-              <NewClock v-show="showClock" class="mapClock" :time="time">
-                <template slot="Luopan">
-                  <Luopan class="mapLuopan" />
-                </template>
-                <template slot="bottom">
-                  <div class="bottom">
-                    <div class="form">
-                      <div class="form_item" style="padding-bottom: 25px">
-                        <!-- <div class="form_label">{{ $l("时间：") }}</div> -->
-                        <div class="form_value">
-                          <TimeSlider v-model="time" :speed="60 * 60 * 4" :min="minTime" :max="maxTime"></TimeSlider>
-                        </div>
-                      </div>
-                    </div>
-                    <el-dropdown @command="speedCommand" placement="top-start" trigger="click">
-                      <div class="speed">
-                        <img class="icon" src="@/assets/image/speed_icon.png" />
-                        <span>X{{ speed }}</span>
-                      </div>
-                      <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item v-for="item in speedList" :command="item" :key="item" :disabled="speed === item">速度 X{{ item }} </el-dropdown-item>
-                      </el-dropdown-menu>
-                    </el-dropdown>
-                  </div>
-                </template>
-              </NewClock>
-              <!-- 旧版时钟&&地图选择 -->
-              <!-- <Luopan class="mapLuopan" />  
-              <Clock v-show="showClock" :time="time" />  -->
+              <NewClock class="NewClock" :time="time" :speed.sync="speed" :minTime="minTime" :maxTime="maxTime" @update:time="handleUpdateTime" @showHelp="handleShowHelp"></NewClock>
               <div id="mapRoot"></div>
             </div>
-
-            <!-- 旧版时间速度调节 -->
-            <!-- <Drawer show direction="bottom" :size="180">
-              <div class="form">
-                <div class="form_flex">
-                  <div class="form_item">
-                    <div class="form_label">{{ $l("时钟：") }}</div>
-                    <div class="form_value">
-                      <el-switch v-model="showClock" />
-                    </div>
-                  </div>
-                  <div class="form_item">
-                    <div class="form_label">{{ $l("速度：") }}</div>
-                    <div class="form_label">
-                      <div class="play_btn" :class="timePlay ? 'el-icon-video-pause' : 'el-icon-video-play'" :title="timePlay ? $l('pause') : $l('play')" @click="timePlay = !timePlay"></div>
-                    </div>
-                    <div class="form_value">
-                      <el-slider style="padding: 0 calc(2em - 10px)" v-model="speed" :step="0.1" :min="0" :max="30" :marks="speedMarks" :format-tooltip="formatSpeed"> </el-slider>
-                    </div>
-                  </div>
-                </div>
-                <div class="form_item" style="padding-bottom: 25px">
-                  <div class="form_label">{{ $l("时间：") }}</div>
-                  <div class="form_value">
-                    <TimeSlider v-model="time" :speed="60 * 60 * 4" :min="minTime" :max="maxTime"></TimeSlider>
-                  </div>
-                </div>
-              </div>
-            </Drawer> -->
           </div>
           <Drawer class="right_toolber" :show.sync="showStopToolbar" direction="right" :size="300">
-            <!-- <Toolbar ref="Toolbar" /> -->
             <Toolbar ref="Toolbar" />
           </Drawer>
         </div>
       </div>
-      <!-- 旧版更多功能 -->
-      <!-- <HelpDialog /> -->
+      <HelpDialog :visible.sync="showHelpDialog" />
     </template>
   </div>
 </template>
@@ -120,13 +60,14 @@ import mixins from "./mixins";
 import HelpDialog from "./component/HelpDialog/index.vue";
 
 import Toolbar from "./component/Toolbar/index.vue";
-import NewClock from "../comparativeAnalysis/component/NewClock.vue";
 import PublicTransit from "./component/PublicTransit/index.vue";
 import MotorizedTravel from "./component/MotorizedTravel/index.vue";
 import Build3D from "./component/Build3D/index.vue";
 import Network from "./component/Network/index.vue";
 import Activity3D from "./component/Activity3D/index.vue";
 import GeoJSON from "./component/GeoJSON/index.vue";
+
+import NewClock from "@/components/NewClock/index.vue";
 
 export default {
   components: {
@@ -165,7 +106,7 @@ export default {
       background-color: #eef2fd;
     }
   }
-  .right_toolber{
+  .right_toolber {
     background-color: #eef2fd;
   }
 }
@@ -231,64 +172,19 @@ export default {
       font-size: 20px;
     }
   }
-
-  .HelpDialog {
-    bottom: 20px;
-    left: 20px;
-    position: absolute;
-    z-index: 20;
-  }
-
   .mapBox {
     position: relative;
 
-    .mapClock {
+    .NewClock {
       position: absolute;
-      top: 10px;
-      right: 10px;
+      right: 20px;
+      top: 20px;
       z-index: 1000;
     }
-
-    .mapLuopan {
-      position: absolute;
-      bottom: 80px;
-      right: 10px;
-      z-index: 1000;
-    }
-
     #mapRoot {
       width: 100%;
       height: 100%;
     }
-  }
-}
-
-.bottom {
-  display: flex;
-  align-items: center;
-}
-
-.speed {
-  height: 26px;
-  background: rgba(0, 0, 0, 0.05);
-  padding: 4px;
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-left: 10px;
-  gap: 8px;
-
-  .icon {
-    width: 18px;
-    height: 18px;
-  }
-
-  .text {
-    color: #434343;
-    font-size: 16px;
-    font-weight: 400;
-    line-height: 20px;
   }
 }
 </style>

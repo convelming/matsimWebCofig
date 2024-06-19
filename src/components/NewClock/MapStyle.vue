@@ -2,11 +2,21 @@
   <div class="MapStyle">
     <div id="map-switch">
       <img class="icon" style="margin-right: 4px" src="@/assets/image/map_icon.png" />
-      <span class="text">地图</span>
+      <span class="text">{{ $l("地图") }}</span>
     </div>
     <div id="map-switch-list"></div>
   </div>
 </template>
+
+
+<language>
+{
+  "地图":{
+    "zh-CN": "地图",
+    "en-US": "Map"
+  },
+}
+</language>
 
 <script>
 export default {

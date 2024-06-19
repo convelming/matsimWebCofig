@@ -39,7 +39,6 @@ export default {
   },
   methods: {
     goTouchstart(type) {
-      console.log(type);
       let _this = this;
       clearTimeout(_this._timeOutEvent);
       _this._timeOutEvent = setTimeout(function () {
@@ -51,7 +50,6 @@ export default {
       }, 500);
     },
     goTouchend(type) {
-      console.log(type);
       let _this = this;
       clearTimeout(_this._timeOutEvent);
       if (_this._timeOutEvent !== 0) {
@@ -74,7 +72,6 @@ export default {
       this._Map.removeEventListener(MAP_EVENT.UPDATE_CAMERA_ROTATE, this._MapEvnetId1);
     },
     handleMapUpdateCameraRotate({ data }) {
-      console.log(data);
       this.pitch = data.newPitch;
       this.rotation = data.newRotation;
     },

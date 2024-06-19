@@ -2,39 +2,49 @@
   <div class="box">
     <div class="top">
       <Luopan class="Luopan"></Luopan>
-      <Bug v-show="showFun" href="https://doc.weixin.qq.com/sheet/e3_AdQA8Aa_ADMt1qh97LkSHer6ALqI2?scode=APwA6gfEAA0aeGdABPAdQA8Aa_ADM&tab=f2oofj"></Bug>
+      <Bug v-show="showFun" :href="bugHref"></Bug>
       <MapStyle v-show="showFun"></MapStyle>
-      <Help v-show="showFun"></Help>
+      <Help v-show="showFun" @click.native="$emit('showHelp')"></Help>
       <Language v-show="showFun"></Language>
       <div class="time" :style="{ background: showFun ? '#E5E5E5' : '' }" @click="showFun = !showFun">
-        {{ getTime }}
+        {{ formatHour(s_time) }}
       </div>
     </div>
-    <div v-show="showFun" class="bottom">
-      <slot name="bottom"></slot>
-    </div>
-    <el-dialog :visible.sync="open" width="500px" append-to-body center @close="handleClose" :close-on-click-modal="false">
-      <div class="body">
-        <!-- <component v-show="carouselIndex == item" v-for="item in pageNum" :key="item" :is="`page${item}`"></component> -->
-      </div>
-      <div slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="handleClose">关闭</el-button>
-        <el-button v-if="carouselIndex != 1" size="mini" type="info" @click="carouselIndex--">上一步</el-button>
-        <el-button v-if="carouselIndex < pageNum" size="mini" type="primary" @click="carouselIndex++">下一步</el-button>
-      </div>
-    </el-dialog>
+    <TimeSlider class="bottom" v-show="showFun" :value="s_time" :min="minTime" :max="maxTime" :speed="s_speed" @input="handleInputTime" @update:speed="handleUpdateSpeed"></TimeSlider>
   </div>
 </template>
 <script>
+import { formatHour } from "@/utils/utils";
+
 import Luopan from "./Luopan.vue";
 import Bug from "./Bug.vue";
 import MapStyle from "./MapStyle.vue";
 import Help from "./Help.vue";
 import Language from "./Language.vue";
+import TimeSlider from "./TimeSlider.vue";
 
 export default {
   props: {
-    time: Number,
+    bugHref: {
+      type: String,
+      default: "https://doc.weixin.qq.com/sheet/e3_AdQA8Aa_ADMt1qh97LkSHer6ALqI2?scode=APwA6gfEAA0aeGdABPAdQA8Aa_ADM&tab=f2oofj",
+    },
+    time: {
+      type: Number,
+      default: 0,
+    },
+    maxTime: {
+      type: Number,
+      default: 24 * 60 * 60,
+    },
+    minTime: {
+      type: Number,
+      default: 0,
+    },
+    speed: {
+      type: Number,
+      default: 0,
+    },
   },
   components: {
     Luopan,
@@ -42,58 +52,49 @@ export default {
     MapStyle,
     Help,
     Language,
+    TimeSlider,
   },
   data() {
     return {
-      // open: !localStorage.getItem("HelpDialogClose"),
-      open: false,
-      carouselIndex: 1,
-      pageNum: 5,
       showFun: false,
+      s_time: 0,
+      s_speed: 0,
     };
   },
   computed: {
     getTime() {
-      console.log(this.time);
       return this.formatTime(Math.ceil(this.time));
     },
   },
   watch: {
-    open(val) {
-      if (val) {
-        this.carouselIndex = 1;
-      }
+    time: {
+      handler(val) {
+        if (val !== this.s_time) {
+          this.s_time = val;
+        }
+      },
+      immediate: true,
+      deep: true,
+    },
+    speed: {
+      handler(val) {
+        if (val !== this.s_speed) {
+          this.s_speed = val;
+        }
+      },
+      immediate: true,
+      deep: true,
     },
   },
   methods: {
-    handleClose() {
-      this.open = false;
-      // localStorage.setItem("HelpDialogClose", true);
+    formatHour: formatHour,
+    handleInputTime(val) {
+      this.s_time = val;
+      this.$emit("update:time", val);
     },
-    handleNext() {
-      this.$refs.carousel.next();
-    },
-    handlePrev() {
-      this.$refs.carousel.prev();
-    },
-    changeLanguage(lan) {
-      this.$setLanguage(lan);
-    },
-    formatTime(seconds) {
-      // 计算小时数
-      const hours = Math.floor(seconds / 3600);
-      // 计算剩余的分钟数
-      const minutes = Math.floor((seconds % 3600) / 60);
-      // 计算剩余的秒数
-      const remainingSeconds = seconds % 60;
-
-      // 将小时、分钟和秒数转换为两位数的字符串
-      const formattedHours = hours.toString().padStart(2, "0");
-      const formattedMinutes = minutes.toString().padStart(2, "0");
-      const formattedSeconds = remainingSeconds.toString().padStart(2, "0");
-
-      // 返回格式化后的字符串
-      return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
+    handleUpdateSpeed(val) {
+      this.s_speed = val;
+      this.$emit("update:speed", val);
     },
   },
 };
@@ -121,6 +122,9 @@ export default {
       font-family: wending;
       padding: 0 4px;
     }
+  }
+  .bottom {
+    margin-top: 12px;
   }
 }
 </style>

@@ -35,7 +35,7 @@
           <TimeRangeSlider :value="[this.s_form.startTime, this.s_form.endTime]" :start.sync="s_form.startTime" :end.sync="s_form.endTime" />
         </div>
       </div>
-      <el-table class="small" :data="top5List" border stripe v-loading="loading1">
+      <el-table class="small my_tabel" :data="top5List" border stripe v-loading="loading1">
         <el-table-column prop="name" :label="$l('name')" />
         <el-table-column prop="type" :label="$l('type')" />
         <el-table-column prop="value" :label="$l('value')" />

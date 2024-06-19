@@ -50,7 +50,7 @@
           <div class="form_value">{{ resData.bigCategory.join(",") }}</div>
         </div>
         <div class="form_item">
-          <el-table :data="resData.activitiesList" border stripe>
+          <el-table class="small my_tabel" :data="resData.activitiesList" border stripe>
             <el-table-column :label="$l(`场地类型`)" prop="type" />
             <el-table-column :label="$l(`开放时间`)">
               <template slot-scope="{ row }">

@@ -12,7 +12,7 @@
           </el-select>
         </div>
         <div class="stops_table">
-          <el-table class="small" :data="routeDetail.stops" border stripe height="250">
+          <el-table class="small my_tabel" :data="routeDetail.stops" border stripe height="250">
             <el-table-column :label="$l('Route')" prop="route" show-overflow-tooltip />
             <el-table-column :label="$l('Name')" prop="name" show-overflow-tooltip />
             <el-table-column width="50">
@@ -225,7 +225,7 @@ export default {
       showTransitRoutesInfo: false,
       formTransitRoutesInfo: undefined,
 
-      predefineColors: ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc'],
+      predefineColors: ["#5470c6", "#91cc75", "#fac858", "#ee6666", "#73c0de", "#3ba272", "#fc8452", "#9a60b4", "#ea7ccc"],
 
       _TransitLinesLayer: undefined,
       _ReachableStopsLayer: undefined,

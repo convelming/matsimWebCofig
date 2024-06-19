@@ -24,7 +24,7 @@
           <div class="item_detail">
             {{ $l("加载指定项目的matsim模型可视化，分析整个城市区域居民出行活动及交通系统运行情况") }}
           </div>
-          <!-- <OAHelpDialog class="item_help" /> -->
+          <!-- <div class="el-icon-question item_help" @click.stop="showOAHelpDialog = true"></div> -->
         </div>
         <div @click="handleClickItem('planAdjustment')" class="item" style="background-color: #f0704b">
           <div class="item_title">
@@ -34,7 +34,7 @@
           <div class="item_detail">
             {{ $l("按照一定的策略新建或调整公交线路，站点，发车信息，实时更新线路信息。") }}
           </div>
-          <PAHelpDialog class="item_help" />
+          <div class="el-icon-question item_help" @click.stop="showPAHelpDialog = true"></div>
         </div>
         <div @click="handleClickItem('comparativeAnalysis')" class="item" style="background-color: #52b3ba">
           <div class="item_title">
@@ -44,7 +44,7 @@
           <div class="item_detail">
             {{ $l("根据调整优化的线路方案，呈现城市居民在线路调整后的反应，并将对比结果可视化呈现。") }}
           </div>
-          <!-- <CAHelpDialog class="item_help" /> -->
+          <!-- <div class="el-icon-question item_help" @click.stop="showCAHelpDialog = true"></div> -->
         </div>
         <div @click="handleClickItem('systemEvaluation')" class="item" style="background-color: #0070c0">
           <div class="item_title">
@@ -54,10 +54,14 @@
           <div class="item_detail">
             {{ $l("公交系统总体运行评估包括可达性。") }}
           </div>
-          <SEHelpDialog class="item_help" />
+          <div class="el-icon-question item_help" @click.stop="showSEHelpDialog = true"></div>
         </div>
       </div>
     </div>
+    <OAHelpDialog class="item_help" :visible.sync="showOAHelpDialog" />
+    <PAHelpDialog class="item_help" :visible.sync="showPAHelpDialog" />
+    <CAHelpDialog class="item_help" :visible.sync="showCAHelpDialog" />
+    <SEHelpDialog class="item_help" :visible.sync="showSEHelpDialog" />
 
     <!-- 请选择基准MATSIM模型 -->
     <el-dialog class="tabel_dialog" :title="$l('请选择基准MATSIM模型')" :visible.sync="dataBaseDialog.show" width="500px">
@@ -323,10 +327,10 @@
 </language>
 
 <script>
-import OAHelpDialog from "./operationsAnalysis/component/HelpDialog/index2.vue";
-import PAHelpDialog from "./planAdjustment/component/HelpDialog/index2.vue";
-import CAHelpDialog from "./comparativeAnalysis/component/HelpDialog/index2.vue";
-import SEHelpDialog from "./systemEvaluation/component/HelpDialog/index2.vue";
+import OAHelpDialog from "./operationsAnalysis/component/HelpDialog/index.vue";
+import PAHelpDialog from "./planAdjustment/component/HelpDialog/index.vue";
+import CAHelpDialog from "./comparativeAnalysis/component/HelpDialog/index.vue";
+import SEHelpDialog from "./systemEvaluation/component/HelpDialog/index.vue";
 
 export default {
   components: {
@@ -367,6 +371,11 @@ export default {
         show: false,
         dataSource: "",
       },
+
+      showOAHelpDialog: false,
+      showPAHelpDialog: false,
+      showCAHelpDialog: false,
+      showSEHelpDialog: false,
     };
   },
   computed: {
@@ -713,6 +722,9 @@ export default {
     position: absolute;
     left: 20px;
     bottom: 20px;
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
   }
 }
 

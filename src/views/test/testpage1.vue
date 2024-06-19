@@ -1,39 +1,39 @@
 <template>
-  <div id="map" class="map"></div>
+  <div id="map" class="map">
+    <NewClock class="NewClock" />
+    <div>{{ Map.context }}</div>
+  </div>
 </template>
 
 <script>
-class tile {
-  load(func) {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        let list = [];
-        for (let i = 0; i < 100; i++) {
-          for (let j = 0; j < Math.random() * 10; j++) {}
-          list.push(func());
-        }
-        resolve(list);
-      }, Math.random() * 10);
-    });
-  }
-}
-
+import "@/mymap/style.css";
+import { Map, LocalMapLayer } from "@/mymap/index.js";
+import NewClock from "@/components/NewClock/index.vue";
 export default {
-  data() {
+  components: {
+    NewClock,
+  },
+  provide() {
     return {
-      num: 0,
+      rootVue: this,
     };
   },
-  mounted() {
-    let pl = [];
-    for (let i = 0; i < 10; i++) {
-      pl.push(new tile().load(() => ++this.num));
-    }
-    Promise.all(pl).then((res) => {
-      console.log(res);
-    });
+  data() {
+    return {};
   },
-  methods: {},
+  mounted() {
+    this.initMap();
+  },
+  methods: {
+    // 初始化地图
+    initMap() {
+      this._Map = new Map({
+        rootId: "map",
+      });
+      this._Map.cameraControls.enableRotate = true;
+      this._Map.addLayer(new LocalMapLayer({ zIndex: 0 }));
+    },
+  },
 };
 </script>
 
@@ -41,5 +41,11 @@ export default {
 .map {
   width: 100vw;
   height: 100vh;
+}
+.NewClock {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  z-index: 1000;
 }
 </style>

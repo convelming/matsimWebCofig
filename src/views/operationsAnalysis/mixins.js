@@ -3,18 +3,6 @@ import { Map, LocalMapLayer } from "@/mymap/index.js";
 
 export default {
   watch: {
-    page_language: {
-      handler(val) {
-        this.speedMarks = {
-          [-30]: "-30", // + this.$l("分/秒"),
-          [-10]: "-2", // + this.$l("分/秒"),
-          0: "0", // + this.$l("分/秒"),
-          [10]: "2", // + this.$l("分/秒"),
-          30: "30", // + this.$l("分/秒"),
-        };
-      },
-      immediate: true,
-    },
   },
 
   data() {
@@ -23,7 +11,6 @@ export default {
       _Map: null,
       _MapLayer: null,
       activeNames: ["PublicTransit", "MotorizedTravel", "Build3D", "Network", "Activity3D", "GeoJSON"],
-      // activeNames: ["GeoJSON"],
 
       showLayerPublicTransit: false,
       showLayerMotorizedTravel: false,
@@ -36,14 +23,13 @@ export default {
 
       showClock: true,
 
+      showHelpDialog: false,
+
       timePlay: true,
       time: 0,
       speed: 0,
       minTime: 0,
       maxTime: 3600 * 28,
-      speedMarks: {},
-
-      speedList: [0, 0.5, 1, 2, 4, 100],
     };
   },
   watch: {
@@ -51,13 +37,13 @@ export default {
       this.handleChangeMapCameraControls();
     },
     showLayerMotorizedTravel(val) {
-      if (val) {
-        this.timePlay = true;
-        this.speed = 5;
-      } else {
-        this.timePlay = false;
-        this.speed = 0;
-      }
+      // if (val) {
+      //   this.timePlay = true;
+      //   this.speed = 5;
+      // } else {
+      //   this.timePlay = false;
+      //   this.speed = 0;
+      // }
       this.handleChangeMapCameraControls();
     },
     showLayerBuild3D(val) {
@@ -87,34 +73,17 @@ export default {
     this.initLayer();
     this.initMap();
     this.handleChangeMapCameraControls();
-
-    this._timeInterval = setInterval(() => {
-      if (!this.timePlay) return;
-      this.time += this.formatSpeed(this.speed);
-      if (this.time > this.maxTime) {
-        this.time = this.minTime;
-      }
-      if (this.time < this.minTime) {
-        this.time = this.maxTime;
-      }
-      this.$emit("timeChange", this.time);
-    }, 1000 / 60);
   },
   beforeDestroy() {
-    clearInterval(this._timeInterval);
   },
   methods: {
-    // 格式化速度
-    formatSpeed(val) {
-      let speed = 0;
-      if (Math.abs(val) <= 10) {
-        speed = val * 0.2;
-      } else if (val > 0) {
-        speed = 2 + ((val - 10) * 28) / 20;
-      } else if (val < 0) {
-        speed = ((val + 10) * 28) / 20 - 2;
-      }
-      return Math.floor(speed * 100) / 100;
+    handleShowHelp() {
+      console.log("handleShowHelp");
+      this.showHelpDialog = true;
+    },
+    handleUpdateTime(value) {
+      this.time = value;
+      this.$emit("timeChange", this.time);
     },
     handleChangeMapCameraControls() {
       let enableRotate = true;

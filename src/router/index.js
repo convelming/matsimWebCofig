@@ -52,21 +52,6 @@ if (process.env.NODE_ENV == "development") {
         name: "testpage1",
         component: () => import(/* webpackChunkName: "test" */ "../views/test/testpage1.vue"),
       },
-      {
-        path: "testpage2",
-        name: "testpage2",
-        component: () => import(/* webpackChunkName: "test" */ "../views/test/testpage2.vue"),
-      },
-      {
-        path: "testpage4",
-        name: "testpage4",
-        component: () => import(/* webpackChunkName: "test" */ "../views/test/testpage4.vue"),
-      },
-      {
-        path: "testpage5",
-        name: "testpage5",
-        component: () => import(/* webpackChunkName: "test" */ "../views/test/testpage5.vue"),
-      },
     ],
   });
 }
