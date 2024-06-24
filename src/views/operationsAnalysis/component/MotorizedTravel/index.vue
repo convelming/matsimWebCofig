@@ -155,7 +155,7 @@ import { CarMotionLayer } from "./layer/CarMotionLayer";
 import { getBusPath, getCarPath, getSubwayPath } from "@/api/index";
 
 export default {
-  props: ["name", "showLayer"],
+  props: ["name", "showLayer", "lock2D"],
   inject: ["rootVue"],
   computed: {
     _Map() {

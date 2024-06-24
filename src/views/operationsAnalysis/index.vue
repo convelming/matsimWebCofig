@@ -5,12 +5,12 @@
         <div class="Drawer_row">
           <Drawer class="left_toolber" show direction="left" :size="300">
             <el-collapse v-model="activeNames">
-              <PublicTransit :showLayer.sync="showLayerPublicTransit" name="PublicTransit" />
-              <MotorizedTravel :showLayer.sync="showLayerMotorizedTravel" name="MotorizedTravel" />
-              <Build3D :showLayer.sync="showLayerBuild3D" name="Build3D" />
-              <Network :showLayer.sync="showLayerNetwork" name="Network" />
-              <Activity3D :showLayer.sync="showLayerActivity3D" name="Activity3D" />
-              <GeoJSON :showLayer.sync="showLayerGeoJSON" name="GeoJSON" />
+              <PublicTransit :showLayer.sync="showLayerPublicTransit" :lock2D.sync="lock2DPublicTransit" name="PublicTransit" />
+              <MotorizedTravel :showLayer.sync="showLayerMotorizedTravel" :lock2D.sync="lock2DMotorizedTravel" name="MotorizedTravel" />
+              <Build3D :showLayer.sync="showLayerBuild3D" :lock2D.sync="lock2DBuild3D" name="Build3D" />
+              <Network :showLayer.sync="showLayerNetwork" :lock2D.sync="lock2DNetwork" name="Network" />
+              <Activity3D :showLayer.sync="showLayerActivity3D" :lock2D.sync="lock2DActivity3D" name="Activity3D" />
+              <GeoJSON :showLayer.sync="showLayerGeoJSON" :lock2D.sync="lock2DGeoJSON" name="GeoJSON" />
               <div style="height: 100px"></div>
             </el-collapse>
           </Drawer>

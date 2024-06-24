@@ -107,7 +107,7 @@ import { GeoJSONLayer } from "./layer/GeoJSONLayer";
 import { guid } from "@/utils/utils";
 
 export default {
-  props: ["name", "showLayer"],
+  props: ["name", "showLayer", "lock2D"],
   inject: ["rootVue"],
   components: {},
   computed: {

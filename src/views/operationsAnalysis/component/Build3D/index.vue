@@ -47,7 +47,7 @@ import { MAP_EVENT } from "@/mymap";
 import { Build3DLayer } from "./layer/Build3DLayer";
 
 export default {
-  props: ["name", "showLayer"],
+  props: ["name", "showLayer", "lock2D"],
   inject: ["rootVue"],
   components: {},
   computed: {

@@ -21,6 +21,12 @@
           <ColorPicker :disabled="!s_showLayer" :title="$l('公交站点颜色')" size="mini" :predefine="predefineColors" v-model="stopColor" />
         </div>
       </div>
+      <div class="form_item">
+        <div class="form_label">{{ $l("是否框选：") }}</div>
+        <div class="form_value">
+          <el-switch :disabled="!s_showLayer" v-model="selectStop" @change="handleSelectStop"></el-switch>
+        </div>
+      </div>
     </div>
   </el-collapse-item>
 </template>
@@ -33,11 +39,11 @@
   },
   "图标大小：":{
     "zh-CN": "图标大小：",
-    "en-US": "icons size："
+    "en-US": "icons size:"
   },
   "图标颜色：":{
     "zh-CN": "图标颜色：",
-    "en-US": "icon color："
+    "en-US": "icon color:"
   },
   "显示站点名称":{
     "zh-CN": "显示站点名称",
@@ -55,16 +61,20 @@
     "zh-CN": "公交站点选取",
     "en-US": "Bus Stop Selection"
   },
+  "是否框选：":{
+    "zh-CN": "是否框选：",
+    "en-US": "Check box:"
+  },
 }
 </language>
 
 <script>
 import { MAP_EVENT } from "@/mymap";
-import { STOPS_STATE_KEY, STOPS_EVENT, StopsLayer } from "./layer/StopsLayer2";
+import { STOPS_STATE_KEY, STOPS_EVENT, StopsLayer } from "./layer/StopsLayer";
 import { LINK_EVENT, LINK_STATE_KEY, LinkLayer } from "./layer/LinkLayer";
 
 export default {
-  props: ["name", "showLayer"],
+  props: ["name", "showLayer", "lock2D"],
   inject: ["rootVue"],
   components: {},
   computed: {
@@ -133,7 +143,7 @@ export default {
   created() {
     this.s_showLayer = this.showLayer;
     this._StopsLayer = new StopsLayer({
-      zIndex: 10,
+      zIndex: 30,
       showName: this.showStopName,
       color: this.stopColor,
       scale: this.stopScale,
@@ -165,7 +175,7 @@ export default {
       this.$emit("update:showLayer", value);
     },
     handleEnable() {
-      this.handleSelectStop(true);
+      this.handleSelectStop(this.selectStop);
       this._Map.addLayer(this._StopsLayer);
       this._Map.addLayer(this._LinkLayer);
       this._StopsLayer.update();
@@ -176,7 +186,6 @@ export default {
       this._Map.removeLayer(this._LinkLayer);
     },
     handleSelectStop(value) {
-      this.selectStop = value;
       if (value) {
         this._StopsLayerEventId = this._StopsLayer.addEventListener(STOPS_EVENT.SELECT_STOP_CHANGE, (res) => {
           if (res.data.length > 0) {
@@ -185,10 +194,11 @@ export default {
           }
         });
         this._StopsLayer.state = STOPS_STATE_KEY.CAN_SELECT;
+        this.$emit("update:lock2D", true);
       } else {
         this._StopsLayer.removeEventListener(STOPS_EVENT.SELECT_STOP_CHANGE, this._StopsLayerEventId);
-
         this._StopsLayer.state = STOPS_STATE_KEY.DISABLE;
+        this.$emit("update:lock2D", false);
       }
     },
   },

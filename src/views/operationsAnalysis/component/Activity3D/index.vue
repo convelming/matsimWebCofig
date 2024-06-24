@@ -51,7 +51,7 @@ import { Activity3DLayer } from "./layer/Activity3DLayer";
 import { getAllActivity, getAllActivityType } from "@/api/index";
 
 export default {
-  props: ["name", "showLayer"],
+  props: ["name", "showLayer", "lock2D"],
   inject: ["rootVue"],
   components: {},
   computed: {

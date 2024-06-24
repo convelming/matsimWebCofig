@@ -5,14 +5,14 @@
         <div class="Drawer_row">
           <Drawer class="left_toolber" show direction="left" :size="300">
             <el-collapse v-model="activeNames">
-              <LinesAnalysis :showLayer.sync="showLayerLinesAnalysis" name="LinesAnalysis" ref="LinesAnalysis" />
-              <AnalysisReport :showLayer.sync="showLayerAnalysisReport" name="AnalysisReport" ref="AnalysisReport" />
-              <PublicTransit :showLayer.sync="showLayerPublicTransit" name="PublicTransit" ref="PublicTransit" />
-              <MotorizedTravel :showLayer.sync="showLayerMotorizedTravel" name="MotorizedTravel" ref="MotorizedTravel" />
-              <Build3D :showLayer.sync="showLayerBuild3D" name="Build3D" ref="Build3D" />
-              <Network :showLayer.sync="showLayerNetwork" name="Network" ref="Network" />
-              <Activity3D :showLayer.sync="showLayerActivity3D" name="Activity3D" />
-              <GeoJSON :showLayer.sync="showLayerGeoJSON" name="GeoJSON" />
+              <LinesAnalysis :showLayer.sync="showLayerLinesAnalysis" :lock2D.sync="lock2DLinesAnalysis" name="LinesAnalysis" ref="LinesAnalysis" />
+              <AnalysisReport :showLayer.sync="showLayerAnalysisReport" :lock2D.sync="lock2DAnalysisReport" name="AnalysisReport" ref="AnalysisReport" />
+              <PublicTransit :showLayer.sync="showLayerPublicTransit" :lock2D.sync="lock2DPublicTransit" name="PublicTransit" />
+              <MotorizedTravel :showLayer.sync="showLayerMotorizedTravel" :lock2D.sync="lock2DMotorizedTravel" name="MotorizedTravel" />
+              <Build3D :showLayer.sync="showLayerBuild3D" :lock2D.sync="lock2DBuild3D" name="Build3D" />
+              <Network :showLayer.sync="showLayerNetwork" :lock2D.sync="lock2DNetwork" name="Network" />
+              <Activity3D :showLayer.sync="showLayerActivity3D" :lock2D.sync="lock2DActivity3D" name="Activity3D" />
+              <GeoJSON :showLayer.sync="showLayerGeoJSON" :lock2D.sync="lock2DGeoJSON" name="GeoJSON" />
               <div style="height: 100px"></div>
             </el-collapse>
           </Drawer>
@@ -97,7 +97,9 @@ export default {
       activeNames: ["LinesAnalysis", "AnalysisReport", "PublicTransit", "MotorizedTravel", "Build3D", "Network", "Activity3D", "GeoJSON"],
 
       showLayerLinesAnalysis: true,
+      lock2DLinesAnalysis: false,
       showLayerAnalysisReport: false,
+      lock2DAnalysisReport: false,
 
       showStopToolbar: true,
 
@@ -116,7 +118,13 @@ export default {
       }
       this.handleChangeMapCameraControls();
     },
+    lock2DAnalysisReport(val) {
+      this.handleChangeMapCameraControls();
+    },
     showLayerLinesAnalysis(val) {
+      this.handleChangeMapCameraControls();
+    },
+    lock2DLinesAnalysis(val) {
       this.handleChangeMapCameraControls();
     },
   },
@@ -138,6 +146,23 @@ export default {
           routeDetail: routeDetail,
         });
         this.showStopToolbar = true;
+      }
+    },
+    handleChangeMapCameraControls() {
+      let enableRotate = true;
+      if (this.showLayerLinesAnalysis && this.lock2DLinesAnalysis) enableRotate = false;
+      if (this.showLayerAnalysisReport && this.lock2DAnalysisReport) enableRotate = false;
+      if (this.showLayerPublicTransit && this.lock2DPublicTransit) enableRotate = false;
+      if (this.showLayerMotorizedTravel && this.lock2DMotorizedTravel) enableRotate = false;
+      if (this.showLayerBuild3D && this.lock2DBuild3D) enableRotate = false;
+      if (this.showLayerNetwork && this.lock2DNetwork) enableRotate = false;
+      if (this.showLayerActivity3D && this.lock2DActivity3D) enableRotate = false;
+      if (this.showLayerGeoJSON && this.lock2DGeoJSON) enableRotate = false;
+      if (enableRotate) {
+        this._Map.enableRotate = true;
+      } else {
+        this._Map.enableRotate = false;
+        this._Map.setPitchAndRotation(90, 0);
       }
     },
   },

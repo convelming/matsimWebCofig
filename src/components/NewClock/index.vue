@@ -110,13 +110,13 @@ export default {
     display: flex;
     align-items: center;
     gap: 12px;
-    height: 32px;
 
     .time {
       cursor: pointer;
       border: 1px solid #e5e5e5;
       border-radius: 4px;
-      height: 100%;
+      height: 32px;
+      line-height: 32px;
       display: flex;
       align-items: center;
       font-family: wending;

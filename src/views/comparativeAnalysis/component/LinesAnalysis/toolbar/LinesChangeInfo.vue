@@ -1,12 +1,12 @@
 <template>
   <el-collapse-item class="toolbar_item" :name="name">
     <div class="toolbar_item_header" slot="title">
-      <div class="title" style="max-width: 100%;">{{ $l("线路比对分析") }}</div>
+      <div class="title" style="max-width: 100%">{{ $l("线路比对分析") }}</div>
     </div>
     <div class="toolbar_item_bodyer">
       <div class="title">
         <span>{{ $l("修改的线路") }}&nbsp;&nbsp;&nbsp;</span>
-        <el-button type="primary" size="mini" circle icon="el-icon-refresh-right" @click="getList1"></el-button>
+        <span class="el-icon-refresh-right" @click="getList1"></span>
       </div>
       <el-table class="small my_tabel" :data="list1" border stripe height="300px" v-loading="loading1">
         <el-table-column :label="$l('Line')" prop="lineName" show-overflow-tooltip />
@@ -26,7 +26,7 @@
       </el-table>
       <div class="title">
         <span>{{ $l("受影响的线路") }}&nbsp;&nbsp;&nbsp;</span>
-        <el-button type="primary" size="mini" circle icon="el-icon-refresh-right" @click="getList2"></el-button>
+        <span class="el-icon-refresh-right" @click="getList1"></span>
       </div>
       <el-table class="small my_tabel" :data="list2" border stripe height="300px" v-loading="loading2">
         <el-table-column :label="$l('Line')" prop="lineName" show-overflow-tooltip />
@@ -312,7 +312,11 @@ export default {
     .title {
       font-size: 18px;
       font-weight: bold;
-      margin: 20px 0;
+      margin: 10px 0;
+      .el-icon-refresh-right {
+        cursor: pointer;
+        color: #409eff;
+      }
     }
     .form {
       width: 100%;

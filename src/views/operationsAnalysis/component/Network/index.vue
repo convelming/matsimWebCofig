@@ -95,7 +95,7 @@ const ColorList = [
 ];
 
 export default {
-  props: ["name", "showLayer"],
+  props: ["name", "showLayer", "lock2D"],
   inject: ["rootVue"],
   components: {},
   computed: {

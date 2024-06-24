@@ -14,11 +14,17 @@ export default {
       activeNames: ["PublicTransit", "MotorizedTravel", "Build3D", "Network", "Activity3D", "GeoJSON"],
 
       showLayerPublicTransit: false,
+      lock2DPublicTransit: false,
       showLayerMotorizedTravel: false,
+      lock2DMotorizedTravel: false,
       showLayerBuild3D: false,
+      lock2DBuild3D: false,
       showLayerNetwork: false,
+      lock2DNetwork: false,
       showLayerActivity3D: false,
+      lock2DActivity3D: false,
       showLayerGeoJSON: false,
+      lock2DGeoJSON: false,
 
       showStopToolbar: false,
 
@@ -37,6 +43,9 @@ export default {
     showLayerPublicTransit(val) {
       this.handleChangeMapCameraControls();
     },
+    lock2DPublicTransit(val) {
+      this.handleChangeMapCameraControls();
+    },
     showLayerMotorizedTravel(val) {
       // if (val) {
       //   this.timePlay = true;
@@ -47,16 +56,31 @@ export default {
       // }
       this.handleChangeMapCameraControls();
     },
+    lock2DMotorizedTravel(val) {
+      this.handleChangeMapCameraControls();
+    },
     showLayerBuild3D(val) {
+      this.handleChangeMapCameraControls();
+    },
+    lock2DBuild3D(val) {
       this.handleChangeMapCameraControls();
     },
     showLayerNetwork(val) {
       this.handleChangeMapCameraControls();
     },
+    lock2DNetwork(val) {
+      this.handleChangeMapCameraControls();
+    },
     showLayerActivity3D(val) {
       this.handleChangeMapCameraControls();
     },
+    lock2DActivity3D(val) {
+      this.handleChangeMapCameraControls();
+    },
     showLayerGeoJSON(val) {
+      this.handleChangeMapCameraControls();
+    },
+    lock2DGeoJSON(val) {
       this.handleChangeMapCameraControls();
     },
   },
@@ -93,7 +117,12 @@ export default {
     },
     handleChangeMapCameraControls() {
       let enableRotate = true;
-      if (this.showLayerPublicTransit) enableRotate = false;
+      if (this.showLayerPublicTransit && this.lock2DPublicTransit) enableRotate = false;
+      if (this.showLayerMotorizedTravel && this.lock2DMotorizedTravel) enableRotate = false;
+      if (this.showLayerBuild3D && this.lock2DBuild3D) enableRotate = false;
+      if (this.showLayerNetwork && this.lock2DNetwork) enableRotate = false;
+      if (this.showLayerActivity3D && this.lock2DActivity3D) enableRotate = false;
+      if (this.showLayerGeoJSON && this.lock2DGeoJSON) enableRotate = false;
       if (enableRotate) {
         this._Map.enableRotate = true;
       } else {

@@ -72,7 +72,7 @@ import axios from "axios";
 import { ColorList } from "@/components/ColorSelect.vue";
 import { BinningLayer } from "./layer/BinningLayer";
 export default {
-  props: ["name", "showLayer"],
+  props: ["name", "showLayer", "lock2D"],
   inject: ["rootVue"],
   components: {},
   computed: {
