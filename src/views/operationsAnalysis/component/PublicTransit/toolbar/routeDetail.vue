@@ -1,7 +1,10 @@
 <template>
-  <el-collapse-item class="toolbar_item my_collapse_item2" :name="name">
+  <el-collapse-item class="toolbar_item" :name="name">
+    <div class="toolbar_item_header" slot="title">
+      <div class="title">{{ $l("Line") }}</div>
+      <div v-if="routeDetail" class="subtitle" :title="routeDetail.line">{{ routeDetail.line }}</div>
+    </div>
     <template v-if="routeDetail">
-      <div class="toolbar_item_header" slot="title">{{ $l("Line") }} {{ routeDetail.line }}</div>
       <div class="toolbar_item_bodyer">
         <div class="stop_title">
           <el-button type="primary" size="small" @click="handleRouteManu({ data: routeDetail, command: 'Transit Route Analysis...' })">{{ $l("Transit Route Analysis...") }}</el-button>
@@ -422,14 +425,7 @@ export default {
   }
 }
 .toolbar_item {
-  .toolbar_item_header {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    padding: 0 20px;
-  }
-  .RouteDetail_bodyer {
-    padding: 0 20px;
+  .toolbar_item_bodyer {
     .stop_name {
       font-size: 16px;
       line-height: 30px;

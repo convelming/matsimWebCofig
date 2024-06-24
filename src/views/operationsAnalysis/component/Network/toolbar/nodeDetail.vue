@@ -1,6 +1,9 @@
 <template>
-  <el-collapse-item class="toolbar_item my_collapse_item2" :name="name">
-    <div class="toolbar_item_header" slot="title">{{ $l("nodeDetail") }} {{ nodeDetail.id }}</div>
+  <el-collapse-item class="toolbar_item" :name="name">
+    <div class="toolbar_item_header" slot="title">
+      <div class="title">{{ $l("nodeDetail") }}</div>
+      <div class="subtitle" :title="nodeDetail.id">{{ nodeDetail.id }}</div>
+    </div>
     <div class="toolbar_item_bodyer" v-loading="loading">
       <el-descriptions class="margin-top" :column="1" border size="small" labelClassName="labelClassName">
         <template slot="extra">
@@ -180,14 +183,7 @@ export default {
   }
 }
 .toolbar_item {
-  .toolbar_item_header {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    padding: 0 20px;
-  }
   .toolbar_item_bodyer {
-    padding: 0 20px;
     .row {
       line-height: 35px;
       display: flex;

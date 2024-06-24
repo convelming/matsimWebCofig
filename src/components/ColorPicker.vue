@@ -19,7 +19,8 @@ export default {
   watch: {
     value: {
       handler(val) {
-        this.s_value = val;
+        const v = String(val).toUpperCase();
+        this.s_value = v;
       },
       immediate: true,
     },
@@ -33,10 +34,10 @@ export default {
   mounted() {},
   methods: {
     handleInput(val) {
-      this.$emit("input", val);
+      const v = String(val).toUpperCase();
+      this.$emit("input", v);
       this.$emit("change", {
-        value: val,
-        colors: this.colorsList[val],
+        value: v,
       });
     },
   },
@@ -46,6 +47,7 @@ export default {
 <style lang="scss" scoped>
 ::v-deep {
   .ColorPicker_input {
+    width: 80px;
     .el-input__inner {
       border: 0;
       padding: 0;
@@ -62,7 +64,6 @@ export default {
   background: rgba(0, 0, 0, 0.05);
   padding: 0px 8px;
   border-radius: 6px;
-  width: 120px;
   height: 36px;
   display: inline-flex;
   align-items: center;

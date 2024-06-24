@@ -1,7 +1,10 @@
 <template>
-  <el-collapse-item class="toolbar_item my_collapse_item2" :name="name">
-    <div class="toolbar_item_header" slot="title">{{ `${$l("私家车详情")}` }} {{ carDetail.id }}</div>
-    <div class="_bodyer" v-loading="loading">
+  <el-collapse-item class="toolbar_item" :name="name">
+    <div class="toolbar_item_header" slot="title">
+      <div class="title">{{ `${$l("私家车详情")}` }}</div>
+      <div class="subtitle" :title="carDetail.id">{{ carDetail.id }}</div>
+    </div>
+    <div class="toolbar_item_bodyer" v-loading="loading">
       <div class="form" v-if="departure">
         <div class="form_item">
           <div class="form_label">{{ "行程ID：" }}</div>
@@ -211,14 +214,7 @@ export default {
 <style lang="scss" scoped>
 .toolbar_item {
   font-size: 13px;
-  .toolbar_item_header {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    padding: 0 20px;
-  }
-  ._bodyer {
-    padding: 0 20px;
+  .toolbar_item_bodyer {
     .form {
       width: 100%;
 

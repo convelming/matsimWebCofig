@@ -1,8 +1,9 @@
 <template>
-  <el-collapse-item class="toolbar_item my_collapse_item2" :name="name">
+  <el-collapse-item class="toolbar_item" :name="name">
     <template v-if="stopDetail">
       <div class="toolbar_item_header" slot="title">
-        {{ `${$l("Stop")} ${stopDetail.name}(${stopDetail.id})` }}
+        <div class="title">{{ $l("Stop") }}</div>
+        <div class="subtitle" :title="`${stopDetail.name}(${stopDetail.id})`">{{ `${stopDetail.name}(${stopDetail.id})` }}</div>
       </div>
       <div class="toolbar_item_bodyer">
         <div class="stop_title">
@@ -483,14 +484,7 @@ export default {
   }
 }
 .toolbar_item {
-  .toolbar_item_header {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    padding: 0 20px;
-  }
   .toolbar_item_bodyer {
-    padding: 0 20px;
     .stop_name {
       font-size: 16px;
       line-height: 30px;

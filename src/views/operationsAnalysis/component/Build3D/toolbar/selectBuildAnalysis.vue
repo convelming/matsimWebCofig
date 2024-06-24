@@ -1,6 +1,9 @@
 <template>
-  <el-collapse-item class="toolbar_item my_collapse_item2" :name="name">
-    <div class="toolbar_item_header" slot="title">{{ $l("selectBuildAnalysis") }} {{ buildDetail.id }}</div>
+  <el-collapse-item class="toolbar_item" :name="name">
+    <div class="toolbar_item_header" slot="title">
+      <div class="title">{{ $l("selectBuildAnalysis") }}</div>
+      <div class="subtitle" :title="buildDetail.id">{{ buildDetail.id }}</div>
+    </div>
     <div class="toolbar_item_bodyer">
       <div class="form_item" style="align-items: center">
         <div class="form_label">{{ $l("type") }}</div>
@@ -182,12 +185,6 @@ export default {
   }
 }
 .toolbar_item {
-  .toolbar_item_header {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    padding: 0 20px;
-  }
   .toolbar_item_bodyer {
     box-sizing: border-box;
     width: 100%;

@@ -86,7 +86,7 @@
 
 <script>
 import "@/mymap/style.css";
-import { Map, LocalMapLayer } from "@/mymap/index.js";
+import { Map, MapLayer } from "@/mymap/index.js";
 import HelpDialog from "./component/HelpDialog/index.vue";
 import Accessibility from "./component/Accessibility/index.vue";
 
@@ -151,7 +151,7 @@ export default {
       window._Map = this._Map;
     },
     initLayer() {
-      this._MapLayer = new LocalMapLayer({ zIndex: -1 });
+      this._MapLayer = new MapLayer({ zIndex: -1 });
     },
   },
 };

@@ -1,6 +1,9 @@
 <template>
-  <el-collapse-item class="toolbar_item my_collapse_item2" :name="name">
-    <div class="toolbar_item_header" slot="title">{{ $l("selectLinkAnalysis") }} {{ lineDetail.id }}</div>
+  <el-collapse-item class="toolbar_item" :name="name">
+    <div class="toolbar_item_header" slot="title">
+      <div class="title">{{ $l("selectLinkAnalysis") }}</div>
+      <div class="subtitle" :title="lineDetail.id">{{ lineDetail.id }}</div>
+    </div>
     <div class="toolbar_item_bodyer">
       <!-- <div class="form_item" style="align-items: center">
         <div class="form_label"></div>
@@ -112,7 +115,7 @@ export default {
   },
   data() {
     return {
-      predefineColors: ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc'],
+      predefineColors: ["#5470c6", "#91cc75", "#fac858", "#ee6666", "#73c0de", "#3ba272", "#fc8452", "#9a60b4", "#ea7ccc"],
 
       loading: true,
       resData: {},
@@ -171,12 +174,6 @@ export default {
   }
 }
 .toolbar_item {
-  .toolbar_item_header {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    padding: 0 20px;
-  }
   .toolbar_item_bodyer {
     box-sizing: border-box;
     width: 100%;

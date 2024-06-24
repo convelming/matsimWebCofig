@@ -309,9 +309,9 @@ export default {
     .toolbar-collapse {
       flex-grow: 1;
       overflow-y: scroll;
-      // &::-webkit-scrollbar {
-      //   display: none;
-      // }
+      &::-webkit-scrollbar {
+        display: none;
+      }
     }
   }
 }

@@ -4,10 +4,9 @@
       <img class="icon" style="margin-right: 4px" src="@/assets/image/map_icon.png" />
       <span class="text">{{ $l("地图") }}</span>
     </div>
-    <div id="map-switch-list"></div>
+    <div ref="mapSwitchList" id="map-switch-list"></div>
   </div>
 </template>
-
 
 <language>
 {
@@ -23,13 +22,19 @@ export default {
   name: "MapStyle",
   props: {},
   components: {},
-  computed: {},
+  computed: {
+    _MapLayer() {
+      return this.rootVue._MapLayer;
+    },
+  },
   watch: {},
   data() {
     return {};
   },
   created() {},
-  mounted() {},
+  mounted() {
+    this.$refs.mapSwitchList.appendChild();
+  },
   methods: {},
 };
 </script>
@@ -64,8 +69,7 @@ export default {
     line-height: 20px;
   }
 
-  .map-switch-list{
-    
+  .map-switch-list {
   }
 }
 </style>

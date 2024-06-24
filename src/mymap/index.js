@@ -4,5 +4,5 @@ export * from "./main/Layer";
 
 // 图层类
 export * from "./layers/MapLayer";
-export * from "./layers/LocalMapLayer";
+export * from "./layers/MapLayer";
 export * from "./layers/OutlineLayer";

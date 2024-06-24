@@ -1,13 +1,11 @@
 <template>
   <el-collapse-item class="my_collapse_item" :name="name" :class="{ active: s_showLayer }">
-    <div class="el-collapse-item__title" slot="title">
-      <el-checkbox class="checkbox flex-align-center" :value="s_showLayer" @change="handleChangeShowLayer">
-        <div class="flex-align-center">
-          <img class="item_icon" v-show="s_showLayer" src="@/assets/image/PublicTransit_icon_a.png" />
-          <img class="item_icon" v-show="!s_showLayer" src="@/assets/image/PublicTransit_icon.png" />
-          <span>{{ $l("公共交通") }}</span>
-          <span v-if="loading" class="el-icon-loading" style="margin-left: 10px"></span>
-        </div>
+    <div class="el-collapse-item__title" slot="title" :title="$l('公共交通')">
+      <el-checkbox class="checkbox" :value="s_showLayer" @change="handleChangeShowLayer">
+        <img class="item_icon" v-show="s_showLayer" src="@/assets/image/PublicTransit_icon_a.png" />
+        <img class="item_icon" v-show="!s_showLayer" src="@/assets/image/PublicTransit_icon.png" />
+        <span class="item_title">{{ $l("公共交通") }}</span>
+        <span v-if="loading" class="el-icon-loading" style="margin-left: 10px"></span>
       </el-checkbox>
     </div>
     <div class="form">
@@ -23,14 +21,6 @@
           <ColorPicker :disabled="!s_showLayer" :title="$l('公交站点颜色')" size="mini" :predefine="predefineColors" v-model="stopColor" />
         </div>
       </div>
-      <!-- <div class="form_item" style="align-items: center; justify-content: flex-end"> -->
-      <!-- <el-switch :disabled="!s_showLayer" style="width: 100%" v-model="showStopName" :active-text="$l('显示站点名称')"></el-switch> -->
-      <!-- <el-color-picker :disabled="!s_showLayer" :title="$l('公交站点颜色')" size="mini" :predefine="predefineColors" v-model="stopColor" /> -->
-      <!-- <div aria-disabled="" :title="$l('公交线路查询')" :class="{ active: sreachLine, disabled: !s_showLayer }" class="icon_button icon_stop" @click="s_showLayer && handleSreachStop(!sreachLine)">
-          <img class="img" src="@/assets/image/地图 (2).svg" alt="" />
-        </div> -->
-      <!-- <div :title="$l('公交站点选取')" :class="{ active: selectStop, disabled: !s_showLayer }" class="icon_button el-icon-aim" @click="s_showLayer && handleSelectStop(!selectStop)"></div> -->
-      <!-- </div> -->
     </div>
   </el-collapse-item>
 </template>
@@ -182,45 +172,17 @@ export default {
     },
     handleDisable() {
       this.handleSelectStop(false);
-      this.handleSreachStop(false);
       this._Map.removeLayer(this._StopsLayer);
       this._Map.removeLayer(this._LinkLayer);
-    },
-    handleSreachStop(value) {
-      this.sreachLine = value;
-      if (value) {
-        this.handleSelectStop(false);
-        this._LinkLayer.addEventListener(LINK_EVENT.STATE_CHANGE, (res) => {
-          const { startPoint, endPoint, state } = res.data;
-          this.linkState = state;
-          if (this.linkState === LINK_STATE_KEY.ENDED) {
-            this.linkStartPoint = startPoint;
-            this.linkEndPoint = endPoint;
-          } else {
-            this.linkStartPoint = null;
-            this.linkEndPoint = null;
-          }
-        });
-
-        this._LinkLayer.show();
-
-        this._LinkLayer.reset();
-        this._LinkLayer.play();
-        this.linkState = this._LinkLayer.state;
-      } else {
-        this._LinkLayer.hide();
-        this._LinkLayer.reset();
-        this._LinkLayer.stop();
-        this.linkState = this._LinkLayer.state;
-      }
     },
     handleSelectStop(value) {
       this.selectStop = value;
       if (value) {
-        this.handleSreachStop(false);
         this._StopsLayerEventId = this._StopsLayer.addEventListener(STOPS_EVENT.SELECT_STOP_CHANGE, (res) => {
-          this.selectBusStopList = res.data;
-          this.rootVue.handleShowStopAndRoute(res.data);
+          if (res.data.length > 0) {
+            this.selectBusStopList = res.data;
+            this.rootVue.handleShowStopAndRoute(res.data);
+          }
         });
         this._StopsLayer.state = STOPS_STATE_KEY.CAN_SELECT;
       } else {

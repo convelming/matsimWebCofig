@@ -1,6 +1,9 @@
 <template>
-  <el-collapse-item class="toolbar_item my_collapse_item2" :name="name">
-    <div class="toolbar_item_header" slot="title">{{ $l("RouteFlows") }} {{ this.routeDetail.routeId }}</div>
+  <el-collapse-item class="toolbar_item" :name="name">
+    <div class="toolbar_item_header" slot="title">
+      <div class="title">{{ $l("RouteFlows") }}</div>
+      <div class="subtitle" :title="this.routeDetail.routeId">{{ this.routeDetail.routeId }}</div>
+    </div>
     <div class="toolbar_item_bodyer">
       <div class="title">
         <span>{{ $l("Top5Routes") }}&nbsp;&nbsp;&nbsp;</span>
@@ -191,7 +194,7 @@ export default {
   },
   data() {
     return {
-      predefineColors: ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc'],
+      predefineColors: ["#5470c6", "#91cc75", "#fac858", "#ee6666", "#73c0de", "#3ba272", "#fc8452", "#9a60b4", "#ea7ccc"],
 
       loading1: false,
 
@@ -428,14 +431,7 @@ export default {
 <style lang="scss" scoped>
 .toolbar_item {
   font-size: 13px;
-  .toolbar_item_header {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    padding: 0 20px;
-  }
   .toolbar_item_bodyer {
-    padding: 0 20px;
     .title {
       font-size: 18px;
       font-weight: bold;

@@ -1,7 +1,8 @@
 <template>
-  <el-collapse-item class="toolbar_item my_collapse_item2" :name="name">
+  <el-collapse-item class="toolbar_item" :name="name">
     <div class="toolbar_item_header" slot="title">
-      {{ busDetail.id.split(")")[0] + ")" }}
+      <div class="title">{{ $l("车辆详情") }}</div>
+      <div class="subtitle" :title="busDetail.id.split(')')[0] + ')'">{{ busDetail.id.split(")")[0] + ")" }}</div>
     </div>
     <div class="toolbar_item_bodyer" v-loading="loading">
       <div class="form" v-if="departure">
@@ -65,6 +66,10 @@
 
 <language>
 {
+  "车辆详情":{
+    "zh-CN": "车辆详情",
+    "en-US": "Vehicle Detail"
+  },
   "车辆信息：":{
     "zh-CN": "车辆信息：",
     "en-US": "Vehicle Info："
@@ -203,7 +208,6 @@ export default {
         this.prevStop.entering = this._entering;
         this.prevStop.leaving = this._leaving;
         this.prevStop.passengers = this._passengers;
-
       }
       // 伪造站点上下客流量
 
@@ -312,14 +316,7 @@ export default {
 <style lang="scss" scoped>
 .toolbar_item {
   font-size: 13px;
-  .toolbar_item_header {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    padding: 0 20px;
-  }
   .toolbar_item_bodyer {
-    padding: 0 20px;
     .form {
       width: 100%;
 

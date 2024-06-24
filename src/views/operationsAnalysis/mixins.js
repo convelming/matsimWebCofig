@@ -1,5 +1,6 @@
 
-import { Map, LocalMapLayer } from "@/mymap/index.js";
+import { Map, MapLayer } from "@/mymap/index.js";
+import { getTimeInterval } from "@/api/index.js";
 
 export default {
   watch: {
@@ -29,7 +30,7 @@ export default {
       time: 0,
       speed: 0,
       minTime: 0,
-      maxTime: 3600 * 28,
+      maxTime: 3600 * 24.5,
     };
   },
   watch: {
@@ -68,6 +69,11 @@ export default {
     const { database, datasource } = this.$route.params;
     this.$store.dispatch("setDataBase", database);
     this.$store.dispatch("setDataSource", database + "/" + datasource);
+
+    // getTimeInterval().then(res => {
+    //   this.minTime = res.data.minTime;
+    //   this.maxTime = res.data.maxTime;
+    // });
   },
   mounted() {
     this.initLayer();
@@ -108,7 +114,7 @@ export default {
       window._Map = this._Map;
     },
     initLayer() {
-      this._MapLayer = new LocalMapLayer({ zIndex: -1 });
+      this._MapLayer = new MapLayer({ zIndex: -1 });
     },
     handleShowStopAndRoute(selectStopIds) {
       if (this.$refs.Toolbar) {

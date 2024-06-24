@@ -1,9 +1,10 @@
 <template>
-  <el-collapse-item class="toolbar_item my_collapse_item2" :name="name">
+  <el-collapse-item class="toolbar_item" :name="name">
     <div class="toolbar_item_header" slot="title">
-      {{ subwayDetail.id.split(")")[0] + ")" }}
+      <div class="title">{{}}</div>
+      <div class="subtitle" :title="subwayDetail.id.split(')')[0] + ')'">{{ subwayDetail.id.split(")")[0] + ")" }}</div>
     </div>
-    <div class="_bodyer" v-loading="loading">
+    <div class="toolbar_item_bodyer" v-loading="loading">
       <div class="form" v-if="departure">
         <!-- <div class="form_item">
           <div class="form_label">{{ $l("路线：") }}</div>
@@ -203,7 +204,6 @@ export default {
         this.prevStop.entering = this._entering;
         this.prevStop.leaving = this._leaving;
         this.prevStop.passengers = this._passengers;
-
       }
       // 伪造站点上下客流量
 
@@ -217,7 +217,7 @@ export default {
           path,
         } = res.data;
         // 创建路径SVG
-        departure.speed = 13.88888888888889
+        departure.speed = 13.88888888888889;
         this.departure = departure;
         this.path = new SubwayMotionPath(path);
         this.initSVG();
@@ -313,14 +313,7 @@ export default {
 <style lang="scss" scoped>
 .toolbar_item {
   font-size: 13px;
-  .toolbar_item_header {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    padding: 0 20px;
-  }
-  ._bodyer {
-    padding: 0 20px;
+  .toolbar_item_bodyer {
     .form {
       width: 100%;
 

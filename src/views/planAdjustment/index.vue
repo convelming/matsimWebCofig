@@ -251,7 +251,7 @@
 <script>
 import "@/mymap/style.css";
 
-import { Map, MAP_EVENT, LocalMapLayer, MAP_LAYER_STYLE, LocalMapTile } from "@/mymap/index.js";
+import { Map, MAP_EVENT, MapLayer, MAP_LAYER_STYLE, LocalMapTile } from "@/mymap/index.js";
 
 import { getByLineId, saveByLine, deleteTransitLine } from "@/api/index";
 
@@ -292,7 +292,7 @@ export default {
       saveLoading: false,
       deleteLoading: false,
       _map: null,
-      _LocalMapLayer: null,
+      _MapLayer: null,
       _UpBusLinkLayer: null,
       _UpBusBusStopLayerLayer: null,
       _DownBusLinkLayer: null,
@@ -394,7 +394,7 @@ export default {
         },
       });
 
-      this._map.addLayer(this._LocalMapLayer);
+      this._map.addLayer(this._MapLayer);
       this._map.addLayer(this._StopsLayer);
       // this._map.addLayer(this._NetworkLayer);
       this._map.addLayer(this._NetworkLayer2);
@@ -409,7 +409,7 @@ export default {
     },
     // 初始化图层
     initLayer() {
-      this._LocalMapLayer = new LocalMapLayer({
+      this._MapLayer = new MapLayer({
         zIndex: 0,
       });
       this._StopsLayer = new StopsLayer({

@@ -1,6 +1,9 @@
 <template>
-  <el-collapse-item class="toolbar_item my_collapse_item2" :name="name">
-    <div class="toolbar_item_header" slot="title">{{ title }}</div>
+  <el-collapse-item class="toolbar_item" :name="name">
+    <div class="toolbar_item_header" slot="title">
+      <div class="title">{{ $l("Stops") }}</div>
+      <div class="subtitle" :title="stopNames">{{ stopNames }}</div>
+    </div>
     <div class="toolbar_item_bodyer">
       <!-- <div class="stop_name">{{ $l("Stop Name") }}</div> -->
       <div class="stop_title">
@@ -210,11 +213,11 @@ export default {
     _Map() {
       return this.rootVue._Map;
     },
-    title() {
+    stopNames() {
       try {
-        return `${this.$l("Stops")} ${this.stopList.map((v) => `${v.name}(${v.id})`).join(",")}`;
+        return this.stopList.map((v) => `${v.name}(${v.id})`).join(",");
       } catch (error) {
-        return `Stops`;
+        return ``;
       }
     },
   },
@@ -578,14 +581,7 @@ export default {
   }
 }
 .toolbar_item {
-  .toolbar_item_header {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    padding: 0 20px;
-  }
   .toolbar_item_bodyer {
-    padding: 0 20px;
     .stop_name {
       font-size: 16px;
       line-height: 30px;

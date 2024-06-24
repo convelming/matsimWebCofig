@@ -1,15 +1,8 @@
 <template>
-  <el-collapse-item class="toolbar_item my_collapse_item2" :name="name">
+  <el-collapse-item class="toolbar_item" :name="name">
     <div class="toolbar_item_bodyer">
       <div class="stop_title">
-        <el-button
-          type="primary"
-          size="small"
-          @click="
-            handleRouteManu({ data, command: 'Transit Route Analysis...' })
-          "
-          >{{ $l("Transit Route Analysis...") }}</el-button
-        >
+        <el-button type="primary" size="small" @click="handleRouteManu({ data, command: 'Transit Route Analysis...' })">{{ $l("Transit Route Analysis...") }}</el-button>
       </div>
     </div>
   </el-collapse-item>
@@ -36,14 +29,7 @@ export default {};
   }
 }
 .toolbar_item {
-  .toolbar_item_header {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    padding: 0 20px;
-  }
   .toolbar_item_bodyer {
-    padding: 0 20px;
     .stop_name {
       font-size: 16px;
       line-height: 30px;

@@ -487,3 +487,15 @@ export function getAllActivityType(params) {
     method: "get",
   });
 }
+
+// 获取时间区间
+// GET /pt/network/getTimeInterval
+// 接口ID：165949873
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-165949873
+export function getTimeInterval(params) {
+  return request({
+    url: `/pt/network/getTimeInterval`,
+    params: params,
+    method: "get",
+  });
+}

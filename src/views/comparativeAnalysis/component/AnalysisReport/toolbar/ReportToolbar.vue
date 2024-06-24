@@ -1,6 +1,8 @@
 <template>
-  <el-collapse-item class="toolbar_item my_collapse_item2" :name="name">
-    <div class="toolbar_item_header" slot="title">{{ $l("ReportToolbar") }}</div>
+  <el-collapse-item class="toolbar_item" :name="name">
+    <div class="toolbar_item_header" slot="title">
+      <div class="title" style="max-width: 100%;">{{ $l("ReportToolbar") }}</div>
+    </div>
     <div class="toolbar_item_bodyer">
       <div class="tree_scroll">
         <el-tree ref="tree" :data="treeData" show-checkbox node-key="id" :default-checked-keys="defaultCheckedKeys">
@@ -11,7 +13,7 @@
         </el-tree>
       </div>
       <div class="btn_list">
-        <el-button type="primary" size="small" @click="handleGenerateAnalysisReport" :loading="reportLoading">{{ $l('分析报告生成') }}</el-button>
+        <el-button type="primary" size="small" @click="handleGenerateAnalysisReport" :loading="reportLoading">{{ $l("分析报告生成") }}</el-button>
       </div>
     </div>
   </el-collapse-item>
@@ -581,7 +583,7 @@ export default {
         .catch((err) => {
           console.log(err);
           this.$message.error(err.msg);
-          typeof cb === "function"&& cb(false);
+          typeof cb === "function" && cb(false);
           this.reportLoading = false;
         });
     },
@@ -591,15 +593,7 @@ export default {
 
 <style lang="scss" scoped>
 .toolbar_item {
-  font-size: 13px;
-  .toolbar_item_header {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    padding: 0 20px;
-  }
   .toolbar_item_bodyer {
-    padding: 0 20px;
     .btn_list {
       padding-top: 20px;
       display: flex;
@@ -622,9 +616,11 @@ export default {
     }
 
     .tree_scroll {
-      padding-right: 15px;
       max-height: 50vh;
       overflow-y: scroll;
+      .el-tree{
+        background-color: transparent;
+      }
     }
   }
 }

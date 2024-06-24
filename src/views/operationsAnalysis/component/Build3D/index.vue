@@ -1,13 +1,11 @@
 <template>
   <el-collapse-item class="my_collapse_item" :name="name" :class="{ active: s_showLayer }">
-    <div class="el-collapse-item__title" slot="title">
-      <el-checkbox class="checkbox flex-align-center" :value="s_showLayer" @change="handleChangeShowLayer">
-        <div class="flex-align-center">
-          <img class="item_icon" v-show="s_showLayer" src="@/assets/image/Build3D_icon_a.png" />
-          <img class="item_icon" v-show="!s_showLayer" src="@/assets/image/Build3D_icon.png" />
-          <span>{{ $l("3D建筑") }}</span>
-          <span v-if="loading" class="el-icon-loading" style="margin-left: 10px"></span>
-        </div>
+    <div class="el-collapse-item__title" slot="title" :title="$l('3D建筑')">
+      <el-checkbox class="checkbox" :value="s_showLayer" @change="handleChangeShowLayer">
+        <img class="item_icon" v-show="s_showLayer" src="@/assets/image/Build3D_icon_a.png" />
+        <img class="item_icon" v-show="!s_showLayer" src="@/assets/image/Build3D_icon.png" />
+        <span class="item_title">{{ $l("3D建筑") }}</span>
+        <span v-if="loading" class="el-icon-loading" style="margin-left: 10px"></span>
       </el-checkbox>
     </div>
     <div class="form">

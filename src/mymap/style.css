@@ -1,4 +1,4 @@
-.LocalMapLayer_menu {
+.MapLayer_menu {
   position:absolute;
   z-index: 999;
   top: 40px;
@@ -12,12 +12,12 @@
   box-shadow: 0 0px 15px rgba(255, 255, 255, 0.8);
   padding: 10px;
 }
-.LocalMapLayer_menu.hide {
+.MapLayer_menu.hide {
   /* width: 50px !important; */
   height: 0px !important;
   padding: 0px !important;
 }
-.LocalMapLayer_menu .open_hide_btn {
+.MapLayer_menu .open_hide_btn {
   position: relative;
   cursor: pointer;
   display: block;
@@ -30,11 +30,11 @@
   /* transition: transform 0.3s; */
   /* transform: rotate(180deg); */
 }
-.LocalMapLayer_menu.hide .open_hide_btn {
+.MapLayer_menu.hide .open_hide_btn {
   transform: rotate(0);
 }
-/* .LocalMapLayer_menu .open_hide_btn::before,
-.LocalMapLayer_menu .open_hide_btn::after {
+/* .MapLayer_menu .open_hide_btn::before,
+.MapLayer_menu .open_hide_btn::after {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -46,13 +46,13 @@
   height: 8px;
   transform: translate(0, -50%) rotate(45deg);
 } */
-.LocalMapLayer_menu .open_hide_btn::before {
+.MapLayer_menu .open_hide_btn::before {
   left: 5px;
 }
-.LocalMapLayer_menu .open_hide_btn::after {
+.MapLayer_menu .open_hide_btn::after {
   left: 10px;
 }
-.LocalMapLayer_menu .item {
+.MapLayer_menu .item {
   box-sizing: border-box;
   cursor: pointer;
   display: block;
@@ -61,9 +61,9 @@
   border-radius: 5px;
   border: 2px solid transparent;
 }
-.LocalMapLayer_menu .item + .item{
+.MapLayer_menu .item + .item{
   margin-top: 10px;
 }
-.LocalMapLayer_menu .item.active {
+.MapLayer_menu .item.active {
   border-color: #fff;
 }

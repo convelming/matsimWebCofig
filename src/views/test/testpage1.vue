@@ -7,7 +7,7 @@
 
 <script>
 import "@/mymap/style.css";
-import { Map, LocalMapLayer } from "@/mymap/index.js";
+import { Map, MapLayer } from "@/mymap/index.js";
 import NewClock from "@/components/NewClock/index.vue";
 export default {
   components: {
@@ -31,7 +31,7 @@ export default {
         rootId: "map",
       });
       this._Map.cameraControls.enableRotate = true;
-      this._Map.addLayer(new LocalMapLayer({ zIndex: 0 }));
+      this._Map.addLayer(new MapLayer({ zIndex: 0 }));
     },
   },
 };

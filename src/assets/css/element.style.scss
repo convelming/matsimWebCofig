@@ -180,7 +180,9 @@
   }
 
   .el-collapse-item__title {
+    width: calc(100% - 32px);
     .checkbox {
+      width: 100%;
       display: flex;
       align-items: center;
 
@@ -189,8 +191,18 @@
       }
 
       .el-checkbox__label {
+        width: calc(100% - 36px);
+        display: flex;
+        align-items: center;
         font-size: 16px;
         font-weight: 500;
+        line-height: 18px;
+
+        .item_title {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          text-wrap: nowrap;
+        }
 
         .item_icon {
           width: 18px;
@@ -214,8 +226,44 @@
   }
 }
 
-.my_collapse_item2 {
+.toolbar_item {
   background-color: #eef2fd;
+
+  .toolbar_item_header {
+    padding-left: 12px;
+    box-sizing: border-box;
+    width: calc(100% - 30px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    .title {
+      box-sizing: border-box;
+      max-width: 80%;
+      flex-shrink: 0;
+      flex-grow: 1;
+      font-size: 18px;
+      font-weight: bold;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      padding-right: 10px;
+    }
+    .subtitle {
+      min-width: 20%;
+      font-size: 14px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .toolbar_item_bodyer {
+    padding: 0 12px;
+  }
+  
+  .el-input__inner{
+    background-color: transparent;
+  }
 
   .el-collapse-item__wrap,
   .el-collapse-item__content,
