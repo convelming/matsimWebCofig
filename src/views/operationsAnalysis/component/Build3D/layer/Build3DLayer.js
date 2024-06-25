@@ -73,6 +73,12 @@ export class Build3DLayer extends Layer {
 
   onAdd(map) {
     super.onAdd(map);
+    const { pitch } = map;
+    const show3D = pitch <= 80;
+    if (this.show3D != show3D) {
+      this.show3D = show3D;
+      this.loadMesh();
+    }
     this.loadMesh();
   }
 

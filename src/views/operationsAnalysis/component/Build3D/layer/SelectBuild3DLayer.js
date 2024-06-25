@@ -34,10 +34,33 @@ export class SelectBuild3DLayer extends Layer {
       const [x, y] = this.map.WebMercatorToCanvasXY(center[0], center[1]);
       this.mesh.position.set(x, y, 0);
     }
+
+    if (type == MAP_EVENT.UPDATE_CAMERA_ROTATE) {
+      const { newPitch } = data;
+      const show3D = newPitch <= 80;
+      if (this.show3D != show3D) {
+        this.show3D = show3D;
+        if (this.show3D) {
+          this.mesh.scale.set(1.01, 1.01, 1.01);
+        } else {
+          this.mesh.scale.set(1, 1, 0.000001);
+        }
+      }
+    }
   }
 
   onAdd(map) {
     super.onAdd(map);
+    const { pitch } = map;
+    const show3D = pitch <= 80;
+    if (this.show3D != show3D) {
+      this.show3D = show3D;
+      if (this.show3D) {
+        this.mesh.scale.set(1.01, 1.01, 1.01);
+      } else {
+        this.mesh.scale.set(1, 1, 0.000001);
+      }
+    }
     this.update();
   }
 
@@ -78,8 +101,6 @@ export class SelectBuild3DLayer extends Layer {
     const [x, y] = this.map.WebMercatorToCanvasXY(center[0], center[1]);
     this.mesh.position.set(x, y, 0);
     this.scene.add(this.mesh);
-
-    this.mesh.scale.set(1.01, 1.01, 1.01);
   }
 
   dispose() {
