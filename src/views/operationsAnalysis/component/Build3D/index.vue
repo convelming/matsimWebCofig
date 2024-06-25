@@ -95,7 +95,6 @@ export default {
       buildOpacity: this.buildOpacity * 100,
       event: {
         [MAP_EVENT.HANDLE_PICK_LEFT]: ({ data }) => {
-          this._Build3DLayer.setSelectBuildId(data.pickColorNum);
           this.rootVue.handleShowBuildDetail({
             uuid: data.pickColorNum,
             buildDetail: data,
@@ -127,14 +126,10 @@ export default {
     },
     // 组件初始化事件
     handleEnable() {
-      this.rootVue.$on("setSelectedBuild", (busDetail) => {
-        this._Build3DLayer.setSelectBuildId(busDetail.pickColorNum);
-      });
       this._Map.addLayer(this._Build3DLayer);
     },
     // 组件卸载事件
     handleDisable() {
-      this.rootVue.$off("setSelectedBuild");
       this._Map.removeLayer(this._Build3DLayer);
     },
   },

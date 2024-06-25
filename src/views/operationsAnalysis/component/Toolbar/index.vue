@@ -90,6 +90,7 @@
 import { guid } from "@/utils/utils";
 // 3D建筑
 import BuildDetail from "../Build3D/toolbar/buildDetail.vue";
+import SelectBuildAnalysis from "../Build3D/toolbar/selectBuildAnalysis.vue";
 // 机动化出行
 import CarDetail from "../MotorizedTravel/toolbar/carDetail.vue";
 import BusDetail from "../MotorizedTravel/toolbar/busDetail.vue";
@@ -103,13 +104,12 @@ import RouteDepartures from "../PublicTransit/toolbar/routeDepartures.vue";
 import LineDetail from "../Network/toolbar/lineDetail.vue";
 import NodeDetail from "../Network/toolbar/nodeDetail.vue";
 import SelectLinkAnalysis from "../Network/toolbar/selectLinkAnalysis.vue";
-// 3D建筑
-import SelectBuildAnalysis from "../Build3D/toolbar/selectBuildAnalysis.vue";
 // 活动
 import ActivityDetail from "../Activity3D/toolbar/ActivityDetail.vue";
 export default {
   components: {
     BuildDetail,
+    SelectBuildAnalysis,
     CarDetail,
     BusDetail,
     SubwayDetail,
@@ -120,7 +120,6 @@ export default {
     LineDetail,
     NodeDetail,
     SelectLinkAnalysis,
-    SelectBuildAnalysis,
     ActivityDetail,
   },
   inject: ["rootVue"],
@@ -182,6 +181,7 @@ export default {
         SubwayDetail: "MotorizedTravel",
 
         BuildDetail: "Build3D",
+        SelectBuildAnalysis: "Build3D",
 
         LineDetail: "Network",
         NodeDetail: "Network",

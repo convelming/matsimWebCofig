@@ -136,6 +136,7 @@
 <script>
 import { getFacilitiesById } from "@/api/index";
 import { formatHour } from "@/utils/utils";
+import { SelectBuild3DLayer } from "../layer/SelectBuild3DLayer";
 export default {
   inject: ["rootVue"],
   props: {
@@ -151,16 +152,25 @@ export default {
       default: () => ({}),
     },
   },
+  computed: {
+    _Map() {
+      return this.rootVue._Map;
+    },
+  },
   watch: {
     show: {
       handler(val) {
-        if (val) {
-          setTimeout(() => {
-            this.rootVue.$emit("setSelectedBuild", this.buildDetail);
-          }, 200);
-        } else {
-          this.rootVue.$emit("setSelectedBuild", {});
-        }
+        this.$nextTick(() => {
+          this._interval = setInterval(() => {
+            if (!this._Map) return;
+            clearInterval(this._interval);
+            if (this.show) {
+              this.handleEnable();
+            } else {
+              this.handleDisable();
+            }
+          }, 1000);
+        });
       },
       immediate: true,
     },
@@ -173,9 +183,20 @@ export default {
     };
   },
   created() {
+    this._SelectBuild3DLayer = new SelectBuild3DLayer({
+      zIndex: 10,
+      buildColor: 0xff0000,
+      buildOpacity: 1,
+    });
     this.getDetail();
   },
   methods: {
+    handleEnable() {
+      this._Map.addLayer(this._SelectBuild3DLayer);
+    },
+    handleDisable() {
+      this._Map.removeLayer(this._SelectBuild3DLayer);
+    },
     getDetail() {
       if (!this.buildDetail) return;
       getFacilitiesById({
@@ -184,6 +205,7 @@ export default {
         .then((res) => {
           res.data.activitiesList = Object.values(res.data.activities || {});
           this.resData = res.data;
+          this._SelectBuild3DLayer.setData(res.data);
         })
         .finally(() => {
           this.loading = false;

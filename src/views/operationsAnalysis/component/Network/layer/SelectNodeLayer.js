@@ -22,7 +22,7 @@ export class SelectStopLayer extends Layer {
 
     this.geometry = new THREE.PlaneGeometry(STOP_SIZE, STOP_SIZE);
     this.material = new THREE.MeshBasicMaterial({
-      depthWrite: false,
+      // depthWrite: false,
       transparent: true,
       map: this.texture,
       color: this.color

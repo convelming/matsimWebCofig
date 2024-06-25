@@ -233,6 +233,7 @@ export default {
         SubwayDetail: "MotorizedTravel",
 
         BuildDetail: "Build3D",
+        SelectBuildAnalysis: "Build3D",
 
         LineDetail: "Network",
         NodeDetail: "Network",

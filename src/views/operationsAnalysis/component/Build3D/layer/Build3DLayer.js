@@ -15,8 +15,6 @@ export class Build3DLayer extends Layer {
 
   tileMap = {};
   builds = {};
-  selectBuildId = null;
-  selectBuildTile = null;
   loadingNum = 0;
 
   constructor(opt) {
@@ -41,40 +39,7 @@ export class Build3DLayer extends Layer {
       vertexColors: true,
       // wireframe: true,
     });
-
-    const material = new THREE.MeshLambertMaterial({
-      color: 0xff0000,
-      transparent: true,
-    });
-    this.coneMesh = new THREE.Mesh(new THREE.BufferGeometry(), material);
   }
-
-  setSelectBuildId(selectBuildId) {
-    this.selectBuildId = null;
-    this.selectBuildTile = null;
-    this.scene.remove(this.coneMesh);
-    for (const tile of Object.values(this.tileMap)) {
-      const item = tile.getBuildByPickColor(selectBuildId);
-      if (item) {
-        this.selectBuildId = selectBuildId;
-        this.selectBuildTile = tile;
-        const geometryOld = this.coneMesh.geometry;
-        const shapes = [
-          {
-            points: item.coordinates[0],
-            holes: item.coordinates.slice(1),
-          },
-        ];
-        const geometryNew = new BuildGeometry({ shapes, height: item.height });
-        this.coneMesh.geometry = geometryNew;
-        this.coneMesh.needsUpdate = true;
-        geometryOld.dispose();
-        this.loadMesh();
-        break;
-      }
-    }
-  }
-
   // 设置拾取图层颜色
   setPickLayerColor(pickLayerColor) {
     this.pickLayerColor = pickLayerColor;
@@ -192,28 +157,12 @@ export class Build3DLayer extends Layer {
         this.pickMeshScene.add(tile.pickBuildMesh);
       }
     }
-
-    if (this.selectBuildTile) {
-      const [x, y] = this.map.WebMercatorToCanvasXY(this.selectBuildTile.x, this.selectBuildTile.y);
-      this.coneMesh.position.set(x, y, 0);
-      this.coneMesh.renderOrder = Number.MAX_SAFE_INTEGER;
-      if (this.show3D) {
-        this.coneMesh.scale.set(1, 1, 1);
-      } else {
-        this.coneMesh.scale.set(1, 1, 0.000001);
-      }
-      this.scene.add(this.coneMesh);
-    } else if (this.coneMesh) {
-      this.scene.remove(this.coneMesh);
-    }
   }
 
   dispose() {
     this.material.dispose();
     this.pickLayerMeterial.dispose();
     this.pickBuildMeterial.dispose();
-    this.coneMesh.geometry.dispose();
-    this.coneMesh.material.dispose();
     for (const tile of Object.values(this.tileMap)) {
       tile.dispose();
     }
@@ -221,7 +170,7 @@ export class Build3DLayer extends Layer {
   }
 }
 
-class BuildTile {
+export class BuildTile {
   _loadNum = 0;
 
   // 加载状态 1未加载 2加载成功 3加载失败 4加载中 5已卸载
@@ -281,7 +230,9 @@ class BuildTile {
       const { data } = await getTileFacilities({ x: this._row, y: this._col });
       if (data && data.length > 0) {
         const geometryList = [];
-        for (const v of data) {
+        for (let i = 0, l = data.length; i < l; i++) {
+          const v = data[i];
+          if (!v) continue
           v.pickColorNum = ++layer.pickColorNum;
           const pickColor = new THREE.Color(v.pickColorNum);
           const shapes = [
@@ -302,7 +253,7 @@ class BuildTile {
     } catch (error) {
       this._geometry = new THREE.BufferGeometry();
       this._loadStatus = 3;
-      console.log(error);
+      console.log(this._row, this._col, error);
     }
 
     this._baseMesh.geometry = this._geometry;
@@ -324,7 +275,7 @@ class BuildTile {
   }
 }
 
-class BuildGeometry extends THREE.BufferGeometry {
+export class BuildGeometry extends THREE.BufferGeometry {
   constructor({ shapes = [], curveSegments = 12, height = 10, color = new THREE.Color(0xff0000) }) {
     super();
 
