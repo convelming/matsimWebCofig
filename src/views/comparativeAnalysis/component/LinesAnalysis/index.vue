@@ -9,20 +9,24 @@
       </el-checkbox>
     </div>
     <div class="form">
-      <div class="form_item">
+      <!-- <div class="form_item">
         <div class="form_label">{{ $l("所有修改线路：") }}</div>
         <div class="form_value">
           <el-switch :disabled="!s_showLayer" v-model="showChangeRoute" style="margin-right: 20px" />
         </div>
-      </div>
+      </div> -->
       <div class="form_item">
-        <div class="form_label">{{ $l("修改前：") }}</div>
+        <div class="form_label">
+          <el-checkbox :disabled="!s_showLayer" v-model="showChangeOld">{{ $l("修改前：") }}</el-checkbox>
+        </div>
         <div class="form_value">
           <ColorPicker :disabled="!s_showLayer" :title="$l('公交站点颜色')" :predefine="predefineColors" v-model="oldLinkColor" />
         </div>
       </div>
       <div class="form_item">
-        <div class="form_label">{{ $l("修改后：") }}</div>
+        <div class="form_label">
+          <el-checkbox :disabled="!s_showLayer" v-model="showChangeNew">{{ $l("修改后：") }}</el-checkbox>
+        </div>
         <div class="form_value">
           <ColorPicker :disabled="!s_showLayer" :title="$l('公交站点颜色')" :predefine="predefineColors" v-model="newLinkColor" />
         </div>
@@ -31,18 +35,16 @@
 
       <div class="form_item">
         <div class="form_label">
-          <el-switch :disabled="!s_showLayer" v-model="showAffectedRoutes" />
+          <el-checkbox :disabled="!s_showLayer" v-model="showAffectedRoutes">{{ $l("受影响线路：") }}</el-checkbox>
         </div>
-        <div class="form_label">{{ $l("受影响线路：") }}</div>
         <div class="form_value">
           <ColorPicker :disabled="!s_showLayer" :title="$l('受影响线路颜色')" :predefine="predefineColors" v-model="affectedLinkColor" />
         </div>
       </div>
       <div class="form_item">
         <div class="form_label">
-          <el-switch :disabled="!s_showLayer" v-model="showAffectedStop" />
+          <el-checkbox :disabled="!s_showLayer" v-model="showAffectedStop">{{ $l("受影响站点：") }}</el-checkbox>
         </div>
-        <div class="form_label">{{ $l("受影响站点：") }}</div>
         <div class="form_value">
           <ColorPicker :disabled="!s_showLayer" :title="$l('受影响站点颜色')" :predefine="predefineColors" v-model="affectedStopColor" />
         </div>
@@ -142,18 +144,20 @@ export default {
         this._NewBusStopListLayer.setColor(this.newLinkColor);
       }
     },
-    showChangeRoute() {
+    showChangeOld() {
       if (this._OldBusLineListLayer) {
-        this._OldBusLineListLayer.visible = this.showChangeRoute;
+        this._OldBusLineListLayer.visible = this.showChangeOld;
       }
       if (this._OldBusStopListLayer) {
-        this._OldBusStopListLayer.visible = this.showChangeRoute;
+        this._OldBusStopListLayer.visible = this.showChangeOld;
       }
+    },
+    showChangeNew() {
       if (this._NewBusLineListLayer) {
-        this._NewBusLineListLayer.visible = this.showChangeRoute;
+        this._NewBusLineListLayer.visible = this.showChangeNew;
       }
       if (this._NewBusStopListLayer) {
-        this._NewBusStopListLayer.visible = this.showChangeRoute;
+        this._NewBusStopListLayer.visible = this.showChangeNew;
       }
     },
     showAffectedRoutes() {
@@ -179,11 +183,13 @@ export default {
   },
   data() {
     return {
+      loading: false,
       loaded: false,
       predefineColors: ["#5470c6", "#91cc75", "#fac858", "#ee6666", "#73c0de", "#3ba272", "#fc8452", "#9a60b4", "#ea7ccc"],
       s_showLayer: true,
 
-      showChangeRoute: true,
+      showChangeOld: true,
+      showChangeNew: true,
       showAffectedRoutes: true,
       showAffectedStop: true,
 

@@ -12,7 +12,7 @@
       <div class="form_item">
         <div class="form_label">{{ $l("语言模型") }}</div>
         <div class="form_value">
-          <el-select v-model="lanModel">
+          <el-select :disabled="!s_showLayer" v-model="lanModel">
             <el-option label="qwen:7b" value="qwen:7b"> </el-option>
           </el-select>
         </div>
@@ -58,6 +58,7 @@ export default {
   },
   data() {
     return {
+      loading: false,
       loaded: false,
       s_showLayer: true,
       lanModel: "qwen:7b",

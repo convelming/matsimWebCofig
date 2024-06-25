@@ -101,6 +101,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 .box {
+  user-select: none;
   padding: 12px;
   background: #ffffff;
   box-shadow: 0px 4px 10px 0px rgba(0, 0, 0, 0.3);

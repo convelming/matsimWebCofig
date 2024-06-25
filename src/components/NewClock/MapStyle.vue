@@ -1,10 +1,12 @@
 <template>
   <div class="MapStyle">
-    <div id="map-switch">
+    <div id="map-switch" @click="open = !open">
       <img class="icon" style="margin-right: 4px" src="@/assets/image/map_icon.png" />
       <span class="text">{{ $l("地图") }}</span>
     </div>
-    <div ref="mapSwitchList" id="map-switch-list"></div>
+    <div class="map-switch-list" v-show="open" >
+      <img class="item" :class="{ active: active == i }" v-for="(v, i) in styleList" :src="v.url" :title="v.NAME" :key="i" @click="handleChangeStyle(i)" />
+    </div>
   </div>
 </template>
 
@@ -21,6 +23,7 @@
 export default {
   name: "MapStyle",
   props: {},
+  inject: ["rootVue"],
   components: {},
   computed: {
     _MapLayer() {
@@ -29,13 +32,43 @@ export default {
   },
   watch: {},
   data() {
-    return {};
+    return {
+      open: false,
+      styleList: [],
+      active: 0,
+    };
   },
   created() {},
   mounted() {
-    this.$refs.mapSwitchList.appendChild();
+    this._interval = setInterval(() => {
+      if (this._MapLayer) {
+        const itemDocList = [];
+        const list = Object.values(this._MapLayer.styleMap);
+        for (let i = 0, l = list.length; i < l; i++) {
+          const value = list[i];
+          if (value === this._MapLayer.tileClass) this.active = i;
+          const item = {
+            title: value.NAME,
+            url: new value(15, 26700, 14218, 200).url,
+            c: value,
+          };
+          itemDocList.push(item);
+        }
+        this.styleList = itemDocList;
+        clearInterval(this._interval);
+      }
+    }, 500);
   },
-  methods: {},
+  beforeDestroy() {
+    clearInterval(this._interval);
+  },
+  methods: {
+    handleChangeStyle(i) {
+      this.open = false;
+      this.active = i;
+      this._MapLayer.setTileClass(this.styleList[i].c);
+    },
+  },
 };
 </script>
 
@@ -70,6 +103,40 @@ export default {
   }
 
   .map-switch-list {
+    position: absolute;
+    z-index: 999;
+    top: 40px;
+    left: 0px;
+    // height: 390px;
+    // width: 40px;
+    overflow: hidden;
+    background: #fff;
+    transition: width 0.3s;
+    border-radius: 5px;
+    box-shadow: 0 0px 15px rgba(0, 0, 0, 0.8);
+    padding: 10px;
+
+    &.hide {
+      /* width: 50px !important; */
+      height: 0px !important;
+      padding: 0px !important;
+    }
+
+    .item {
+      box-sizing: border-box;
+      cursor: pointer;
+      display: block;
+      height: 40px;
+      width: 40px;
+      border-radius: 5px;
+      border: 2px solid transparent;
+      & + .item {
+        margin-top: 10px;
+      }
+      &.active {
+        border-color: #409eff;
+      }
+    }
   }
 }
 </style>

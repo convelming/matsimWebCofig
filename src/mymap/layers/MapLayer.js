@@ -240,45 +240,45 @@ export class MapLayer extends Layer {
   }
 
   // 地图菜单div
-  get menuDoc() {
-    if (!this._menuDoc) {
-      const menuDoc = document.createElement("div");
-      menuDoc.classList.add("MapLayer_menu", "hide");
-      menuDoc.style = `height: ${Object.values(this.styleMap).length * 50 -10
-        }px;`;
+  // get menuDoc() {
+  //   if (!this._menuDoc) {
+  //     const menuDoc = document.createElement("div");
+  //     menuDoc.classList.add("MapLayer_menu", "hide");
+  //     menuDoc.style = `height: ${Object.values(this.styleMap).length * 50 -10
+  //       }px;`;
 
-      const openHideBtn = document.getElementById("map-switch");
-      // openHideBtn.classList.add("open_hide_btn");
-      openHideBtn.onclick = (event) => {
-        if (menuDoc.classList.contains("hide")) {
-          menuDoc.classList.remove("hide");
-        } else {
-          menuDoc.classList.add("hide");
-        }
-      };
-      // menuDoc.append(openHideBtn);
-      const itemDocList = [];
-      for (const [key, value] of Object.entries(this.styleMap)) {
-        const itemDoc = document.createElement("img");
-        itemDoc.title = value.NAME;
-        itemDoc.src = new value(15, 26700, 14218, 200).url;
-        itemDoc.classList.add("item");
-        if (value === this.tileClass) itemDoc.classList.add("active");
-        itemDoc.onclick = (event) => {
-          itemDocList.forEach((itemDoc) => {
-            itemDoc.classList.remove("active");
-          });
-          itemDoc.classList.add("active");
-          this.setTileClass(value);
-        };
+  //     const openHideBtn = document.getElementById("map-switch");
+  //     // openHideBtn.classList.add("open_hide_btn");
+  //     openHideBtn.onclick = (event) => {
+  //       if (menuDoc.classList.contains("hide")) {
+  //         menuDoc.classList.remove("hide");
+  //       } else {
+  //         menuDoc.classList.add("hide");
+  //       }
+  //     };
+  //     // menuDoc.append(openHideBtn);
+  //     const itemDocList = [];
+  //     for (const [key, value] of Object.entries(this.styleMap)) {
+  //       const itemDoc = document.createElement("img");
+  //       itemDoc.title = value.NAME;
+  //       itemDoc.src = new value(15, 26700, 14218, 200).url;
+  //       itemDoc.classList.add("item");
+  //       if (value === this.tileClass) itemDoc.classList.add("active");
+  //       itemDoc.onclick = (event) => {
+  //         itemDocList.forEach((itemDoc) => {
+  //           itemDoc.classList.remove("active");
+  //         });
+  //         itemDoc.classList.add("active");
+  //         this.setTileClass(value);
+  //       };
 
-        itemDocList.push(itemDoc);
-        menuDoc.append(itemDoc);
-      }
-      this._menuDoc = menuDoc;
-    }
-    return this._menuDoc;
-  }
+  //       itemDocList.push(itemDoc);
+  //       menuDoc.append(itemDoc);
+  //     }
+  //     this._menuDoc = menuDoc;
+  //   }
+  //   return this._menuDoc;
+  // }
 
   constructor(opt) {
     super(opt);
@@ -291,11 +291,11 @@ export class MapLayer extends Layer {
   setStyleMap(styleMap) {
     this.styleMap = styleMap;
 
-    if (this._menuDoc) {
-      if (this._menuDoc.parentElement)
-        this._menuDoc.parentElement.removeChild(menuDoc);
-      this._menuDoc = null;
-    }
+    // if (this._menuDoc) {
+    //   if (this._menuDoc.parentElement)
+    //     this._menuDoc.parentElement.removeChild(menuDoc);
+    //   this._menuDoc = null;
+    // }
     let item = Object.values(styleMap).find((v) => v === this.tileClass);
     if (item) {
       this.setTileClass(item);
@@ -329,9 +329,9 @@ export class MapLayer extends Layer {
       this.loadMesh();
       this.setShowZoom(this.zoom);
       this.setMeshPosition(this.map.center);
-      if(document.getElementById('map-switch-list')){
-        document.getElementById('map-switch-list').append(this.menuDoc)
-      }
+      // if(document.getElementById('map-switch-list')){
+      //   document.getElementById('map-switch-list').append(this.menuDoc)
+      // }
     }
   }
 
