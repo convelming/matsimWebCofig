@@ -53,7 +53,7 @@
 </language>
 
 <script>
-import "@/mymap/style.css";
+
 
 import mixins from "./mixins";
 

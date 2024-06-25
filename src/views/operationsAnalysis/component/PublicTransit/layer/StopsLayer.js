@@ -120,11 +120,9 @@ export class StopsLayer extends Layer {
       this.update();
     }
     if (type == MAP_EVENT.HANDLE_PICK_LEFT && data.layerId == this.id) {
-      if (this.state == STOPS_STATE_KEY.CAN_SELECT) {
-        let item = this.data[data.pickColor - 1];
-        if (item) {
-          this.setSelectIds([item.data.stop.id]);
-        }
+      let item = this.data[data.pickColor - 1];
+      if (item) {
+        this.setSelectIds([item.data.stop.id]);
       }
     }
     if (type == MAP_EVENT.HANDLE_MOUSE_MOVE_PICK) {

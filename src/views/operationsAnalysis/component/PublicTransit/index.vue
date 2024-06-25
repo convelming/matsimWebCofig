@@ -130,6 +130,7 @@ export default {
       linkEndPoint: undefined,
 
       selectStop: false,
+      selectStopByBox: false,
       selectBusStopList: [],
 
       predefineColors: ["#5470c6", "#91cc75", "#fac858", "#ee6666", "#73c0de", "#3ba272", "#fc8452", "#9a60b4", "#ea7ccc"],
@@ -150,6 +151,12 @@ export default {
       event: {
         [MAP_EVENT.LAYER_LOADING]: ({ data }) => {
           this.loading = data;
+        },
+        [STOPS_EVENT.SELECT_STOP_CHANGE]: ({ data }) => {
+          if (data.length > 0) {
+            this.selectBusStopList = data;
+            this.rootVue.handleShowStopAndRoute(data);
+          }
         },
       },
     });
@@ -187,16 +194,9 @@ export default {
     },
     handleSelectStop(value) {
       if (value) {
-        this._StopsLayerEventId = this._StopsLayer.addEventListener(STOPS_EVENT.SELECT_STOP_CHANGE, (res) => {
-          if (res.data.length > 0) {
-            this.selectBusStopList = res.data;
-            this.rootVue.handleShowStopAndRoute(res.data);
-          }
-        });
         this._StopsLayer.state = STOPS_STATE_KEY.CAN_SELECT;
         this.$emit("update:lock2D", true);
       } else {
-        this._StopsLayer.removeEventListener(STOPS_EVENT.SELECT_STOP_CHANGE, this._StopsLayerEventId);
         this._StopsLayer.state = STOPS_STATE_KEY.DISABLE;
         this.$emit("update:lock2D", false);
       }

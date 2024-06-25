@@ -56,7 +56,7 @@
 </language>
 
 <script>
-import "@/mymap/style.css";
+
 import mixins from "../operationsAnalysis/mixins";
 
 import PublicTransit from "../operationsAnalysis/component/PublicTransit/index.vue";

@@ -92,6 +92,11 @@
       </div>
     </div>
     <HelpDialog :visible.sync="showHelpDialog" />
+
+    <div class="MapLayer_menu" :class="{ hide: !showStyleMenu }" :style="`width: ${styleList.length * 50 + 30}px`">
+      <div class="open_hide_btn" @click="showStyleMenu = !showStyleMenu"></div>
+      <img class="item" :class="{ active: styleActive == i }" v-for="(v, i) in styleList" :src="v.url" :title="v.NAME" :key="i" @click="handleChangeStyle(i)" />
+    </div>
   </div>
 </template>
 
@@ -249,8 +254,6 @@
 </language>
 
 <script>
-import "@/mymap/style.css";
-
 import { Map, MAP_EVENT, MapLayer, MAP_LAYER_STYLE, LocalMapTile } from "@/mymap/index.js";
 
 import { getByLineId, saveByLine, deleteTransitLine } from "@/api/index";
@@ -288,6 +291,9 @@ export default {
       datasource: "",
 
       showHelpDialog: false,
+      showStyleMenu: false,
+      styleList: [],
+      styleActive: 0,
 
       saveLoading: false,
       deleteLoading: false,
@@ -378,6 +384,11 @@ export default {
     changeLanguage(lan) {
       this.$setLanguage(lan);
     },
+    handleChangeStyle(i) {
+      this.showStyleMenu = false;
+      this.styleActive = i;
+      this._MapLayer.setTileClass(this.styleList[i].c);
+    },
     // 初始化地图
     initMap() {
       this._map = new Map({
@@ -395,6 +406,22 @@ export default {
       });
 
       this._map.addLayer(this._MapLayer);
+      {
+        const itemDocList = [];
+        const list = Object.values(this._MapLayer.styleMap);
+        for (let i = 0, l = list.length; i < l; i++) {
+          const value = list[i];
+          if (value === this._MapLayer.tileClass) this.styleActive = i;
+          const item = {
+            title: value.NAME,
+            url: new value(15, 26700, 14218, 200).url,
+            c: value,
+          };
+          itemDocList.push(item);
+        }
+        this.styleList = itemDocList;
+      }
+
       this._map.addLayer(this._StopsLayer);
       // this._map.addLayer(this._NetworkLayer);
       this._map.addLayer(this._NetworkLayer2);
@@ -1123,7 +1150,7 @@ export default {
     border-radius: 5px;
     border: 2px solid transparent;
     &.active {
-      border-color: #fff;
+      border-color: #409eff;
     }
   }
 }

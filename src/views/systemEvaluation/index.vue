@@ -85,7 +85,7 @@
 </language>
 
 <script>
-import "@/mymap/style.css";
+
 import { Map, MapLayer } from "@/mymap/index.js";
 import HelpDialog from "./component/HelpDialog/index.vue";
 import Accessibility from "./component/Accessibility/index.vue";

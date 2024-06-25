@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import "@/mymap/style.css";
+
 import { Map, MapLayer } from "@/mymap/index.js";
 import NewClock from "@/components/NewClock/index.vue";
 export default {
