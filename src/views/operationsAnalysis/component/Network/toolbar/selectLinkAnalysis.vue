@@ -54,8 +54,9 @@
 
 <script>
 import { MAP_EVENT } from "@/mymap";
-import { getElapseLinkLeg } from "@/api/index";
+import { getLinkById, getElapseLinkLeg } from "@/api/index";
 import { LinkFlowLayer } from "../layer/LinkFlowLayer";
+import { SelectLineLayer } from "../layer/SelectLineLayer";
 
 export default {
   props: {
@@ -134,6 +135,11 @@ export default {
     };
   },
   created() {
+    this._SelectLineLayer = new SelectLineLayer({
+      zIndex: 30,
+      lineWidth: this.lineDetail.lineWidth,
+      lineOffset: this.lineDetail.lineOffset,
+    });
     this._LinkFlowLayer = new LinkFlowLayer({ zIndex: 100, color: this.color, height: this.height });
     this.getDetail();
   },
@@ -142,22 +148,36 @@ export default {
     this.handleDisable();
   },
   methods: {
-    getDetail() {
+    handleLineWidthChange(lineWidth) {
+      this._SelectLineLayer.setLineWidth(lineWidth);
+    },
+    handleLineOffsetChange(lineOffset) {
+      this._SelectLineLayer.setLineOffset(lineOffset);
+    },
+    async getDetail() {
       this.loading = true;
-      getElapseLinkLeg({ linkId: this.lineDetail.id, startTime: this.startTime, endTime: this.endTime })
-        .then((res) => {
+      try {
+        await getElapseLinkLeg({ linkId: this.lineDetail.id, startTime: this.startTime, endTime: this.endTime }).then((res) => {
           this._LinkFlowLayer.setData(res.data);
           this.loading = false;
-        })
-        .finally(() => {
-          this.loading = false;
         });
+        await getLinkById({ linkId: this.lineDetail.id }).then((res) => {
+          this._SelectLineLayer.setData(res.data);
+        });
+      } catch (error) {}
+      this.loading = false;
     },
     handleEnable() {
       this._Map.addLayer(this._LinkFlowLayer);
+      this._Map.addLayer(this._SelectLineLayer);
+      this.rootVue.$on("Network_setLineWidth", this.handleLineWidthChange);
+      this.rootVue.$on("Network_setLineOffset", this.handleLineOffsetChange);
     },
     handleDisable() {
       this._Map.removeLayer(this._LinkFlowLayer);
+      this._Map.removeLayer(this._SelectLineLayer);
+      this.rootVue.$off("Network_setLineWidth", this.handleLineWidthChange);
+      this.rootVue.$off("Network_setLineOffset", this.handleLineOffsetChange);
     },
   },
 };

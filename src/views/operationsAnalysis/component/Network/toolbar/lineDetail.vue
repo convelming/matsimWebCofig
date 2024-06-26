@@ -100,10 +100,9 @@
 import { MAP_EVENT } from "@/mymap";
 import LineMenu, { line_menu } from "../menu/Line.vue";
 import { getLinkById } from "@/api/index";
-import { guid } from "@/utils/utils";
+import { SelectLineLayer } from "../layer/SelectLineLayer";
 
 import LinkVolumes from "../dialog/LinkVolumes.vue";
-
 import Vue from "vue";
 
 const LinkVolumesExtend = Vue.extend(LinkVolumes);
@@ -134,14 +133,6 @@ export default {
   watch: {
     show: {
       handler(val) {
-        if (val) {
-          setTimeout(() => {
-            this.rootVue.$emit("setSelectLine", this.lineDetail);
-          }, 200);
-        } else {
-          this.rootVue.$emit("setSelectLine", {});
-        }
-
         this.$nextTick(() => {
           this._interval = setInterval(() => {
             if (!this._Map) return;
@@ -165,6 +156,13 @@ export default {
       menuStyle: "top:100px;left:100px;z-index:1000;",
     };
   },
+  created() {
+    this._SelectLineLayer = new SelectLineLayer({
+      zIndex: 30,
+      lineWidth: this.lineDetail.lineWidth,
+      lineOffset: this.lineDetail.lineOffset,
+    });
+  },
   mounted() {
     this.getDetail();
   },
@@ -173,11 +171,18 @@ export default {
     this.handleDisable();
   },
   methods: {
+    handleLineWidthChange(lineWidth) {
+      this._SelectLineLayer.setLineWidth(lineWidth);
+    },
+    handleLineOffsetChange(lineOffset) {
+      this._SelectLineLayer.setLineOffset(lineOffset);
+    },
     getDetail() {
       this.loading = true;
       getLinkById({ linkId: this.lineDetail.id })
         .then((res) => {
           this.resData = res.data;
+          this._SelectLineLayer.setData(res.data);
           this.loading = false;
         })
         .finally(() => {
@@ -186,10 +191,16 @@ export default {
     },
     handleEnable() {
       this._MapEvnetId1 = this._Map.addEventListener(MAP_EVENT.HANDLE_CLICK_RIGHT, this.handleOpenMenu);
+      this._Map.addLayer(this._SelectLineLayer);
+      this.rootVue.$on("Network_setLineWidth", this.handleLineWidthChange);
+      this.rootVue.$on("Network_setLineOffset", this.handleLineOffsetChange);
       window.addEventListener("mousedown", this.handleCloseMenu);
     },
     handleDisable() {
       this._Map.removeEventListener(MAP_EVENT.HANDLE_CLICK_RIGHT, this._MapEvnetId1);
+      this._Map.removeLayer(this._SelectLineLayer);
+      this.rootVue.$off("Network_setLineWidth", this.handleLineWidthChange);
+      this.rootVue.$off("Network_setLineOffset", this.handleLineOffsetChange);
       window.removeEventListener("mousedown", this.handleCloseMenu);
     },
     handleOpenMenu(res) {
@@ -206,7 +217,7 @@ export default {
         case "selectLinkAnalysis":
           this.rootVue.handleShowSelectLinkAnalysis({
             uuid: this.name + this.lineDetail.id,
-            lineDetail: this.lineDetail,
+            lineDetail: JSON.parse(JSON.stringify(this.lineDetail)),
           });
           break;
         case "linkVolumes":

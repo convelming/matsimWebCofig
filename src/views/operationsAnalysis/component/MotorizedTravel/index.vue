@@ -336,12 +336,12 @@ export default {
       console.log("val", val);
       try {
         if (val) {
-          this.rootVue.$on("setSelectedBus", (busDetail) => {
+          this.rootVue.$on("MotorizedTravel_setSelectedBus", (busDetail) => {
             this._BusMotionLayer.setSelectBusId(busDetail.uuid);
           });
           this._Map.addLayer(this._BusMotionLayer);
         } else {
-          this.rootVue.$off("setSelectedBus");
+          this.rootVue.$off("MotorizedTravel_setSelectedBus");
           this._Map.removeLayer(this._BusMotionLayer);
         }
       } catch (error) {}
@@ -349,12 +349,12 @@ export default {
     handleShowSubway3DLayer(val) {
       try {
         if (val) {
-          this.rootVue.$on("setSelectedSubway", (subwayDetail) => {
+          this.rootVue.$on("MotorizedTravel_setSelectedSubway", (subwayDetail) => {
             this._SubwayMotionLayer.setSelectSubwayId(subwayDetail.uuid);
           });
           this._Map.addLayer(this._SubwayMotionLayer);
         } else {
-          this.rootVue.$off("setSelectedSubway");
+          this.rootVue.$off("MotorizedTravel_setSelectedSubway");
           this._Map.removeLayer(this._SubwayMotionLayer);
         }
       } catch (error) {}
@@ -362,12 +362,12 @@ export default {
     handleShowCar3DLayer(val) {
       try {
         if (val) {
-          this.rootVue.$on("setSelectedCar", (carDetail) => {
+          this.rootVue.$on("MotorizedTravel_setSelectedCar", (carDetail) => {
             this._CarMotionLayer.setSelectCarId(carDetail.uuid);
           });
           this._Map.addLayer(this._CarMotionLayer);
         } else {
-          this.rootVue.$off("setSelectedCar");
+          this.rootVue.$off("MotorizedTravel_setSelectedCar");
           this._Map.removeLayer(this._CarMotionLayer);
         }
       } catch (error) {}

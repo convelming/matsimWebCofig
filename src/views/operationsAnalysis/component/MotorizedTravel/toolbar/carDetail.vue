@@ -106,11 +106,11 @@ export default {
       handler(val) {
         if (val) {
           setTimeout(() => {
-            this.rootVue.$emit("setSelectedCar", this.carDetail);
+            this.rootVue.$emit("MotorizedTravel_setSelectedCar", this.carDetail);
             this.rootVue.$on("timeChange", this.updateVisibleSvg);
           }, 200);
         } else {
-          this.rootVue.$emit("setSelectedCar", {});
+          this.rootVue.$emit("MotorizedTravel_setSelectedCar", {});
           this.rootVue.$off("timeChange", this.updateVisibleSvg);
         }
       },

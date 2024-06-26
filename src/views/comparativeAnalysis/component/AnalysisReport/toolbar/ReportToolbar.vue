@@ -288,11 +288,11 @@ export default {
   mounted() {
     // 接收两个 boolean 类型的参数，1. 是否只是叶子节点，默认值为 false 2. 是否包含半选节点，默认值为 false
     // console.log(this.$refs.tree.getCheckedNodes());
-    this.rootVue.$on("generateAnalysisReport", this.handleGenerateAnalysisReport);
+    this.rootVue.$on("AnalysisReport_generateAnalysisReport", this.handleGenerateAnalysisReport);
   },
   beforeDestroy() {
     this.handleDisable();
-    this.rootVue.$off("generateAnalysisReport", this.handleGenerateAnalysisReport);
+    this.rootVue.$off("AnalysisReport_generateAnalysisReport", this.handleGenerateAnalysisReport);
     this._dialogMap.values().forEach((v) => v.$destroy());
     this._dialogMap.clear();
   },

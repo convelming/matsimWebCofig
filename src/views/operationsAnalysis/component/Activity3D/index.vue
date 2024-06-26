@@ -85,7 +85,7 @@ export default {
         if (this._Activity3DLayer) {
           this._Activity3DLayer.setColors(val);
         }
-        this.rootVue.$emit("Activity3DChangeColor", JSON.parse(JSON.stringify(val)));
+        this.rootVue.$emit("Activity3D_changeColor", JSON.parse(JSON.stringify(val)));
       },
       deep: true,
     },

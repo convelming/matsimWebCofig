@@ -94,7 +94,7 @@ export default {
     // 组件卸载事件
     handleDisable() {},
     handleGenerateAnalysisReport() {
-      this.rootVue.$emit("generateAnalysisReport");
+      this.rootVue.$emit("AnalysisReport_generateAnalysisReport");
     },
   },
 };

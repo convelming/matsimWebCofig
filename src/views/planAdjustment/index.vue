@@ -1008,6 +1008,11 @@ export default {
 }
 .setting_box {
   user-select: none;
+  max-height: calc(100vh - 170px);
+  overflow-y: auto;
+  &::-webkit-scrollbar {
+    display: none;
+  }
   .footer {
     padding-top: 10px;
     text-align: right;

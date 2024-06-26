@@ -145,11 +145,11 @@ export default {
       handler(val) {
         if (val) {
           setTimeout(() => {
-            this.rootVue.$emit("setSelectedBus", this.busDetail);
+            this.rootVue.$emit("MotorizedTravel_setSelectedBus", this.busDetail);
             this.rootVue.$on("timeChange", this.handleBusDetailTimeChange);
           }, 200);
         } else {
-          this.rootVue.$emit("setSelectedBus", {});
+          this.rootVue.$emit("MotorizedTravel_setSelectedBus", {});
           this.rootVue.$off("timeChange", this.handleBusDetailTimeChange);
         }
       },

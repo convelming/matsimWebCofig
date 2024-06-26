@@ -68,10 +68,10 @@
 </language>
 
 <script>
-import { MAP_EVENT } from "@/mymap";
 import { BuildFlowLayer } from "../layer/BuildFlowLayer";
+import { SelectBuild3DLayer } from "../layer/SelectBuild3DLayer";
 
-import { getStartInFacilities, getEndInFacilities } from "@/api/index";
+import { getFacilitiesById, getStartInFacilities, getEndInFacilities } from "@/api/index";
 
 export default {
   props: {
@@ -96,14 +96,6 @@ export default {
   watch: {
     show: {
       handler(val) {
-        if (val) {
-          setTimeout(() => {
-            this.rootVue.$emit("setSelectedBuild", this.buildDetail);
-          }, 200);
-        } else {
-          this.rootVue.$emit("setSelectedBuild", {});
-        }
-
         this.$nextTick(() => {
           this._interval = setInterval(() => {
             if (!this._Map) return;
@@ -145,6 +137,11 @@ export default {
   },
   created() {
     this._BuildFlowLayer = new BuildFlowLayer({ zIndex: 100, color: this.color, height: this.height });
+    this._SelectBuild3DLayer = new SelectBuild3DLayer({
+      zIndex: 10,
+      buildColor: 0xff0000,
+      buildOpacity: 1,
+    });
     this.getDetail();
   },
   beforeDestroy() {
@@ -163,12 +160,24 @@ export default {
         .finally(() => {
           this.loading = false;
         });
+
+      getFacilitiesById({
+        id: this.buildDetail.id,
+      })
+        .then((res) => {
+          this._SelectBuild3DLayer.setData(res.data);
+        })
+        .finally(() => {
+          this.loading = false;
+        });
     },
     handleEnable() {
       this._Map.addLayer(this._BuildFlowLayer);
+      this._Map.addLayer(this._SelectBuild3DLayer);
     },
     handleDisable() {
       this._Map.removeLayer(this._BuildFlowLayer);
+      this._Map.removeLayer(this._SelectBuild3DLayer);
     },
   },
 };

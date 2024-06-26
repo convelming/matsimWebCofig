@@ -15,15 +15,15 @@
         </div>
         <div class="form_item">
           <div class="form_label">{{ $l("coord") }}</div>
-          <div class="form_value">{{ activityDetail.coord }}</div>
+          <div class="form_value">{{ MercatorToWGS84(activityDetail.coord.x, activityDetail.coord.y).map((v) => Number(v.toFixed(3))) }}</div>
         </div>
         <div class="form_item">
           <div class="form_label">{{ $l("startTime") }}</div>
-          <div class="form_value">{{ activityDetail.startTime }}</div>
+          <div class="form_value">{{ formatHour(activityDetail.startTime) }}</div>
         </div>
         <div class="form_item">
           <div class="form_label">{{ $l("endTime") }}</div>
-          <div class="form_value">{{ activityDetail.endTime }}</div>
+          <div class="form_value">{{ formatHour(activityDetail.endTime) }}</div>
         </div>
         <div class="form_item" v-if="nextActivity">
           <div class="form_label">{{ $l("nextActivity") }}</div>
@@ -113,6 +113,7 @@
 
 <script>
 import { MAP_EVENT } from "@/mymap";
+import { MercatorToWGS84 } from "@/mymap/utils/LngLatUtils";
 import { getPlan } from "@/api/index";
 import { formatHour } from "@/utils/utils";
 import { SelectActivityLayer } from "../layer/SelectActivityLayer";
@@ -215,7 +216,7 @@ export default {
     });
 
     this._SelectActivityLayer.setData(this.activityDetail);
-    this.rootVue.$on("Activity3DChangeColor", this.handleActivity3DChangeColor);
+    this.rootVue.$on("Activity3D_changeColor", this.handleActivity3DChangeColor);
   },
   mounted() {
     this.getDetail();
@@ -223,7 +224,7 @@ export default {
   beforeDestroy() {
     clearInterval(this._interval);
     this.handleDisable();
-    this.rootVue.$off("Activity3DChangeColor", this.handleActivity3DChangeColor);
+    this.rootVue.$off("Activity3D_changeColor", this.handleActivity3DChangeColor);
   },
   methods: {
     handleActivity3DChangeColor(val) {
@@ -261,9 +262,8 @@ export default {
           this.loading = false;
         });
     },
-    formatHour(val) {
-      return formatHour(val).slice(0, 5);
-    },
+    formatHour: formatHour,
+    MercatorToWGS84: MercatorToWGS84,
   },
 };
 </script>

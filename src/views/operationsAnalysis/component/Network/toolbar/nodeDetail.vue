@@ -112,6 +112,12 @@ export default {
     this.handleDisable();
   },
   methods: {
+    handleLineWidthChange(lineWidth) {
+      this._SelectStopLayer.setLineWidth(lineWidth);
+    },
+    handleLineOffsetChange(lineOffset) {
+      this._SelectStopLayer.setLineOffset(lineOffset);
+    },
     getDetail() {
       this.loading = true;
       getNodeById({ nodeId: this.nodeDetail.id })

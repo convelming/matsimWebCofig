@@ -117,11 +117,13 @@ export default {
     width: {
       handler(val) {
         this._NetworkLayer.setLineWidth(val);
+        this.rootVue.$emit("Network_setLineWidth", val);
       },
     },
     offset: {
       handler(val) {
         this._NetworkLayer.setLineOffset(val);
+        this.rootVue.$emit("Network_setLineOffset", val);
       },
     },
     colors: {
@@ -230,14 +232,12 @@ export default {
       this._Map.addLayer(this._NetworkLayer);
       this.handleCanSelect(true);
       this.rootVue.$on("timeChange", this.handleTimeChange);
-      this.rootVue.$on("setSelectLine", this.handleSetSelectLine);
     },
     // 组件卸载事件
     handleDisable() {
       this._Map.removeLayer(this._NetworkLayer);
       this.handleCanSelect(false);
       this.rootVue.$off("timeChange", this.handleTimeChange);
-      this.rootVue.$off("setSelectLine", this.handleSetSelectLine);
     },
     handleSetSelectLine(data) {
       if (this._NetworkLayer) this._NetworkLayer.setSelectLine(data.id);
@@ -249,11 +249,13 @@ export default {
       this.canSelect = value;
       if (value) {
         this._NetworkLayerEventId = this._NetworkLayer.addEventListener(MAP_EVENT.HANDLE_PICK_LEFT, ({ data }) => {
-          this.selectItem = data;
-          if (data.type == "line") {
-            this.rootVue.handleShowLineDetail({ uuid: data.uuid, lineDetail: data });
-          } else if (data.type == "node") {
-            this.rootVue.handleShowNodeDetail({ uuid: data.uuid, nodeDetail: data });
+          const _data = JSON.parse(JSON.stringify(data));
+          _data.lineWidth = this.width;
+          _data.lineOffset = this.offset;
+          if (_data.type == "line") {
+            this.rootVue.handleShowLineDetail({ uuid: _data.uuid, lineDetail: _data });
+          } else if (_data.type == "node") {
+            this.rootVue.handleShowNodeDetail({ uuid: _data.uuid, nodeDetail: _data });
           }
         });
       } else {

@@ -90,8 +90,6 @@ export class NetworkLayer extends Layer {
     }
     this.selectLine.mesh.material.uniforms.lineWidth.value = lineWidth;
     this.selectLine.mesh.material.needsUpdate = true;
-
-    const scale = lineWidth / 100;
   }
 
   setLineOffset(lineOffset) {
@@ -120,7 +118,7 @@ export class NetworkLayer extends Layer {
       for (const tile of Object.values(this.tileMap)) {
         const lineItem = tile.getLineByPickColor(pickColorNum);
         const nodeItem = tile.getNodeByPickColor(pickColorNum);
-        const nodeList = Object.keys(tile._nodeData);
+        console.log(lineItem, nodeItem);
         if (lineItem) {
           this.handleEventListener(type, lineItem);
           break;
@@ -286,6 +284,7 @@ export class NetworkTile {
 
     this._nodeGeometry = new THREE.PlaneGeometry(100, 100);
     this._baseNodeMaterial = new THREE.MeshBasicMaterial({
+      depthWrite: false,
       map: NetworkTile.noodMap,
       color: new THREE.Color(0xff0000),
       transparent: true,

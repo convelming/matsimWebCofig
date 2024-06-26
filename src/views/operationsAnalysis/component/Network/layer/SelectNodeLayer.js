@@ -22,20 +22,10 @@ export class SelectStopLayer extends Layer {
 
     this.geometry = new THREE.PlaneGeometry(STOP_SIZE, STOP_SIZE);
     this.material = new THREE.MeshBasicMaterial({
-      // depthWrite: false,
       transparent: true,
       map: this.texture,
       color: this.color
     });
-    this.material.onBeforeCompile = (shader) => {
-      shader.fragmentShader = shader.fragmentShader.replace(
-        "#include <output_fragment>",
-        `
-          outgoingLight = diffuse.rgb;
-          #include <output_fragment>
-        `
-      );
-    };
 
     this.mesh = new THREE.Mesh(this.geometry, this.material);
   }
