@@ -1,11 +1,11 @@
 <template>
   <el-collapse-item class="my_collapse_item" :name="name" :class="{ active: s_showLayer }">
-    <div class="el-collapse-item__title" slot="title" :title='$l("导入GeoJSON")'>
+    <div class="el-collapse-item__title" slot="title" :title="$l('导入GeoJSON')">
       <el-checkbox class="checkbox" :value="s_showLayer" @change="handleChangeShowLayer">
-          <img class="item_icon" v-show="s_showLayer" src="@/assets/image/road_map_icon_a.png" />
-          <img class="item_icon" v-show="!s_showLayer" src="@/assets/image/road_map_icon.png" />
-          <span class="item_title">{{ $l("导入GeoJSON") }}</span>
-          <span v-if="loading" class="el-icon-loading" style="margin-left: 10px"></span>
+        <img class="item_icon" v-show="s_showLayer" src="@/assets/image/road_map_icon_a.png" />
+        <img class="item_icon" v-show="!s_showLayer" src="@/assets/image/road_map_icon.png" />
+        <span class="item_title">{{ $l("导入GeoJSON") }}</span>
+        <span v-if="loading" class="el-icon-loading" style="margin-left: 10px"></span>
       </el-checkbox>
     </div>
     <div class="form">
@@ -19,7 +19,7 @@
           </div>
           <div class="file_row">
             <div style="width: 100%; padding: 0 10px">
-              <el-slider :disabled="!s_showLayer" :title="$l('pointScale')" style="padding: 0 calc(2em - 10px)" v-model="item.labelParams.pointScale" :step="1" :min="1" :max="30" @change="handleChange('pointScale', index, $event)"> </el-slider>
+              <el-slider :disabled="!s_showLayer" :title="$l('pointScale')"  v-model="item.labelParams.pointScale" :step="1" :min="1" :max="200" @change="handleChange('pointScale', index, $event)"> </el-slider>
             </div>
             <div class="file_btn">
               <el-color-picker :disabled="!s_showLayer" :title="$l('pointColor')" size="mini" :predefine="predefineColors" v-model="item.labelParams.pointColor" @change="handleChange('pointColor', index, $event)" />
@@ -30,7 +30,7 @@
           </div>
           <div class="file_row">
             <div style="width: 100%; padding: 0 10px">
-              <el-slider :disabled="!s_showLayer" :title="$l('lineWidth')" style="padding: 0 calc(2em - 10px)" v-model="item.labelParams.lineWidth" :step="1" :min="1" :max="30" @change="handleChange('lineWidth', index, $event)"> </el-slider>
+              <el-slider :disabled="!s_showLayer" :title="$l('lineWidth')"  v-model="item.labelParams.lineWidth" :step="1" :min="1" :max="200" @change="handleChange('lineWidth', index, $event)"> </el-slider>
             </div>
             <div class="file_btn">
               <el-color-picker :disabled="!s_showLayer" :title="$l('lineColor')" size="mini" :predefine="predefineColors" v-model="item.labelParams.lineColor" @change="handleChange('lineColor', index, $event)" />
@@ -168,9 +168,9 @@ export default {
       const labelParams = {
         zIndex: 20,
         pointColor: "#ffa500",
-        pointScale: 1,
+        pointScale: 10,
         lineColor: "#ffa500",
-        lineWidth: 10,
+        lineWidth: 20,
         polygonColor: "#ffa500",
       };
       const item = {
@@ -270,6 +270,34 @@ export default {
 }
 
 .my_collapse_item {
+  .el-collapse-item__title {
+    padding-left: 10px;
+  }
+  .file_list {
+    padding-bottom: 20px;
+    .file_item {
+      box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+      border: 1px solid #000;
+      border-radius: 4px;
+    }
+    .file_row {
+      height: 40px;
+      display: flex;
+      align-items: center;
+      & + .file_row {
+        border-top: 1px solid #000;
+      }
+      .file_btn {
+        flex-shrink: 0;
+        height: 40px;
+        width: 40px;
+        border-left: 1px solid #000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+  }
 }
 
 .flex-align-center {

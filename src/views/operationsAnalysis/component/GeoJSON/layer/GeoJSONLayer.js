@@ -204,6 +204,7 @@ export class GeoJSONLayer extends Layer {
   }
 
   getMultiLineString(coordinates, crs, center, other) {
+    console.log(coordinates, crs, center, other);
     const coordSys = crs.properties.name.match(/EPSG::\d+/)[0].replace("::", ":");
     const geometryList = [];
     for (const pointList of coordinates) {
@@ -234,6 +235,8 @@ export class GeoJSONLayer extends Layer {
           toLength,
           lineLength,
         })
+
+        fromCoord = toCoord;
       }
       const geometry = this.getLineGeometry(lineList);
       geometryList.push(geometry)
