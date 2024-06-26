@@ -1,20 +1,24 @@
 import * as THREE from "three";
 import { Layer, MAP_EVENT } from "@/mymap/index.js";
 
-const SIZE = 80;
+const SIZE = 10;
+const COLOR = "#000000"
 
 export class ActivityRoutesLayer extends Layer {
 
   center = [0, 0];
+  colors = new Map();
 
   actScale = 1;
-  actColor = new THREE.Color(0xffa500);
+  actWidth = 2;
   actTexture = new THREE.TextureLoader().load(require("@/assets/image/point.png"));
   actList = [];
+  actStartMeshList = [];
+  actEndMeshList = [];
+  actCylMeshList = [];
 
   legScale = 1;
-  legWidth = 10;
-  legColor = new THREE.Color(0xff0000);
+  legWidth = 20;
   legTexture = new THREE.TextureLoader().load(require("@/assets/image/link_top5.png"));
   legList = [];
   legMeshList = [];
@@ -22,54 +26,14 @@ export class ActivityRoutesLayer extends Layer {
 
   height = 100;
 
-  setActColor(actColor) {
-    this.actColor = new THREE.Color(actColor);
-    this.actMaterial.setValues({ color: this.actColor });
-    this.actMaterial2.setValues({ color: this.actColor });
-  }
-
-  setLegColor(legColor) {
-    this.legColor = new THREE.Color(legColor);
-    this.legMaterial.setValues({ color: this.legColor });
-  }
-
-  setHeight(height) {
-    this.height = height;
-    this.scaleScene.scale.set(1, 1, this.height / 100);
-  }
-
   constructor(opt) {
     super(opt);
 
 
     this.height = opt.height || this.height;
     this.actScale = opt.actScale || this.actScale;
-    this.actColor = new THREE.Color(opt.actColor || this.actColor);
     this.legScale = opt.legScale || this.legScale;
-    this.legColor = new THREE.Color(opt.legColor || this.legColor);
-
-    this.actGeometry = new THREE.PlaneGeometry(SIZE, SIZE);
-    this.actMaterial = this.getActMaterial({
-      // depthWrite: false,
-      transparent: true,
-      map: this.actTexture,
-      color: this.actColor,
-    });
-    this.actGeometry2 = new THREE.CylinderGeometry(SIZE / 2, SIZE / 2);
-    this.actMaterial2 = new THREE.MeshBasicMaterial({
-      // depthWrite: false,
-      transparent: true,
-      color: this.actColor,
-      opacity: 0.8,
-    });
-
-    this.legMaterial = this.getLegMaterial({
-      // depthWrite: false,
-      side: THREE.DoubleSide,
-      transparent: true,
-      map: this.legTexture,
-      color: this.legColor,
-    });
+    this.colors = new Map((opt.colors || []).map(v => [v.name, v.color]));
 
     this.scaleScene = new THREE.Group();
     this.scaleScene.scale.set(1, 1, this.height / 100);
@@ -79,6 +43,7 @@ export class ActivityRoutesLayer extends Layer {
 
   onAdd(map) {
     super.onAdd(map);
+    this.updateSize();
     this.update();
   }
 
@@ -88,24 +53,39 @@ export class ActivityRoutesLayer extends Layer {
       this.scaleScene.position.set(x, y, 0);
     }
     if (type == MAP_EVENT.UPDATE_CAMERA_HEIGHT) {
-      this.changeSize();
+      this.updateSize();
     }
+  }
+
+  dispose() {
+    this.scaleScene.removeFromParent();
+    [this.actStartMeshList, this.actEndMeshList, this.actCylMeshList, this.legMeshList].flat().forEach((v) => {
+      v.removeFromParent();
+      v.geometry.dispose();
+    });
+    this.actStartMeshList = [];
+    this.actEndMeshList = [];
+    this.actCylMeshList = [];
+    this.legMeshList = [];
+
+    this.actTexture.dispose();
+    this.legTexture.dispose();
+    this.colors.clear()
   }
 
   setData(data, center) {
     try {
       const actList = [];
       const legList = [];
-      let pickColor = 1;
       for (const v of data) {
         if (v.type === 'Activity') {
           v.point = [v.coord.x - center[0], v.coord.y - center[1]];
-          v.pickColor = pickColor += 1;
           actList.push(v);
         } else if (v.type === 'Leg') {
           let length = 0;
           let time = v.path.startTime;
           const speed = v.path.distance / (v.path.endTime - v.path.startTime);
+          const lineCenter = [];
           // if (!legCenter) legCenter = v.center;
           v.path.paths.forEach(v2 => {
 
@@ -122,8 +102,6 @@ export class ActivityRoutesLayer extends Layer {
               x: v2.endPoint[0] - center[0],
               y: v2.endPoint[1] - center[1]
             };
-
-            v2.pickColor = pickColor += 10;
           })
           legList.push(v);
         }
@@ -140,25 +118,112 @@ export class ActivityRoutesLayer extends Layer {
     }
   }
 
+  setHeight(height) {
+    this.height = height;
+    this.scaleScene.scale.set(1, 1, this.height / 100);
+  }
+
+
+  setColors(colors) {
+    this.colors = new Map(colors.map(v => [v.name, v.color]));
+    for (const mesh of this.actStartMeshList) {
+      const color = new THREE.Color(this.colors.get(mesh.userData.activity) || COLOR);
+      mesh.material.setValues({ color: color });
+      mesh.material.needsUpdate = true;
+    }
+    for (const mesh of this.actEndMeshList) {
+      const color = new THREE.Color(this.colors.get(mesh.userData.activity) || COLOR);
+      mesh.material.setValues({ color: color });
+      mesh.material.needsUpdate = true;
+    }
+    for (const mesh of this.actCylMeshList) {
+      const color = new THREE.Color(this.colors.get(mesh.userData.activity) || COLOR);
+      mesh.material.setValues({ color: color });
+      mesh.material.needsUpdate = true;
+    }
+    for (const mesh of this.legMeshList) {
+      const color = new THREE.Color(this.colors.get(mesh.userData.activity) || COLOR);
+      mesh.material.setValues({ color: color });
+      mesh.material.needsUpdate = true;
+    }
+  }
+
+  updateSize() {
+    this.actWidth = this.map.cameraHeight / 400;
+    this.legWidth = this.map.cameraHeight / 100;
+    const scale = this.actScale * this.actWidth;
+    for (const mesh of this.actStartMeshList) {
+      mesh.scale.set(scale, scale, 1)
+    }
+    for (const mesh of this.actEndMeshList) {
+      mesh.scale.set(scale, scale, 1)
+    }
+    for (const mesh of this.actCylMeshList) {
+      mesh.scale.set(scale, 1, scale)
+    }
+    for (const mesh of this.legMeshList) {
+      mesh.material.needsUpdate = true;
+    }
+  }
+
   update() {
     if (!this.map) return;
-    console.log(this.legList, this.actList);
+    [this.actStartMeshList, this.actEndMeshList, this.actCylMeshList, this.legMeshList].flat().forEach((v) => {
+      v.removeFromParent();
+      v.geometry.dispose();
+    });
+    this.actStartMeshList = [];
+    this.actEndMeshList = [];
+    this.actCylMeshList = [];
+    this.legMeshList = [];
 
     // 活动
     {
-      if (this.actMesh) {
-        this.actMesh.removeFromParent();
-        this.actMesh.dispose();
+      console.log(this.colors);
+      for (let i = 0, l = this.actList.length; i < l; i++) {
+        const item = this.actList[i]
+        const { point, startTime, endTime, activity } = item;
+        const startZ = Number(startTime) / 60;
+        const endZ = Number(endTime) / 60;
+        const height = Math.abs(endZ - startZ);
+        const color = new THREE.Color(this.colors.get(activity) || COLOR);
+        const scale = this.actScale * this.actWidth;
+
+        const geometry = new THREE.PlaneGeometry(SIZE, SIZE);
+        const material = this.getActMaterial({
+          transparent: true,
+          map: this.actTexture,
+          color: color,
+        });
+        const geometry2 = new THREE.CylinderGeometry(SIZE / 2, SIZE / 2, height);
+        const material2 = new THREE.MeshBasicMaterial({
+          transparent: true,
+          color: color,
+          opacity: 0.8,
+        });
+        const startMesh = new THREE.Mesh(geometry, material);
+        startMesh.position.set(point[0], point[1], startZ);
+        startMesh.scale.set(scale, scale, 1)
+        startMesh.userData.activity = activity;
+        this.actStartMeshList.push(startMesh);
+        this.scaleScene.add(startMesh);
+
+        const endMesh = new THREE.Mesh(geometry, material);
+        endMesh.position.set(point[0], point[1], endZ + 1);
+        endMesh.scale.set(scale, scale, 1)
+        endMesh.userData.activity = activity;
+        this.actEndMeshList.push(endMesh);
+        this.scaleScene.add(endMesh);
+
+        const cylMesh = new THREE.Mesh(geometry2, material2);
+        cylMesh.rotateX(Math.PI / 2);
+        cylMesh.position.set(point[0], point[1], startZ + height / 2);
+        cylMesh.scale.set(scale, 1, scale)
+        cylMesh.userData.activity = activity;
+        this.actCylMeshList.push(cylMesh);
+        this.scaleScene.add(cylMesh);
+
       }
-      if (this.actMesh2) {
-        this.actMesh2.removeFromParent();
-        this.actMesh2.dispose();
-      }
-      this.actMesh = new THREE.InstancedMesh(this.actGeometry, this.actMaterial, this.actList.length * 2);
-      this.actMesh2 = new THREE.InstancedMesh(this.actGeometry2, this.actMaterial2, this.actList.length);
-      this.actMesh.position.set(0, 0, 2);
-      this.scaleScene.add(this.actMesh);
-      this.scaleScene.add(this.actMesh2);
     }
     // 路径
     {
@@ -167,12 +232,20 @@ export class ActivityRoutesLayer extends Layer {
         mesh.geometry.dispose();
       }
 
-      this.legWidth = this.map.cameraHeight / 150 * this.legScale;
-
       for (let i = 0, l = this.legList.length; i < l; i++) {
         const item = this.legList[i];
-        const geometry = this.getLegGeometry(item.path.paths);
-        const mesh = new THREE.Mesh(geometry, this.legMaterial);
+        const { path, activity } = item;
+        const color = new THREE.Color(this.colors.get(activity) || COLOR);
+        console.log(activity, color.getHexString());
+        const geometry = this.getLegGeometry(path.paths);
+        const material = this.getLegMaterial({
+          side: THREE.DoubleSide,
+          transparent: true,
+          map: this.legTexture,
+          color: color,
+        });
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.userData.activity = activity;
         this.scaleScene.add(mesh);
         this.legMeshList.push(mesh);
       }
@@ -181,47 +254,9 @@ export class ActivityRoutesLayer extends Layer {
     const [x, y] = this.map.WebMercatorToCanvasXY(...this.center);
     this.scaleScene.position.set(x, y, 0);
 
-    this.changeSize();
-  }
-
-  changeSize() {
-    if (this.actMesh) {
-      const _scale = this.map.cameraHeight / 4000 * this.actScale;
-      for (let i = 0, l = this.actList.length * 2; i < l; i++) {
-        const item = this.actList[Math.floor(i / 2)]
-        const { point, pickColor } = item;
-        const startTime = Number(item.startTime);
-        const endTime = Number(item.endTime);
-        const z = i % 2 == 0 ? startTime / 60 : endTime / 60;
-        const positionV3 = new THREE.Vector3(point[0], point[1], z);
-        const scaleV3 = new THREE.Vector3(_scale, _scale, 1);
-        const matrix = new THREE.Matrix4();
-        matrix.compose(positionV3, new THREE.Quaternion(), scaleV3);
-        this.actMesh.setMatrixAt(i, matrix);
-
-
-        if (i % 2 == 0) {
-          const height = Math.abs(endTime - startTime) / 60;
-          const positionV3_2 = new THREE.Vector3(point[0], point[1], startTime / 60 + height / 2);
-          const scaleV3_2 = new THREE.Vector3(_scale, height, _scale);
-          const rotation_2 = new THREE.Quaternion()
-          rotation_2.setFromAxisAngle(new THREE.Vector3(1, 0, 0), Math.PI / 2);
-          const matrix_2 = new THREE.Matrix4();
-          matrix_2.compose(positionV3_2, rotation_2, scaleV3_2);
-          this.actMesh2.setMatrixAt(Math.floor(i / 2), matrix_2);
-        }
-      }
-      this.actMesh.instanceMatrix.needsUpdate = true;
-      this.actMesh2.instanceMatrix.needsUpdate = true;
-    }
-
-    this.legWidth = this.map.cameraHeight / 150 * this.legScale;
-    this.legMaterial.needsUpdate = true;
-
   }
 
   getActMaterial(opt) {
-
     const material = new THREE.MeshBasicMaterial(opt);
     material.onBeforeCompile = (shader) => {
       shader.fragmentShader = shader.fragmentShader.replace(
@@ -254,17 +289,15 @@ export class ActivityRoutesLayer extends Layer {
     };
     return material;
   }
-  getLegMaterial({ usePickColor, ...opt }) {
-    const material = new THREE.MeshBasicMaterial({
-      ...opt,
-    });
+  getLegMaterial(opt) {
+    const material = new THREE.MeshBasicMaterial(opt);
     material.onBeforeCompile = (shader) => {
+      const lineWidth = Number(this.legWidth * this.legScale).toFixed(2)
       shader.vertexShader = shader.vertexShader.replace(
         "#include <common>",
         `
           #include <common>
 
-          attribute vec3 pickColor;
           attribute float side;
           attribute float lineLength;
           attribute vec2 startPosition;
@@ -276,7 +309,7 @@ export class ActivityRoutesLayer extends Layer {
         "#include <begin_vertex>",
         `
           #include <begin_vertex>
-          float lineWidth = ${Number(this.legWidth).toFixed(2)};
+          float lineWidth = ${lineWidth};
           float offset = lineWidth / 2.0 * side;
           vLineLength = lineLength;
 
@@ -319,7 +352,7 @@ export class ActivityRoutesLayer extends Layer {
         "#include <map_fragment>",
         `
             #ifdef USE_MAP
-              float lineWidth = ${Number(this.legWidth).toFixed(2)} * 2.0;
+              float lineWidth = ${lineWidth} * 2.0;
               float l = mod(vLineLength, lineWidth * 5.0) / lineWidth ;
               if(0.0 < l && l < 1.0){
                 vec4 sampledDiffuseColor = texture2D(map, vec2(vUv.x,  l));
@@ -330,19 +363,6 @@ export class ActivityRoutesLayer extends Layer {
             #endif
           `
       );
-      if (usePickColor) {
-        shader.vertexShader = shader.vertexShader.replace(
-          "#include <color_vertex>",
-          `
-            #include <color_vertex>
-            #if defined( USE_COLOR_ALPHA )
-              vColor = vec4(pickColor,1.0);
-            #elif defined( USE_COLOR )
-              vColor = pickColor;
-            #endif
-          `
-        );
-      }
     };
     /**
      * 当用到onBeforeCompile回调的时候，
@@ -354,8 +374,8 @@ export class ActivityRoutesLayer extends Layer {
     material.customProgramCacheKey = () => {
       return JSON.stringify({
         uuid: material.uuid,
-        usePickColor: usePickColor,
         lineWidth: this.legWidth,
+        lineScale: this.legScale,
       });
     };
     return material;
@@ -386,26 +406,15 @@ export class ActivityRoutesLayer extends Layer {
       new Float32Array(length * 4 * 2 + 2),
       2
     );
-    const attrPickColor = new THREE.BufferAttribute(
-      new Float32Array(length * 4 * 3 + 2 * 3),
-      3
-    );
-    const attrColor = new THREE.BufferAttribute(
-      new Float32Array(length * 4 * 3 + 2 * 3),
-      3
-    );
     const attrLength = new THREE.BufferAttribute(
       new Float32Array(length * 4 + 2),
       1
     );
 
-    const color = new THREE.Color(this.legColor);
-
     for (let index = 0; index < data.length; index++) {
       const link = data[index];
       const prevLink = index == 0 ? link : data[index - 1];
       const nextLink = index == data.length - 1 ? link : data[index + 1];
-      const pickColor = new THREE.Color(link.pickColor);
 
       const prevFromxy = prevLink.fromCoord;
       const linkFromxy = link.fromCoord;
@@ -425,20 +434,6 @@ export class ActivityRoutesLayer extends Layer {
         attrLength.setX(index * 4, link.fromLength);
         attrLength.setX(index * 4 + 1, link.fromLength);
 
-        attrPickColor.setXYZ(
-          index * 4,
-          pickColor.r,
-          pickColor.g,
-          pickColor.b
-        );
-        attrPickColor.setXYZ(
-          index * 4 + 1,
-          pickColor.r,
-          pickColor.g,
-          pickColor.b
-        );
-        attrColor.setXYZ(index * 4, color.r, color.g, color.b);
-        attrColor.setXYZ(index * 4 + 1, color.r, color.g, color.b);
       }
       // toNode
       {
@@ -452,21 +447,6 @@ export class ActivityRoutesLayer extends Layer {
         attrSide.setX(index * 4 + 3, -1);
         attrLength.setX(index * 4 + 2, link.toLength);
         attrLength.setX(index * 4 + 3, link.toLength);
-
-        attrPickColor.setXYZ(
-          index * 4 + 2,
-          pickColor.r,
-          pickColor.g,
-          pickColor.b
-        );
-        attrPickColor.setXYZ(
-          index * 4 + 3,
-          pickColor.r,
-          pickColor.g,
-          pickColor.b
-        );
-        attrColor.setXYZ(index * 4 + 2, color.r, color.g, color.b);
-        attrColor.setXYZ(index * 4 + 3, color.r, color.g, color.b);
       }
 
       attrUv.setXY(index * 4, 0, 0);
@@ -490,8 +470,6 @@ export class ActivityRoutesLayer extends Layer {
     geometry.setAttribute("side", attrSide);
     geometry.setAttribute("lineLength", attrLength);
     geometry.setAttribute("uv", attrUv);
-    geometry.setAttribute("pickColor", attrPickColor);
-    geometry.setAttribute("color", attrColor);
     geometry.index = attrIndex;
     return geometry
   }

@@ -1,7 +1,7 @@
 <template>
   <el-collapse-item class="toolbar_item" :name="name">
     <div class="toolbar_item_header" slot="title">
-      <div class="title" style="max-width: 100%;">{{ $l("活动详情") }}</div>
+      <div class="title" style="max-width: 100%">{{ $l("活动详情") }}</div>
     </div>
     <div class="toolbar_item_bodyer" v-loading="loading">
       <div class="form" v-if="activityDetail">
@@ -38,14 +38,14 @@
           </div>
         </div>
         <div style="margin: 20px 0 0 20px" v-if="showActivityRoutes">
-          <div class="form_item" style="align-items: center">
+          <!-- <div class="form_item" style="align-items: center">
             <div class="form_label">{{ $l("actColor") }}</div>
             <el-color-picker size="mini" :predefine="predefineColors" v-model="actColor" />
           </div>
           <div class="form_item" style="align-items: center">
             <div class="form_label">{{ $l("legColor") }}</div>
             <el-color-picker size="mini" :predefine="predefineColors" v-model="legColor" />
-          </div>
+          </div> -->
           <div class="form_item" style="align-items: center">
             <div class="form_label">{{ $l("height") }}</div>
             <div class="form_value">
@@ -201,18 +201,21 @@ export default {
     };
   },
   created() {
+    console.log(this.activityDetail);
     this._SelectActivityLayer = new SelectActivityLayer({
       zIndex: 30,
       color: this.color,
     });
     this._ActivityRoutesLayer = new ActivityRoutesLayer({
       zIndex: 40,
-      actColor: this.actColor,
-      legColor: this.legColor,
+      // actColor: this.actColor,
+      // legColor: this.legColor,
+      colors: this.activityDetail.colors,
       height: this.height,
     });
 
     this._SelectActivityLayer.setData(this.activityDetail);
+    this.rootVue.$on("Activity3DChangeColor", this.handleActivity3DChangeColor);
   },
   mounted() {
     this.getDetail();
@@ -220,8 +223,14 @@ export default {
   beforeDestroy() {
     clearInterval(this._interval);
     this.handleDisable();
+    this.rootVue.$off("Activity3DChangeColor", this.handleActivity3DChangeColor);
   },
   methods: {
+    handleActivity3DChangeColor(val) {
+      this._ActivityRoutesLayer.setColors(val);
+      // this._ActivityRoutesLayer.setActColor(val.actColor);
+      // this._ActivityRoutesLayer.setLegColor(val.legColor);
+    },
     handleEnable() {
       this._Map.addLayer(this._SelectActivityLayer);
       if (this.showActivityRoutes) this._Map.addLayer(this._ActivityRoutesLayer);

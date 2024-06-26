@@ -16,6 +16,12 @@
         </div>
       </div>
       <div class="form_item">
+        <div class="form_label">{{ $l("大小：") }}</div>
+        <div class="form_value">
+          <el-slider style="padding: 0px calc(2em - 10px)" :disabled="!s_showLayer" v-model="scale" :min="0" :max="20" :step="1" />
+        </div>
+      </div>
+      <div class="form_item">
         <div class="form_label">{{ $l("颜色：") }}</div>
         <div class="form_value">
           <div class="color_item" v-for="(v, i) in activityTypeList" :key="i">
@@ -41,6 +47,10 @@
   "颜色：":{
     "zh-CN": "颜色：",
     "en-US": "Color："
+  },
+  "大小：":{
+    "zh-CN": "大小：",
+    "en-US": "Size："
   },
 }
 </language>
@@ -75,6 +85,7 @@ export default {
         if (this._Activity3DLayer) {
           this._Activity3DLayer.setColors(val);
         }
+        this.rootVue.$emit("Activity3DChangeColor", JSON.parse(JSON.stringify(val)));
       },
       deep: true,
     },
@@ -113,10 +124,12 @@ export default {
       maxNum: this.maxNum,
       event: {
         [MAP_EVENT.HANDLE_PICK_LEFT]: ({ data }) => {
-          console.log(data);
+          const _data = JSON.parse(JSON.stringify(data));
+
+          _data.colors = JSON.parse(JSON.stringify(this.activityTypeList));
           this.rootVue.handleShowActivityDetail({
             uuid: data.pickColor,
-            activityDetail: data,
+            activityDetail: _data,
           });
         },
       },

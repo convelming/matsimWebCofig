@@ -1,26 +1,26 @@
 <template>
   <el-collapse-item class="my_collapse_item" :name="name" :class="{ active: s_showLayer }">
-    <div class="el-collapse-item__title" slot="title" :title='$l("network")'>
+    <div class="el-collapse-item__title" slot="title" :title="$l('network')">
       <el-checkbox class="checkbox" :value="s_showLayer" @change="handleChangeShowLayer">
-          <img class="item_icon" v-show="s_showLayer" src="@/assets/image/road_network_icon_a.png" />
-          <img class="item_icon" v-show="!s_showLayer" src="@/assets/image/road_network_icon.png" />
-          <span class="item_title">{{ $l("network") }}</span>
-          <span v-if="loading" class="el-icon-loading" style="margin-left: 10px"></span>
+        <img class="item_icon" v-show="s_showLayer" src="@/assets/image/road_network_icon_a.png" />
+        <img class="item_icon" v-show="!s_showLayer" src="@/assets/image/road_network_icon.png" />
+        <span class="item_title">{{ $l("network") }}</span>
+        <span v-if="loading" class="el-icon-loading" style="margin-left: 10px"></span>
       </el-checkbox>
     </div>
     <div class="form">
       <div class="form_item">
         <div class="form_label">{{ $l("width") }}</div>
         <div class="form_value">
-          <!-- <el-slider :disabled="!s_showLayer" v-model="width" :min="0" :max="20" :step="1" /> -->
-          <el-input-number class="my_input_number_1" style="width: 100%" size="medium" :disabled="!s_showLayer" v-model="width" :min="0" :max="20" :step="1" step-strictly> </el-input-number>
+          <el-slider style="padding: 0px calc(2em - 10px)" :disabled="!s_showLayer" v-model="width" :min="0" :max="20" :step="1" />
+          <!-- <el-input-number class="my_input_number_1" style="width: 100%" size="medium" :disabled="!s_showLayer" v-model="width" :min="0" :max="20" :step="1" step-strictly> </el-input-number> -->
         </div>
       </div>
       <div class="form_item">
         <div class="form_label">{{ $l("offset") }}</div>
         <div class="form_value">
-          <!-- <el-slider :disabled="!s_showLayer" v-model="offset" :min="0" :max="20" :step="1" /> -->
-          <el-input-number class="my_input_number_1" style="width: 100%" size="medium" :disabled="!s_showLayer" v-model="offset" :min="0" :max="20" :step="1" step-strictly> </el-input-number>
+          <el-slider style="padding: 0px calc(2em - 10px)" :disabled="!s_showLayer" v-model="offset" :min="0" :max="20" :step="1" />
+          <!-- <el-input-number class="my_input_number_1" style="width: 100%" size="medium" :disabled="!s_showLayer" v-model="offset" :min="0" :max="20" :step="1" step-strictly> </el-input-number> -->
         </div>
       </div>
       <div class="form_item">
