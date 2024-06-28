@@ -208,7 +208,7 @@ export default {
       return this.rootVue._map;
     },
     _networkLayer() {
-      return this.rootVue._NetworkLayer2;
+      return this.rootVue._NetworkLayer;
     },
     _networkLineLayer() {
       return this.rootVue._NetworkLineLayer;

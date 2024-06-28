@@ -1,157 +1,43 @@
 import * as THREE from "three";
-import { Layer, MAP_EVENT } from "@/mymap/index.js";
 
 import NetworkLayerWorker from "../worker/NetworkLayer.worker";
 
+import { Layer, MAP_EVENT } from "@/mymap/index.js";
+
 import { getGeomjson } from "@/api/index";
 
-// 根据显示区域加载路网
+// 整个路网一次性加载
 export class NetworkLayer extends Layer {
   name = "NetworkLayer";
-  data = null;
   color = new THREE.Color(0x909399);
-
-  loader = new THREE.BufferGeometryLoader();
-  texture = new THREE.TextureLoader().load(
-    require("@/assets/image/link_top2.png")
-  );
-
-  lineWidth = 1;
-  lineOffset = 0;
-  center = null;
-  range = null;
+  lineWidth = 6;
+  center = [12594687.19, 2641696.16];
 
   material = null;
   pickLayerMaterial = null;
   pickMaterial = null;
 
-  highMaterial = null;
+  data = [];
+  geometryList = [];
 
-  geoList = [];
-  center = null;
-  range = [];
+  bufferGeometryLoader = new THREE.BufferGeometryLoader();
 
-  constructor(options) {
-    super(options);
+  constructor(opt) {
+    super(opt);
+    this.data = [];
+    this.geometryList = [];
     this.color = new THREE.Color(opt.color || this.color);
-    this.lineWidth = options.lineWidth || this.lineWidth;
-
-    this.loader = new THREE.BufferGeometryLoader();
-    // this.update();
-    
-    this.worker = new NetworkLayerWorker();
-    this.worker.onmessage = this.workerOnMessage.bind(this);
-    this.worker.onerror = this.workerOnError.bind(this);
-  }
-
-  on(type, data) {
-    if (type == MAP_EVENT.UPDATE_CENTER) {
-      for (const mesh of this.scene.children) {
-        const [x, y] = this.map.WebMercatorToCanvasXY(...mesh.userData.center);
-        mesh.position.set(x, y, 0);
-      }
-      for (const mesh of this.pickLayerScene.children) {
-        const [x, y] = this.map.WebMercatorToCanvasXY(...mesh.userData.center);
-        mesh.position.set(x, y, 0);
-      }
-      for (const mesh of this.pickMeshScene.children) {
-        const [x, y] = this.map.WebMercatorToCanvasXY(...mesh.userData.center);
-        mesh.position.set(x, y, 0);
-      }
-      this.update();
-      this.handleEventListener(type);
-    }
-    if (type == MAP_EVENT.UPDATE_CAMERA_HEIGHT) {
-      this.update();
-      this.setValues({
-        lineWidth: this.map.cameraHeight / 160,
-      });
-    }
-    if (type == MAP_EVENT.HANDLE_PICK_LEFT && data.layerId == this.id) {
-      let color = new THREE.Color(data.pickColor);
-      let item = this.data.find((v) => color.equals(v.pickColor));
-      if (item) {
-        this.handleEventListener(type, item.data);
-      }
-    }
-  }
-
-  onAdd(map) {
-    super.onAdd(map);
-    this.update();
-    this.setValues({
-      lineWidth: this.map.cameraHeight / 160,
-    });
-  }
-
-  dispose() {
-    super.dispose();
-    this.worker.terminate();
-  }
-
-  show() {
-    super.show();
-    this.update();
-  }
-  
-  async update() {
-    if (this.updateTimeout) return;
-    this.updateTimeout = setTimeout(() => (this.updateTimeout = null), 1000);
-    try {
-      if (!this.map) return;
-      if (!this.visible) return;
-      if (this.updateing) return;
-      this.updateing = true;
-      const { maxX, minX, maxY, minY } =
-        this.map.getWindowRangeAndWebMercator();
-      const wd = Math.abs(maxX - minX);
-      const hd = Math.abs(maxY - minY);
-      const maxX1 = maxX + wd;
-      const minX1 = minX - wd;
-      const maxY1 = maxY + hd;
-      const minY1 = minY - hd;
-      const [maxX2, minX2, maxY2, minY2] = this.range;
-      if (maxX1 <= maxX2 && minX1 >= minX2 && maxY1 <= maxY2 && minY1 >= minY2)
-        throw new Error("当前视野范围不需要更新");
-      if (!maxX1 || !minX1 || !maxY1 || !minY1) throw new Error("坐标不能为空");
-      this.range = [maxX1, minX1, maxY1, minY1];
-      const res = await getGeomjson({
-        xyarr: [
-          [maxX1, minY1],
-          [maxX1, maxY1],
-          [minX1, maxY1],
-          [minX1, minY1],
-        ],
-      });
-      this.worker.postMessage({
-        list: res.data,
-        center: [(maxX + minX) / 2, (maxY + minY) / 2],
-      });
-    } catch (error) {
-    } finally {
-      this.updateing = false;
-    }
-  }
-  
-  workerOnMessage(event) {
-    const { center, data, geoJsonList } = event.data;
-    this.center = center;
-    this.data = data;
-
-    this.clearScene();
-    for (const geo of this.geoList) {
-      geo.dispose();
-    }
-    this.geoList = [];
+    this.lineWidth = opt.lineWidth || this.lineWidth;
+    this.center = opt.center || this.center;
 
     this.material = this.getMaterial({
-      // map: this.texture,
       color: this.color,
+      usePickColor: false,
     });
 
     this.pickLayerMaterial = this.getMaterial({
-      color: this.pickLayerColor,
       pickOffset: 10,
+      usePickColor: false,
     });
 
     this.pickMaterial = this.getMaterial({
@@ -159,37 +45,86 @@ export class NetworkLayer extends Layer {
       usePickColor: true,
       pickOffset: 10,
     });
-    for (const geoJson of geoJsonList) {
-      const [x, y] = this.map.WebMercatorToCanvasXY(center[0], center[1]);
 
-      const geometry = this.loader.parse(geoJson);
-      this.geoList.push(geometry);
+    this.worker = new NetworkLayerWorker();
+    getGeomjson({
+      selectAll: true,
+    }).then((res) => {
+      this.worker.onmessage = (event) => {
+        if (event.data.type === "progress") {
+          const { dataList, geometryJson } = event.data.data;
 
-      const mesh = new THREE.Mesh(geometry, this.material);
-      mesh.userData.center = center;
-      mesh.position.set(x, y, 0);
-      this.scene.add(mesh);
+          const geometry = this.bufferGeometryLoader.parse(geometryJson);
+          const mesh = new THREE.Mesh(geometry, this.material);
+          this.scene.add(mesh);
+          const pickLayerMesh = new THREE.Mesh(geometry, this.pickLayerMaterial);
+          this.pickLayerScene.add(pickLayerMesh);
+          const pickMesh = new THREE.Mesh(geometry, this.pickMaterial);
+          this.pickMeshScene.add(pickMesh);
 
-      const pickLayerMesh = new THREE.Mesh(geometry, this.pickLayerMaterial);
-      pickLayerMesh.userData.center = center;
-      pickLayerMesh.position.set(x, y, 0);
-      this.pickLayerScene.add(pickLayerMesh);
+          this.data.push(...dataList);
+          this.geometryList.push(geometry);
 
-      const pickMesh = new THREE.Mesh(geometry, this.pickMaterial);
-      pickMesh.userData.center = center;
-      pickMesh.position.set(x, y, 0);
-      this.pickMeshScene.add(pickMesh);
+          this._setMeshPosition();
+        }
+      };
+      this.worker.onerror = (event) => { };
+      this.worker.postMessage({ data: res.data, center: this.center });
+    });
+  }
+
+  setPickLayerColor(pickLayerColor) {
+    this.pickLayerColor = pickLayerColor;
+    this.pickLayerMaterial.setValues({
+      color: pickLayerColor,
+    });
+    this.pickLayerMaterial.needsUpdate = true;
+  }
+
+  on(type, data) {
+    if (type == MAP_EVENT.UPDATE_CENTER) {
+      this._setMeshPosition();
+      this.handleEventListener(type);
+    }
+    if (type == MAP_EVENT.HANDLE_PICK_LEFT && data.layerId == this.id) {
+      let item = this.data.find((v) => data.pickColor == v.pickColorNum);
+      if (item) {
+        this.handleEventListener(type, item);
+      }
     }
   }
 
-  workerOnError(event) {
-    this.center = null;
-    this.data = null;
-    this.clearScene();
-    for (const geo of this.geoList) {
-      geo.dispose();
+  onAdd(map) {
+    super.onAdd(map);
+    this._setMeshPosition();
+  }
+
+  dispose() {
+    this.worker.terminate();
+    for (const geometry of this.geometryList) {
+      geometry.dispose();
     }
-    this.geoList = [];
+  }
+
+  show() {
+    super.show();
+    this._setMeshPosition();
+  }
+
+  _setMeshPosition() {
+    if (!this.map) return;
+    for (const mesh of this.scene.children) {
+      const [x, y] = this.map.WebMercatorToCanvasXY(...this.center);
+      mesh.position.set(x, y, 0);
+    }
+    for (const mesh of this.pickLayerScene.children) {
+      const [x, y] = this.map.WebMercatorToCanvasXY(...this.center);
+      mesh.position.set(x, y, 0);
+    }
+    for (const mesh of this.pickMeshScene.children) {
+      const [x, y] = this.map.WebMercatorToCanvasXY(...this.center);
+      mesh.position.set(x, y, 0);
+    }
   }
 
   setValues(opt) {
@@ -213,13 +148,37 @@ export class NetworkLayer extends Layer {
         "#include <common>",
         `
           #include <common>
+          vec3 lineOffset(vec2 start, vec3 current, vec2 end, float offset) {
+            float lenA = length(current.xy - start);
+            float lenB = length(current.xy - end);
 
+            if(lenA == 0. && lenB == 0.) return current;
+
+            vec2 dirA = normalize(current.xy - start);
+            vec2 dirB = normalize(current.xy - end);
+
+            if(lenA == 0.) {
+              float angle = PI / 2.0;
+              vec2 normal = vec2(-dirB.y, dirB.x);
+              return vec3(current.xy + normal * offset / sin(angle), current.z);
+            } else if(lenB == 0.) {
+              float angle = PI / 2.0;
+              vec2 normal = vec2(dirA.y, -dirA.x);
+              return vec3(current.xy + normal * offset / sin(angle), current.z);
+            } else {
+              vec2 dir = normalize(dirB - dirA);
+              vec2 normal = vec2(-dir.y, dir.x);
+              float angle = acos(dot(dirB, normal));
+              if(angle < 0.2) angle = 0.2;
+              if(angle > 2.94) angle = 2.94;
+              return vec3(current.xy + normal * offset / sin(angle), current.z);
+            }
+          }
 
           attribute vec3 pickColor;
           attribute float side;
           attribute vec2 startPosition;
           attribute vec2 endPosition;
-          varying float lineLength;
         `
       );
       shader.vertexShader = shader.vertexShader.replace(
@@ -227,69 +186,10 @@ export class NetworkLayer extends Layer {
         `
           #include <begin_vertex>
           float lineWidth = ${Number(
-            this.lineWidth + (pickOffset || 0)
-          ).toFixed(2)};
-          float lineOffset = ${Number(this.lineOffset).toFixed(2)};
-          float offset = lineWidth / 2.0  * side + lineOffset;
-
-          float lenA = length(position.xy - startPosition);
-          float lenB = length(position.xy - endPosition);
-
-          #ifdef USE_MAP
-            if(vUv.y <= 0.5){
-              lineLength = lenB;
-            }else {
-              lineLength = lenA;
-            }
-          #endif
-
-          if(lenA == 0. && lenB == 0.) {
-            transformed = position;
-          } else {
-            vec2 dirA = normalize(position.xy - startPosition);
-            vec2 dirB = normalize(position.xy - endPosition);
-  
-            if(lenA == 0.) {
-              float angle = PI / 2.0;
-              vec2 normal = vec2(-dirB.y, dirB.x);
-              transformed = vec3(position.xy + normal * offset / sin(angle), position.z);
-            } else if(lenB == 0.) {
-              float angle = PI / 2.0;
-              vec2 normal = vec2(dirA.y, -dirA.x);
-              transformed = vec3(position.xy + normal * offset / sin(angle), position.z);
-            } else {
-              vec2 dir = normalize(dirB - dirA);
-              vec2 normal = vec2(-dir.y, dir.x);
-              float angle = acos(dot(dirB, normal));
-              if(angle < 0.2) angle = 0.2;
-              if(angle > 2.94) angle = 2.94;
-              transformed = vec3(position.xy + normal * offset / sin(angle), position.z);
-            }
-          }
-        `
-      );
-
-      shader.fragmentShader = shader.fragmentShader.replace(
-        "#include <common>",
-        `
-        #include <common>
-        varying float lineLength;
-        `
-      );
-
-      shader.fragmentShader = shader.fragmentShader.replace(
-        "#include <map_fragment>",
-        `
-        #ifdef USE_MAP
-          float lineWidth = ${Number(this.lineWidth).toFixed(2)} * 2.0;
-          float l = mod(vUv.y * lineLength, lineWidth) / lineWidth;
-          if(0.0 < l && l < 0.9){
-            vec4 sampledDiffuseColor = texture2D(map, vec2(vUv.x,  l));
-            if(sampledDiffuseColor.a > 0.5) {
-              diffuseColor = vec4(1.0);
-            }
-          }
-        #endif
+          this.lineWidth + (pickOffset || 0)
+        ).toFixed(2)};
+          float offset = lineWidth / 2.0  * side;
+          transformed = lineOffset(startPosition, position, endPosition, offset);
         `
       );
       if (usePickColor) {
@@ -315,9 +215,7 @@ export class NetworkLayer extends Layer {
      */
     material.customProgramCacheKey = () => {
       return JSON.stringify({
-        uuid: material.uuid,
         lineWidth: this.lineWidth,
-        lineOffset: this.lineOffset,
         usePickColor: usePickColor,
         pickOffset: pickOffset,
       });

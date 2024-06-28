@@ -145,6 +145,14 @@
     "zh-CN":"请选择结束时间",
     "en-US":"Please select end time"
   },
+  "时间间隔": {
+    "zh-CN":"时间间隔",
+    "en-US":"Time interval"
+  },
+  "运营车型": {
+    "zh-CN":"运营车型",
+    "en-US":"Vehicle models"
+  },
   "备注": {
     "zh-CN":"备注",
     "en-US":"remark"
@@ -355,7 +363,7 @@ export default {
         { label: "节假日", value: "holiday" },
         { label: "其它", value: "other" },
       ],
-      modelOptions: [
+      busModelOptions: [
         { label: "小型(4.5<L≤6)", value: "小型(4.5<L≤6)" },
         { label: "中型(6<L≤9)", value: "中型(6<L≤9)" },
         { label: "大型(9<L≤12)", value: "大型(9<L≤12)" },
@@ -363,6 +371,13 @@ export default {
         { label: "双层特大型(12≤L≤13.7)", value: "双层特大型(12≤L≤13.7)" },
         { label: "水上巴士", value: "水上巴士" },
         { label: "其它", value: "其它" },
+      ],
+      subwayModelOptions: [
+        { label: "A型车", value: "A型车" },
+        { label: "B型车", value: "B型车" },
+        { label: "C型车", value: "C型车" },
+        { label: "D型车", value: "D型车" },
+        { label: "L型车", value: "L型车" },
       ],
     };
   },
@@ -378,6 +393,12 @@ export default {
     },
     _allStopLayer() {
       return this.rootVue._StopsLayer;
+    },
+    modelOptions() {
+      return {
+        bus: this.busModelOptions,
+        subway: this.subwayModelOptions,
+      }[this.transitRoute.transportMode];
     },
   },
   watch: {

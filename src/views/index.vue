@@ -109,7 +109,7 @@
         <el-button type="primary" size="mini" icon="el-icon-refresh-right" @click="handleGetDateSourceList()">{{ $l("刷新列表") }}</el-button>
         <el-button type="primary" size="mini" icon="el-icon-add" @click="handleShowAddPlanAdjustmentDialog()">{{ $l("新建方案") }}</el-button>
       </div>
-      <el-table height="400" :data="dataSourceList" border stripe v-loading="dateSourceListLoading">
+      <el-table height="400" :data="dataSourceList.filter(v=>!v.noRun)" border stripe v-loading="dateSourceListLoading">
         <el-table-column prop="name" :label="$l('方案名称')" width="100" />
         <el-table-column prop="detail" :label="$l('方案简介')" />
         <el-table-column prop="loadStatus" :label="$l('方案状态')" width="130">

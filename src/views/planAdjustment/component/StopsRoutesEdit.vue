@@ -182,7 +182,7 @@ export default {
       return this.rootVue._EditBusStopLayer;
     },
     _networkLayer() {
-      return this.rootVue._NetworkLayer2;
+      return this.rootVue._NetworkLayer;
     },
     _networkLineLayer() {
       return this.rootVue._NetworkLineLayer;

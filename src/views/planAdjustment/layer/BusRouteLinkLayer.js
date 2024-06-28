@@ -429,7 +429,7 @@ export class BusRouteLinkLayer extends Layer {
         `
             #ifdef USE_MAP
               float lineWidth = ${Number(this.lineWidth).toFixed(2)} * 2.0;
-              float l = mod(vLineLength, 100.0) / lineWidth ;
+              float l = mod(vLineLength, lineWidth * 2.0) / lineWidth;
               if(0.0 < l && l < 1.0){
                 vec4 sampledDiffuseColor = texture2D(map, vec2(vUv.x,  l));
                 if(sampledDiffuseColor.a > 0.6) {

@@ -11,6 +11,83 @@
         </Drawer>
       </div>
     </div>
+    <!-- <Dialog :visible="openSetting" width="350px" hideClose hideMinimize>
+      <div class="setting_box">
+        <el-form ref="tlForm" size="small">
+          <el-form-item :label="$l('路线名称')">
+            <RouteSelect ref="routeSelect" v-model="tlForm.id" :label.sync="tlForm.name" @change="handleGetRouteDetail" />
+          </el-form-item>
+        </el-form>
+        <template v-if="tlForm.obj">
+          <el-collapse v-model="activeNames">
+            <el-collapse-item v-if="!tlForm.obj.up.discard" name="up">
+              <div class="el-collapse-item__title" slot="title">
+                <el-checkbox v-model="showUpLayer">{{ $l("上行名称") }}</el-checkbox>
+              </div>
+              <el-row :gutter="20">
+                <el-col :span="24">
+                  <el-input class="row" v-model="tlForm.obj.up.routeId" size="small"></el-input>
+                </el-col>
+              </el-row>
+              <el-row :gutter="20">
+                <el-col :span="12">
+                  <el-button type="primary" @click="handleOpenStopsEdit('up')" size="small">{{ $l("点击打开站点编辑") }}</el-button>
+                </el-col>
+                <el-col :span="12">
+                  <el-button type="primary" @click="handleOpenStopsRoutesEdit('up')" size="small">{{ $l("点击打开路径编辑") }}</el-button>
+                </el-col>
+              </el-row>
+              <el-row :gutter="20">
+                <el-col :span="12">
+                  <el-button type="primary" @click="handleOpenStartEdit('up')" size="small">{{ $l("点击编辑发车信息") }}</el-button>
+                </el-col>
+                <el-col :span="12">
+                  <el-button type="primary" @click="handleDeleteTransitRoute('up')" size="small">{{ $l("删除该方向") }}</el-button>
+                </el-col>
+              </el-row>
+              <el-row :gutter="20" v-if="tlForm.obj.down.discard">
+                <el-col :span="24">
+                  <el-button style="width: 100%" type="warning" @click="handleCreateDownByUp" size="small">{{ $l("按上行路线反正生成下行路线") }}</el-button>
+                </el-col>
+              </el-row>
+            </el-collapse-item>
+
+            <el-collapse-item v-if="!tlForm.obj.down.discard" :title="$l('下行名称')" name="down">
+              <div class="el-collapse-item__title" slot="title">
+                <el-checkbox v-model="showDownLayer">{{ $l("下行名称") }}</el-checkbox>
+              </div>
+              <el-row :gutter="20">
+                <el-col :span="24">
+                  <el-input v-model="tlForm.obj.down.routeId" size="small"></el-input>
+                </el-col>
+              </el-row>
+              <el-row :gutter="20">
+                <el-col :span="12">
+                  <el-button type="primary" @click="handleOpenStopsEdit('down')" size="small">{{ $l("点击打开站点编辑") }}</el-button>
+                </el-col>
+                <el-col :span="12">
+                  <el-button type="primary" @click="handleOpenStopsRoutesEdit('down')" size="small">{{ $l("点击打开路径编辑") }}</el-button>
+                </el-col>
+              </el-row>
+              <el-row :gutter="20">
+                <el-col :span="12">
+                  <el-button type="primary" @click="handleOpenStartEdit('down')" size="small">{{ $l("点击编辑发车信息") }}</el-button>
+                </el-col>
+                <el-col :span="12">
+                  <el-button type="primary" @click="handleDeleteTransitRoute('down')" size="small">{{ $l("删除该方向") }} </el-button>
+                </el-col>
+              </el-row>
+            </el-collapse-item>
+          </el-collapse>
+          <div class="footer">
+            <el-button type="primary" size="small" @click="handleDelete" :loading="deleteLoading">{{ $l("删除") }}</el-button>
+            <el-button type="primary" size="small" @click="handleSave" :loading="saveLoading">{{ $l("保存") }}</el-button>
+            <el-button type="primary" size="small" @click="handleCancel">{{ $l("取消") }}</el-button>
+          </div>
+        </template>
+      </div>
+    </Dialog> -->
+
     <Dialog :visible="openSetting" width="350px" hideClose hideMinimize>
       <div class="setting_box">
         <el-form ref="tlForm" size="small">
@@ -85,7 +162,6 @@
           <img src="@/assets/image/locale.svg" style="width: 100%; height: 100%" />
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item command="zh-CN" :disabled="page_language == 'zh-CN'">中文（简体）</el-dropdown-item>
-            <!-- <el-dropdown-item command="zh_MO" :disabled="page_language == 'zh-MO'">中文（繁體）</el-dropdown-item> -->
             <el-dropdown-item command="en-US" :disabled="page_language == 'en-US'">English</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
@@ -250,6 +326,14 @@
     "zh-CN":"方案保存成功",
     "en-US":"Program saving success"
   },
+  "上下行反转": {
+    "zh-CN":"上下行反转",
+    "en-US":"Reverse transit routes"
+  },
+  "删除该方向": {
+    "zh-CN":"删除该方向",
+    "en-US":"Delete transit route"
+  },
 }
 </language>
 
@@ -286,6 +370,7 @@ export default {
   },
   data() {
     return {
+      activeNames: ["up", "down"],
       database: "",
       datasource: "",
 
@@ -293,6 +378,9 @@ export default {
       showStyleMenu: false,
       styleList: [],
       styleActive: 0,
+
+      showUpLayer: true,
+      showDownLayer: true,
 
       saveLoading: false,
       deleteLoading: false,
@@ -306,7 +394,6 @@ export default {
       _EditBusLinkLayer: null,
       _EditBusStopLayer: null,
 
-      _NetworkLayer: null,
       _NetworkLayer: null,
       _NetworkLineLayer: null,
       _StopsLayer: null,
@@ -356,6 +443,18 @@ export default {
         }
       },
       deep: true,
+    },
+    showUpLayer: {
+      handler(val) {
+        this._UpBusLinkLayer.visible = val;
+        this._UpBusStopLayer.visible = val;
+      },
+    },
+    showDownLayer: {
+      handler(val) {
+        this._DownBusLinkLayer.visible = val;
+        this._DownBusStopLayer.visible = val;
+      },
     },
   },
   provide() {
@@ -422,7 +521,6 @@ export default {
       }
 
       this._map.addLayer(this._StopsLayer);
-      // this._map.addLayer(this._NetworkLayer);
       this._map.addLayer(this._NetworkLayer);
       this._map.addLayer(this._NetworkLineLayer);
       this._map.addLayer(this._UpBusLinkLayer);
@@ -443,11 +541,6 @@ export default {
         color: 0x409eff,
         visible: false,
       });
-      // this._NetworkLayer = new NetworkLayer({
-      //   zIndex: 3,
-      //   color: 0x409eff,
-      //   visible: false,
-      // });
       this._NetworkLayer = new NetworkLayer({
         zIndex: 3,
         color: 0x409eff,
@@ -504,8 +597,6 @@ export default {
       this._StopsLayer.update();
       this._StopsLayer.hide();
 
-      // this._NetworkLayer.update();
-      // this._NetworkLayer.show();
       this._NetworkLayer.hide();
       this._NetworkLineLayer.update();
       this._NetworkLineLayer.hide();
@@ -751,8 +842,6 @@ export default {
 
       this._BusRouteLinkLayer.hide();
       this._BusRouteLinkLayer.removeEventListener(MAP_EVENT.HANDLE_PICK_LEFT);
-      // this._NetworkLayer.hide();
-      // this._NetworkLayer.removeEventListener(MAP_EVENT.HANDLE_PICK_LEFT);
       this._NetworkLayer.hide();
       this._NetworkLayer.removeEventListener(MAP_EVENT.HANDLE_PICK_LEFT);
       this._NetworkLineLayer.hide();
@@ -785,8 +874,6 @@ export default {
 
         this._BusRouteLinkLayer.hide();
         this._BusRouteLinkLayer.removeEventListener(MAP_EVENT.HANDLE_PICK_LEFT);
-        // this._NetworkLayer.hide();
-        // this._NetworkLayer.removeEventListener(MAP_EVENT.HANDLE_PICK_LEFT);
         this._NetworkLayer.hide();
         this._NetworkLayer.removeEventListener(MAP_EVENT.HANDLE_PICK_LEFT);
         this._NetworkLineLayer.hide();
@@ -912,6 +999,22 @@ export default {
           this.saveLoading = false;
         });
     },
+    handleReverseTransitRoutes() {
+      console.log(this.tlForm.obj && !this.tlForm.obj.up.discard && !this.tlForm.obj.down.discard);
+      if (this.tlForm.obj && !this.tlForm.obj.up.discard && !this.tlForm.obj.down.discard) {
+        const oldUp = this.tlForm.obj.up;
+        this.tlForm.obj.up = this.tlForm.obj.down;
+        this.tlForm.obj.down = oldUp;
+      }
+    },
+    async handleDeleteTransitRoute(type) {
+      try {
+        await this.$confirm(this.$l("确认删除？"), this.$l("提示"));
+        if (this.tlForm.obj) {
+          this.tlForm.obj[type].discard = true;
+        }
+      } catch (error) {}
+    },
     // 取消
     handleCancel() {
       this.tlForm = {
@@ -1015,6 +1118,15 @@ export default {
   .footer {
     padding-top: 10px;
     text-align: right;
+  }
+  .el-row + .el-row {
+    padding-top: 10px;
+  }
+  .el-col {
+    * {
+      display: block;
+      width: 100%;
+    }
   }
 }
 .index {
