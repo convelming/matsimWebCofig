@@ -17,63 +17,69 @@
           <el-form-item :label="$l('路线名称')">
             <RouteSelect ref="routeSelect" v-model="tlForm.id" :label.sync="tlForm.name" @change="handleGetRouteDetail" />
           </el-form-item>
-          <el-form-item v-if="tlForm.obj" :label="$l('有无上下行')">
-            <el-switch v-model="tlForm.obj.down.discard" :active-value="false" :inactive-value="true" />
-          </el-form-item>
         </el-form>
         <template v-if="tlForm.obj">
-          <el-form v-if="!tlForm.obj.up.discard" ref="upForm" size="small">
-            <el-form-item :label="$l('上行名称')">
-              <el-input style="width: 200px" v-model="tlForm.obj.up.routeId"></el-input>
-            </el-form-item>
-            <el-form-item :label="$l('上行路线站点编辑')">
-              <el-button type="primary" @click="handleOpenStopsEdit('up')">{{ $l("点击打开站点编辑") }}</el-button>
-            </el-form-item>
-            <el-form-item :label="$l('上行路线路径编辑')">
-              <el-button type="primary" @click="handleOpenStopsRoutesEdit('up')">{{ $l("点击打开路径编辑") }}</el-button>
-            </el-form-item>
-            <el-form-item :label="$l('上行路线发车编辑')">
-              <el-button type="primary" @click="handleOpenStartEdit('up')">{{ $l("点击编辑发车信息") }}</el-button>
-            </el-form-item>
-          </el-form>
-          <el-form v-if="!tlForm.obj.down.discard" ref="downForm" size="small">
-            <el-form-item label-width="0">
-              <el-button style="width: 100%" type="warning" @click="handleCreateDownByUp">{{ $l("按上行路线反正生成下行路线") }}</el-button>
-            </el-form-item>
-            <el-form-item :label="$l('下行名称')">
-              <el-input style="width: 200px" v-model="tlForm.obj.down.routeId"></el-input>
-            </el-form-item>
-            <el-form-item :label="$l('下行路线站点编辑')">
-              <el-button type="primary" @click="handleOpenStopsEdit('down')">{{ $l("点击打开站点编辑") }}</el-button>
-            </el-form-item>
-            <el-form-item :label="$l('下行路线路径编辑')">
-              <el-button type="primary" @click="handleOpenStopsRoutesEdit('down')">{{ $l("点击打开路径编辑") }}</el-button>
-            </el-form-item>
-            <el-form-item :label="$l('下行路线发车编辑')">
-              <el-button type="primary" @click="handleOpenStartEdit('down')">{{ $l("点击编辑发车信息") }}</el-button>
-            </el-form-item>
-          </el-form>
-          <div class="footer">
-            <el-button type="primary" size="small" @click="handleDelete" :loading="deleteLoading">{{ $l("删除") }}</el-button>
-            <el-button type="primary" size="small" @click="handleSave" :loading="saveLoading">{{ $l("保存") }}</el-button>
-            <el-button type="primary" size="small" @click="handleCancel">{{ $l("取消") }}</el-button>
-          </div>
+          <el-collapse v-model="activeNames">
+            <el-collapse-item v-for="(v, i) in tlForm.obj.transitRoutes" :name="String(i)">
+              <div slot="title">
+                <el-checkbox v-model="v.showLayer">{{ $l("线路") }} {{ i + 1 }}</el-checkbox>
+              </div>
+              <el-row :gutter="20">
+                <el-col :span="24">
+                  <el-input class="row" v-model="v.routeId" size="small"></el-input>
+                </el-col>
+              </el-row>
+              <el-row :gutter="20">
+                <el-col :span="12">
+                  <el-button type="primary" @click="handleOpenStopsEdit(i)" size="small">{{ $l("编辑站点") }}</el-button>
+                </el-col>
+                <el-col :span="12">
+                  <el-button type="primary" @click="handleOpenStopsRoutesEdit(i)" size="small">{{ $l("编辑路径") }}</el-button>
+                </el-col>
+              </el-row>
+              <el-row :gutter="20">
+                <el-col :span="12">
+                  <el-button type="primary" @click="handleOpenStartEdit(i)" size="small">{{ $l("编辑发车信息") }}</el-button>
+                </el-col>
+                <el-col :span="12">
+                  <el-button type="primary" @click="handleDeleteTransitRoute(i)" size="small">{{ $l("删除线路") }}</el-button>
+                </el-col>
+              </el-row>
+              <el-row :gutter="20">
+                <el-col :span="12">
+                  <el-button style="width: 100%" type="warning" @click="handleCreateDownByUp" size="small">{{ $l("生成反向线路") }}</el-button>
+                </el-col>
+                <el-col :span="12">
+                  <el-button style="width: 100%" type="warning" @click="handleCreateDownByUp" size="small">{{ $l("克隆线路") }}</el-button>
+                </el-col>
+              </el-row>
+            </el-collapse-item>
+          </el-collapse>
+          <el-row :gutter="20">
+            <el-col :span="24">
+              <el-button type="success" size="small" @click="">{{ $l("添加线路") }}</el-button>
+            </el-col>
+          </el-row>
+          <el-row :gutter="20">
+            <el-col :span="8">
+              <el-button type="danger" size="small" @click="handleDelete" :loading="deleteLoading">{{ $l("删除路线") }}</el-button>
+            </el-col>
+            <el-col :span="8">
+              <el-button type="primary" size="small" @click="handleSave" :loading="saveLoading">{{ $l("保存路线") }}</el-button>
+            </el-col>
+            <el-col :span="8">
+              <el-button type="info" size="small" @click="handleCancel">{{ $l("取消编辑") }}</el-button>
+            </el-col>
+          </el-row>
         </template>
-        <!-- <el-divider></el-divider>
-        <div class="footer">
-          <el-button type="primary" size="mini" @click="handleCreateDataSource()">{{ $l("新建方案") }}</el-button>
-          <el-button type="primary" size="mini" @click="handleSaveDataSource()">{{ $l("保存方案") }}</el-button>
-        </div> -->
       </div>
     </Dialog>
 
-    <StopsEdit v-if="stopsEditObj.open" :left="stopsEditObj.left" :width="stopsEditObj.width" @close="handleCloseStopsEdit" @change="handleChangeStopsEdit" :transitRouteJSON="stopsEditObj.transitRouteJSON" />
+    <StopsEdit :show="stopsEditObj.open" :transitRouteJSON="stopsEditObj.transitRouteJSON" @close="handleCloseStopsEdit" @change="handleChangeStopsEdit" />
 
-    <Dialog width="450px" :title="stopsRoutesEditObj.title" :visible.sync="stopsRoutesEditObj.open" @close="handleCloseStopsRoutesEdit">
-      <StopsRoutesEdit v-if="stopsRoutesEditObj.open" :transitRouteJSON="stopsRoutesEditObj.transitRouteJSON" @toEditStops="handleToEditStops" @change="handleChangeStopsRoutesEdit" />
-    </Dialog>
+    <StopsRoutesEdit :show="stopsRoutesEditObj.open" :transitRouteJSON="stopsRoutesEditObj.transitRouteJSON" @close="handleCloseStopsRoutesEdit" @toEditStops="handleToEditStops" @change="handleChangeStopsRoutesEdit" />
 
-    <Dialog :title="startEditObj.title" :width="startEditObj.width" :left="startEditObj.left" :visible.sync="startEditObj.open" @close="handleCloseStartEdit">
+    <Dialog :title="startEditObj.title" :width="startEditObj.width" :left="startEditObj.left" :visible.sync="startEditObj.open" @close="handleCloseStartEdit" left="center" width="900px">
       <StartEdit v-if="startEditObj.open" :transitRouteJSON="startEditObj.transitRouteJSON" @change="handleChangeStartEdit" />
     </Dialog>
 
@@ -85,12 +91,12 @@
           <img src="@/assets/image/locale.svg" style="width: 100%; height: 100%" />
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item command="zh-CN" :disabled="page_language == 'zh-CN'">中文（简体）</el-dropdown-item>
-            <!-- <el-dropdown-item command="zh_MO" :disabled="page_language == 'zh-MO'">中文（繁體）</el-dropdown-item> -->
             <el-dropdown-item command="en-US" :disabled="page_language == 'en-US'">English</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
       </div>
     </div>
+
     <HelpDialog :visible.sync="showHelpDialog" />
 
     <div class="MapLayer_menu" :class="{ hide: !showStyleMenu }" :style="`width: ${styleList.length * 50 + 30}px`">
@@ -106,89 +112,49 @@
     "zh-CN":"路线名称",
     "en-US":"Route name"
   },
-  "有无上下行": {
-    "zh-CN":"有无上下行",
-    "en-US":"With or without up and down"
+  "添加线路": {
+    "zh-CN":"添加线路",
+    "en-US":"Add transit route"
   },
-  "上行名称": {
-    "zh-CN":"上行名称",
+  "克隆线路": {
+    "zh-CN":"克隆线路",
+    "en-US":"Clone transit route"
+  },
+  "线路": {
+    "zh-CN":"线路",
+    "en-US":"transit route"
+  },
+  "线路名称": {
+    "zh-CN":"线路名称",
     "en-US":"Uplink name"
   },
-  "上行路线站点编辑": {
-    "zh-CN":"上行路线站点编辑",
-    "en-US":"Upper Route Stations Edit"
+  "编辑站点": {
+    "zh-CN":"编辑站点",
+    "en-US":"Edit Stops"
   },
-  "点击打开站点编辑": {
-    "zh-CN":"点击打开站点编辑",
-    "en-US":"Click to open the site editor"
+  "编辑路径": {
+    "zh-CN":"编辑路径",
+    "en-US":"Edit Routes"
   },
-  "上行路线路径编辑": {
-    "zh-CN":"上行路线路径编辑",
-    "en-US":"Uplink Route Path Editor"
+  "编辑发车信息": {
+    "zh-CN":"编辑发车信息",
+    "en-US":"Edit departure info"
   },
-  "点击打开路径编辑": {
-    "zh-CN":"点击打开路径编辑",
-    "en-US":"Click to open the path editor"
+  "生成反向线路": {
+    "zh-CN":"生成反向线路",
+    "en-US":"Generate reverse"
   },
-  "上行路线发车编辑": {
-    "zh-CN":"上行路线发车编辑",
-    "en-US":"Upward Route Departure Edit"
+  "删除路线": {
+    "zh-CN":"删除路线",
+    "en-US":"Delete route"
   },
-  "点击编辑发车信息": {
-    "zh-CN":"点击编辑发车信息",
-    "en-US":"Click to edit departure information"
+  "保存路线": {
+    "zh-CN":"保存路线",
+    "en-US":"Save route"
   },
-  "按上行路线反正生成下行路线": {
-    "zh-CN":"按上行路线反正生成下行路线",
-    "en-US":"Generate downward routes by upward routes anyway"
-  },
-  "下行名称": {
-    "zh-CN":"下行名称",
-    "en-US":"Downstream name"
-  },
-  "下行路线站点编辑": {
-    "zh-CN":"下行路线站点编辑",
-    "en-US":"Down-Route Stations Edit"
-  },
-  "点击打开站点编辑": {
-    "zh-CN":"点击打开站点编辑",
-    "en-US":"Click to open the site editor"
-  },
-  "下行路线路径编辑": {
-    "zh-CN":"下行路线路径编辑",
-    "en-US":"Down-Route Path Editor"
-  },
-  "点击打开路径编辑": {
-    "zh-CN":"点击打开路径编辑",
-    "en-US":"Click to open the path editor"
-  },
-  "下行路线发车编辑": {
-    "zh-CN":"下行路线发车编辑",
-    "en-US":"Down-Route Departure Edit"
-  },
-  "点击编辑发车信息": {
-    "zh-CN":"点击编辑发车信息",
-    "en-US":"Click to edit departure information"
-  },
-  "删除": {
-    "zh-CN":"删除",
-    "en-US":"delete"
-  },
-  "保存": {
-    "zh-CN":"保存",
-    "en-US":"save"
-  },
-  "取消": {
-    "zh-CN":"取消",
-    "en-US":"cancel"
-  },
-  "新建方案": {
-    "zh-CN":"新建方案",
-    "en-US":"New scheme"
-  },
-  "保存方案": {
-    "zh-CN":"保存方案",
-    "en-US":"Save scheme"
+  "取消编辑": {
+    "zh-CN":"取消编辑",
+    "en-US":"Cancel Edit"
   },
   "站点编辑": {
     "zh-CN":"站点编辑",
@@ -250,6 +216,10 @@
     "zh-CN":"方案保存成功",
     "en-US":"Program saving success"
   },
+  "删除线路": {
+    "zh-CN":"删除线路",
+    "en-US":"Delete transit route"
+  },
 }
 </language>
 
@@ -286,6 +256,7 @@ export default {
   },
   data() {
     return {
+      activeNames: ["up", "down"],
       database: "",
       datasource: "",
 
@@ -293,6 +264,9 @@ export default {
       showStyleMenu: false,
       styleList: [],
       styleActive: 0,
+
+      showUpLayer: true,
+      showDownLayer: true,
 
       saveLoading: false,
       deleteLoading: false,
@@ -306,7 +280,6 @@ export default {
       _EditBusLinkLayer: null,
       _EditBusStopLayer: null,
 
-      _NetworkLayer: null,
       _NetworkLayer: null,
       _NetworkLineLayer: null,
       _StopsLayer: null,
@@ -356,6 +329,18 @@ export default {
         }
       },
       deep: true,
+    },
+    showUpLayer: {
+      handler(val) {
+        this._UpBusLinkLayer.visible = val;
+        this._UpBusStopLayer.visible = val;
+      },
+    },
+    showDownLayer: {
+      handler(val) {
+        this._DownBusLinkLayer.visible = val;
+        this._DownBusStopLayer.visible = val;
+      },
     },
   },
   provide() {
@@ -420,18 +405,6 @@ export default {
         }
         this.styleList = itemDocList;
       }
-
-      this._map.addLayer(this._StopsLayer);
-      // this._map.addLayer(this._NetworkLayer);
-      this._map.addLayer(this._NetworkLayer);
-      this._map.addLayer(this._NetworkLineLayer);
-      this._map.addLayer(this._UpBusLinkLayer);
-      this._map.addLayer(this._UpBusStopLayer);
-      this._map.addLayer(this._DownBusLinkLayer);
-      this._map.addLayer(this._DownBusStopLayer);
-      this._map.addLayer(this._EditBusLinkLayer);
-      this._map.addLayer(this._EditBusStopLayer);
-      this._map.addLayer(this._BusRouteLinkLayer);
     },
     // 初始化图层
     initLayer() {
@@ -443,11 +416,6 @@ export default {
         color: 0x409eff,
         visible: false,
       });
-      // this._NetworkLayer = new NetworkLayer({
-      //   zIndex: 3,
-      //   color: 0x409eff,
-      //   visible: false,
-      // });
       this._NetworkLayer = new NetworkLayer({
         zIndex: 3,
         color: 0x409eff,
@@ -499,48 +467,19 @@ export default {
         visible: true,
       });
     },
-    // 还原图层到初始状态
-    resetLayer() {
-      this._StopsLayer.update();
-      this._StopsLayer.hide();
-
-      // this._NetworkLayer.update();
-      // this._NetworkLayer.show();
-      this._NetworkLayer.hide();
-      this._NetworkLineLayer.update();
-      this._NetworkLineLayer.hide();
-
-      this._UpBusLinkLayer.setData();
-      this._UpBusLinkLayer.hide();
-
-      this._UpBusStopLayer.setData();
-      this._UpBusStopLayer.hide();
-
-      this._DownBusLinkLayer.setData();
-      this._DownBusLinkLayer.hide();
-
-      this._DownBusStopLayer.setData();
-      this._DownBusStopLayer.hide();
-
-      this._EditBusLinkLayer.setData();
-      this._EditBusLinkLayer.hide();
-
-      this._EditBusStopLayer.setData();
-      this._EditBusStopLayer.hide();
-
-      this._BusRouteLinkLayer.setData();
-      this._BusRouteLinkLayer.hide();
-    },
+    resetLayer() {},
     // 恢复上一次编辑未保存的数据
     revertData() {
       try {
         let tlForm = JSON.parse(sessionStorage.getItem(this.datasource + "_tlForm"));
         if (tlForm && tlForm.obj) {
+          const obj = new Bean.TransitLine(tlForm.obj);
           this.tlForm = {
             id: tlForm.id,
             name: tlForm.name,
-            obj: new Bean.TransitLine(tlForm.obj),
+            obj: obj,
           };
+          this.activeNames = obj.transitRoutes.map((v, i) => String(i));
           this.bMapBoxObj = {
             width: document.body.clientWidth / 2,
             open: this.bMapBoxObj.open,
@@ -549,15 +488,6 @@ export default {
             zoom: this._map ? this._map.zoom : 16,
           };
 
-          this._UpBusLinkLayer.setData(this.tlForm.obj.up);
-          this._UpBusStopLayer.setData(this.tlForm.obj.up);
-          this._DownBusLinkLayer.setData(this.tlForm.obj.down);
-          this._DownBusStopLayer.setData(this.tlForm.obj.down);
-
-          this._UpBusLinkLayer.show();
-          this._UpBusStopLayer.show();
-          this._DownBusLinkLayer.show();
-          this._DownBusStopLayer.show();
           this.setFitZoomAndCenterByTransitRoute();
           this.$nextTick(() => {
             this.$refs.routeSelect.remoteMethod(tlForm.name);
@@ -581,6 +511,7 @@ export default {
           if (res.data && res.data.lineId) {
             let obj = new Bean.TransitLine(res.data);
             this.tlForm.obj = obj;
+            this.activeNames = obj.transitRoutes.map((v, i) => String(i));
             this.bMapBoxObj = {
               width: document.body.clientWidth / 2,
               open: this.bMapBoxObj.open,
@@ -597,27 +528,15 @@ export default {
           let obj = new Bean.TransitLine({
             name: item.name,
           });
-          obj.up.discard = false;
           this.tlForm.obj = obj;
         })
-        .finally(() => {
-          this._UpBusLinkLayer.setData(this.tlForm.obj.up);
-          this._UpBusStopLayer.setData(this.tlForm.obj.up);
-          this._DownBusLinkLayer.setData(this.tlForm.obj.down);
-          this._DownBusStopLayer.setData(this.tlForm.obj.down);
-
-          this._UpBusLinkLayer.show();
-          this._UpBusStopLayer.show();
-          this._DownBusLinkLayer.show();
-          this._DownBusStopLayer.show();
-          // this.setFitZoomAndCenterByTransitRoute();
-        });
+        .finally(() => {});
     },
     // 根据线路设置地图的缩放和中心点
     setFitZoomAndCenterByTransitRoute(transitRoute) {
       this.$nextTick(() => {
         setTimeout(() => {
-          if (!transitRoute) transitRoute = this.tlForm.obj.up;
+          if (!transitRoute) transitRoute = this.tlForm.obj.transitRoutes[0];
           const list = transitRoute.stops.map((v) => v.coord.toList());
           const res2 = this._map.getFitZoomAndCenterPoints(list);
           this.handleCenterAndZoom({
@@ -650,31 +569,18 @@ export default {
       }
     },
     // 打开 站点编辑 弹窗
-    handleOpenStopsEdit(routeType) {
+    handleOpenStopsEdit(index) {
       this.openSetting = false;
-      const transitRoute = this.tlForm.obj[routeType];
+      const transitRoute = this.tlForm.obj.transitRoutes[index];
       this.$nextTick(() => {
-        // let left = 20;
-        // if (this.$refs.bmapBox.$el) {
-        //   left = document.body.clientWidth / 2 - 320;
-        // }
         this.stopsEditObj = {
           title: `${transitRoute.routeId} - ${this.$l("站点编辑")}`,
           open: true,
-          routeType: routeType,
+          index: index,
           transitRouteJSON: transitRoute.toJSON(),
-          width: "300px",
-          left: 20,
         };
       });
 
-      this._UpBusLinkLayer.hide();
-      this._UpBusStopLayer.hide();
-      this._DownBusLinkLayer.hide();
-      this._DownBusStopLayer.hide();
-
-      this._EditBusLinkLayer.show();
-      this._EditBusStopLayer.show();
       // this.setFitZoomAndCenterByTransitRoute(transitRoute);
     },
     // 关闭 站点编辑 弹窗回调
@@ -684,49 +590,34 @@ export default {
       this.stopsEditObj = {
         title: this.$l("站点编辑"),
         open: false,
-        routeType: "up",
+        index: -1,
         transitRouteJSON: undefined,
       };
-
-      this._UpBusLinkLayer.show();
-      this._UpBusStopLayer.show();
-      this._DownBusLinkLayer.show();
-      this._DownBusStopLayer.show();
-
-      this._EditBusLinkLayer.hide();
-      this._EditBusStopLayer.hide();
-
-      this._EditBusLinkLayer.setData();
-      this._EditBusStopLayer.setData();
       // this.setFitZoomAndCenterByTransitRoute();
     },
     // 保存 站点编辑 弹窗回调
     handleChangeStopsEdit(data) {
       let transitRoute = new Bean.TransitRoute(data);
-      this.$set(this.tlForm.obj, this.stopsEditObj.routeType, transitRoute);
-      this._UpBusLinkLayer.setData(this.tlForm.obj.up);
-      this._UpBusStopLayer.setData(this.tlForm.obj.up);
-      this._DownBusLinkLayer.setData(this.tlForm.obj.down);
-      this._DownBusStopLayer.setData(this.tlForm.obj.down);
+      this.$set(this.tlForm.obj.transitRoutes, this.stopsEditObj.index, transitRoute);
       this.handleCloseStopsEdit();
     },
     // 打开 路径编辑 弹窗
-    handleOpenStopsRoutesEdit(routeType) {
+    handleOpenStopsRoutesEdit(index) {
       this.openSetting = false;
-      const transitRoute = this.tlForm.obj[routeType];
+      const transitRoute = this.tlForm.obj.transitRoutes[index];
       this.stopsRoutesEditObj = {
         title: `${transitRoute.routeId} - ${this.$l("路径编辑")}`,
         open: true,
-        routeType: routeType,
+        index: index,
         transitRouteJSON: transitRoute.toJSON(),
       };
-      this._UpBusLinkLayer.hide();
-      this._UpBusStopLayer.hide();
-      this._DownBusLinkLayer.hide();
-      this._DownBusStopLayer.hide();
+      // this._UpBusLinkLayer.hide();
+      // this._UpBusStopLayer.hide();
+      // this._DownBusLinkLayer.hide();
+      // this._DownBusStopLayer.hide();
 
-      this._EditBusLinkLayer.show();
-      this._EditBusStopLayer.show();
+      // this._EditBusLinkLayer.show();
+      // this._EditBusStopLayer.show();
       // this.setFitZoomAndCenterByTransitRoute(transitRoute);
     },
     // 关闭 路径编辑 弹窗回调
@@ -736,33 +627,33 @@ export default {
       this.stopsRoutesEditObj = {
         title: this.$l("路径编辑"),
         open: false,
-        routeType: "up",
+        index: -1,
         transitRouteJSON: undefined,
       };
-      this._UpBusLinkLayer.show();
-      this._UpBusStopLayer.show();
-      this._DownBusLinkLayer.show();
-      this._DownBusStopLayer.show();
+      // this._UpBusLinkLayer.show();
+      // this._UpBusStopLayer.show();
+      // this._DownBusLinkLayer.show();
+      // this._DownBusStopLayer.show();
 
-      this._EditBusLinkLayer.hide();
-      this._EditBusLinkLayer.setData();
-      this._EditBusStopLayer.hide();
-      this._EditBusStopLayer.setData();
+      // this._EditBusLinkLayer.hide();
+      // this._EditBusLinkLayer.setData();
+      // this._EditBusStopLayer.hide();
+      // this._EditBusStopLayer.setData();
 
-      this._BusRouteLinkLayer.hide();
-      this._BusRouteLinkLayer.removeEventListener(MAP_EVENT.HANDLE_PICK_LEFT);
+      // this._BusRouteLinkLayer.hide();
+      // this._BusRouteLinkLayer.removeEventListener(MAP_EVENT.HANDLE_PICK_LEFT);
       // this._NetworkLayer.hide();
       // this._NetworkLayer.removeEventListener(MAP_EVENT.HANDLE_PICK_LEFT);
-      this._NetworkLayer.hide();
-      this._NetworkLayer.removeEventListener(MAP_EVENT.HANDLE_PICK_LEFT);
-      this._NetworkLineLayer.hide();
-      this._NetworkLineLayer.removeEventListener(MAP_EVENT.HANDLE_PICK_LEFT);
+      // this._NetworkLayer.hide();
+      // this._NetworkLayer.removeEventListener(MAP_EVENT.HANDLE_PICK_LEFT);
+      // this._NetworkLineLayer.hide();
+      // this._NetworkLineLayer.removeEventListener(MAP_EVENT.HANDLE_PICK_LEFT);
 
       // this.setFitZoomAndCenterByTransitRoute();
     },
     // 路径编辑 弹窗 跳转到 站点编辑 弹窗
     handleToEditStops() {
-      let routeType = this.stopsRoutesEditObj.routeType;
+      let index = this.stopsRoutesEditObj.index;
       {
         // this.handleCloseStopsRoutesEdit();
         // this.openSetting = true;
@@ -770,7 +661,7 @@ export default {
         this.stopsRoutesEditObj = {
           title: this.$l("路径编辑"),
           open: false,
-          routeType: "up",
+          index: -1,
           transitRouteJSON: undefined,
         };
         // this._UpBusLinkLayer.show();
@@ -783,83 +674,56 @@ export default {
         // this._EditBusStopLayer.hide();
         // this._EditBusStopLayer.setData();
 
-        this._BusRouteLinkLayer.hide();
-        this._BusRouteLinkLayer.removeEventListener(MAP_EVENT.HANDLE_PICK_LEFT);
+        // this._BusRouteLinkLayer.hide();
+        // this._BusRouteLinkLayer.removeEventListener(MAP_EVENT.HANDLE_PICK_LEFT);
         // this._NetworkLayer.hide();
         // this._NetworkLayer.removeEventListener(MAP_EVENT.HANDLE_PICK_LEFT);
-        this._NetworkLayer.hide();
-        this._NetworkLayer.removeEventListener(MAP_EVENT.HANDLE_PICK_LEFT);
-        this._NetworkLineLayer.hide();
-        this._NetworkLineLayer.removeEventListener(MAP_EVENT.HANDLE_PICK_LEFT);
+        // this._NetworkLayer.hide();
+        // this._NetworkLayer.removeEventListener(MAP_EVENT.HANDLE_PICK_LEFT);
+        // this._NetworkLineLayer.hide();
+        // this._NetworkLineLayer.removeEventListener(MAP_EVENT.HANDLE_PICK_LEFT);
 
         // this.setFitZoomAndCenterByTransitRoute();
       }
       {
         // this.handleOpenStopsEdit(routeType);
         this.openSetting = false;
-        const transitRoute = this.tlForm.obj[routeType];
+        const transitRoute = this.tlForm.obj.transitRoutes[index];
 
-        // this.bMapBoxObj.open = false;
-        // let left = 20;
-        // if (this.$refs.bmapBox.$el) {
-        //   left = document.body.clientWidth - this.$refs.bmapBox.$el.clientWidth - 320;
-        // }
+        this.bMapBoxObj.open = false;
         this.stopsEditObj = {
           title: `${transitRoute.routeId} - ${this.$l("站点编辑")}`,
           open: true,
-          routeType: routeType,
+          index: index,
           transitRouteJSON: transitRoute.toJSON(),
-          width: "300px",
-          left: 20,
         };
 
-        this._UpBusLinkLayer.hide();
-        this._UpBusStopLayer.hide();
-        this._DownBusLinkLayer.hide();
-        this._DownBusStopLayer.hide();
+        // this._UpBusLinkLayer.hide();
+        // this._UpBusStopLayer.hide();
+        // this._DownBusLinkLayer.hide();
+        // this._DownBusStopLayer.hide();
 
-        this._EditBusLinkLayer.show();
-        this._EditBusStopLayer.show();
+        // this._EditBusLinkLayer.show();
+        // this._EditBusStopLayer.show();
         // this.setFitZoomAndCenterByTransitRoute(transitRoute);
       }
     },
     // 保存 路径编辑 弹窗回调
     handleChangeStopsRoutesEdit(data) {
       let transitRoute = new Bean.TransitRoute(data);
-      this.$set(this.tlForm.obj, this.stopsRoutesEditObj.routeType, transitRoute);
-      this._UpBusLinkLayer.setData(this.tlForm.obj.up);
-      this._UpBusStopLayer.setData(this.tlForm.obj.up);
-      this._DownBusLinkLayer.setData(this.tlForm.obj.down);
-      this._DownBusStopLayer.setData(this.tlForm.obj.down);
-      // this.handleCloseStopsRoutesEdit();
+      this.$set(this.tlForm.obj.transitRoutes, this.stopsRoutesEditObj.index, transitRoute);
+      this.handleCloseStopsRoutesEdit();
     },
     // 打开 发车信息编辑 弹窗
-    handleOpenStartEdit(routeType) {
+    handleOpenStartEdit(index) {
       this.openSetting = false;
-      const transitRoute = this.tlForm.obj[routeType];
-
-      const bWidth = document.body.clientWidth;
-      let width = 900;
-      if (bWidth < width) {
-        width = bWidth * 0.8;
-      }
-      let left = (bWidth - width) / 2;
+      const transitRoute = this.tlForm.obj.transitRoutes[index];
       this.startEditObj = {
         title: `${transitRoute.routeId} - ${this.$l("发车信息编辑")}`,
         open: true,
-        routeType: routeType,
+        index: index,
         transitRouteJSON: transitRoute.toJSON(),
-        left: left,
-        width: width + "px",
       };
-
-      this._UpBusLinkLayer.hide();
-      this._UpBusStopLayer.hide();
-      this._DownBusLinkLayer.hide();
-      this._DownBusStopLayer.hide();
-
-      this._EditBusLinkLayer.show();
-      this._EditBusStopLayer.show();
     },
     // 关闭 发车信息编辑 弹窗回调
     handleCloseStartEdit() {
@@ -867,30 +731,16 @@ export default {
       this.startEditObj = {
         title: this.$l("发车信息编辑"),
         open: false,
-        routeType: "up",
+        index: -1,
         transitRouteJSON: undefined,
       };
 
-      this._UpBusLinkLayer.show();
-      this._UpBusStopLayer.show();
-      this._DownBusLinkLayer.show();
-      this._DownBusStopLayer.show();
-
-      this._EditBusLinkLayer.hide();
-      this._EditBusStopLayer.hide();
-
-      this._EditBusLinkLayer.setData();
-      this._EditBusStopLayer.setData();
       // this.setFitZoomAndCenterByTransitRoute();
     },
     // 保存 发车信息编辑 弹窗回调
     handleChangeStartEdit(data) {
       let transitRoute = new Bean.TransitRoute(data);
-      this.$set(this.tlForm.obj, this.startEditObj.routeType, transitRoute);
-      this._UpBusLinkLayer.setData(this.tlForm.obj.up);
-      this._UpBusStopLayer.setData(this.tlForm.obj.up);
-      this._DownBusLinkLayer.setData(this.tlForm.obj.down);
-      this._DownBusStopLayer.setData(this.tlForm.obj.down);
+      this.$set(this.tlForm.obj.transitRoutes, this.startEditObj.index, transitRoute);
       this.handleCloseStartEdit();
     },
     // 保存公交线路编辑结果
@@ -911,6 +761,22 @@ export default {
         .catch((err) => {
           this.saveLoading = false;
         });
+    },
+    handleReverseTransitRoutes() {
+      console.log(this.tlForm.obj && !this.tlForm.obj.up.discard && !this.tlForm.obj.down.discard);
+      if (this.tlForm.obj && !this.tlForm.obj.up.discard && !this.tlForm.obj.down.discard) {
+        const oldUp = this.tlForm.obj.up;
+        this.tlForm.obj.up = this.tlForm.obj.down;
+        this.tlForm.obj.down = oldUp;
+      }
+    },
+    async handleDeleteTransitRoute(type) {
+      try {
+        await this.$confirm(this.$l("确认删除？"), this.$l("提示"));
+        if (this.tlForm.obj) {
+          this.tlForm.obj[type].discard = true;
+        }
+      } catch (error) {}
     },
     // 取消
     handleCancel() {
@@ -1015,6 +881,15 @@ export default {
   .footer {
     padding-top: 10px;
     text-align: right;
+  }
+  .el-row + .el-row {
+    padding-top: 10px;
+  }
+  .el-col {
+    * {
+      display: block;
+      width: 100%;
+    }
   }
 }
 .index {

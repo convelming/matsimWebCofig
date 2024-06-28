@@ -69,7 +69,10 @@ export class EventListener {
 
   // 删除事件
   removeEventListener(type, eventId) {
-    if (!eventId) {
+    if (!type) {
+      this.eventList = {};
+      this.stopEventList = {};
+    } else if (!eventId) {
       this.eventList[type] = {};
       this.stopEventList[type] = {};
     } else if (this.eventList[type]) {

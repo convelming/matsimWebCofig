@@ -1,72 +1,77 @@
 <template>
-  <div class="StopsRoutesEdit">
-    <el-form :model="stopsRouteForm" ref="stopsRouteForm" :inline="false" size="small" label-width="100px" label-position="left">
-      <el-form-item label-width="0">
-        <el-select v-model="stopsRouteId" @change="handleChangestopsRouteId" :disabled="!!stopsRouteId" :placeholder="$l('请选择路段')">
-          <el-option v-for="item in stopsRoutesOptions" :key="item.value" :label="item.label" :value="item.value" />
-        </el-select>
-        <el-button style="margin-left: 20px" type="warning" icon="el-icon-refresh" @click="handleReselectStopsRoute">{{ $l("重选") }}</el-button>
-        <el-button type="primary" @click="$emit('toEditStops')">{{
-          $l("编辑站点")
-        }}</el-button>
-      </el-form-item>
-      <template v-if="stopsRouteForm">
-        <el-form-item :label="$l('出发站点：')">
-          {{ stopsRouteForm.startStop.name }} &nbsp;&nbsp;
-          <div class="address_btn el-icon-aim" @click="handleChangeCenter('start')" />
-        </el-form-item>
-        <el-form-item :label="$l('到达站点：')">
-          {{ stopsRouteForm.endStop.name }} &nbsp;&nbsp;
-          <div class="address_btn el-icon-aim" @click="handleChangeCenter('end')" />
-        </el-form-item>
-        <el-form-item :label="$l('编辑方式：')">
-          <el-select v-model="stopsRouteEditType" disabled>
-            <el-option :label="$l('按点选择')" :value="1" />
-            <el-option :label="$l('按路段选择')" :value="2" />
+  <Dialog
+    width="450px"
+    :title="$l('路径编辑')"
+    :visible="show"
+    @close="
+      handleDisable();
+      $emit('close');
+    "
+  >
+    <div class="StopsRoutesEdit">
+      <el-form :model="stopsRouteForm" ref="stopsRouteForm" :inline="false" size="small" label-width="100px" label-position="left">
+        <el-form-item label-width="0">
+          <el-select v-model="stopsRouteId" @change="handleChangestopsRouteId" :disabled="!!stopsRouteId" :placeholder="$l('请选择路段')">
+            <el-option v-for="item in stopsRoutesOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
+          <el-button style="margin-left: 20px" type="warning" icon="el-icon-refresh" @click="handleReselectStopsRoute">{{ $l("重选") }}</el-button>
+          <el-button type="primary" @click="$emit('toEditStops')">{{ $l("编辑站点") }}</el-button>
         </el-form-item>
-        <el-form-item v-if="stopsRouteEditType == 1"> </el-form-item>
-        <template v-if="stopsRouteEditType == 2">
-          <el-form-item :label="$l('路段线宽：')">
-            <el-slider class="lineWidth" :min="1" v-model="lineWidth" @change="handleChangeLineWidth" />
+        <template v-if="stopsRouteForm">
+          <el-form-item :label="$l('出发站点：')">
+            {{ stopsRouteForm.startStop.name }} &nbsp;&nbsp;
+            <div class="address_btn el-icon-aim" @click="handleChangeCenter('start')" />
           </el-form-item>
-          <el-form-item :label="$l('路段偏移：')">
-            <el-slider class="lineOffset" v-model="lineOffset" @change="handleChangeLineOffset" />
+          <el-form-item :label="$l('到达站点：')">
+            {{ stopsRouteForm.endStop.name }} &nbsp;&nbsp;
+            <div class="address_btn el-icon-aim" @click="handleChangeCenter('end')" />
           </el-form-item>
-          <el-form-item :label="$l('必经路段：')" />
-          <el-form-item label-width="0">
-            <el-table height="200px" :data="stopsRouteForm.middleLink" border stripe>
-              <el-table-column prop="id" :label="$l('Id')" />
-              <el-table-column prop="fromCoord" :label="$l('起点')">
-                <template slot-scope="{ row }">{{
-                  row.fromCoord && `${row.fromCoord.lng},${row.fromCoord.lat}`
-                }}</template>
-              </el-table-column>
-              <el-table-column prop="toCoord" :label="$l('终点')">
-                <template slot-scope="{ row }">{{
-                  row.toCoord && `${row.toCoord.lng},${row.toCoord.lat}`
-                }}</template>
-              </el-table-column>
-              <el-table-column prop="length">
-                <template slot-scope="{ row }">
-                  <el-button type="text" icon="el-icon-delete" @click="handleRemoveMiddleLink(row)"></el-button></template>
-              </el-table-column>
-            </el-table>
+          <el-form-item :label="$l('编辑方式：')">
+            <el-select v-model="stopsRouteEditType" disabled>
+              <el-option :label="$l('按点选择')" :value="1" />
+              <el-option :label="$l('按路段选择')" :value="2" />
+            </el-select>
+          </el-form-item>
+          <el-form-item v-if="stopsRouteEditType == 1"> </el-form-item>
+          <template v-if="stopsRouteEditType == 2">
+            <el-form-item :label="$l('路段线宽：')">
+              <el-slider class="lineWidth" :min="1" v-model="lineWidth" @change="handleChangeLineWidth" />
+            </el-form-item>
+            <el-form-item :label="$l('路段偏移：')">
+              <el-slider class="lineOffset" v-model="lineOffset" @change="handleChangeLineOffset" />
+            </el-form-item>
+            <el-form-item :label="$l('必经路段：')" />
+            <el-form-item label-width="0">
+              <el-table height="200px" :data="stopsRouteForm.middleLink" border stripe>
+                <el-table-column prop="id" :label="$l('Id')" />
+                <el-table-column prop="fromCoord" :label="$l('起点')">
+                  <template slot-scope="{ row }">{{ row.fromCoord && `${row.fromCoord.lng},${row.fromCoord.lat}` }}</template>
+                </el-table-column>
+                <el-table-column prop="toCoord" :label="$l('终点')">
+                  <template slot-scope="{ row }">{{ row.toCoord && `${row.toCoord.lng},${row.toCoord.lat}` }}</template>
+                </el-table-column>
+                <el-table-column prop="length">
+                  <template slot-scope="{ row }"> <el-button type="text" icon="el-icon-delete" @click="handleRemoveMiddleLink(row)"></el-button></template>
+                </el-table-column>
+              </el-table>
+            </el-form-item>
+          </template>
+          <el-form-item>
+            <el-button type="warning" @click="handleCalcRouteAccessible">{{ $l("检查站点间线段连续性") }}</el-button>
+            <el-button type="primary" @click="handleSaveStopsRoute" :disabled="!canSaveStopsRoute">{{ $l("保存站点路径") }}</el-button>
           </el-form-item>
         </template>
-        <el-form-item>
-          <el-button type="warning" @click="handleCalcRouteAccessible">{{
-            $l("检查站点间线段连续性")
-          }}</el-button>
-          <el-button type="primary" @click="handleSaveStopsRoute" :disabled="!canSaveStopsRoute">{{ $l("保存站点路径") }}</el-button>
-        </el-form-item>
-      </template>
-    </el-form>
-  </div>
+      </el-form>
+    </div>
+  </Dialog>
 </template>
 
 <language>
 {
+  "路径编辑": {
+    "zh-CN":"路径编辑",
+    "en-US":"Path edit"
+  },
   "请选择路段": {
     "zh-CN":"请选择路段",
     "en-US":"Please select a road section"
@@ -147,9 +152,21 @@ import { MAP_EVENT } from "@/mymap/index";
 import * as Bean from "@/utils/Bean";
 import StopsRoutesSelect from "./StopsRoutesSelect.vue";
 import { computeRoute, calcRouteAccessible } from "@/api";
+
+import { BusLinkLayer } from "../layer/BusLinkLayer";
+import { BusStopLayer } from "../layer/BusStopLayer";
+import { StopsLayer } from "../layer/StopsLayer";
+import { NetworkLayer } from "../layer/NetworkLayer";
+import { NetworkLineLayer } from "../layer/NetworkLineLayer";
+import { BusRouteLinkLayer } from "../layer/BusRouteLinkLayer";
+
 export default {
   components: { StopsRoutesSelect },
   props: {
+    show: {
+      type: Boolean,
+      default: false,
+    },
     transitRouteJSON: {
       type: Object,
       default: () => new Bean.TransitRoute().toJSON(),
@@ -168,29 +185,75 @@ export default {
       transitRoute: new Bean.TransitRoute(),
     };
   },
+  watch: {
+    show: {
+      handler(val) {
+        this.$nextTick(() => {
+          this._interval = setInterval(() => {
+            if (!this._Map) return;
+            clearInterval(this._interval);
+            if (this.show) {
+              this.handleEnable();
+            } else {
+              this.handleDisable();
+            }
+          }, 500);
+        });
+      },
+      immediate: true,
+    },
+  },
   computed: {
+    _Map() {
+      return this.rootVue._map;
+    },
     stopsRoutesOptions() {
       return this.transitRoute.getStopsRouteOptions();
     },
-    _editLayer() {
-      return this.rootVue._BusRouteLinkLayer;
-    },
-    _linkLayer() {
-      return this.rootVue._EditBusLinkLayer;
-    },
-    _stopLayer() {
-      return this.rootVue._EditBusStopLayer;
-    },
-    _networkLayer() {
-      return this.rootVue._NetworkLayer;
-    },
-    _networkLineLayer() {
-      return this.rootVue._NetworkLineLayer;
-    },
   },
-  mounted() {
-    this.transitRoute = new Bean.TransitRoute(this.transitRouteJSON);
-    if (this._linkLayer) {
+  created() {
+    this._linkLayer = new BusLinkLayer({
+      zIndex: 7,
+      color: 0xf56c6c,
+      visible: true,
+    });
+    this._stopLayer = new BusStopLayer({
+      zIndex: 10,
+      color: 0x67c23a,
+      highStopColor: 0xe6a23c,
+      visible: true,
+    });
+    this._editLayer = new BusRouteLinkLayer({
+      zIndex: 11,
+      linkColor: 0xf56c6c,
+      stopColor: 0x67c23a,
+      middleLinkColor: 0xffffff,
+      visible: false,
+    });
+    this._networkLayer = new NetworkLayer({
+      zIndex: 3,
+      color: 0x409eff,
+      visible: false,
+    });
+    this._networkLineLayer = new NetworkLineLayer({
+      zIndex: 4,
+      color: 0x67c23a,
+      visible: false,
+    });
+  },
+  mounted() {},
+  beforeDestroy() {
+    this.handleDisable();
+
+    this._editLayer && this._editLayer.dispose();
+    this._linkLayer && this._linkLayer.dispose();
+    this._stopLayer && this._stopLayer.dispose();
+    this._networkLayer && this._networkLayer.dispose();
+    this._networkLayer && this._networkLayer.dispose();
+  },
+  methods: {
+    handleEnable() {
+      this.transitRoute = new Bean.TransitRoute(this.transitRouteJSON);
       this._linkLayer.setData(this.transitRoute);
       this._linkLayer.addEventListener(MAP_EVENT.HANDLE_PICK_LEFT, (res) => {
         let key = this.transitRoute.getStopsRouteKeyByLink(res.data.id);
@@ -199,8 +262,7 @@ export default {
           this.handleChangestopsRouteId(key);
         }
       });
-    }
-    if (this._stopLayer) {
+
       this._stopLayer.setData(this.transitRoute);
       this._stopLayer.addEventListener(MAP_EVENT.HANDLE_PICK_LEFT, (res) => {
         const stop = new Bean.Stops(res.data);
@@ -210,9 +272,35 @@ export default {
           this.handleChangestopsRouteId(key);
         }
       });
-    }
-  },
-  methods: {
+
+      this._Map.addLayer(this._editLayer);
+      this._Map.addLayer(this._linkLayer);
+      this._Map.addLayer(this._stopLayer);
+      this._Map.addLayer(this._networkLayer);
+      this._Map.addLayer(this._networkLineLayer);
+    },
+    handleDisable() {
+      this.canSaveStopsRoute = false;
+      this.stopsRouteId = null;
+      this.stopsRouteForm = null;
+      this._linkLayer.show();
+      this._stopLayer.show();
+      this._editLayer.hide();
+      this._networkLayer.hide();
+      this._networkLineLayer.hide();
+
+      this._editLayer.removeEventListener();
+      this._linkLayer.removeEventListener();
+      this._stopLayer.removeEventListener();
+      this._networkLayer.removeEventListener();
+      this._networkLayer.removeEventListener();
+
+      this._Map.removeLayer(this._editLayer);
+      this._Map.removeLayer(this._linkLayer);
+      this._Map.removeLayer(this._stopLayer);
+      this._Map.removeLayer(this._networkLayer);
+      this._Map.removeLayer(this._networkLineLayer);
+    },
     handleChangeLineWidth() {
       if (this._networkLayer) {
         this._networkLayer.setValues({
@@ -287,31 +375,22 @@ export default {
         if (this._stopLayer) this._stopLayer.hide();
         if (this._editLayer) {
           this._editLayer.setData(this.stopsRouteForm);
-          this._editLayer.addEventListener(
-            MAP_EVENT.HANDLE_PICK_LEFT,
-            (res) => {
-              this.handleRemoveMiddleLink(res.data);
-            }
-          );
+          this._editLayer.addEventListener(MAP_EVENT.HANDLE_PICK_LEFT, (res) => {
+            this.handleRemoveMiddleLink(res.data);
+          });
           this._editLayer.show();
         }
         if (this._networkLayer) {
-          this._networkLayer.addEventListener(
-            MAP_EVENT.HANDLE_PICK_LEFT,
-            (res) => {
-              this._networkLineLayer.setData(res.data.id);
-            }
-          );
+          this._networkLayer.addEventListener(MAP_EVENT.HANDLE_PICK_LEFT, (res) => {
+            this._networkLineLayer.setData(res.data.id);
+          });
           this._networkLayer.show();
         }
         if (this._networkLineLayer) {
-          this._networkLineLayer.addEventListener(
-            MAP_EVENT.HANDLE_PICK_LEFT,
-            (res) => {
-              this.handleAddMiddleLink(res.data);
-              this._networkLineLayer.setData();
-            }
-          );
+          this._networkLineLayer.addEventListener(MAP_EVENT.HANDLE_PICK_LEFT, (res) => {
+            this.handleAddMiddleLink(res.data);
+            this._networkLineLayer.setData();
+          });
           this._networkLineLayer.show();
         }
       });

@@ -91,39 +91,20 @@ export class TransitLineParams {
   transitRoutes = [];
 }
 export class TransitLine {
-  get hasDown() {
-    return this.down && !this.down.discard;
-  }
-  set hasDown(hasDown) {
-    if (hasDown) {
-      if (this.down) {
-        this.down.discard = false;
-      } else {
-        this.down = new TransitRoute();
-      }
-    } else {
-      this.down.discard = true;
-    }
-  }
 
   constructor(opt) {
     if (opt instanceof this.constructor) opt = opt.toJSON();
     opt = ObjectAssign(opt, new TransitLineParams());
     this.lineId = opt.lineId;
     this.name = opt.name;
-    this.up = new TransitRoute(opt.transitRoutes[0]);
-    this.up.discard = false;
-    this.down = new TransitRoute(opt.transitRoutes[1]);
+    this.transitRoutes = opt.transitRoutes.map(v => new TransitRoute(v))
   }
 
   toJSON() {
-    let transitRoutes = [];
-    if (this.up) transitRoutes.push(this.up.toJSON());
-    if (this.down) transitRoutes.push(this.down.toJSON());
     return {
       lineId: this.lineId,
       name: this.name,
-      transitRoutes: transitRoutes,
+      transitRoutes: this.transitRoutes.map(v => v.toJSON()),
     };
   }
 }
@@ -143,14 +124,14 @@ export class TransitRouteParams {
   stops = [];
   departures = [];
   departureRules = [];
-
-  discard = true;
 }
 export class TransitRoute {
   _routeMap = {};
   _routeLink = null;
 
   center = null;
+
+  showLayer = true;
 
   get startStop() {
     return this.stops[0] || new Stops();
@@ -194,8 +175,6 @@ export class TransitRoute {
     this.transportMode = opt.transportMode;
     this.departures = opt.departures.map((v) => new Departures(v));
     this.departureRules = opt.departureRules.map((v) => new DepartureRule(v));
-
-    this.discard = !!opt.discard;
 
     this.stops = opt.stops.map((v) => new Stops(v));
 

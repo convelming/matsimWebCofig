@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <Dialog class="StopsEditDialog" :title="$l('站点列表')" :visible.sync="visible" @close="$emit('close')" :width="width" :left="left" resize="500px">
+  <div v-show="show">
+    <Dialog class="StopsEditDialog" :title="$l('站点列表')" :visible.sync="visible" @close="$emit('close')" width="300px" left="20" resize="500px">
       <div class="StopsEdit">
         <div class="box1">
           <div class="stop_title">{{ transitRoute.routeId }}</div>
@@ -169,16 +169,19 @@ import * as Bean from "@/utils/Bean";
 import { MAP_EVENT } from "@/mymap/index.js";
 import * as THREE from "three";
 
+import { BusLinkLayer } from "../layer/BusLinkLayer";
+import { BusStopLayer } from "../layer/BusStopLayer";
+import { StopsLayer } from "../layer/StopsLayer";
+import { NetworkLayer } from "../layer/NetworkLayer";
+import { NetworkLineLayer } from "../layer/NetworkLineLayer";
+import { BusRouteLinkLayer } from "../layer/BusRouteLinkLayer";
+
 export default {
   components: {},
   props: {
-    width: {
-      type: String,
-      default: "300px",
-    },
-    left: {
-      type: Number,
-      default: 20,
+    show: {
+      type: Boolean,
+      default: false,
     },
     transitRouteJSON: {
       type: Object,
@@ -203,39 +206,106 @@ export default {
       lineWidth: 4,
     };
   },
+  watch: {
+    show: {
+      handler(val) {
+        this.visible = val;
+        this.$nextTick(() => {
+          this._interval = setInterval(() => {
+            if (!this._Map) return;
+            clearInterval(this._interval);
+            if (this.show) {
+              this.handleEnable();
+            } else {
+              this.handleDisable();
+            }
+          }, 500);
+        });
+      },
+      immediate: true,
+    },
+  },
   computed: {
-    _map() {
+    _Map() {
       return this.rootVue._map;
-    },
-    _networkLayer() {
-      return this.rootVue._NetworkLayer;
-    },
-    _networkLineLayer() {
-      return this.rootVue._NetworkLineLayer;
-    },
-    _linkLayer() {
-      return this.rootVue._EditBusLinkLayer;
-    },
-    _stopLayer() {
-      return this.rootVue._EditBusStopLayer;
-    },
-    _allStopLayer() {
-      return this.rootVue._StopsLayer;
     },
   },
   created() {
-    let transitRoute = new Bean.TransitRoute(this.transitRouteJSON);
-    this._transitRouteCopy = transitRoute.toJSON();
-    this.transitRoute = transitRoute;
-    this.updateLayer();
-  },
-  mounted() {
-    this.visible = true;
+    this._linkLayer = new BusLinkLayer({
+      zIndex: 7,
+      color: 0xf56c6c,
+      visible: true,
+    });
+    this._stopLayer = new BusStopLayer({
+      zIndex: 10,
+      color: 0x67c23a,
+      highStopColor: 0xe6a23c,
+      visible: true,
+    });
+    this._networkLayer = new NetworkLayer({
+      zIndex: 3,
+      color: 0x409eff,
+      visible: false,
+    });
+    this._networkLineLayer = new NetworkLineLayer({
+      zIndex: 4,
+      color: 0x67c23a,
+      visible: false,
+    });
+    this._allStopLayer = new StopsLayer({
+      zIndex: 2,
+      color: 0x409eff,
+      visible: false,
+    });
   },
   beforeDestroy() {
-    this.handleCancel();
+    this.handleDisable();
+
+    this._linkLayer && this._linkLayer.dispose();
+    this._stopLayer && this._stopLayer.dispose();
+    this._networkLayer && this._networkLayer.dispose();
+    this._networkLayer && this._networkLayer.dispose();
+    this._allStopLayer && this._allStopLayer.dispose();
   },
   methods: {
+    handleEnable() {
+      const transitRoute = new Bean.TransitRoute(this.transitRouteJSON);
+      this._transitRouteCopy = transitRoute.toJSON();
+      this.transitRoute = transitRoute;
+
+      this._Map.addLayer(this._linkLayer);
+      this._Map.addLayer(this._stopLayer);
+      this._Map.addLayer(this._networkLayer);
+      this._Map.addLayer(this._networkLineLayer);
+      this._Map.addLayer(this._allStopLayer);
+
+      this.handleChangeCenter();
+      this.updateLayer();
+    },
+    handleDisable() {
+      const transitRoute = new Bean.TransitRoute();
+      this._transitRouteCopy = transitRoute.toJSON();
+      this.transitRoute = transitRoute;
+      this.editIndex = -1;
+      this.form = null;
+      this.open = false;
+
+      this.handleCloseSelectAddress();
+      this.handleCloseSelectLink();
+      this.handleCloseSelectStop();
+
+      this._linkLayer.show();
+      this._stopLayer.show();
+      this._networkLayer.hide();
+      this._networkLineLayer.hide();
+      this._allStopLayer.hide();
+
+      this._Map.removeLayer(this._linkLayer);
+      this._Map.removeLayer(this._stopLayer);
+      this._Map.removeLayer(this._networkLayer);
+      this._Map.removeLayer(this._networkLineLayer);
+      this._Map.removeLayer(this._allStopLayer);
+    },
     handleChangeLineWidth() {
       if (this._networkLayer) {
         this._networkLayer.setValues({
@@ -264,7 +334,7 @@ export default {
       const startPoint = this.transitRoute.startStop.coord;
       const endPoint = this.transitRoute.endStop.coord;
       let list = [startPoint.toList(), endPoint.toList()];
-      const res2 = this.rootVue._map.getFitZoomAndCenterPoints(list);
+      const res2 = this._Map.getFitZoomAndCenterPoints(list);
       this.rootVue.handleCenterAndZoom({
         center: res2.center,
         zoom: res2.zoom,
@@ -304,19 +374,19 @@ export default {
       }
     },
     handleCloseSelectAddress() {
-      if (this._map) {
-        this._map.removeEventListener(MAP_EVENT.HANDLE_CLICK_LEFT, this._mapEventId);
+      if (this._Map) {
+        this._Map.removeEventListener(MAP_EVENT.HANDLE_CLICK_LEFT, this._MapEventId);
       }
-      this._mapEventId = null;
+      this._MapEventId = null;
       this.selectAddress = false;
     },
     handleSelectAddress() {
       // this.handleCloseSelectAddress();
       this.handleCloseSelectLink();
       this.handleCloseSelectStop();
-      if (this._map) {
+      if (this._Map) {
         this.selectAddress = true;
-        this._mapEventId = this._map.addEventListener(MAP_EVENT.HANDLE_CLICK_LEFT, (res) => {
+        this._MapEventId = this._Map.addEventListener(MAP_EVENT.HANDLE_CLICK_LEFT, (res) => {
           this.form.coord = new Bean.Coord({
             x: res.data.webMercatorXY[0],
             y: res.data.webMercatorXY[1],
@@ -392,7 +462,6 @@ export default {
     async handleSave() {
       if (this.editIndex == -1) {
         this.handleCancel();
-        return;
       } else {
         const valid = await this.$refs["form"].validate();
         if (valid) {
@@ -426,7 +495,7 @@ export default {
     handleDelete(index) {
       this.transitRoute.removeStop(index);
       this._transitRouteCopy = this.transitRoute.toJSON();
-      this.handleCancel();
+      this.updateLayer();
     },
     handleCancel() {
       this.$nextTick(() => {
@@ -439,7 +508,7 @@ export default {
         this.handleChangeCenter();
         this.updateLayer();
         this.open = false;
-        this.visible = true;
+        this.visible = this.show;
       });
     },
     updateLayer() {

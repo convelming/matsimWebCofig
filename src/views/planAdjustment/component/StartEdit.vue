@@ -395,10 +395,12 @@ export default {
       return this.rootVue._StopsLayer;
     },
     modelOptions() {
-      return {
-        bus: this.busModelOptions,
-        subway: this.subwayModelOptions,
-      }[this.transitRoute.transportMode];
+      return (
+        {
+          bus: this.busModelOptions,
+          subway: this.subwayModelOptions,
+        }[this.transitRoute.transportMode] || this.busModelOptions
+      );
     },
   },
   watch: {
