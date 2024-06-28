@@ -1,3 +1,6 @@
+import { image } from "d3";
+
+
 export function send(obj, funcName, callback) {
   let oldFunc = obj[funcName];
   obj[funcName] = callback.bind(obj, oldFunc.bind(obj));
@@ -58,4 +61,42 @@ export function getTextImage(
     width: width,
     height: height,
   };
+}
+
+export function htmlToImage(html) {
+  return new Promise((resolve, reject) => {
+
+    const _html = `<div style="position: fixed;left: 110vw;top: 110vh;z-index: 1000;">${html}</div>`
+    let dom = new DOMParser().parseFromString(_html, "text/html").body.firstChild;
+    document.body.appendChild(dom);
+    const width = dom.clientWidth
+    const height = dom.clientHeight
+    document.body.removeChild(dom);
+    const svgText = `
+      <svg viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
+        <!-- 把 HTML 嵌入到 SVG 中 -->
+        <!-- 注意设置高度与宽度 -->
+        <foreignObject x="0" y="0" width="${width}" height="${height}">
+          <html xmlns="http://www.w3.org/1999/xhtml">${html}</html>
+        </foreignObject>
+      </svg>
+    `;
+    const svg = new Blob([svgText], { type: "image/svg+xml;charset=utf-8", });
+    var image = new Image();
+    image.crossOrigin = "anonymous";
+    image.src = URL.createObjectURL(svg);
+    image.onload = function (e) {
+      var canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      var context = canvas.getContext("2d");
+      context.drawImage(image, 0, 0, width, height);
+      const url = canvas.toDataURL("image/png");
+      resolve({
+        url: url,
+        width: width,
+        height: height
+      })
+    };
+  })
 }

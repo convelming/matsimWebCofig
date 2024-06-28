@@ -24,10 +24,16 @@
       <div class="form_item">
         <div class="form_label">{{ $l("颜色：") }}</div>
         <div class="form_value">
-          <div class="color_item" v-for="(v, i) in activityTypeList" :key="i">
-            <div class="color_title">{{ v.name }}</div>
-            <ColorPicker :disabled="!s_showLayer" size="mini" :predefine="predefineColors" v-model="v.color" />
-          </div>
+          <el-select v-model="colorType" :disabled="!s_showLayer" size="small" style="width: 100%; margin-bottom: 10px; display: block">
+            <el-option :label="$l('activity')" value="activity" />
+            <el-option :label="$l('leg')" value="leg" />
+          </el-select>
+          <el-table class="small my_tabel" :data="{ leg: legTypeList, activity: activityTypeList }[colorType] || []" border stripe>
+            <el-table-column prop="name" :label="$l('type')" />
+            <el-table-column prop="color" :label="$l('color')" width="150px">
+              <ColorPicker slot-scope="{ row }" :disabled="!s_showLayer" size="mini" :predefine="predefineColors" v-model="row.color" />
+            </el-table-column>
+          </el-table>
         </div>
       </div>
     </div>
@@ -51,6 +57,22 @@
   "大小：":{
     "zh-CN": "大小：",
     "en-US": "Size："
+  },
+  "leg":{
+    "zh-CN": "出行方式",
+    "en-US": "leg"
+  },
+  "activity":{
+    "zh-CN": "活动类型",
+    "en-US": "activity"
+  },
+  "type":{
+    "zh-CN": "类型",
+    "en-US": "type"
+  },
+  "color":{
+    "zh-CN": "颜色",
+    "en-US": "color"
   },
 }
 </language>
@@ -85,7 +107,19 @@ export default {
         if (this._Activity3DLayer) {
           this._Activity3DLayer.setColors(val);
         }
-        this.rootVue.$emit("Activity3D_changeColor", JSON.parse(JSON.stringify(val)));
+        this.rootVue.$emit("Activity3D_changeColor", {
+          activityColors: this.activityTypeList,
+          legColors: this.legTypeList,
+        });
+      },
+      deep: true,
+    },
+    legTypeList: {
+      handler(val) {
+        this.rootVue.$emit("Activity3D_changeColor", {
+          activityColors: this.activityTypeList,
+          legColors: this.legTypeList,
+        });
       },
       deep: true,
     },
@@ -110,7 +144,9 @@ export default {
 
       _Activity3DLayer: null,
 
+      colorType: "activity",
       activityTypeList: [],
+      legTypeList: [],
 
       loading: false,
     };
@@ -126,7 +162,8 @@ export default {
         [MAP_EVENT.HANDLE_PICK_LEFT]: ({ data }) => {
           const _data = JSON.parse(JSON.stringify(data));
 
-          _data.colors = JSON.parse(JSON.stringify(this.activityTypeList));
+          _data.legColors = JSON.parse(JSON.stringify(this.legTypeList));
+          _data.activityColors = JSON.parse(JSON.stringify(this.activityTypeList));
           this.rootVue.handleShowActivityDetail({
             uuid: data.pickColor,
             activityDetail: _data,
@@ -136,7 +173,8 @@ export default {
     });
 
     getAllActivityType().then((res) => {
-      this.activityTypeList = res.data.map((v, i) => ({ name: v, color: this.predefineColors[i % this.predefineColors.length] }));
+      this.legTypeList = res.data.leg.map((v, i) => ({ name: v, color: this.predefineColors[i % this.predefineColors.length] }));
+      this.activityTypeList = res.data.activity.map((v, i) => ({ name: v, color: this.predefineColors[i % this.predefineColors.length] }));
     });
   },
   mounted() {

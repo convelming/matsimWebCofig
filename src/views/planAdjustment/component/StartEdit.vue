@@ -25,7 +25,7 @@
 
     <!-- 添加或修改对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="550px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+      <el-form ref="form" :model="form" :rules="rules" label-width="80px" size="small">
         <el-form-item :label="$l('运营类型')" prop="type">
           <el-select v-model="form.type" @change="handleChangeType">
             <el-option v-for="item in typeOptions" :key="item.value" :label="$l(item.label)" :value="item.value" />
@@ -33,7 +33,7 @@
         </el-form-item>
         <el-form-item :label="$l('')" prop="startDays">
           <el-checkbox-group v-model="form.startDays">
-            <el-checkbox-button v-for="item in startDaysOptions" :label="$l(item.label)" :key="item.value" :disabled="!!item.disabled">{{ item.label }}</el-checkbox-button>
+            <el-checkbox-button v-for="item in startDaysOptions" :label="item.value" :key="item.value" :disabled="!!item.disabled">{{ item.label }}</el-checkbox-button>
           </el-checkbox-group>
         </el-form-item>
         <el-form-item :label="$l('发班类型')" prop="startType">
@@ -60,9 +60,7 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">{{
-          $l("确定")
-        }}</el-button>
+        <el-button type="primary" @click="submitForm">{{ $l("确定") }}</el-button>
         <el-button @click="cancel">{{ $l("取消") }}</el-button>
       </div>
     </el-dialog>
@@ -191,6 +189,110 @@
     "zh-CN":"警告",
     "en-US":"warn"
   },
+  "平峰(早晨)": {
+    "zh-CN":"平峰(早晨)",
+    "en-US":"morning_valley"
+  },
+  "早高峰": {
+    "zh-CN":"早高峰",
+    "en-US":"morning_peak"
+  },
+  "平峰(白天)": {
+    "zh-CN":"平峰(白天)",
+    "en-US":"daytime_valley"
+  },
+  "晚高峰": {
+    "zh-CN":"晚高峰",
+    "en-US":"evening_peak"
+  },
+  "平峰(夜间)": {
+    "zh-CN":"平峰(夜间)",
+    "en-US":"evening_valley"
+  },
+  "定点发车": {
+    "zh-CN":"定点发车",
+    "en-US":"fixed_point"
+  },
+  "其它": {
+    "zh-CN":"其它",
+    "en-US":"other"
+  },
+  "周一": {
+    "zh-CN":"周一",
+    "en-US":"Mon"
+  },
+  "周二": {
+    "zh-CN":"周二",
+    "en-US":"Tues"
+  },
+  "周三": {
+    "zh-CN":"周三",
+    "en-US":"Wed"
+  },
+  "周四": {
+    "zh-CN":"周四",
+    "en-US":"Thurs"
+  },
+  "周五": {
+    "zh-CN":"周五",
+    "en-US":"Fri"
+  },
+  "周六": {
+    "zh-CN":"周六",
+    "en-US":"Sat"
+  },
+  "周日": {
+    "zh-CN":"周日",
+    "en-US":"Sun"
+  },
+  "全天": {
+    "zh-CN":"全天",
+    "en-US":"all-day"
+  },
+  "工作日": {
+    "zh-CN":"工作日",
+    "en-US":"weekday"
+  },
+  "周末": {
+    "zh-CN":"周末",
+    "en-US":"weekend"
+  },
+  "节假日": {
+    "zh-CN":"节假日",
+    "en-US":"holiday"
+  },
+  "其它": {
+    "zh-CN":"其它",
+    "en-US":"other"
+  },
+  "小型(4.5<L≤6)": {
+    "zh-CN":"小型(4.5<L≤6)",
+    "en-US":"mini(4.5<L≤6)"
+  },
+  "中型(6<L≤9)": {
+    "zh-CN":"中型(6<L≤9)",
+    "en-US":"medium(6<L≤9)"
+  },
+  "大型(9<L≤12)": {
+    "zh-CN":"大型(9<L≤12)",
+    "en-US":"large(9<L≤12)"
+  },
+  "单层特大型(12<L≤16)": {
+    "zh-CN":"单层特大型(12<L≤16)",
+    "en-US":"Single layer extra large(9<L≤12)"
+  },
+  "双层特大型(12≤L≤13.7)": {
+    "zh-CN":"双层特大型(12≤L≤13.7)",
+    "en-US":"Double layer extra large size(12≤L≤13.7)"
+  },
+  "水上巴士": {
+    "zh-CN":"水上巴士",
+    "en-US":"Water buses"
+  },
+  "其它": {
+    "zh-CN":"其它",
+    "en-US":"other"
+  },
 }
 </language>
 
@@ -238,13 +340,13 @@ export default {
         { label: "其它", value: "other" },
       ],
       startDaysOptions: [
-        { label: "一", value: "1" },
-        { label: "二", value: "2" },
-        { label: "三", value: "3" },
-        { label: "四", value: "4" },
-        { label: "五", value: "5" },
-        { label: "六", value: "6" },
-        { label: "日", value: "7" },
+        { label: "周一", value: "1" },
+        { label: "周二", value: "2" },
+        { label: "周三", value: "3" },
+        { label: "周四", value: "4" },
+        { label: "周五", value: "5" },
+        { label: "周六", value: "6" },
+        { label: "周日", value: "7" },
       ],
       typeOptions: [
         { label: "全天", value: "all-day" },
@@ -388,46 +490,38 @@ export default {
     },
     handleChangeType(value) {
       let startDaysOptions = [
-        { label: "一", value: "1", disabled: false },
-        { label: "二", value: "2", disabled: false },
-        { label: "三", value: "3", disabled: false },
-        { label: "四", value: "4", disabled: false },
-        { label: "五", value: "5", disabled: false },
-        { label: "六", value: "6", disabled: false },
-        { label: "日", value: "7", disabled: false },
+        { label: "周一", value: "1", disabled: false },
+        { label: "周二", value: "2", disabled: false },
+        { label: "周三", value: "3", disabled: false },
+        { label: "周四", value: "4", disabled: false },
+        { label: "周五", value: "5", disabled: false },
+        { label: "周六", value: "6", disabled: false },
+        { label: "周日", value: "7", disabled: false },
       ];
       switch (value) {
         case "all-day":
           startDaysOptions.forEach((v) => {
             v.disabled = false;
           });
-          this.form.startDays = startDaysOptions
-            .filter((v) => !v.disabled)
-            .map((v) => v.value);
+          this.form.startDays = startDaysOptions.filter((v) => !v.disabled).map((v) => v.value);
           break;
         case "weekday":
           startDaysOptions.forEach((v) => {
-            v.disabled = v.label == "六" || v.label == "日";
+            v.disabled = v.label == "周六" || v.label == "周日";
           });
-          this.form.startDays = startDaysOptions
-            .filter((v) => !v.disabled)
-            .map((v) => v.value);
+          this.form.startDays = startDaysOptions.filter((v) => !v.disabled).map((v) => v.value);
           break;
         case "weekend":
           startDaysOptions.forEach((v) => {
-            v.disabled = v.label != "六" && v.label != "日";
+            v.disabled = v.label != "周六" && v.label != "周日";
           });
-          this.form.startDays = startDaysOptions
-            .filter((v) => !v.disabled)
-            .map((v) => v.value);
+          this.form.startDays = startDaysOptions.filter((v) => !v.disabled).map((v) => v.value);
           break;
         case "holiday":
           startDaysOptions.forEach((v) => {
             v.disabled = true;
           });
-          this.form.startDays = startDaysOptions
-            .filter((v) => !v.disabled)
-            .map((v) => v.value);
+          this.form.startDays = startDaysOptions.filter((v) => !v.disabled).map((v) => v.value);
           break;
         case "other":
           startDaysOptions.forEach((v) => {

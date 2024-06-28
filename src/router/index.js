@@ -41,7 +41,7 @@ const routes = [
   },
 ];
 
-if (process.env.NODE_ENV == "development") {
+// if (process.env.NODE_ENV == "development") {
   routes.push({
     path: "/test",
     name: "test",
@@ -54,7 +54,7 @@ if (process.env.NODE_ENV == "development") {
       },
     ],
   });
-}
+// }
 
 const router = new VueRouter({
   routes,

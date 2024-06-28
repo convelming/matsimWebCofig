@@ -7,7 +7,8 @@ const COLOR = "#000000"
 export class ActivityRoutesLayer extends Layer {
 
   center = [0, 0];
-  colors = new Map();
+  legColors = new Map();
+  activityColors = new Map();
 
   actScale = 1;
   actWidth = 2;
@@ -33,7 +34,8 @@ export class ActivityRoutesLayer extends Layer {
     this.height = opt.height || this.height;
     this.actScale = opt.actScale || this.actScale;
     this.legScale = opt.legScale || this.legScale;
-    this.colors = new Map((opt.colors || []).map(v => [v.name, v.color]));
+    this.legColors = new Map((opt.legColors || []).map(v => [v.name, v.color]));
+    this.activityColors = new Map((opt.activityColors || []).map(v => [v.name, v.color]));
 
     this.scaleScene = new THREE.Group();
     this.scaleScene.scale.set(1, 1, this.height / 100);
@@ -123,26 +125,29 @@ export class ActivityRoutesLayer extends Layer {
     this.scaleScene.scale.set(1, 1, this.height / 100);
   }
 
-
-  setColors(colors) {
-    this.colors = new Map(colors.map(v => [v.name, v.color]));
+  setActivityColors(activityColors){
+    this.activityColors = new Map(activityColors.map(v => [v.name, v.color]));
     for (const mesh of this.actStartMeshList) {
-      const color = new THREE.Color(this.colors.get(mesh.userData.activity) || COLOR);
+      const color = new THREE.Color(this.activityColors.get(mesh.userData.activity) || COLOR);
       mesh.material.setValues({ color: color });
       mesh.material.needsUpdate = true;
     }
     for (const mesh of this.actEndMeshList) {
-      const color = new THREE.Color(this.colors.get(mesh.userData.activity) || COLOR);
+      const color = new THREE.Color(this.activityColors.get(mesh.userData.activity) || COLOR);
       mesh.material.setValues({ color: color });
       mesh.material.needsUpdate = true;
     }
     for (const mesh of this.actCylMeshList) {
-      const color = new THREE.Color(this.colors.get(mesh.userData.activity) || COLOR);
+      const color = new THREE.Color(this.activityColors.get(mesh.userData.activity) || COLOR);
       mesh.material.setValues({ color: color });
       mesh.material.needsUpdate = true;
     }
+  }
+  
+  setLegColors(legColors) {
+    this.legColors = new Map(legColors.map(v => [v.name, v.color]));
     for (const mesh of this.legMeshList) {
-      const color = new THREE.Color(this.colors.get(mesh.userData.activity) || COLOR);
+      const color = new THREE.Color(this.legColors.get(mesh.userData.activity) || COLOR);
       mesh.material.setValues({ color: color });
       mesh.material.needsUpdate = true;
     }
@@ -176,17 +181,17 @@ export class ActivityRoutesLayer extends Layer {
     this.actEndMeshList = [];
     this.actCylMeshList = [];
     this.legMeshList = [];
-
+    console.log(this.legColors);
+    console.log(this.activityColors);
     // 活动
     {
-      console.log(this.colors);
       for (let i = 0, l = this.actList.length; i < l; i++) {
         const item = this.actList[i]
         const { point, startTime, endTime, activity } = item;
         const startZ = Number(startTime) / 60;
         const endZ = Number(endTime) / 60;
         const height = Math.abs(endZ - startZ);
-        const color = new THREE.Color(this.colors.get(activity) || COLOR);
+        const color = new THREE.Color(this.activityColors.get(activity) || COLOR);
         const scale = this.actScale * this.actWidth;
 
         const geometry = new THREE.PlaneGeometry(SIZE, SIZE);
@@ -209,7 +214,7 @@ export class ActivityRoutesLayer extends Layer {
         this.scaleScene.add(startMesh);
 
         const endMesh = new THREE.Mesh(geometry, material);
-        endMesh.position.set(point[0], point[1], endZ + 1);
+        endMesh.position.set(point[0], point[1], endZ + 0.01);
         endMesh.scale.set(scale, scale, 1)
         endMesh.userData.activity = activity;
         this.actEndMeshList.push(endMesh);
@@ -235,7 +240,7 @@ export class ActivityRoutesLayer extends Layer {
       for (let i = 0, l = this.legList.length; i < l; i++) {
         const item = this.legList[i];
         const { path, activity } = item;
-        const color = new THREE.Color(this.colors.get(activity) || COLOR);
+        const color = new THREE.Color(this.legColors.get(activity) || COLOR);
         console.log(activity, color.getHexString());
         const geometry = this.getLegGeometry(path.paths);
         const material = this.getLegMaterial({

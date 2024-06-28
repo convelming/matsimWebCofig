@@ -209,9 +209,8 @@ export default {
     });
     this._ActivityRoutesLayer = new ActivityRoutesLayer({
       zIndex: 40,
-      // actColor: this.actColor,
-      // legColor: this.legColor,
-      colors: this.activityDetail.colors,
+      activityColors: this.activityDetail.activityColors,
+      legColors: this.activityDetail.legColors,
       height: this.height,
     });
 
@@ -228,7 +227,8 @@ export default {
   },
   methods: {
     handleActivity3DChangeColor(val) {
-      this._ActivityRoutesLayer.setColors(val);
+      this._ActivityRoutesLayer.setActivityColors(val.activityColors);
+      this._ActivityRoutesLayer.setLegColors(val.legColors);
       // this._ActivityRoutesLayer.setActColor(val.actColor);
       // this._ActivityRoutesLayer.setLegColor(val.legColor);
     },

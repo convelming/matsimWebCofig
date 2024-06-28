@@ -114,9 +114,9 @@ const datasource = {
         dispatch("getDataSourceList", state.dataBase);
       }
     },
-    async copyDataSource({ commit, state, dispatch }, { source, target }) {
+    async copyDataSource({ commit, state, dispatch }, { source, target, detail, base }) {
       try {
-        const res = await copyScheme({ source, target });
+        const res = await copyScheme({ source, target, detail, base });
         return res;
       } catch (error) {
       } finally {

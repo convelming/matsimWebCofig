@@ -81,47 +81,46 @@
     </el-dialog>
 
     <!-- 公交运行分析 -->
-    <el-dialog class="tabel_dialog" :title="$l('公交运行分析')" :visible.sync="operationsAnalysisDialog.show" width="600px">
+    <el-dialog class="tabel_dialog" :title="$l('公交运行分析')" :visible.sync="operationsAnalysisDialog.show" width="900px">
       <div class="tabel_toolbar">
         <el-button type="primary" size="mini" icon="el-icon-arrow-left" @click="handleToSelectDataBase('operationsAnalysis')">{{ $l("返回上一级") }}</el-button>
         <el-button type="primary" size="mini" icon="el-icon-refresh-right" @click="handleGetDateSourceList()">{{ $l("刷新列表") }}</el-button>
       </div>
       <el-table height="400" :data="dataSourceList" border stripe v-loading="dateSourceListLoading">
-        <el-table-column prop="name" :label="$l('方案名称')" />
+        <el-table-column prop="name" :label="$l('方案名称')" width="100" />
         <el-table-column prop="detail" :label="$l('方案简介')" />
-        <el-table-column prop="loadStatus" :label="$l('方案状态')">
+        <el-table-column prop="loadStatus" :label="$l('方案状态')" width="130">
           <template slot-scope="{ row }">{{ row.loadStatus }} / {{ row.runStatus }}</template>
         </el-table-column>
         <el-table-column :label="$l('操作')" width="250">
           <template slot-scope="{ row }">
-            <el-button :disabled="row.runStatus != '已运行' || row.loadStatus != '已加载'" type="primary" size="mini" @click="handleOperationsAnalysisToDetail(row)">{{ $l("查看") }}</el-button>
-            <!-- <el-button type="primary" size="mini" :disabled="row.noRun" :loading="row.runStatus == '运行中'" @click="handleOperationsAnalysisRun(row)">{{ $l("运行") }}</el-button> -->
-            <el-button type="primary" size="mini" :disabled="row.noLoad || row.loadStatus == '已加载'" :loading="row.loadStatus == '加载中'" @click="handleOperationsAnalysisLoad(row)">{{ $l("加载") }}</el-button>
+            <el-button v-if="row.runStatus == '已运行' && row.loadStatus == '已加载'" type="primary" size="mini" @click="handleOperationsAnalysisToDetail(row)">{{ $l("查看") }}</el-button>
+            <!-- <el-button v-if="row.noRun"  type="success" size="mini" :loading="row.runStatus == '运行中'" @click="handleOperationsAnalysisRun(row)">{{ $l("运行") }}</el-button> -->
+            <el-button v-if="!row.noLoad && row.loadStatus != '已加载'" type="warning" size="mini" :loading="row.loadStatus == '加载中'" @click="handleOperationsAnalysisLoad(row)">{{ $l("加载") }}</el-button>
           </template>
         </el-table-column>
       </el-table>
     </el-dialog>
 
     <!-- 线路方案调整 -->
-    <el-dialog class="tabel_dialog" :title="$l('线路方案调整')" :visible.sync="planAdjustmentDialog.show" width="700px">
+    <el-dialog class="tabel_dialog" :title="$l('线路方案调整')" :visible.sync="planAdjustmentDialog.show" width="900px">
       <div class="tabel_toolbar">
         <el-button type="primary" size="mini" icon="el-icon-arrow-left" @click="handleToSelectDataBase('planAdjustment')">{{ $l("返回上一级") }}</el-button>
         <el-button type="primary" size="mini" icon="el-icon-refresh-right" @click="handleGetDateSourceList()">{{ $l("刷新列表") }}</el-button>
-        <el-button type="primary" size="mini" icon="el-icon-add" @click="handlePlanAdjustmentCreate()">{{ $l("新建方案") }}</el-button>
+        <el-button type="primary" size="mini" icon="el-icon-add" @click="handleShowAddPlanAdjustmentDialog()">{{ $l("新建方案") }}</el-button>
       </div>
       <el-table height="400" :data="dataSourceList" border stripe v-loading="dateSourceListLoading">
-        <el-table-column prop="name" :label="$l('方案名称')" />
+        <el-table-column prop="name" :label="$l('方案名称')" width="100" />
         <el-table-column prop="detail" :label="$l('方案简介')" />
-        <el-table-column prop="loadStatus" :label="$l('方案状态')">
+        <el-table-column prop="loadStatus" :label="$l('方案状态')" width="130">
           <template slot-scope="{ row }">{{ row.loadStatus }} / {{ row.runStatus }}</template>
         </el-table-column>
-        <el-table-column :label="$l('操作')" width="400">
+        <el-table-column :label="$l('操作')" width="250">
           <template slot-scope="{ row }">
-            <el-button v-if="!row.noRun" :disabled="row.loadStatus != '已加载'" type="primary" size="mini" @click="handlePlanAdjustmentToDetail(row)">{{ $l("修改") }}</el-button>
-            <el-button v-if="!row.noRun" type="primary" size="mini" :loading="row.runStatus == '运行中'" @click="handleOperationsAnalysisRun(row)">{{ $l("运行") }}</el-button>
-            <el-button type="primary" size="mini" :disabled="row.noLoad || row.loadStatus == '已加载'" :loading="row.loadStatus == '加载中'" @click="handlePlanAdjustmentLoad(row)">{{ $l("加载") }}</el-button>
-            <el-button v-if="!row.noRun" type="primary" size="mini" @click="handleCopy(row)">{{ $l("克隆") }}</el-button>
-            <el-button v-if="!row.noRun" type="primary" size="mini" @click="handleDelect(row)">{{ $l("删除") }}</el-button>
+            <el-button v-if="!row.noRun && row.loadStatus == '已加载'" type="primary" size="mini" @click="handlePlanAdjustmentToDetail(row)">{{ $l("修改") }}</el-button>
+            <el-button v-if="!row.noRun" type="success" size="mini" :loading="row.runStatus == '运行中'" @click="handleOperationsAnalysisRun(row)">{{ $l("运行") }}</el-button>
+            <el-button v-if="!row.noLoad && row.loadStatus != '已加载'" :loading="row.loadStatus == '加载中'" type="warning" size="mini" @click="handlePlanAdjustmentLoad(row)">{{ $l("加载") }}</el-button>
+            <el-button v-if="!row.noRun" type="danger" size="mini" @click="handleDelect(row)">{{ $l("删除") }}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -141,7 +140,6 @@
         </el-table-column>
         <el-table-column :label="$l('对比方案')" width="90" align="center">
           <template slot-scope="{ row }">
-            <!-- <el-checkbox v-model="comparativeAnalysisDialog.dataSource2" false-label="" :true-label="row.name">{{ "" }}</el-checkbox> -->
             <el-checkbox v-model="comparativeAnalysisDialog.dataSource2" false-label="" :true-label="row.name" :disabled="row.loadStatus != '已加载' || row.runStatus != '已运行' || comparativeAnalysisDialog.dataSource1 == row.name">{{ "" }}</el-checkbox>
           </template>
         </el-table-column>
@@ -152,8 +150,7 @@
         </el-table-column>
         <el-table-column :label="$l('操作')" width="180">
           <template slot-scope="{ row }">
-            <!-- <el-button v-if="!row.noRun" type="primary" size="mini" :loading="row.runStatus == '运行中'" @click="handleOperationsAnalysisRun(row)">{{ $l("运行") }}</el-button> -->
-            <el-button type="primary" size="mini" :disabled="row.noLoad || row.loadStatus == '已加载'" :loading="row.loadStatus == '加载中'" @click="handleOperationsAnalysisLoad(row)">{{ $l("加载") }}</el-button>
+            <el-button v-if="!row.noLoad && row.loadStatus != '已加载'" type="warning" size="mini" :loading="row.loadStatus == '加载中'" @click="handleOperationsAnalysisLoad(row)">{{ $l("加载") }}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -176,11 +173,30 @@
         </el-table-column>
         <el-table-column :label="$l('操作')" width="180">
           <template slot-scope="{ row }">
-            <!-- <el-button :disabled="row.loadStatus != '已加载'" type="primary" size="mini" @click="handleSystemEvaluationToDetail(row)">{{ $l("查看") }}</el-button> -->
-            <el-button type="primary" size="mini" :disabled="row.noLoad || row.loadStatus == '已加载'" :loading="row.loadStatus == '加载中'" @click="handleSystemEvaluationLoad(row)">{{ $l("加载") }}</el-button>
+            <el-button v-if="!row.noLoad && row.loadStatus != '已加载'" type="warning" size="mini" :loading="row.loadStatus == '加载中'" @click="handleSystemEvaluationLoad(row)">{{ $l("加载") }}</el-button>
           </template>
         </el-table-column>
       </el-table>
+    </el-dialog>
+
+    <el-dialog class="tabel_dialog" :title="$l('新建方案')" :visible.sync="addPlanAdjustmentDialog.show" width="550px">
+      <el-form :model="addPlanAdjustmentDialog.form" ref="form" :rules="addPlanAdjustmentDialog.rules" label-width="100px" :inline="false" size="small">
+        <el-form-item :label="$l('基础方案')" prop="source">
+          <el-select v-model="addPlanAdjustmentDialog.form.source">
+            <el-option v-for="item in dataSourceList" :key="item.name" :label="item.name" :value="item.name"> </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item :label="$l('新方案名称')" prop="target">
+          <el-input v-model="addPlanAdjustmentDialog.form.target"></el-input>
+        </el-form-item>
+        <el-form-item :label="$l('新方案描述')" prop="detail">
+          <el-input type="textarea" v-model="addPlanAdjustmentDialog.form.detail" :autosize="{ minRows: 2 }"> </el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button :loading="addPlanAdjustmentDialog.loading" type="primary" @click="handleAddPlanAdjustment">{{ $l("立即创建") }}</el-button>
+          <el-button @click="addPlanAdjustmentDialog.show = false">{{ $l("取消") }}</el-button>
+        </el-form-item>
+      </el-form>
     </el-dialog>
   </div>
 </template>
@@ -206,6 +222,18 @@
   "保存方案": {
     "zh-CN":"保存方案",
     "en-US":"Save Scheme",
+  },
+  "立即创建": {
+    "zh-CN":"立即创建",
+    "en-US":"Created",
+  },
+  "新方案名称": {
+    "zh-CN":"新方案名称",
+    "en-US":"New Scheme Name",
+  },
+  "新方案描述": {
+    "zh-CN":"新方案描述",
+    "en-US":"New Scheme Detail",
   },
   "方案创建成功": {
     "zh-CN":"方案创建成功",
@@ -349,11 +377,6 @@ export default {
         dataBase: "",
         itemKey: "",
       },
-      dataBaseDialog: {
-        show: false,
-        dataBase: "",
-        itemKey: "",
-      },
       operationsAnalysisDialog: {
         show: false,
         dataSource: "",
@@ -370,6 +393,26 @@ export default {
       systemEvaluationDialog: {
         show: false,
         dataSource: "",
+      },
+      addPlanAdjustmentDialog: {
+        show: false,
+        form: "",
+        loading: false,
+        rules: {
+          target: {
+            validator: (rule, value, callback) => {
+              if (!value) {
+                callback(new Error(this.$l("请输入方案名称")));
+              } else if (!/^[a-zA-Z0-9_]+$/.test(value)) {
+                callback(new Error(this.$l("方案名称只能使用英文字母，数字和下划线")));
+              } else if (value.slice(-4).toLowerCase() == "base") {
+                callback(new Error(this.$l("方案名称不能以base结尾")));
+              } else {
+                callback();
+              }
+            },
+          },
+        },
       },
 
       showOAHelpDialog: false,
@@ -492,34 +535,28 @@ export default {
       this.planAdjustmentDialog.show = true;
       this.planAdjustmentDialog.dataSource = "";
     },
-    async handlePlanAdjustmentCreate() {
-      try {
-        const { value, action } = await this.$prompt(this.$l("请输入方案名称"), this.$l("提示"), {
-          confirmButtonText: this.$l("确定"),
-          cancelButtonText: this.$l("取消"),
-          inputValidator: (value) => {
-            if (!value) {
-              return this.$l("请输入方案名称");
-            }
-            if (!/^[a-zA-Z0-9_]+$/.test(value)) {
-              return this.$l("方案名称只能使用英文字母，数字和下划线");
-            }
-            if (value.slice(-4).toLowerCase() == "base") {
-              return this.$l("方案名称不能以base结尾");
-            }
-            return true;
-          },
-        });
-        if (action == "confirm") {
-          const data = await this.$store.dispatch("createDataSource", {
-            base: this.dataBase,
-            key: value,
-          });
-          if (data.code == 200) {
+    handleShowAddPlanAdjustmentDialog() {
+      this.addPlanAdjustmentDialog.show = true;
+      this.addPlanAdjustmentDialog.form = {
+        base: this.dataBase,
+        source: "",
+        target: "",
+        detail: "",
+      };
+    },
+    handleAddPlanAdjustment() {
+      this.$refs.addForm.validate((valid) => {
+        if (!valid) return;
+        this.addPlanAdjustmentDialog.loading = true;
+        this.$store
+          .dispatch("createDataSource", this.addPlanAdjustmentDialog.form)
+          .then((res) => {
             this.$message.success(this.$l("方案创建成功"));
-          }
-        }
-      } catch (error) {}
+          })
+          .finally(() => {
+            this.addPlanAdjustmentDialog.loading = false;
+          });
+      });
     },
     handlePlanAdjustmentToDetail(row) {
       const [database, datasource] = row.name.split("/");
@@ -569,35 +606,6 @@ export default {
     },
     handleDelect(row) {
       this.$store.dispatch("deleteDataSource", row);
-    },
-    async handleCopy(row) {
-      try {
-        const { value, action } = await this.$prompt(this.$l("请输入方案名称"), this.$l("提示"), {
-          confirmButtonText: this.$l("确定"),
-          cancelButtonText: this.$l("取消"),
-          inputValidator: (value) => {
-            if (!value) {
-              return this.$l("请输入方案名称");
-            }
-            if (!/^[a-zA-Z0-9_]+$/.test(value)) {
-              return this.$l("方案名称只能使用英文字母，数字和下划线");
-            }
-            if (value.slice(-4).toLowerCase() == "base") {
-              return this.$l("方案名称不能以base结尾");
-            }
-            return true;
-          },
-        });
-        if (action == "confirm") {
-          const data = await this.$store.dispatch("copyDataSource", {
-            source: row.name,
-            target: this.dataBase + "/" + value,
-          });
-          if (data.code == 200) {
-            this.$message.success(this.$l("方案克隆成功"));
-          }
-        }
-      } catch (error) {}
     },
     handleToSelectDataBase(key) {
       this.handleShowDataBase(key);
