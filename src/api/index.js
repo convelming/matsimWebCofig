@@ -499,3 +499,15 @@ export function getTimeInterval(params) {
     method: "get",
   });
 }
+
+// 全部修改路线列表
+// GET /pt/transitLine/changeLines
+// 接口ID：188281232
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-188281232
+export function changeLines(params) {
+  return request({
+    url: `/pt/transitLine/changeLines`,
+    params: params,
+    method: "get",
+  });
+}

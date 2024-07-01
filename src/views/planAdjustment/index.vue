@@ -19,43 +19,45 @@
           </el-form-item>
         </el-form>
         <template v-if="tlForm.obj">
-          <el-collapse v-model="activeNames">
-            <el-collapse-item v-for="(v, i) in tlForm.obj.transitRoutes" :name="String(i)">
-              <div slot="title">
-                <el-checkbox v-model="v.showLayer">{{ $l("线路") }} {{ i + 1 }}</el-checkbox>
-              </div>
-              <el-row :gutter="20">
-                <el-col :span="24">
-                  <el-input class="row" v-model="v.routeId" size="small"></el-input>
-                </el-col>
-              </el-row>
-              <el-row :gutter="20">
-                <el-col :span="12">
-                  <el-button type="primary" @click="handleOpenStopsEdit(i)" size="small">{{ $l("编辑站点") }}</el-button>
-                </el-col>
-                <el-col :span="12">
-                  <el-button type="primary" @click="handleOpenStopsRoutesEdit(i)" size="small">{{ $l("编辑路径") }}</el-button>
-                </el-col>
-              </el-row>
-              <el-row :gutter="20">
-                <el-col :span="12">
-                  <el-button type="primary" @click="handleOpenStartEdit(i)" size="small">{{ $l("编辑发车信息") }}</el-button>
-                </el-col>
-                <el-col :span="12">
-                  <el-button type="primary" @click="handleDeleteTransitRoute(i)" size="small">{{ $l("删除线路") }}</el-button>
-                </el-col>
-              </el-row>
-              <el-row :gutter="20">
-                <el-col :span="12">
-                  <el-button style="width: 100%" type="warning" @click="handleCreateDownByUp" size="small">{{ $l("生成反向线路") }}</el-button>
-                </el-col>
-                <el-col :span="12">
-                  <el-button style="width: 100%" type="warning" @click="handleCreateDownByUp" size="small">{{ $l("克隆线路") }}</el-button>
-                </el-col>
-              </el-row>
-            </el-collapse-item>
-          </el-collapse>
-          <el-row :gutter="20">
+          <div class="tr_list">
+            <el-collapse v-model="activeNames">
+              <el-collapse-item v-for="(v, i) in tlForm.obj.transitRoutes" :name="String(i)" :key="i">
+                <div slot="title">
+                  <el-checkbox v-model="v.showLayer" @change="updateLayer">{{ $l("线路") }} {{ i + 1 }}</el-checkbox>
+                </div>
+                <el-row :gutter="20">
+                  <el-col :span="24">
+                    <el-input class="row" v-model="v.routeId" size="small"></el-input>
+                  </el-col>
+                </el-row>
+                <el-row :gutter="20">
+                  <el-col :span="12">
+                    <el-button type="primary" @click="handleOpenStopsEdit(i)" size="small">{{ $l("编辑站点") }}</el-button>
+                  </el-col>
+                  <el-col :span="12">
+                    <el-button type="primary" @click="handleOpenStopsRoutesEdit(i)" size="small">{{ $l("编辑路径") }}</el-button>
+                  </el-col>
+                </el-row>
+                <el-row :gutter="20">
+                  <el-col :span="12">
+                    <el-button type="primary" @click="handleOpenStartEdit(i)" size="small">{{ $l("编辑发车信息") }}</el-button>
+                  </el-col>
+                  <el-col :span="12">
+                    <el-button type="primary" @click="handleDeleteTransitRoute(i)" size="small">{{ $l("删除线路") }}</el-button>
+                  </el-col>
+                </el-row>
+                <el-row :gutter="20">
+                  <el-col :span="12">
+                    <el-button style="width: 100%" type="warning" @click="handleCreateDownByUp(i)" size="small">{{ $l("生成反向线路") }}</el-button>
+                  </el-col>
+                  <el-col :span="12">
+                    <el-button style="width: 100%" type="warning" @click="handleCreateDownByUp" size="small">{{ $l("克隆线路") }}</el-button>
+                  </el-col>
+                </el-row>
+              </el-collapse-item>
+            </el-collapse>
+          </div>
+          <el-row style="padding-top: 20px" :gutter="20">
             <el-col :span="24">
               <el-button type="success" size="small" @click="">{{ $l("添加线路") }}</el-button>
             </el-col>
@@ -72,6 +74,27 @@
             </el-col>
           </el-row>
         </template>
+        <template v-else>
+          <el-table class="small my_tabel" :data="changedList" border stripe height="calc(100vh - 220px)" v-loading="loading1">
+            <el-table-column :label="$l('Line')" prop="lineName" show-overflow-tooltip />
+            <el-table-column :label="$l('Route')" prop="routeName" show-overflow-tooltip />
+            <el-table-column width="80">
+              <template slot-scope="{ row }">
+                <el-button type="primary" size="mini" @click="handleEditRoute(row)">{{ $l("编辑") }}</el-button>
+              </template>
+              <!-- <el-dropdown slot-scope="{ row }" trigger="click" @command="handleRouteMenu({ data: row, command: $event })">
+                <span class="el-dropdown-link el-icon-arrow-down el-icon--right" />
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item command="线路变动信息" :disabled="!row.path">{{ $l("线路变动信息") }}</el-dropdown-item>
+                  <el-dropdown-item command="站点变动信息" :disabled="!row.stop">{{ $l("站点变动信息") }}</el-dropdown-item>
+                  <el-dropdown-item command="时刻表信息变动" :disabled="!row.time">{{ $l("时刻表信息变动") }}</el-dropdown-item>
+                  <el-dropdown-item command="Xml信息对比">{{ $l("Xml信息对比") }}</el-dropdown-item>
+                  <el-dropdown-item command="客流信息变化">{{ $l("客流信息变化") }}</el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown> -->
+            </el-table-column>
+          </el-table>
+        </template>
       </div>
     </Dialog>
 
@@ -79,9 +102,7 @@
 
     <StopsRoutesEdit :show="stopsRoutesEditObj.open" :transitRouteJSON="stopsRoutesEditObj.transitRouteJSON" @close="handleCloseStopsRoutesEdit" @toEditStops="handleToEditStops" @change="handleChangeStopsRoutesEdit" />
 
-    <Dialog :title="startEditObj.title" :width="startEditObj.width" :left="startEditObj.left" :visible.sync="startEditObj.open" @close="handleCloseStartEdit" left="center" width="900px">
-      <StartEdit v-if="startEditObj.open" :transitRouteJSON="startEditObj.transitRouteJSON" @change="handleChangeStartEdit" />
-    </Dialog>
+    <StartEdit :show="startEditObj.open" :transitRouteJSON="startEditObj.transitRouteJSON" @close="handleCloseStartEdit" @change="handleChangeStartEdit" />
 
     <div class="HelpBtnList">
       <div class="_flex">
@@ -108,6 +129,14 @@
 
 <language>
 {
+  "Line":{
+    "zh-CN": "线",
+    "en-US": "Line"
+  },
+  "Route":{
+    "zh-CN": "路线",
+    "en-US": "Route"
+  },
   "路线名称": {
     "zh-CN":"路线名称",
     "en-US":"Route name"
@@ -226,7 +255,7 @@
 <script>
 import { Map, MAP_EVENT, MapLayer, MAP_LAYER_STYLE, LocalMapTile } from "@/mymap/index.js";
 
-import { getByLineId, saveByLine, deleteTransitLine } from "@/api/index";
+import { getByLineId, saveByLine, deleteTransitLine, changeLines } from "@/api/index";
 
 import BMapBox from "./component/BMapBox.vue";
 import RouteSelect from "./component/RouteSelect.vue";
@@ -237,10 +266,6 @@ import HelpDialog from "./component/HelpDialog/index.vue";
 
 import { BusLinkLayer } from "./layer/BusLinkLayer";
 import { BusStopLayer } from "./layer/BusStopLayer";
-import { StopsLayer } from "./layer/StopsLayer";
-import { NetworkLayer } from "./layer/NetworkLayer";
-import { NetworkLineLayer } from "./layer/NetworkLineLayer";
-import { BusRouteLinkLayer } from "./layer/BusRouteLinkLayer";
 
 import * as Bean from "@/utils/Bean";
 
@@ -256,7 +281,7 @@ export default {
   },
   data() {
     return {
-      activeNames: ["up", "down"],
+      activeNames: [1, 2],
       database: "",
       datasource: "",
 
@@ -272,17 +297,11 @@ export default {
       deleteLoading: false,
       _map: null,
       _MapLayer: null,
-      _UpBusLinkLayer: null,
-      _UpBusBusStopLayerLayer: null,
-      _DownBusLinkLayer: null,
-      _DownBusBusStopLayerLayer: null,
+      _LinkLayerList: null,
+      _StopLayerList: null,
 
-      _EditBusLinkLayer: null,
-      _EditBusStopLayer: null,
-
-      _NetworkLayer: null,
-      _NetworkLineLayer: null,
-      _StopsLayer: null,
+      loading1: true,
+      changedList: [],
 
       lineOffset: 0,
       tlForm: {
@@ -356,10 +375,9 @@ export default {
     this.$store.dispatch("setDataSource", database + "/" + datasource);
   },
   async mounted() {
-    this.initLayer();
     this.initMap();
-    this.resetLayer();
     this.revertData();
+    this.getChangedList();
   },
   beforeDestroy() {
     this._map.dispose();
@@ -372,6 +390,16 @@ export default {
       this.showStyleMenu = false;
       this.styleActive = i;
       this._MapLayer.setTileClass(this.styleList[i].c);
+    },
+    getChangedList() {
+      this.loading1 = true;
+      changeLines()
+        .then((res) => {
+          this.changedList = res.data;
+        })
+        .finally(() => {
+          this.loading1 = false;
+        });
     },
     // 初始化地图
     initMap() {
@@ -389,6 +417,9 @@ export default {
         },
       });
 
+      this._MapLayer = new MapLayer({
+        zIndex: 0,
+      });
       this._map.addLayer(this._MapLayer);
       {
         const itemDocList = [];
@@ -406,68 +437,6 @@ export default {
         this.styleList = itemDocList;
       }
     },
-    // 初始化图层
-    initLayer() {
-      this._MapLayer = new MapLayer({
-        zIndex: 0,
-      });
-      this._StopsLayer = new StopsLayer({
-        zIndex: 2,
-        color: 0x409eff,
-        visible: false,
-      });
-      this._NetworkLayer = new NetworkLayer({
-        zIndex: 3,
-        color: 0x409eff,
-        visible: false,
-      });
-      this._NetworkLineLayer = new NetworkLineLayer({
-        zIndex: 4,
-        color: 0x67c23a,
-        visible: false,
-      });
-
-      this._UpBusLinkLayer = new BusLinkLayer({
-        zIndex: 5,
-        color: 0xf56c6c,
-        visible: true,
-      });
-      this._DownBusLinkLayer = new BusLinkLayer({
-        zIndex: 6,
-        color: 0xf56c6c,
-        visible: true,
-      });
-      this._EditBusLinkLayer = new BusLinkLayer({
-        zIndex: 7,
-        color: 0xf56c6c,
-        visible: true,
-      });
-
-      this._UpBusStopLayer = new BusStopLayer({
-        zIndex: 8,
-        color: 0x67c23a,
-        visible: true,
-      });
-      this._DownBusStopLayer = new BusStopLayer({
-        zIndex: 9,
-        color: 0x67c23a,
-        visible: true,
-      });
-      this._EditBusStopLayer = new BusStopLayer({
-        zIndex: 10,
-        color: 0x67c23a,
-        highStopColor: 0xe6a23c,
-        visible: true,
-      });
-      this._BusRouteLinkLayer = new BusRouteLinkLayer({
-        zIndex: 11,
-        linkColor: 0xf56c6c,
-        stopColor: 0x67c23a,
-        middleLinkColor: 0xffffff,
-        visible: true,
-      });
-    },
-    resetLayer() {},
     // 恢复上一次编辑未保存的数据
     revertData() {
       try {
@@ -492,6 +461,8 @@ export default {
           this.$nextTick(() => {
             this.$refs.routeSelect.remoteMethod(tlForm.name);
           });
+
+          this.updateLayer();
         }
       } catch (error) {
         this.tlForm = {
@@ -499,8 +470,85 @@ export default {
           name: null,
           obj: null,
         };
-        this.resetLayer();
+        this.updateLayer();
       }
+    },
+    updateLayer() {
+      const routes = this.tlForm.obj ? this.tlForm.obj.transitRoutes || [] : [];
+      const layers1 = this._LinkLayerList || [];
+      const layers2 = this._StopLayerList || [];
+      const l = Math.max(routes.length, layers1.length);
+      console.log("updateLayer", l);
+      for (let i = 0; i < l; i++) {
+        const route = routes[i];
+        let layer1 = layers1[i];
+        let layer2 = layers2[i];
+        if (route && route.showLayer) {
+          if (!layer1) {
+            layer1 = new BusLinkLayer({
+              zIndex: 6,
+              color: 0xf56c6c,
+              visible: true,
+            });
+            layers1[i] = layer1;
+          }
+          if (!layer2) {
+            layer2 = new BusStopLayer({
+              zIndex: 8,
+              color: 0x67c23a,
+              visible: true,
+            });
+            layers2[i] = layer2;
+          }
+          layer1.setData(route);
+          layer2.setData(route);
+          this._map.addLayer(layer1);
+          this._map.addLayer(layer2);
+        } else {
+          if (layer1) {
+            this._map.removeLayer(layer1);
+          }
+          if (layer2) {
+            this._map.removeLayer(layer2);
+          }
+        }
+      }
+      this._LinkLayerList = layers1;
+      this._StopLayerList = layers2;
+    },
+    handleEditRoute(row) {
+      getByLineId({
+        lineId: row.lineId,
+      })
+        .then((res) => {
+          if (res.data && res.data.lineId) {
+            let obj = new Bean.TransitLine(res.data);
+            this.tlForm.obj = obj;
+            this.activeNames = obj.transitRoutes.map((v, i) => String(i));
+            this.bMapBoxObj = {
+              width: document.body.clientWidth / 2,
+              open: this.bMapBoxObj.open,
+              busName: this.tlForm.obj.name,
+              center: this._map ? this._map.center : [12604071, 2640970],
+              zoom: this._map ? this._map.zoom : 16,
+            };
+            this.$nextTick(() => {
+              this.$refs.routeSelect.remoteMethod(row.lineName);
+            });
+            this.setFitZoomAndCenterByTransitRoute();
+          } else {
+            throw new Error("获取线路详情失败");
+          }
+        })
+        .catch((res) => {
+          let obj = new Bean.TransitLine({
+            name: item.name,
+          });
+          this.tlForm.obj = obj;
+        })
+        .finally(() => {
+          this.updateLayer();
+        });
     },
     // 获取线路详情
     handleGetRouteDetail({ value, item }) {
@@ -530,7 +578,9 @@ export default {
           });
           this.tlForm.obj = obj;
         })
-        .finally(() => {});
+        .finally(() => {
+          this.updateLayer();
+        });
     },
     // 根据线路设置地图的缩放和中心点
     setFitZoomAndCenterByTransitRoute(transitRoute) {
@@ -756,7 +806,7 @@ export default {
           };
           this.saveLoading = false;
           this.$message.success(this.$l("保存成功"));
-          this.resetLayer();
+          this.updateLayer();
         })
         .catch((err) => {
           this.saveLoading = false;
@@ -770,12 +820,11 @@ export default {
         this.tlForm.obj.down = oldUp;
       }
     },
-    async handleDeleteTransitRoute(type) {
+    async handleDeleteTransitRoute(index) {
       try {
         await this.$confirm(this.$l("确认删除？"), this.$l("提示"));
-        if (this.tlForm.obj) {
-          this.tlForm.obj[type].discard = true;
-        }
+        this.tlForm.obj.transitRoutes.splice(index, 1);
+        this.updateLayer();
       } catch (error) {}
     },
     // 取消
@@ -785,7 +834,7 @@ export default {
         name: "",
         obj: null,
       };
-      this.resetLayer();
+      this.updateLayer();
     },
     async handleDelete() {
       try {
@@ -800,18 +849,22 @@ export default {
           obj: null,
         };
         this.deleteLoading = false;
-        this.resetLayer();
+        this.updateLayer();
       } catch (error) {
         this.deleteLoading = false;
       }
     },
-    handleCreateDownByUp() {
-      let stops = this.tlForm.obj.up.toJSON().stops.reverse();
-      let params = new Bean.TransitRouteParams();
-      params.stops = stops;
-      params.routeId = `${this.$l("反转：")}${this.tlForm.obj.up.routeId}`;
-      params.discard = false;
-      this.tlForm.obj.down = new Bean.TransitRoute(params);
+    handleCreateDownByUp(index) {
+      const oldRoute = this.tlForm.obj.transitRoutes[index];
+      if (oldRoute) {
+        let stops = oldRoute.toJSON().stops.reverse();
+        let params = new Bean.TransitRouteParams();
+        params.stops = stops;
+        params.routeId = `${this.$l("反转：")}${oldRoute.routeId}`;
+        params.discard = false;
+        this.activeNames.push(String(this.tlForm.obj.transitRoutes.length));
+        this.tlForm.obj.transitRoutes.push(new Bean.TransitRoute(params));
+      }
     },
     async handleCreateDataSource() {
       try {
@@ -872,12 +925,6 @@ export default {
   }
 }
 .setting_box {
-  user-select: none;
-  max-height: calc(100vh - 170px);
-  overflow-y: auto;
-  &::-webkit-scrollbar {
-    display: none;
-  }
   .footer {
     padding-top: 10px;
     text-align: right;
@@ -889,6 +936,30 @@ export default {
     * {
       display: block;
       width: 100%;
+    }
+  }
+
+  .tr_list {
+    background-color: #eef2fd;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    height: calc(100vh - 300px);
+    user-select: none;
+    overflow-y: auto;
+    ::v-deep {
+      .el-collapse-item {
+        padding: 0 10px;
+        border-bottom: 1px solid #ccc;
+      }
+      .el-collapse-item__header {
+        background-color: transparent;
+      }
+      .el-collapse-item__wrap {
+        background-color: transparent;
+      }
+    }
+    &::-webkit-scrollbar {
+      display: none;
     }
   }
 }

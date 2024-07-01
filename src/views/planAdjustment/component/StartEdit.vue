@@ -1,74 +1,80 @@
 <template>
-  <div class="StartEdit">
-    <div class="toolbar">
-      <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd">{{ $l("新增") }}</el-button>
-      <el-button type="danger" plain icon="el-icon-delete" size="mini" @click="handleDelete()">{{ $l("删除") }}</el-button>
-    </div>
-    <el-table v-loading="loading" :data="list" @selection-change="handleSelectionChange" max-height="500">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column :label="$l('类型')" align="center" prop="type" :formatter="typeFormatter" />
-      <el-table-column :label="$l('开始时间')" align="center" prop="beginTime" />
-      <el-table-column :label="$l('结束时间')" align="center" prop="endTime" />
-      <el-table-column :label="$l('发车间隔')" align="center" prop="spacesStr" />
-      <el-table-column :label="$l('车型')" align="center" prop="model" :formatter="modelFormatter" />
-      <el-table-column :label="$l('备注')" align="center" prop="remark" />
-      <el-table-column :label="$l('操作')" fixed="right" min-width="150" align="center" class-name="small-padding fixed-width">
-        <template slot-scope="scope">
-          <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)">{{ $l("修改") }}</el-button>
-          <el-button size="mini" type="text" icon="el-icon-delete" style="color: #f56c6c" @click="handleDelete(scope.row)">{{ $l("删除") }}</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-    <div class="footer">
-      <el-button type="primary" size="small" @click="$emit('change', transitRoute.toJSON())">{{ $l("确定") }}</el-button>
-    </div>
-
-    <!-- 添加或修改对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="550px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px" size="small">
-        <el-form-item :label="$l('运营类型')" prop="type">
-          <el-select v-model="form.type" @change="handleChangeType">
-            <el-option v-for="item in typeOptions" :key="item.value" :label="$l(item.label)" :value="item.value" />
-          </el-select>
-        </el-form-item>
-        <el-form-item :label="$l('')" prop="startDays">
-          <el-checkbox-group v-model="form.startDays">
-            <el-checkbox-button v-for="item in startDaysOptions" :label="item.value" :key="item.value" :disabled="!!item.disabled">{{ item.label }}</el-checkbox-button>
-          </el-checkbox-group>
-        </el-form-item>
-        <el-form-item :label="$l('发班类型')" prop="startType">
-          <el-select v-model="form.startType" @change="handleChangeStartType">
-            <el-option v-for="item in startTypeOptions" :key="item.value" :label="$l(item.label)" :value="item.value" />
-          </el-select>
-        </el-form-item>
-        <el-form-item :label="$l('开始时间')" prop="beginTime">
-          <el-time-picker v-model="form.beginTime" value-format="HH:mm:ss" :placeholder="$l('请选择开始时间')" />
-        </el-form-item>
-        <el-form-item :label="$l('结束时间')" prop="endTime">
-          <el-time-picker v-model="form.endTime" value-format="HH:mm:ss" :placeholder="$l('请选择结束时间')" />
-        </el-form-item>
-        <el-form-item :label="$l('时间间隔')" prop="spacesStr">
-          <el-time-picker v-model="form.spacesStr" value-format="HH:mm:ss" format="HH:mm:ss" />
-        </el-form-item>
-        <el-form-item :label="$l('运营车型')" prop="model">
-          <el-select v-model="form.model">
-            <el-option v-for="item in modelOptions" :key="item.value" :label="$l(item.label)" :value="item.value" />
-          </el-select>
-        </el-form-item>
-        <el-form-item :label="$l('备注')" prop="remark">
-          <el-input v-model="form.remark" type="textarea" :placeholder="$l('请输入内容')"></el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">{{ $l("确定") }}</el-button>
-        <el-button @click="cancel">{{ $l("取消") }}</el-button>
+  <Dialog width="900px" :title="$l('发车信息编辑')" :visible="show" left="center" @close="$emit('close')">
+    <div class="StartEdit">
+      <div class="toolbar">
+        <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd">{{ $l("新增") }}</el-button>
+        <el-button type="danger" plain icon="el-icon-delete" size="mini" @click="handleDelete()">{{ $l("删除") }}</el-button>
       </div>
-    </el-dialog>
-  </div>
+      <el-table v-loading="loading" :data="list" @selection-change="handleSelectionChange" max-height="500">
+        <el-table-column type="selection" width="55" align="center" />
+        <el-table-column :label="$l('类型')" align="center" prop="type" :formatter="typeFormatter" />
+        <el-table-column :label="$l('开始时间')" align="center" prop="beginTime" />
+        <el-table-column :label="$l('结束时间')" align="center" prop="endTime" />
+        <el-table-column :label="$l('发车间隔')" align="center" prop="spacesStr" />
+        <el-table-column :label="$l('车型')" align="center" prop="model" :formatter="modelFormatter" />
+        <el-table-column :label="$l('备注')" align="center" prop="remark" />
+        <el-table-column :label="$l('操作')" fixed="right" min-width="150" align="center" class-name="small-padding fixed-width">
+          <template slot-scope="scope">
+            <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)">{{ $l("修改") }}</el-button>
+            <el-button size="mini" type="text" icon="el-icon-delete" style="color: #f56c6c" @click="handleDelete(scope.row)">{{ $l("删除") }}</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <div class="footer">
+        <el-button type="primary" size="small" @click="$emit('change', transitRoute.toJSON())">{{ $l("确定") }}</el-button>
+      </div>
+
+      <!-- 添加或修改对话框 -->
+      <el-dialog :title="title" :visible.sync="open" width="550px" append-to-body>
+        <el-form ref="form" :model="form" :rules="rules" label-width="80px" size="small">
+          <el-form-item :label="$l('运营类型')" prop="type">
+            <el-select v-model="form.type" @change="handleChangeType">
+              <el-option v-for="item in typeOptions" :key="item.value" :label="$l(item.label)" :value="item.value" />
+            </el-select>
+          </el-form-item>
+          <el-form-item :label="$l('')" prop="startDays">
+            <el-checkbox-group v-model="form.startDays">
+              <el-checkbox-button v-for="item in startDaysOptions" :label="item.value" :key="item.value" :disabled="!!item.disabled">{{ item.label }}</el-checkbox-button>
+            </el-checkbox-group>
+          </el-form-item>
+          <el-form-item :label="$l('发班类型')" prop="startType">
+            <el-select v-model="form.startType" @change="handleChangeStartType">
+              <el-option v-for="item in startTypeOptions" :key="item.value" :label="$l(item.label)" :value="item.value" />
+            </el-select>
+          </el-form-item>
+          <el-form-item :label="$l('开始时间')" prop="beginTime">
+            <el-time-picker v-model="form.beginTime" value-format="HH:mm:ss" :placeholder="$l('请选择开始时间')" />
+          </el-form-item>
+          <el-form-item :label="$l('结束时间')" prop="endTime">
+            <el-time-picker v-model="form.endTime" value-format="HH:mm:ss" :placeholder="$l('请选择结束时间')" />
+          </el-form-item>
+          <el-form-item :label="$l('时间间隔')" prop="spacesStr">
+            <el-time-picker v-model="form.spacesStr" value-format="HH:mm:ss" format="HH:mm:ss" />
+          </el-form-item>
+          <el-form-item :label="$l('运营车型')" prop="model">
+            <el-select v-model="form.model">
+              <el-option v-for="item in modelOptions" :key="item.value" :label="$l(item.label)" :value="item.value" />
+            </el-select>
+          </el-form-item>
+          <el-form-item :label="$l('备注')" prop="remark">
+            <el-input v-model="form.remark" type="textarea" :placeholder="$l('请输入内容')"></el-input>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button type="primary" @click="submitForm">{{ $l("确定") }}</el-button>
+          <el-button @click="cancel">{{ $l("取消") }}</el-button>
+        </div>
+      </el-dialog>
+    </div>
+  </Dialog>
 </template>
 
 <language>
 {
+  "发车信息编辑": {
+    "zh-CN":"发车信息编辑",
+    "en-US":"Departure Info Edit"
+  },
   "新增": {
     "zh-CN":"新增",
     "en-US":"add"
@@ -307,8 +313,19 @@
 <script>
 import * as Bean from "@/utils/Bean";
 
+import { BusLinkLayer } from "../layer/BusLinkLayer";
+import { BusStopLayer } from "../layer/BusStopLayer";
+import { StopsLayer } from "../layer/StopsLayer";
+import { NetworkLayer } from "../layer/NetworkLayer";
+import { NetworkLineLayer } from "../layer/NetworkLineLayer";
+import { BusRouteLinkLayer } from "../layer/BusRouteLinkLayer";
+
 export default {
   props: {
+    show: {
+      type: Boolean,
+      default: false,
+    },
     transitRouteJSON: {
       type: Object,
       default: () => new Bean.TransitRoute().toJSON(),
@@ -383,16 +400,8 @@ export default {
   },
   computed: {
     list() {
-      return this.transitRoute.departureRules;
-    },
-    _linkLayer() {
-      return this.rootVue._EditBusLinkLayer;
-    },
-    _stopLayer() {
-      return this.rootVue._EditBusStopLayer;
-    },
-    _allStopLayer() {
-      return this.rootVue._StopsLayer;
+      [].sort;
+      return this.transitRoute.departureRules.sort((a, b) => (a.beginTime > b.beginTime ? 1 : -1));
     },
     modelOptions() {
       return (
@@ -402,8 +411,27 @@ export default {
         }[this.transitRoute.transportMode] || this.busModelOptions
       );
     },
+    _Map() {
+      return this.rootVue._map;
+    },
   },
   watch: {
+    show: {
+      handler(val) {
+        this.$nextTick(() => {
+          this._interval = setInterval(() => {
+            if (!this._Map) return;
+            clearInterval(this._interval);
+            if (this.show) {
+              this.handleEnable();
+            } else {
+              this.handleDisable();
+            }
+          }, 500);
+        });
+      },
+      immediate: true,
+    },
     page_language: {
       handler(val) {
         this.rules = {
@@ -438,10 +466,33 @@ export default {
     },
   },
   created() {
-    this.transitRoute = new Bean.TransitRoute(this.transitRouteJSON);
-    this.updateLayer();
+    this._linkLayer = new BusLinkLayer({
+      zIndex: 6,
+      color: 0xf56c6c,
+      visible: true,
+    });
+    this._stopLayer = new BusStopLayer({
+      zIndex: 8,
+      color: 0x67c23a,
+      visible: true,
+    });
   },
   methods: {
+    handleEnable() {
+      this.transitRoute = new Bean.TransitRoute(this.transitRouteJSON);
+      if (this._linkLayer) {
+        this._linkLayer.setData(this.transitRoute);
+      }
+      if (this._stopLayer) {
+        this._stopLayer.setData(this.transitRoute);
+      }
+      this._Map.addLayer(this._linkLayer);
+      this._Map.addLayer(this._stopLayer);
+    },
+    handleDisable() {
+      this._Map.removeLayer(this._linkLayer);
+      this._Map.removeLayer(this._stopLayer);
+    },
     typeFormatter(row, column) {
       let item = this.typeOptions.find((v) => v.value == row.type);
       return item ? item.label : "";
@@ -502,14 +553,6 @@ export default {
           this.transitRoute.removeDepartureRule(uuid);
         }
       });
-    },
-    updateLayer() {
-      if (this._linkLayer) {
-        this._linkLayer.setData(this.transitRoute);
-      }
-      if (this._stopLayer) {
-        this._stopLayer.setData(this.transitRoute);
-      }
     },
     handleChangeType(value) {
       let startDaysOptions = [
