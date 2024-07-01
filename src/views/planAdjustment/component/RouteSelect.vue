@@ -73,7 +73,7 @@ export default {
     },
     remoteMethod(query) {
       this.query = query;
-      if (query !== "") {
+      if (query) {
         this.loading = true;
         getByLineName({
           name: query,

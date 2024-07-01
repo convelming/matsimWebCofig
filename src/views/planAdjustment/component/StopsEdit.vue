@@ -331,14 +331,14 @@ export default {
       }
     },
     handleChangeCenter(type) {
-      const startPoint = this.transitRoute.startStop.coord;
-      const endPoint = this.transitRoute.endStop.coord;
-      let list = [startPoint.toList(), endPoint.toList()];
-      const res2 = this._Map.getFitZoomAndCenterPoints(list);
-      this.rootVue.handleCenterAndZoom({
-        center: res2.center,
-        zoom: res2.zoom,
-      });
+      // const startPoint = this.transitRoute.startStop.coord;
+      // const endPoint = this.transitRoute.endStop.coord;
+      // let list = [startPoint.toList(), endPoint.toList()];
+      // const res2 = this._Map.getFitZoomAndCenter(list);
+      // this.rootVue.handleCenterAndZoom({
+      //   center: res2.center,
+      //   zoom: res2.zoom,
+      // });
     },
     handleCloseSelectLink() {
       if (this._networkLayer) {

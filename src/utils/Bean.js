@@ -150,7 +150,6 @@ export class TransitRoute {
       if (i != 0) {
         const key = `${prevStop.uuid}-${stop.uuid}`;
         const item = this._routeMap[key];
-        // console.log(`${prevStop.name}-${stop.name}`, item, item ? item.label : "");
         if (item) {
           if (item.route.length == 0) {
             list.push(item.endStop.linkId);
@@ -322,7 +321,8 @@ export class DepartureRuleParams {
   beginTime = "06:00:00";
   endTime = "22:00:00";
   spaces = 0;
-  model = "大型(9<L≤12)";
+  model = "";
+  modelJson = JSON.stringify({ model: "", length: 0, width: 0, total: 0, seat: 0, coach: 0 });
   remark = "";
   startDays = "";
   startType = "morning_valley";
@@ -344,7 +344,14 @@ export class DepartureRule {
     this.endTime = opt.endTime;
     // this.spaces = opt.spaces;
     this.spacesStr = moment.unix(YEAR_TIME + opt.spaces).format("HH:mm:ss");
-    this.model = opt.model;
+    try {
+      const modelJson = JSON.parse(opt.model);
+      this.model = modelJson.model;
+      this.modelJson = modelJson;
+    } catch (error) {
+      this.model = "";
+      this.modelJson = { model: "", length: 0, width: 0, total: 0, seat: 0, coach: 0 };
+    }
     this.remark = opt.remark;
 
     this.startDays = opt.startDays.split(",");
@@ -352,13 +359,15 @@ export class DepartureRule {
     this.uuid = opt.uuid;
   }
   toJSON() {
+    this.modelJson.model = this.model;
+    const modelJson = JSON.stringify(this.modelJson);
     return {
       id: this.id,
       type: this.type,
       beginTime: this.beginTime,
       endTime: this.endTime,
       spaces: moment("2000-01-01 " + this.spacesStr).unix() - YEAR_TIME,
-      model: this.model,
+      model: modelJson,
       remark: this.remark,
 
       startDays: this.startDays.join(","),

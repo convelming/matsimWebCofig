@@ -16,7 +16,7 @@ export class Activity3DLayer extends Layer {
   time = 0;
   maxNum = 1000;
 
-  texture = new THREE.TextureLoader().load(require("@/assets/image/point.png"));
+  texture = new THREE.TextureLoader().load(require("@/assets/image/point2.png"));
 
 
   constructor(opt) {

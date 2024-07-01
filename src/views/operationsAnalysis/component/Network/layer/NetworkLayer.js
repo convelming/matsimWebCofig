@@ -10,6 +10,7 @@ import { guid } from "@/utils/utils";
 const BUILD_ZOOM = 11;
 
 export class NetworkLayer extends Layer {
+  _noLoadTileList = [];
   colors = ColorBar2D.defaultColors;
   lineWidth = 6;
   lineOffset = 0;
@@ -135,9 +136,21 @@ export class NetworkLayer extends Layer {
     this.loadMesh();
   }
 
-  handleLoading(flag) {
-    this.loadingNum += flag;
-    this.handleEventListener(MAP_EVENT.LAYER_LOADING, this.loadingNum > 0);
+  handleLoadTile(tile) {
+    if (this.loadingNum < 20) {
+      this.loadingNum++;
+      this.handleEventListener(MAP_EVENT.LAYER_LOADING, this.loadingNum > 0);
+      tile.load(this).then(() => {
+        this.loadingNum--;
+        this.handleEventListener(MAP_EVENT.LAYER_LOADING, this.loadingNum > 0);
+        if (this._noLoadTileList.length > 0) {
+          const _tile = this._noLoadTileList.shift();
+          this.handleLoadTile(_tile);
+        }
+      });
+    } else {
+      this._noLoadTileList.push(tile);
+    }
   }
 
   async loadMesh() {
@@ -179,11 +192,7 @@ export class NetworkLayer extends Layer {
             pickLayerColor: this.pickLayerColor,
           });
           this.tileMap[key] = tile;
-        }
-        if (tile.loadStatus == 1) {
-          // noLoadTileList.push(tile);
-          this.handleLoading(1);
-          tile.load(this).then(() => this.handleLoading(-1));
+          this.handleLoadTile(tile);
         }
         const [x, y] = this.map.WebMercatorToCanvasXY(tile.x, tile.y);
         tile.baseScene.position.set(x, y, 0);
@@ -197,10 +206,6 @@ export class NetworkLayer extends Layer {
       }
     }
 
-    // while (noLoadTileList.length > 0) {
-    //   const list = noLoadTileList.splice(0, 30);
-    //   await Promise.all(list.map((v) => v.load(() => ++this.pickColorNum)));
-    // }
     if (this.selectLine.show) {
       const { line, tile, mesh } = this.selectLine;
       const [x, y] = this.map.WebMercatorToCanvasXY(tile.x, tile.y);
@@ -388,7 +393,6 @@ export class NetworkTile {
       this._loadStatus = 2;
     } catch (error) {
       this._loadStatus = 3;
-      console.log("networktile:error", error);
     }
     return this;
   }

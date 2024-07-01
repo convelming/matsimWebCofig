@@ -9,6 +9,7 @@ import { getTileFacilities } from "@/api/index";
 const BUILD_ZOOM = 11;
 
 export class Build3DLayer extends Layer {
+  _noLoadTileList = [];
   name = "Build3DLayer";
   buildColor = "#ff4500";
   buildOpacity = 0.8;
@@ -82,6 +83,7 @@ export class Build3DLayer extends Layer {
     this.loadMesh();
   }
 
+
   render() {
     super.render();
   }
@@ -98,9 +100,21 @@ export class Build3DLayer extends Layer {
     this.material.needsUpdate = true;
   }
 
-  handleLoading(flag) {
-    this.loadingNum += flag;
-    this.handleEventListener(MAP_EVENT.LAYER_LOADING, this.loadingNum > 0);
+  handleLoadTile(tile) {
+    if (this.loadingNum < 20) {
+      this.loadingNum++;
+      this.handleEventListener(MAP_EVENT.LAYER_LOADING, this.loadingNum > 0);
+      tile.load(this).then(() => {
+        this.loadingNum--;
+        this.handleEventListener(MAP_EVENT.LAYER_LOADING, this.loadingNum > 0);
+        if (this._noLoadTileList.length > 0) {
+          const _tile = this._noLoadTileList.shift();
+          this.handleLoadTile(_tile);
+        }
+      });
+    } else {
+      this._noLoadTileList.push(tile);
+    }
   }
 
   async loadMesh() {
@@ -136,10 +150,7 @@ export class Build3DLayer extends Layer {
         if (!tile) {
           tile = new BuildTile(i, j, this.material, this.pickLayerMeterial, this.pickBuildMeterial);
           this.tileMap[key] = tile;
-        }
-        if (tile.loadStatus == 1) {
-          this.handleLoading(1);
-          tile.load(this).then(() => this.handleLoading(-1));
+          this.handleLoadTile(tile);
         }
         const [x, y] = this.map.WebMercatorToCanvasXY(tile.x, tile.y);
 

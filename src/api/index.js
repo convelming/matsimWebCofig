@@ -511,3 +511,15 @@ export function changeLines(params) {
     method: "get",
   });
 }
+
+// 获取默认中心点和zoomlevel
+// GET /pt/network/getCenterZoom
+// 接口ID：184069048
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-184069048
+export function getCenterZoom(params) {
+  return request({
+    url: `/pt/network/getCenterZoom`,
+    params: params,
+    method: "get",
+  });
+}

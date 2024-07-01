@@ -51,19 +51,39 @@
           <el-form-item :label="$l('时间间隔')" prop="spacesStr">
             <el-time-picker v-model="form.spacesStr" value-format="HH:mm:ss" format="HH:mm:ss" />
           </el-form-item>
+
           <el-form-item :label="$l('运营车型')" prop="model">
-            <el-select v-model="form.model">
+            <el-select v-model="form.model" @change="handleChangeModel">
               <el-option v-for="item in modelOptions" :key="item.value" :label="$l(item.label)" :value="item.value" />
             </el-select>
           </el-form-item>
+          <template v-show="form.model">
+            <el-form-item :label="$l('车辆长度')" prop="modelJson.length">
+              <el-input-number v-model="form.modelJson.length" :min="0" :step="0.01" step-strictly> </el-input-number>
+            </el-form-item>
+            <el-form-item :label="$l('车辆宽度')" prop="modelJson.width">
+              <el-input-number v-model="form.modelJson.width" :min="0" :step="0.01" step-strictly> </el-input-number>
+            </el-form-item>
+            <el-form-item :label="$l('总定员')" prop="modelJson.total">
+              <el-input-number v-model="form.modelJson.total" :min="0" :step="0.01" step-strictly> </el-input-number>
+            </el-form-item>
+            <el-form-item :label="$l('座席')" prop="modelJson.seat">
+              <el-input-number v-model="form.modelJson.seat" :min="0" :step="0.01" step-strictly> </el-input-number>
+            </el-form-item>
+            <el-form-item v-if="this.transitRoute.transportMode == 'subway' || this.transitRoute.transportMode == 'tram'" :label="$l('车厢数量')" prop="modelJson.coach">
+              <el-input-number v-model="form.modelJson.coach" :min="0" :step="0.01" step-strictly> </el-input-number>
+            </el-form-item>
+          </template>
+
           <el-form-item :label="$l('备注')" prop="remark">
             <el-input v-model="form.remark" type="textarea" :placeholder="$l('请输入内容')"></el-input>
           </el-form-item>
+
+          <el-form-item>
+            <el-button type="primary" @click="submitForm">{{ $l("确定") }}</el-button>
+            <el-button @click="cancel">{{ $l("取消") }}</el-button>
+          </el-form-item>
         </el-form>
-        <div slot="footer" class="dialog-footer">
-          <el-button type="primary" @click="submitForm">{{ $l("确定") }}</el-button>
-          <el-button @click="cancel">{{ $l("取消") }}</el-button>
-        </div>
       </el-dialog>
     </div>
   </Dialog>
@@ -158,6 +178,26 @@
   "运营车型": {
     "zh-CN":"运营车型",
     "en-US":"Vehicle models"
+  },
+  "车厢数量": {
+    "zh-CN":"车厢数量",
+    "en-US":"Number of carriages"
+  },
+  "车辆长度": {
+    "zh-CN":"车辆长度",
+    "en-US":"Vehicle length"
+  },
+  "车辆宽度": {
+    "zh-CN":"车辆宽度",
+    "en-US":"Vehicle width"
+  },
+  "总定员": {
+    "zh-CN":"总定员",
+    "en-US":"Total staffing"
+  },
+  "座席": {
+    "zh-CN":"座席",
+    "en-US":"Seats"
   },
   "备注": {
     "zh-CN":"备注",
@@ -349,7 +389,7 @@ export default {
       // 是否显示弹出层
       open: false,
       // 表单参数
-      form: {},
+      form: new Bean.DepartureRule(),
       // 表单校验
       rules: {},
 
@@ -380,34 +420,49 @@ export default {
         { label: "节假日", value: "holiday" },
         { label: "其它", value: "other" },
       ],
+      // 车辆类型	车辆长度	车辆宽度	总定员	座席
+      // 小型车(4.5≤L≤6)	6.00	2.13	30	11
+      // 中型车(6≤L≤9)	8.49	2.42	55	13
+      // 大型(9<L≤12)	12.00	2.55	78	19
+      // 单层特大型(12<L≤16)	17.98	2.54	130	31
+      // 双层特大型(12≤L≤13.7)	12.00	2.55	112	66
+      // 水上巴士	-	-	100	100
+      // 其它	-	-	-	-
       busModelOptions: [
-        { label: "小型(4.5<L≤6)", value: "小型(4.5<L≤6)" },
-        { label: "中型(6<L≤9)", value: "中型(6<L≤9)" },
-        { label: "大型(9<L≤12)", value: "大型(9<L≤12)" },
-        { label: "单层特大型(12<L≤16)", value: "单层特大型(12<L≤16)" },
-        { label: "双层特大型(12≤L≤13.7)", value: "双层特大型(12≤L≤13.7)" },
-        { label: "水上巴士", value: "水上巴士" },
-        { label: "其它", value: "其它" },
+        { label: "小型(4.5<L≤6)", value: "小型(4.5<L≤6)", json: { model: "小型(4.5<L≤6)", length: 6.0, width: 2.13, total: 30, seat: 11, coach: 1 } },
+        { label: "中型(6<L≤9)", value: "中型(6<L≤9)", json: { model: "小型(4.5<L≤6)", length: 8.49, width: 2.42, total: 55, seat: 13, coach: 1 } },
+        { label: "大型(9<L≤12)", value: "大型(9<L≤12)", json: { model: "大型(9<L≤12)", length: 12.0, width: 2.55, total: 78, seat: 19, coach: 1 } },
+        { label: "单层特大型(12<L≤16)", value: "单层特大型(12<L≤16)", json: { model: "单层特大型(12<L≤16)", length: 17.98, width: 2.54, total: 130, seat: 31, coach: 1 } },
+        { label: "双层特大型(12≤L≤13.7)", value: "双层特大型(12≤L≤13.7)", json: { model: "双层特大型(12≤L≤13.7)", length: 12.0, width: 2.55, total: 112, seat: 66, coach: 1 } },
+        { label: "水上巴士", value: "水上巴士", json: { model: "水上巴士", length: 0, width: 0, total: 100, seat: 100 } },
+        { label: "其它", value: "其它", json: { model: "其它", length: 0, width: 0, total: 0, seat: 0 } },
       ],
+      // 车厢类型	车厢长度	车厢宽度	总定员	座席
+      // A型车	22.8	3.0	310	56
+      // B型车	19.0	2.8	250	46
+      // C型车	19.0	2.6	220	40
+      // D型车	22.8	2.6	238	66
+      // L型车	16.0	2.8	242	32
       subwayModelOptions: [
-        { label: "A型车", value: "A型车" },
-        { label: "B型车", value: "B型车" },
-        { label: "C型车", value: "C型车" },
-        { label: "D型车", value: "D型车" },
-        { label: "L型车", value: "L型车" },
+        { label: "A型车", value: "A型车", json: { model: "A型车", length: 22.8, width: 3.0, total: 310, seat: 56, coach: 1 } },
+        { label: "B型车", value: "B型车", json: { model: "B型车", length: 19.0, width: 2.8, total: 250, seat: 46, coach: 1 } },
+        { label: "C型车", value: "C型车", json: { model: "C型车", length: 19.0, width: 2.6, total: 220, seat: 40, coach: 1 } },
+        { label: "D型车", value: "D型车", json: { model: "D型车", length: 22.8, width: 2.6, total: 238, seat: 66, coach: 1 } },
+        { label: "L型车", value: "L型车", json: { model: "L型车", length: 16.0, width: 2.8, total: 242, seat: 32, coach: 1 } },
       ],
     };
   },
   computed: {
     list() {
-      [].sort;
       return this.transitRoute.departureRules.sort((a, b) => (a.beginTime > b.beginTime ? 1 : -1));
     },
     modelOptions() {
       return (
         {
           bus: this.busModelOptions,
+          ferry: this.busModelOptions,
           subway: this.subwayModelOptions,
+          tram: this.subwayModelOptions,
         }[this.transitRoute.transportMode] || this.busModelOptions
       );
     },
@@ -670,11 +725,29 @@ export default {
           break;
       }
     },
+    handleChangeModel(value) {
+      const item = this.modelOptions.find((v) => v.value == value);
+      console.log(item);
+      if (item) {
+        this.form.modelJson = JSON.parse(JSON.stringify(item.json));
+      }
+    },
   },
 };
 </script>
 
 <style lang="scss" scoped>
+::v-deep {
+  .el-dialog {
+    margin-top: 50px !important;
+  }
+  .el-input-number {
+    width: 220px;
+  }
+  .el-select {
+    width: 220px;
+  }
+}
 .StartEdit {
   .toolbar {
     padding-bottom: 10px;

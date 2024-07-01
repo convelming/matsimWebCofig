@@ -1,6 +1,6 @@
 
 import { Map, MapLayer } from "@/mymap/index.js";
-import { getTimeInterval } from "@/api/index.js";
+import { getTimeInterval, getCenterZoom } from "@/api/index.js";
 
 export default {
   watch: {
@@ -37,6 +37,7 @@ export default {
       speed: 0,
       minTime: 0,
       maxTime: 3600 * 24.5,
+      range: []
     };
   },
   watch: {
@@ -94,15 +95,20 @@ export default {
     this.$store.dispatch("setDataBase", database);
     this.$store.dispatch("setDataSource", database + "/" + datasource);
 
-    // getTimeInterval().then(res => {
-    //   this.minTime = res.data.minTime;
-    //   this.maxTime = res.data.maxTime;
-    // });
   },
   mounted() {
-    this.initLayer();
-    this.initMap();
-    this.handleChangeMapCameraControls();
+    Promise.all([
+      getTimeInterval(),
+      getCenterZoom()
+    ]).then(([timeRes, rangeRes]) => {
+      // this.minTime = timeRes.data.minTime;
+      // this.maxTime = timeRes.data.maxTime;
+      this.range = rangeRes.data.range.map(v => [v.x, v.y]);
+
+      this.initLayer();
+      this.initMap();
+      this.handleChangeMapCameraControls();
+    })
   },
   beforeDestroy() {
   },
@@ -135,12 +141,10 @@ export default {
         rootId: "mapRoot",
         zoom: 11,
         enableRotate: true,
-        zoom: 16,
-        minPitch: -90,
-        center: [12612545.3950225, 2617157.5169194015],
       });
       this._Map.addLayer(this._MapLayer);
-      window._Map = this._Map;
+
+      console.log(this._Map.setFitZoomAndCenterByPoints(this.range));
     },
     initLayer() {
       this._MapLayer = new MapLayer({ zIndex: -1 });

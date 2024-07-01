@@ -329,7 +329,7 @@ export default {
       const startPoint = this.stopsRouteForm.startStop.coord;
       const endPoint = this.stopsRouteForm.endStop.coord;
       let list = [startPoint.toList(), endPoint.toList()];
-      const res2 = this.rootVue._map.getFitZoomAndCenterPoints(list);
+      const res2 = this.rootVue._map.getFitZoomAndCenter(list);
       this.rootVue.handleCenterAndZoom({
         center: res2.center,
         zoom: res2.zoom,

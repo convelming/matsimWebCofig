@@ -678,8 +678,20 @@ export class Map extends EventListener {
     }
   }
 
+  // 根据WebMercator坐标数组设置最佳缩放层级和中心点
+  setFitZoomAndCenterByPoints(list) {
+    const { height, center, zoom } = this.getFitZoomAndCenter(list);
+    this.setCenter(center);
+    this.setZoom(zoom);
+    return {
+      height,
+      center,
+      zoom,
+    }
+  }
+
   // 获取最佳缩放层级和中心点
-  getFitZoomAndCenterPoints(list) {
+  getFitZoomAndCenter(list) {
     if (list.length == 0) {
       return {
         height: this.cameraHeight,

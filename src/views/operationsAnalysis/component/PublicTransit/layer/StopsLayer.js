@@ -33,7 +33,7 @@ export class StopsLayer extends Layer {
   frameOpacity = 0.5;
   frameStartPoint = [0, 0];
   frameEndPoint = [0, 0];
-  texture = new THREE.TextureLoader().load(require("@/assets/image/point.png"));
+  texture = new THREE.TextureLoader().load(require("@/assets/image/point2.png"));
   texture2 = new THREE.TextureLoader().load(require("@/assets/image/bus_icon.png"));
   texture3D = new THREE.TextureLoader().load(require("@/assets/image/公交站牌.png"));
 
