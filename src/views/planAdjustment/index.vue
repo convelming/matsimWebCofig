@@ -481,6 +481,7 @@ export default {
           });
 
           this.updateLayer();
+          this.getChangedList();
         }
       } catch (error) {
         this.tlForm = {
@@ -489,6 +490,7 @@ export default {
           obj: null,
         };
         this.updateLayer();
+        this.getChangedList();
       }
     },
     updateLayer() {
@@ -832,6 +834,7 @@ export default {
                   this.saveLoading = false;
                   this.$message.success(this.$l("保存成功"));
                   this.updateLayer();
+                  this.getChangedList();
                 })
                 .catch((err) => {
                   this.saveLoading = false;
@@ -850,6 +853,7 @@ export default {
                     this.saveLoading = false;
                     this.$message.success(this.$l("保存成功"));
                     this.updateLayer();
+                    this.getChangedList();
                   })
                   .catch((err) => {
                     this.saveLoading = false;
@@ -859,7 +863,22 @@ export default {
               }
             });
         } else {
-          this.saveLoading = false;
+          let params = this.tlForm.obj.toJSON();
+          saveByLine(params)
+            .then((res) => {
+              this.tlForm = {
+                id: "",
+                name: "",
+                obj: null,
+              };
+              this.saveLoading = false;
+              this.$message.success(this.$l("保存成功"));
+              this.updateLayer();
+              this.getChangedList();
+            })
+            .catch((err) => {
+              this.saveLoading = false;
+            });
         }
       });
     },
@@ -871,6 +890,7 @@ export default {
         obj: null,
       };
       this.updateLayer();
+      this.getChangedList();
     },
     // 删除编辑公交路线
     async handleDelete() {
@@ -887,6 +907,7 @@ export default {
         };
         this.deleteLoading = false;
         this.updateLayer();
+        this.getChangedList();
       } catch (error) {
         this.deleteLoading = false;
       }
