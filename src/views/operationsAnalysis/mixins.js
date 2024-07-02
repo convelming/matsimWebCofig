@@ -1,6 +1,7 @@
 
 import { Map, MapLayer } from "@/mymap/index.js";
 import { getTimeInterval, getCenterZoom } from "@/api/index.js";
+import { guid } from "@/utils/index.js";
 
 export default {
   watch: {
@@ -32,7 +33,6 @@ export default {
 
       showHelpDialog: false,
 
-      timePlay: true,
       time: 0,
       speed: 0,
       minTime: 0,
@@ -48,13 +48,11 @@ export default {
       this.handleChangeMapCameraControls();
     },
     showLayerMotorizedTravel(val) {
-      // if (val) {
-      //   this.timePlay = true;
-      //   this.speed = 5;
-      // } else {
-      //   this.timePlay = false;
-      //   this.speed = 0;
-      // }
+      if (val) {
+        this.speed = 10;
+      } else {
+        this.speed = 0;
+      }
       this.handleChangeMapCameraControls();
     },
     lock2DMotorizedTravel(val) {
@@ -152,15 +150,8 @@ export default {
     handleShowStopAndRoute(selectStopIds) {
       if (this.$refs.Toolbar) {
         this.$refs.Toolbar.add("StopAndRoute", {
+          uuid: guid,
           ids: selectStopIds,
-        });
-        this.showStopToolbar = true;
-      }
-    },
-    handleShowStopDetailByStopId(stopId) {
-      if (this.$refs.Toolbar) {
-        this.$refs.Toolbar.add("StopDetail", {
-          stopId: stopId,
         });
         this.showStopToolbar = true;
       }
@@ -168,6 +159,7 @@ export default {
     handleShowStopDetailByStopData(stopData) {
       if (this.$refs.Toolbar) {
         this.$refs.Toolbar.add("StopDetail", {
+          uuid: stopData.id,
           stopData: stopData,
         });
         this.showStopToolbar = true;
@@ -176,6 +168,7 @@ export default {
     handleShowRouteDetail(routeId) {
       if (this.$refs.Toolbar) {
         this.$refs.Toolbar.add("RouteDetail", {
+          uuid: routeId,
           routeId: routeId,
         });
         this.showStopToolbar = true;
@@ -184,6 +177,7 @@ export default {
     handleShowRouteDepartures(routeId) {
       if (this.$refs.Toolbar) {
         this.$refs.Toolbar.add("RouteDepartures", {
+          uuid: routeId,
           routeId: routeId,
         });
         this.showStopToolbar = true;

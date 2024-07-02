@@ -62,6 +62,25 @@ export function saveByLine(data) {
   });
 }
 
+// 保存到新方案
+// POST /pt/transitLine/saveNewScheme
+// 接口ID：189536968
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-189536968
+export function saveNewScheme(data) {
+  return request({
+    url: `/pt/transitLine/saveNewScheme`,
+    method: "post",
+    data: data,
+  });
+}
+
+export function lineIsRun() {
+  return request({
+    url: `/pt/transitLine/isRun`,
+    method: "get"
+  });
+}
+
 // 计算路线是否连贯
 // POST /pt/transitLine/calcRouteAccessible
 // 接口ID：132148176
@@ -523,3 +542,64 @@ export function getCenterZoom(params) {
     method: "get",
   });
 }
+
+// 模糊查询站点
+// GET /pt/transitLine/getStopByName
+// 接口ID：181205374
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-181205374
+export function getStopByName(params) {
+  return request({
+    url: `/pt/transitLine/getStopByName`,
+    params: params,
+    method: "get",
+  });
+}
+
+// 模糊查询线路
+// GET /pt/transitLine/getRouteByName
+// 接口ID：181205401
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-181205401
+export function getRouteByName(params) {
+  return request({
+    url: `/pt/transitLine/getRouteByName`,
+    params: params,
+    method: "get",
+  });
+}
+
+// 模糊查询node
+// GET /pt/link/getNodeByName
+// 接口ID：182087438
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-182087438
+export function getNodeByName(params) {
+  return request({
+    url: `/pt/link/getNodeByName`,
+    params: params,
+    method: "get",
+  });
+}
+
+// 模糊查询link
+// GET /pt/link/getLinkByName
+// 接口ID：182087458
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-182087458
+export function getLinkByName(params) {
+  return request({
+    url: `/pt/link/getLinkByName`,
+    params: params,
+    method: "get",
+  });
+}
+
+// 模糊查询建筑
+// GET /pt/af/getFacilitiesByName
+// 接口ID：182104885
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-182104885
+export function getFacilitiesByName(params) {
+  return request({
+    url: `/pt/af/getFacilitiesByName`,
+    params: params,
+    method: "get",
+  });
+}
+

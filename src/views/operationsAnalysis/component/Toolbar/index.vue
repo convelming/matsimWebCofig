@@ -10,47 +10,30 @@
       </div>
     </div>
     <div class="toolbar-bodyer" v-show="activeModel === PublicTransit.name">
-      <!-- <div class="toolbar-search">
-        <el-select v-model="" value-key="" placeholder="" clearable filterable @change=""> </el-select>
-      </div> -->
+      <SreachStopRoute />
       <el-collapse class="toolbar-collapse" v-model="PublicTransit.activeName" accordion>
-        <!-- <el-collapse class="toolbar-collapse" :value="PublicTransit.activeName" @input="handleChangeActive" accordion> -->
         <component v-for="item in PublicTransit.list" :show="item.name == PublicTransit.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" />
       </el-collapse>
     </div>
     <div class="toolbar-bodyer" v-show="activeModel === MotorizedTravel.name">
-      <!-- <div class="toolbar-search">
-        <el-select v-model="" value-key="" placeholder="" clearable filterable @change=""> </el-select>
-      </div> -->
       <el-collapse class="toolbar-collapse" v-model="MotorizedTravel.activeName" accordion>
-        <!-- <el-collapse class="toolbar-collapse" :value="MotorizedTravel.activeName" @input="handleChangeActive" accordion> -->
         <component v-for="item in MotorizedTravel.list" :show="item.name == MotorizedTravel.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" />
       </el-collapse>
     </div>
     <div class="toolbar-bodyer" v-show="activeModel === Build3D.name">
-      <!-- <div class="toolbar-search">
-        <el-select v-model="" value-key="" placeholder="" clearable filterable @change=""> </el-select>
-      </div> -->
+      <SreachBuild />
       <el-collapse class="toolbar-collapse" v-model="Build3D.activeName" accordion>
-        <!-- <el-collapse class="toolbar-collapse" :value="Build3D.activeName" @input="handleChangeActive" accordion> -->
         <component v-for="item in Build3D.list" :show="item.name == Build3D.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" />
       </el-collapse>
     </div>
     <div class="toolbar-bodyer" v-show="activeModel === Network.name">
-      <!-- <div class="toolbar-search">
-        <el-select v-model="" value-key="" placeholder="" clearable filterable @change=""> </el-select>
-      </div> -->
+      <SreachLineNode />
       <el-collapse class="toolbar-collapse" v-model="Network.activeName" accordion>
-        <!-- <el-collapse class="toolbar-collapse" :value="Network.activeName" @input="handleChangeActive" accordion> -->
         <component v-for="item in Network.list" :show="item.name == Network.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" />
       </el-collapse>
     </div>
     <div class="toolbar-bodyer" v-show="activeModel === Activity3D.name">
-      <!-- <div class="toolbar-search">
-        <el-select v-model="" value-key="" placeholder="" clearable filterable @change=""> </el-select>
-      </div> -->
       <el-collapse class="toolbar-collapse" v-model="Activity3D.activeName" accordion>
-        <!-- <el-collapse class="toolbar-collapse" :value="Activity3D.activeName" @input="handleChangeActive" accordion> -->
         <component v-for="item in Activity3D.list" :show="item.name == Activity3D.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" />
       </el-collapse>
     </div>
@@ -89,6 +72,7 @@
 <script>
 import { guid } from "@/utils/utils";
 // 3D建筑
+import SreachBuild from "../Build3D/toolbar/sreachBuild.vue";
 import BuildDetail from "../Build3D/toolbar/buildDetail.vue";
 import SelectBuildAnalysis from "../Build3D/toolbar/selectBuildAnalysis.vue";
 // 机动化出行
@@ -96,11 +80,13 @@ import CarDetail from "../MotorizedTravel/toolbar/carDetail.vue";
 import BusDetail from "../MotorizedTravel/toolbar/busDetail.vue";
 import SubwayDetail from "../MotorizedTravel/toolbar/subwayDetail.vue";
 // 公共交通
+import SreachStopRoute from "../PublicTransit/toolbar/sreachStopRoute.vue";
 import RouteDetail from "../PublicTransit/toolbar/routeDetail.vue";
 import StopAndRoute from "../PublicTransit/toolbar/stopAndRoute.vue";
 import StopDetail from "../PublicTransit/toolbar/stopDetail.vue";
 import RouteDepartures from "../PublicTransit/toolbar/routeDepartures.vue";
 // 路网
+import SreachLineNode from "../Network/toolbar/sreachLineNode.vue";
 import LineDetail from "../Network/toolbar/lineDetail.vue";
 import NodeDetail from "../Network/toolbar/nodeDetail.vue";
 import SelectLinkAnalysis from "../Network/toolbar/selectLinkAnalysis.vue";
@@ -108,18 +94,25 @@ import SelectLinkAnalysis from "../Network/toolbar/selectLinkAnalysis.vue";
 import ActivityDetail from "../Activity3D/toolbar/ActivityDetail.vue";
 export default {
   components: {
+    SreachBuild,
     BuildDetail,
     SelectBuildAnalysis,
+
     CarDetail,
     BusDetail,
     SubwayDetail,
+
+    SreachStopRoute,
     RouteDetail,
     StopAndRoute,
     StopDetail,
     RouteDepartures,
+
+    SreachLineNode,
     LineDetail,
     NodeDetail,
     SelectLinkAnalysis,
+
     ActivityDetail,
   },
   inject: ["rootVue"],
@@ -204,20 +197,23 @@ export default {
       let activeName = "";
       let list = obj.list;
       switch (type) {
-        case "ActivityDetail":
-        case "SelectLinkAnalysis":
-        case "SelectBuildAnalysis":
-        case "BusDetail":
-        case "CarDetail":
-        case "SubwayDetail":
         case "BuildDetail":
+        case "SelectBuildAnalysis":
+
+        case "CarDetail":
+        case "BusDetail":
+        case "SubwayDetail":
+
+        case "RouteDetail":
+        case "StopDetail":
+
         case "LineDetail":
-        case "NodeDetail": {
-          const index = list.findIndex((v) => v.name == activeName);
-          if (index > -1) {
-            const item = list[index];
-            list.splice(index, 1);
-            list.unshift(item);
+        case "NodeDetail":
+        case "SelectLinkAnalysis":
+
+        case "ActivityDetail": {
+          const item = list.find((v) => v.data.uuid == data.uuid);
+          if (item && data.uuid) {
             activeName = item.name;
             break;
           }

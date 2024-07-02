@@ -195,9 +195,9 @@
     "zh-CN":"保存成功",
     "en-US":"Save Success"
   },
-  "确认删除？": {
-    "zh-CN":"确认删除？",
-    "en-US":"Confirm delete?"
+  "是否删除：": {
+    "zh-CN":"是否删除：",
+    "en-US":"Do you want to delete it:"
   },
   "提示": {
     "zh-CN":"提示",
@@ -248,16 +248,29 @@
     "en-US":"Delete transit route"
   },
   "获取路线详情失败：": {
-    "zh-CN":"获取线路详情失败：",
+    "zh-CN":"获取路线详情失败：",
     "en-US":"Get route details failed:"
+  },
+  "另存为新方案": {
+    "zh-CN":"另存为新方案",
+    "en-US":"Save as New Scheme"
+  },
+  "继续保存": {
+    "zh-CN":"继续保存",
+    "en-US":"Continue saving"
+  },
+  "此方案模型已经运行，由于运行时间比较久，建议另存为新的方案": {
+    "zh-CN":"此方案模型已经运行，由于运行时间比较久，建议另存为新的方案",
+    "en-US":"This solution model has already been running. Due to the long running time, it is recommended to save it as a new solution"
   },
 }
 </language>
 
 <script>
+const moment = require("moment");
 import { Map, MAP_EVENT, MapLayer, MAP_LAYER_STYLE, LocalMapTile } from "@/mymap/index.js";
 
-import { getByLineId, saveByLine, deleteTransitLine, changeLines, getCenterZoom } from "@/api/index";
+import { getByLineId, saveByLine, deleteTransitLine, changeLines, getCenterZoom, lineIsRun, saveNewScheme } from "@/api/index";
 
 import BMapBox from "./component/BMapBox.vue";
 import RouteSelect from "./component/RouteSelect.vue";
@@ -378,7 +391,7 @@ export default {
   },
   async mounted() {
     Promise.all([getCenterZoom()]).then(([rangeRes]) => {
-      this.range = rangeRes.data.range.map(v => [v.x, v.y]);
+      this.range = rangeRes.data.range.map((v) => [v.x, v.y]);
       this.initMap();
       this.revertData();
       this.getChangedList();
@@ -773,7 +786,8 @@ export default {
     },
     async handleDeleteTransitRoute(index) {
       try {
-        await this.$confirm(this.$l("确认删除？"), this.$l("提示"));
+        const item = this.tlForm.obj.transitRoutes[index];
+        await this.$confirm(`${this.$l("是否删除：")}${item.routeId}`, this.$l("提示"));
         this.tlForm.obj.transitRoutes.splice(index, 1);
         this.updateLayer();
       } catch (error) {}
@@ -781,21 +795,73 @@ export default {
     // 保存公交路线编辑结果
     handleSave() {
       this.saveLoading = true;
-      let params = this.tlForm.obj.toJSON();
-      saveByLine(params)
-        .then((res) => {
-          this.tlForm = {
-            id: "",
-            name: "",
-            obj: null,
-          };
+      lineIsRun().then((isRun) => {
+        if (isRun.data) {
+          this.$prompt(this.$l("此方案模型已经运行，由于运行时间比较久，建议另存为新的方案"), "提示", {
+            distinguishCancelAndClose: true,
+            confirmButtonText: this.$l("另存为新方案"),
+            cancelButtonText: this.$l("继续保存"),
+            inputValue: `${this.datasource}_${moment().format("yyyyMMDDHHmmss")}`,
+            inputValidator: (value) => {
+              if (!value) {
+                return this.$l("请输入方案名称");
+              }
+              if (!/^[a-zA-Z0-9_]+$/.test(value)) {
+                return this.$l("方案名称只能使用英文字母，数字和下划线");
+              }
+              if (value.slice(-4).toLowerCase() == "base") {
+                return this.$l("方案名称不能以base结尾");
+              }
+              return true;
+            },
+          })
+            .then((value) => {
+              let params = this.tlForm.obj.toJSON();
+              this.saveLoading = false;
+              saveNewScheme({
+                transitLine: params,
+                key: value.value,
+                detail: "",
+              })
+                .then((res) => {
+                  this.tlForm = {
+                    id: "",
+                    name: "",
+                    obj: null,
+                  };
+                  this.saveLoading = false;
+                  this.$message.success(this.$l("保存成功"));
+                  this.updateLayer();
+                })
+                .catch((err) => {
+                  this.saveLoading = false;
+                });
+            })
+            .catch((error) => {
+              if (error == "cancel") {
+                let params = this.tlForm.obj.toJSON();
+                saveByLine(params)
+                  .then((res) => {
+                    this.tlForm = {
+                      id: "",
+                      name: "",
+                      obj: null,
+                    };
+                    this.saveLoading = false;
+                    this.$message.success(this.$l("保存成功"));
+                    this.updateLayer();
+                  })
+                  .catch((err) => {
+                    this.saveLoading = false;
+                  });
+              } else {
+                this.saveLoading = false;
+              }
+            });
+        } else {
           this.saveLoading = false;
-          this.$message.success(this.$l("保存成功"));
-          this.updateLayer();
-        })
-        .catch((err) => {
-          this.saveLoading = false;
-        });
+        }
+      });
     },
     // 取消编辑公交路线
     handleCancel() {
@@ -809,7 +875,7 @@ export default {
     // 删除编辑公交路线
     async handleDelete() {
       try {
-        await this.$confirm(this.$l("确认删除？"), this.$l("提示"));
+        await this.$confirm(`${this.$l("是否删除：")}${this.tlForm.id}`, this.$l("提示"));
         this.deleteLoading = true;
         await deleteTransitLine({
           lineId: this.tlForm.id,

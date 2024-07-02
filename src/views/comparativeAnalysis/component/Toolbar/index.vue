@@ -14,59 +14,40 @@
     <div class="toolbar-bodyer" v-show="activeModel === LinesAnalysis.name">
       <el-collapse class="toolbar-collapse" v-model="LinesAnalysis.activeName" accordion>
         <LinesChangeInfo name="LinesChangeInfo" />
-        <!-- <el-collapse class="toolbar-collapse" :value="LinesAnalysis.activeName" @input="handleChangeActive" accordion> -->
         <component v-for="item in LinesAnalysis.list" :show="item.name == LinesAnalysis.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" />
       </el-collapse>
     </div>
     <div class="toolbar-bodyer" v-show="activeModel === AnalysisReport.name">
       <el-collapse class="toolbar-collapse" v-model="AnalysisReport.activeName" accordion>
         <ReportToolbar name="ReportToolbar" />
-        <!-- <el-collapse class="toolbar-collapse" :value="AnalysisReport.activeName" @input="handleChangeActive" accordion> -->
         <component v-for="item in AnalysisReport.list" :show="item.name == AnalysisReport.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" />
       </el-collapse>
     </div>
     <div class="toolbar-bodyer" v-show="activeModel === PublicTransit.name">
-      <!-- <div class="toolbar-search">
-        <el-select v-model="" value-key="" placeholder="" clearable filterable @change=""> </el-select>
-      </div> -->
+      <SreachStopRoute />
       <el-collapse class="toolbar-collapse" v-model="PublicTransit.activeName" accordion>
-        <!-- <el-collapse class="toolbar-collapse" :value="PublicTransit.activeName" @input="handleChangeActive" accordion> -->
         <component v-for="item in PublicTransit.list" :show="item.name == PublicTransit.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" />
       </el-collapse>
     </div>
     <div class="toolbar-bodyer" v-show="activeModel === MotorizedTravel.name">
-      <!-- <div class="toolbar-search">
-        <el-select v-model="" value-key="" placeholder="" clearable filterable @change=""> </el-select>
-      </div> -->
       <el-collapse class="toolbar-collapse" v-model="MotorizedTravel.activeName" accordion>
-        <!-- <el-collapse class="toolbar-collapse" :value="MotorizedTravel.activeName" @input="handleChangeActive" accordion> -->
         <component v-for="item in MotorizedTravel.list" :show="item.name == MotorizedTravel.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" />
       </el-collapse>
     </div>
     <div class="toolbar-bodyer" v-show="activeModel === Build3D.name">
-      <!-- <div class="toolbar-search">
-        <el-select v-model="" value-key="" placeholder="" clearable filterable @change=""> </el-select>
-      </div> -->
+      <SreachBuild />
       <el-collapse class="toolbar-collapse" v-model="Build3D.activeName" accordion>
-        <!-- <el-collapse class="toolbar-collapse" :value="Build3D.activeName" @input="handleChangeActive" accordion> -->
         <component v-for="item in Build3D.list" :show="item.name == Build3D.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" />
       </el-collapse>
     </div>
     <div class="toolbar-bodyer" v-show="activeModel === Network.name">
-      <!-- <div class="toolbar-search">
-        <el-select v-model="" value-key="" placeholder="" clearable filterable @change=""> </el-select>
-      </div> -->
+      <SreachLineNode />
       <el-collapse class="toolbar-collapse" v-model="Network.activeName" accordion>
-        <!-- <el-collapse class="toolbar-collapse" :value="Network.activeName" @input="handleChangeActive" accordion> -->
         <component v-for="item in Network.list" :show="item.name == Network.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" />
       </el-collapse>
     </div>
     <div class="toolbar-bodyer" v-show="activeModel === Activity3D.name">
-      <!-- <div class="toolbar-search">
-        <el-select v-model="" value-key="" placeholder="" clearable filterable @change=""> </el-select>
-      </div> -->
       <el-collapse class="toolbar-collapse" v-model="Activity3D.activeName" accordion>
-        <!-- <el-collapse class="toolbar-collapse" :value="Activity3D.activeName" @input="handleChangeActive" accordion> -->
         <component v-for="item in Activity3D.list" :show="item.name == Activity3D.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" />
       </el-collapse>
     </div>
@@ -119,6 +100,7 @@ import LinesChangeInfo from "../LinesAnalysis/toolbar/LinesChangeInfo.vue";
 import RouteFlows from "../LinesAnalysis/toolbar/RouteFlows.vue";
 
 // 3D建筑
+import SreachBuild from "../../../operationsAnalysis/component/Build3D/toolbar/sreachBuild.vue";
 import BuildDetail from "../../../operationsAnalysis/component/Build3D/toolbar/buildDetail.vue";
 import SelectBuildAnalysis from "../../../operationsAnalysis/component/Build3D/toolbar/selectBuildAnalysis.vue";
 // 机动化出行
@@ -126,11 +108,13 @@ import CarDetail from "../../../operationsAnalysis/component/MotorizedTravel/too
 import BusDetail from "../../../operationsAnalysis/component/MotorizedTravel/toolbar/busDetail.vue";
 import SubwayDetail from "../../../operationsAnalysis/component/MotorizedTravel/toolbar/subwayDetail.vue";
 // 公共交通
+import SreachStopRoute from "../../../operationsAnalysis/component/PublicTransit/toolbar/sreachStopRoute.vue";
 import RouteDetail from "../../../operationsAnalysis/component/PublicTransit/toolbar/routeDetail.vue";
 import StopAndRoute from "../../../operationsAnalysis/component/PublicTransit/toolbar/stopAndRoute.vue";
 import StopDetail from "../../../operationsAnalysis/component/PublicTransit/toolbar/stopDetail.vue";
 import RouteDepartures from "../../../operationsAnalysis/component/PublicTransit/toolbar/routeDepartures.vue";
 // 路网
+import SreachLineNode from "../../../operationsAnalysis/component/Network/toolbar/sreachLineNode.vue";
 import LineDetail from "../../../operationsAnalysis/component/Network/toolbar/lineDetail.vue";
 import NodeDetail from "../../../operationsAnalysis/component/Network/toolbar/nodeDetail.vue";
 import SelectLinkAnalysis from "../../../operationsAnalysis/component/Network/toolbar/selectLinkAnalysis.vue";
@@ -143,6 +127,7 @@ export default {
 
     RouteFlows,
 
+    SreachBuild,
     BuildDetail,
     SelectBuildAnalysis,
 
@@ -150,11 +135,13 @@ export default {
     BusDetail,
     SubwayDetail,
 
+    SreachStopRoute,
     RouteDetail,
     StopAndRoute,
     StopDetail,
     RouteDepartures,
 
+    SreachLineNode,
     LineDetail,
     NodeDetail,
     SelectLinkAnalysis,
@@ -223,9 +210,10 @@ export default {
       },
       modelMap: {
         RouteFlows: "LinesAnalysis",
+
         RouteDetail: "PublicTransit",
-        StopAndRoute: "PublicTransit",
         StopDetail: "PublicTransit",
+        StopAndRoute: "PublicTransit",
         RouteDepartures: "PublicTransit",
 
         CarDetail: "MotorizedTravel",
@@ -258,20 +246,23 @@ export default {
       switch (type) {
         case "RouteFlows":
 
-        case "ActivityDetail":
-        case "SelectLinkAnalysis":
-        case "SelectBuildAnalysis":
-        case "BusDetail":
-        case "CarDetail":
-        case "SubwayDetail":
         case "BuildDetail":
+        case "SelectBuildAnalysis":
+
+        case "CarDetail":
+        case "BusDetail":
+        case "SubwayDetail":
+
+        case "RouteDetail":
+        case "StopDetail":
+
         case "LineDetail":
-        case "NodeDetail": {
-          const index = list.findIndex((v) => v.name == activeName);
-          if (index > -1) {
-            const item = list[index];
-            list.splice(index, 1);
-            list.unshift(item);
+        case "NodeDetail":
+        case "SelectLinkAnalysis":
+
+        case "ActivityDetail": {
+          const item = list.find((v) => v.data.uuid == data.uuid);
+          if (item && data.uuid) {
             activeName = item.name;
             break;
           }

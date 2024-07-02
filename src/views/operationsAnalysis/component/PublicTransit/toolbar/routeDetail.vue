@@ -16,7 +16,7 @@
         </div>
         <div class="stops_table">
           <el-table class="small my_tabel" :data="routeDetail.stops" border stripe height="250">
-            <el-table-column :label="$l('Route')" prop="route" show-overflow-tooltip />
+            <!-- <el-table-column :label="$l('Route')" prop="route" show-overflow-tooltip /> -->
             <el-table-column :label="$l('Name')" prop="name" show-overflow-tooltip />
             <el-table-column width="50">
               <el-dropdown slot-scope="{ row }" trigger="click" @command="handleOneStopMenu({ data: row, command: $event })">

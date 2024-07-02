@@ -253,9 +253,9 @@ export default {
           _data.lineWidth = this.width;
           _data.lineOffset = this.offset;
           if (_data.type == "line") {
-            this.rootVue.handleShowLineDetail({ uuid: _data.uuid, lineDetail: _data });
+            this.rootVue.handleShowLineDetail({ uuid: "line" + _data.id, lineDetail: _data });
           } else if (_data.type == "node") {
-            this.rootVue.handleShowNodeDetail({ uuid: _data.uuid, nodeDetail: _data });
+            this.rootVue.handleShowNodeDetail({ uuid: "node" + _data.id, nodeDetail: _data });
           }
         });
       } else {
