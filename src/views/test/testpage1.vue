@@ -1,7 +1,6 @@
 <template>
   <div id="map" class="map">
-    <NewClock id="NewClock" class="NewClock" />
-    <img :src="src" class="img" alt="" style="width: 200px" />
+    <NewClock class="NewClock" :time="time" :speed.sync="speed" :minTime="minTime" :maxTime="maxTime" @update:time="handleUpdateTime" @showHelp="handleShowHelp"></NewClock>
   </div>
 </template>
 
@@ -9,6 +8,9 @@
 import { Map, MapLayer } from "@/mymap/index.js";
 import { htmlToImage } from "@/mymap/utils/index";
 import NewClock from "@/components/NewClock/index.vue";
+import { CarMotionLayer } from "./layer/CarMotionLayer2.js";
+import { TestLayer } from "./layer/TestLayer.js";
+import { getCarPathArray } from "@/api/index";
 export default {
   components: {
     NewClock,
@@ -20,39 +22,45 @@ export default {
   },
   data() {
     return {
-      src: "",
+      time: 40600,
+      speed: 1,
+      minTime: 0,
+      maxTime: 3600 * 24.5,
+      range: [],
     };
+  },
+  created() {
+    this.$store.dispatch("setDataBase", "guangzhou");
+    this.$store.dispatch("setDataSource", "guangzhou/Nansha");
   },
   async mounted() {
     this.initMap();
-    const html = `
-      <div class="img" style="width: 200px">
-        <h1>悯农</h1>
-        <p>锄禾日当午，汗滴禾下土</p>
-        <p>锄禾日当午，汗滴禾下土</p>
-        <p>锄禾日当午，汗滴禾下土</p>
-        <p>锄禾日当午，汗滴禾下土</p>
-        <p>锄禾日当午，汗滴禾下土</p>
-        <p>锄禾日当午，汗滴禾下土</p>
-        <p>锄禾日当午，汗滴禾下土</p>
-        <p>锄禾日当午，汗滴禾下土</p>
-        <p>锄禾日当午，汗滴禾下土</p>
-        <p>锄禾日当午，汗滴禾下土</p>
-        <p>谁知盘中餐，粒粒皆辛苦</p>
-      </div>
-    `;
-    console.log(html);
-    // const image = await htmlToImage(html);
-    // this.src = image.url;
   },
   methods: {
+    handleShowHelp() {
+      console.log("handleShowHelp");
+    },
+    handleUpdateTime(value) {
+      this.time = value;
+      this._CarMotionLayer.setTime(this.time);
+    },
     // 初始化地图
-    initMap() {
+    async initMap() {
       this._Map = new Map({
         rootId: "map",
+        center: [12628397, 2655338.7],
       });
       this._Map.cameraControls.enableRotate = true;
-      this._Map.addLayer(new MapLayer({ zIndex: 0 }));
+      this._MapLayer = new MapLayer({ zIndex: 0 });
+      this._Map.addLayer(this._MapLayer);
+      this._CarMotionLayer = new CarMotionLayer({ zIndex: 20 });
+      this._Map.addLayer(this._CarMotionLayer);
+      getCarPathArray(30000).then((res) => {
+        this._CarMotionLayer.setData(res.data);
+      });
+
+      this._TestLayer = new TestLayer({ zIndex: 20 });
+      this._Map.addLayer(this._TestLayer);
     },
   },
 };

@@ -9,6 +9,7 @@ export class ModelPool {
 
   static get instance() {
     if (!ModelPoolInstance) {
+      console.log("new ModelPool");
       ModelPoolInstance = new ModelPool();
     }
     return ModelPoolInstance;
@@ -42,6 +43,8 @@ export class ModelPool {
     Subway: "/models/Subway.gltf",
     Ferry: "/models/Bus.gltf",
   };
+
+  // 默认模型
 
   constructor() {
     const loader = new GLTFLoader();
@@ -89,7 +92,6 @@ export class ModelPool {
     }
   }
 }
-
 
 export class BusMotionPath {
   constructor(opt = []) {
@@ -252,8 +254,8 @@ export class BusMotionPoint {
 export class CarMotionPath {
   constructor(opt = []) {
     this._opt = JSON.parse(JSON.stringify(opt));
-    const startPoint = new BusMotionPoint(opt[0].startPoint);
-    const endPoint = new BusMotionPoint(opt[opt.length - 1].endPoint);
+    const startPoint = new CarMotionPoint(opt[0].startPoint);
+    const endPoint = new CarMotionPoint(opt[opt.length - 1].endPoint);
     const startTime = opt[0].startTime;
     const endTime = opt[opt.length - 1].endTime;
 

@@ -100,6 +100,7 @@ export class BusLinkLayer extends Layer {
   setData(data) {
     try {
       const routelist = data.getRouteLink(data.route);
+      console.log(routelist);
       const center = data.center;
       let lineLength = 0;
       this.data = routelist.map((v) => {
@@ -117,6 +118,7 @@ export class BusLinkLayer extends Layer {
       this.center = center.toList();
       this.update();
     } catch (error) {
+      console.log(error);
       this.data = null;
       this.center = [0, 0];
       this.update();

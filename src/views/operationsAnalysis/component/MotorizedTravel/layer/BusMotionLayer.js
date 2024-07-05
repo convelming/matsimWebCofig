@@ -4,6 +4,21 @@ import { BusMotionPath, BusMotionPoint, ModelPool } from "../utils.js";
 
 import BusMotionLayerWorker from "../worker/BusMotionLayer.worker";
 
+// {
+//   array: [
+//     cx, cy,
+//     公交数据总大小,
+//     公交Index,
+//     班次数据总大小, 班次index, 班次发车时间, ... ,
+//     路径数据总大小, 路径点x, 路径点y
+//   ],
+//   map: [
+//     [班次id,班次id,班次id,班次id...],
+//     [班次id,班次id,班次id,班次id...]
+//   ]
+// }
+
+
 export class BusMotionLayer extends Layer {
   name = "BusMotionLayer";
   time = 0;
@@ -190,6 +205,7 @@ export class BusMotionLayer extends Layer {
       }
       if (!model) {
         model = ModelPool.instance.take(modelName);
+        if (!model) continue;
         this.busGroup.add(model);
       }
       const scale = this.modelSize * 0.005;

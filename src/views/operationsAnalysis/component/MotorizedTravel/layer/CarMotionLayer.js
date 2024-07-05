@@ -82,7 +82,6 @@ export class CarMotionLayer extends Layer {
       console.log(error);
     });
 
-    ModelPool.instance.defaultModel
   }
 
   on(type, data) {
@@ -185,6 +184,7 @@ export class CarMotionLayer extends Layer {
       }
       if (!model) {
         model = ModelPool.instance.take(modelName);
+        if (!model) continue;
         this.carGroup.add(model);
       }
       const scale = this.modelSize * 0.005;

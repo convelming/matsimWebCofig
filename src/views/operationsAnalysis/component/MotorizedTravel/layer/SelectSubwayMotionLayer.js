@@ -80,7 +80,6 @@ export class SelectSubwayMotionLayer extends Layer {
       console.log(error);
     });
 
-    ModelPool.instance.defaultModel
   }
 
   on(type, data) {
@@ -189,6 +188,7 @@ export class SelectSubwayMotionLayer extends Layer {
       }
       if (!model) {
         model = ModelPool.instance.take(modelName);
+        if (!model) continue;
         this.subwayGroup.add(model);
       }
       const scale = this.modelSize * 0.005;

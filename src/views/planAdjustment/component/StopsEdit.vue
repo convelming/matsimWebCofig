@@ -483,10 +483,12 @@ export default {
           }
           let formIndex = this.form.index;
           let stop = new Bean.Stops(this.form.toJSON());
-
+          console.log(stop);
           this.transitRoute.removeStop(this.editIndex);
           this.transitRoute.addStop(stop, formIndex - 1);
           this._transitRouteCopy = this.transitRoute.toJSON();
+          console.log(this.transitRoute.stops);
+          console.log(this.transitRoute.route);
 
           this.handleCancel();
         }

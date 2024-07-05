@@ -144,6 +144,7 @@ export class SelectBusMotionLayer extends Layer {
       }
       if (!model) {
         model = ModelPool.instance.take(modelName);
+        if (!model) continue;
         this.busGroup.add(model);
       }
       const scale = this.modelSize * 0.005;

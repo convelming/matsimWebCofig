@@ -306,6 +306,17 @@ export function getCarPath(data) {
   });
 }
 
+// 查询私家车路线 Copy
+// POST /pt/transitLine/getCarPathArray
+// 接口ID：187556184
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-187556184
+export function getCarPathArray(number) {
+  return request({
+    url: `/pt/transitLine/getCarPathArray?number=${number}`,
+    method: "post",
+  });
+}
+
 export function getTwoWayByRouteId(params) {
   return request({
     url: `/pt/transitLine/getTwoWayByRouteId`,

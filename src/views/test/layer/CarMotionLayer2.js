@@ -1,10 +1,12 @@
 import * as THREE from "three";
 import { Layer, MAP_EVENT } from "@/mymap/index.js";
-import { CarMotionPath, CarMotionPoint, ModelPool } from "../utils.js";
+import { ModelPool } from "./CarMotionLayer2.utils.js";
 
-export class SelectCarMotionLayer extends Layer {
-  name = "SelectCarMotionLayer";
-  time = 0;
+import CarMotionLayerWorker from "./CarMotionLayer2.worker";
+
+export class CarMotionLayer extends Layer {
+  name = "CarMotionLayer";
+  time = 3600 * 8;
   timeSpeed = 60 * 1;
 
   timeObj = new Map();
@@ -13,9 +15,13 @@ export class SelectCarMotionLayer extends Layer {
 
   selectCarId = null;
 
-  maxCarNum = 500;
+  maxCarNum = 50000;
   modelSize = 10;
   lockSelectCar = true;
+
+  canRender = false;
+
+
 
   constructor(opt) {
     super(opt);
@@ -61,18 +67,21 @@ export class SelectCarMotionLayer extends Layer {
 
     this.worker = new CarMotionLayerWorker();
     this.worker.onmessage = (event) => {
-      const { key, data } = event.data;
+      const [key, postTime, callTime] = event.data;
+      const data = event.data.slice(3);
       switch (key) {
-        case "setData":
+        case 1:
+          this.center = [data[0], data[1]];
+          const [x, y] = this.map.WebMercatorToCanvasXY(...this.center);
+          this.carGroup.position.set(x, y, 0);
+          this.pickLayerMesh.position.set(x, y, 0);
+          this.pickMeshMesh.position.set(x, y, 0);
+          this.canRender = true;
+          const array = new Float64Array([2, new Date().getTime(), this.time, this.maxCarNum]);
+          this.worker.postMessage(array, [array.buffer]);
           break;
-        case "render":
+        case 2:
           this.handleRenderCallback(data);
-          break;
-        case "getCarByColor":
-          this.handleGetCarByColorCallback(data);
-          break;
-        case "getCarByUuid":
-          this.handleGetCarByUuidCallback(data);
           break;
       }
     };
@@ -80,6 +89,7 @@ export class SelectCarMotionLayer extends Layer {
       console.log(error);
     });
 
+    ModelPool.instance.default
   }
 
   on(type, data) {
@@ -88,13 +98,16 @@ export class SelectCarMotionLayer extends Layer {
       this.carGroup.position.set(x, y, 0);
       this.pickLayerMesh.position.set(x, y, 0);
       this.pickMeshMesh.position.set(x, y, 0);
+
+      if (this.line) {
+        const [x, y] = this.map.WebMercatorToCanvasXY(...this.line.userData.center);
+        this.line.position.set(x, y, 0);
+      }
     }
 
     if (type == MAP_EVENT.HANDLE_PICK_LEFT && data.layerId == this.id) {
-      this.worker.postMessage({
-        key: "getCarByColor",
-        data: { pickColor: data.pickColor },
-      });
+      const index = data.pickColor;
+      console.log(index - 1);
     }
   }
 
@@ -114,45 +127,22 @@ export class SelectCarMotionLayer extends Layer {
 
   render() {
     super.render();
-    this.worker.postMessage({
-      key: "render",
-      data: {
-        time: this.time,
-        maxCarNum: this.maxCarNum,
-        center: this.center,
-      },
-    });
+    // if (this.canRender) {
+    //   const array = new Float64Array([2, new Date().getTime(), this.time, this.maxCarNum]);
+    //   this.worker.postMessage(array, [array.buffer]);
+    // }
   }
 
   dispose() {
     this.worker.terminate();
   }
 
-  setSelectCarId(uuid) {
-    this.selectCarId = uuid;
-    this.worker.postMessage({
-      key: "getCarByUuid",
-      data: {
-        uuid: this.selectCarId,
-      },
-    });
-  }
 
-  handleGetCarByUuidCallback(data) {
-    if (data) {
-      const { carDetail, path } = data;
-      this._selectCarDetail = carDetail;
-      this._selectCarPath = new CarMotionPath(path);
-    } else {
-      this._selectCarDetail = null;
-      this._selectCarPath = null;
-    }
-  }
-
-  handleRenderCallback({ time, list }) {
+  handleRenderCallback(array) {
+    console.log("handleRenderCallback");
     this.rendering = false;
-
-    const num = Math.max(this.runCarList.length, list.length);
+    const arraySize = 7;
+    const num = Math.max(this.runCarList.length, array.length / arraySize);
     const runCarList = [];
     const attrPoitions = [];
     const attrPickColors = [];
@@ -161,19 +151,15 @@ export class SelectCarMotionLayer extends Layer {
     this.carGroup.remove(this.coneMesh);
     for (let i = 0; i < num; i++) {
       let model = this.runCarList[i];
-      if (list[i] && list[i].carDetail.uuid == this.selectCarId) {
-        const { position, worldPosition } = list[i].runDetail;
-        this.coneMesh.position.set(position[0], position[1], this.modelSize * 7);
+      const data = array.slice(i * arraySize, i * arraySize + arraySize);
+      const id = data[0];
+      // console.log(data[1] + this.center[0], data[2] + this.center[1])
+      if (data[0] == this.selectCarId && data[0] != undefined) {
+        this.coneMesh.position.set(data[1], data[2], this.modelSize * 7);
         const scale = this.modelSize * 0.1;
         this.coneMesh.scale.set(scale, scale, scale);
         this.carGroup.add(this.coneMesh);
-        // if (this.lockSelectCar) {
-        //   const eventId = this.map.addEventListener(MAP_EVENT.LAYER_AFTER_RENDER, () => {
-        //     this.map.setCenter(worldPosition);
-        //     this.map.removeEventListener(MAP_EVENT.LAYER_AFTER_RENDER, eventId);
-        //   });
-        // }
-      } else if (i > this.maxCarNum || !list[i]) {
+      } else if (i > this.maxCarNum || data[0] == undefined) {
         if (model) {
           this.carGroup.remove(model);
           ModelPool.instance.still(modelName, model);
@@ -185,19 +171,20 @@ export class SelectCarMotionLayer extends Layer {
         if (!model) continue;
         this.carGroup.add(model);
       }
+
       const scale = this.modelSize * 0.005;
       model.scale.set(scale, scale, scale);
       runCarList[i] = model;
 
-      const { carDetail, runDetail } = list[i];
-      const { position, rotation } = runDetail;
-      model.position.set(position[0], position[1], this.modelSize);
-      model.rotation.fromArray(rotation);
+      model.position.set(data[1], data[2], this.modelSize);
+
+      const rotationOrderMap = { 1: "XYZ", 2: "YXZ", 3: "ZXY", 4: "ZYX", 5: "YZX", 6: "XZY" };
+      model.rotation.fromArray([data[3], data[4], data[5], rotationOrderMap[data[6]]]);
 
       const attrLength = attrPoitions.length;
-      const pickColor = new THREE.Color(carDetail.pickColor);
-      attrPoitions[attrLength] = position[0];
-      attrPoitions[attrLength + 1] = position[1];
+      const pickColor = new THREE.Color(id + 1);
+      attrPoitions[attrLength] = data[1];
+      attrPoitions[attrLength + 1] = data[2];
       attrPoitions[attrLength + 2] = (this.modelSize * 5) / 4;
       attrPickColors[attrLength] = pickColor.r;
       attrPickColors[attrLength + 1] = pickColor.g;
@@ -213,18 +200,34 @@ export class SelectCarMotionLayer extends Layer {
     this.pickGeometry.computeBoundingSphere();
   }
 
-  handleGetCarByColorCallback(data) {
-    if (data) {
-      this.handleEventListener(MAP_EVENT.HANDLE_PICK_LEFT, data.carDetail);
-    }
-  }
-  
   setData(data) {
-    this.worker.postMessage({ key: "setData", data: data });
+    try {
+      console.time("new Float64Array")
+      this.idList = data.idList;
+      const array = new Float64Array(data.array.length + 2);
+      array.set([1], 0);
+      array.set([new Date().getTime()], 1);
+      array.set(data.array, 2);
+      console.timeEnd("new Float64Array")
+      this.worker.postMessage(array, [array.buffer]);
+    } catch (error) {
+      console.log(error);
+      this.idList = [];
+      const array = new Float64Array([0, 0]);
+      this.worker.postMessage(array, [array.buffer]);
+    }
   }
 
   setTime(time) {
-    this.time = time;
+    if (this._changeTimeout || Math.abs(this.time - time) < 0.001) return;
+    this._changeTimeout = setTimeout(() => {
+      this.time = Number(time.toFixed(4));
+      if (this.canRender) {
+        const array = new Float64Array([2, new Date().getTime(), this.time, this.maxCarNum]);
+        this.worker.postMessage(array, [array.buffer]);
+      }
+      this._changeTimeout = null;
+    }, 1000 / 60);
   }
 
   setModelSize(modelSize) {
