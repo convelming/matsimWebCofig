@@ -47,6 +47,7 @@ class CarMotionWorker {
   render(array) {
     const time = array[0];
     const maxCarNum = array[1];
+    const selectCarIndex = array[2];
 
     const timeKey = Math.ceil(time / this.timeSpeed);
     const _carKeys = this.timeObj.get(timeKey) || [];
@@ -54,7 +55,7 @@ class CarMotionWorker {
     const runCarList = [];
     for (const carKey of _carKeys) {
       const v1 = this.carMap.get(carKey);
-      if (v1 && time >= v1.startTime && time <= v1.endTime) {
+      if (v1 && (runCarList.length < maxCarNum || v1.id == selectCarIndex) && time >= v1.startTime && time <= v1.endTime) {
         const { path, id } = v1;
         const { start, end } = calculatePosition(path, time);
 
@@ -70,7 +71,6 @@ class CarMotionWorker {
         const rotationOrderMap = { "XYZ": 1, "YXZ": 2, "ZXY": 3, "ZYX": 4, "YZX": 5, "XZY": 6 };
         runCarList.push(id, x0, y0, rotation.x, rotation.y, rotation.z, rotationOrderMap[rotation.order]);
       }
-      if (runCarList.length >= maxCarNum) break;
     }
     return new Float64Array(runCarList);
   }
@@ -93,7 +93,6 @@ class CarMotionWorker {
       const startTime = path[0];
       const endTime = path[path.length - 7];
       const carId = Symbol(id);
-      if (id == 564) console.log(path);
       const car = {
         id: id,
 
@@ -124,7 +123,7 @@ onmessage = function (e) {
     switch (key) {
       case 1: {
         //"setData":
-        console.log("setData", new Date().getTime() - postTime);
+        // console.log("car:setData", new Date().getTime() - postTime);
         const workerData = worker.setData(data);
         const array = new Float64Array(workerData.length + 3);
         array.set([key, new Date().getTime(), postTime], 0);
@@ -134,6 +133,7 @@ onmessage = function (e) {
       }
       case 2: {
         //"render":
+        // console.log("car:render", new Date().getTime() - postTime);
         const workerData = worker.render(data);
         const array = new Float64Array(workerData.length + 3);
         array.set([key, new Date().getTime(), postTime], 0);

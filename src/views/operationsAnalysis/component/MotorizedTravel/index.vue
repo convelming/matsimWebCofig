@@ -149,10 +149,10 @@
 
 <script>
 import { MAP_EVENT } from "@/mymap/index.js";
-import { BusMotionLayer } from "./layer/BusMotionLayer";
-import { SubwayMotionLayer } from "./layer/SubwayMotionLayer";
-import { CarMotionLayer } from "./layer/CarMotionLayer";
-import { getBusPath, getCarPath, getSubwayPath } from "@/api/index";
+import { BusMotionLayer } from "./layer/BusMotionLayer2";
+import { SubwayMotionLayer } from "./layer/SubwayMotionLayer2";
+import { CarMotionLayer } from "./layer/CarMotionLayer2";
+import { getBusPath, getBusPathArray, getCarPath, getCarPathArray, getSubwayPath, getSubwayPathArray } from "@/api/index";
 
 export default {
   props: ["name", "showLayer", "lock2D"],
@@ -241,10 +241,10 @@ export default {
       modelSize: this.modelSize,
       event: {
         [MAP_EVENT.HANDLE_PICK_LEFT]: ({ data }) => {
-          this._BusMotionLayer.setSelectBusId(data.uuid);
+          this._BusMotionLayer.setSelectBusId(data);
           this.rootVue.handleShowBusDetail({
-            uuid: data.uuid,
-            busDetail: data,
+            uuid: data,
+            busDetail: { id: data },
           });
         },
       },
@@ -256,10 +256,10 @@ export default {
       modelSize: this.modelSize,
       event: {
         [MAP_EVENT.HANDLE_PICK_LEFT]: ({ data }) => {
-          this._SubwayMotionLayer.setSelectSubwayId(data.uuid);
+          this._SubwayMotionLayer.setSelectSubwayId(data);
           this.rootVue.handleShowSubwayDetail({
-            uuid: data.uuid,
-            subwayDetail: data,
+            uuid: data,
+            subwayDetail: { id: data },
           });
         },
       },
@@ -271,10 +271,10 @@ export default {
       modelSize: this.modelSize,
       event: {
         [MAP_EVENT.HANDLE_PICK_LEFT]: ({ data }) => {
-          this._CarMotionLayer.setSelectCarId(data.uuid);
+          this._CarMotionLayer.setSelectCarId(data);
           this.rootVue.handleShowCarDetail({
-            uuid: data.uuid,
-            carDetail: data,
+            uuid: data,
+            carDetail: { id: data },
           });
         },
       },
@@ -309,21 +309,21 @@ export default {
     },
     async getBusPath() {
       try {
-        const res = await getBusPath();
+        const res = await getBusPathArray();
         this._BusMotionLayer.setData(res.data);
         this._BusDataLoaded = true;
       } catch (error) {}
     },
     async getSubwayPath() {
       try {
-        const res = await getSubwayPath();
+        const res = await getSubwayPathArray();
         this._SubwayMotionLayer.setData(res.data);
         this._SubwayDataLoaded = true;
       } catch (error) {}
     },
     async getCarPath() {
       try {
-        const res = await getCarPath();
+        const res = await getCarPathArray(500);
         this._CarMotionLayer.setData(res.data);
         this._CarDataLoaded = true;
       } catch (error) {}
@@ -337,7 +337,7 @@ export default {
       try {
         if (val) {
           this.rootVue.$on("MotorizedTravel_setSelectedBus", (busDetail) => {
-            this._BusMotionLayer.setSelectBusId(busDetail.uuid);
+            this._BusMotionLayer.setSelectBusId(busDetail.id);
           });
           this._Map.addLayer(this._BusMotionLayer);
         } else {
@@ -350,7 +350,7 @@ export default {
       try {
         if (val) {
           this.rootVue.$on("MotorizedTravel_setSelectedSubway", (subwayDetail) => {
-            this._SubwayMotionLayer.setSelectSubwayId(subwayDetail.uuid);
+            this._SubwayMotionLayer.setSelectSubwayId(subwayDetail.id);
           });
           this._Map.addLayer(this._SubwayMotionLayer);
         } else {
@@ -363,7 +363,7 @@ export default {
       try {
         if (val) {
           this.rootVue.$on("MotorizedTravel_setSelectedCar", (carDetail) => {
-            this._CarMotionLayer.setSelectCarId(carDetail.uuid);
+            this._CarMotionLayer.setSelectCarId(carDetail.id);
           });
           this._Map.addLayer(this._CarMotionLayer);
         } else {

@@ -434,8 +434,8 @@ export default {
         { label: "大型(9<L≤12)", value: "大型(9<L≤12)", json: { model: "大型(9<L≤12)", length: 12.0, width: 2.55, total: 78, seat: 19, coach: 1 } },
         { label: "单层特大型(12<L≤16)", value: "单层特大型(12<L≤16)", json: { model: "单层特大型(12<L≤16)", length: 17.98, width: 2.54, total: 130, seat: 31, coach: 1 } },
         { label: "双层特大型(12≤L≤13.7)", value: "双层特大型(12≤L≤13.7)", json: { model: "双层特大型(12≤L≤13.7)", length: 12.0, width: 2.55, total: 112, seat: 66, coach: 1 } },
-        { label: "水上巴士", value: "水上巴士", json: { model: "水上巴士", length: 0, width: 0, total: 100, seat: 100 } },
-        { label: "其它", value: "其它", json: { model: "其它", length: 0, width: 0, total: 0, seat: 0 } },
+        { label: "水上巴士", value: "水上巴士", json: { model: "水上巴士", length: 0, width: 0, total: 100, seat: 100, coach: 1 } },
+        { label: "其它", value: "其它", json: { model: "其它", length: 0, width: 0, total: 0, seat: 0, coach: 1 } },
       ],
       // 车厢类型	车厢长度	车厢宽度	总定员	座席
       // A型车	22.8	3.0	310	56

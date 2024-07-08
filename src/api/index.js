@@ -286,11 +286,29 @@ export function getBusPath(data) {
   });
 }
 
+// 查询公交路线发车时间
+// POST /pt/transitLine/getBusPathArray
+export function getBusPathArray() {
+  return request({
+    url: `/pt/transitLine/getBusPathArray`,
+    method: "post",
+  });
+}
+
 // 查询地铁路线发车时间
 // POST /pt/transitLine/getSubwayPath
 export function getSubwayPath(data) {
   return request({
     url: `/pt/transitLine/getSubwayPath`,
+    data: data,
+    method: "post",
+  });
+}
+// 查询地铁路线发车时间
+// POST /pt/transitLine/getSubwayPathArray
+export function getSubwayPathArray(data) {
+  return request({
+    url: `/pt/transitLine/getSubwayPathArray`,
     data: data,
     method: "post",
   });
