@@ -175,19 +175,19 @@ export const MAP_LAYER_STYLE = {
       return `http://192.168.60.231:23334/osm/liberty/${this.zoom}/${this.row}/${this.col}.png`;
     }
   },
-  SSTYLE_JYL: class extends MapTile {
-    static max_zoom = 16;
-    // x偏移量
-    _x_offset = -256 * 2.32;
-    // y偏移量
-    _y_offset = 256 * 1.3;
-    static NAME = "极夜蓝";
-    static BACKGROUND = `#0a4173`;
-    get url() {
-      return `http://t0.tianditu.gov.cn/img_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=img&STYLE=ChinaOnlineStreetPurplishBlue&TILEMATRIXSET=w&FORMAT=tiles&TILEMATRIX=${this.zoom}&TILEROW=${this.row}&TILECOL=${this.col}&tk=1ff53318177e78188444436d0201e763`;
-      // return `https://map.geoq.cn/ArcGIS/rest/services/ChinaOnlineStreetPurplishBlue/MapServer/tile/${this.zoom}/${this.col}/${this.row}&tk=1ff53318177e78188444436d0201e763`;
-    }
-  },
+  // SSTYLE_JYL: class extends MapTile {
+  //   static max_zoom = 16;
+  //   // x偏移量
+  //   _x_offset = -256 * 2.32;
+  //   // y偏移量
+  //   _y_offset = 256 * 1.3;
+  //   static NAME = "极夜蓝";
+  //   static BACKGROUND = `#0a4173`;
+  //   get url() {
+  //     return `http://t0.tianditu.gov.cn/img_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=img&STYLE=ChinaOnlineStreetPurplishBlue&TILEMATRIXSET=w&FORMAT=tiles&TILEMATRIX=${this.zoom}&TILEROW=${this.row}&TILECOL=${this.col}&tk=1ff53318177e78188444436d0201e763`;
+  //     // return `https://map.geoq.cn/ArcGIS/rest/services/ChinaOnlineStreetPurplishBlue/MapServer/tile/${this.zoom}/${this.col}/${this.row}&tk=1ff53318177e78188444436d0201e763`;
+  //   }
+  // },
   MAPBOX: class extends MapTile {
     static NAME = "MAPBOX";
     get url() {
@@ -199,8 +199,8 @@ export const MAP_LAYER_STYLE = {
       return `https://api.mapbox.com/styles/v1/convel/ck8frzi262yko1invkvbif5aw/tiles/512/${this.zoom}/${this.row}/${this.col}@2x?access_token=pk.eyJ1IjoiY29udmVsIiwiYSI6ImNsaHB4cXA2MDBicGIzam1zb25zdGtiOHAifQ.UuaTujcOQlxywCJWWZ0SSg`
     }
   },
-  MAPBOX2: class extends MapTile {
-    static NAME = "MAPBOX";
+  SSTYLE_JYL: class extends MapTile {
+    static NAME = "极夜蓝";
     get url() {
       // const token =
       //   "pk.eyJ1IjoiaGR4MTQ3IiwiYSI6ImNsYWdwajMyMDEwejAzb251MTd4aXV3dWUifQ._QFvRrJtFKNJ5cOdmoRzTQ";
@@ -208,7 +208,7 @@ export const MAP_LAYER_STYLE = {
       //   "pk.eyJ1IjoiemFjaHlhbmc4MyIsImEiOiJja211MjRsbm4waXMwMm5wZDE3d3BuZjBuIn0.lcRS0kbOWjzFw-UikwbyHQ";
       // return `https://api.mapbox.com/v4/mapbox.satellite/${this.zoom}/${this.row}/${this.col}.png256?access_token=${token}`;
       // mapbox://styles/dasin/cltigm5bp010s01ptciblgffl
-      return `https://api.mapbox.com/styles/dasin/cltigm5bp010s01ptciblgffl/tiles/512/${this.zoom}/${this.row}/${this.col}@2x?access_token=pk.eyJ1IjoiY29udmVsIiwiYSI6ImNsaHB4cXA2MDBicGIzam1zb25zdGtiOHAifQ.UuaTujcOQlxywCJWWZ0SSg`
+      return `https://api.mapbox.com/styles/v1/dasin/cltigm5bp010s01ptciblgffl/tiles/512/${this.zoom}/${this.row}/${this.col}@2x?access_token=pk.eyJ1IjoiY29udmVsIiwiYSI6ImNsaHB4cXA2MDBicGIzam1zb25zdGtiOHAifQ.UuaTujcOQlxywCJWWZ0SSg`
     }
   },
 };

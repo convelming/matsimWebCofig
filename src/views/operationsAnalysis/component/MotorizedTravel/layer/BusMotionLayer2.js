@@ -93,7 +93,7 @@ export class BusMotionLayer extends Layer {
           this.pickLayerMesh.position.set(x, y, 0);
           this.pickMeshMesh.position.set(x, y, 0);
           this.canRender = true;
-          if (this.canRender) this.postRender();
+          if (this.canRender) this.callWorkerRender();
           break;
         case 2:
           this.handleRenderCallback(data);
@@ -132,10 +132,10 @@ export class BusMotionLayer extends Layer {
 
   render() {
     super.render();
-    // if (this.canRender) this.postRender();
+    // if (this.canRender) this.callWorkerRender();
   }
 
-  postRender() {
+  callWorkerRender() {
     let windowRange = {
       maxX: 0,
       minX: 0,
@@ -253,7 +253,7 @@ export class BusMotionLayer extends Layer {
     if (this._changeTimeout || Math.abs(this.time - time) < 0.001) return;
     this._changeTimeout = setTimeout(() => {
       this.time = Number(time.toFixed(4));
-      if (this.canRender) this.postRender();
+      if (this.canRender) this.callWorkerRender();
       this._changeTimeout = null;
     }, 1000 / 60);
   }
@@ -264,11 +264,11 @@ export class BusMotionLayer extends Layer {
     this.pickLayerMaterial.needsUpdate = true;
     this.pickMeshMaterial.setValues({ size: this.modelSize * 5 });
     this.pickMeshMaterial.needsUpdate = true;
-    if (this.canRender) this.postRender();
+    if (this.canRender) this.callWorkerRender();
   }
 
   setSelectBusId(selectBusId) {
     this.selectBusIndex = this.idList.findIndex(v => v == selectBusId);
-    if (this.canRender) this.postRender();
+    if (this.canRender) this.callWorkerRender();
   }
 }

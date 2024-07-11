@@ -85,6 +85,11 @@ export class GeoJSONLayer extends Layer {
       color: this.polygonColor,
       transparent: true,
     });
+
+    // axios.get("./data/line2.geojson").then((res) => {
+    //   console.log(res.data);
+    //   this.setData(res.data)
+    // });
   }
 
 
@@ -109,6 +114,7 @@ export class GeoJSONLayer extends Layer {
 
   update() {
     this.clearScene();
+    console.log("update", this.map, this.data);
     if (!this.map) return;
     if (!this.data) return;
     const center = [...this.map.center];
@@ -116,12 +122,14 @@ export class GeoJSONLayer extends Layer {
     console.time("loadGeoJson");
     const scene = this.loadGeoJson(this.data, DEFAULT_CRS, center);
     console.timeEnd("loadGeoJson");
+    console.log(scene);
     this.scene.add(scene);
 
   }
 
   loadGeoJson(data, parentCrs, center) {
     if (data.type === "FeatureCollection") {
+      console.log("FeatureCollection");
       const { features, crs, ...other } = data;
       return this.getFeatureCollection(features, crs || parentCrs, center, other);
     } else if (data.type === "Feature") {
@@ -174,7 +182,6 @@ export class GeoJSONLayer extends Layer {
     mesh.userData = { ...other, crs, center };
     return mesh;
   }
-  
   getMultiPoint(coordinates, crs, center, other) {
     const scene = new THREE.Group();
     const _scale = this.pointScale;
@@ -197,6 +204,7 @@ export class GeoJSONLayer extends Layer {
   }
 
   getMultiLineString(coordinates, crs, center, other) {
+    console.log(coordinates, crs, center, other);
     const coordSys = crs.properties.name.match(/EPSG::\d+/)[0].replace("::", ":");
     const geometryList = [];
     for (const pointList of coordinates) {

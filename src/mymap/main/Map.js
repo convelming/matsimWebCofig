@@ -459,6 +459,7 @@ export class Map extends EventListener {
     this.cameraControls.addEventListener("change", (res) => {
       const height = Math.round(this.cameraControls.getDistance());
       const zoom = MAP_ZOOM_RANGE.MAX - Math.LOG2E * Math.log(height / MAP_ZOOM_HEIGHT);
+      console.log(zoom);
       this.scene.fog.near = height * 2;
       this.scene.fog.far = height * 3;
       this.camera.far = height * 3;

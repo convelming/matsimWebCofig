@@ -81,7 +81,7 @@ export class CarMotionLayer extends Layer {
           this.pickLayerMesh.position.set(x, y, 0);
           this.pickMeshMesh.position.set(x, y, 0);
           this.canRender = true;
-          this.postRender();
+          this.callWorkerRender();
           break;
         case 2:
           this.handleRenderCallback(data);
@@ -120,10 +120,10 @@ export class CarMotionLayer extends Layer {
 
   render() {
     super.render();
-    // if (this.canRender) this.postRender();
+    // if (this.canRender) this.callWorkerRender();
   }
 
-  postRender() {
+  callWorkerRender() {
     let windowRange = {
       maxX: 0,
       minX: 0,
@@ -242,7 +242,7 @@ export class CarMotionLayer extends Layer {
     if (this._changeTimeout || Math.abs(this.time - time) < 0.001) return;
     this._changeTimeout = setTimeout(() => {
       this.time = Number(time.toFixed(4));
-      if (this.canRender) this.postRender();
+      if (this.canRender) this.callWorkerRender();
       this._changeTimeout = null;
     }, 1000 / 60);
   }
@@ -253,11 +253,11 @@ export class CarMotionLayer extends Layer {
     this.pickLayerMaterial.needsUpdate = true;
     this.pickMeshMaterial.setValues({ size: this.modelSize * 5 });
     this.pickMeshMaterial.needsUpdate = true;
-    if (this.canRender) this.postRender();
+    if (this.canRender) this.callWorkerRender();
   }
 
   setSelectCarId(selectCarId) {
     this.selectCarIndex = this.idList.findIndex(v => v == selectCarId);
-    this.postRender();
+    this.callWorkerRender();
   }
 }

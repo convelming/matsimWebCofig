@@ -47,12 +47,11 @@ export default {
       this._Map = new Map({
         rootId: "map",
         center: [12628397, 2655338.7],
-        zoom: 11,
+        // zoom: 11,
       });
       this._Map.cameraControls.enableRotate = true;
       this._MapLayer = new MapLayer({ zIndex: 0 });
       this._Map.addLayer(this._MapLayer);
-
     },
   },
 };
