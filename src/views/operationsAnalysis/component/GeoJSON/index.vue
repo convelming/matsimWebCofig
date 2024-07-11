@@ -270,9 +270,6 @@ export default {
 }
 
 .my_collapse_item {
-  .el-collapse-item__title {
-    padding-left: 10px;
-  }
   .file_list {
     padding-bottom: 20px;
     .file_item {

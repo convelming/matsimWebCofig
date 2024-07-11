@@ -735,10 +735,10 @@ export class Map extends EventListener {
     const buttomLeft = this.WindowXYToWebMercator(0, height) || center;
     const buttomRight = this.WindowXYToWebMercator(width, height) || center;
     const topRight = this.WindowXYToWebMercator(width, 0) || center;
-    let maxX = Math.max(topLeft[0], buttomLeft[0], buttomRight[0], topRight[0]);
-    let minX = Math.min(topLeft[0], buttomLeft[0], buttomRight[0], topRight[0]);
-    let maxY = Math.max(topLeft[1], buttomLeft[1], buttomRight[1], topRight[1]);
-    let minY = Math.min(topLeft[1], buttomLeft[1], buttomRight[1], topRight[1]);
+    const maxX = Math.max(topLeft[0], buttomLeft[0], buttomRight[0], topRight[0]);
+    const minX = Math.min(topLeft[0], buttomLeft[0], buttomRight[0], topRight[0]);
+    const maxY = Math.max(topLeft[1], buttomLeft[1], buttomRight[1], topRight[1]);
+    const minY = Math.min(topLeft[1], buttomLeft[1], buttomRight[1], topRight[1]);
     return {
       topLeft: topLeft,
       buttomLeft: buttomLeft,
@@ -748,6 +748,8 @@ export class Map extends EventListener {
       minX: minX,
       maxY: maxY,
       minY: minY,
+      width: Math.abs(maxY - minY),
+      height: Math.abs(maxX - minX),
     };
   }
 

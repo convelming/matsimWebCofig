@@ -18,7 +18,7 @@
       <div class="form_item">
         <div class="form_label">{{ $l("大小：") }}</div>
         <div class="form_value">
-          <el-slider style="padding: 0px calc(2em - 10px)" :disabled="!s_showLayer" v-model="scale" :min="0" :max="20" :step="1" />
+          <el-slider style="padding: 0px calc(2em - 10px)" :disabled="!s_showLayer" v-model="scale" :min="0" :max="3" :step="0.1" />
         </div>
       </div>
       <div class="form_item">
@@ -128,7 +128,7 @@ export default {
         this._Activity3DLayer.setScale(val);
       }
     },
-    maxNum() {
+    maxNum(val) {
       if (this._Activity3DLayer) {
         this._Activity3DLayer.setMaxNum(val);
       }
@@ -195,14 +195,14 @@ export default {
       if (this.loading) return;
       this.loading = true;
       let list = [];
-      if (!this._ActivityLoaded) list.push(this.getAllActivity({ number: 1000000 }));
+      if (!this._ActivityLoaded) list.push(this.getAllActivity());
       Promise.all(list).finally(() => {
         this.loading = false;
       });
     },
     async getAllActivity() {
       try {
-        const res = await getAllActivity();
+        const res = await getAllActivity(1000000);
         this._Activity3DLayer.setData(res.data);
         this._ActivityLoaded = true;
       } catch (error) {}

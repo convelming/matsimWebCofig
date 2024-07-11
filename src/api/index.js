@@ -504,10 +504,9 @@ export function getEndInFacilities(params) {
 // GET /pt/person/getAllActivity
 // 接口ID：158593009
 // 接口地址：https://www.apifox.cn/link/project/3709845/apis/api-158593009
-export function getAllActivity(params) {
+export function getAllActivity(number) {
   return request({
-    url: `/pt/person/getAllActivity`,
-    params: params,
+    url: `/pt/person/getAllActivity?number=${number}`,
     method: "get",
   });
 }

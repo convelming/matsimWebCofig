@@ -72,7 +72,7 @@ class Activity3DMotionWorker {
     }
     return {
       time: time,
-      list: runActivityList,
+      list: runActivityList.sort((a, b) => a.startTime - b.startTime),
       center: this.center,
       maxNum: maxNum,
     };

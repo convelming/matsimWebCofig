@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { Layer, MAP_EVENT } from "@/mymap/index.js";
 
 
-import Activity3DLayerWorker from "../worker/Activity3DLayer.worker";
+import Activity3DLayerWorker from "../worker/Activity3DLayer2.worker";
 
 
 const SIZE = 80;
@@ -97,12 +97,6 @@ export class Activity3DLayer extends Layer {
     }
     if (type == MAP_EVENT.HANDLE_PICK_LEFT && data.layerId == this.id) {
       console.log(data);
-      this.worker.postMessage({
-        key: "getActivityByColor",
-        data: {
-          pickColor: data.pickColor,
-        },
-      });
     }
 
   }
@@ -120,14 +114,14 @@ export class Activity3DLayer extends Layer {
     super.render();
     if (this.rendering) return;
     this.rendering = true;
-    this.worker.postMessage({
-      key: "render",
-      data: {
-        time: this.time,
-        maxNum: this.maxNum,
-        center: this.center,
-      },
-    });
+    // this.worker.postMessage({
+    //   key: "render",
+    //   data: {
+    //     time: this.time,
+    //     maxNum: this.maxNum,
+    //     center: this.center,
+    //   },
+    // });
   }
 
   handleRenderCallback({ time, maxNum, center, list }) {
@@ -156,10 +150,11 @@ export class Activity3DLayer extends Layer {
         const positionV3 = new THREE.Vector3(point[0], point[1], i / maxNum);
         const scaleV3 = new THREE.Vector3(_scale, _scale, _scale);
         const matrix = new THREE.Matrix4();
-        if (time - startTime < 20 && startTime > 30) {
+        if (time - startTime < 20) {
           const s = _scale * ((1 - (time - startTime) / 20) * 2 + 1);
           scaleV3.set(s, s, s);
         }
+
         matrix.compose(positionV3, new THREE.Quaternion(), scaleV3);
 
         this.mesh.setMatrixAt(i, matrix);
@@ -228,7 +223,27 @@ export class Activity3DLayer extends Layer {
   }
 
   setData(data) {
-    this.worker.postMessage({ key: "setData", data: data });
+    console.time("setData")
+    const center = data[0] ? [data[0].x, data[0].y] : [0, 0];
+    const actTypeObj = Array.from(new Set(data.map(v => v.actType))).reduce(function (target, key, index) {
+      target[key] = index;
+      target[index] = key;
+      return target;
+    }, {});
+    const _array = data.map((v, i) => [i, v.coord.x - center[0], v.coord.y - center[1], actTypeObj[v.actType], v.startTime, v.endTime]).flat();
+    const idList = data.map(v => v.personId);
+    console.timeEnd("setData")
+
+    this.center = center;
+    this.idList = idList;
+    this.actTypeObj = actTypeObj;
+
+    const array = new Float64Array(_array.length + 4);
+    array.set([1], 0);
+    array.set([new Date().getTime()], 1);
+    array.set(center, 2);
+    array.set(_array, 4);
+    this.worker.postMessage(array, [array.buffer]);
   }
 
 }

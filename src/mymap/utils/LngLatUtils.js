@@ -4,6 +4,13 @@ proj4.defs("EPSG:4526", "+proj=tmerc +lat_0=0 +lon_0=114 +k=1 +x_0=38500000 +y_0
 
 export const EARTH_RADIUS = 20037508.3427892;
 
+// const EARTH_RADIUS = 20037508.3427892;
+// const row = 1;
+// const col = 1;
+// const x = (row * (EARTH_RADIUS * 2)) / Math.pow(2, zoom) - EARTH_RADIUS;
+// const y = EARTH_RADIUS - ((col * (EARTH_RADIUS * 2)) / Math.pow(2, zoom));
+// console.log(x, y);
+
 /**
  * EPSG:4526转Web墨卡托
  * @param {*} lng 

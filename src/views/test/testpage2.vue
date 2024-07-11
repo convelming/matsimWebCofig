@@ -8,8 +8,7 @@
 import { Map, MapLayer } from "@/mymap/index.js";
 import { htmlToImage } from "@/mymap/utils/index";
 import NewClock from "@/components/NewClock/index.vue";
-import { TestLayer } from "./layer/TestLayer.js";
-import { getCarPathArray, getBusPathArray, getAllActivity } from "@/api/index";
+import { GeoJSONLayer } from "./layer/GeoJSONLayer.js";
 export default {
   components: {
     NewClock,
@@ -53,6 +52,8 @@ export default {
       this._MapLayer = new MapLayer({ zIndex: 0 });
       this._Map.addLayer(this._MapLayer);
 
+      this._GeoJSONLayer = new GeoJSONLayer({ zIndex: 1 });
+      this._Map.addLayer(this._GeoJSONLayer);
     },
   },
 };

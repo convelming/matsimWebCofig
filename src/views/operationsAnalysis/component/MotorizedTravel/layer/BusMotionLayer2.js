@@ -9,7 +9,7 @@ import BusMotionLayerWorker from "../worker/BusMotionLayer2.worker";
 //     cx, cy,
 //     公交数据总大小,
 //     班次数据总大小, 班次index, 班次发车时间, 班次速度, 班次index, 班次发车时间, 班次速度, ... ,
-//     路径数据总大小, 路径长度, 路径点x, 路径点y, 路径点x, 路径点y
+//     路径数据总大小, 路径长度, 路径点x, 路径点y, 距离 , 路径点x, 路径点y, 距离 ...
 //   ],
 //   map: [
 //      班次id,班次id,班次id,班次id...
@@ -93,8 +93,7 @@ export class BusMotionLayer extends Layer {
           this.pickLayerMesh.position.set(x, y, 0);
           this.pickMeshMesh.position.set(x, y, 0);
           this.canRender = true;
-          const array = new Float64Array([2, new Date().getTime(), this.time, this.maxBusNum, this.selectBusIndex]);
-          this.worker.postMessage(array, [array.buffer]);
+          if (this.canRender) this.postRender();
           break;
         case 2:
           this.handleRenderCallback(data);
@@ -133,10 +132,29 @@ export class BusMotionLayer extends Layer {
 
   render() {
     super.render();
-    // if (this.canRender) {
-    //   const array = new Float64Array([2, new Date().getTime(), this.time, this.maxBusNum, this.selectBusIndex]);
-    //   this.worker.postMessage(array, [array.buffer]);
-    // }
+    // if (this.canRender) this.postRender();
+  }
+
+  postRender() {
+    let windowRange = {
+      maxX: 0,
+      minX: 0,
+      maxY: 0,
+      minY: 0,
+      width: 0,
+      height: 0
+    };
+    if (this.map) windowRange = this.map.getWindowRangeAndWebMercator();
+    const list = [2, new Date().getTime()];
+    list.push(this.time);
+    list.push(this.maxBusNum);
+    list.push(this.selectBusIndex);
+    list.push(windowRange.maxX);
+    list.push(windowRange.minX);
+    list.push(windowRange.maxY);
+    list.push(windowRange.minY);
+    const array = new Float64Array(list);
+    this.worker.postMessage(array, [array.buffer]);
   }
 
   dispose() {
@@ -235,10 +253,7 @@ export class BusMotionLayer extends Layer {
     if (this._changeTimeout || Math.abs(this.time - time) < 0.001) return;
     this._changeTimeout = setTimeout(() => {
       this.time = Number(time.toFixed(4));
-      if (this.canRender) {
-        const array = new Float64Array([2, new Date().getTime(), this.time, this.maxBusNum, this.selectBusIndex]);
-        this.worker.postMessage(array, [array.buffer]);
-      }
+      if (this.canRender) this.postRender();
       this._changeTimeout = null;
     }, 1000 / 60);
   }
@@ -249,11 +264,11 @@ export class BusMotionLayer extends Layer {
     this.pickLayerMaterial.needsUpdate = true;
     this.pickMeshMaterial.setValues({ size: this.modelSize * 5 });
     this.pickMeshMaterial.needsUpdate = true;
+    if (this.canRender) this.postRender();
   }
 
   setSelectBusId(selectBusId) {
     this.selectBusIndex = this.idList.findIndex(v => v == selectBusId);
-    const array = new Float64Array([2, new Date().getTime(), this.time, this.maxBusNum, this.selectBusIndex]);
-    this.worker.postMessage(array, [array.buffer]);
+    if (this.canRender) this.postRender();
   }
 }

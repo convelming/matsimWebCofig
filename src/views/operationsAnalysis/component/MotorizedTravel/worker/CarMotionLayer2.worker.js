@@ -48,6 +48,10 @@ class CarMotionWorker {
     const time = array[0];
     const maxCarNum = array[1];
     const selectCarIndex = array[2];
+    const maxX = array[3];
+    const minX = array[4];
+    const maxY = array[5];
+    const minY = array[6];
 
     const timeKey = Math.ceil(time / this.timeSpeed);
     const _carKeys = this.timeObj.get(timeKey) || [];

@@ -61,9 +61,6 @@ function calculatePosition(path, distance) {
     end: [endX, endY],
     isRunning: false
   }
-
-
-
 }
 
 function pointMove(start, end, percentage) {
@@ -82,6 +79,10 @@ class BusMotionWorker {
     const time = array[0];
     const maxBusNum = array[1];
     const selectBusIndex = array[2];
+    const maxX = array[3];
+    const minX = array[4];
+    const maxY = array[5];
+    const minY = array[6];
 
     const timeKey = Math.ceil(time / this.timeSpeed);
     const _busKeys = this.timeObj.get(timeKey) || [];
@@ -175,7 +176,7 @@ onmessage = function (e) {
       }
       case 2: {
         //"render":
-        // console.log("bus:render", new Date().getTime() - postTime);
+        // console.log("bus:render", new Date().getTime() - postTime, data);
         const workerData = worker.render(data);
         const array = new Float64Array(workerData.length + 3);
         array.set([key, new Date().getTime(), postTime], 0);

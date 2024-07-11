@@ -333,7 +333,6 @@ export default {
       this.$emit("update:showLayer", value);
     },
     handleShowBus3DLayer(val) {
-      console.log("val", val);
       try {
         if (val) {
           this.rootVue.$on("MotorizedTravel_setSelectedBus", (busDetail) => {

@@ -184,7 +184,8 @@ export const MAP_LAYER_STYLE = {
     static NAME = "极夜蓝";
     static BACKGROUND = `#0a4173`;
     get url() {
-      return `https://map.geoq.cn/ArcGIS/rest/services/ChinaOnlineStreetPurplishBlue/MapServer/tile/${this.zoom}/${this.col}/${this.row}`;
+      return `http://t0.tianditu.gov.cn/img_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=img&STYLE=ChinaOnlineStreetPurplishBlue&TILEMATRIXSET=w&FORMAT=tiles&TILEMATRIX=${this.zoom}&TILEROW=${this.row}&TILECOL=${this.col}&tk=1ff53318177e78188444436d0201e763`;
+      // return `https://map.geoq.cn/ArcGIS/rest/services/ChinaOnlineStreetPurplishBlue/MapServer/tile/${this.zoom}/${this.col}/${this.row}&tk=1ff53318177e78188444436d0201e763`;
     }
   },
   MAPBOX: class extends MapTile {
@@ -196,6 +197,18 @@ export const MAP_LAYER_STYLE = {
       //   "pk.eyJ1IjoiemFjaHlhbmc4MyIsImEiOiJja211MjRsbm4waXMwMm5wZDE3d3BuZjBuIn0.lcRS0kbOWjzFw-UikwbyHQ";
       // return `https://api.mapbox.com/v4/mapbox.satellite/${this.zoom}/${this.row}/${this.col}.png256?access_token=${token}`;
       return `https://api.mapbox.com/styles/v1/convel/ck8frzi262yko1invkvbif5aw/tiles/512/${this.zoom}/${this.row}/${this.col}@2x?access_token=pk.eyJ1IjoiY29udmVsIiwiYSI6ImNsaHB4cXA2MDBicGIzam1zb25zdGtiOHAifQ.UuaTujcOQlxywCJWWZ0SSg`
+    }
+  },
+  MAPBOX2: class extends MapTile {
+    static NAME = "MAPBOX";
+    get url() {
+      // const token =
+      //   "pk.eyJ1IjoiaGR4MTQ3IiwiYSI6ImNsYWdwajMyMDEwejAzb251MTd4aXV3dWUifQ._QFvRrJtFKNJ5cOdmoRzTQ";
+      // const token =
+      //   "pk.eyJ1IjoiemFjaHlhbmc4MyIsImEiOiJja211MjRsbm4waXMwMm5wZDE3d3BuZjBuIn0.lcRS0kbOWjzFw-UikwbyHQ";
+      // return `https://api.mapbox.com/v4/mapbox.satellite/${this.zoom}/${this.row}/${this.col}.png256?access_token=${token}`;
+      // mapbox://styles/dasin/cltigm5bp010s01ptciblgffl
+      return `https://api.mapbox.com/styles/dasin/cltigm5bp010s01ptciblgffl/tiles/512/${this.zoom}/${this.row}/${this.col}@2x?access_token=pk.eyJ1IjoiY29udmVsIiwiYSI6ImNsaHB4cXA2MDBicGIzam1zb25zdGtiOHAifQ.UuaTujcOQlxywCJWWZ0SSg`
     }
   },
 };
@@ -282,7 +295,7 @@ export class MapLayer extends Layer {
 
   constructor(opt) {
     super(opt);
-    this.tileClass = opt.tileClass || MAP_LAYER_STYLE.MAPBOX;
+    this.tileClass = opt.tileClass || MAP_LAYER_STYLE.MAP_TILER_BASIC;
     this.styleMap = opt.styleMap || MAP_LAYER_STYLE;
 
     this.setStyleMap(this.styleMap);
