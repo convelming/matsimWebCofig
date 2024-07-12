@@ -273,8 +273,8 @@ export default {
         [MAP_EVENT.HANDLE_PICK_LEFT]: ({ data }) => {
           this._CarMotionLayer.setSelectCarId(data);
           this.rootVue.handleShowCarDetail({
-            uuid: data,
-            carDetail: { id: data },
+            uuid: data.join(","),
+            carDetail: { id: data[1], vehicleId: data[0] },
           });
         },
       },
@@ -323,7 +323,7 @@ export default {
     },
     async getCarPath() {
       try {
-        const res = await getCarPathArray(500);
+        const res = await getCarPathArray(10000);
         this._CarMotionLayer.setData(res.data);
         this._CarDataLoaded = true;
       } catch (error) {}

@@ -64,7 +64,7 @@ export const MAP_ZOOM_RANGE = {
 };
 
 // 地图层级缩放高度基数
-const MAP_ZOOM_HEIGHT = 400;
+const MAP_ZOOM_HEIGHT = 300;
 
 export class Map extends EventListener {
   name = "map";

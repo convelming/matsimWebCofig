@@ -6,10 +6,7 @@
 
 <script>
 import { Map, MapLayer } from "@/mymap/index.js";
-import { htmlToImage } from "@/mymap/utils/index";
 import NewClock from "@/components/NewClock/index.vue";
-import { TestLayer } from "./layer/TestLayer.js";
-import { getCarPathArray, getBusPathArray, getAllActivity } from "@/api/index";
 export default {
   components: {
     NewClock,
@@ -34,8 +31,29 @@ export default {
   },
   async mounted() {
     this.initMap();
+
+    // fetch("http://192.168.60.231:23334/guangzhou/Nansha/car/13/6673/3500", {})
+    //   .then((response) => this.readReadableStream(response.body))
+    //   .then((response) => {
+    //     console.log(response);
+    //     console.timeEnd("load file");
+    //   });
   },
   methods: {
+    async readReadableStream(stream) {
+      const reader = stream.getReader();
+      const list = [];
+      let { done, value } = await reader.read();
+      do {
+        let numberOfFloats = value.byteLength / 4;
+        let dataView = new DataView(value.buffer);
+        for (let i = 0; i < numberOfFloats; i++) {
+          list.push(dataView.getFloat32(i * 4, false));
+        }
+        ({ done, value } = await reader.read());
+      } while (!done);
+      return new Float32Array(list);
+    },
     handleShowHelp() {
       console.log("handleShowHelp");
     },

@@ -68,9 +68,10 @@ export class GeoJSONLayer extends Layer {
       map: this.pointTexture,
       color: this.pointColor,
     })
+    this.pointMesh = null;
 
     this.lineMaterial = this.getLineMaterial({
-      side: THREE.DoubleSide,
+      // side: THREE.DoubleSide,
       transparent: true,
       map: this.lineTexture,
       color: this.lineColor,
@@ -82,14 +83,14 @@ export class GeoJSONLayer extends Layer {
 
     this.worker = new GeoJSONLayerWorker();
     this.worker.onmessage = (event) => {
-      const [key, postTime, callTime] = event.data;
-      const data = event.data.slice(3);
+      const [key] = event.data;
+      const data = event.data.slice(1);
       switch (key) {
         case 1:
-          this.handleSetDataCallback(data);
+          this.handleSetPoint(data);
           break;
         case 2:
-          this.handleRenderCallback(data);
+          this.handleSetLine(data);
           break;
       }
     };
@@ -189,20 +190,6 @@ export class GeoJSONLayer extends Layer {
     return material;
   }
 
-  handleRenderCallback(array) {
-
-  }
-
-  handleSetDataCallback(array) {
-    this.center = [array[0], array[1]];
-    const [x, y] = this.map.WebMercatorToCanvasXY(...this.center);
-    this.busGroup.position.set(x, y, 0);
-    this.pickLayerMesh.position.set(x, y, 0);
-    this.pickMeshMesh.position.set(x, y, 0);
-    this.canRender = true;
-    if (this.canRender) this.postRender();
-  }
-
   on(type, data) {
     if (type == MAP_EVENT.UPDATE_CENTER) {
       for (const mesh of this.scene.children) {
@@ -214,17 +201,112 @@ export class GeoJSONLayer extends Layer {
 
   onAdd(map) {
     super.onAdd(map);
+    // this.updatePoint()
   }
 
   setData(data) {
     if (data instanceof Int8Array) {
+      console.log(data);
+      console.time("setLine")
       const array = new Int8Array(data.length + 1);
       array.set([1], 0);
-      array.set(data, 2);
+      array.set(data, 1);
       this.worker.postMessage(array, [array.buffer]);
     } else {
       throw new Error("data instanceof Int8Array");
     }
+  }
+
+  handleSetPoint(array) {
+    this.pointData = array;
+    this.updatePoint()
+  }
+  updatePoint() {
+    if (!this.map) return;
+    if (!this.pointData) return;
+    const pointCenter = Array.from(this.pointData.slice(0, 2));
+    const pointArray = this.pointData.slice(2);
+    console.log(pointCenter, pointArray);
+    this.pointMesh = new THREE.InstancedMesh(this.pointGeometry, this.pointMaterial, pointArray.length / 2);
+    for (let i = 0, l = pointArray.length / 2; i < l; i++) {
+      const x = pointArray[i * 2];
+      const y = pointArray[i * 2 + 1];
+      this.pointMesh.setMatrixAt(i, new THREE.Matrix4().makeTranslation(x, y, 0));
+    }
+    const [x, y] = this.map.WebMercatorToCanvasXY(pointCenter[0], pointCenter[1]);
+    this.pointMesh.position.set(x, y, 0.02);
+    this.pointMesh.userData.center = pointCenter;
+    this.scene.add(this.pointMesh);
+  }
+
+  handleSetLine(array) {
+    this.lineData = array;
+    this.updateLine()
+  }
+  updateLine() {
+    console.timeEnd("setLine")
+    if (!this.map) return;
+    if (!this.lineData) return;
+    const lineCenter = Array.from(this.lineData.slice(0, 2));
+    const lineArray = this.lineData.slice(2);
+    const geometryList = [];
+    for (let index = 0, l = lineArray.length, lineDataSize = lineArray[0]; index < l; index += 1 + lineDataSize, lineDataSize = lineArray[index]) {
+      const line = lineArray.slice(index + 1, index + 1 + lineDataSize);
+      const geometry = this.getLineGeometry(line);
+      console.log(geometry);
+      geometryList[geometryList.length] = geometry;
+    }
+    const geometry = BufferGeometryUtils.mergeBufferGeometries(geometryList, false);
+    const mesh = new THREE.Mesh(geometry, this.lineMaterial);
+    const [x, y] = this.map.WebMercatorToCanvasXY(lineCenter[0], lineCenter[1]);
+    mesh.position.set(x, y, 0.01);
+    mesh.userData.center = lineCenter;
+    console.log(lineCenter);
+    this.scene.add(mesh);
+  }
+  getLineGeometry(array) {
+    console.time("getLineGeometry")
+    if (array.length < 6) return null;
+    const attrPosition = [];
+    const attrStartPosition = [];
+    const attrEndPosition = [];
+    const attrSide = [];
+    const attrIndex = [];
+    const attrUv = [];
+    const attrLength = [];
+    const length = array.length / 3;
+    for (let index = 0; index < length; index++) {
+      let prev = Array.from(array.slice((index - 1) * 3, index * 3));
+      let that = Array.from(array.slice(index * 3, (index + 1) * 3))
+      let next = Array.from(array.slice((index + 1) * 3, (index + 2) * 3));
+      if (index === 0) {
+        next = Array.from(array.slice((index + 1) * 3, (index + 2) * 3));
+        prev = [that[0] * 2 - next[0], that[1] * 2 - next[1], that[2] * 2 - next[2]];
+      }
+      if (array[(index + 1) * 3] === undefined) {
+        prev = Array.from(array.slice((index - 1) * 3, index * 3));
+        next = [that[0] * 2 - prev[0], that[1] * 2 - prev[1], that[2] * 2 - prev[2]];
+      }
+      console.log(prev, next, that);
+      attrStartPosition[index] = [prev[0], prev[1], 0, prev[0], prev[1], 0];
+      attrPosition[index] = [that[0], that[1], 0, that[0], that[1], 0];
+      attrEndPosition[index] = [next[0], next[1], 0, next[0], next[1], 0];
+      attrUv[index] = [0, 0, 0, 1];
+      attrLength[index] = [that[2], that[2]];
+      attrSide[index] = [-1, 1];
+      if (index !== 0) attrIndex[index - 1] = [0, 1, 3, 0, 3, 2].map(v => v + (index - 1) * 2);
+    }
+
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(attrPosition.flat()), 3));
+    geometry.setAttribute("startPosition", new THREE.BufferAttribute(new Float32Array(attrStartPosition.flat()), 3));
+    geometry.setAttribute("endPosition", new THREE.BufferAttribute(new Float32Array(attrEndPosition.flat()), 3));
+    geometry.setAttribute("side", new THREE.BufferAttribute(new Int8Array(attrSide.flat()), 1));
+    geometry.setAttribute("lineLength", new THREE.BufferAttribute(new Float32Array(attrLength.flat()), 1));
+    geometry.setAttribute("uv", new THREE.BufferAttribute(new Float32Array(attrLength.flat()), 2));
+    geometry.index = new THREE.BufferAttribute(new Uint16Array(attrIndex.flat()), 1);
+    console.timeEnd("getLineGeometry")
+    return geometry
   }
 }
 

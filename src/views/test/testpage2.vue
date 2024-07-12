@@ -33,42 +33,8 @@ export default {
   },
   async mounted() {
     this.initMap();
-
-    // const url = `http://192.168.60.231:23334/guangzhou/Nansha/pt/13`;
-    // const row = 6664;
-    // const col = 3530;
-    // for (let i = row; i < row + 21; i++) {
-    //   for (let j = col; j < col + 100; j++) {
-    //     fetch(`${url}/${i}/${j}`)
-    //       .then((res) => {
-    //         console.log(res.status);
-    //       })
-    //       .catch((err) => {});
-    //   }
-    // }
-
-    // fetch("http://192.168.60.231:23334/guangzhou/Nansha/car/13/6673/3500", {})
-    //   .then((response) => this.readReadableStream(response.body))
-    //   .then((response) => {
-    //     console.log(response);
-    //     console.timeEnd("load file");
-    //   });
   },
   methods: {
-    async readReadableStream(stream) {
-      const reader = stream.getReader();
-      const list = [];
-      let { done, value } = await reader.read();
-      do {
-        let numberOfFloats = value.byteLength / 4;
-        let dataView = new DataView(value.buffer);
-        for (let i = 0; i < numberOfFloats; i++) {
-          list.push(dataView.getFloat32(i * 4, false));
-        }
-        ({ done, value } = await reader.read());
-      } while (!done);
-      return new Float32Array(list);
-    },
     handleShowHelp() {
       console.log("handleShowHelp");
     },
@@ -79,8 +45,9 @@ export default {
     async initMap() {
       this._Map = new Map({
         rootId: "map",
-        center: [12628397, 2655338.7],
-        zoom: 17
+        center: [12612545.3950225, 2617157.5169194015],
+        zoom: 17,
+        minPitch: -90,
       });
       this._Map.cameraControls.enableRotate = true;
       this._MapLayer = new MapLayer({ zIndex: 0 });
@@ -88,7 +55,6 @@ export default {
 
       this._GeoJSONLayer = new GeoJSONLayer({ zIndex: 1 });
       this._Map.addLayer(this._GeoJSONLayer);
-      window._Map = this._Map;
     },
     handleInputFile(e) {
       console.log(e.target.files);
