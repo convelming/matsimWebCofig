@@ -8,7 +8,7 @@
 <script>
 import { Map, MapLayer } from "@/mymap/index.js";
 import NewClock from "@/components/NewClock/index.vue";
-import { GeoJSONLayer } from "./layer/GeoJSONLayer.js";
+import { GeoJSONLayer } from "@/views/operationsAnalysis/component/GeoJSON/layer/GeoJSONLayer.js";
 export default {
   components: {
     NewClock,
@@ -45,7 +45,8 @@ export default {
     async initMap() {
       this._Map = new Map({
         rootId: "map",
-        center: [12612545.3950225, 2617157.5169194015],
+        // center: [12612545.3950225, 2617157.5169194015],
+        center: [12599952, 2632734.5],
         zoom: 17,
         minPitch: -90,
       });

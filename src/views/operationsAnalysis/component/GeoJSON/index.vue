@@ -184,12 +184,10 @@ export default {
       this.geoJSONList.push(item);
 
       let reader = new FileReader();
-      // 传入需要被转换的文本流 file,这个是转字符串的关键方法
-      reader.readAsText(file);
-      // onload是异步的,封装的话可以用promise
+      reader.readAsArrayBuffer(file);
       reader.onload = () => {
-        // 输出字符串
-        item._layer.setData(JSON.parse(reader.result));
+        const arrayBuffer = reader.result;
+        item._layer.setData(new Int8Array(arrayBuffer));
       };
       if (this._Map) {
         if (this.s_showLayer && item.show) {

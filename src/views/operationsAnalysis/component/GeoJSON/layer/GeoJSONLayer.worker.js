@@ -77,9 +77,9 @@ class GeoJSONParser {
         if (j == 0) {
           line[0] = [x, y, 0];
         } else {
-          const fromLength = length;
           const lineLength = Math.sqrt(Math.pow(fromCoord[0] - x, 2) + Math.pow(fromCoord[1] - y, 2));
-          const toLength = fromLength + lineLength;
+          length += lineLength;
+          const toLength = length;
           line[j] = [x, y, toLength];
         }
         fromCoord = [x, y];
@@ -93,6 +93,7 @@ class GeoJSONParser {
     for (let i = 0; i < coordinates.length; i++) {
       const coordinate = [];
       for (let j = 0; j < coordinates[i].length; j++) {
+        coordinate[j] = [];
         for (let k = 0; k < coordinates[i][j].length; k++) {
           let [x, y] = coordinates[i][j][k];
           if (coordSys !== "EPSG:3857") [x, y] = proj4(coordSys, "EPSG:3857", [x, y]);
@@ -104,21 +105,6 @@ class GeoJSONParser {
       }
       this.polygonList[this.polygonList.length] = coordinate;
     }
-    return mesh;
-  }
-
-  getPointArray() {
-    return new Float32Array([1, this.center, this.pointList].flat(2));
-  }
-
-  getLineArray() {
-    const list = [2, this.center];
-    for (let i = 0; i < this.lineList.length; i++) {
-      const line = this.lineList[i];
-      list[list.length] = line.length * 3;
-      list[list.length] = line;
-    }
-    return new Float32Array(list.flat(2));
   }
 }
 
@@ -137,12 +123,35 @@ onmessage = function (e) {
             this.postMessage(array, [array.buffer]);
           }
           if (parser.lineList.length > 0) {
-            const list = [2, parser.center];
+            const list = [2, parser.center[0], parser.center[1]]
             for (let i = 0; i < parser.lineList.length; i++) {
-              const line = parser.lineList[i];
-              list[list.length] = line.length * 3;
-              list[list.length] = line;
+              const v1 = parser.lineList[i];
+              list[list.length] = v1.length * 3;
+              for (const v2 of v1) {
+                list[list.length] = v2[0];
+                list[list.length] = v2[1];
+                list[list.length] = v2[2];
+              }
             }
+            const array = new Float32Array(list);
+            this.postMessage(array, [array.buffer]);
+          }
+          console.log(parser.polygonList);
+          if (parser.polygonList.length > 0) {
+            const list = [3, parser.center];
+            for (let i = 0; i < parser.polygonList.length; i++) {
+              const polygon = parser.polygonList[i];
+              const pl = [];
+              for (let j = 0; j < polygon.length; j++) {
+                const coordinate = polygon[j];
+                pl[pl.length] = coordinate.length * 2;
+                pl[pl.length] = coordinate;
+              }
+              const _l = pl.flat(2);
+              list[list.length] = _l.length;
+              list[list.length] = _l;
+            }
+            console.log(list);
             const array = new Float32Array(list.flat(2));
             this.postMessage(array, [array.buffer]);
           }
