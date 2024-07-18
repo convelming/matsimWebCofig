@@ -1,26 +1,24 @@
 import * as THREE from "three";
 import { Layer, MAP_EVENT } from "@/mymap/index.js";
-import { EARTH_RADIUS } from "@/mymap/utils/LngLatUtils.js";
 import * as BufferGeometryUtils from "three/addons/utils/BufferGeometryUtils.js";
 import { guid } from "@/utils/utils";
 
 import { getTileFacilities } from "@/api/index";
 
 const BUILD_ZOOM = 11;
+const EARTH_RADIUS = 20037508.3427892;
 
 export class Build3DLayer extends Layer {
-  _noLoadTileList = [];
   name = "Build3DLayer";
   buildColor = "#ff4500";
   buildOpacity = 0.8;
 
   tileMap = {};
-  builds = {};
   loadingNum = 0;
+  _noLoadTileList = [];
 
   constructor(opt) {
     super(opt);
-    this.builds = {};
     this.buildColor = opt.buildColor || this.buildColor;
     this.buildOpacity = opt.buildOpacity || this.buildOpacity;
 
@@ -118,33 +116,11 @@ export class Build3DLayer extends Layer {
   }
 
   async loadMesh() {
-    this.updateTimeout = null;
     this.clearScene();
+    const { row, col, size } = this.map.getTileRangeByZoom(BUILD_ZOOM);
 
-    const zoom = BUILD_ZOOM;
-    const [mapCenterX, mapCenterY] = this.map.center;
-    // const { far, fov } = this.map.camera;
-    // const width = far / Math.cos((Math.PI * fov) / 180);
-
-    const { maxX, minX, maxY, minY } = this.map.getWindowRangeAndWebMercator();
-    const width = Math.max(maxX - minX, maxY - minY);
-
-    const [row, col] = [Math.floor(((EARTH_RADIUS + mapCenterX) * Math.pow(2, zoom)) / (EARTH_RADIUS * 2)), Math.floor(((EARTH_RADIUS - mapCenterY) * Math.pow(2, zoom)) / (EARTH_RADIUS * 2))];
-    const tileSize = (EARTH_RADIUS * 2) / Math.pow(2, zoom);
-    const radius = Math.ceil(width / tileSize) + 1;
-
-    const max_row_col = Math.pow(2, zoom);
-    let rowStart = row - radius;
-    if (rowStart < 0) rowStart = 0;
-    let rowEnd = row + radius;
-    if (rowEnd > max_row_col) rowEnd = max_row_col;
-
-    let colStart = col - radius;
-    if (colStart < 0) colStart = 0;
-    let colEnd = col + radius;
-    if (colEnd > max_row_col) colEnd = max_row_col;
-    for (let i = rowStart; i < rowEnd; i++) {
-      for (let j = colStart; j < colEnd; j++) {
+    for (let i = row[0]; i < row[1]; i++) {
+      for (let j = col[0]; j < col[1]; j++) {
         let key = `${i}_${j}`;
         let tile = this.tileMap[key];
         if (!tile) {

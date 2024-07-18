@@ -37,8 +37,8 @@ export class SubwayMotionLayer extends Layer {
 
   constructor(opt) {
     super(opt);
-    this.maxVehicleNum = opt.maxVehicleNum || this.maxVehicleNum;
-    this.lockSelectVehicle = opt.lockSelectVehicle || this.lockSelectVehicle;
+    this.maxSubwayNum = opt.maxSubwayNum || this.maxSubwayNum;
+    this.lockSelectSubway = opt.lockSelectSubway || this.lockSelectSubway;
     this.modelSize = opt.modelSize || this.modelSize;
 
     this.modelPool = new ModelPool({
@@ -171,7 +171,7 @@ export class SubwayMotionLayer extends Layer {
         const scale = this.modelSize * 0.1;
         this.coneMesh.scale.set(scale, scale, scale);
         this.subwayGroup.add(this.coneMesh);
-        this.map.setCenter([data[1] + this.center[0], data[2] + this.center[1]]);
+        if (this.lockSelectSubway && this.map) this.map.setCenter([data[1] + this.center[0], data[2] + this.center[1]]);
       } else if (i > this.maxSubwayNum || data[0] == undefined) {
         if (model) {
           this.subwayGroup.remove(model);
@@ -185,14 +185,19 @@ export class SubwayMotionLayer extends Layer {
         this.subwayGroup.add(model);
       }
 
+      // const scale = this.modelSize * 0.005;
+      // model.scale.set(scale, scale, scale);
+      // model.position.set(data[1], data[2], this.modelSize);
+      // const rotationOrderMap = { 1: "XYZ", 2: "YXZ", 3: "ZXY", 4: "ZYX", 5: "YZX", 6: "XZY" };
+      // model.rotation.fromArray([data[3], data[4], data[5], rotationOrderMap[data[6]]]);
+      
       const scale = this.modelSize * 0.005;
       model.scale.set(scale, scale, scale);
-      runSubwayList[i] = model;
-
       model.position.set(data[1], data[2], this.modelSize);
+      model.quaternion.set(data[3], data[4], data[5], data[6]);
 
-      const rotationOrderMap = { 1: "XYZ", 2: "YXZ", 3: "ZXY", 4: "ZYX", 5: "YZX", 6: "XZY" };
-      model.rotation.fromArray([data[3], data[4], data[5], rotationOrderMap[data[6]]]);
+      
+      runSubwayList[i] = model;
 
       const attrLength = attrPoitions.length;
       const pickColor = new THREE.Color(id + 1);

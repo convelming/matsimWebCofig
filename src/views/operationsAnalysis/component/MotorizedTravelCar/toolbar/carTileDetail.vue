@@ -16,7 +16,7 @@
         </div>
         <div class="form_item">
           <div class="form_label">{{ "人员：" }}</div>
-          <div class="form_value">{{ departure.persons && departure.persons.join(",") }}</div>
+          <div class="form_value">{{ departure.persons.join(",") }}</div>
         </div>
         <div class="form_item">
           <div class="form_label">{{ "行程总里程：" }}</div>

@@ -7,10 +7,7 @@ import CarMotionLayerWorker from "../worker/CarMotionLayer2.worker";
 export class CarMotionLayer extends Layer {
   name = "CarMotionLayer";
   time = 3600 * 8;
-  timeSpeed = 60 * 1;
 
-  timeObj = new Map();
-  carMap = new Map();
   runCarList = new Array();
 
   selectCarIndex = -1;
@@ -25,8 +22,8 @@ export class CarMotionLayer extends Layer {
 
   constructor(opt) {
     super(opt);
-    this.maxVehicleNum = opt.maxVehicleNum || this.maxVehicleNum;
-    this.lockSelectVehicle = opt.lockSelectVehicle || this.lockSelectVehicle;
+    this.maxCarNum = opt.maxCarNum || this.maxCarNum;
+    this.lockSelectCar = opt.lockSelectCar || this.lockSelectCar;
     this.modelSize = opt.modelSize || this.modelSize;
 
     this.modelPool = new ModelPool({
@@ -178,7 +175,7 @@ export class CarMotionLayer extends Layer {
         const scale = this.modelSize * 0.1;
         this.coneMesh.scale.set(scale, scale, scale);
         this.carGroup.add(this.coneMesh);
-        this.map.setCenter([data[1] + this.center[0], data[2] + this.center[1]]);
+        if (this.lockSelectCar && this.map) this.map.setCenter([data[1] + this.center[0], data[2] + this.center[1]]);
       } else if (i > this.maxCarNum || data[0] == undefined) {
         if (model) {
           this.carGroup.remove(model);
@@ -192,15 +189,20 @@ export class CarMotionLayer extends Layer {
         this.carGroup.add(model);
       }
 
+      // const scale = this.modelSize * 0.005;
+      // model.scale.set(scale, scale, scale);
+      // model.position.set(data[1], data[2], this.modelSize);
+      // const rotationOrderMap = { 1: "XYZ", 2: "YXZ", 3: "ZXY", 4: "ZYX", 5: "YZX", 6: "XZY" };
+      // model.rotation.fromArray([data[3], data[4], data[5], rotationOrderMap[data[6]]]);
+      
       const scale = this.modelSize * 0.005;
       model.scale.set(scale, scale, scale);
-      runCarList[i] = model;
-
       model.position.set(data[1], data[2], this.modelSize);
+      model.quaternion.set(data[3], data[4], data[5], data[6]);
 
-      const rotationOrderMap = { 1: "XYZ", 2: "YXZ", 3: "ZXY", 4: "ZYX", 5: "YZX", 6: "XZY" };
-      model.rotation.fromArray([data[3], data[4], data[5], rotationOrderMap[data[6]]]);
-
+      
+      runCarList[i] = model;
+      
       const attrLength = attrPoitions.length;
       const pickColor = new THREE.Color(id + 1);
       attrPoitions[attrLength] = data[1];

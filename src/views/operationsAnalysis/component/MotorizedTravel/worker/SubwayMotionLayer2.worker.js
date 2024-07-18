@@ -97,13 +97,18 @@ class SubwayMotionWorker {
         const [x1, y1] = end;
         const position = new THREE.Vector3(x0, y0, 0);
         const target = new THREE.Vector3(x1, y1, 0); // 你的目标点
-        const direction = new THREE.Vector3().subVectors(target, position).normalize();
-        const m4 = new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(1, 0, 0), Math.PI / 2);
-        m4.multiply(new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(0, 1, 0), Math.atan2(direction.y, direction.x) + Math.PI / 2));
-        const rotation = new THREE.Euler();
-        rotation.setFromRotationMatrix(m4);
-        const rotationOrderMap = { "XYZ": 1, "YXZ": 2, "ZXY": 3, "ZYX": 4, "YZX": 5, "XZY": 6 };
-        runSubwayList.push(id, x0, y0, rotation.x, rotation.y, rotation.z, rotationOrderMap[rotation.order]);
+        // const direction = new THREE.Vector3().subVectors(target, position).normalize();
+        // const m4 = new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(1, 0, 0), Math.PI / 2);
+        // m4.multiply(new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(0, 1, 0), Math.atan2(direction.y, direction.x) + Math.PI / 2));
+        // const rotation = new THREE.Euler();
+        // rotation.setFromRotationMatrix(m4);
+        // const rotationOrderMap = { "XYZ": 1, "YXZ": 2, "ZXY": 3, "ZYX": 4, "YZX": 5, "XZY": 6 };
+        // runSubwayList.push(id, x0, y0, rotation.x, rotation.y, rotation.z, rotationOrderMap[rotation.order]);
+
+        const m4 = new THREE.Matrix4().lookAt(position, target, new THREE.Vector3(0, 0, 1));
+        m4.multiply(new THREE.Matrix4().makeRotationY(Math.PI));
+        const q = new THREE.Quaternion().setFromRotationMatrix(m4);
+        runSubwayList.push(id, x0, y0, q.x, q.y, q.z, q.w); // length = 7
       }
     }
     return new Float64Array(runSubwayList);

@@ -324,7 +324,7 @@ export function getCarPath(data) {
   });
 }
 
-// 查询私家车路线 Copy
+// 查询私家车路线
 // POST /pt/transitLine/getCarPathArray
 // 接口ID：187556184
 // 接口地址：https://app.apifox.com/link/project/3709845/apis/api-187556184
@@ -332,6 +332,18 @@ export function getCarPathArray(number) {
   return request({
     url: `/pt/transitLine/getCarPathArray?number=${number}`,
     method: "post",
+  });
+}
+
+// 私家车瓦片数据
+// GET /pt/tiles/car/{base}/{scheme}/{zoom}/{row}/{col}
+// 接口ID：193393526
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-193393526
+export function getCarTile(base, scheme, zoom, row, col) {
+  return request({
+    url: `/pt/tiles/car/${base}/${scheme}/${zoom}/${row}/${col}`,
+    method: "get",
+    responseType: "arraybuffer",
   });
 }
 

@@ -1,8 +1,9 @@
 import * as THREE from "three";
 import { Layer, MAP_EVENT } from "@/mymap/index.js";
-import { EARTH_RADIUS } from "@/mymap/utils/LngLatUtils.js";
 import * as BufferGeometryUtils from "three/addons/utils/BufferGeometryUtils.js";
 import { guid } from "@/utils";
+
+const EARTH_RADIUS = 20037508.3427892;
 
 export class BusLineListLayer extends Layer {
   name = "BusLineListLayer";

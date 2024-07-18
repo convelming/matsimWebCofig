@@ -1,9 +1,9 @@
 import { Layer } from "../main/Layer";
 import * as THREE from "three";
-import { EARTH_RADIUS } from "../utils/LngLatUtils.js";
 import { MAP_EVENT } from "../main/Map.js";
 
 const Loader = new THREE.TextureLoader();
+const EARTH_RADIUS = 20037508.3427892;
 
 // 瓦片类
 export class MapTile {
@@ -251,48 +251,7 @@ export class MapLayer extends Layer {
     }
     return this._zoomMap;
   }
-
-  // 地图菜单div
-  // get menuDoc() {
-  //   if (!this._menuDoc) {
-  //     const menuDoc = document.createElement("div");
-  //     menuDoc.classList.add("MapLayer_menu", "hide");
-  //     menuDoc.style = `height: ${Object.values(this.styleMap).length * 50 -10
-  //       }px;`;
-
-  //     const openHideBtn = document.getElementById("map-switch");
-  //     // openHideBtn.classList.add("open_hide_btn");
-  //     openHideBtn.onclick = (event) => {
-  //       if (menuDoc.classList.contains("hide")) {
-  //         menuDoc.classList.remove("hide");
-  //       } else {
-  //         menuDoc.classList.add("hide");
-  //       }
-  //     };
-  //     // menuDoc.append(openHideBtn);
-  //     const itemDocList = [];
-  //     for (const [key, value] of Object.entries(this.styleMap)) {
-  //       const itemDoc = document.createElement("img");
-  //       itemDoc.title = value.NAME;
-  //       itemDoc.src = new value(15, 26700, 14218, 200).url;
-  //       itemDoc.classList.add("item");
-  //       if (value === this.tileClass) itemDoc.classList.add("active");
-  //       itemDoc.onclick = (event) => {
-  //         itemDocList.forEach((itemDoc) => {
-  //           itemDoc.classList.remove("active");
-  //         });
-  //         itemDoc.classList.add("active");
-  //         this.setTileClass(value);
-  //       };
-
-  //       itemDocList.push(itemDoc);
-  //       menuDoc.append(itemDoc);
-  //     }
-  //     this._menuDoc = menuDoc;
-  //   }
-  //   return this._menuDoc;
-  // }
-
+  
   constructor(opt) {
     super(opt);
     this.tileClass = opt.tileClass || MAP_LAYER_STYLE.MAP_TILER_BASIC;
@@ -303,12 +262,6 @@ export class MapLayer extends Layer {
 
   setStyleMap(styleMap) {
     this.styleMap = styleMap;
-
-    // if (this._menuDoc) {
-    //   if (this._menuDoc.parentElement)
-    //     this._menuDoc.parentElement.removeChild(menuDoc);
-    //   this._menuDoc = null;
-    // }
     let item = Object.values(styleMap).find((v) => v === this.tileClass);
     if (item) {
       this.setTileClass(item);
@@ -342,9 +295,6 @@ export class MapLayer extends Layer {
       this.loadMesh();
       this.setShowZoom(this.zoom);
       this.setMeshPosition(this.map.center);
-      // if(document.getElementById('map-switch-list')){
-      //   document.getElementById('map-switch-list').append(this.menuDoc)
-      // }
     }
   }
 
@@ -364,7 +314,6 @@ export class MapLayer extends Layer {
         this.setMeshPosition(this.map.center);
       }
     }
-    super.on(type, data);
   }
 
   // 显示指定缩放级别的瓦片
@@ -401,46 +350,20 @@ export class MapLayer extends Layer {
   // 加载瓦片
   loadMesh() {
     const zoom = this.zoom;
-    const [mapCenterX, mapCenterY] = this.map.center;
-    const { far, fov } = this.map.camera;
-    const width = far / (Math.cos((Math.PI * fov) / 180) * 2);
-
-    const [row, col] = [
-      Math.floor(
-        ((EARTH_RADIUS + mapCenterX) * Math.pow(2, zoom)) / (EARTH_RADIUS * 2)
-      ),
-      Math.floor(
-        ((EARTH_RADIUS - mapCenterY) * Math.pow(2, zoom)) / (EARTH_RADIUS * 2)
-      ),
-    ];
-    const tileSize = (EARTH_RADIUS * 2) / Math.pow(2, zoom);
-    const radius = Math.ceil(width / tileSize);
-
-    const max_row_col = Math.pow(2, zoom);
-    let rowStart = row - radius;
-    if (rowStart < 0) rowStart = 0;
-    let rowEnd = row + radius;
-    if (rowEnd > max_row_col) rowEnd = max_row_col;
-
-    let colStart = col - radius;
-    if (colStart < 0) colStart = 0;
-    let colEnd = col + radius;
-    if (colEnd > max_row_col) colEnd = max_row_col;
-
+    const { row, col, size } = this.map.getTileRangeByZoom(zoom);
+    const crow = (row[0] + row[1]) / 2;
+    const ccol = (col[0] + col[1]) / 2;
     let urlList = [];
-    for (let i = rowStart; i < rowEnd; i++) {
-      for (let j = colStart; j < colEnd; j++) {
-        let key = `${i}_${j}`;
+    for (let i = row[0]; i < row[1]; i++) {
+      for (let j = col[0]; j < col[1]; j++) {
+        const key = `${i}_${j}`;
+        let tile = this.zoomMap[zoom].tileMap[key]
         if (!this.zoomMap[zoom].tileMap[key]) {
-          const tile = new this.tileClass(zoom, i, j, tileSize);
+          tile = new this.tileClass(zoom, i, j, size);
           this.zoomMap[zoom].tileMap[key] = tile;
           this.zoomMap[zoom].scene.add(tile.mesh);
-
-          urlList.push({
-            level: Math.max(Math.abs(row - i), Math.abs(col - j)),
-            tile: this.zoomMap[zoom].tileMap[key],
-          });
         }
+        urlList.push({ level: Math.abs(crow - i) + Math.abs(ccol - j), tile: tile });
       }
     }
     urlList

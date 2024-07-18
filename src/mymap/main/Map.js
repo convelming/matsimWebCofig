@@ -11,6 +11,7 @@ import { WGS84ToMercator, EPSG4526ToMercator } from "../utils/LngLatUtils";
 import { EventListener } from "./EventListener";
 import { BloomComposer } from "../composer/BloomComposer";
 
+
 export const SCENE_MAP = {
   ENTIRE_SCENE: 0, // 全景图层
   BLOOM_SCENE: 1, // 泛光图层
@@ -752,6 +753,42 @@ export class Map extends EventListener {
       width: Math.abs(maxY - minY),
       height: Math.abs(maxX - minX),
     };
+  }
+
+  getTileRangeByZoom(zoom) {
+    const EARTH_RADIUS = 20037508.3427892;
+    const [mapCenterX, mapCenterY] = this.center;
+    const { far, fov } = this.camera;
+    const width = far / (Math.cos((Math.PI * fov) / 180) * 2);
+    const [row, col] = [
+      Math.floor(
+        ((EARTH_RADIUS + mapCenterX) * Math.pow(2, zoom)) / (EARTH_RADIUS * 2)
+      ),
+      Math.floor(
+        ((EARTH_RADIUS - mapCenterY) * Math.pow(2, zoom)) / (EARTH_RADIUS * 2)
+      ),
+    ];
+    const tileSize = (EARTH_RADIUS * 2) / Math.pow(2, zoom);
+    const radius = Math.ceil(width / tileSize);
+
+    const max_row_col = Math.pow(2, zoom);
+
+    let rowStart = row - radius;
+    if (rowStart < 0) rowStart = 0;
+    let rowEnd = row + radius;
+    if (rowEnd > max_row_col) rowEnd = max_row_col;
+
+    let colStart = col - radius;
+    if (colStart < 0) colStart = 0;
+    let colEnd = col + radius;
+    if (colEnd > max_row_col) colEnd = max_row_col;
+
+    return {
+      row: [rowStart, rowEnd],
+      col: [colStart, colEnd],
+      size: tileSize,
+      zoom: zoom
+    }
   }
 
   // 把渲染坐标转换成WebMercator

@@ -12,18 +12,26 @@ export default {
       loading: false,
       _Map: null,
       _MapLayer: null,
-      activeNames: ["PublicTransit", "MotorizedTravel", "Build3D", "Network", "Activity3D", "GeoJSON"],
+      activeNames: ["PublicTransit", "MotorizedTravel", "MotorizedTravelCar", "Build3D", "Network", "Activity3D", "GeoJSON"],
 
       showLayerPublicTransit: false,
       lock2DPublicTransit: false,
+
       showLayerMotorizedTravel: false,
       lock2DMotorizedTravel: false,
+
       showLayerBuild3D: false,
       lock2DBuild3D: false,
+
       showLayerNetwork: false,
       lock2DNetwork: false,
+
       showLayerActivity3D: false,
       lock2DActivity3D: false,
+
+      showLayerMotorizedTravelCar: false,
+      lock2DMotorizedTravelCar: false,
+
       showLayerGeoJSON: false,
       lock2DGeoJSON: false,
 
@@ -33,7 +41,7 @@ export default {
 
       showHelpDialog: false,
 
-      time: 0,
+      time: 3600 * 8,
       speed: 0,
       minTime: 0,
       maxTime: 3600 * 24.5,
@@ -76,6 +84,12 @@ export default {
     lock2DActivity3D(val) {
       this.handleChangeMapCameraControls();
     },
+    showLayerMotorizedTravelCar(val) {
+      this.handleChangeMapCameraControls();
+    },
+    lock2DMotorizedTravelCar(val) {
+      this.handleChangeMapCameraControls();
+    },
     showLayerGeoJSON(val) {
       this.handleChangeMapCameraControls();
     },
@@ -92,7 +106,6 @@ export default {
     const { database, datasource } = this.$route.params;
     this.$store.dispatch("setDataBase", database);
     this.$store.dispatch("setDataSource", database + "/" + datasource);
-
   },
   mounted() {
     Promise.all([
@@ -137,12 +150,11 @@ export default {
     initMap() {
       this._Map = new Map({
         rootId: "mapRoot",
-        zoom: 11,
         enableRotate: true,
       });
       this._Map.addLayer(this._MapLayer);
 
-      console.log(this._Map.setFitZoomAndCenterByPoints(this.range));
+      // console.log(this._Map.setFitZoomAndCenterByPoints(this.range));
     },
     initLayer() {
       this._MapLayer = new MapLayer({ zIndex: -1 });
