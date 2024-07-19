@@ -189,7 +189,7 @@ export default {
     updateVisibleSvg(time) {
       try {
         if (time === undefined || time === null) return;
-        if (time - this._updateTime < 0.005) return;
+        if (Math.abs(time - this._updateTime) < 0.005) return;
         this._updateTime = Number(Number(time).toFixed(3));
         const path = this.path;
         const { originPoint, resultPoint, startPoint, box, padding, paddingPoint } = this.svgParams;

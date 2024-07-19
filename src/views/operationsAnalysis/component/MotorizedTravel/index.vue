@@ -149,9 +149,9 @@
 
 <script>
 import { MAP_EVENT } from "@/mymap/index.js";
-import { BusMotionLayer } from "./layer/BusMotionLayer2";
-import { SubwayMotionLayer } from "./layer/SubwayMotionLayer2";
-import { CarMotionLayer } from "./layer/CarMotionLayer2";
+import { BusMotionLayer } from "./layer/BusMotionLayer";
+import { SubwayMotionLayer } from "./layer/SubwayMotionLayer";
+import { CarMotionLayer } from "./layer/CarMotionLayer";
 import { getBusPath, getBusPathArray, getCarPath, getCarPathArray, getSubwayPath, getSubwayPathArray } from "@/api/index";
 
 export default {

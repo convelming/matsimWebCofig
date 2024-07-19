@@ -1,29 +1,34 @@
 import * as THREE from "three";
 import { Layer, MAP_EVENT } from "@/mymap/index.js";
-import { CarMotionPath, CarMotionPoint, ModelPool } from "../utils.js";
+import { ModelPool } from "@/mymap/utils/ModelPool.js";
 
 import CarMotionLayerWorker from "../worker/CarMotionLayer.worker";
 
 export class CarMotionLayer extends Layer {
   name = "CarMotionLayer";
-  time = 0;
-  timeSpeed = 60 * 1;
+  time = 3600 * 8;
 
-  timeObj = new Map();
-  carMap = new Map();
   runCarList = new Array();
 
-  selectCarId = null;
+  selectCarIndex = -1;
 
-  maxCarNum = 500;
+  maxCarNum = 2000;
   modelSize = 10;
   lockSelectCar = true;
 
+  canRender = false;
+
+  modelPool = null;
+
   constructor(opt) {
     super(opt);
-    this.maxVehicleNum = opt.maxVehicleNum || this.maxVehicleNum;
-    this.lockSelectVehicle = opt.lockSelectVehicle || this.lockSelectVehicle;
+    this.maxCarNum = opt.maxCarNum || this.maxCarNum;
+    this.lockSelectCar = opt.lockSelectCar || this.lockSelectCar;
     this.modelSize = opt.modelSize || this.modelSize;
+
+    this.modelPool = new ModelPool({
+      SUV: "/models/SUV.gltf",
+    })
 
     this.carGroup = new THREE.Group();
 
@@ -63,25 +68,26 @@ export class CarMotionLayer extends Layer {
 
     this.worker = new CarMotionLayerWorker();
     this.worker.onmessage = (event) => {
-      const { key, data } = event.data;
+      const [key, postTime, callTime] = event.data;
+      const data = event.data.slice(3);
       switch (key) {
-        case "setData":
+        case 1:
+          this.center = [data[0], data[1]];
+          const [x, y] = this.map.WebMercatorToCanvasXY(...this.center);
+          this.carGroup.position.set(x, y, 0);
+          this.pickLayerMesh.position.set(x, y, 0);
+          this.pickMeshMesh.position.set(x, y, 0);
+          this.canRender = true;
+          this.callWorkerRender();
           break;
-        case "render":
+        case 2:
           this.handleRenderCallback(data);
-          break;
-        case "getCarByColor":
-          this.handleGetCarByColorCallback(data);
-          break;
-        case "getCarByUuid":
-          this.handleGetCarByUuidCallback(data);
           break;
       }
     };
     this.worker.addEventListener("error", (error) => {
       console.log(error);
     });
-
   }
 
   on(type, data) {
@@ -90,13 +96,17 @@ export class CarMotionLayer extends Layer {
       this.carGroup.position.set(x, y, 0);
       this.pickLayerMesh.position.set(x, y, 0);
       this.pickMeshMesh.position.set(x, y, 0);
+
+      if (this.line) {
+        const [x, y] = this.map.WebMercatorToCanvasXY(...this.line.userData.center);
+        this.line.position.set(x, y, 0);
+      }
     }
 
     if (type == MAP_EVENT.HANDLE_PICK_LEFT && data.layerId == this.id) {
-      this.worker.postMessage({
-        key: "getCarByColor",
-        data: { pickColor: data.pickColor },
-      });
+      const id = this.idList[data.pickColor - 1];
+      this.setSelectCarId(id)
+      this.handleEventListener(MAP_EVENT.HANDLE_PICK_LEFT, id);
     }
   }
 
@@ -105,56 +115,51 @@ export class CarMotionLayer extends Layer {
     this.center = this.map.center;
   }
 
-  beforeRender() {
-    if (this.lockSelectCar && this._selectCarDetail && this._selectCarPath) {
-      const { start, end, isRunning } = this._selectCarPath.getPointByTime(this.time);
-      if (isRunning) {
-        this.map.setCenter(start.toJSON());
-      }
-    }
-  }
-
   render() {
     super.render();
-    this.worker.postMessage({
-      key: "render",
-      data: {
-        time: this.time,
-        maxCarNum: this.maxCarNum,
-        center: this.center,
-      },
-    });
+    // if (this.canRender) this.callWorkerRender();
   }
+
+  callWorkerRender() {
+    let windowRange = {
+      maxX: 0,
+      minX: 0,
+      maxY: 0,
+      minY: 0,
+      width: 0,
+      height: 0
+    };
+    if (this.map) windowRange = this.map.getWindowRangeAndWebMercator();
+    const list = [2, new Date().getTime()];
+    list.push(this.time);
+    list.push(this.maxCarNum);
+    list.push(this.selectCarIndex);
+    list.push(windowRange.maxX);
+    list.push(windowRange.minX);
+    list.push(windowRange.maxY);
+    list.push(windowRange.minY);
+    const array = new Float64Array(list);
+    this.worker.postMessage(array, [array.buffer]);
+  }
+
 
   dispose() {
     this.worker.terminate();
+    const modelName = "SUV";
+    this.runCarList.forEach(model => {
+      this.carGroup.remove(model);
+      this.modelPool.still(modelName, model)
+    })
+    this.runCarList.length = 0;
+    this.modelPool.dispose();
+    this.pickGeometry.dispose();
   }
 
-  setSelectCarId(uuid) {
-    this.selectCarId = uuid;
-    this.worker.postMessage({
-      key: "getCarByUuid",
-      data: {
-        uuid: this.selectCarId,
-      },
-    });
-  }
 
-  handleGetCarByUuidCallback(data) {
-    if (data) {
-      const { carDetail, path } = data;
-      this._selectCarDetail = carDetail;
-      this._selectCarPath = new CarMotionPath(path);
-    } else {
-      this._selectCarDetail = null;
-      this._selectCarPath = null;
-    }
-  }
-
-  handleRenderCallback({ time, list }) {
+  handleRenderCallback(array) {
     this.rendering = false;
-
-    const num = Math.max(this.runCarList.length, list.length);
+    const arraySize = 7;
+    const num = Math.max(this.runCarList.length, array.length / arraySize);
     const runCarList = [];
     const attrPoitions = [];
     const attrPickColors = [];
@@ -163,43 +168,45 @@ export class CarMotionLayer extends Layer {
     this.carGroup.remove(this.coneMesh);
     for (let i = 0; i < num; i++) {
       let model = this.runCarList[i];
-      if (list[i] && list[i].carDetail.uuid == this.selectCarId) {
-        const { position, worldPosition } = list[i].runDetail;
-        this.coneMesh.position.set(position[0], position[1], this.modelSize * 7);
+      const data = array.slice(i * arraySize, i * arraySize + arraySize);
+      const id = data[0];
+      if (data[0] == this.selectCarIndex && data[0] != undefined) {
+        this.coneMesh.position.set(data[1], data[2], this.modelSize * 4.5);
         const scale = this.modelSize * 0.1;
         this.coneMesh.scale.set(scale, scale, scale);
         this.carGroup.add(this.coneMesh);
-        // if (this.lockSelectCar) {
-        //   const eventId = this.map.addEventListener(MAP_EVENT.LAYER_AFTER_RENDER, () => {
-        //     this.map.setCenter(worldPosition);
-        //     this.map.removeEventListener(MAP_EVENT.LAYER_AFTER_RENDER, eventId);
-        //   });
-        // }
-      } else if (i > this.maxCarNum || !list[i]) {
+        if (this.lockSelectCar && this.map) this.map.setCenter([data[1] + this.center[0], data[2] + this.center[1]]);
+      } else if (i > this.maxCarNum || data[0] == undefined) {
         if (model) {
           this.carGroup.remove(model);
-          ModelPool.instance.still(modelName, model);
+          this.modelPool.still(modelName, model);
         }
         continue;
       }
       if (!model) {
-        model = ModelPool.instance.take(modelName);
+        model = this.modelPool.take(modelName);
         if (!model) continue;
         this.carGroup.add(model);
       }
+
+      // const scale = this.modelSize * 0.005;
+      // model.scale.set(scale, scale, scale);
+      // model.position.set(data[1], data[2], this.modelSize);
+      // const rotationOrderMap = { 1: "XYZ", 2: "YXZ", 3: "ZXY", 4: "ZYX", 5: "YZX", 6: "XZY" };
+      // model.rotation.fromArray([data[3], data[4], data[5], rotationOrderMap[data[6]]]);
+      
       const scale = this.modelSize * 0.005;
       model.scale.set(scale, scale, scale);
+      model.position.set(data[1], data[2], this.modelSize);
+      model.quaternion.set(data[3], data[4], data[5], data[6]);
+
+      
       runCarList[i] = model;
-
-      const { carDetail, runDetail } = list[i];
-      const { position, rotation } = runDetail;
-      model.position.set(position[0], position[1], this.modelSize);
-      model.rotation.fromArray(rotation);
-
+      
       const attrLength = attrPoitions.length;
-      const pickColor = new THREE.Color(carDetail.pickColor);
-      attrPoitions[attrLength] = position[0];
-      attrPoitions[attrLength + 1] = position[1];
+      const pickColor = new THREE.Color(id + 1);
+      attrPoitions[attrLength] = data[1];
+      attrPoitions[attrLength + 1] = data[2];
       attrPoitions[attrLength + 2] = (this.modelSize * 5) / 4;
       attrPickColors[attrLength] = pickColor.r;
       attrPickColors[attrLength + 1] = pickColor.g;
@@ -215,18 +222,31 @@ export class CarMotionLayer extends Layer {
     this.pickGeometry.computeBoundingSphere();
   }
 
-  handleGetCarByColorCallback(data) {
-    if (data) {
-      this.handleEventListener(MAP_EVENT.HANDLE_PICK_LEFT, data.carDetail);
-    }
-  }
-  
   setData(data) {
-    this.worker.postMessage({ key: "setData", data: data });
+    try {
+      console.time("new Float64Array")
+      this.idList = data.idList;
+      const array = new Float64Array(data.array.length + 2);
+      array.set([1], 0);
+      array.set([new Date().getTime()], 1);
+      array.set(data.array, 2);
+      console.timeEnd("new Float64Array")
+      this.worker.postMessage(array, [array.buffer]);
+    } catch (error) {
+      console.log(error);
+      this.idList = [];
+      const array = new Float64Array([0, 0]);
+      this.worker.postMessage(array, [array.buffer]);
+    }
   }
 
   setTime(time) {
-    this.time = time;
+    if (this._changeTimeout || Math.abs(this.time - time) < 0.001) return;
+    this._changeTimeout = setTimeout(() => {
+      this.time = Number(time.toFixed(4));
+      if (this.canRender) this.callWorkerRender();
+      this._changeTimeout = null;
+    }, 1000 / 60);
   }
 
   setModelSize(modelSize) {
@@ -235,5 +255,11 @@ export class CarMotionLayer extends Layer {
     this.pickLayerMaterial.needsUpdate = true;
     this.pickMeshMaterial.setValues({ size: this.modelSize * 5 });
     this.pickMeshMaterial.needsUpdate = true;
+    if (this.canRender) this.callWorkerRender();
+  }
+
+  setSelectCarId(selectCarId) {
+    this.selectCarIndex = this.idList.findIndex(v => v == selectCarId);
+    this.callWorkerRender();
   }
 }
