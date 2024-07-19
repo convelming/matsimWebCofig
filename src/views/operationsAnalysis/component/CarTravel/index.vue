@@ -130,10 +130,10 @@ export default {
       modelSize: this.modelSize,
       event: {
         [MAP_EVENT.HANDLE_PICK_LEFT]: ({ data }) => {
-          this._CarTileLayer.setSelectCarId(data);
-          this.rootVue.handleShowCarDetail({
-            uuid: data.join(","),
-            carDetail: { id: data[1], vehicleId: data[0] },
+          this._CarTileLayer.setSelectCarIndex(data);
+          this.rootVue.handleShowCarTileDetail({
+            uuid: "CarTileDetail_" + data,
+            carDetail: { index: data },
           });
         },
       },
@@ -160,12 +160,12 @@ export default {
     handleShowCar3DLayer(val) {
       try {
         if (val) {
-          this.rootVue.$on("MotorizedTravel_setSelectedCar", (carDetail) => {
-            this._CarTileLayer.setSelectCarId(carDetail.id);
+          this.rootVue.$on("CarTravel_setSelectedCar", (carDetail) => {
+            this._CarTileLayer.setSelectCarIndex(carDetail.index);
           });
           this._Map.addLayer(this._CarTileLayer);
         } else {
-          this.rootVue.$off("MotorizedTravel_setSelectedCar");
+          this.rootVue.$off("CarTravel_setSelectedCar");
           this._Map.removeLayer(this._CarTileLayer);
         }
       } catch (error) {}

@@ -7,7 +7,7 @@
             <el-collapse v-model="activeNames">
               <PublicTransit :showLayer.sync="showLayerPublicTransit" :lock2D.sync="lock2DPublicTransit" name="PublicTransit" />
               <MotorizedTravel :showLayer.sync="showLayerMotorizedTravel" :lock2D.sync="lock2DMotorizedTravel" name="MotorizedTravel" />
-              <MotorizedTravelCar :showLayer.sync="showLayerMotorizedTravelCar" :lock2D.sync="lock2DMotorizedTravelCar" name="MotorizedTravelCar" />
+              <CarTravel :showLayer.sync="showLayerCarTravel" :lock2D.sync="lock2DCarTravel" name="CarTravel" />
               <Build3D :showLayer.sync="showLayerBuild3D" :lock2D.sync="lock2DBuild3D" name="Build3D" />
               <Network :showLayer.sync="showLayerNetwork" :lock2D.sync="lock2DNetwork" name="Network" />
               <Activity3D :showLayer.sync="showLayerActivity3D" :lock2D.sync="lock2DActivity3D" name="Activity3D" />
@@ -65,7 +65,7 @@ import Build3D from "./component/Build3D/index.vue";
 import Network from "./component/Network/index.vue";
 import Activity3D from "./component/Activity3D/index.vue";
 import GeoJSON from "./component/GeoJSON/index.vue";
-import MotorizedTravelCar from "./component/MotorizedTravelCar/index.vue";
+import CarTravel from "./component/CarTravel/index.vue";
 
 import NewClock from "@/components/NewClock/index.vue";
 
@@ -79,7 +79,7 @@ export default {
     Network,
     Activity3D,
     GeoJSON,
-    MotorizedTravelCar,
+    CarTravel,
     NewClock,
   },
   mixins: [mixins],

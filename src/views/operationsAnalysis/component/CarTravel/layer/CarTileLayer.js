@@ -24,6 +24,8 @@ export class CarTileLayer extends Layer {
 
   center = [12628397, 2655338.7]
 
+  selectCarIndex = -1;
+
   constructor(opt) {
     super(opt);
     this.dataSource = opt.dataSource || this.dataSource;
@@ -119,12 +121,7 @@ export class CarTileLayer extends Layer {
     }
 
     if (type == MAP_EVENT.HANDLE_PICK_LEFT && data.layerId == this.id) {
-      // const id = this.idList[data.pickColor - 1];
-      // this.setSelectCarId(id)
-
-      this.selectCarIndex = data.pickColor - 1;
-      this.handleRender();
-      this.handleEventListener(MAP_EVENT.HANDLE_PICK_LEFT, id);
+      this.handleEventListener(MAP_EVENT.HANDLE_PICK_LEFT, data.pickColor - 1);
     }
   }
 
@@ -208,7 +205,7 @@ export class CarTileLayer extends Layer {
         const scale = this.modelSize * 0.1;
         this.coneMesh.scale.set(scale, scale, scale);
         this.carGroup.add(this.coneMesh);
-        this.map.setCenter([x + this.center[0], y + this.center[1]]);
+        if (this.lockSelectCar && this.map) this.map.setCenter([x + this.center[0], y + this.center[1]]);
       } else if (i > this.maxCarNum || carId == undefined) {
         if (model) {
           this.carGroup.remove(model);
@@ -255,4 +252,8 @@ export class CarTileLayer extends Layer {
     this.pickMeshMesh.position.set(x, y, 0);
   }
 
+  setSelectCarIndex(index) {
+    this.selectCarIndex = index;
+    this.handleRender();
+  }
 }

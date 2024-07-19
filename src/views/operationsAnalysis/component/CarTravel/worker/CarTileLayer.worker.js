@@ -130,7 +130,6 @@ class Worker {
   }
 
   render(data) {
-    console.time("render")
     const { time, maxCarNum, selectCarIndex, maxX, minX, maxY, minY } = data;
     const [cx, cy] = [12628397, 2655338.7]
     const timeSpeed = TIME_SPEED;
@@ -162,7 +161,6 @@ class Worker {
         runCarList.push(id, x0 - cx, y0 - cy, q.x, q.y, q.z, q.w); // length = 7
       }
     }
-    console.timeEnd("render")
     return new Float64Array(runCarList);
   }
 }

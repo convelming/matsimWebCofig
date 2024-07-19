@@ -194,7 +194,7 @@ export class BusMotionPoint {
     let x = this.x + (point.x - this.x) * percentage;
     let y = this.y + (point.y - this.y) * percentage;
     if (newObject) {
-      return new BusMotionPoint([x, y]);
+      return new this.constructor([x, y]);
     } else {
       this.x = x;
       this.y = y;
@@ -204,7 +204,7 @@ export class BusMotionPoint {
 
   scale(scale, newObject = true) {
     if (newObject) {
-      return new BusMotionPoint([this.x * scale, this.y * scale]);
+      return new this.constructor([this.x * scale, this.y * scale]);
     } else {
       this.x *= scale;
       this.y *= scale;
@@ -214,7 +214,7 @@ export class BusMotionPoint {
 
   offset(point, newObject = true) {
     if (newObject) {
-      return new BusMotionPoint([this.x - point.x, this.y - point.y]);
+      return new this.constructor([this.x - point.x, this.y - point.y]);
     } else {
       this.x -= point.x;
       this.y -= point.y;
@@ -224,7 +224,7 @@ export class BusMotionPoint {
 
   unOffset(point, newObject = true) {
     if (newObject) {
-      return new BusMotionPoint([this.x + point.x, this.y + point.y]);
+      return new this.constructor([this.x + point.x, this.y + point.y]);
     } else {
       this.x += point.x;
       this.y += point.y;
@@ -241,7 +241,7 @@ export class BusMotionPoint {
   }
 
   clone() {
-    return new BusMotionPoint([this.x, this.y]);
+    return new this.constructor([this.x, this.y]);
   }
 
   toJSON() {
@@ -252,8 +252,8 @@ export class BusMotionPoint {
 export class CarMotionPath {
   constructor(opt = []) {
     this._opt = JSON.parse(JSON.stringify(opt));
-    const startPoint = new BusMotionPoint(opt[0].startPoint);
-    const endPoint = new BusMotionPoint(opt[opt.length - 1].endPoint);
+    const startPoint = new CarMotionPoint(opt[0].startPoint);
+    const endPoint = new CarMotionPoint(opt[opt.length - 1].endPoint);
     const startTime = opt[0].startTime;
     const endTime = opt[opt.length - 1].endTime;
 

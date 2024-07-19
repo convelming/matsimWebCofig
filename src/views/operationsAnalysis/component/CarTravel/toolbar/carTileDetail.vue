@@ -84,7 +84,7 @@
 
 <script>
 import { CarMotionPath, CarMotionPoint } from "../utils.js";
-import { getCarInfo } from "@/api/index";
+import { getCarDetail } from "@/api/index";
 import { formatHour } from "@/utils/utils";
 export default {
   inject: ["rootVue"],
@@ -106,11 +106,11 @@ export default {
       handler(val) {
         if (val) {
           setTimeout(() => {
-            this.rootVue.$emit("MotorizedTravel_setSelectedCar", this.carDetail);
+            this.rootVue.$emit("CarTravel_setSelectedCar", this.carDetail);
             this.rootVue.$on("timeChange", this.updateVisibleSvg);
           }, 200);
         } else {
-          this.rootVue.$emit("MotorizedTravel_setSelectedCar", {});
+          this.rootVue.$emit("CarTravel_setSelectedCar", {});
           this.rootVue.$off("timeChange", this.updateVisibleSvg);
         }
       },
@@ -137,10 +137,9 @@ export default {
   methods: {
     getDetail() {
       if (!this.carDetail) return;
-      getCarInfo({
-        id: this.carDetail.id,
-        vehicleId: this.carDetail.vehicleId,
-      }).then((res) => {
+      const { database, datasource } = this.$route.params;
+      getCarDetail(database, datasource, this.carDetail.index).then((res) => {
+        console.log(res);
         const { paths, ...departure } = res.data;
         // 创建路径SVG
         this.departure = departure;
@@ -189,9 +188,11 @@ export default {
     updateVisibleSvg(time) {
       try {
         if (time === undefined || time === null) return;
+        if (time - this._updateTime < 0.005) return;
+        this._updateTime = Number(Number(time).toFixed(3));
         const path = this.path;
         const { originPoint, resultPoint, startPoint, box, padding, paddingPoint } = this.svgParams;
-        const { start } = path.getPointByTime(time);
+        const { start } = path.getPointByTime(this._updateTime);
         const visiblePoint = start.offset(originPoint).unOffset(paddingPoint, false);
 
         this.visibleSvgParams = {

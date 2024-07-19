@@ -7,7 +7,7 @@
 <script>
 import { Map, MapLayer } from "@/mymap/index.js";
 import NewClock from "@/components/NewClock/index.vue";
-import { CarTileLayer } from "@/views/operationsAnalysis/component/MotorizedTravelCar/layer/CarTileLayer.js";
+import { CarTileLayer } from "@/views/operationsAnalysis/component/CarTravel/layer/CarTileLayer.js";
 export default {
   components: {
     NewClock,

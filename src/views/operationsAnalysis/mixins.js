@@ -12,7 +12,7 @@ export default {
       loading: false,
       _Map: null,
       _MapLayer: null,
-      activeNames: ["PublicTransit", "MotorizedTravel", "MotorizedTravelCar", "Build3D", "Network", "Activity3D", "GeoJSON"],
+      activeNames: ["PublicTransit", "MotorizedTravel", "CarTravel", "Build3D", "Network", "Activity3D", "GeoJSON"],
 
       showLayerPublicTransit: false,
       lock2DPublicTransit: false,
@@ -29,8 +29,8 @@ export default {
       showLayerActivity3D: false,
       lock2DActivity3D: false,
 
-      showLayerMotorizedTravelCar: false,
-      lock2DMotorizedTravelCar: false,
+      showLayerCarTravel: false,
+      lock2DCarTravel: false,
 
       showLayerGeoJSON: false,
       lock2DGeoJSON: false,
@@ -41,7 +41,7 @@ export default {
 
       showHelpDialog: false,
 
-      time: 3600 * 8,
+      time: 3600 * 8 - 360,
       speed: 0,
       minTime: 0,
       maxTime: 3600 * 24.5,
@@ -84,10 +84,10 @@ export default {
     lock2DActivity3D(val) {
       this.handleChangeMapCameraControls();
     },
-    showLayerMotorizedTravelCar(val) {
+    showLayerCarTravel(val) {
       this.handleChangeMapCameraControls();
     },
-    lock2DMotorizedTravelCar(val) {
+    lock2DCarTravel(val) {
       this.handleChangeMapCameraControls();
     },
     showLayerGeoJSON(val) {
@@ -216,6 +216,15 @@ export default {
     handleShowCarDetail({ uuid, carDetail }) {
       if (this.$refs.Toolbar) {
         this.$refs.Toolbar.add("CarDetail", {
+          uuid: uuid,
+          carDetail: carDetail,
+        });
+        this.showStopToolbar = true;
+      }
+    },
+    handleShowCarTileDetail({ uuid, carDetail }) {
+      if (this.$refs.Toolbar) {
+        this.$refs.Toolbar.add("CarTileDetail", {
           uuid: uuid,
           carDetail: carDetail,
         });

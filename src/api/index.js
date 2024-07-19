@@ -379,6 +379,17 @@ export function getCarInfo(params) {
   });
 }
 
+// 查询私家车详情
+// GET /pt/tiles/carDetail/{base}/{scheme}/{index}
+// 接口ID：194922810
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-194922810
+export function getCarDetail(base, scheme, index) {
+  return request({
+    url: `/pt/tiles/carDetail/${base}/${scheme}/${index}`,
+    method: "get",
+  });
+}
+
 // 删除线路
 // DELETE /pt/transitLine/delete
 // 接口ID：154661151
