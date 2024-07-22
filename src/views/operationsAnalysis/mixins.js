@@ -50,50 +50,59 @@ export default {
   },
   watch: {
     showLayerPublicTransit(val) {
+      this.handleChangeTimeSpeed();
       this.handleChangeMapCameraControls();
     },
     lock2DPublicTransit(val) {
+      this.handleChangeTimeSpeed();
       this.handleChangeMapCameraControls();
     },
     showLayerMotorizedTravel(val) {
-      if (val) {
-        this.speed = 10;
-      } else {
-        this.speed = 0;
-      }
+      this.handleChangeTimeSpeed();
       this.handleChangeMapCameraControls();
     },
     lock2DMotorizedTravel(val) {
+      this.handleChangeTimeSpeed();
       this.handleChangeMapCameraControls();
     },
     showLayerBuild3D(val) {
+      this.handleChangeTimeSpeed();
       this.handleChangeMapCameraControls();
     },
     lock2DBuild3D(val) {
+      this.handleChangeTimeSpeed();
       this.handleChangeMapCameraControls();
     },
     showLayerNetwork(val) {
+      this.handleChangeTimeSpeed();
       this.handleChangeMapCameraControls();
     },
     lock2DNetwork(val) {
+      this.handleChangeTimeSpeed();
       this.handleChangeMapCameraControls();
     },
     showLayerActivity3D(val) {
+      this.handleChangeTimeSpeed();
       this.handleChangeMapCameraControls();
     },
     lock2DActivity3D(val) {
+      this.handleChangeTimeSpeed();
       this.handleChangeMapCameraControls();
     },
     showLayerCarTravel(val) {
+      this.handleChangeTimeSpeed();
       this.handleChangeMapCameraControls();
     },
     lock2DCarTravel(val) {
+      this.handleChangeTimeSpeed();
       this.handleChangeMapCameraControls();
     },
     showLayerGeoJSON(val) {
+      this.handleChangeTimeSpeed();
       this.handleChangeMapCameraControls();
     },
     lock2DGeoJSON(val) {
+      this.handleChangeTimeSpeed();
       this.handleChangeMapCameraControls();
     },
   },
@@ -132,6 +141,21 @@ export default {
       this.time = value;
       this.$emit("timeChange", this.time);
     },
+    handleChangeTimeSpeed() {
+      let enableRotate = false;
+      if (this.showLayerPublicTransit) enableRotate = true;
+      if (this.showLayerMotorizedTravel) enableRotate = true;
+      if (this.showLayerBuild3D) enableRotate = true;
+      if (this.showLayerNetwork) enableRotate = true;
+      if (this.showLayerActivity3D) enableRotate = true;
+      if (this.showLayerCarTravel) enableRotate = true;
+      if (this.showLayerGeoJSON) enableRotate = true;
+      if (enableRotate) {
+        this.speed = 10;
+      } else {
+        this.speed = 0;
+      }
+    },
     handleChangeMapCameraControls() {
       let enableRotate = true;
       if (this.showLayerPublicTransit && this.lock2DPublicTransit) enableRotate = false;
@@ -139,6 +163,7 @@ export default {
       if (this.showLayerBuild3D && this.lock2DBuild3D) enableRotate = false;
       if (this.showLayerNetwork && this.lock2DNetwork) enableRotate = false;
       if (this.showLayerActivity3D && this.lock2DActivity3D) enableRotate = false;
+      if (this.showLayerCarTravel && this.lock2DCarTravel) enableRotate = false;
       if (this.showLayerGeoJSON && this.lock2DGeoJSON) enableRotate = false;
       if (enableRotate) {
         this._Map.enableRotate = true;
@@ -154,7 +179,7 @@ export default {
       });
       this._Map.addLayer(this._MapLayer);
 
-      // console.log(this._Map.setFitZoomAndCenterByPoints(this.range));
+      console.log(this._Map.setFitZoomAndCenterByPoints(this.range));
     },
     initLayer() {
       this._MapLayer = new MapLayer({ zIndex: -1 });
@@ -222,9 +247,9 @@ export default {
         this.showStopToolbar = true;
       }
     },
-    handleShowCarTileDetail({ uuid, carDetail }) {
+    handleShowCarTravelDetail({ uuid, carDetail }) {
       if (this.$refs.Toolbar) {
-        this.$refs.Toolbar.add("CarTileDetail", {
+        this.$refs.Toolbar.add("CarTravelDetail", {
           uuid: uuid,
           carDetail: carDetail,
         });

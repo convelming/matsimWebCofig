@@ -2,12 +2,12 @@ import * as THREE from "three";
 import { Layer, MAP_EVENT } from "@/mymap/index.js";
 import { ModelPool } from "@/mymap/utils/ModelPool.js";
 
-import CarTileLayerWorker from "../worker/CarTileLayer.worker";
+import CarTravelLayerWorker from "../worker/CarTravelLayer.worker";
 
 const BUILD_ZOOM = 15;
 const EARTH_RADIUS = 20037508.3427892;
 
-export class CarTileLayer extends Layer {
+export class CarTravelLayer extends Layer {
 
   time = 27046 //3600 * 8;
   timeSpeed = 60 * 1;
@@ -75,7 +75,7 @@ export class CarTileLayer extends Layer {
     this.coneMesh.rotateX((Math.PI / 2) * 3);
 
 
-    this.worker = new CarTileLayerWorker();
+    this.worker = new CarTravelLayerWorker();
     this.worker.onmessage = (event) => {
       const [key] = event.data;
       const data = event.data.slice(1);
@@ -187,6 +187,7 @@ export class CarTileLayer extends Layer {
 
 
   handleRenderCallback(array) {
+    if (!this.map) return;
     this.rendering = false;
     const arraySize = 7;
     const num = Math.max(this.runCarList.length, array.length / arraySize);

@@ -67,8 +67,13 @@ class Worker {
       for (let j = col[0]; j < col[1]; j++) {
         const key = `${i}_${j}`;
         if (!this.tileMap.has(key)) {
-          const tile = await this.getTile(dataSource, zoom, i, j);
-          this.tileMap.set(key, tile);
+          try {
+            const tile = await this.getTile(dataSource, zoom, i, j);
+            this.tileMap.set(key, tile);
+          } catch (error) {
+            console.error(`数据 ${key} 加载失败`);
+            console.error(error);
+          }
         }
       }
     }

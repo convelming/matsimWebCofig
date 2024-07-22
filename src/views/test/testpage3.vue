@@ -7,7 +7,8 @@
 <script>
 import { Map, MapLayer } from "@/mymap/index.js";
 import NewClock from "@/components/NewClock/index.vue";
-import { CarTileLayer } from "@/views/operationsAnalysis/component/CarTravel/layer/CarTileLayer.js";
+import { CarTravelLayer } from "@/views/operationsAnalysis/component/CarTravel/layer/CarTravelLayer.js";
+import { CarTravelLayer2 } from "@/views/operationsAnalysis/component/CarTravel/layer/CarTravelLayer2.js";
 export default {
   components: {
     NewClock,
@@ -60,7 +61,7 @@ export default {
     },
     handleUpdateTime(value) {
       this.time = value;
-      // this._CarTileLayer.setTime(value);
+      // this._CarTravelLayer.setTime(value);
     },
     // 初始化地图
     async initMap() {
@@ -73,8 +74,10 @@ export default {
       this._Map.cameraControls.enableRotate = true;
       this._MapLayer = new MapLayer({ zIndex: 0 });
       this._Map.addLayer(this._MapLayer);
-      this._CarTileLayer = new CarTileLayer({ zIndex: 1, base: "guangzhou", scheme: "base" });
-      this._Map.addLayer(this._CarTileLayer);
+      this._CarTravelLayer = new CarTravelLayer({ zIndex: 1, base: "guangzhou", scheme: "base" });
+      this._Map.addLayer(this._CarTravelLayer);
+      this._CarTravelLayer2 = new CarTravelLayer2({ zIndex: 1, base: "guangzhou", scheme: "base" });
+      this._Map.addLayer(this._CarTravelLayer2);
     },
   },
 };

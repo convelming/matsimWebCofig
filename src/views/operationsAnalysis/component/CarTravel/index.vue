@@ -48,7 +48,7 @@
 
 <script>
 import { MAP_EVENT } from "@/mymap/index.js";
-import { CarTileLayer } from "./layer/CarTileLayer";
+import { CarTravelLayer } from "./layer/CarTravelLayer";
 
 export default {
   props: ["name", "showLayer", "lock2D"],
@@ -71,17 +71,17 @@ export default {
     },
     lockSelectVehicle: {
       handler(val) {
-        this._CarTileLayer.lockSelectCar = val;
+        this._CarTravelLayer.lockSelectCar = val;
       },
     },
     maxVehicleNum: {
       handler(val) {
-        this._CarTileLayer.maxCarNum = val;
+        this._CarTravelLayer.maxCarNum = val;
       },
     },
     modelSize: {
       handler(val) {
-        this._CarTileLayer.setModelSize(val);
+        this._CarTravelLayer.setModelSize(val);
       },
     },
     page_language: {
@@ -107,7 +107,7 @@ export default {
       showCar3DLayer: true,
       maxVehicleNum: 20000,
 
-      _CarTileLayer: null,
+      _CarTravelLayer: null,
 
       modelSize: 3,
 
@@ -122,7 +122,7 @@ export default {
   },
   created() {
     this.s_showLayer = this.showLayer;
-    this._CarTileLayer = new CarTileLayer({
+    this._CarTravelLayer = new CarTravelLayer({
       zIndex: 10,
       dataSource: this.$store.getters.dataSource,
       lockSelectCar: this.lockSelectVehicle,
@@ -130,9 +130,9 @@ export default {
       modelSize: this.modelSize,
       event: {
         [MAP_EVENT.HANDLE_PICK_LEFT]: ({ data }) => {
-          this._CarTileLayer.setSelectCarIndex(data);
-          this.rootVue.handleShowCarTileDetail({
-            uuid: "CarTileDetail_" + data,
+          this._CarTravelLayer.setSelectCarIndex(data);
+          this.rootVue.handleShowCarTravelDetail({
+            uuid: "CarTravelDetail_" + data,
             carDetail: { index: data },
           });
         },
@@ -150,7 +150,7 @@ export default {
   },
   beforeDestroy() {
     this.handleDisable();
-    this._CarTileLayer.dispose();
+    this._CarTravelLayer.dispose();
   },
   methods: {
     handleChangeShowLayer(value) {
@@ -161,12 +161,12 @@ export default {
       try {
         if (val) {
           this.rootVue.$on("CarTravel_setSelectedCar", (carDetail) => {
-            this._CarTileLayer.setSelectCarIndex(carDetail.index);
+            this._CarTravelLayer.setSelectCarIndex(carDetail.index);
           });
-          this._Map.addLayer(this._CarTileLayer);
+          this._Map.addLayer(this._CarTravelLayer);
         } else {
           this.rootVue.$off("CarTravel_setSelectedCar");
-          this._Map.removeLayer(this._CarTileLayer);
+          this._Map.removeLayer(this._CarTravelLayer);
         }
       } catch (error) {}
     },
@@ -181,7 +181,7 @@ export default {
       this.rootVue.$off("timeChange", this.handleTimeChange);
     },
     handleTimeChange(time) {
-      if (this._CarTileLayer) this._CarTileLayer.setTime(time);
+      if (this._CarTravelLayer) this._CarTravelLayer.setTime(time);
     },
     // 格式化速度
     formatSpeed(val) {

@@ -56,7 +56,6 @@
 </language>
 
 <script>
-
 import mixins from "../operationsAnalysis/mixins";
 
 import PublicTransit from "../operationsAnalysis/component/PublicTransit/index.vue";
@@ -163,6 +162,22 @@ export default {
       } else {
         this._Map.enableRotate = false;
         this._Map.setPitchAndRotation(90, 0);
+      }
+    },
+    handleChangeTimeSpeed() {
+      let enableRotate = false;
+      if (this.showLayerLinesAnalysis) enableRotate = true;
+      if (this.showLayerAnalysisReport) enableRotate = true;
+      if (this.showLayerPublicTransit) enableRotate = true;
+      if (this.showLayerMotorizedTravel) enableRotate = true;
+      if (this.showLayerBuild3D) enableRotate = true;
+      if (this.showLayerNetwork) enableRotate = true;
+      if (this.showLayerActivity3D) enableRotate = true;
+      if (this.showLayerGeoJSON) enableRotate = true;
+      if (enableRotate) {
+        this.speed = 10;
+      } else {
+        this.speed = 0;
       }
     },
   },

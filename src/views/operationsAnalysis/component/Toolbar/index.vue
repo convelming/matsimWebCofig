@@ -93,7 +93,7 @@ import SelectLinkAnalysis from "../Network/toolbar/selectLinkAnalysis.vue";
 // 活动
 import ActivityDetail from "../Activity3D/toolbar/ActivityDetail.vue";
 // 私家车出行
-import CarTileDetail from "../CarTravel/toolbar/carTileDetail.vue";
+import CarTravelDetail from "../CarTravel/toolbar/carTravelDetail.vue";
 
 export default {
   components: {
@@ -118,7 +118,7 @@ export default {
 
     ActivityDetail,
 
-    CarTileDetail,
+    CarTravelDetail,
   },
   inject: ["rootVue"],
   data() {
@@ -135,7 +135,7 @@ export default {
       MotorizedTravel: {
         id: "MotorizedTravel",
         name: "机动化出行",
-        components: ["CarDetail", "BusDetail", "SubwayDetail", "CarTileDetail"],
+        components: ["CarDetail", "BusDetail", "SubwayDetail", "CarTravelDetail"],
         sreach: {},
         params: {},
         list: [],
@@ -187,7 +187,7 @@ export default {
 
         ActivityDetail: "Activity3D",
 
-        CarTileDetail: "MotorizedTravel"
+        CarTravelDetail: "MotorizedTravel"
       },
       activeModel: "公共交通",
       activeName: "",
