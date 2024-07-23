@@ -54,11 +54,16 @@ class Worker {
 
   tileMap = new Map();
 
+  loadMap = new Map();
+  run = true;
 
-  constructor() { }
+  constructor() {
+    this.handleGetTile();
+  }
 
-  async loadTiles(data) {
-    if (this.tileMap.size > 50) {
+  loadTiles(data) {
+    const LIVE_NUM = 4;
+    if (this.tileMap.size > 100) {
       // TODO 清除一些显示优先级低的tile
       for (const key of Array.from(this.tileMap.keys())) {
         if (this.tileMap.get(key).live <= 0) {
@@ -66,7 +71,6 @@ class Worker {
         }
       }
     }
-
     for (const tile of this.tileMap.values()) {
       tile.live--;
     }
@@ -75,23 +79,40 @@ class Worker {
       for (let j = col[0]; j < col[1]; j++) {
         const key = `${i}_${j}`;
         if (!this.tileMap.has(key)) {
-          try {
-            const tile = await this.getTile(dataSource, zoom, i, j);
-            this.tileMap.set(key, tile);
-          } catch (error) {
-            console.error(`数据 ${key} 加载失败`);
-            console.error(error);
-          }
+          const loadTile = { dataSource: dataSource, zoom: zoom, row: i, col: j, live: LIVE_NUM, loading: true };
+          this.tileMap.set(key, loadTile);
+          this.loadMap.set(key, loadTile);
         } else {
-          this.tileMap.get(key).live = 3;
+          this.tileMap.get(key).live = LIVE_NUM;
         }
       }
     }
-
     return new Float64Array();
   }
 
-  async getTile(dataSource, zoom, row, col) {
+  async handleGetTile() {
+    while (this.run) {
+      if (this.loadMap.size > 1) {
+        try {
+          const key = this.loadMap.keys().next().value;
+          const loadTile = this.loadMap.get(key);
+          if (loadTile.live > 0) {
+            const tile = await this.getTile(this.loadMap.get(key));
+            this.tileMap.set(key, tile);
+          }
+          this.loadMap.delete(key);
+          await new Promise(resolve => setTimeout(resolve, 0));
+        } catch (error) {
+          console.error(error)
+        }
+      } else {
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
+    }
+  }
+
+  async getTile(params) {
+    const { dataSource, zoom, row, col, live } = params;
     const response = await axios({
       url: `/pt/tiles/car/${dataSource}/${zoom}/${row}/${col}`,
       headers: { uuid: guid(), dataSource: "" },
@@ -108,6 +129,11 @@ class Worker {
     const timeSpeed = TIME_SPEED;
     const timeObj = new Map();
     const carMap = new Map();
+
+    const x1 = ((row + 0) * (EARTH_RADIUS * 2)) / Math.pow(2, zoom) - EARTH_RADIUS;
+    const y1 = EARTH_RADIUS - ((col + 0) * (EARTH_RADIUS * 2)) / Math.pow(2, zoom);
+    const x2 = ((row + 1) * (EARTH_RADIUS * 2)) / Math.pow(2, zoom) - EARTH_RADIUS;
+    const y2 = EARTH_RADIUS - ((col + 1) * (EARTH_RADIUS * 2)) / Math.pow(2, zoom);
 
     for (let i = 0, dataLength = array[0]; i < array.length; i += dataLength + 1, dataLength = array[i]) {
       const id = array[i + 1];
@@ -135,46 +161,46 @@ class Worker {
       }
     }
     return {
-      row: row,
-      col: col,
-      x: ((row + 0.5) * (EARTH_RADIUS * 2)) / Math.pow(2, zoom) - EARTH_RADIUS,
-      y: EARTH_RADIUS - ((col + 0.5) * (EARTH_RADIUS * 2)) / Math.pow(2, zoom),
+      ...params,
+      loading: false,
+      minX: Math.min(x1, x2),
+      maxX: Math.max(x1, x2),
+      minY: Math.min(y1, y2),
+      maxY: Math.max(y1, y2),
       timeObj: timeObj,
-      carMap: carMap,
-      live: 3
+      carMap: carMap
     };
   }
 
   render(data) {
-    const { time, maxCarNum, selectCarIndex, maxX, minX, maxY, minY } = data;
-    const [cx, cy] = [12628397, 2655338.7]
+    const { time, maxCarNum, selectCarIndex, maxX, minX, maxY, minY, center } = data;
+    const [cx, cy] = center;
     const timeSpeed = TIME_SPEED;
     const timeKey = Math.ceil(time / timeSpeed);
-    const cars = [];
-    for (const tile of this.tileMap.values()) {
-      if (tile.timeObj.has(timeKey)) {
-        const carKeys = tile.timeObj.get(timeKey);
+    const runCarList = [];
+
+    for (const { loading, timeObj, carMap, minX, minY, maxX, maxY } of this.tileMap.values()) {
+      if (!loading && timeObj.has(timeKey)) {
+        const carKeys = timeObj.get(timeKey);
         for (const key of carKeys) {
-          if (tile.carMap.has(key)) {
-            cars[cars.length] = tile.carMap.get(key);
+          if (carMap.has(key)) {
+            const v1 = carMap.get(key)
+            if (time >= v1.startTime && time <= v1.endTime) {
+              const { path, id } = v1;
+              const { start, end } = calculatePosition(path, time);
+              const [x0, y0] = start;
+              // if (minX <= x0 && x0 <= maxX && minY <= y0 && y0 <= maxY) {
+              const [x1, y1] = end;
+              const position = new THREE.Vector3(x0 - cx, y0 - cy, 0);
+              const target = new THREE.Vector3(x1 - cx, y1 - cy, 0); // 你的目标点
+              const m4 = new THREE.Matrix4().lookAt(position, target, new THREE.Vector3(0, 0, 1));
+              m4.multiply(new THREE.Matrix4().makeRotationY(Math.PI));
+              const q = new THREE.Quaternion().setFromRotationMatrix(m4);
+              runCarList.push(id, x0 - cx, y0 - cy, q.x, q.y, q.z, q.w); // length = 7
+              // }
+            }
           }
         }
-      }
-    }
-
-    const runCarList = [];
-    for (const v1 of cars) {
-      if (v1 && (runCarList.length < maxCarNum || v1.id == selectCarIndex) && time >= v1.startTime && time <= v1.endTime) {
-        const { path, id } = v1;
-        const { start, end } = calculatePosition(path, time);
-        const [x0, y0] = start;
-        const [x1, y1] = end;
-        const position = new THREE.Vector3(x0 - cx, y0 - cy, 0);
-        const target = new THREE.Vector3(x1 - cx, y1 - cy, 0); // 你的目标点
-        const m4 = new THREE.Matrix4().lookAt(position, target, new THREE.Vector3(0, 0, 1));
-        m4.multiply(new THREE.Matrix4().makeRotationY(Math.PI));
-        const q = new THREE.Quaternion().setFromRotationMatrix(m4);
-        runCarList.push(id, x0 - cx, y0 - cy, q.x, q.y, q.z, q.w); // length = 7
       }
     }
     return new Float64Array(runCarList);
@@ -189,12 +215,11 @@ onmessage = function (e) {
     case 1: {
       //"loadTiles":
       // console.log("car:loadTiles", new Date().getTime() - data.postTime);
-      worker.loadTiles(e.data).then(workerData => {
-        const array = new Float64Array(workerData.length + 1);
-        array.set([key], 0);
-        array.set(workerData, 1);
-        this.postMessage(array, [array.buffer]);
-      })
+      const workerData = worker.loadTiles(e.data)
+      const array = new Float64Array(workerData.length + 1);
+      array.set([key], 0);
+      array.set(workerData, 1);
+      this.postMessage(array, [array.buffer]);
       break;
     }
     case 2: {

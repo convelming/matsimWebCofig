@@ -3,7 +3,7 @@ import { Layer, MAP_EVENT } from "@/mymap/index.js";
 
 import CarTravelLayerWorker from "../worker/CarTravelLayer.worker";
 
-const BUILD_ZOOM = 15;
+const BUILD_ZOOM = 13;
 const EARTH_RADIUS = 20037508.3427892;
 
 export class CarTravelLayer2 extends Layer {
@@ -20,6 +20,7 @@ export class CarTravelLayer2 extends Layer {
   constructor(opt) {
     super(opt);
     this.dataSource = opt.dataSource || this.dataSource;
+    this.center = opt.center || this.center;
 
     this.worker = new CarTravelLayerWorker();
     this.worker.onmessage = (event) => {
@@ -107,8 +108,7 @@ export class CarTravelLayer2 extends Layer {
       ...windowRange,
       key: 2,
       time: this.time,
-      maxCarNum: this.maxCarNum,
-      selectCarIndex: this.selectCarIndex,
+      center: this.center,
     });
   }
 
@@ -158,7 +158,7 @@ export class CarTravel2Geometry extends THREE.BufferGeometry {
     const lineNormals = [];
     const lineLengths = [];
 
-    
+
     this.setIndex(indices);
     this.setAttribute("lineLength", new THREE.Float32BufferAttribute(lineLengths, 1));
     this.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));

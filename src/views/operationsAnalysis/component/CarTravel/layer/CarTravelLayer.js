@@ -29,6 +29,7 @@ export class CarTravelLayer extends Layer {
   constructor(opt) {
     super(opt);
     this.dataSource = opt.dataSource || this.dataSource;
+    this.center = opt.center || this.center;
 
     this.maxVehicleNum = opt.maxVehicleNum || this.maxVehicleNum;
     this.lockSelectVehicle = opt.lockSelectVehicle || this.lockSelectVehicle;
@@ -162,6 +163,7 @@ export class CarTravelLayer extends Layer {
       time: this.time,
       maxCarNum: this.maxCarNum,
       selectCarIndex: this.selectCarIndex,
+      center: this.center,
     });
   }
 
@@ -186,8 +188,8 @@ export class CarTravelLayer extends Layer {
 
 
   handleRenderCallback(array) {
-    if (!this.map) return;
     this.rendering = false;
+    if (!this.map) return;
     const arraySize = 7;
     const num = Math.max(this.runCarList.length, array.length / arraySize);
     const runCarList = [];

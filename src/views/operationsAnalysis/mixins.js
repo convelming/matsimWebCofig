@@ -45,7 +45,8 @@ export default {
       speed: 0,
       minTime: 0,
       maxTime: 3600 * 24.5,
-      range: []
+      range: [],
+      center: [0, 0]
     };
   },
   watch: {
@@ -124,8 +125,8 @@ export default {
       // this.minTime = timeRes.data.minTime;
       // this.maxTime = timeRes.data.maxTime;
       this.range = rangeRes.data.range.map(v => [v.x, v.y]);
+      this.center = [rangeRes.data.center.x, rangeRes.data.center.y];
 
-      this.initLayer();
       this.initMap();
       this.handleChangeMapCameraControls();
     })
@@ -134,7 +135,6 @@ export default {
   },
   methods: {
     handleShowHelp() {
-      console.log("handleShowHelp");
       this.showHelpDialog = true;
     },
     handleUpdateTime(value) {
@@ -177,12 +177,10 @@ export default {
         rootId: "mapRoot",
         enableRotate: true,
       });
-      this._Map.addLayer(this._MapLayer);
+      this._Map.setFitZoomAndCenterByPoints(this.range);
 
-      console.log(this._Map.setFitZoomAndCenterByPoints(this.range));
-    },
-    initLayer() {
       this._MapLayer = new MapLayer({ tileClass: MAP_LAYER_STYLE[0], zIndex: -1 });
+      this._Map.addLayer(this._MapLayer);
     },
     handleShowStopAndRoute(selectStopIds) {
       if (this.$refs.Toolbar) {

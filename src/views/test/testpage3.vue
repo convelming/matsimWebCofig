@@ -73,9 +73,9 @@ export default {
       this._Map.cameraControls.enableRotate = true;
       this._MapLayer = new MapLayer({ tileClass: MAP_LAYER_STYLE[0], zIndex: -1 });
       this._Map.addLayer(this._MapLayer);
-      this._CarTravelLayer = new CarTravelLayer({ zIndex: 1, base: "guangzhou", scheme: "base" });
-      this._Map.addLayer(this._CarTravelLayer);
-      this._CarTravelLayer2 = new CarTravelLayer2({ zIndex: 1, base: "guangzhou", scheme: "base" });
+      // this._CarTravelLayer = new CarTravelLayer({ zIndex: 1, dataSource: "guangzhou/base" });
+      // this._Map.addLayer(this._CarTravelLayer);
+      this._CarTravelLayer2 = new CarTravelLayer2({ zIndex: 1, dataSource: "guangzhou/base" });
       this._Map.addLayer(this._CarTravelLayer2);
     },
   },

@@ -163,6 +163,7 @@ export default {
           this.rootVue.$on("CarTravel_setSelectedCar", (carDetail) => {
             this._CarTravelLayer.setSelectCarIndex(carDetail.index);
           });
+          this._CarTravelLayer.center = this.rootVue.center;
           this._Map.addLayer(this._CarTravelLayer);
         } else {
           this.rootVue.$off("CarTravel_setSelectedCar");
