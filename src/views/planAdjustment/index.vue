@@ -116,7 +116,7 @@
 
     <div class="MapLayer_menu" :class="{ hide: !showStyleMenu }" :style="`width: ${styleList.length * 50 + 30}px`">
       <div class="open_hide_btn" @click="showStyleMenu = !showStyleMenu"></div>
-      <img class="item" :class="{ active: styleActive == i }" v-for="(v, i) in styleList" :src="v.url" :title="v.NAME" :key="i" @click="handleChangeStyle(i)" />
+      <img class="item" :class="{ active: styleActive == i }" v-for="(v, i) in styleList" :src="v.url" :title="v.style_name" :key="i" @click="handleChangeStyle(i)" />
     </div>
   </div>
 </template>
@@ -268,7 +268,7 @@
 
 <script>
 const moment = require("moment");
-import { Map, MAP_EVENT, MapLayer, MAP_LAYER_STYLE, LocalMapTile } from "@/mymap/index.js";
+import { Map, MAP_EVENT, MapLayer, MAP_LAYER_STYLE } from "@/mymap/index.js";
 
 import { getByLineId, saveByLine, deleteTransitLine, changeLines, getCenterZoom, lineIsRun, saveNewScheme } from "@/api/index";
 
@@ -434,18 +434,17 @@ export default {
           },
         },
       });
-      this._MapLayer = new MapLayer({
-        zIndex: 0,
-      });
+      this._MapLayer = new MapLayer({ tileClass: MAP_LAYER_STYLE[0], zIndex: -1 });
       this._map.addLayer(this._MapLayer);
       {
+        const styleMap = MAP_LAYER_STYLE;
         const itemDocList = [];
-        const list = Object.values(this._MapLayer.styleMap);
+        const list = Object.values(styleMap);
         for (let i = 0, l = list.length; i < l; i++) {
           const value = list[i];
           if (value === this._MapLayer.tileClass) this.styleActive = i;
           const item = {
-            title: value.NAME,
+            title: value.style_name,
             url: new value(15, 26700, 14218, 200).url,
             c: value,
           };

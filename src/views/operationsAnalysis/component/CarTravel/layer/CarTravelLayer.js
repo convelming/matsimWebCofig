@@ -84,7 +84,6 @@ export class CarTravelLayer extends Layer {
           //"loadTiles":
           this.loading = false;
           this.handleEventListener(MAP_EVENT.LAYER_LOADING, this.loading);
-          console.timeEnd("handleLoadTiles")
           this.handleRender();
           break;
         }

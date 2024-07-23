@@ -5,214 +5,6 @@ import { MAP_EVENT } from "../main/Map.js";
 const Loader = new THREE.TextureLoader();
 const EARTH_RADIUS = 20037508.3427892;
 
-// 瓦片类
-export class MapTile {
-  // 瓦片名称
-  static NAME = "MapTile";
-  // 地图背景色
-  static BACKGROUND = 0xd9ecff;
-
-  _loadNum = 0;
-
-  // 加载状态 1未加载 2加载成功 3加载失败
-  _loadStatus = 1;
-  // x偏移量
-  _x_offset = 0;
-  // y偏移量
-  _y_offset = 0;
-  // 瓦片的最大缩放级别
-  static max_zoom = 18;
-  // 瓦片的最小缩放级别
-  static min_zoom = 5;
-
-  get loadStatus() {
-    return this._loadStatus;
-  }
-
-  // 瓦片的行号
-  get row() {
-    return this._row;
-  }
-  set row(v) {
-    this._row = v;
-  }
-
-  // 瓦片的列号
-  get col() {
-    return this._col;
-  }
-  set col(v) {
-    this._col = v;
-  }
-
-  // 瓦片的缩放级别
-  get zoom() {
-    return this._zoom;
-  }
-  set zoom(v) {
-    this._zoom = v;
-  }
-
-  // 瓦片的大小
-  get size() {
-    return this._size;
-  }
-  set size(v) {
-    this._size = v;
-  }
-
-  // 瓦片的x坐标
-  get x() {
-    return this._x + this._x_offset;
-  }
-
-  // 瓦片的y坐标
-  get y() {
-    return this._y + this._y_offset;
-  }
-
-  // 瓦片的z坐标
-  get z() {
-    return this._z;
-  }
-
-  // 瓦片贴图url
-  get url() {
-    return ``;
-  }
-
-  // 瓦片的mesh
-  get mesh() {
-    if (!this._mesh) {
-      let material = new THREE.MeshBasicMaterial({
-        transparent: true,
-        // side: THREE.DoubleSide, //双面显示
-        color: 0xffffff,
-        opacity: 0,
-        // color: 0x000000,
-      });
-      let geometry = new THREE.PlaneGeometry(this._size, this._size);
-      this._mesh = new THREE.Mesh(geometry, material);
-      return this._mesh;
-    } else {
-      return this._mesh;
-    }
-  }
-
-  // 加载瓦片贴图
-  async loadMap() {
-    try {
-      this._loadNum++;
-      const texture = await new Promise((resolve, reject) =>
-        Loader.load(this.url, resolve, undefined, reject)
-      );
-      this.mesh.material.setValues({ map: texture, transparent: false });
-      this.mesh.material.needsUpdate = true;
-      this._loadStatus = 2;
-    } catch (error) {
-      if (this._loadNum <= 1) {
-        await new Promise((resolve) =>
-          setTimeout(resolve, 2000 * Math.random())
-        );
-        this.loadMap();
-      } else {
-        this._loadStatus = 3;
-      }
-    }
-  }
-
-  constructor(zoom, row, col, size) {
-    this.zoom = zoom;
-    this.row = row;
-    this.col = col;
-    this.size = size;
-
-    this._x =
-      ((row + 0.5) * (EARTH_RADIUS * 2)) / Math.pow(2, zoom) - EARTH_RADIUS;
-    this._y =
-      EARTH_RADIUS - ((col + 0.5) * (EARTH_RADIUS * 2)) / Math.pow(2, zoom);
-    // let zd = this.constructor.max_zoom - this.constructor.min_zoom;
-    // this._z = (zd - zoom) / zd / 100;
-    this._z = 0;
-  }
-}
-
-export const MAP_LAYER_STYLE = {
-  DARK_MATTER: class extends MapTile {
-    static NAME = "DARK_MATTER";
-    static BACKGROUND = `#0a4173`;
-    get url() {
-      return `http://192.168.60.231:23334/osm/DarkMatter/${this.zoom}/${this.row}/${this.col}.png`;
-    }
-  },
-  MAP_TILER_BASIC: class extends MapTile {
-    static NAME = "MAP_TILER_BASIC";
-    get url() {
-      return `http://192.168.60.231:23334/osm/MapTilerBasic/${this.zoom}/${this.row}/${this.col}.png`;
-    }
-  },
-  OSM_BROGHT: class extends MapTile {
-    static NAME = "OSM_BROGHT";
-    get url() {
-      return `http://192.168.60.231:23334/osm/OSMBroght/${this.zoom}/${this.row}/${this.col}.png`;
-    }
-  },
-  OSM_LIDERTY: class extends MapTile {
-    static NAME = "OSM_LIDERTY";
-    get url() {
-      return `http://192.168.60.231:23334/osm/OSMLiberty/${this.zoom}/${this.row}/${this.col}.png`;
-    }
-  },
-  POSITRON: class extends MapTile {
-    static NAME = "POSITRON";
-    get url() {
-      return `http://192.168.60.231:23334/osm/Positron/${this.zoom}/${this.row}/${this.col}.png`;
-    }
-  },
-  LIBERTY: class extends MapTile {
-    static NAME = "LIBERTY";
-    get url() {
-      return `http://192.168.60.231:23334/osm/liberty/${this.zoom}/${this.row}/${this.col}.png`;
-    }
-  },
-  // SSTYLE_JYL: class extends MapTile {
-  //   static max_zoom = 16;
-  //   // x偏移量
-  //   _x_offset = -256 * 2.32;
-  //   // y偏移量
-  //   _y_offset = 256 * 1.3;
-  //   static NAME = "极夜蓝";
-  //   static BACKGROUND = `#0a4173`;
-  //   get url() {
-  //     return `http://t0.tianditu.gov.cn/img_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=img&STYLE=ChinaOnlineStreetPurplishBlue&TILEMATRIXSET=w&FORMAT=tiles&TILEMATRIX=${this.zoom}&TILEROW=${this.row}&TILECOL=${this.col}&tk=1ff53318177e78188444436d0201e763`;
-  //     // return `https://map.geoq.cn/ArcGIS/rest/services/ChinaOnlineStreetPurplishBlue/MapServer/tile/${this.zoom}/${this.col}/${this.row}&tk=1ff53318177e78188444436d0201e763`;
-  //   }
-  // },
-  MAPBOX: class extends MapTile {
-    static NAME = "MAPBOX";
-    get url() {
-      // const token =
-      //   "pk.eyJ1IjoiaGR4MTQ3IiwiYSI6ImNsYWdwajMyMDEwejAzb251MTd4aXV3dWUifQ._QFvRrJtFKNJ5cOdmoRzTQ";
-      // const token =
-      //   "pk.eyJ1IjoiemFjaHlhbmc4MyIsImEiOiJja211MjRsbm4waXMwMm5wZDE3d3BuZjBuIn0.lcRS0kbOWjzFw-UikwbyHQ";
-      // return `https://api.mapbox.com/v4/mapbox.satellite/${this.zoom}/${this.row}/${this.col}.png256?access_token=${token}`;
-      return `https://api.mapbox.com/styles/v1/convel/ck8frzi262yko1invkvbif5aw/tiles/512/${this.zoom}/${this.row}/${this.col}@2x?access_token=pk.eyJ1IjoiY29udmVsIiwiYSI6ImNsaHB4cXA2MDBicGIzam1zb25zdGtiOHAifQ.UuaTujcOQlxywCJWWZ0SSg`
-    }
-  },
-  SSTYLE_JYL: class extends MapTile {
-    static NAME = "极夜蓝";
-    get url() {
-      // const token =
-      //   "pk.eyJ1IjoiaGR4MTQ3IiwiYSI6ImNsYWdwajMyMDEwejAzb251MTd4aXV3dWUifQ._QFvRrJtFKNJ5cOdmoRzTQ";
-      // const token =
-      //   "pk.eyJ1IjoiemFjaHlhbmc4MyIsImEiOiJja211MjRsbm4waXMwMm5wZDE3d3BuZjBuIn0.lcRS0kbOWjzFw-UikwbyHQ";
-      // return `https://api.mapbox.com/v4/mapbox.satellite/${this.zoom}/${this.row}/${this.col}.png256?access_token=${token}`;
-      // mapbox://styles/dasin/cltigm5bp010s01ptciblgffl
-      return `https://api.mapbox.com/styles/v1/dasin/cltigm5bp010s01ptciblgffl/tiles/512/${this.zoom}/${this.row}/${this.col}@2x?access_token=pk.eyJ1IjoiY29udmVsIiwiYSI6ImNsaHB4cXA2MDBicGIzam1zb25zdGtiOHAifQ.UuaTujcOQlxywCJWWZ0SSg`
-    }
-  },
-};
-
 // 地图图层类
 export class MapLayer extends Layer {
   name = "MapLayer";
@@ -221,9 +13,7 @@ export class MapLayer extends Layer {
    * 地图图层使用的瓦片类
    * @type {Function}
    */
-  tileClass = null;
-
-  styleMap = null;
+  tileClass = MapTile;
 
   /**
    * 获取当前缩放级别
@@ -251,24 +41,12 @@ export class MapLayer extends Layer {
     }
     return this._zoomMap;
   }
-  
+
   constructor(opt) {
     super(opt);
-    this.tileClass = opt.tileClass || MAP_LAYER_STYLE.MAP_TILER_BASIC;
-    this.styleMap = opt.styleMap || MAP_LAYER_STYLE;
-
-    this.setStyleMap(this.styleMap);
+    this.setTileClass(opt.tileClass);
   }
 
-  setStyleMap(styleMap) {
-    this.styleMap = styleMap;
-    let item = Object.values(styleMap).find((v) => v === this.tileClass);
-    if (item) {
-      this.setTileClass(item);
-    } else {
-      this.setTileClass(Object.values(styleMap)[0]);
-    }
-  }
 
   // 设置瓦片类
   setTileClass(tileClass) {
@@ -277,7 +55,7 @@ export class MapLayer extends Layer {
       this._zoomMap = null;
       this.clearScene();
       if (this.map) {
-        this.map.setBackground(new THREE.Color(this.tileClass.BACKGROUND));
+        this.map.setBackground(new THREE.Color(this.tileClass.background));
         this.loadMesh();
         this.setShowZoom(this.zoom);
         this.setMeshPosition(this.map.center);
@@ -291,7 +69,7 @@ export class MapLayer extends Layer {
   async onAdd(map) {
     super.onAdd(map);
     if (this.map) {
-      this.map.setBackground(new THREE.Color(this.tileClass.BACKGROUND));
+      this.map.setBackground(new THREE.Color(this.tileClass.background));
       this.loadMesh();
       this.setShowZoom(this.zoom);
       this.setMeshPosition(this.map.center);
@@ -375,3 +153,164 @@ export class MapLayer extends Layer {
       });
   }
 }
+
+// 瓦片类
+export class MapTile {
+  // 瓦片名称
+  static name = "MapTile";
+  // 地图背景色
+  static background = 0xd9ecff;
+  // 瓦片的最大缩放级别
+  static max_zoom = 18;
+  // 瓦片的最小缩放级别
+  static min_zoom = 5;
+  // x偏移量
+  static x_offset = 0;
+  // y偏移量
+  static y_offset = 0;
+
+
+  _loadNum = 0;
+
+  // 加载状态 1未加载 2加载成功 3加载失败
+  _loadStatus = 1;
+
+  get loadStatus() {
+    return this._loadStatus;
+  }
+
+  // 瓦片的行号
+  get row() {
+    return this._row;
+  }
+  set row(v) {
+    this._row = v;
+  }
+
+  // 瓦片的列号
+  get col() {
+    return this._col;
+  }
+  set col(v) {
+    this._col = v;
+  }
+
+  // 瓦片的缩放级别
+  get zoom() {
+    return this._zoom;
+  }
+  set zoom(v) {
+    this._zoom = v;
+  }
+
+  // 瓦片的大小
+  get size() {
+    return this._size;
+  }
+  set size(v) {
+    this._size = v;
+  }
+
+  // 瓦片的x坐标
+  get x() {
+    return this._x + this.constructor.x_offset;
+  }
+
+  // 瓦片的y坐标
+  get y() {
+    return this._y + this.constructor.y_offset;
+  }
+
+  // 瓦片的z坐标
+  get z() {
+    return this._z;
+  }
+
+  // 瓦片贴图url
+  get url() {
+    return ``;
+  }
+
+  // 瓦片的mesh
+  get mesh() {
+    if (!this._mesh) {
+      let material = new THREE.MeshBasicMaterial({
+        transparent: true,
+        // side: THREE.DoubleSide, //双面显示
+        color: 0xffffff,
+        opacity: 0,
+        // color: 0x000000,
+      });
+      let geometry = new THREE.PlaneGeometry(this._size, this._size);
+      this._mesh = new THREE.Mesh(geometry, material);
+      return this._mesh;
+    } else {
+      return this._mesh;
+    }
+  }
+
+  // 加载瓦片贴图
+  async loadMap() {
+    try {
+      this._loadNum++;
+      const texture = await new Promise((resolve, reject) =>
+        Loader.load(this.url, resolve, undefined, reject)
+      );
+      this.mesh.material.setValues({ map: texture, transparent: false });
+      this.mesh.material.needsUpdate = true;
+      this._loadStatus = 2;
+    } catch (error) {
+      if (this._loadNum <= 1) {
+        await new Promise((resolve) =>
+          setTimeout(resolve, 2000 * Math.random())
+        );
+        this.loadMap();
+      } else {
+        this._loadStatus = 3;
+      }
+    }
+  }
+
+  constructor(zoom, row, col, size) {
+    this.zoom = zoom;
+    this.row = row;
+    this.col = col;
+    this.size = size;
+
+    this._x =
+      ((row + 0.5) * (EARTH_RADIUS * 2)) / Math.pow(2, zoom) - EARTH_RADIUS;
+    this._y =
+      EARTH_RADIUS - ((col + 0.5) * (EARTH_RADIUS * 2)) / Math.pow(2, zoom);
+    // let zd = this.constructor.max_zoom - this.constructor.min_zoom;
+    // this._z = (zd - zoom) / zd / 100;
+    this._z = 0;
+  }
+}
+
+export function MapStyleFactory(params = {}) {
+  const defaultParams = {
+    style_name: "",
+    background: 0xd9ecff,
+    max_zoom: 18,
+    min_zoom: 0,
+    x_offset: 0,
+    y_offset: 0,
+    get_url: function (zoom, row, col) {
+      return `http://192.168.60.231:23334/osm/MapTilerBasic/${zoom}/${row}/${col}.png`;
+    }
+  }
+  const { style_name, background, max_zoom, min_zoom, x_offset, y_offset, get_url } = Object.assign({}, defaultParams, params);
+  return class extends MapTile {
+    static style_name = style_name;
+    static background = background;
+    static max_zoom = max_zoom;
+    static min_zoom = min_zoom;
+    static x_offset = x_offset;
+    static y_offset = y_offset;
+    get url() {
+      return get_url(this.zoom, this.row, this.col);
+    }
+  }
+}
+
+export const MAP_LAYER_STYLE = (window.MAP_LAYER_STYLE || []).map(MapStyleFactory);

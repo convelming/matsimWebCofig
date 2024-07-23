@@ -109,7 +109,7 @@
         <el-button type="primary" size="mini" icon="el-icon-refresh-right" @click="handleGetDateSourceList()">{{ $l("刷新列表") }}</el-button>
         <el-button type="primary" size="mini" icon="el-icon-add" @click="handleShowAddPlanAdjustmentDialog()">{{ $l("新建方案") }}</el-button>
       </div>
-      <el-table height="400" :data="dataSourceList.filter(v=>!v.noRun)" border stripe v-loading="dateSourceListLoading">
+      <el-table height="400" :data="dataSourceList.filter((v) => !v.noRun)" border stripe v-loading="dateSourceListLoading">
         <el-table-column prop="name" :label="$l('方案名称')" width="100" />
         <el-table-column prop="detail" :label="$l('方案简介')" />
         <el-table-column prop="loadStatus" :label="$l('方案状态')" width="130">
@@ -180,7 +180,7 @@
     </el-dialog>
 
     <el-dialog class="tabel_dialog" :title="$l('新建方案')" :visible.sync="addPlanAdjustmentDialog.show" width="550px">
-      <el-form :model="addPlanAdjustmentDialog.form" ref="form" :rules="addPlanAdjustmentDialog.rules" label-width="100px" :inline="false" size="small">
+      <el-form :model="addPlanAdjustmentDialog.form" ref="addForm" :rules="addPlanAdjustmentDialog.rules" label-width="100px" :inline="false" size="small">
         <el-form-item :label="$l('基础方案')" prop="source">
           <el-select v-model="addPlanAdjustmentDialog.form.source">
             <el-option v-for="item in dataSourceList" :key="item.name" :label="item.name" :value="item.name"> </el-option>
@@ -548,9 +548,21 @@ export default {
       this.$refs.addForm.validate((valid) => {
         if (!valid) return;
         this.addPlanAdjustmentDialog.loading = true;
+        const form = JSON.parse(JSON.stringify(this.addPlanAdjustmentDialog.form));
+        console.log(form);
         this.$store
-          .dispatch("createDataSource", this.addPlanAdjustmentDialog.form)
+          // .dispatch("createDataSource", {
+          //   base: form.source,
+          //   key: form.target,
+          //   detail: form.detail,
+          // })
+          .dispatch("copyDataSource", {
+            source: form.source,
+            target: form.base + "/" + form.target,
+            detail: form.detail,
+          })
           .then((res) => {
+            this.addPlanAdjustmentDialog.open = false;
             this.$message.success(this.$l("方案创建成功"));
           })
           .finally(() => {

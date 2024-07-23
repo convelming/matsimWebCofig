@@ -60,8 +60,16 @@ class Worker {
   async loadTiles(data) {
     if (this.tileMap.size > 50) {
       // TODO 清除一些显示优先级低的tile
+      for (const key of Array.from(this.tileMap.keys())) {
+        if (this.tileMap.get(key).live <= 0) {
+          this.tileMap.delete(key);
+        }
+      }
     }
 
+    for (const tile of this.tileMap.values()) {
+      tile.live--;
+    }
     const { dataSource, row, col, zoom, size } = data;
     for (let i = row[0]; i < row[1]; i++) {
       for (let j = col[0]; j < col[1]; j++) {
@@ -74,6 +82,8 @@ class Worker {
             console.error(`数据 ${key} 加载失败`);
             console.error(error);
           }
+        } else {
+          this.tileMap.get(key).live = 3;
         }
       }
     }
@@ -131,6 +141,7 @@ class Worker {
       y: EARTH_RADIUS - ((col + 0.5) * (EARTH_RADIUS * 2)) / Math.pow(2, zoom),
       timeObj: timeObj,
       carMap: carMap,
+      live: 3
     };
   }
 

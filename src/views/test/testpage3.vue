@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import { Map, MapLayer } from "@/mymap/index.js";
+import { Map, MapLayer, MAP_LAYER_STYLE } from "@/mymap/index.js";
 import NewClock from "@/components/NewClock/index.vue";
 import { CarTravelLayer } from "@/views/operationsAnalysis/component/CarTravel/layer/CarTravelLayer.js";
 import { CarTravelLayer2 } from "@/views/operationsAnalysis/component/CarTravel/layer/CarTravelLayer2.js";
@@ -33,7 +33,6 @@ export default {
   },
   async mounted() {
     this.initMap();
-
     // fetch("http://192.168.60.231:23334/guangzhou/Nansha/car/13/6673/3500", {})
     //   .then((response) => this.readReadableStream(response.body))
     //   .then((response) => {
@@ -72,7 +71,7 @@ export default {
         minPitch: -90,
       });
       this._Map.cameraControls.enableRotate = true;
-      this._MapLayer = new MapLayer({ zIndex: 0 });
+      this._MapLayer = new MapLayer({ tileClass: MAP_LAYER_STYLE[0], zIndex: -1 });
       this._Map.addLayer(this._MapLayer);
       this._CarTravelLayer = new CarTravelLayer({ zIndex: 1, base: "guangzhou", scheme: "base" });
       this._Map.addLayer(this._CarTravelLayer);

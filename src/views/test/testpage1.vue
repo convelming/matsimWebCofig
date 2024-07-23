@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import { Map, MapLayer } from "@/mymap/index.js";
+import { Map, MapLayer, MAP_LAYER_STYLE } from "@/mymap/index.js";
 import NewClock from "@/components/NewClock/index.vue";
 export default {
   components: {
@@ -68,7 +68,7 @@ export default {
         // zoom: 11,
       });
       this._Map.cameraControls.enableRotate = true;
-      this._MapLayer = new MapLayer({ zIndex: 0 });
+      this._MapLayer = new MapLayer({ tileClass: MAP_LAYER_STYLE[0], zIndex: -1 });
       this._Map.addLayer(this._MapLayer);
     },
   },

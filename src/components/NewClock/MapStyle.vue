@@ -4,8 +4,8 @@
       <img class="icon" style="margin-right: 4px" src="@/assets/image/map_icon.png" />
       <span class="text">{{ $l("地图") }}</span>
     </div>
-    <div class="map-switch-list" v-show="open" >
-      <img class="item" :class="{ active: active == i }" v-for="(v, i) in styleList" :src="v.url" :title="v.NAME" :key="i" @click="handleChangeStyle(i)" />
+    <div class="map-switch-list" v-show="open">
+      <img class="item" :class="{ active: active == i }" v-for="(v, i) in styleList" :src="v.url" :title="v.style_name" :key="i" @click="handleChangeStyle(i)" />
     </div>
   </div>
 </template>
@@ -20,6 +20,8 @@
 </language>
 
 <script>
+import { MAP_LAYER_STYLE } from "@/mymap/index";
+
 export default {
   name: "MapStyle",
   props: {},
@@ -43,12 +45,12 @@ export default {
     this._interval = setInterval(() => {
       if (this._MapLayer) {
         const itemDocList = [];
-        const list = Object.values(this._MapLayer.styleMap);
+        const list = Object.values(MAP_LAYER_STYLE);
         for (let i = 0, l = list.length; i < l; i++) {
           const value = list[i];
           if (value === this._MapLayer.tileClass) this.active = i;
           const item = {
-            title: value.NAME,
+            title: value.style_name,
             url: new value(15, 26700, 14218, 200).url,
             c: value,
           };
@@ -104,7 +106,7 @@ export default {
 
   .map-switch-list {
     position: absolute;
-    z-index: 999;
+    z-index: 3000;
     top: 40px;
     left: 0px;
     // height: 390px;

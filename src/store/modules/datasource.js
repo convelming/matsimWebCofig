@@ -105,18 +105,18 @@ const datasource = {
         dispatch("getDataSourceList", state.dataBase);
       }
     },
-    async createDataSource({ commit, state, dispatch }, { base, key }) {
+    async createDataSource({ commit, state, dispatch }, { base, key, detail }) {
       try {
-        const res = await addScheme({ base, key });
+        const res = await addScheme({ base, key, detail });
         return res;
       } catch (error) {
       } finally {
         dispatch("getDataSourceList", state.dataBase);
       }
     },
-    async copyDataSource({ commit, state, dispatch }, { source, target, detail, base }) {
+    async copyDataSource({ commit, state, dispatch }, { source, target, detail }) {
       try {
-        const res = await copyScheme({ source, target, detail, base });
+        const res = await copyScheme({ source, target, detail });
         return res;
       } catch (error) {
       } finally {

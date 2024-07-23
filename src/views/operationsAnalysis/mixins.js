@@ -1,5 +1,5 @@
 
-import { Map, MapLayer } from "@/mymap/index.js";
+import { Map, MapLayer, MAP_LAYER_STYLE } from "@/mymap/index.js";
 import { getTimeInterval, getCenterZoom } from "@/api/index.js";
 import { guid } from "@/utils/index.js";
 
@@ -182,7 +182,7 @@ export default {
       console.log(this._Map.setFitZoomAndCenterByPoints(this.range));
     },
     initLayer() {
-      this._MapLayer = new MapLayer({ zIndex: -1 });
+      this._MapLayer = new MapLayer({ tileClass: MAP_LAYER_STYLE[0], zIndex: -1 });
     },
     handleShowStopAndRoute(selectStopIds) {
       if (this.$refs.Toolbar) {

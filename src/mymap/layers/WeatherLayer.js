@@ -12,6 +12,4 @@ export class WeatherLayer extends Layer {
     this.setStyleMap(this.styleMap);
   }
 
-
-
 }
