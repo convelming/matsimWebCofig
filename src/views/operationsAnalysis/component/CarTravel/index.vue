@@ -49,6 +49,8 @@
 <script>
 import { MAP_EVENT } from "@/mymap/index.js";
 import { CarTravelLayer } from "./layer/CarTravelLayer";
+import { CarTravelLayer2 } from "./layer/CarTravelLayer2";
+import { CarTravelLayer3 } from "./layer/CarTravelLayer3";
 
 export default {
   props: ["name", "showLayer", "lock2D"],
@@ -138,11 +140,27 @@ export default {
         },
       },
     });
+    this._CarTravelLayer2 = new CarTravelLayer2({
+      zIndex: 20,
+      dataSource: this.$store.getters.dataSource,
+      trailLength: 100,
+      lineWidth: 50,
+      color: "#ff0000",
+    });
+    this._CarTravelLayer3 = new CarTravelLayer3({
+      zIndex: 30,
+      dataSource: this.$store.getters.dataSource,
+      trailLength: 200,
+      lineWidth: 100,
+      color: "#ff0000",
+    });
   },
   mounted() {
     this._interval = setInterval(() => {
       if (!this._Map) return;
       clearInterval(this._interval);
+      this._CarTravelLayer.center = this.rootVue.center;
+
       if (this.s_showLayer) {
         this.handleEnable();
       }
@@ -157,32 +175,47 @@ export default {
       this.s_showLayer = value;
       this.$emit("update:showLayer", value);
     },
-    handleShowCar3DLayer(val) {
+    handleShowLayer() {
       try {
-        if (val) {
-          this.rootVue.$on("CarTravel_setSelectedCar", (carDetail) => {
-            this._CarTravelLayer.setSelectCarIndex(carDetail.index);
-          });
-          this._CarTravelLayer.center = this.rootVue.center;
+        if (this._Map.zoom < 11 && this.s_showLayer) {
+          this._CarTravelLayer3.init();
+          this._Map.addLayer(this._CarTravelLayer3);
+        } else {
+          this._Map.removeLayer(this._CarTravelLayer3);
+        }
+        if (11 <= this._Map.zoom && this._Map.zoom <= 15.5 && this.s_showLayer) {
+          this._CarTravelLayer2.init();
+          this._Map.addLayer(this._CarTravelLayer2);
+        } else {
+          this._Map.removeLayer(this._CarTravelLayer2);
+        }
+        if (15.5 < this._Map.zoom && this.s_showLayer) {
           this._Map.addLayer(this._CarTravelLayer);
         } else {
-          this.rootVue.$off("CarTravel_setSelectedCar");
           this._Map.removeLayer(this._CarTravelLayer);
         }
       } catch (error) {}
     },
     // 组件初始化事件
     handleEnable() {
-      this.handleShowCar3DLayer(this.showCar3DLayer);
+      this.handleShowLayer();
       this.rootVue.$on("timeChange", this.handleTimeChange);
+      this.rootVue.$on("CarTravel_setSelectedCar", (carDetail) => {
+        this._CarTravelLayer.setSelectCarIndex(carDetail.index);
+      });
+      this._Map_Event_Id = this._Map.addEventListener(MAP_EVENT.UPDATE_ZOOM, this.handleShowLayer.bind(this));
     },
     // 组件卸载事件
     handleDisable() {
-      this.handleShowCar3DLayer(false);
+      this.handleShowLayer();
       this.rootVue.$off("timeChange", this.handleTimeChange);
+      this.rootVue.$off("CarTravel_setSelectedCar");
+      this._Map.removeEventListener(MAP_EVENT.UPDATE_ZOOM, this._Map_Event_Id);
     },
     handleTimeChange(time) {
       if (this._CarTravelLayer) this._CarTravelLayer.setTime(time);
+      if (this._CarTravelLayer2) this._CarTravelLayer2.setTime(time);
+      if (this._CarTravelLayer3) this._CarTravelLayer3.setTime(time);
     },
     // 格式化速度
     formatSpeed(val) {

@@ -132,8 +132,8 @@ export class MapLayer extends Layer {
     const crow = (row[0] + row[1]) / 2;
     const ccol = (col[0] + col[1]) / 2;
     let urlList = [];
-    for (let i = row[0]; i < row[1]; i++) {
-      for (let j = col[0]; j < col[1]; j++) {
+    for (let i = row[0]; i <= row[1]; i++) {
+      for (let j = col[0]; j <= col[1]; j++) {
         const key = `${i}_${j}`;
         let tile = this.zoomMap[zoom].tileMap[key]
         if (!this.zoomMap[zoom].tileMap[key]) {

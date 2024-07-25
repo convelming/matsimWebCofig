@@ -75,8 +75,8 @@ class Worker {
       tile.live--;
     }
     const { dataSource, row, col, zoom, size } = data;
-    for (let i = row[0]; i < row[1]; i++) {
-      for (let j = col[0]; j < col[1]; j++) {
+    for (let i = row[0]; i <= row[1]; i++) {
+      for (let j = col[0]; j <= col[1]; j++) {
         const key = `${i}_${j}`;
         if (!this.tileMap.has(key)) {
           const loadTile = { dataSource: dataSource, zoom: zoom, row: i, col: j, live: LIVE_NUM, loading: true };
@@ -138,8 +138,8 @@ class Worker {
     for (let i = 0, dataLength = array[0]; i < array.length; i += dataLength + 1, dataLength = array[i]) {
       const id = array[i + 1];
       const type = array[i + 2];
+      // path = [x, y, time, x, y, time, ...];
       const path = array.slice(i + 3, i + 1 + dataLength);
-      // path = [startTime, endTime, speed, distance, startX, startY, endX, endY .....]
       const startTime = path[2];
       const endTime = path[path.length - 1];
       const carId = Symbol(id);

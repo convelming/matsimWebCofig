@@ -5,10 +5,11 @@
 </template>
 
 <script>
-import { Map, MapLayer, MAP_LAYER_STYLE } from "@/mymap/index.js";
+import { Map, MapLayer, MAP_LAYER_STYLE, MAP_EVENT } from "@/mymap/index.js";
 import NewClock from "@/components/NewClock/index.vue";
 import { CarTravelLayer } from "@/views/operationsAnalysis/component/CarTravel/layer/CarTravelLayer.js";
 import { CarTravelLayer2 } from "@/views/operationsAnalysis/component/CarTravel/layer/CarTravelLayer2.js";
+import { CarTravelLayer3 } from "@/views/operationsAnalysis/component/CarTravel/layer/CarTravelLayer3.js";
 export default {
   components: {
     NewClock,
@@ -20,11 +21,12 @@ export default {
   },
   data() {
     return {
-      time: 27046,
-      speed: 1,
+      time: 66919,
+      speed: 100,
       minTime: 0,
       maxTime: 3600 * 24.5,
       range: [],
+      s_showLayer: true,
     };
   },
   created() {
@@ -39,6 +41,7 @@ export default {
     //     console.log(response);
     //     console.timeEnd("load file");
     //   });
+    this.handleShowLayer();
   },
   methods: {
     async readReadableStream(stream) {
@@ -60,23 +63,49 @@ export default {
     },
     handleUpdateTime(value) {
       this.time = value;
-      // this._CarTravelLayer.setTime(value);
+      this._CarTravelLayer.setTime(value);
+      this._CarTravelLayer2.setTime(value);
+      this._CarTravelLayer3.setTime(value);
     },
     // 初始化地图
     async initMap() {
       this._Map = new Map({
         rootId: "map",
-        center: [12630459, 2653277.25],
-        zoom: 16,
+        center: [12614648, 2654619.25],
+        zoom: 13,
         minPitch: -90,
+        event: {
+          [MAP_EVENT.UPDATE_ZOOM]: this.handleShowLayer.bind(this),
+        },
       });
       this._Map.cameraControls.enableRotate = true;
       this._MapLayer = new MapLayer({ tileClass: MAP_LAYER_STYLE[0], zIndex: -1 });
       this._Map.addLayer(this._MapLayer);
-      // this._CarTravelLayer = new CarTravelLayer({ zIndex: 1, dataSource: "guangzhou/base" });
-      // this._Map.addLayer(this._CarTravelLayer);
-      this._CarTravelLayer2 = new CarTravelLayer2({ zIndex: 1, dataSource: "guangzhou/base" });
-      this._Map.addLayer(this._CarTravelLayer2);
+      this._CarTravelLayer = new CarTravelLayer({ zIndex: 1, dataSource: "guangzhou/base" });
+      this._CarTravelLayer2 = new CarTravelLayer2({ zIndex: 100, dataSource: "guangzhou/base", trailLength: 200, lineWidth: 100, color: "#ff0000" });
+      this._CarTravelLayer3 = new CarTravelLayer3({ zIndex: 100, dataSource: "guangzhou/base", trailLength: 400, lineWidth: 200, color: "#00ff00" });
+    },
+
+    handleShowLayer() {
+      try {
+        if (this._Map.zoom < 11 && this.s_showLayer) {
+          this._CarTravelLayer3.init();
+          this._Map.addLayer(this._CarTravelLayer3);
+        } else {
+          this._Map.removeLayer(this._CarTravelLayer3);
+        }
+        if (11 <= this._Map.zoom && this._Map.zoom <= 15.5 && this.s_showLayer) {
+          this._CarTravelLayer2.init();
+          this._Map.addLayer(this._CarTravelLayer2);
+        } else {
+          this._Map.removeLayer(this._CarTravelLayer2);
+        }
+        if (15.5 < this._Map.zoom && this.s_showLayer) {
+          this._Map.addLayer(this._CarTravelLayer);
+        } else {
+          this._Map.removeLayer(this._CarTravelLayer);
+        }
+      } catch (error) {}
     },
   },
 };

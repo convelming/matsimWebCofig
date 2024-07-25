@@ -2,15 +2,15 @@ import * as THREE from "three";
 import { Layer, MAP_EVENT } from "@/mymap/index.js";
 import { CarTravelRouteListGeometry, CarTravelRouteGeometry, CarTraveRoutelMaterial } from "../utils"
 
-
 import { guid } from "@/utils/utils";
 import axios from "axios";
+import { path } from "d3";
 
 
-const BUILD_ZOOM = 13;
+const BUILD_ZOOM = 9;
 const EARTH_RADIUS = 20037508.3427892;
 
-export class CarTravelLayer2 extends Layer {
+export class CarTravelLayer3 extends Layer {
 
   time = 66919 //3600 * 8;
   timeSpeed = 60 * 1;
@@ -38,7 +38,6 @@ export class CarTravelLayer2 extends Layer {
     this.material.uniforms.trailTime.value = this.time;
     this.material.needsUpdate = true;
   }
-
   setTrailLength(trailLength) {
     this.trailLength = trailLength;
     this.material.uniforms.trailLength.value = this.trailLength;
@@ -66,11 +65,11 @@ export class CarTravelLayer2 extends Layer {
       this.inited = true;
       this.clearScene();
       for (let i = 0; i < 50; i++) {
-        let mesh = await this.getMesh(i, this.material)
+        let mesh = await this.getMesh(i, this.material);
         const [x, y] = this.map.WebMercatorToCanvasXY(...mesh.userData.center);
         mesh.position.set(x, y, 0);
         this.scene.add(mesh);
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise(resolve => setTimeout(resolve, 0));
       }
     } catch (error) {
       console.log(error);
@@ -107,7 +106,7 @@ export class CarTravelLayer2 extends Layer {
     const dataView = new DataView(response.data);
     for (let i = 0; i < dataView.byteLength; i += 4) {
       const value = dataView.getFloat32(i, false);
-      array.push(value);
+      array[array.length] = value;
     }
     console.time(`new Mesh ${index}`)
     const [cx, cy] = array.slice(3, 5);
@@ -124,5 +123,47 @@ export class CarTravelLayer2 extends Layer {
     console.timeEnd(`new Mesh ${index}`)
     return mesh;
   }
+  // async getMesh2(index, material) {
+  //   return axios({
+  //     url: `/pt/tiles/car/${this.dataSource}/${BUILD_ZOOM}/${index}`,
+  //     headers: { uuid: guid(), dataSource: this.dataSource },
+  //     method: "get",
+  //     responseType: "arraybuffer",
+  //   }).then(response => {
+  //     if (response.status != 200 || response.data.byteLength == 0) throw new Error("获取数据失败" + index);
+  //     {
+  //       let routeList = [];
+  //       const dataView = new DataView(response.data);
+  //       let i1 = 0;
+  //       const l1 = dataView.byteLength;
+  //       const cx = dataView.getFloat32(12, false);
+  //       const cy = dataView.getFloat32(16, false);
+  //       while (i1 < l1) {
+  //         const dataLength = dataView.getFloat32(i1, false);
+  //         const offset = dataLength * 4 + i1 + 4;
+  //         const route = [i1];
+  //         while (i1 < l1 && i1 < offset) {
+  //           let value = dataView.getFloat32(i1, false);
+  //           route[route.length] = value;
+  //           i1 = i1 + 4;
+  //         }
+  //         routeList[routeList.length] = route;
+  //       }
+  //       console.log(routeList);
+  //     }
+  //     const array = [];
+  //     const dataView = new DataView(response.data);
+  //     for (let i = 0; i < dataView.byteLength; i += 4) {
+  //       const value = dataView.getFloat32(i, false);
+  //       array[array.length] = value;
+  //     }
+  //     return array
+  //   })
+  //   // const geometry = new CarTravelRouteListGeometry(routeList);
+  //   // const mesh = new THREE.Mesh(geometry, material);
+  //   // mesh.userData.center = [cx, cy];
+  //   // console.timeEnd(`new Mesh ${index}`)
+  //   // return mesh;
+  // }
 }
 

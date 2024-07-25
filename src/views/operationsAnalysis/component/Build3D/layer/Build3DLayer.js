@@ -119,8 +119,8 @@ export class Build3DLayer extends Layer {
     this.clearScene();
     const { row, col, size } = this.map.getTileRangeByZoom(BUILD_ZOOM);
 
-    for (let i = row[0]; i < row[1]; i++) {
-      for (let j = col[0]; j < col[1]; j++) {
+    for (let i = row[0]; i <= row[1]; i++) {
+      for (let j = col[0]; j <= col[1]; j++) {
         let key = `${i}_${j}`;
         let tile = this.tileMap[key];
         if (!tile) {

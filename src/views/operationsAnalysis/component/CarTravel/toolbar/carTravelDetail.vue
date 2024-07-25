@@ -83,7 +83,7 @@
 </language>
 
 <script>
-import { CarMotionPath, CarMotionPoint } from "../utils.js";
+import { CarTravelPath, CarTravelPoint } from "../utils.js";
 import { getCarDetail } from "@/api/index";
 import { formatHour } from "@/utils/utils";
 export default {
@@ -143,7 +143,7 @@ export default {
         const { paths, ...departure } = res.data;
         // 创建路径SVG
         this.departure = departure;
-        this.path = new CarMotionPath(paths);
+        this.path = new CarTravelPath(paths);
         this.initSVG();
         this.loading = false;
       });
@@ -152,7 +152,7 @@ export default {
       const { originPoint, resultPoint, startPoint } = this.path;
       const box = resultPoint.offset(originPoint);
       const padding = Math.max(box.x, box.y) * 0.02;
-      const paddingPoint = new CarMotionPoint([padding, padding]);
+      const paddingPoint = new CarTravelPoint([padding, padding]);
       this.svgParams = {
         originPoint: originPoint.clone(),
         resultPoint: resultPoint.clone(),
