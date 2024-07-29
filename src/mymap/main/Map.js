@@ -164,8 +164,8 @@ export class Map extends EventListener {
   }
 
   setBackground(background) {
-    this.background = background;
-    this.scene.background = new THREE.Color(this.background);
+    this.background = new THREE.Color(background);
+    this.scene.background = this.background;
     this.scene.fog.color = this.background;
   }
 
@@ -270,7 +270,7 @@ export class Map extends EventListener {
     directionalLight.shadow.camera.left = -8;
     directionalLight.shadow.camera.right = 8;
 
-    this.scene.add(directionalLight);
+    // this.scene.add(directionalLight);
   }
 
   // 添加地图鼠标事件监听
@@ -783,12 +783,23 @@ export class Map extends EventListener {
     let colEnd = col + radius;
     if (colEnd > max_row_col) colEnd = max_row_col;
 
+
+    const x1 = ((rowStart) * (EARTH_RADIUS * 2)) / Math.pow(2, zoom) - EARTH_RADIUS;
+    const y1 = EARTH_RADIUS - ((colStart) * (EARTH_RADIUS * 2)) / Math.pow(2, zoom);
+    const x2 = ((rowEnd + 1) * (EARTH_RADIUS * 2)) / Math.pow(2, zoom) - EARTH_RADIUS;
+    const y2 = EARTH_RADIUS - ((colEnd + 1) * (EARTH_RADIUS * 2)) / Math.pow(2, zoom);
+
     return {
       row: [rowStart, rowEnd],
       col: [colStart, colEnd],
+      minX: Math.min(x1, x2),
+      maxX: Math.max(x1, x2),
+      minY: Math.min(y1, y2),
+      maxY: Math.max(y1, y2),
+      center: [mapCenterX, mapCenterY],
       size: tileSize,
       zoom: zoom
-    }
+    };
   }
 
   // 把渲染坐标转换成WebMercator

@@ -156,7 +156,7 @@ export class CarTravelLayer extends Layer {
       width: 0,
       height: 0
     };
-    if (this.map) windowRange = this.map.getWindowRangeAndWebMercator();
+    if (this.map) windowRange = this.map.getTileRangeByZoom(this.map.zoom);
     this.worker.postMessage({
       ...windowRange,
       key: 2,
@@ -196,6 +196,7 @@ export class CarTravelLayer extends Layer {
     const attrPoitions = [];
     const attrPickColors = [];
     const modelName = "SUV";
+    const scale = this.modelSize * 0.005;
 
     this.carGroup.remove(this.coneMesh);
     for (let i = 0; i < num; i++) {
@@ -221,8 +222,6 @@ export class CarTravelLayer extends Layer {
         this.carGroup.add(model);
       }
 
-
-      const scale = this.modelSize * 0.005;
       model.scale.set(scale, scale, scale);
       model.position.set(x, y, this.modelSize);
       model.quaternion.set(qx, qy, qz, qw);

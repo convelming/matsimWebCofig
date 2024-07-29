@@ -143,15 +143,11 @@ export default {
     this._CarTravelLayer2 = new CarTravelLayer2({
       zIndex: 20,
       dataSource: this.$store.getters.dataSource,
-      trailLength: 100,
-      lineWidth: 50,
       color: "#ff0000",
     });
     this._CarTravelLayer3 = new CarTravelLayer3({
       zIndex: 30,
       dataSource: this.$store.getters.dataSource,
-      trailLength: 200,
-      lineWidth: 100,
       color: "#ff0000",
     });
   },

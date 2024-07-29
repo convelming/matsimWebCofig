@@ -179,7 +179,7 @@ class Worker {
     const timeKey = Math.ceil(time / timeSpeed);
     const runCarList = [];
 
-    for (const { loading, timeObj, carMap, minX, minY, maxX, maxY } of this.tileMap.values()) {
+    for (const { loading, timeObj, carMap } of this.tileMap.values()) {
       if (!loading && timeObj.has(timeKey)) {
         const carKeys = timeObj.get(timeKey);
         for (const key of carKeys) {
@@ -189,15 +189,15 @@ class Worker {
               const { path, id } = v1;
               const { start, end } = calculatePosition(path, time);
               const [x0, y0] = start;
-              // if (minX <= x0 && x0 <= maxX && minY <= y0 && y0 <= maxY) {
-              const [x1, y1] = end;
-              const position = new THREE.Vector3(x0 - cx, y0 - cy, 0);
-              const target = new THREE.Vector3(x1 - cx, y1 - cy, 0); // 你的目标点
-              const m4 = new THREE.Matrix4().lookAt(position, target, new THREE.Vector3(0, 0, 1));
-              m4.multiply(new THREE.Matrix4().makeRotationY(Math.PI));
-              const q = new THREE.Quaternion().setFromRotationMatrix(m4);
-              runCarList.push(id, x0 - cx, y0 - cy, q.x, q.y, q.z, q.w); // length = 7
-              // }
+              if (minX <= x0 && x0 <= maxX && minY <= y0 && y0 <= maxY) {
+                const [x1, y1] = end;
+                const position = new THREE.Vector3(x0 - cx, y0 - cy, 0);
+                const target = new THREE.Vector3(x1 - cx, y1 - cy, 0); // 你的目标点
+                const m4 = new THREE.Matrix4().lookAt(position, target, new THREE.Vector3(0, 0, 1));
+                m4.multiply(new THREE.Matrix4().makeRotationY(Math.PI));
+                const q = new THREE.Quaternion().setFromRotationMatrix(m4);
+                runCarList.push(id, x0 - cx, y0 - cy, q.x, q.y, q.z, q.w); // length = 7
+              }
             }
           }
         }

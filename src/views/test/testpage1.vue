@@ -7,6 +7,9 @@
 <script>
 import { Map, MapLayer, MAP_LAYER_STYLE } from "@/mymap/index.js";
 import NewClock from "@/components/NewClock/index.vue";
+
+import { MapBoxTileLayer } from "./layer/MapBoxTileLayer";
+
 export default {
   components: {
     NewClock,
@@ -66,10 +69,11 @@ export default {
         rootId: "map",
         center: [12628397, 2655338.7],
         // zoom: 11,
+        minPitch: -90,
       });
-      this._Map.cameraControls.enableRotate = true;
-      this._MapLayer = new MapLayer({ tileClass: MAP_LAYER_STYLE[0], zIndex: -1 });
-      this._Map.addLayer(this._MapLayer);
+      // this._MapLayer = new MapLayer({ tileClass: MAP_LAYER_STYLE[0], zIndex: -1 });
+      // this._Map.addLayer(this._MapLayer);
+      this._Map.addLayer(new MapBoxTileLayer({ zIndex: 10 }));
     },
   },
 };

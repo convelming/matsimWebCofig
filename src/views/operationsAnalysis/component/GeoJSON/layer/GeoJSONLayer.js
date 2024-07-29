@@ -4,7 +4,6 @@ import * as THREE from "three";
 import { Layer, MAP_EVENT } from "@/mymap/index.js";
 import * as BufferGeometryUtils from "three/addons/utils/BufferGeometryUtils.js";
 
-// import GeoJSONLayerWorker from "../worker/GeoJSONLayer.worker";
 import GeoJSONLayerWorker from "./GeoJSONLayer.worker";
 
 const POINT_SIZE = 80;

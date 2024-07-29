@@ -54,9 +54,21 @@ export class CarTravelLayer3 extends Layer {
     this.material.needsUpdate = true;
   }
 
+  autoSize() {
+    const lineWidth = this.map.cameraHeight / 400;
+    const trailLength = 100;
+    this.setTrailLength(trailLength);
+    this.setLineWidth(lineWidth);
+  }
+
   // 地图加载完成回调
   async onAdd(map) {
     super.onAdd(map);
+    for (const mesh of this.scene.children) {
+      const [x, y] = this.map.WebMercatorToCanvasXY(...mesh.userData.center);
+      mesh.position.set(x, y, 0);
+    }
+    this.autoSize();
   }
 
   async init() {
@@ -83,6 +95,9 @@ export class CarTravelLayer3 extends Layer {
         const [x, y] = this.map.WebMercatorToCanvasXY(...mesh.userData.center);
         mesh.position.set(x, y, 0);
       }
+    }
+    if(type == MAP_EVENT.UPDATE_CAMERA_HEIGHT){
+      this.autoSize();
     }
   }
 

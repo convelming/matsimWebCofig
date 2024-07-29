@@ -18,14 +18,8 @@
       <div class="form_item">
         <div class="form_label">{{ $l("显示图层：") }}</div>
         <div class="form_value">
-          <!-- <el-checkbox :disabled="!s_showLayer" v-model="showBus3DLayer" @change="
-            handleShowBus3DLayer($event);
-          handleShowSubway3DLayer($event);
-          ">{{ $l("公交车") }}</el-checkbox> -->
-          <!-- <el-checkbox :disabled="!s_showLayer" v-model="showSubway3DLayer" @change="handleShowSubway3DLayer">地铁</el-checkbox> -->
-          <!-- <el-checkbox :disabled="!s_showLayer" v-model="showCar3DLayer" @change="handleShowCar3DLayer">{{ $l("私家车")
-            }}</el-checkbox> -->
-          <div
+          <el-switch :disabled="!s_showLayer" v-model="showBus3DLayer" @change="handleShowBus3DLayer($event), handleShowBus3DLayer($event)"> </el-switch>
+          <!-- <div
             class="layer"
             @click="
               () => {
@@ -65,7 +59,7 @@
               <div class="text2">{{ $l("私家车") }}</div>
               <img class="icon" src="@/assets/image/eye-close-line.png" />
             </template>
-          </div>
+          </div> -->
         </div>
       </div>
       <div class="form_item">
@@ -214,7 +208,7 @@ export default {
       lockSelectVehicle: true,
       showBus3DLayer: true,
       showSubway3DLayer: true,
-      showCar3DLayer: true,
+      showCar3DLayer: false,
       maxVehicleNum: 20000,
 
       _BusMotionLayer: null,
@@ -300,9 +294,9 @@ export default {
       if (this.loading) return;
       this.loading = true;
       let list = [];
-      if (!this._BusDataLoaded) list.push(this.getBusPath());
-      if (!this._SubwayDataLoaded) list.push(this.getSubwayPath());
-      if (!this._CarDataLoaded) list.push(this.getCarPath());
+      if (!this._BusDataLoaded && this.showBus3DLayer) list.push(this.getBusPath());
+      if (!this._SubwayDataLoaded && this.showSubway3DLayer) list.push(this.getSubwayPath());
+      if (!this._CarDataLoaded && this.showCar3DLayer) list.push(this.getCarPath());
       Promise.all(list).finally(() => {
         this.loading = false;
       });
