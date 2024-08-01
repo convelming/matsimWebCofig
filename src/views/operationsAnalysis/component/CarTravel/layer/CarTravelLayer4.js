@@ -4,10 +4,11 @@ import { CarTravelRouteListGeometry, CarTravelRouteGeometry, CarTraveRoutelMater
 
 import { getFloat32Buffer } from "@/api/arraybuffer"
 
-const BUILD_ZOOM = 9;
+
+const BUILD_ZOOM = 13;
 const EARTH_RADIUS = 20037508.3427892;
 
-export class CarTravelLayer3 extends Layer {
+export class CarTravelLayer4 extends Layer {
 
   time = 66919 //3600 * 8;
   timeSpeed = 60 * 1;
@@ -35,6 +36,7 @@ export class CarTravelLayer3 extends Layer {
     this.material.uniforms.trailTime.value = this.time;
     this.material.needsUpdate = true;
   }
+
   setTrailLength(trailLength) {
     this.trailLength = trailLength;
     this.material.uniforms.trailLength.value = this.trailLength;
@@ -51,13 +53,6 @@ export class CarTravelLayer3 extends Layer {
     this.material.needsUpdate = true;
   }
 
-  autoSize() {
-    const lineWidth = this.map.cameraHeight / 400;
-    const trailLength = 100;
-    this.setTrailLength(trailLength);
-    this.setLineWidth(lineWidth);
-  }
-
   // 地图加载完成回调
   async onAdd(map) {
     super.onAdd(map);
@@ -68,18 +63,36 @@ export class CarTravelLayer3 extends Layer {
     this.autoSize();
   }
 
+  autoSize() {
+    const lineWidth = this.map.cameraHeight / 400;
+    const trailLength = 100;
+    this.setTrailLength(trailLength);
+    this.setLineWidth(lineWidth);
+  }
+
   async init() {
     try {
       if (this.inited) return;
       this.inited = true;
       this.clearScene();
-      for (let i = 0; i < 50; i++) {
-        let mesh = await this.getMesh(i, this.material);
-        const [x, y] = this.map.WebMercatorToCanvasXY(...mesh.userData.center);
-        mesh.position.set(x, y, 0);
-        this.scene.add(mesh);
-        await new Promise(resolve => setTimeout(resolve, 0));
+      const [array1, array2] = await Promise.all([
+        getFloat32Buffer(`/data/congestion`),
+        getFloat32Buffer(`/data/way`)
+      ])
+      console.log(array1, array2);
+      const map1 = new Map();
+      let maxLength = 0;
+      let maxFlow = 0;
+      for (let i = 0, dataLength = array1[0]; i < array1.length; i += dataLength + 1, dataLength = array1[i]) {
+        const data = array1.slice(i + 1, i + 1 + dataLength).map((v, i) => [v, v, v][i % 3]);
+        const key = `${data[0]}_${data[1]}`;
+        const flowList = data.slice(2);
+        const mf = Math.max(...flowList);
+        if (mf > maxFlow) maxFlow = mf;
+        if (data.length > maxLength) maxLength = data.length;
+        map1.set(key, flowList);
       }
+      console.log(map1, maxLength, maxFlow);
     } catch (error) {
       console.log(error);
     }
@@ -104,24 +117,6 @@ export class CarTravelLayer3 extends Layer {
 
   dispose() {
     this.worker.terminate();
-  }
-
-  async getMesh(index, material) {
-    const array = await getFloat32Buffer(`/pt/tiles/car/${this.dataSource}/${BUILD_ZOOM}/${index}`)
-    console.time(`new Mesh ${index}`)
-    const [cx, cy] = array.slice(3, 5);
-    const pathList = [];
-    for (let i = 0, dataLength = array[0]; i < array.length; i += dataLength + 1, dataLength = array[i]) {
-      const id = array[i + 1];
-      const type = array[i + 2];
-      const path = array.slice(i + 3, i + 1 + dataLength).map((v, i) => [v - cx, v - cy, v][i % 3]);
-      pathList[pathList.length] = path;
-    }
-    const geometry = new CarTravelRouteListGeometry(pathList);
-    const mesh = new THREE.Mesh(geometry, material);
-    mesh.userData.center = [cx, cy];
-    console.timeEnd(`new Mesh ${index}`)
-    return mesh;
   }
 }
 

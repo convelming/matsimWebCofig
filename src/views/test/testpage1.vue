@@ -71,6 +71,7 @@ export default {
         // zoom: 11,
         minPitch: -90,
       });
+      this._Map.cameraControls.enableRotate = true;
       // this._MapLayer = new MapLayer({ tileClass: MAP_LAYER_STYLE[0], zIndex: -1 });
       // this._Map.addLayer(this._MapLayer);
       this._Map.addLayer(new MapBoxTileLayer({ zIndex: 10 }));

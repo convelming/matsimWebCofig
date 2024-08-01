@@ -242,7 +242,7 @@ export class Map extends EventListener {
   // 初始化相机
   initCamera() {
     // 创建相机
-    this.camera = new THREE.PerspectiveCamera(60, 1, 0.1, 3000);
+    this.camera = new THREE.PerspectiveCamera(60, 1, 1, 3000);
     // 设置相机位置
     this.camera.position.y = 1000;
     this.camera.lookAt(0, 0, 0);
@@ -463,6 +463,7 @@ export class Map extends EventListener {
       console.log(zoom);
       this.scene.fog.near = height * 2;
       this.scene.fog.far = height * 3;
+      this.camera.near = height * 3 / 1000;
       this.camera.far = height * 3;
       this.camera.updateProjectionMatrix();
       this.setZoom(zoom, true);
@@ -643,6 +644,7 @@ export class Map extends EventListener {
       this.camera.position.y = height;
       this.scene.fog.near = height * 2;
       this.scene.fog.far = height * 3;
+      this.camera.near = height * 3 / 1000;
       this.camera.far = height * 3;
       this.camera.updateProjectionMatrix();
       this.on(MAP_EVENT.UPDATE_CAMERA_HEIGHT, height);

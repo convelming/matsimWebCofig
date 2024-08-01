@@ -102,10 +102,10 @@ export class MapLayer extends Layer {
         map.show = true;
         map.scene.position.setZ(0);
         this.scene.add(map.scene);
-      } else if (z == zoom + 1) {
-        map.show = true;
-        map.scene.position.setZ(-0.1);
-        this.scene.add(map.scene);
+      // } else if (z == zoom + 1) {
+      //   map.show = true;
+      //   map.scene.position.setZ(-0.1);
+      //   this.scene.add(map.scene);
       } else if (map.show) {
         map.show = false;
         this.scene.remove(map.scene);

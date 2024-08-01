@@ -47,7 +47,6 @@ module.exports = defineConfig({
       .test(/\.worker\.js$/) // 文件名必须要xxx.worker.js
       .use("worker")
       .loader("worker-loader");
-
     config.module
       .rule("language")
       .resourceQuery(/blockType=language/)

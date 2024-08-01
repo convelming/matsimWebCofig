@@ -2,10 +2,7 @@ import * as THREE from "three";
 import { Layer, MAP_EVENT } from "@/mymap/index.js";
 import { CarTravelRouteListGeometry, CarTravelRouteGeometry, CarTraveRoutelMaterial } from "../utils"
 
-
-import { guid } from "@/utils/utils";
-import axios from "axios";
-
+import { getFloat32Buffer } from "@/api/arraybuffer"
 
 const BUILD_ZOOM = 13;
 const EARTH_RADIUS = 20037508.3427892;
@@ -97,7 +94,7 @@ export class CarTravelLayer2 extends Layer {
         mesh.position.set(x, y, 0);
       }
     }
-    if(type == MAP_EVENT.UPDATE_CAMERA_HEIGHT){
+    if (type == MAP_EVENT.UPDATE_CAMERA_HEIGHT) {
       this.autoSize();
     }
   }
@@ -111,19 +108,7 @@ export class CarTravelLayer2 extends Layer {
   }
 
   async getMesh(index, material) {
-    const response = await axios({
-      url: `/pt/tiles/car/${this.dataSource}/${BUILD_ZOOM}/${index}`,
-      headers: { uuid: guid(), dataSource: this.dataSource },
-      method: "get",
-      responseType: "arraybuffer",
-    })
-    if (response.status != 200 || response.data.byteLength == 0) throw new Error("获取数据失败" + index);
-    const array = [];
-    const dataView = new DataView(response.data);
-    for (let i = 0; i < dataView.byteLength; i += 4) {
-      const value = dataView.getFloat32(i, false);
-      array.push(value);
-    }
+    const array = await getFloat32Buffer(`/pt/tiles/car/${this.dataSource}/${BUILD_ZOOM}/${index}`)
     console.time(`new Mesh ${index}`)
     const [cx, cy] = array.slice(3, 5);
     const pathList = [];

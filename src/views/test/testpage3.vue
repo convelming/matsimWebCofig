@@ -10,6 +10,7 @@ import NewClock from "@/components/NewClock/index.vue";
 import { CarTravelLayer } from "@/views/operationsAnalysis/component/CarTravel/layer/CarTravelLayer.js";
 import { CarTravelLayer2 } from "@/views/operationsAnalysis/component/CarTravel/layer/CarTravelLayer2.js";
 import { CarTravelLayer3 } from "@/views/operationsAnalysis/component/CarTravel/layer/CarTravelLayer3.js";
+import { CarTravelLayer4 } from "@/views/operationsAnalysis/component/CarTravel/layer/CarTravelLayer4.js";
 export default {
   components: {
     NewClock,
@@ -84,9 +85,12 @@ export default {
       this._CarTravelLayer = new CarTravelLayer({ zIndex: 1, dataSource: "guangzhou/base" });
       this._CarTravelLayer2 = new CarTravelLayer2({ zIndex: 100, dataSource: "guangzhou/base", trailLength: 200, lineWidth: 100, color: "#ff0000" });
       this._CarTravelLayer3 = new CarTravelLayer3({ zIndex: 100, dataSource: "guangzhou/base", trailLength: 400, lineWidth: 200, color: "#00ff00" });
+      this._CarTravelLayer4 = new CarTravelLayer4({ zIndex: 100, dataSource: "guangzhou/base", trailLength: 400, lineWidth: 200, color: "#00ff00" });
+      this._CarTravelLayer4.init();
     },
 
     handleShowLayer() {
+      return;
       try {
         if (this._Map.zoom < 11 && this.s_showLayer) {
           this._CarTravelLayer3.init();

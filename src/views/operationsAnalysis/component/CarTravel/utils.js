@@ -449,3 +449,217 @@ export class CarTraveRoutelMaterial extends THREE.Material {
     this.setValues(params);
   }
 }
+
+export class RoadGeometry extends THREE.BufferGeometry {
+  constructor(array) {
+    super();
+    this.type = "RoadGeometry";
+    this.isRoadGeometry = true;
+
+    const length = array.length / 3;
+    const attrPosition = new Array();
+    const attrStartPosition = new Array();
+    const attrEndPosition = new Array();
+    const attrSide = new Array();
+    const attrIndex = new Array();
+    const attrUv = new Array();
+    let roadLength = 0;
+    for (let index = 0; index < length; index++) {
+      let prevX = array[index * 3 - 3]
+      let prevY = array[index * 3 - 2]
+      let prevL = array[index * 3 - 1]
+      let thatX = array[index * 3 + 0]
+      let thatY = array[index * 3 + 1]
+      let thatL = array[index * 3 + 2]
+      let nextX = array[index * 3 + 3]
+      let nextY = array[index * 3 + 4]
+      let nextL = array[index * 3 + 5]
+
+      if (index === 0) {
+        prevX = thatX * 2 - nextX;
+        prevY = thatY * 2 - nextY;
+      }
+      if (index >= length - 1) {
+        nextX = thatX * 2 - prevX;
+        nextY = thatY * 2 - prevY;
+      }
+
+
+      attrPosition[index * 6] = thatX;
+      attrPosition[index * 6 + 1] = thatY;
+      attrPosition[index * 6 + 2] = 0;
+      attrPosition[index * 6 + 3] = thatX;
+      attrPosition[index * 6 + 4] = thatY;
+      attrPosition[index * 6 + 5] = 0;
+
+      attrStartPosition[index * 4] = prevX;
+      attrStartPosition[index * 4 + 1] = prevY;
+      attrStartPosition[index * 4 + 2] = prevX;
+      attrStartPosition[index * 4 + 3] = prevY;
+
+      attrEndPosition[index * 4] = nextX;
+      attrEndPosition[index * 4 + 1] = nextY;
+      attrEndPosition[index * 4 + 2] = nextX;
+      attrEndPosition[index * 4 + 3] = nextY;
+
+      if (index > 0) {
+        roadLength += Math.sqrt(Math.pow(thatX - prevX, 2) + Math.pow(thatY - prevY, 2));
+      }
+
+      attrUv[index * 4] = 0;
+      attrUv[index * 4 + 1] = roadLength;
+      attrUv[index * 4 + 2] = 1;
+      attrUv[index * 4 + 3] = roadLength;
+
+      attrSide[index * 2] = -1;
+      attrSide[index * 2 + 1] = 1;
+
+      if (index < length - 1) {
+        attrIndex[index * 6] = index * 2 + 0
+        attrIndex[index * 6 + 1] = index * 2 + 1
+        attrIndex[index * 6 + 2] = index * 2 + 3
+        attrIndex[index * 6 + 3] = index * 2 + 0
+        attrIndex[index * 6 + 4] = index * 2 + 3
+        attrIndex[index * 6 + 5] = index * 2 + 2
+      };
+    }
+    this.setAttribute("position", new THREE.Float32BufferAttribute(attrPosition, 3));
+    this.setAttribute("startPosition", new THREE.Float32BufferAttribute(attrStartPosition, 2));
+    this.setAttribute("endPosition", new THREE.Float32BufferAttribute(attrEndPosition, 2));
+    this.setAttribute("side", new THREE.Int8BufferAttribute(attrSide, 1));
+    this.setAttribute("uv", new THREE.Float32BufferAttribute(attrUv.map((v, i) => i % 2 != 0 ? v : v / roadLength)), 2);
+    this.setIndex(attrIndex);
+    this.computeVertexNormals();
+  }
+}
+
+
+export class RoadlMaterial extends THREE.Material {
+  constructor(argu) {
+    super();
+    const { color = 0xff0000, opacity = 1, lineWidth = 50, lineOffset = 0, map = null, trailLength = 10, trailTime = 0, ...params } = argu || {};
+    this.alphaTest = 0.1;
+    this.transparent = true;
+    this.depthWrite = false;
+    this.defines = {
+      USE_MAP: !!map,
+    };
+    this.uniforms = {
+      diffuse: {
+        value: new THREE.Color(color),
+      },
+      opacity: {
+        value: opacity,
+      },
+      lineWidth: {
+        value: lineWidth,
+      },
+      lineOffset: {
+        value: lineOffset,
+      },
+      map: {
+        value: map,
+      },
+      uvTransform: {
+        value: new THREE.Matrix3(),
+      },
+      trailTime: {
+        value: trailTime,
+      },
+    };
+    this.vertexShader = `
+      #include <common>
+      #include <logdepthbuf_pars_vertex>
+
+      attribute vec3 pickColor;
+      attribute float side;
+      attribute float length;
+      attribute vec2 startPosition;
+      attribute vec2 endPosition;
+      
+      varying vec3 vColor;
+      varying vec2 vUv;
+
+      uniform float lineWidth;
+      uniform float lineOffset;
+      uniform mat3 uvTransform;
+
+      void main() {
+
+        #ifdef USE_MAP
+          vUv = ( uvTransform * vec3( uv, 1 ) ).xy;
+        #endif
+        
+        vec3 transformed = vec3(1.0);
+
+        float offset = lineWidth / 2.0 * side + lineOffset;
+
+        float lenA = length(position.xy - startPosition);
+        float lenB = length(position.xy - endPosition);
+
+        if(lenA == 0. && lenB == 0.) {
+          transformed = position;
+        } else {
+          vec2 dirA = normalize(position.xy - startPosition);
+          vec2 dirB = normalize(position.xy - endPosition);
+
+          if(lenA == 0.) {
+            float angle = PI / 2.0;
+            vec2 normal = vec2(-dirB.y, dirB.x);
+            transformed = vec3(position.xy + normal * offset / sin(angle), position.z);
+          } else if(lenB == 0.) {
+            float angle = PI / 2.0;
+            vec2 normal = vec2(dirA.y, -dirA.x);
+            transformed = vec3(position.xy + normal * offset / sin(angle), position.z);
+          } else {
+            vec2 dir = normalize(dirB - dirA);
+            vec2 normal = vec2(-dir.y, dir.x);
+            float angle = mod(acos(dot(dirB, normal)), 3.14);
+            if(angle < 0.2) angle = 0.2;
+            if(angle > 2.94) angle = 2.94;
+            transformed = vec3(position.xy + normal * offset / sin(angle), position.z);
+          }
+        }
+
+        gl_Position = projectionMatrix * modelViewMatrix * vec4( transformed, 1.0 );
+
+        #include <logdepthbuf_vertex>
+
+      }
+    `;
+    this.fragmentShader = `
+      #include <common>
+      #include <logdepthbuf_pars_fragment>
+
+
+      // 当前时间
+      uniform float trailLength;
+      uniform float lineWidth;
+      uniform vec3 diffuse;
+      uniform float opacity;
+      uniform sampler2D map;
+      
+      varying vec3 vColor;
+      varying vec3 vPickColor;
+      varying vec2 vUv;
+
+      void main() {
+        vec4 diffuseColor = vec4( diffuse, opacity );
+        
+        #include <logdepthbuf_fragment>
+
+        #ifdef USE_MAP
+          vec2 uv = vUv;
+          uv.x = mod(vUv.x * vLineLength, lineWidth) / lineWidth;
+          vec4 sampledDiffuseColor = texture2D(map, uv);
+          sampledDiffuseColor.rgb *= sampledDiffuseColor.a;
+          diffuseColor.rgb += sampledDiffuseColor.rgb;
+        #endif
+
+        gl_FragColor = diffuseColor;
+
+      }
+    `;
+    this.setValues(params);
+  }
+}
