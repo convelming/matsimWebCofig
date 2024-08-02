@@ -120,7 +120,7 @@ export default {
 
       showStopName: false,
       stopColor: "#2656C6",
-      stopScale: 3,
+      stopScale: 2,
 
       sreachLine: false,
       frameSelectState: undefined,

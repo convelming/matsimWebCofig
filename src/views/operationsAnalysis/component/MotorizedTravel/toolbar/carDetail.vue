@@ -7,29 +7,29 @@
     <div class="toolbar_item_bodyer" v-loading="loading">
       <div class="form" v-if="departure">
         <div class="form_item">
-          <div class="form_label">{{ "行程ID：" }}</div>
+          <div class="form_label">{{ $l("行程ID：") }}</div>
           <div class="form_value">{{ departure.id }}</div>
         </div>
         <div class="form_item">
-          <div class="form_label">{{ "车辆ID：" }}</div>
+          <div class="form_label">{{ $l("车辆ID：") }}</div>
           <div class="form_value">{{ departure.vehicleId }}</div>
         </div>
         <div class="form_item">
-          <div class="form_label">{{ "人员：" }}</div>
+          <div class="form_label">{{ $l("人员：") }}</div>
           <div class="form_value">{{ departure.persons && departure.persons.join(",") }}</div>
         </div>
         <div class="form_item">
-          <div class="form_label">{{ "行程总里程：" }}</div>
+          <div class="form_label">{{ $l("行程总里程：") }}</div>
           <div class="form_value">{{ Number(departure.distance / 1000).toFixed(2) }}{{ $l("km") }}</div>
         </div>
         <div class="form_item">
-          <div class="form_label">{{ "行程开始时间：" }}</div>
+          <div class="form_label">{{ $l("行程开始时间：") }}</div>
           <div class="form_value">
             {{ formatHour(departure.startTime) }}
           </div>
         </div>
         <div class="form_item">
-          <div class="form_label">{{ "行程结束时间：" }}</div>
+          <div class="form_label">{{ $l("行程结束时间：") }}</div>
           <div class="form_value">
             {{ formatHour(departure.endTime) }}
           </div>

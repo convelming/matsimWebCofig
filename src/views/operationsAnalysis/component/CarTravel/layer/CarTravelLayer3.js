@@ -73,7 +73,7 @@ export class CarTravelLayer3 extends Layer {
       if (this.inited) return;
       this.inited = true;
       this.clearScene();
-      for (let i = 0; i < 50; i++) {
+      for (let i = 0; i < 30; i++) {
         let mesh = await this.getMesh(i, this.material);
         const [x, y] = this.map.WebMercatorToCanvasXY(...mesh.userData.center);
         mesh.position.set(x, y, 0);
