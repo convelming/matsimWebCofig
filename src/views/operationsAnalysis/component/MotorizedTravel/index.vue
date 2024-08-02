@@ -1,10 +1,10 @@
 <template>
   <el-collapse-item class="my_collapse_item" :name="name" :class="{ active: s_showLayer }">
-    <div class="el-collapse-item__title" slot="title" :title="$l('机动化出行')">
+    <div class="el-collapse-item__title" slot="title" :title="$l('公共交通出行')">
       <el-checkbox class="checkbox" :value="s_showLayer" @change="handleChangeShowLayer">
         <img class="item_icon" v-show="s_showLayer" src="@/assets/image/MotorizedTravel_icon_a.png" />
         <img class="item_icon" v-show="!s_showLayer" src="@/assets/image/MotorizedTravel_icon.png" />
-        <span class="item_title">{{ $l("机动化出行") }}</span>
+        <span class="item_title">{{ $l("公共交通出行") }}</span>
         <span v-if="loading" class="el-icon-loading" style="margin-left: 10px"></span>
       </el-checkbox>
     </div>
@@ -110,9 +110,9 @@
 
 <language>
 {
-  "机动化出行":{
-    "zh-CN": "机动化出行",
-    "en-US": "Motorized travel"
+  "公共交通出行":{
+    "zh-CN": "公共交通出行",
+    "en-US": "Public transportation travel"
   },
   "视角跟随：":{
     "zh-CN": "视角跟随：",

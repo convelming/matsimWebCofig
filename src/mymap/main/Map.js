@@ -270,7 +270,7 @@ export class Map extends EventListener {
     directionalLight.shadow.camera.left = -8;
     directionalLight.shadow.camera.right = 8;
 
-    // this.scene.add(directionalLight);
+    this.scene.add(directionalLight);
   }
 
   // 添加地图鼠标事件监听
