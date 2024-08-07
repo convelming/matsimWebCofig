@@ -12,6 +12,7 @@
               <Network :showLayer.sync="showLayerNetwork" :lock2D.sync="lock2DNetwork" name="Network" />
               <Activity3D :showLayer.sync="showLayerActivity3D" :lock2D.sync="lock2DActivity3D" name="Activity3D" />
               <GeoJSON :showLayer.sync="showLayerGeoJSON" :lock2D.sync="lock2DGeoJSON" name="GeoJSON" />
+              <Parking :showLayer.sync="showLayerParking" :lock2D.sync="lock2DParking" name="Parking" />
               <div style="height: 100px"></div>
             </el-collapse>
           </Drawer>
@@ -66,6 +67,7 @@ import Network from "./component/Network/index.vue";
 import Activity3D from "./component/Activity3D/index.vue";
 import GeoJSON from "./component/GeoJSON/index.vue";
 import CarTravel from "./component/CarTravel/index.vue";
+import Parking from "./component/Parking/index.vue";
 
 import NewClock from "@/components/NewClock/index.vue";
 
@@ -81,6 +83,7 @@ export default {
     GeoJSON,
     CarTravel,
     NewClock,
+    Parking,
   },
   mixins: [mixins],
   data() {

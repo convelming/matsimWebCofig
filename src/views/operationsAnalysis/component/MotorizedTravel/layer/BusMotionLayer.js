@@ -35,6 +35,8 @@ export class BusMotionLayer extends Layer {
 
   modelPool = null;
 
+  center = [0, 0];
+
   constructor(opt) {
     super(opt);
     this.maxBusNum = opt.maxBusNum || this.maxBusNum;
@@ -88,12 +90,14 @@ export class BusMotionLayer extends Layer {
       switch (key) {
         case 1:
           this.center = [data[0], data[1]];
-          const [x, y] = this.map.WebMercatorToCanvasXY(...this.center);
-          this.busGroup.position.set(x, y, 0);
-          this.pickLayerMesh.position.set(x, y, 0);
-          this.pickMeshMesh.position.set(x, y, 0);
           this.canRender = true;
-          if (this.canRender) this.callWorkerRender();
+          if (this.map) {
+            const [x, y] = this.map.WebMercatorToCanvasXY(...this.center);
+            this.busGroup.position.set(x, y, 0);
+            this.pickLayerMesh.position.set(x, y, 0);
+            this.pickMeshMesh.position.set(x, y, 0);
+            this.callWorkerRender();
+          }
           break;
         case 2:
           this.handleRenderCallback(data);
@@ -127,7 +131,7 @@ export class BusMotionLayer extends Layer {
 
   onAdd(map) {
     super.onAdd(map);
-    this.center = this.map.center;
+    this.on(MAP_EVENT.UPDATE_CENTER, {})
   }
 
   render() {

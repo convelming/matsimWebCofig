@@ -145,7 +145,7 @@
 import { MAP_EVENT } from "@/mymap/index.js";
 import { BusMotionLayer } from "./layer/BusMotionLayer";
 import { SubwayMotionLayer } from "./layer/SubwayMotionLayer";
-import { CarMotionLayer } from "./layer/CarMotionLayer";
+// import { CarMotionLayer } from "./layer/CarMotionLayer";
 import { getBusPath, getBusPathArray, getCarPath, getCarPathArray, getSubwayPath, getSubwayPathArray } from "@/api/index";
 
 export default {
@@ -171,21 +171,21 @@ export default {
       handler(val) {
         this._BusMotionLayer.lockSelectBus = val;
         this._SubwayMotionLayer.lockSelectSubway = val;
-        this._CarMotionLayer.lockSelectCar = val;
+        // this._CarMotionLayer.lockSelectCar = val;
       },
     },
     maxVehicleNum: {
       handler(val) {
         this._BusMotionLayer.maxBusNum = val;
         this._SubwayMotionLayer.maxSubwayNum = val;
-        this._CarMotionLayer.maxCarNum = val;
+        // this._CarMotionLayer.maxCarNum = val;
       },
     },
     modelSize: {
       handler(val) {
         this._BusMotionLayer.setModelSize(val);
         this._SubwayMotionLayer.setModelSize(val);
-        this._CarMotionLayer.setModelSize(val);
+        // this._CarMotionLayer.setModelSize(val);
       },
     },
     page_language: {
@@ -208,12 +208,12 @@ export default {
       lockSelectVehicle: true,
       showBus3DLayer: true,
       showSubway3DLayer: true,
-      showCar3DLayer: false,
+      // showCar3DLayer: false,
       maxVehicleNum: 20000,
 
       _BusMotionLayer: null,
       _SubwayMotionLayer: null,
-      _CarMotionLayer: null,
+      // _CarMotionLayer: null,
 
       modelSize: 3,
 
@@ -258,21 +258,21 @@ export default {
         },
       },
     });
-    this._CarMotionLayer = new CarMotionLayer({
-      zIndex: 10,
-      lockSelectCar: this.lockSelectVehicle,
-      maxCarNum: this.maxVehicleNum,
-      modelSize: this.modelSize,
-      event: {
-        [MAP_EVENT.HANDLE_PICK_LEFT]: ({ data }) => {
-          this._CarMotionLayer.setSelectCarId(data);
-          this.rootVue.handleShowCarDetail({
-            uuid: data.join(","),
-            carDetail: { id: data[1], vehicleId: data[0] },
-          });
-        },
-      },
-    });
+    // this._CarMotionLayer = new CarMotionLayer({
+    //   zIndex: 10,
+    //   lockSelectCar: this.lockSelectVehicle,
+    //   maxCarNum: this.maxVehicleNum,
+    //   modelSize: this.modelSize,
+    //   event: {
+    //     [MAP_EVENT.HANDLE_PICK_LEFT]: ({ data }) => {
+    //       this._CarMotionLayer.setSelectCarId(data);
+    //       this.rootVue.handleShowCarDetail({
+    //         uuid: data.join(","),
+    //         carDetail: { id: data[1], vehicleId: data[0] },
+    //       });
+    //     },
+    //   },
+    // });
   },
   mounted() {
     this._interval = setInterval(() => {
@@ -287,7 +287,7 @@ export default {
     this.handleDisable();
     this._BusMotionLayer.dispose();
     this._SubwayMotionLayer.dispose();
-    this._CarMotionLayer.dispose();
+    // this._CarMotionLayer.dispose();
   },
   methods: {
     getData() {
@@ -296,7 +296,7 @@ export default {
       let list = [];
       if (!this._BusDataLoaded && this.showBus3DLayer) list.push(this.getBusPath());
       if (!this._SubwayDataLoaded && this.showSubway3DLayer) list.push(this.getSubwayPath());
-      if (!this._CarDataLoaded && this.showCar3DLayer) list.push(this.getCarPath());
+      // if (!this._CarDataLoaded && this.showCar3DLayer) list.push(this.getCarPath());
       Promise.all(list).finally(() => {
         this.loading = false;
       });
@@ -315,13 +315,13 @@ export default {
         this._SubwayDataLoaded = true;
       } catch (error) {}
     },
-    async getCarPath() {
-      try {
-        const res = await getCarPathArray(10000);
-        this._CarMotionLayer.setData(res.data);
-        this._CarDataLoaded = true;
-      } catch (error) {}
-    },
+    // async getCarPath() {
+    //   try {
+    //     const res = await getCarPathArray(10000);
+    //     this._CarMotionLayer.setData(res.data);
+    //     this._CarDataLoaded = true;
+    //   } catch (error) {}
+    // },
     handleChangeShowLayer(value) {
       this.s_showLayer = value;
       this.$emit("update:showLayer", value);
@@ -337,7 +337,9 @@ export default {
           this.rootVue.$off("MotorizedTravel_setSelectedBus");
           this._Map.removeLayer(this._BusMotionLayer);
         }
-      } catch (error) {}
+      } catch (error) {
+        console.log(error);
+      }
     },
     handleShowSubway3DLayer(val) {
       try {
@@ -350,41 +352,43 @@ export default {
           this.rootVue.$off("MotorizedTravel_setSelectedSubway");
           this._Map.removeLayer(this._SubwayMotionLayer);
         }
-      } catch (error) {}
+      } catch (error) {
+        console.log(error);
+      }
     },
-    handleShowCar3DLayer(val) {
-      try {
-        if (val) {
-          this.rootVue.$on("MotorizedTravel_setSelectedCar", (carDetail) => {
-            this._CarMotionLayer.setSelectCarId(carDetail.id);
-          });
-          this._Map.addLayer(this._CarMotionLayer);
-        } else {
-          this.rootVue.$off("MotorizedTravel_setSelectedCar");
-          this._Map.removeLayer(this._CarMotionLayer);
-        }
-      } catch (error) {}
-    },
+    // handleShowCar3DLayer(val) {
+    //   try {
+    //     if (val) {
+    //       this.rootVue.$on("MotorizedTravel_setSelectedCar", (carDetail) => {
+    //         this._CarMotionLayer.setSelectCarId(carDetail.id);
+    //       });
+    //       this._Map.addLayer(this._CarMotionLayer);
+    //     } else {
+    //       this.rootVue.$off("MotorizedTravel_setSelectedCar");
+    //       this._Map.removeLayer(this._CarMotionLayer);
+    //     }
+    //   } catch (error) {}
+    // },
     // 组件初始化事件
     handleEnable() {
       this.getData();
       this.handleShowBus3DLayer(this.showBus3DLayer);
       this.handleShowSubway3DLayer(this.showBus3DLayer);
       // this.handleShowSubway3DLayer(this.showSubway3DLayer);
-      this.handleShowCar3DLayer(this.showCar3DLayer);
+      // this.handleShowCar3DLayer(this.showCar3DLayer);
       this.rootVue.$on("timeChange", this.handleTimeChange);
     },
     // 组件卸载事件
     handleDisable() {
       this.handleShowBus3DLayer(false);
       this.handleShowSubway3DLayer(false);
-      this.handleShowCar3DLayer(false);
+      // this.handleShowCar3DLayer(false);
       this.rootVue.$off("timeChange", this.handleTimeChange);
     },
     handleTimeChange(time) {
       if (this._BusMotionLayer) this._BusMotionLayer.setTime(time);
       if (this._SubwayMotionLayer) this._SubwayMotionLayer.setTime(time);
-      if (this._CarMotionLayer) this._CarMotionLayer.setTime(time);
+      // if (this._CarMotionLayer) this._CarMotionLayer.setTime(time);
     },
     // 格式化速度
     formatSpeed(val) {

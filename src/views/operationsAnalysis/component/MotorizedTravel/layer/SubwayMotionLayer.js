@@ -35,6 +35,8 @@ export class SubwayMotionLayer extends Layer {
 
   modelPool = null;
 
+  center = [0, 0];
+
   constructor(opt) {
     super(opt);
     this.maxSubwayNum = opt.maxSubwayNum || this.maxSubwayNum;
@@ -88,13 +90,16 @@ export class SubwayMotionLayer extends Layer {
       switch (key) {
         case 1:
           this.center = [data[0], data[1]];
-          const [x, y] = this.map.WebMercatorToCanvasXY(...this.center);
-          this.subwayGroup.position.set(x, y, 0);
-          this.pickLayerMesh.position.set(x, y, 0);
-          this.pickMeshMesh.position.set(x, y, 0);
           this.canRender = true;
-          const array = new Float64Array([2, new Date().getTime(), this.time, this.maxSubwayNum, this.selectSubwayIndex]);
-          this.worker.postMessage(array, [array.buffer]);
+          if (this.map) {
+            const [x, y] = this.map.WebMercatorToCanvasXY(...this.center);
+            this.subwayGroup.position.set(x, y, 0);
+            this.pickLayerMesh.position.set(x, y, 0);
+            this.pickMeshMesh.position.set(x, y, 0);
+            this.canRender = true;
+            const array = new Float64Array([2, new Date().getTime(), this.time, this.maxSubwayNum, this.selectSubwayIndex]);
+            this.worker.postMessage(array, [array.buffer]);
+          }
           break;
         case 2:
           this.handleRenderCallback(data);
@@ -128,7 +133,7 @@ export class SubwayMotionLayer extends Layer {
 
   onAdd(map) {
     super.onAdd(map);
-    this.center = this.map.center;
+    this.on(MAP_EVENT.UPDATE_CENTER, {})
   }
 
   render() {
@@ -190,13 +195,13 @@ export class SubwayMotionLayer extends Layer {
       // model.position.set(data[1], data[2], this.modelSize);
       // const rotationOrderMap = { 1: "XYZ", 2: "YXZ", 3: "ZXY", 4: "ZYX", 5: "YZX", 6: "XZY" };
       // model.rotation.fromArray([data[3], data[4], data[5], rotationOrderMap[data[6]]]);
-      
+
       const scale = this.modelSize * 0.005;
       model.scale.set(scale, scale, scale);
       model.position.set(data[1], data[2], this.modelSize);
       model.quaternion.set(data[3], data[4], data[5], data[6]);
 
-      
+
       runSubwayList[i] = model;
 
       const attrLength = attrPoitions.length;

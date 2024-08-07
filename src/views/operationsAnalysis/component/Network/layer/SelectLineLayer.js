@@ -32,9 +32,9 @@ export class SelectLineLayer extends Layer {
       let [x, y] = this.map.WebMercatorToCanvasXY(this.mesh.userData.center[0], this.mesh.userData.center[1]);
       this.mesh.position.set(x, y, 0);
     }
-    if (type == MAP_EVENT.UPDATE_CAMERA_HEIGHT) {
-      this.setSize(this.map.cameraHeight / 10000);
-    }
+    // if (type == MAP_EVENT.UPDATE_CAMERA_HEIGHT) {
+    //   this.setSize(this.map.cameraHeight / 10000);
+    // }
   }
 
   setLineOffset(lineOffset) {

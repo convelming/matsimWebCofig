@@ -7,12 +7,15 @@
             <el-collapse v-model="activeNames">
               <LinesAnalysis :showLayer.sync="showLayerLinesAnalysis" :lock2D.sync="lock2DLinesAnalysis" name="LinesAnalysis" ref="LinesAnalysis" />
               <AnalysisReport :showLayer.sync="showLayerAnalysisReport" :lock2D.sync="lock2DAnalysisReport" name="AnalysisReport" ref="AnalysisReport" />
+
               <PublicTransit :showLayer.sync="showLayerPublicTransit" :lock2D.sync="lock2DPublicTransit" name="PublicTransit" />
               <MotorizedTravel :showLayer.sync="showLayerMotorizedTravel" :lock2D.sync="lock2DMotorizedTravel" name="MotorizedTravel" />
+              <CarTravel :showLayer.sync="showLayerCarTravel" :lock2D.sync="lock2DCarTravel" name="CarTravel" />
               <Build3D :showLayer.sync="showLayerBuild3D" :lock2D.sync="lock2DBuild3D" name="Build3D" />
               <Network :showLayer.sync="showLayerNetwork" :lock2D.sync="lock2DNetwork" name="Network" />
               <Activity3D :showLayer.sync="showLayerActivity3D" :lock2D.sync="lock2DActivity3D" name="Activity3D" />
               <GeoJSON :showLayer.sync="showLayerGeoJSON" :lock2D.sync="lock2DGeoJSON" name="GeoJSON" />
+              <Parking :showLayer.sync="showLayerParking" :lock2D.sync="lock2DParking" name="Parking" />
               <div style="height: 100px"></div>
             </el-collapse>
           </Drawer>
@@ -64,6 +67,7 @@ import Build3D from "../operationsAnalysis/component/Build3D/index.vue";
 import Network from "../operationsAnalysis/component/Network/index.vue";
 import Activity3D from "../operationsAnalysis/component/Activity3D/index.vue";
 import GeoJSON from "../operationsAnalysis/component/GeoJSON/index.vue";
+import CarTravel from "../operationsAnalysis/component/CarTravel/index.vue";
 
 import AnalysisReport from "./component/AnalysisReport/index.vue";
 import LinesAnalysis from "./component/LinesAnalysis/index.vue";
@@ -82,6 +86,7 @@ export default {
     Network,
     Activity3D,
     GeoJSON,
+    CarTravel,
 
     AnalysisReport,
     LinesAnalysis,
@@ -93,7 +98,7 @@ export default {
 
   data() {
     return {
-      activeNames: ["LinesAnalysis", "AnalysisReport", "PublicTransit", "MotorizedTravel", "Build3D", "Network", "Activity3D", "GeoJSON"],
+      activeNames: ["LinesAnalysis", "AnalysisReport", "PublicTransit", "MotorizedTravel", "Build3D", "Network", "Activity3D", "GeoJSON", "CarTravel"],
 
       showLayerLinesAnalysis: true,
       lock2DLinesAnalysis: false,
@@ -115,15 +120,19 @@ export default {
           this.$refs.Toolbar.activeName = "";
         }
       }
+      this.handleChangeTimeSpeed();
       this.handleChangeMapCameraControls();
     },
     lock2DAnalysisReport(val) {
+      this.handleChangeTimeSpeed();
       this.handleChangeMapCameraControls();
     },
     showLayerLinesAnalysis(val) {
+      this.handleChangeTimeSpeed();
       this.handleChangeMapCameraControls();
     },
     lock2DLinesAnalysis(val) {
+      this.handleChangeTimeSpeed();
       this.handleChangeMapCameraControls();
     },
   },
@@ -151,12 +160,15 @@ export default {
       let enableRotate = true;
       if (this.showLayerLinesAnalysis && this.lock2DLinesAnalysis) enableRotate = false;
       if (this.showLayerAnalysisReport && this.lock2DAnalysisReport) enableRotate = false;
+
       if (this.showLayerPublicTransit && this.lock2DPublicTransit) enableRotate = false;
       if (this.showLayerMotorizedTravel && this.lock2DMotorizedTravel) enableRotate = false;
       if (this.showLayerBuild3D && this.lock2DBuild3D) enableRotate = false;
       if (this.showLayerNetwork && this.lock2DNetwork) enableRotate = false;
       if (this.showLayerActivity3D && this.lock2DActivity3D) enableRotate = false;
       if (this.showLayerGeoJSON && this.lock2DGeoJSON) enableRotate = false;
+      if (this.showLayerCarTravel && this.lock2DCarTravel) enableRotate = false;
+      if (this.showLayerParking && this.lock2DParking) enableRotate = false;
       if (enableRotate) {
         this._Map.enableRotate = true;
       } else {
@@ -168,12 +180,15 @@ export default {
       let enableRotate = false;
       if (this.showLayerLinesAnalysis) enableRotate = true;
       if (this.showLayerAnalysisReport) enableRotate = true;
+
       if (this.showLayerPublicTransit) enableRotate = true;
       if (this.showLayerMotorizedTravel) enableRotate = true;
       if (this.showLayerBuild3D) enableRotate = true;
       if (this.showLayerNetwork) enableRotate = true;
       if (this.showLayerActivity3D) enableRotate = true;
       if (this.showLayerGeoJSON) enableRotate = true;
+      if (this.showLayerCarTravel) enableRotate = true;
+      if (this.showLayerParking) enableRotate = true;
       if (enableRotate) {
         this.speed = 10;
       } else {

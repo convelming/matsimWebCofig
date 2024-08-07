@@ -35,6 +35,9 @@ export default {
       showLayerGeoJSON: false,
       lock2DGeoJSON: false,
 
+      showLayerParking: false,
+      lock2DParking: false,
+
       showStopToolbar: false,
 
       showClock: true,
@@ -106,6 +109,14 @@ export default {
       this.handleChangeTimeSpeed();
       this.handleChangeMapCameraControls();
     },
+    showLayerParking(val) {
+      this.handleChangeTimeSpeed();
+      this.handleChangeMapCameraControls();
+    },
+    lock2DParking(val) {
+      this.handleChangeTimeSpeed();
+      this.handleChangeMapCameraControls();
+    },
   },
   provide() {
     return {
@@ -148,8 +159,9 @@ export default {
       if (this.showLayerBuild3D) enableRotate = true;
       if (this.showLayerNetwork) enableRotate = true;
       if (this.showLayerActivity3D) enableRotate = true;
-      if (this.showLayerCarTravel) enableRotate = true;
       if (this.showLayerGeoJSON) enableRotate = true;
+      if (this.showLayerCarTravel) enableRotate = true;
+      if (this.showLayerParking) enableRotate = true;
       if (enableRotate) {
         this.speed = 10;
       } else {
@@ -163,8 +175,9 @@ export default {
       if (this.showLayerBuild3D && this.lock2DBuild3D) enableRotate = false;
       if (this.showLayerNetwork && this.lock2DNetwork) enableRotate = false;
       if (this.showLayerActivity3D && this.lock2DActivity3D) enableRotate = false;
-      if (this.showLayerCarTravel && this.lock2DCarTravel) enableRotate = false;
       if (this.showLayerGeoJSON && this.lock2DGeoJSON) enableRotate = false;
+      if (this.showLayerCarTravel && this.lock2DCarTravel) enableRotate = false;
+      if (this.showLayerParking && this.lock2DParking) enableRotate = false;
       if (enableRotate) {
         this._Map.enableRotate = true;
       } else {

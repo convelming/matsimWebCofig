@@ -4,17 +4,23 @@
       <el-row :gutter="20">
         <el-col :span="12" :offset="0">
           <el-card class="box-card">
-            <div slot="header" class="clearfix">{{ $l("基础方案") }}</div>
+            <div slot="header" class="clearfix">
+              <span>{{ $l("基础方案") }}</span>
+              <span>{{ form.routeId }}</span>
+            </div>
             <div class="_content">
-              <div class="item" :class="{ active: selectOldDeparture == v.departureId }" v-for="(v, i) in oldColList" :key="i" @click="handleSelectOldDeparture(v)">{{ v.departureId }}</div>
+              <div class="item" :class="{ active: selectOldDeparture == v.departureId }" v-for="(v, i) in oldColList" :key="i" @click="handleSelectOldDeparture(v)">{{ formatHour(v.time) }}</div>
             </div>
           </el-card>
         </el-col>
         <el-col :span="12" :offset="0">
           <el-card class="box-card">
-            <div slot="header" class="clearfix">{{ $l("对比方案") }}</div>
+            <div slot="header" class="clearfix">
+              <span>{{ $l("对比方案") }}</span>
+              <span>{{ form.routeId }}</span>
+            </div>
             <div class="_content">
-              <div class="item" :class="{ active: selectNewDeparture == v.departureId }" v-for="(v, i) in newColList" :key="i" @click="handleSelectNewDeparture(v)">{{ v.departureId }}</div>
+              <div class="item" :class="{ active: selectNewDeparture == v.departureId }" v-for="(v, i) in newColList" :key="i" @click="handleSelectNewDeparture(v)">{{ formatHour(v.time) }}</div>
             </div>
           </el-card>
         </el-col>
@@ -104,9 +110,7 @@ export default {
   },
   destroyed() {},
   methods: {
-    timeFormatter(row) {
-      return formatHour(row.departureTime);
-    },
+    formatHour,
 
     changeData(data, type) {
       try {
@@ -388,6 +392,10 @@ export default {
   .chart-container {
     width: 100%;
     height: 420px;
+  }
+  .clearfix {
+    display: flex;
+    justify-content: space-between;
   }
 }
 </style>
