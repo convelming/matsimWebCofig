@@ -141,11 +141,7 @@ export default {
       rootVue: this,
     };
   },
-  created() {
-    const { database1, datasource1, database2, datasource2 } = this.$route.params;
-    this.$store.dispatch("setDataBase", database1);
-    this.$store.dispatch("setDataSource", database1 + "/" + datasource1);
-  },
+  created() {},
   methods: {
     handleShowRouteFlows({ uuid, routeDetail }) {
       if (this.$refs.Toolbar) {

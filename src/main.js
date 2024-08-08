@@ -33,6 +33,8 @@ Vue.component("Clock", Clock);
 Vue.use(ElementUI);
 Vue.use(language);
 
+Vue.config.productionTip = false
+
 new Vue({
   router,
   store,

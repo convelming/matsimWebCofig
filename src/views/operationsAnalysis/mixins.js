@@ -12,7 +12,7 @@ export default {
       loading: false,
       _Map: null,
       _MapLayer: null,
-      activeNames: ["PublicTransit", "MotorizedTravel", "CarTravel", "Build3D", "Network", "Activity3D", "GeoJSON"],
+      activeNames: [],
 
       showLayerPublicTransit: false,
       lock2DPublicTransit: false,
@@ -35,7 +35,7 @@ export default {
       showLayerGeoJSON: false,
       lock2DGeoJSON: false,
 
-      showLayerParking: false,
+      showLayerParking: true,
       lock2DParking: false,
 
       showStopToolbar: false,
@@ -153,44 +153,15 @@ export default {
       this.$emit("timeChange", this.time);
     },
     handleChangeTimeSpeed() {
-      let enableRotate = false;
-      if (this.showLayerPublicTransit) enableRotate = true;
-      if (this.showLayerMotorizedTravel) enableRotate = true;
-      if (this.showLayerBuild3D) enableRotate = true;
-      if (this.showLayerNetwork) enableRotate = true;
-      if (this.showLayerActivity3D) enableRotate = true;
-      if (this.showLayerGeoJSON) enableRotate = true;
-      if (this.showLayerCarTravel) enableRotate = true;
-      if (this.showLayerParking) enableRotate = true;
-      if (enableRotate) {
-        this.speed = 10;
-      } else {
-        this.speed = 0;
-      }
     },
     handleChangeMapCameraControls() {
-      let enableRotate = true;
-      if (this.showLayerPublicTransit && this.lock2DPublicTransit) enableRotate = false;
-      if (this.showLayerMotorizedTravel && this.lock2DMotorizedTravel) enableRotate = false;
-      if (this.showLayerBuild3D && this.lock2DBuild3D) enableRotate = false;
-      if (this.showLayerNetwork && this.lock2DNetwork) enableRotate = false;
-      if (this.showLayerActivity3D && this.lock2DActivity3D) enableRotate = false;
-      if (this.showLayerGeoJSON && this.lock2DGeoJSON) enableRotate = false;
-      if (this.showLayerCarTravel && this.lock2DCarTravel) enableRotate = false;
-      if (this.showLayerParking && this.lock2DParking) enableRotate = false;
-      if (enableRotate) {
-        this._Map.enableRotate = true;
-      } else {
-        this._Map.enableRotate = false;
-        this._Map.setPitchAndRotation(90, 0);
-      }
     },
     initMap() {
       this._Map = new Map({
         rootId: "mapRoot",
         enableRotate: true,
       });
-      this._Map.setFitZoomAndCenterByPoints(this.range);
+      // this._Map.setFitZoomAndCenterByPoints(this.range);
 
       this._MapLayer = new MapLayer({ tileClass: MAP_LAYER_STYLE[0], zIndex: -1 });
       this._Map.addLayer(this._MapLayer);

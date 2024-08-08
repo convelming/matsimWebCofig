@@ -17,6 +17,9 @@ module.exports = defineConfig({
   // webpack-dev-server 相关配置
   parallel: false,
   devServer: {
+    client: {
+      overlay: false
+    },
     proxy: {
       "/": {
         ws: false,

@@ -101,6 +101,7 @@ const datasource = {
         const res = await saveScheme({ key });
         return res;
       } catch (error) {
+        return Promise.reject(error);
       } finally {
         dispatch("getDataSourceList", state.dataBase);
       }
@@ -110,6 +111,7 @@ const datasource = {
         const res = await addScheme({ base, key, detail });
         return res;
       } catch (error) {
+        return Promise.reject(error);
       } finally {
         dispatch("getDataSourceList", state.dataBase);
       }
@@ -119,6 +121,7 @@ const datasource = {
         const res = await copyScheme({ source, target, detail });
         return res;
       } catch (error) {
+        return Promise.reject(error);
       } finally {
         dispatch("getDataSourceList", state.dataBase);
       }
