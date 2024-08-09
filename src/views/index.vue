@@ -205,7 +205,7 @@
 {
   "公交运行分析": {
     "zh-CN":"公交运行分析",
-    "en-US":"Analysis of Public Transportation Operations",
+    "en-US":"Public Transit Analysis",
   },
   "刷新列表": {
     "zh-CN":"刷新列表",
@@ -217,7 +217,7 @@
   },
   "新建方案": {
     "zh-CN":"新建方案",
-    "en-US":"New Scheme",
+    "en-US":"Create Scheme",
   },
   "保存方案": {
     "zh-CN":"保存方案",
@@ -225,7 +225,7 @@
   },
   "立即创建": {
     "zh-CN":"立即创建",
-    "en-US":"Created",
+    "en-US":"Create",
   },
   "新方案名称": {
     "zh-CN":"新方案名称",
@@ -233,27 +233,27 @@
   },
   "新方案描述": {
     "zh-CN":"新方案描述",
-    "en-US":"New Scheme Detail",
+    "en-US":"Scheme description",
   },
   "方案创建成功": {
     "zh-CN":"方案创建成功",
-    "en-US":"Created successfully",
+    "en-US":"Scheme Created",
   },
   "方案保存成功": {
     "zh-CN":"方案保存成功",
-    "en-US":"Save successfully",
+    "en-US":"Scheme Saved",
   },
   "请输入方案名称": {
     "zh-CN":"请输入方案名称",
-    "en-US":"Please enter the scheme name",
+    "en-US":"Please enter a scheme name",
   },
   "方案名称只能使用英文字母，数字和下划线": {
     "zh-CN":"方案名称只能使用英文字母，数字和下划线",
-    "en-US":"The scheme name can only use English letters, numbers, and underscores",
+    "en-US":"Please only use English letters, numbers, and underscores",
   },
   "方案名称不能以base结尾": {
     "zh-CN":"方案名称不能以base结尾",
-    "en-US":"The scheme name cannot end with base",
+    "en-US":"Do not use existed scheme name",
   },
   "方案名称": {
     "zh-CN":"方案名称",
@@ -265,67 +265,67 @@
   },
   "方案状态": {
     "zh-CN":"方案状态",
-    "en-US":"Scheme state",
+    "en-US":"Status",
   },
   "基准名称": {
     "zh-CN":"基准名称",
-    "en-US":"Benchmark name",
+    "en-US":"Base Scenario",
   },
   "运行状态": {
     "zh-CN":"运行状态",
-    "en-US":"Run state",
+    "en-US":"Running",
   },
   "加载状态": {
     "zh-CN":"加载状态",
-    "en-US":"Load state",
+    "en-US":"Loading",
   },
   "基础方案": {
     "zh-CN":"基础方案",
-    "en-US":"Base",
+    "en-US":"Base scenario",
   },
   "对比方案": {
     "zh-CN":"对比方案",
-    "en-US":"Comparison",
+    "en-US":"Comparison scheme",
   },
   "请选择基准MATSIM模型": {
     "zh-CN":"请选择基准MATSIM模型",
-    "en-US":"Please select the baseline MATSIM model",
+    "en-US":"Please select a base MATSim scenario",
   },
   "智慧公交线网仿真与在线优化平台": {
     "zh-CN":"智慧公交线网仿真与在线优化平台",
-    "en-US":"Intelligent bus route network simulation and online optimization platform",
+    "en-US":"MATSim Viz & Public Transit Optimization with AIGC",
   },
   "城市公交路线规划平台": {
     "zh-CN":"城市公交路线规划平台",
-    "en-US":"Urban Bus Route Planning Platform",
+    "en-US":"Platform of Urban Public Tranist Planning ",
   },
   "展示整个公交系统的运行现状，包括线路、发车时间，客流量信息及其OD分布等": {
     "zh-CN":"展示整个公交系统的运行现状，包括线路、发车时间，客流量信息及其OD分布等",
-    "en-US":"Demonstrate the current status of the entire transit system, including routes, departure times, passenger flow information and its OD distribution, etc.",
+    "en-US":"Demonstrate the entire transit operating system, including routes, departure times, passenger flow and trip information, etc.",
   },
   "线路方案调整": {
     "zh-CN":"线路方案调整",
-    "en-US":"Route program adjustment",
+    "en-US":"Route scheme optimization",
   },
   "按照一定的策略新建或调整公交线路，站点，发车信息，实时更新线路信息。": {
     "zh-CN":"按照一定的策略新建或调整公交线路，站点，发车信息，实时更新线路信息。",
-    "en-US":"New or adjusted bus routes, stops, and departure information according to certain strategies, and real-time updated route information.",
+    "en-US":"Create or revise bus routes, via stops, and time tables according to optimization strategies, and update user reactions in almost-real-time.",
   },
   "方案对比分析": {
     "zh-CN":"方案对比分析",
-    "en-US":"Comparative Analysis of Scenarios",
+    "en-US":"Analysis & Comparison of Public Transit Optimizations",
   },
   "根据调整优化的线路方案，呈现城市居民在线路调整后的反应，并将对比结果可视化呈现。": {
     "zh-CN":"根据调整优化的线路方案，呈现城市居民在线路调整后的反应，并将对比结果可视化呈现。",
-    "en-US":"According to the adjusted and optimized route scheme, presenting the reaction of urban residents after the route adjustment, and visualizing the comparison results.",
+    "en-US":"According to the adjusted and optimized PT schemes, visualizing travel behaviours before and after, with AIGC reports",
   },
   "公交系统评估": {
     "zh-CN":"公交系统评估",
-    "en-US":"Public transportation system assessment",
+    "en-US":"Public Transit Assessment",
   },
   "公交运营评估": {
     "zh-CN":"公交运营评估",
-    "en-US":"Public Transportation Operations Assessment",
+    "en-US":"Public Transit Operations Evaluation",
   },
   "公交系统总体运行评估包括可达性。": {
     "zh-CN":"公交系统总体运行评估包括可达性。",
@@ -333,19 +333,19 @@
   },
   "克隆": {
     "zh-CN":"克隆",
-    "en-US":"clones",
+    "en-US":"Copy",
   },
   "方案克隆成功": {
     "zh-CN":"方案克隆成功",
-    "en-US":"Program cloning success",
+    "en-US":"Scheme Copied",
   },
   "MATSim webViz": {
     "zh-CN":"MATSim webViz",
     "en-US":"MATSim webViz",
   },
   "加载指定项目的matsim模型可视化，分析整个城市区域居民出行活动及交通系统运行情况": {
-    "zh-CN":"加载指定项目的matsim模型可视化，分析整个城市区域居民出行活动及交通系统运行情况",
-    "en-US":"Load the matsim model visualization of a given project to analyze the travel activities of residents and the operation of the transportation system in the entire urban area.",
+    "zh-CN":"加载指定项目的MATSim模型可视化，分析整个城市区域居民出行活动及交通系统运行情况",
+    "en-US":"Load a MATSim scenario to visualize, analyse travel behaviours and activities of the entire region",
   },
   "确认":{
     "zh-CN":"确认",
