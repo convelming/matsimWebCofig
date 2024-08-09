@@ -122,9 +122,18 @@ export class PolygonSelectLayer extends Layer {
     this.state = POLYGON_SELECT_STATE_KEY.NOT_STARTED;
     this.path = [[0, 0]];
     this.center = [0, 0];
-    this.movePoint = [0, 0]
+    this.movePoint = [0, 0];
     this.update();
     this.handleStateChange();
+  }
+
+  setPath(path){
+    this.center = path[0];
+    this.path = path;
+    this.movePoint = path[0];
+    this.scene.add(this.mesh1);
+    this.scene.add(this.mesh2);
+    this.update();
   }
 
   update() {

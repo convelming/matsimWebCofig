@@ -7,6 +7,7 @@
         <div class="item" id="Build3D" :class="{ active: activeModel === Build3D.name }" @click="handleActiveModel(Build3D)">{{ $l(Build3D.name) }}</div>
         <div class="item" id="Network" :class="{ active: activeModel === Network.name }" @click="handleActiveModel(Network)">{{ $l(Network.name) }}</div>
         <div class="item" id="Activity3D" :class="{ active: activeModel === Activity3D.name }" @click="handleActiveModel(Activity3D)">{{ $l(Activity3D.name) }}</div>
+        <div class="item" id="Parking" :class="{ active: activeModel === Parking.name }" @click="handleActiveModel(Parking)">{{ $l(Parking.name) }}</div>
       </div>
     </div>
     <div class="toolbar-bodyer" v-show="activeModel === PublicTransit.name">
@@ -37,6 +38,11 @@
         <component v-for="item in Activity3D.list" :show="item.name == Activity3D.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" />
       </el-collapse>
     </div>
+    <div class="toolbar-bodyer" v-show="activeModel === Parking.name">
+      <el-collapse class="toolbar-collapse" v-model="Parking.activeName" accordion>
+        <component v-for="item in Parking.list" :show="item.name == Parking.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" />
+      </el-collapse>
+    </div>
   </div>
 </template>
 
@@ -64,7 +70,11 @@
   },
   "公共交通":{
     "zh-CN": "公共交通",
-    "en-US": "public transport"
+    "en-US": "Public transport"
+  },
+  "停车供需":{
+    "zh-CN": "停车供需",
+    "en-US": "Parking"
   },
 }
 </language>
@@ -94,6 +104,8 @@ import SelectLinkAnalysis from "../Network/toolbar/selectLinkAnalysis.vue";
 import ActivityDetail from "../Activity3D/toolbar/ActivityDetail.vue";
 // 私家车出行
 import CarTravelDetail from "../CarTravel/toolbar/carTravelDetail.vue";
+// 停车供需
+import PolgonParkingDetail from "../Parking/toolbar/PolgonParkingDetail.vue";
 
 export default {
   components: {
@@ -119,6 +131,8 @@ export default {
     ActivityDetail,
 
     CarTravelDetail,
+
+    PolgonParkingDetail,
   },
   inject: ["rootVue"],
   data() {
@@ -168,6 +182,32 @@ export default {
         list: [],
         activeName: "",
       },
+      Parking: {
+        id: "Parking",
+        name: "停车供需",
+        components: ["PolgonParkingDetail"],
+        sreach: {},
+        params: {},
+        list: [
+          {
+            type: "PolgonParkingDetail",
+            data: {
+              uuid: "b6978a48-3ca1-4f28-a33d-c74223a2abd5",
+              polgonParkingDetail: {
+                xyarr: [
+                  [12614142.912075812, 2647049.121822725],
+                  [12614089.274436189, 2646533.6038326165],
+                  [12614855.10158639, 2646438.247928082],
+                  [12614914.699183678, 2647198.115502744],
+                ],
+                geoId: null,
+              },
+            },
+            name: "90061843-6de2-4302-a8f7-eb697d0ba0f0",
+          },
+        ],
+        activeName: "90061843-6de2-4302-a8f7-eb697d0ba0f0",
+      },
       modelMap: {
         RouteDetail: "PublicTransit",
         StopAndRoute: "PublicTransit",
@@ -187,9 +227,11 @@ export default {
 
         ActivityDetail: "Activity3D",
 
-        CarTravelDetail: "MotorizedTravel"
+        CarTravelDetail: "MotorizedTravel",
+
+        PolgonParkingDetail: "Parking",
       },
-      activeModel: "公共交通",
+      activeModel: "停车供需",
       activeName: "",
       list: [],
     };

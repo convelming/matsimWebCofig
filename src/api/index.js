@@ -654,3 +654,64 @@ export function getFacilitiesByName(params) {
   });
 }
 
+
+// 全部停车位置信息
+// POST /pt/parking/allParking
+// 接口ID：202018855
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-202018855
+export function allParking(data) {
+  return request({
+    url: `/pt/parking/allParking`,
+    data: data,
+    method: "post",
+  });
+}
+
+// 范围停车需求3D柱状图
+// POST /pt/parking/rangeParking
+// 接口ID：201934418
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-201934418
+export function rangeParking(data) {
+  return request({
+    url: `/pt/parking/rangeParking`,
+    data: data,
+    method: "post",
+  });
+}
+
+// 上传GoeJson
+// POST /pt/parking/uploadGeoJson
+// 接口ID：202028362
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-202028362
+export function uploadGeoJson(file, onUploadProgress = () => { }) {
+  let data = new FormData();
+  data.append("file", file);
+  return request({
+    url: `/pt/parking/uploadGeoJson`,
+    method: "post",
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+    data: data,
+    onUploadProgress
+  });
+}
+
+
+// 范围查询供需比
+// POST /pt/parking/rangeRequireRatio
+// 接口ID：202536443
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-202536443
+export function rangeRequireRatio(data) {
+  return request({
+    url: `/pt/parking/rangeRequireRatio`,
+    data: data,
+    method: "post",
+  });
+}
+
+
+
+
+
+

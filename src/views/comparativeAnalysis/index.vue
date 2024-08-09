@@ -68,6 +68,7 @@ import Network from "../operationsAnalysis/component/Network/index.vue";
 import Activity3D from "../operationsAnalysis/component/Activity3D/index.vue";
 import GeoJSON from "../operationsAnalysis/component/GeoJSON/index.vue";
 import CarTravel from "../operationsAnalysis/component/CarTravel/index.vue";
+import Parking from "../operationsAnalysis/component/Parking/index.vue";
 
 import AnalysisReport from "./component/AnalysisReport/index.vue";
 import LinesAnalysis from "./component/LinesAnalysis/index.vue";
@@ -94,6 +95,7 @@ export default {
     HelpDialog,
     Toolbar,
     NewClock,
+    Parking
   },
 
   data() {
@@ -136,12 +138,11 @@ export default {
       this.handleChangeMapCameraControls();
     },
   },
-  provide() {
-    return {
-      rootVue: this,
-    };
+  created() {
+    const { database1, datasource1, database2, datasource2 } = this.$route.params;
+    this.$store.dispatch("setDataBase", database1);
+    this.$store.dispatch("setDataSource", database1 + "/" + datasource1);
   },
-  created() {},
   methods: {
     handleShowRouteFlows({ uuid, routeDetail }) {
       if (this.$refs.Toolbar) {

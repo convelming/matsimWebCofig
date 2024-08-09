@@ -292,5 +292,14 @@ export default {
         this.showStopToolbar = true;
       }
     },
+    handleShowPolgonParkingDetail({ uuid, polgonParkingDetail }) {
+      if (this.$refs.Toolbar) {
+        this.$refs.Toolbar.add("PolgonParkingDetail", {
+          uuid: uuid,
+          polgonParkingDetail: polgonParkingDetail,
+        });
+        this.showStopToolbar = true;
+      }
+    },
   },
 };

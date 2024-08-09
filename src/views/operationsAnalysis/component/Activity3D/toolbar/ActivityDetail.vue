@@ -215,7 +215,7 @@ export default {
     });
 
     this._SelectActivityLayer.setData(this.activityDetail);
-    this.rootVue.$on("Activity3D_changeColor", this.handleActivity3DChangeColor);
+    this.rootVue.$on(this.activityDetail.changeColorEventKey, this.handleActivity3DChangeColor);
   },
   mounted() {
     this.getDetail();
@@ -223,7 +223,7 @@ export default {
   beforeDestroy() {
     clearInterval(this._interval);
     this.handleDisable();
-    this.rootVue.$off("Activity3D_changeColor", this.handleActivity3DChangeColor);
+    this.rootVue.$off(this.activityDetail.changeColorEventKey, this.handleActivity3DChangeColor);
   },
   methods: {
     handleActivity3DChangeColor(val) {

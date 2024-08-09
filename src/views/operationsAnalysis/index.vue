@@ -91,7 +91,7 @@ export default {
       // activeNames: ["PublicTransit", "MotorizedTravel", "CarTravel", "Build3D", "Network", "Activity3D", "GeoJSON", "Parking"],
       activeNames: ["Parking"],
     };
-  },
+  },  
   methods: {
     speedCommand(value) {
       this.speed = value;

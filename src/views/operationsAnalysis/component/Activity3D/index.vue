@@ -82,6 +82,8 @@ import { MAP_EVENT } from "@/mymap";
 import { Activity3DLayer } from "./layer/Activity3DLayer";
 import { getAllActivity, getAllActivityType } from "@/api/index";
 
+const CHANGE_COLOR_EVENT_KEY = "Activity3D_changeColor";
+
 export default {
   props: ["name", "showLayer", "lock2D"],
   inject: ["rootVue"],
@@ -107,7 +109,7 @@ export default {
         if (this._Activity3DLayer) {
           this._Activity3DLayer.setColors(val);
         }
-        this.rootVue.$emit("Activity3D_changeColor", {
+        this.rootVue.$emit(CHANGE_COLOR_EVENT_KEY, {
           activityColors: this.activityTypeList,
           legColors: this.legTypeList,
         });
@@ -116,7 +118,7 @@ export default {
     },
     legTypeList: {
       handler(val) {
-        this.rootVue.$emit("Activity3D_changeColor", {
+        this.rootVue.$emit(CHANGE_COLOR_EVENT_KEY, {
           activityColors: this.activityTypeList,
           legColors: this.legTypeList,
         });
@@ -164,6 +166,7 @@ export default {
 
           _data.legColors = JSON.parse(JSON.stringify(this.legTypeList));
           _data.activityColors = JSON.parse(JSON.stringify(this.activityTypeList));
+          _data.changeColorEventKey = CHANGE_COLOR_EVENT_KEY;
           this.rootVue.handleShowActivityDetail({
             uuid: data.pickColor,
             activityDetail: _data,

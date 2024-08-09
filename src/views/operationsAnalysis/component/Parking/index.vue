@@ -15,8 +15,10 @@
           <div>
             <el-button :disabled="!s_showLayer" type="primary" size="mini" @click="handleSelectFile">{{ $l("导入GeoJSON") }}</el-button>
           </div>
-          <div v-if="file">
-            <el-tag :disabled="!s_showLayer" type="info" size="normal" effect="dark" closable @close="handleCloseFile">文件</el-tag>
+          <div class="file_item" v-if="file">
+            <span>{{ file.name }}</span>
+            <i v-if="file.uploading" class="el-icon-loading"></i>
+            <i v-else class="el-icon-close" @click="handleCloseFile"></i>
           </div>
         </div>
       </div>
@@ -31,32 +33,40 @@
         </div>
       </div>
       <div class="form_item">
-        <div class="form_label">{{ $l("最多显示人数：") }}</div>
+        <div class="form_label">{{ $l("显示活动：") }}</div>
         <div class="form_value">
-          <el-input-number class="my_input_number_1" style="width: 100%" :disabled="!s_showLayer" size="medium" v-model="maxNum" :min="0" :step="1" step-strictly> </el-input-number>
+          <el-switch :disabled="!s_showLayer" v-model="showActivity" @change="handleShowActivity($event)" />
         </div>
       </div>
-      <div class="form_item">
-        <div class="form_label">{{ $l("大小：") }}</div>
-        <div class="form_value">
-          <el-slider style="padding: 0px calc(2em - 10px)" :disabled="!s_showLayer" v-model="scale" :min="0" :max="3" :step="0.1" />
+      <template v-if="showActivity">
+        <div class="form_item">
+          <div class="form_label">{{ $l("最多显示人数：") }}</div>
+          <div class="form_value">
+            <el-input-number class="my_input_number_1" style="width: 100%" :disabled="!s_showLayer" size="medium" v-model="maxNum" :min="0" :step="1" step-strictly> </el-input-number>
+          </div>
         </div>
-      </div>
-      <div class="form_item">
-        <div class="form_label">{{ $l("颜色：") }}</div>
-        <div class="form_value">
-          <!-- <el-select v-model="colorType" :disabled="!s_showLayer" size="small" style="width: 100%; margin-bottom: 10px; display: block">
+        <div class="form_item">
+          <div class="form_label">{{ $l("大小：") }}</div>
+          <div class="form_value">
+            <el-slider style="padding: 0px calc(2em - 10px)" :disabled="!s_showLayer" v-model="scale" :min="0" :max="3" :step="0.1" />
+          </div>
+        </div>
+        <div class="form_item">
+          <div class="form_label">{{ $l("颜色：") }}</div>
+          <div class="form_value">
+            <!-- <el-select v-model="colorType" :disabled="!s_showLayer" size="small" style="width: 100%; margin-bottom: 10px; display: block">
             <el-option :label="$l('activity')" value="activity" />
             <el-option :label="$l('leg')" value="leg" />
           </el-select> -->
-          <el-table class="small my_tabel" :data="{ leg: legTypeList, activity: activityTypeList }[colorType] || []" border stripe>
-            <el-table-column prop="name" :label="$l('type')" />
-            <el-table-column prop="color" :label="$l('color')" width="150px">
-              <ColorPicker slot-scope="{ row }" :disabled="!s_showLayer" size="mini" :predefine="predefineColors" v-model="row.color" />
-            </el-table-column>
-          </el-table>
+            <el-table class="small my_tabel" :data="{ leg: legTypeList, activity: activityTypeList }[colorType] || []" border stripe>
+              <el-table-column prop="name" :label="$l('type')" />
+              <el-table-column prop="color" :label="$l('color')" width="150px">
+                <ColorPicker slot-scope="{ row }" :disabled="!s_showLayer" size="mini" :predefine="predefineColors" v-model="row.color" />
+              </el-table-column>
+            </el-table>
+          </div>
         </div>
-      </div>
+      </template>
     </div>
   </el-collapse-item>
 </template>
@@ -80,6 +90,10 @@
     "en-US": "Box selection:"
   },
   
+  "显示活动：":{
+    "zh-CN": "显示活动：",
+    "en-US": "Show Activity："
+  },
   "最多显示人数：":{
     "zh-CN": "最多显示人数：",
     "en-US": "Max People Number："
@@ -114,8 +128,11 @@
 <script>
 import { MAP_EVENT } from "@/mymap";
 import { PolygonSelectLayer, POLYGON_SELECT_STATE_KEY, POLYGON_SELECT_EVENT } from "./layer/PolygonSelectLayer";
-import { Parking3DLayer } from "./layer/Parking3DLayer";
-import { getAllActivity, getAllActivityType } from "@/api/index";
+import { Activity3DLayer } from "../Activity3D/layer/Activity3DLayer";
+import { allParking, getAllActivityType, uploadGeoJson } from "@/api/index";
+import { guid } from "@/utils/utils";
+
+const CHANGE_COLOR_EVENT_KEY = "Parking_changeColor";
 
 export default {
   props: ["name", "showLayer", "lock2D"],
@@ -140,10 +157,10 @@ export default {
 
     activityTypeList: {
       handler(val) {
-        if (this._Parking3DLayer) {
-          this._Parking3DLayer.setColors(val);
+        if (this._Activity3DLayer) {
+          this._Activity3DLayer.setColors(val);
         }
-        this.rootVue.$emit("Activity3D_changeColor", {
+        this.rootVue.$emit(CHANGE_COLOR_EVENT_KEY, {
           activityColors: this.activityTypeList,
           legColors: this.legTypeList,
         });
@@ -152,7 +169,7 @@ export default {
     },
     legTypeList: {
       handler(val) {
-        this.rootVue.$emit("Activity3D_changeColor", {
+        this.rootVue.$emit(CHANGE_COLOR_EVENT_KEY, {
           activityColors: this.activityTypeList,
           legColors: this.legTypeList,
         });
@@ -160,13 +177,13 @@ export default {
       deep: true,
     },
     scale(val) {
-      if (this._Parking3DLayer) {
-        this._Parking3DLayer.setScale(val);
+      if (this._Activity3DLayer) {
+        this._Activity3DLayer.setScale(val);
       }
     },
     maxNum(val) {
-      if (this._Parking3DLayer) {
-        this._Parking3DLayer.setMaxNum(val);
+      if (this._Activity3DLayer) {
+        this._Activity3DLayer.setMaxNum(val);
       }
     },
   },
@@ -175,12 +192,12 @@ export default {
       POLYGON_SELECT_STATE_KEY,
       predefineColors: ["#5470c6", "#91cc75", "#fac858", "#ee6666", "#73c0de", "#3ba272", "#fc8452", "#9a60b4", "#ea7ccc"],
       s_showLayer: true,
-
       color: "#5470c6",
       scale: 1,
       maxNum: 10000,
+      showActivity: true,
 
-      _Parking3DLayer: null,
+      _Activity3DLayer: null,
 
       colorType: "activity",
       activityTypeList: [],
@@ -197,7 +214,7 @@ export default {
     this.s_showLayer = this.showLayer;
 
     this._PolygonSelectLayer = new PolygonSelectLayer({
-      zIndex: 5,
+      zIndex: 40,
       event: {
         [POLYGON_SELECT_EVENT.STATE_CHANGE]: (res) => {
           this.polygonSelectState = res.data.state;
@@ -208,8 +225,7 @@ export default {
       },
     });
 
-    
-    this._Parking3DLayer = new Parking3DLayer({
+    this._Activity3DLayer = new Activity3DLayer({
       zIndex: 20,
       colors: this.activityTypeList,
       scale: this.scale,
@@ -220,6 +236,8 @@ export default {
 
           _data.legColors = JSON.parse(JSON.stringify(this.legTypeList));
           _data.activityColors = JSON.parse(JSON.stringify(this.activityTypeList));
+          _data.changeColorEventKey = CHANGE_COLOR_EVENT_KEY;
+
           this.rootVue.handleShowActivityDetail({
             uuid: data.pickColor,
             activityDetail: _data,
@@ -245,7 +263,7 @@ export default {
   beforeDestroy() {
     this.handleDisable();
     this._PolygonSelectLayer.dispose();
-    this._Parking3DLayer.dispose();
+    this._Activity3DLayer.dispose();
   },
   methods: {
     getData() {
@@ -259,10 +277,21 @@ export default {
     },
     async getAllActivity() {
       try {
-        const res = await getAllActivity(1000000);
-        this._Parking3DLayer.setData(res.data);
+        const res = await allParking(1000000);
+        this._Activity3DLayer.setData(res.data);
         this._ActivityLoaded = true;
       } catch (error) {}
+    },
+    handleShowActivity(val) {
+      try {
+        if (val) {
+          this._Map.addLayer(this._Activity3DLayer);
+        } else {
+          this._Map.removeLayer(this._Activity3DLayer);
+        }
+      } catch (error) {
+        console.log(error);
+      }
     },
     handleChangeShowLayer(value) {
       this.s_showLayer = value;
@@ -271,20 +300,21 @@ export default {
     // 组件初始化事件
     handleEnable() {
       this.getData();
+      this.handleShowActivity(this.showActivity);
       this._Map.addLayer(this._PolygonSelectLayer);
-      this._Map.addLayer(this._Parking3DLayer);
       this.rootVue.$on("timeChange", this.handleTimeChange);
     },
     // 组件卸载事件
     handleDisable() {
       this.handleStopPolygonSelect();
+      this.handleShowActivity(false);
       this._Map.removeLayer(this._PolygonSelectLayer);
-      this._Map.removeLayer(this._Parking3DLayer);
       this.rootVue.$off("timeChange", this.handleTimeChange);
     },
     handleTimeChange(time) {
-      if (this._Parking3DLayer) this._Parking3DLayer.setTime(time);
+      if (this._Activity3DLayer) this._Activity3DLayer.setTime(time);
     },
+
     handleCloseFile() {
       this.file = null;
     },
@@ -295,15 +325,44 @@ export default {
       input.style = "position:absolute;width:0;height:0;top: -100px;";
       document.body.appendChild(input);
       input.onchange = (e) => {
-        this.file = e.target.files[0];
+        this.handleUploadFile(e.target.files[0]);
         document.body.removeChild(input);
       };
       input.click();
+    },
+    handleUploadFile(file) {
+      console.log(file);
+      this.file = {
+        name: file.name,
+        _file: file,
+        uuid: null,
+        progress: 0,
+        uploading: true,
+      };
+      uploadGeoJson(file, (progressEvent) => {
+        if (progressEvent.lengthComputable) {
+          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          // 调用传入的回调，并传递进度百分比
+          this.file.progress = percentCompleted;
+        }
+      }).then((res) => {
+        this.file.uuid = res.data.uuid;
+        this.file.uploading = false;
+        this.rootVue.$emit("Parking_Geojson_Uuid", { uuid: res.data.uuid });
+      });
     },
     // ******************************* 交通交叉口 -- start
     handleShowParkDetail(path) {
       this.handleStopPolygonSelect();
       console.log(path);
+      
+      this.rootVue.handleShowPolgonParkingDetail({
+        uuid: guid(),
+        polgonParkingDetail: {
+          xyarr: path,
+          geoId: this.file ? this.file.uuid : null,
+        },
+      });
     },
     handlePlayPolygonSelect() {
       if (this._PolygonSelectLayer) {
@@ -339,6 +398,24 @@ export default {
 }
 
 .my_collapse_item {
+}
+.file_item {
+  display: inline-block;
+  padding: 7px 10px 7px 15px;
+  font-size: 12px;
+  line-height: 18px;
+  border-radius: 3px;
+
+  color: #ffffff;
+  background-color: #409eff;
+  border-color: #409eff;
+  .el-icon-loading {
+    margin-left: 10px;
+  }
+  .el-icon-close {
+    cursor: pointer;
+    margin-left: 10px;
+  }
 }
 
 .flex-align-center {

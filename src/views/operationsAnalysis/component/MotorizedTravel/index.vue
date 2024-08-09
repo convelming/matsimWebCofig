@@ -18,7 +18,7 @@
       <div class="form_item">
         <div class="form_label">{{ $l("显示图层：") }}</div>
         <div class="form_value">
-          <el-switch :disabled="!s_showLayer" v-model="showBus3DLayer" @change="handleShowBus3DLayer($event), handleShowBus3DLayer($event)"> </el-switch>
+          <el-switch :disabled="!s_showLayer" v-model="showBus3DLayer" @change="handleShowBus3DLayer($event), handleShowSubway3DLayer($event)"> </el-switch>
           <!-- <div
             class="layer"
             @click="

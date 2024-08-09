@@ -8,6 +8,7 @@ import Activity3DLayerWorker from "../worker/Activity3DLayer.worker";
 const SIZE = 80;
 
 export class Activity3DLayer extends Layer {
+  canRender = false;
 
   color = new THREE.Color(0xff0000);
 
@@ -17,7 +18,6 @@ export class Activity3DLayer extends Layer {
   maxNum = 1000;
 
   texture = new THREE.TextureLoader().load(require("@/assets/image/point2.png"));
-
 
   constructor(opt) {
     super(opt);
@@ -39,14 +39,9 @@ export class Activity3DLayer extends Layer {
       shader.fragmentShader = shader.fragmentShader.replace(
         "#include <output_fragment>",
         `
-          #if defined(USE_MAP) 
+          #if defined(USE_MAP)
             vec4 textColor = texture2D( map, vUv );
-            float length = (textColor.r + textColor.g + textColor.b) / 3.0  ;
-            if(length < 0.5){
-              outgoingLight = vec3(1.0);
-            }else{
-              outgoingLight = vColor.rgb;
-            }
+            outgoingLight.rgb = vColor.rgb;
           #endif
           #include <output_fragment>
         `
@@ -61,16 +56,19 @@ export class Activity3DLayer extends Layer {
     this.pickMaterial2 = new THREE.MeshBasicMaterial();
 
     this.worker = new Activity3DLayerWorker();
+
     this.worker.onmessage = (event) => {
-      const { key, data } = event.data;
+      const [key] = event.data;
+      const data = event.data.slice(1);
       switch (key) {
-        case "setData":
-          // this.handleSetData(data);
+        case 1:
+          this.canRender = true;
+          this.callWorkerRender();
           break;
-        case "render":
+        case 2:
           this.handleRenderCallback(data);
           break;
-        case "getActivityByColor":
+        case 3:
           this.handleGetActivityByColor(data);
           break;
       }
@@ -81,6 +79,9 @@ export class Activity3DLayer extends Layer {
   }
 
   on(type, data) {
+    if (type == MAP_EVENT.UPDATE_CAMERA_HEIGHT) {
+      if (this.canRender) this.callWorkerRender();
+    }
     if (type == MAP_EVENT.UPDATE_CENTER) {
       for (const mesh of this.scene.children) {
         const [x, y] = this.map.WebMercatorToCanvasXY(...this.center);
@@ -96,15 +97,9 @@ export class Activity3DLayer extends Layer {
       }
     }
     if (type == MAP_EVENT.HANDLE_PICK_LEFT && data.layerId == this.id) {
-      console.log(data);
-      this.worker.postMessage({
-        key: "getActivityByColor",
-        data: {
-          pickColor: data.pickColor,
-        },
-      });
+      const array = new Float64Array([3, data.pickColor]);
+      this.worker.postMessage(array, [array.buffer]);
     }
-
   }
 
   dispose() {
@@ -114,46 +109,54 @@ export class Activity3DLayer extends Layer {
 
   onAdd(map) {
     super.onAdd(map);
+    this.on(MAP_EVENT.UPDATE_CENTER, {})
   }
 
   render() {
     super.render();
-    if (this.rendering) return;
-    this.rendering = true;
-    this.worker.postMessage({
-      key: "render",
-      data: {
-        time: this.time,
-        maxNum: this.maxNum,
-        center: this.center,
-      },
-    });
   }
 
-  handleRenderCallback({ time, maxNum, center, list }) {
-    // console.log("handleRenderCallback");
-    this.center = center;
-    const _scale = this.map.cameraHeight / 4000 * this.scale;
 
-    if (!this.mesh || this.mesh.count != this.maxNum) {
+  callWorkerRender() {
+    const array = new Float64Array([2, this.time, this.maxNum]);
+    this.worker.postMessage(array, [array.buffer]);
+  }
+  clearScene() {
+    super.clearScene();
+    if (this.mesh) this.mesh.dispose();
+    if (this.pickLayerMesh) this.pickLayerMesh.dispose();
+    if (this.pickMesh) this.pickMesh.dispose();
+    this.mesh = null;
+    this.pickLayerMesh = null;
+    this.pickMesh = null;
+  }
+
+  handleRenderCallback(array) {
+    if (!this.map) {
       this.clearScene();
-      if (this.mesh) this.mesh.dispose();
-      if (this.pickLayerMesh) this.pickLayerMesh.dispose();
-      if (this.pickMesh) this.pickMesh.dispose();
+    } else {
+      const [time, cx, cy, runNum] = array;
+      this.center = [cx, cy];
+      const _scale = this.map.cameraHeight / 4000 * this.scale;
+      const decode = new TextDecoder();
 
-      this.mesh = new THREE.InstancedMesh(this.geometry, this.material, maxNum);
-      this.pickLayerMesh = new THREE.InstancedMesh(this.pickGeometry, this.pickMaterial, maxNum);
-      this.pickMesh = new THREE.InstancedMesh(this.pickGeometry2, this.pickMaterial2, maxNum);
+      if (!this.mesh || this.mesh.count != runNum) {
+        this.clearScene();
 
-      this.scene.add(this.mesh);
-      this.pickLayerScene.add(this.pickLayerMesh);
-      this.pickMeshScene.add(this.pickMesh);
-    }
-    for (let i = 0; i < maxNum; i++) {
-      const activity = list[i];
-      if (activity) {
-        const { point, pickColor, actType, startTime } = activity;
-        const positionV3 = new THREE.Vector3(point[0], point[1], i / maxNum);
+        this.mesh = new THREE.InstancedMesh(this.geometry, this.material, runNum);
+        this.pickLayerMesh = new THREE.InstancedMesh(this.pickGeometry, this.pickMaterial, runNum);
+        this.pickMesh = new THREE.InstancedMesh(this.pickGeometry2, this.pickMaterial2, runNum);
+
+        this.scene.add(this.mesh);
+        this.pickLayerScene.add(this.pickLayerMesh);
+        this.pickMeshScene.add(this.pickMesh);
+      }
+      let aIndex = 0;
+      for (let i = 4, dataLength = array[4]; i < array.length; i += dataLength + 1, dataLength = array[i]) {
+        const activity = array.slice(i + 1, i + 1 + dataLength);
+        const [px, py, pickColor, startTime, endTime, ...typeArray] = activity;
+
+        const positionV3 = new THREE.Vector3(px, py, aIndex / runNum);
         const scaleV3 = new THREE.Vector3(_scale, _scale, _scale);
         const matrix = new THREE.Matrix4();
         if (time - startTime < 20 && startTime > 30) {
@@ -162,73 +165,83 @@ export class Activity3DLayer extends Layer {
         }
         matrix.compose(positionV3, new THREE.Quaternion(), scaleV3);
 
-        this.mesh.setMatrixAt(i, matrix);
-        this.pickLayerMesh.setMatrixAt(i, matrix);
-        this.pickMesh.setMatrixAt(i, matrix);
+        this.mesh.setMatrixAt(aIndex, matrix);
+        this.pickLayerMesh.setMatrixAt(aIndex, matrix);
+        this.pickMesh.setMatrixAt(aIndex, matrix);
 
-        const color = this.colors.get(actType) || this.color;
-        this.mesh.setColorAt(i, new THREE.Color(color));
-        // pickLayerMesh.setColorAt(i, this.pickLayerColor);
-        this.pickMesh.setColorAt(i, new THREE.Color(pickColor));
-      } else {
-        const positionV3 = new THREE.Vector3(0, 0, -1000);
-        const scaleV3 = new THREE.Vector3(1, 1, 1);
-        const matrix = new THREE.Matrix4();
-        matrix.compose(positionV3, new THREE.Quaternion(), scaleV3);
+        const mtype = decode.decode(new Uint8Array(typeArray));
+        const color = this.colors.get(mtype) || this.color;
+        this.mesh.setColorAt(aIndex, new THREE.Color(color));
+        // pickLayerMesh.setColorAt(aIndex, this.pickLayerColor);
+        this.pickMesh.setColorAt(aIndex, new THREE.Color(pickColor));
 
-        this.mesh.setMatrixAt(i, matrix);
-        this.pickLayerMesh.setMatrixAt(i, matrix);
-        this.pickMesh.setMatrixAt(i, matrix);
+        aIndex += 1;
+      }
 
+      this.mesh.instanceMatrix.needsUpdate = true;
+      this.pickLayerMesh.instanceMatrix.needsUpdate = true;
+      this.pickMesh.instanceMatrix.needsUpdate = true;
 
-        this.mesh.setColorAt(i, new THREE.Color(0));
-        this.pickMesh.setColorAt(i, new THREE.Color(0));
+      if (this.mesh.instanceColor) this.mesh.instanceColor.needsUpdate = true;
+      if (this.pickMesh.instanceColor) this.pickMesh.instanceColor.needsUpdate = true;
+      if (this.map) {
+        const [x, y] = this.map.WebMercatorToCanvasXY(cx, cy);
+        this.mesh.position.set(x, y, 0);
+        this.pickLayerMesh.position.set(x, y, 0);
+        this.pickMesh.position.set(x, y, 0);
       }
     }
-
-    this.mesh.instanceMatrix.needsUpdate = true;
-    this.pickLayerMesh.instanceMatrix.needsUpdate = true;
-    this.pickMesh.instanceMatrix.needsUpdate = true;
-
-    this.mesh.instanceColor.needsUpdate = true;
-    this.pickMesh.instanceColor.needsUpdate = true;
-
-    const [x, y] = this.map.WebMercatorToCanvasXY(...center);
-
-    this.mesh.position.set(x, y, 0);
-    this.pickLayerMesh.position.set(x, y, 0);
-    this.pickMesh.position.set(x, y, 0);
-
-    this.rendering = false;
   }
 
-  handleGetActivityByColor(v) {
-    if (v) this.handleEventListener(MAP_EVENT.HANDLE_PICK_LEFT, v);
+  handleGetActivityByColor(array) {
+    if (array.length > 0) {
+      try {
+        const v = JSON.parse(new TextDecoder().decode(new Uint8Array(Array.from(array))));
+        this.handleEventListener(MAP_EVENT.HANDLE_PICK_LEFT, v);
+      } catch (error) {
+        console.log(error)
+      }
+    }
   }
 
   setTime(time) {
-    this.time = time;
+    if (this._changeTimeout || Math.abs(this.time - time) < 0.001) return;
+    this._changeTimeout = setTimeout(() => {
+      this.time = Number(time.toFixed(4));
+      if (this.canRender) this.callWorkerRender();
+      this._changeTimeout = null;
+    }, 1000 / 60);
   }
 
   setMaxNum(maxNum) {
     this.maxNum = maxNum;
+    if (this.canRender) this.callWorkerRender();
   }
 
   setScale(scale) {
     this.scale = scale;
+    if (this.canRender) this.callWorkerRender();
   }
 
   setColors(colors) {
-    this.colors = new Map(colors.map(v => [v.name, v.color]))
+    this.colors = new Map(colors.map(v => [v.name, v.color]));
+    if (this.canRender) this.callWorkerRender();
   }
 
   setPickLayerColor(pickLayerColor) {
     this.pickLayerColor = new THREE.Color(pickLayerColor);
     this.pickMaterial.setValues({ color: this.pickLayerColor });
+    if (this.canRender) this.callWorkerRender();
   }
 
   setData(data) {
-    this.worker.postMessage({ key: "setData", data: data });
+    this.canRender = false;
+    const str = JSON.stringify(data);
+    const strArray = new TextEncoder().encode(str);
+    const array = new Float64Array(1 + strArray.length);
+    array.set([1], 0);
+    array.set(strArray, 1);
+    this.worker.postMessage(array, [array.buffer]);
   }
 
 }
