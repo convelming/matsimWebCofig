@@ -106,6 +106,7 @@ import ActivityDetail from "../Activity3D/toolbar/ActivityDetail.vue";
 import CarTravelDetail from "../CarTravel/toolbar/carTravelDetail.vue";
 // 停车供需
 import PolgonParkingDetail from "../Parking/toolbar/PolgonParkingDetail.vue";
+import ParkingActivityDetail from "../Parking/toolbar/ParkingActivityDetail.vue";
 
 export default {
   components: {
@@ -133,6 +134,7 @@ export default {
     CarTravelDetail,
 
     PolgonParkingDetail,
+    ParkingActivityDetail
   },
   inject: ["rootVue"],
   data() {
@@ -185,7 +187,7 @@ export default {
       Parking: {
         id: "Parking",
         name: "停车供需",
-        components: ["PolgonParkingDetail"],
+        components: ["PolgonParkingDetail","ParkingActivityDetail"],
         sreach: {},
         params: {},
         list: [],
@@ -213,6 +215,7 @@ export default {
         CarTravelDetail: "MotorizedTravel",
 
         PolgonParkingDetail: "Parking",
+        ParkingActivityDetail: "Parking",
       },
       activeModel: "公共交通",
       activeName: "",
@@ -243,7 +246,10 @@ export default {
         case "NodeDetail":
         case "SelectLinkAnalysis":
 
-        case "ActivityDetail": {
+        case "ActivityDetail": 
+        case "ParkingActivityDetail": 
+        
+        {
           const item = list.find((v) => v.data.uuid == data.uuid);
           if (item && data.uuid) {
             activeName = item.name;

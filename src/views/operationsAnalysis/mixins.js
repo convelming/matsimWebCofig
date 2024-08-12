@@ -292,6 +292,15 @@ export default {
         this.showStopToolbar = true;
       }
     },
+    handleShowParkingActivityDetail({ uuid, activityDetail }) {
+      if (this.$refs.Toolbar) {
+        this.$refs.Toolbar.add("ParkingActivityDetail", {
+          uuid: uuid,
+          activityDetail: activityDetail,
+        });
+        this.showStopToolbar = true;
+      }
+    },
     handleShowPolgonParkingDetail({ uuid, polgonParkingDetail }) {
       if (this.$refs.Toolbar) {
         this.$refs.Toolbar.add("PolgonParkingDetail", {

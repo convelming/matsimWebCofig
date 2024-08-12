@@ -53,11 +53,14 @@
         <div class="form_item">
           <div class="form_label">{{ $l("颜色：") }}</div>
           <div class="form_value">
-            <!-- <el-select v-model="colorType" :disabled="!s_showLayer" size="small" style="width: 100%; margin-bottom: 10px; display: block">
-            <el-option :label="$l('activity')" value="activity" />
-            <el-option :label="$l('leg')" value="leg" />
-          </el-select> -->
-            <el-table class="small my_tabel" :data="{ leg: legTypeList, activity: activityTypeList }[colorType] || []" border stripe>
+            <div style="display: flex; width: 100%; margin-bottom: 10px; align-items: center">
+              <el-select v-model="colorType" :disabled="!s_showLayer" size="small">
+                <el-option :label="$l('activity')" value="activity" />
+                <el-option :label="$l('leg')" value="leg" />
+              </el-select>
+              <el-button :disabled="!s_showLayer" :icon="showColorTypeTable ? 'el-icon-caret-top' : 'el-icon-caret-bottom'" type="info" size="small" @click="showColorTypeTable = !showColorTypeTable"></el-button>
+            </div>
+            <el-table v-show="showColorTypeTable" class="small my_tabel" :data="{ leg: legTypeList, activity: activityTypeList }[colorType] || []" border stripe>
               <el-table-column prop="name" :label="$l('type')" />
               <el-table-column prop="color" :label="$l('color')" width="150px">
                 <ColorPicker slot-scope="{ row }" :disabled="!s_showLayer" size="mini" :predefine="predefineColors" v-model="row.color" />
@@ -268,6 +271,7 @@ export default {
 
       _Activity3DLayer: null,
 
+      showColorTypeTable: false,
       colorType: "activity",
       activityTypeList: [],
       legTypeList: [],
@@ -318,7 +322,7 @@ export default {
           _data.activityColors = JSON.parse(JSON.stringify(this.activityTypeList));
           _data.changeColorEventKey = CHANGE_COLOR_EVENT_KEY;
 
-          this.rootVue.handleShowActivityDetail({
+          this.rootVue.handleShowParkingActivityDetail({
             uuid: data.pickColor,
             activityDetail: _data,
           });
