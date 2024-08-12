@@ -35,7 +35,7 @@ export default {
       showLayerGeoJSON: false,
       lock2DGeoJSON: false,
 
-      showLayerParking: true,
+      showLayerParking: false,
       lock2DParking: false,
 
       showStopToolbar: false,

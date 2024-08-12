@@ -13,22 +13,21 @@
         <div class="form_label">{{ $l("上传文件：") }}</div>
         <div class="form_value">
           <div>
-            <el-button :disabled="!s_showLayer" type="primary" size="mini" @click="handleSelectFile">{{ $l("导入GeoJSON") }}</el-button>
+            <el-button :disabled="!s_showLayer" type="primary" size="mini" @click="handleShowUploadDialog">{{ $l("导入GeoJSON") }}</el-button>
           </div>
           <div class="file_item" v-if="file">
             <span>{{ file.name }}</span>
-            <i v-if="file.uploading" class="el-icon-loading"></i>
-            <i v-else class="el-icon-close" @click="handleCloseFile"></i>
+            <i class="el-icon-close" @click="handleCloseFile"></i>
           </div>
         </div>
       </div>
       <div class="form_item">
-        <div class="form_label">{{ $l("框选：") }}</div>
+        <div class="form_label">{{ $l("划定选择范围：") }}</div>
         <div class="form_value">
-          <el-button v-if="polygonSelectState == POLYGON_SELECT_STATE_KEY.NOT_STARTED" :disabled="!s_showLayer" type="primary" size="mini" @click="handlePlayPolygonSelect">开始框选</el-button>
+          <el-button v-if="polygonSelectState == POLYGON_SELECT_STATE_KEY.NOT_STARTED" :disabled="!s_showLayer" type="primary" size="mini" @click="handlePlayPolygonSelect">{{ $l("开始划定") }}</el-button>
           <template v-if="polygonSelectState != POLYGON_SELECT_STATE_KEY.NOT_STARTED">
-            <el-button type="primary" size="mini" @click="handleReplayPolygonSelect">重新框选</el-button>
-            <el-button type="primary" size="mini" @click="handleStopPolygonSelect">停止框选</el-button>
+            <el-button type="primary" size="mini" @click="handleReplayPolygonSelect">{{ $l("重新划定") }}</el-button>
+            <el-button type="primary" size="mini" @click="handleStopPolygonSelect">{{ $l("停止划定") }}</el-button>
           </template>
         </div>
       </div>
@@ -67,6 +66,36 @@
           </div>
         </div>
       </template>
+
+      <el-dialog :title="$l('导入GeoJSON')" :visible.sync="showUploadDialog" width="600px" append-to-body>
+        <el-form :model="uploadForm" ref="form" :rules="uploadRules" label-width="auto" :inline="false" size="normal">
+          <el-form-item :label="$l('文件')" prop="file">
+            <div>
+              <el-button :disabled="!s_showLayer" type="primary" size="mini" @click="handleSelectFile">{{ $l("选择GeoJSON") }}</el-button>
+            </div>
+            <div class="file_item" v-if="uploadForm.file">
+              <span>{{ uploadForm.file.name }}</span>
+              <i class="el-icon-close" @click="uploadForm.file = null"></i>
+            </div>
+          </el-form-item>
+          <el-form-item :label="$l('路内停车场字段')" prop="road">
+            <el-input v-model="uploadForm.road"></el-input>
+          </el-form-item>
+          <el-form-item :label="$l('公共停车场字段')" prop="common">
+            <el-input v-model="uploadForm.common"></el-input>
+          </el-form-item>
+          <el-form-item :label="$l('专用停车场字段')" prop="special">
+            <el-input v-model="uploadForm.special"></el-input>
+          </el-form-item>
+          <el-form-item :label="$l('路边停车场字段')" prop="roadside">
+            <el-input v-model="uploadForm.roadside"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="handleUploadFile" :loading="uploading">{{ $l("立即上传") }}</el-button>
+            <el-button @click="showUploadDialog = false">{{ $l("取消") }}</el-button>
+          </el-form-item>
+        </el-form>
+      </el-dialog>
     </div>
   </el-collapse-item>
 </template>
@@ -85,9 +114,21 @@
     "zh-CN": "上传文件：",
     "en-US": "Upload file:"
   },
-  "框选：":{
+  "划定选择范围：":{
     "zh-CN": "划定选择范围：",
     "en-US": "Draw to select:"
+  },
+  "开始划定":{
+    "zh-CN": "开始划定",
+    "en-US": "Start draw"
+  },
+  "重新划定":{
+    "zh-CN": "重新划定",
+    "en-US": "Redraw"
+  },
+  "停止划定":{
+    "zh-CN": "停止划定",
+    "en-US": "Stop draw"
   },
   
   "显示活动：":{
@@ -121,6 +162,34 @@
   "color":{
     "zh-CN": "颜色",
     "en-US": "color"
+  },
+  "文件":{
+    "zh-CN": "文件",
+    "en-US": "File"
+  },
+  "选择GeoJSON":{
+    "zh-CN": "选择GeoJSON",
+    "en-US": "Select GeoJSON"
+  },
+  "路内停车场字段":{
+    "zh-CN": "路内停车场字段",
+    "en-US": "On road parking lot field"
+  },
+  "公共停车场字段":{
+    "zh-CN": "公共停车场字段",
+    "en-US": "Public parking lot fields"
+  },
+  "专用停车场字段":{
+    "zh-CN": "专用停车场字段",
+    "en-US": "Dedicated Parking Lot Fields"
+  },
+  "路边停车场字段":{
+    "zh-CN": "路边停车场字段",
+    "en-US": "Roadside parking lot field"
+  },
+  "立即上传":{
+    "zh-CN": "立即上传",
+    "en-US": "Upload now"
   },
 }
 </language>
@@ -203,7 +272,18 @@ export default {
       activityTypeList: [],
       legTypeList: [],
 
+      showUploadDialog: false,
+      uploadForm: {},
+      uploadRules: {
+        file: {
+          required: true,
+          message: "文件不能为空",
+          trigger: "blur",
+        },
+      },
+      uploading: false,
       file: null,
+
       selectPolygon: false,
       polygonSelectState: POLYGON_SELECT_STATE_KEY.NOT_STARTED,
 
@@ -314,53 +394,62 @@ export default {
     handleTimeChange(time) {
       if (this._Activity3DLayer) this._Activity3DLayer.setTime(time);
     },
-
-    handleCloseFile() {
-      this.file = null;
+    // ******************************* 上传文件 -- start
+    handleShowUploadDialog() {
+      this.uploading = false;
+      this.uploadForm = {
+        file: null,
+        road: null,
+        common: null,
+        special: null,
+        roadside: null,
+      };
+      this.showUploadDialog = true;
     },
     handleSelectFile() {
       const input = document.createElement("input");
       input.type = "file";
       input.accept = ".geojson";
-      input.style = "position:absolute;width:0;height:0;top: -100px;";
+      input.style = "position:fixed;width:0;height:0;top: -100px;";
       document.body.appendChild(input);
       input.onchange = (e) => {
-        this.handleUploadFile(e.target.files[0]);
+        this.uploadForm.file = e.target.files[0];
         document.body.removeChild(input);
       };
       input.click();
     },
     handleUploadFile(file) {
-      console.log(file);
-      this.file = {
-        name: file.name,
-        _file: file,
-        uuid: null,
-        progress: 0,
-        uploading: true,
-      };
-      uploadGeoJson(file, (progressEvent) => {
-        if (progressEvent.lengthComputable) {
-          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-          // 调用传入的回调，并传递进度百分比
-          this.file.progress = percentCompleted;
-        }
-      }).then((res) => {
-        this.file.uuid = res.data.uuid;
-        this.file.uploading = false;
-        this.rootVue.$emit("Parking_Geojson_Uuid", { uuid: res.data.uuid });
-      });
+      this.uploading = true;
+      uploadGeoJson(this.uploadForm)
+        .then((res) => {
+          this.showUploadDialog = false;
+          this.file = {
+            ...this.uploadForm,
+            name: this.uploadForm.file.name,
+            geoId: res.data,
+          };
+          this.rootVue.$emit("Parking_Geojson_Uuid", { geoId: res.data });
+          this.uploading = false;
+        })
+        .catch((res) => {
+          this.uploading = false;
+        });
     },
+    handleCloseFile() {
+      this.file = null;
+      this.rootVue.$emit("Parking_Geojson_Uuid", { geoId: null });
+    },
+    // ******************************* 上传文件 -- end
     // ******************************* 交通交叉口 -- start
     handleShowParkDetail(path) {
       this.handleStopPolygonSelect();
       console.log(path);
-      
+
       this.rootVue.handleShowPolgonParkingDetail({
         uuid: guid(),
         polgonParkingDetail: {
           xyarr: path,
-          geoId: this.file ? this.file.uuid : null,
+          geoId: this.file ? this.file.geoId : null,
         },
       });
     },
