@@ -15,23 +15,17 @@ using Llama 3 (server end Ollama) to generate report of the scenarios before and
 
 项目所有依赖可以在package.json里找到。 需要注意的是Node需要16+，Vue版本是2.6, 暂时不兼容3.0以上的版本；Three.js需要148的版本，
 
-
 ## 如何安装使用 Installation
-      
-      npm install
-      npm run serve
+第一次使用时请运行 ```npm install``` 下载依赖库，依赖库下载完整后 运行```npm run serve``` 开启本地服务。
 ### 如何将项目打包放入 Spring boot 的static 文件夹
       运行 
       npm run build
 
 然后将打包生成的文件放到后端static 文件夹下即可
 
-### 如何单独调试
+### 如何进行本地调试
 调试时需要在本地/服务器端运行后端服务，服务器地址在vue.config.js中修改 devServer.proxy.target ip地址如：http://localhost:1234 
-修改后需要从新运行 
-   ``` 
-   npm run serve
-   ```
+修改后需要重新运行```npm run serve``` 按照配置的ip使用浏览器打开指定页面
 ### 浏览器兼容  
 开发时使用的是微软edge浏览器，兼容谷歌Chrome，其他浏览器的兼容性有待进一步测试
 
@@ -42,9 +36,10 @@ using Llama 3 (server end Ollama) to generate report of the scenarios before and
 前端在渲染和展示是所有位置信息使用的坐标系是墨卡托（WGS84/Pseudo-Mercator），EPSG：3857。导入MATSim模型时自动适配地图范围和显示位置，不同的坐标系可以进行自动转换，但是需要在MATSim输出文件里指定其使用的坐标系。
 
 ### 安全性 测试中
-如发现有潜在的安全问题，请联系作者。
+如发现有潜在的安全问题，请联系作者或开发人员。
 
-
+### 项目总体架构
+参照 STRUCTURE.md
 
 在使用Markdown（MD）格式撰写文本时，通常有以下几个基本要求和约定：
 1. 标题
