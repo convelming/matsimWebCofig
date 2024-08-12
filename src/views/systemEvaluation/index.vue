@@ -75,11 +75,11 @@
   },
   "客流廊道": {
     "zh-CN": "客流廊道",
-    "en-US": "passenger corridor"
+    "en-US": "Passenger corridor"
   },
   "覆盖范围": {
     "zh-CN": "覆盖范围",
-    "en-US": "Coverage"
+    "en-US": "Range"
   },
 }
 </language>

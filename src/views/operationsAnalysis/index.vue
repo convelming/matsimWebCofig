@@ -37,11 +37,11 @@
 {
   "时钟：":{
     "zh-CN": "时钟：",
-    "en-US": "clock："
+    "en-US": "Clock："
   },
   "速度：":{
     "zh-CN": "速度：",
-    "en-US": "speed："
+    "en-US": "Speed："
   },
   "时间：":{
     "zh-CN": "时间：",
@@ -49,7 +49,7 @@
   },
   "分/秒":{
     "zh-CN": "分/秒",
-    "en-US": "Min/s"
+    "en-US": "Min/Sec"
   },
 }
 </language>
