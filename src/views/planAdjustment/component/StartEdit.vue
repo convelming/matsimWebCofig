@@ -237,7 +237,7 @@
   },
   "是否确认删除发车信息？": {
     "zh-CN":"是否确认删除发车信息？",
-    "en-US":"Delete the depature info？"
+    "en-US":"Delete the departure info？"
   },
   "警告": {
     "zh-CN":"警告",
