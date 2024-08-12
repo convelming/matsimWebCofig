@@ -62,10 +62,10 @@
 {
   "活动详情":{
     "zh-CN": "活动详情",
-    "en-US": "Activity Detail"
+    "en-US": "Activity Details"
   },
   "personId":{
-    "zh-CN": "出行人Id：",
+    "zh-CN": "出行者Id：",
     "en-US": "Person Id:"
   },
   "actType":{
@@ -86,7 +86,7 @@
   },
   "displayActivityRoutes":{
     "zh-CN": "显示活动路线：",
-    "en-US": "Display Activity Rroutes:"
+    "en-US": "Display trip route:"
   },
   "nextActivity":{
     "zh-CN": "下一个活动：",

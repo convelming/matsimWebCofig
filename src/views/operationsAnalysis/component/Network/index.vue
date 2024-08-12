@@ -67,7 +67,7 @@
   },
   "selectLine":{
     "zh-CN": "选择路段",
-    "en-US": "Select Line"
+    "en-US": "Select Link"
   }
 }
 </language>

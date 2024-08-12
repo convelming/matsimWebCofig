@@ -18,7 +18,7 @@
   },
   "新建线路": {
     "zh-CN":"新建线路",
-    "en-US":"Add line"
+    "en-US":"Add new line"
   },
   "已有线路": {
     "zh-CN":"已有线路",

@@ -44,11 +44,11 @@
 {
   "活动":{
     "zh-CN": "活动",
-    "en-US": "Activity3D"
+    "en-US": "Activities"
   },
   "最多显示人数：":{
     "zh-CN": "最多显示人数：",
-    "en-US": "Max People Number："
+    "en-US": "Max Number："
   },
   "颜色：":{
     "zh-CN": "颜色：",
@@ -60,19 +60,19 @@
   },
   "leg":{
     "zh-CN": "出行方式",
-    "en-US": "leg"
+    "en-US": "Mode"
   },
   "activity":{
     "zh-CN": "活动类型",
-    "en-US": "activity"
+    "en-US": "Act type"
   },
   "type":{
     "zh-CN": "类型",
-    "en-US": "type"
+    "en-US": "Type"
   },
   "color":{
     "zh-CN": "颜色",
-    "en-US": "color"
+    "en-US": "Color"
   },
 }
 </language>

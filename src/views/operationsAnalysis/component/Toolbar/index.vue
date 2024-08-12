@@ -50,11 +50,11 @@
 {
   "活动":{
     "zh-CN": "活动",
-    "en-US": "Activity3D"
+    "en-US": "Activity"
   },
   "3D建筑":{
     "zh-CN": "3D建筑",
-    "en-US": "3DBuilding"
+    "en-US": "Building"
   },
   "导入GeoJSON":{
     "zh-CN": "导入GeoJSON",
@@ -62,7 +62,7 @@
   },
   "机动化出行":{
     "zh-CN": "机动化出行",
-    "en-US": "Motorized travel"
+    "en-US": "Motorized trips"
   },
   "路网":{
     "zh-CN": "路网",
@@ -70,11 +70,11 @@
   },
   "公共交通":{
     "zh-CN": "公共交通",
-    "en-US": "Public transport"
+    "en-US": "Public Transit"
   },
   "停车供需":{
-    "zh-CN": "停车供需",
-    "en-US": "Parking"
+    "zh-CN": "停车供需分析",
+    "en-US": "Parking analysis"
   },
 }
 </language>

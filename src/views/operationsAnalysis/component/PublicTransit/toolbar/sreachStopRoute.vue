@@ -28,7 +28,7 @@
     "en-US":"stop"
   },
   "route": {
-    "zh-CN":"路线",
+    "zh-CN":"线路",
     "en-US":"route"
   },
 }

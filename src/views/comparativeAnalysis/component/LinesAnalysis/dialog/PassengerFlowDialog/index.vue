@@ -34,7 +34,7 @@
 {
   "客流信息变化":{
     "zh-CN": "客流信息变化",
-    "en-US": "Changes in passenger flow"
+    "en-US": "Changes In Passenger Data"
   },
   "线路编号：":{
     "zh-CN": "线路编号：",
@@ -45,16 +45,16 @@
     "en-US": "Analysis: "
   },
   "单个班车":{
-    "zh-CN": "单个班车",
+    "zh-CN": "单次班车",
     "en-US": "Single"
   },
   "时间段":{
     "zh-CN": "时间段",
-    "en-US": "Multiple"
+    "en-US": "time"
   },
   "时间段：":{
     "zh-CN": "时间段：",
-    "en-US": "Multiple: "
+    "en-US": "Time: "
   },
   "Passengers Entering / Leaving":{
     "zh-CN": "乘客进出",

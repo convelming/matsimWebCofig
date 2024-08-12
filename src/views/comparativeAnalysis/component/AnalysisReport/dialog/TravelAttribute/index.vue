@@ -22,35 +22,35 @@
 {
   "出行属性":{
     "zh-CN": "出行属性",
-    "en-US": "Travel Attribute"
+    "en-US": "Travel Attributes"
   },
   "在途时间":{
     "zh-CN": "在途时间",
-    "en-US": "travel time"
+    "en-US": "Travel Time"
   },
   "候车时间":{
     "zh-CN": "候车时间",
-    "en-US": "waiting time"
+    "en-US": "Waiting time"
   },
   "换乘次数":{
     "zh-CN": "换乘次数",
-    "en-US": "transfer"
+    "en-US": "Transfers"
   },
   "费用":{
     "zh-CN": "费用",
-    "en-US": "amount"
+    "en-US": "Cost"
   },
   "出行距离":{
     "zh-CN": "出行距离",
-    "en-US": "distance"
+    "en-US": "Travel Distance"
   },
   "基础方案":{
     "zh-CN": "基础方案",
-    "en-US": "base"
+    "en-US": "Base Scenario"
   },
   "对比方案":{
     "zh-CN": "对比方案",
-    "en-US": "contrast"
+    "en-US": "Compared Scheme"
   },
   "图表":{
     "zh-CN": "图表",
@@ -58,7 +58,7 @@
   },
   "描述":{
     "zh-CN": "描述",
-    "en-US": "description"
+    "en-US": "AIGC"
   },
 }
 </language>
