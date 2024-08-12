@@ -7,22 +7,42 @@ using Llama 3 (server end Ollama) to generate report of the scenarios before and
 2. 公交运营系统评估 通过web GIS结合公交运营情况对其进行评价，并生成优化的公交线路、站点和发车时间的优化方案。
 3. 公交线路修改 新建或对已有的公交线路进行调整，确认后将自动生成MASim模型并运行
 4. 公交线路对比分析 与原有或选定的公交线路进行优化方案的对比分析，并自动就生成分析报告
-
-
-## 项目依赖 Prerequisites
-   - Node.js >= 14.x
-   - npm >dd= 7.x
    
-项目
+前端的代码在VS code里完成，主要架构采用vue 2 版本，采用前后端分离的方式进行。后端的代码可在 [MATSimWebViz](https://github.com/convelming/matsimWebViz.git) 找到。
+
+
+## 项目 主要依赖 Prerequisites
+
+项目所有依赖可以在package.json里找到。 需要注意的是Node需要16+，Vue版本是2.6, 暂时不兼容3.0以上的版本；Three.js需要148的版本，
 
 
 ## 如何安装使用 Installation
-      ``` bash
+      
       npm install
       npm run serve
 ### 如何将项目打包放入 Spring boot 的static 文件夹
-### 如何单独调试
+      运行 
+      npm run build
 
+然后将打包生成的文件放到后端static 文件夹下即可
+
+### 如何单独调试
+调试时需要在本地/服务器端运行后端服务，服务器地址在vue.config.js中修改 devServer.proxy.target ip地址如：http://localhost:1234 
+修改后需要从新运行 
+   ``` 
+   npm run serve
+   ```
+### 浏览器兼容  
+开发时使用的是微软edge浏览器，兼容谷歌Chrome，其他浏览器的兼容性有待进一步测试
+
+### 网络地图配置 
+项目可使用本地瓦片地图服务或Mapbox的在线地图等八个地图，配置位置在/public/config.js,以第一个为 默认样式，如有需要，可对默认地图进行调整，也可以进入模型后在右上角进行手动选取。
+本地/服务器端瓦片地图需要自行爬取。
+### CRS
+前端在渲染和展示是所有位置信息使用的坐标系是墨卡托（WGS84/Pseudo-Mercator），EPSG：3857。导入MATSim模型时自动适配地图范围和显示位置，不同的坐标系可以进行自动转换，但是需要在MATSim输出文件里指定其使用的坐标系。
+
+### 安全性 测试中
+如发现有潜在的安全问题，请联系作者。
 
 
 
