@@ -233,7 +233,7 @@
   },
   "新方案描述": {
     "zh-CN":"新方案描述",
-    "en-US":"Scheme description",
+    "en-US":"Scheme Description",
   },
   "方案创建成功": {
     "zh-CN":"方案创建成功",
@@ -257,11 +257,11 @@
   },
   "方案名称": {
     "zh-CN":"方案名称",
-    "en-US":"Scheme name",
+    "en-US":"Scheme Name",
   },
   "方案简介": {
     "zh-CN":"方案简介",
-    "en-US":"Scheme introduction",
+    "en-US":"Scheme Introduction",
   },
   "方案状态": {
     "zh-CN":"方案状态",

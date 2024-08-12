@@ -261,7 +261,7 @@
   },
   "此方案模型已经运行，由于运行时间比较久，建议另存为新的方案": {
     "zh-CN":"此方案模型已经运行，由于运行时间比较久，建议另存为新的方案",
-    "en-US":"This solution model has already been running. Due to the long running time, it is recommended to save it as a new solution"
+    "en-US":"This solution model has already been running. Due to the long running time, it is recommended to save it as a new scheme."
   },
 }
 </language>
