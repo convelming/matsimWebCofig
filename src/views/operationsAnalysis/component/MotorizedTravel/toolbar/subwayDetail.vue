@@ -72,7 +72,7 @@
   },
   "运行速度：":{
     "zh-CN": "运行速度：",
-    "en-US": "running speed："
+    "en-US": "Operating speed："
   },
   "km/h":{
     "zh-CN": "km/h",
@@ -80,7 +80,7 @@
   },
   "总里程：":{
     "zh-CN": "总里程：",
-    "en-US": "total mileage："
+    "en-US": "Route distance："
   },
   "km":{
     "zh-CN": "km",
@@ -88,31 +88,31 @@
   },
   "行驶里程：":{
     "zh-CN": "行驶里程：",
-    "en-US": "mileage："
+    "en-US": "Distance travelled："
   },
   "当前载客量：":{
     "zh-CN": "当前载客量：",
-    "en-US": "Current capacity："
+    "en-US": "Passengers on board："
   },
   "人":{
-    "zh-CN": "人",
-    "en-US": "man"
+    "zh-CN": " 人",
+    "en-US": " passengers"
   },
   "上一个停靠站点：":{
     "zh-CN": "上一个停靠站点：",
-    "en-US": "Previous stop："
+    "en-US": "Last station："
   },
   "上一个站点上客量：":{
     "zh-CN": "上一个站点上客量：",
-    "en-US": "Previous site loading："
+    "en-US": "Last station aboard："
   },
   "上一个站点下客量：":{
     "zh-CN": "上一个站点下客量：",
-    "en-US": "Previous site drop-offs："
+    "en-US": "Last station alight："
   },
   "下一个停靠站点：":{
     "zh-CN": "下一个停靠站点：",
-    "en-US": "Next stop："
+    "en-US": "Next station："
   },
 }
 </language>

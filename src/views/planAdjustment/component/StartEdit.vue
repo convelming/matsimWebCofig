@@ -93,7 +93,7 @@
 {
   "发车信息编辑": {
     "zh-CN":"发车信息编辑",
-    "en-US":"Departure Info Edit"
+    "en-US":"Time Table Edit"
   },
   "新增": {
     "zh-CN":"新增",
@@ -117,11 +117,11 @@
   },
   "发车间隔": {
     "zh-CN":"发车间隔",
-    "en-US":"departure interval"
+    "en-US":"Headway"
   },
   "车型": {
     "zh-CN":"车型",
-    "en-US":"vehicle type"
+    "en-US":"Vehicle type"
   },
   "请输入关键词": {
     "zh-CN":"请输入关键词",
@@ -129,27 +129,27 @@
   },
   "备注": {
     "zh-CN":"备注",
-    "en-US":"remark"
+    "en-US":"Description"
   },
   "操作": {
     "zh-CN":"操作",
-    "en-US":"operate"
+    "en-US":"Operate"
   },
   "修改": {
     "zh-CN":"修改",
-    "en-US":"edit"
+    "en-US":"Edit"
   },
   "删除": {
     "zh-CN":"删除",
-    "en-US":"delete"
+    "en-US":"Delete"
   },
   "确定": {
     "zh-CN":"确定",
-    "en-US":"confirm"
+    "en-US":"Confirm"
   },
   "取消": {
     "zh-CN":"取消",
-    "en-US":"cancel"
+    "en-US":"Cancel"
   },
   "运营类型": {
     "zh-CN":"运营类型",
@@ -157,7 +157,7 @@
   },
   "发班类型": {
     "zh-CN":"发班类型",
-    "en-US":"Shift Type"
+    "en-US":"Scheule Type"
   },
   "开始时间": {
     "zh-CN":"开始时间",
@@ -177,7 +177,7 @@
   },
   "运营车型": {
     "zh-CN":"运营车型",
-    "en-US":"Vehicle models"
+    "en-US":"Vehicle types"
   },
   "车厢数量": {
     "zh-CN":"车厢数量",
@@ -193,7 +193,7 @@
   },
   "总定员": {
     "zh-CN":"总定员",
-    "en-US":"Total staffing"
+    "en-US":"Total passengers"
   },
   "座席": {
     "zh-CN":"座席",
@@ -233,39 +233,39 @@
   },
   "编辑发车信息": {
     "zh-CN":"编辑发车信息",
-    "en-US":"Edit dispatch info"
+    "en-US":"Edit departure info"
   },
   "是否确认删除发车信息？": {
     "zh-CN":"是否确认删除发车信息？",
-    "en-US":"Do confirm the deletion of the dispatch info？"
+    "en-US":"Delete the depature info？"
   },
   "警告": {
     "zh-CN":"警告",
-    "en-US":"warn"
+    "en-US":"Warning"
   },
   "平峰(早晨)": {
     "zh-CN":"平峰(早晨)",
-    "en-US":"morning_valley"
+    "en-US":"Off-peak hour(morning)"
   },
   "早高峰": {
     "zh-CN":"早高峰",
-    "en-US":"morning_peak"
+    "en-US":"Peak hour(morning)"
   },
   "平峰(白天)": {
     "zh-CN":"平峰(白天)",
-    "en-US":"daytime_valley"
+    "en-US":"Off-peak hour(daytime)"
   },
   "晚高峰": {
     "zh-CN":"晚高峰",
-    "en-US":"evening_peak"
+    "en-US":"Peak hour(evening)"
   },
   "平峰(夜间)": {
     "zh-CN":"平峰(夜间)",
-    "en-US":"evening_valley"
+    "en-US":"Off-peak hour(evening)"
   },
   "定点发车": {
     "zh-CN":"定点发车",
-    "en-US":"fixed_point"
+    "en-US":"time table oriented"
   },
   "其它": {
     "zh-CN":"其它",
@@ -277,7 +277,7 @@
   },
   "周二": {
     "zh-CN":"周二",
-    "en-US":"Tues"
+    "en-US":"Tue"
   },
   "周三": {
     "zh-CN":"周三",
@@ -285,7 +285,7 @@
   },
   "周四": {
     "zh-CN":"周四",
-    "en-US":"Thurs"
+    "en-US":"Thu"
   },
   "周五": {
     "zh-CN":"周五",

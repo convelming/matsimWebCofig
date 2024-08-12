@@ -74,8 +74,8 @@
 <language>
 {
   "停车供需":{
-    "zh-CN": "停车供需",
-    "en-US": "Parking supply and demand"
+    "zh-CN": "停车供需分析",
+    "en-US": "Parking Analysis"
   },
   "导入GeoJSON":{
     "zh-CN": "导入GeoJSON",
@@ -86,8 +86,8 @@
     "en-US": "Upload file:"
   },
   "框选：":{
-    "zh-CN": "框选：",
-    "en-US": "Box selection:"
+    "zh-CN": "划定选择范围：",
+    "en-US": "Draw to select:"
   },
   
   "显示活动：":{
@@ -96,7 +96,7 @@
   },
   "最多显示人数：":{
     "zh-CN": "最多显示人数：",
-    "en-US": "Max People Number："
+    "en-US": "Max display Number："
   },
   "颜色：":{
     "zh-CN": "颜色：",
@@ -112,11 +112,11 @@
   },
   "activity":{
     "zh-CN": "活动类型",
-    "en-US": "activity"
+    "en-US": "Activity"
   },
   "type":{
     "zh-CN": "类型",
-    "en-US": "type"
+    "en-US": "Type"
   },
   "color":{
     "zh-CN": "颜色",

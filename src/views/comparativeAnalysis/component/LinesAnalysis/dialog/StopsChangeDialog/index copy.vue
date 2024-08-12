@@ -45,27 +45,27 @@
 {
   "站点变动信息":{
     "zh-CN": "站点变动信息",
-    "en-US": "Stop changes"
+    "en-US": "Modified Stop Info"
   },
   "基础方案":{
     "zh-CN": "基础方案",
-    "en-US": "基础方案"
+    "en-US": "Base Scenario"
   },
   "对比方案":{
     "zh-CN": "对比方案",
-    "en-US": "对比方案"
+    "en-US": "Compared Scheme"
   },
   "vehicleId":{
     "zh-CN": "vehicleId",
-    "en-US": "vehicleId"
+    "en-US": "VehicleId"
   },
   "id":{
-    "zh-CN": "id",
-    "en-US": "id"
+    "zh-CN": "ID",
+    "en-US": "ID"
   },
   "departureTime":{
-    "zh-CN": "departureTime",
-    "en-US": "departureTime"
+    "zh-CN": "出发时间",
+    "en-US": "Departure Time"
   },
 }
 </language>

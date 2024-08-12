@@ -46,7 +46,7 @@
   },
   "#passengers":{
     "zh-CN": "载客量",
-    "en-US": "#passengers"
+    "en-US": "passengers"
   },
 }
 </language>

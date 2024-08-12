@@ -78,11 +78,11 @@
   },
   "#Alighting Pax":{
     "zh-CN": "#下车的乘客",
-    "en-US": "#Alighting Pax"
+    "en-US": "PassengerAlight"
   },
   "#Bording Pax":{
     "zh-CN": "#上车的乘客",
-    "en-US": "#Bording Pax"
+    "en-US": "PassengerAboard"
   },
 }
 </language>

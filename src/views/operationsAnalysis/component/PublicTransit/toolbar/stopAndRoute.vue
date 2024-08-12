@@ -60,7 +60,7 @@
 {
   "Stops":{
     "zh-CN": "站点",
-    "en-US": "站点"
+    "en-US": "Stop"
   },
   "Id":{
     "zh-CN": "编号",

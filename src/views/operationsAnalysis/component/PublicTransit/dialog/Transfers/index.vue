@@ -170,7 +170,7 @@
   },
   "Include Passengers that start theirtriphere":{
     "zh-CN": "包括从这里出发的乘客",
-    "en-US": "Include Passengers that start theirtriphere"
+    "en-US": "Include Passengers that start their trip here"
   },
   "Include Passengers that end their trip here":{
     "zh-CN": "包括在此处结束行程的乘客",

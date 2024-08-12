@@ -38,27 +38,27 @@
 {
   "时刻表信息变动":{
     "zh-CN": "时刻表信息变动",
-    "en-US": "Timetable changes"
+    "en-US": "Timetable Changes"
   },
   "基础方案":{
     "zh-CN": "基础方案",
-    "en-US": "Basic Programs"
+    "en-US": "Basic Scenario"
   },
   "对比方案":{
     "zh-CN": "对比方案",
-    "en-US": "Comparative Programs"
+    "en-US": "Compared Scheme"
   },
   "vehicleId":{
     "zh-CN": "车辆标识",
-    "en-US": "vehicleId"
+    "en-US": "VehicleId"
   },
   "id":{
-    "zh-CN": "id",
-    "en-US": "id"
+    "zh-CN": "ID",
+    "en-US": "ID"
   },
   "departureTime":{
     "zh-CN": "出发时间",
-    "en-US": "departureTime"
+    "en-US": "Departure Time"
   },
 }
 </language>

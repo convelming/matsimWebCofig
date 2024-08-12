@@ -21,11 +21,11 @@
 {
   "请输入关键词": {
     "zh-CN":"请输入关键词",
-    "en-US":"Please enter keyword"
+    "en-US":"Please enter link Id"
   },
   "line": {
     "zh-CN":"路段",
-    "en-US":"line"
+    "en-US":"link"
   },
   "node": {
     "zh-CN":"节点",

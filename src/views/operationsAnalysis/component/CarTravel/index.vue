@@ -29,19 +29,19 @@
 {
   "私家车出行":{
     "zh-CN": "私家车出行",
-    "en-US": "Private travel"
+    "en-US": "car trips"
   },
   "视角跟随：":{
     "zh-CN": "视角跟随：",
-    "en-US": "Perspective Following："
+    "en-US": "View Following："
   },
   "车辆大小：":{
     "zh-CN": "车辆大小：",
-    "en-US": "Vehicle size："
+    "en-US": "Vehicle length："
   },
   "最大显示数量：":{
     "zh-CN": "最大显示数量：",
-    "en-US": "Maximum Display Quantity："
+    "en-US": "Maximum Display ："
   },
 }
 </language>

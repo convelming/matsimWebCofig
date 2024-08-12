@@ -30,27 +30,27 @@
 {
   "线路变动信息":{
     "zh-CN": "线路变动信息",
-    "en-US": "Route changes"
+    "en-US": "Modified Route Info"
   },
   "基础方案":{
     "zh-CN": "基础方案",
-    "en-US": "Basic Programs"
+    "en-US": "Base Scenario"
   },
   "对比方案":{
     "zh-CN": "对比方案",
-    "en-US": "Comparative Programs"
+    "en-US": "Compared Scheme"
   },
   "vehicleId":{
     "zh-CN": "车辆标识",
-    "en-US": "vehicleId"
+    "en-US": "VehicleId"
   },
   "id":{
-    "zh-CN": "id",
-    "en-US": "id"
+    "zh-CN": "ID",
+    "en-US": "ID"
   },
   "departureTime":{
     "zh-CN": "出发时间",
-    "en-US": "departureTime"
+    "en-US": "Departure Time"
   },
 }
 </language>
