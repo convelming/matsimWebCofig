@@ -653,7 +653,7 @@ export default {
   box-sizing: border-box;
   width: 100vw;
   height: 100vh;
-  background-image: url("~@/assets/image/back.jpg");
+  background-image: url("~@/assets/image/gz.jpeg");
   background-size: cover;
   background-repeat: no-repeat;
   overflow: auto;
