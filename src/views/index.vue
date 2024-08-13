@@ -292,7 +292,7 @@
     "en-US":"Please select a base MATSim scenario",
   },
   "智慧公交线网仿真与在线优化平台": {
-    "zh-CN":"智慧公交线网仿真与在线优化平台",
+    "zh-CN":"MATSim广州&公交优化平台",
     "en-US":"MATSim Viz & PT Optimization with AIGC",
   },
   "城市公交路线规划平台": {
@@ -653,7 +653,7 @@ export default {
   box-sizing: border-box;
   width: 100vw;
   height: 100vh;
-  background-image: url("~@/assets/image/back.jpg");
+  background-image: url("~@/assets/image/gz.jpeg");
   background-size: cover;
   background-repeat: no-repeat;
   overflow: auto;
