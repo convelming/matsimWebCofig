@@ -19,7 +19,7 @@
           <div class="Drawer_col">
             <div></div>
             <div class="mapBox">
-              <NewClock class="NewClock" :time="time" :speed.sync="speed" :minTime="minTime" :maxTime="maxTime" @update:time="handleUpdateTime" @showHelp="handleShowHelp"></NewClock>
+              <NewClock class="NewClock" :time="time" :speed="speed" @update:speed="speedCommand" :minTime="minTime" :maxTime="maxTime" @update:time="handleUpdateTime" @showHelp="handleShowHelp"></NewClock>
               <div id="mapRoot"></div>
             </div>
           </div>
@@ -32,8 +32,6 @@
     </template>
   </div>
 </template>
-
-
 
 <script>
 import mixins from "./mixins";
@@ -72,9 +70,10 @@ export default {
       activeNames: ["PublicTransit", "MotorizedTravel", "CarTravel", "Build3D", "Network", "Activity3D", "GeoJSON", "Parking"],
       // activeNames: ["Parking"],
     };
-  },  
+  },
   methods: {
     speedCommand(value) {
+      this._speed = value;
       this.speed = value;
     },
 
@@ -89,7 +88,7 @@ export default {
       if (this.showLayerCarTravel) enableRotate = true;
       if (this.showLayerParking) enableRotate = true;
       if (enableRotate) {
-        this.speed = 10;
+        this.speed = this._speed || 10;
       } else {
         this.speed = 0;
       }
