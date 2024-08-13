@@ -30,7 +30,7 @@
   },
   "描述":{
     "zh-CN": "描述",
-    "en-US": "Description"
+    "en-US": "AIGC"
   },
   "有机动车":{
     "zh-CN": "有机动车",

@@ -30,7 +30,7 @@
   },
   "描述":{
     "zh-CN": "描述",
-    "en-US": "Description"
+    "en-US": "AIGC"
   },
   "男性":{
     "zh-CN": "男性",
@@ -38,7 +38,7 @@
   },
   "女性":{
     "zh-CN": "女性",
-    "en-US": "Famale"
+    "en-US": "Female"
   },
 }
 </language>

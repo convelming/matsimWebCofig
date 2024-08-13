@@ -31,7 +31,7 @@
   },
   "分析报告生成":{
     "zh-CN": "分析报告生成",
-    "en-US": "Generate Report "
+    "en-US": "Generate Report"
   }
 }
 </language>

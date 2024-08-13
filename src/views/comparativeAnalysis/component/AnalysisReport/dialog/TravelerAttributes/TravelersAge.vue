@@ -30,7 +30,7 @@
   },
   "描述":{
     "zh-CN": "描述",
-    "en-US": "Description"
+    "en-US": "AIGC"
   },
 }
 </language>
