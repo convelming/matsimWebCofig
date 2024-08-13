@@ -34,28 +34,28 @@
 <language>
 {
   "公交轨道站点":{
-    "zh-CN": "公交轨道站点",
-    "en-US": "Bus rail station"
+    "zh-CN": "公共交通线路",
+    "en-US": "PT Lines&Stops"
   },
   "图标大小：":{
     "zh-CN": "图标大小：",
-    "en-US": "icons size:"
+    "en-US": "Stop Size:"
   },
   "图标颜色：":{
     "zh-CN": "图标颜色：",
-    "en-US": "icon color:"
+    "en-US": "Stop Color:"
   },
   "显示站点名称":{
     "zh-CN": "显示站点名称",
-    "en-US": "Show site name"
+    "en-US": "Show Stop name"
   },
   "公交站点颜色":{
     "zh-CN": "公交站点颜色",
-    "en-US": "Bus Stop Colors"
+    "en-US": "Stop Colors"
   },
   "公交线路查询":{
     "zh-CN": "公交线路查询",
-    "en-US": "Bus Route Search"
+    "en-US": "Bus Route Query"
   },
   "公交站点选取":{
     "zh-CN": "公交站点选取",
@@ -63,7 +63,7 @@
   },
   "是否框选：":{
     "zh-CN": "是否框选：",
-    "en-US": "Check box:"
+    "en-US": "Box Selection:"
   },
 }
 </language>
@@ -72,11 +72,12 @@
 import { MAP_EVENT } from "@/mymap";
 import { STOPS_STATE_KEY, STOPS_EVENT, StopsLayer } from "./layer/StopsLayer";
 import { LINK_EVENT, LINK_STATE_KEY, LinkLayer } from "./layer/LinkLayer";
+import LineDetail from "@/views/operationsAnalysis/component/Network/toolbar/lineDetail.vue";
 
 export default {
   props: ["name", "showLayer", "lock2D"],
   inject: ["rootVue"],
-  components: {},
+  components: {LineDetail},
   computed: {
     _Map() {
       return this.rootVue._Map;
