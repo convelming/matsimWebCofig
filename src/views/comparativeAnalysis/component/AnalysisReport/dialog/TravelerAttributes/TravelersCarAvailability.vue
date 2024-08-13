@@ -22,7 +22,7 @@
 {
   "出行者车辆可使用情况":{
     "zh-CN": "出行者车辆可使用情况",
-    "en-US": "Travelers Car Availability"
+    "en-US": "Car Availability"
   },
   "图表":{
     "zh-CN": "图表",
@@ -30,19 +30,19 @@
   },
   "描述":{
     "zh-CN": "描述",
-    "en-US": "description"
+    "en-US": "Description"
   },
   "总是可以使用":{
     "zh-CN": "总是可以使用",
-    "en-US": "always"
+    "en-US": "Always"
   },
   "没有或者不可使用":{
     "zh-CN": "没有或者不可使用",
-    "en-US": "never"
+    "en-US": "Never"
   },
   "偶尔可以使用":{
     "zh-CN": "偶尔可以使用",
-    "en-US": "sometimes"
+    "en-US": "Sometimes"
   },
 }
 </language>

@@ -22,7 +22,7 @@
 {
   "出行者机动车保有量":{
     "zh-CN": "出行者机动车保有量",
-    "en-US": "Travelers Car License"
+    "en-US": "Car Ownership"
   },
   "图表":{
     "zh-CN": "图表",
@@ -30,11 +30,11 @@
   },
   "描述":{
     "zh-CN": "描述",
-    "en-US": "description"
+    "en-US": "Description"
   },
   "有机动车":{
     "zh-CN": "有机动车",
-    "en-US": "yes"
+    "en-US": "have"
   },
   "无机动车":{
     "zh-CN": "无机动车",

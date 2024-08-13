@@ -22,7 +22,7 @@
 {
   "出行者就业情况":{
     "zh-CN": "出行者就业情况",
-    "en-US": "Travelers Employed"
+    "en-US": "Employment"
   },
   "图表":{
     "zh-CN": "图表",
@@ -30,15 +30,15 @@
   },
   "描述":{
     "zh-CN": "描述",
-    "en-US": "description"
+    "en-US": "Description"
   },
   "在职":{
     "zh-CN": "在职",
-    "en-US": "yes"
+    "en-US": "Employed"
   },
   "离职":{
     "zh-CN": "离职",
-    "en-US": "no"
+    "en-US": "Unemployed"
   },
 }
 </language>
