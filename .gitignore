@@ -2,6 +2,7 @@
 .VSCodeCounter
 node_modules
 /bus_route_correction_dist
+/static
 /src/assets/data
 /public/data
 

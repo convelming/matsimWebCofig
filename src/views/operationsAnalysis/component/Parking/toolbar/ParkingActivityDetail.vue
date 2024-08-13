@@ -37,15 +37,7 @@
             <el-switch v-model="showActivityRoutes" />
           </div>
         </div>
-        <div style="margin: 20px 0 0 20px" v-if="showActivityRoutes">
-          <!-- <div class="form_item" style="align-items: center">
-            <div class="form_label">{{ $l("actColor") }}</div>
-            <el-color-picker size="mini" :predefine="predefineColors" v-model="actColor" />
-          </div>
-          <div class="form_item" style="align-items: center">
-            <div class="form_label">{{ $l("legColor") }}</div>
-            <el-color-picker size="mini" :predefine="predefineColors" v-model="legColor" />
-          </div> -->
+        <div style="margin: 20px 0 0 20px" >
           <div class="form_item" style="align-items: center">
             <div class="form_label">{{ $l("height") }}</div>
             <div class="form_value">

@@ -13,8 +13,8 @@
     </div>
     <Dialog :visible="openSetting" width="350px" hideClose hideMinimize>
       <div class="setting_box">
-        <el-form ref="tlForm" size="small">
-          <el-form-item :label="$l('路线名称')">
+        <el-form ref="tlForm" size="small" label-width="auto">
+          <el-form-item :label="$l('路线名称')" >
             <RouteSelect ref="routeSelect" v-model="tlForm.id" :label.sync="tlForm.name" @change="handleGetRouteDetail" />
           </el-form-item>
         </el-form>
