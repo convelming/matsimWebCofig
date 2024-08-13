@@ -123,7 +123,7 @@
   },
   "开始划定":{
     "zh-CN": "开始划定",
-    "en-US": "Start draw"
+    "en-US": "Start drawing"
   },
   "重新划定":{
     "zh-CN": "重新划定",
@@ -131,7 +131,7 @@
   },
   "停止划定":{
     "zh-CN": "停止划定",
-    "en-US": "Stop draw"
+    "en-US": "Stop drawing"
   },
   
   "显示活动：":{
@@ -140,7 +140,7 @@
   },
   "最多显示人数：":{
     "zh-CN": "最多显示人数：",
-    "en-US": "Max Dsisplay Number："
+    "en-US": "Max Display Number："
   },
   "颜色：":{
     "zh-CN": "颜色：",
@@ -152,7 +152,7 @@
   },
   "leg":{
     "zh-CN": "出行方式",
-    "en-US": "leg"
+    "en-US": "Mode"
   },
   "activity":{
     "zh-CN": "活动类型",
@@ -164,7 +164,7 @@
   },
   "color":{
     "zh-CN": "颜色",
-    "en-US": "color"
+    "en-US": "Color"
   },
   "文件":{
     "zh-CN": "文件",
@@ -176,19 +176,19 @@
   },
   "路内停车场字段":{
     "zh-CN": "路内停车场字段",
-    "en-US": "On road parking lot field"
+    "en-US": "On Street Parking Field:"
   },
   "公共停车场字段":{
     "zh-CN": "公共停车场字段",
-    "en-US": "Public parking lot fields"
+    "en-US": "Public Parking Field"
   },
   "专用停车场字段":{
     "zh-CN": "专用停车场字段",
-    "en-US": "Dedicated Parking Lot Fields"
+    "en-US": "Dedicated Parking Field"
   },
   "路边停车场字段":{
-    "zh-CN": "路边停车场字段",
-    "en-US": "Roadside parking lot field"
+    "zh-CN": "路外停车场字段",
+    "en-US": "Roadside Parking Field"
   },
   "立即上传":{
     "zh-CN": "立即上传",

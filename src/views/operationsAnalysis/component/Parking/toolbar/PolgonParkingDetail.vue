@@ -34,11 +34,11 @@
   },
   "停车需求图表":{
     "zh-CN": "停车需求图表",
-    "en-US": "Parking Demand Chart"
+    "en-US": "Hourly Parking Demand"
   },
   "停车供需比图表":{
     "zh-CN": "停车供需比图表",
-    "en-US": "Parking supply-demand ratio Chart"
+    "en-US": "Parking supply/demand Ratio"
   },
 }
 </language>

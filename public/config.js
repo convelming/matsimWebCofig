@@ -13,6 +13,12 @@
 // }
 window.MAP_LAYER_STYLE = [
   {
+    style_name: "MAPBOX",
+    get_url: function (zoom, row, col) {
+      return `https://api.mapbox.com/styles/v1/convel/ck8frzi262yko1invkvbif5aw/tiles/512/${zoom}/${row}/${col}@2x?access_token=pk.eyJ1IjoiY29udmVsIiwiYSI6ImNsaHB4cXA2MDBicGIzam1zb25zdGtiOHAifQ.UuaTujcOQlxywCJWWZ0SSg`
+    }
+  },
+  {
     style_name: "MAP_TILER_BASIC",
     get_url: function (zoom, row, col) {
       return `http://192.168.60.231:23334/osm/MapTilerBasic/${zoom}/${row}/${col}.png`;
@@ -49,12 +55,7 @@ window.MAP_LAYER_STYLE = [
       return `http://192.168.60.231:23334/osm/liberty/${zoom}/${row}/${col}.png`;
     }
   },
-  {
-    style_name: "MAPBOX",
-    get_url: function (zoom, row, col) {
-      return `https://api.mapbox.com/styles/v1/convel/ck8frzi262yko1invkvbif5aw/tiles/512/${zoom}/${row}/${col}@2x?access_token=pk.eyJ1IjoiY29udmVsIiwiYSI6ImNsaHB4cXA2MDBicGIzam1zb25zdGtiOHAifQ.UuaTujcOQlxywCJWWZ0SSg`
-    }
-  },
+
   {
     style_name: "极夜蓝",
     background: `#0a4173`,

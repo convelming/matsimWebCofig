@@ -81,7 +81,7 @@ export default {
     return {
       predefineColors: ["#5470c6", "#91cc75", "#fac858", "#ee6666", "#73c0de", "#3ba272", "#fc8452", "#9a60b4", "#ea7ccc"],
       s_showLayer: true,
-      buildColor: "#E9CDAA",
+      buildColor: "#626364",
       buildOpacity: 80,
       _Build3DLayer: null,
 
