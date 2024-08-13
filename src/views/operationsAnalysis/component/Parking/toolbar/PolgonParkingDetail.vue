@@ -6,17 +6,23 @@
     <div class="toolbar_item_bodyer" v-loading="loading" ref="body">
       <div class="title">
         <span>{{ $l("停车需求图表") }}</span>
-        <el-button type="text" icon="el-icon-full-screen" @click="" />
+        <el-button type="text" icon="el-icon-full-screen" @click="showChart3 = true" />
       </div>
       <div ref="chart1" class="chart1"></div>
       <div v-show="showChart2">
         <div class="title">
           <span>{{ $l("停车供需比图表") }}</span>
-          <el-button type="text" icon="el-icon-full-screen" @click="" />
+          <el-button type="text" icon="el-icon-full-screen" @click="showChart4 = true" />
         </div>
         <div ref="chart2" class="chart2"></div>
       </div>
     </div>
+    <Dialog :title="$l('停车需求图表')" hideMinimize :visible.sync="showChart3" @open="handleOpenChart3" left="center" :top="20" width="840px">
+      <div class="chart3" ref="chart3"></div>
+    </Dialog>
+    <Dialog :title="$l('停车供需比图表')" hideMinimize :visible.sync="showChart4" @open="handleOpenChart4" left="center" :top="50" width="840px">
+      <div class="chart4" ref="chart4"></div>
+    </Dialog>
   </el-collapse-item>
 </template>
 
@@ -88,6 +94,8 @@ export default {
       showChart2: false,
       rangeParkingData: null,
       rangeRequireRatioData: null,
+      showChart3: false,
+      showChart4: false,
     };
   },
   created() {
@@ -98,6 +106,8 @@ export default {
   mounted() {
     this._chart1 = echarts.init(this.$refs.chart1);
     this._chart2 = echarts.init(this.$refs.chart2);
+    this._chart3 = echarts.init(this.$refs.chart3);
+    this._chart4 = echarts.init(this.$refs.chart4);
     this.getDetail();
     this.handleChangeGeoId(this.s_polgonParkingDetail);
     this._resizeObserver = new ResizeObserver((entries) => {
@@ -143,6 +153,7 @@ export default {
         rangeRequireRatio(this.s_polgonParkingDetail).then((res) => {
           this.rangeRequireRatioData = res.data;
           this._chart2.setOption(this.getChartOptions2(), true);
+          this._chart4.setOption(this.getChartOptions2(), true);
           this.showChart2 = true;
           this.$nextTick(() => {
             this._chart2.resize();
@@ -158,7 +169,8 @@ export default {
       rangeParking(this.s_polgonParkingDetail).then((res) => {
         this.rangeParkingData = res.data;
         this._chart1.setOption(this.getChartOptions1(), true);
-        this._chart2.resize();
+        this._chart3.setOption(this.getChartOptions1(), true);
+        this._chart1.resize();
         this.loading = false;
       });
     },
@@ -204,19 +216,13 @@ export default {
           type: "value",
         },
         grid3D: {
-          boxWidth: 200,
-          boxDepth: 80,
+          boxWidth: hours.length * 10,
+          boxDepth: type.length * 20,
           viewControl: {
-            // projection: 'orthographic'
-          },
-          light: {
-            main: {
-              intensity: 1.2,
-              shadow: true,
-            },
-            ambient: {
-              intensity: 0.3,
-            },
+            projection: 'perspective',
+            // minDistance: 50,
+            // maxDistance: hours.length * type.length * 10 * 1.5,
+            // distance: hours.length * type.length * 10,
           },
         },
         series: [
@@ -262,6 +268,12 @@ export default {
         ],
       };
     },
+    handleOpenChart3() {
+      if (this._chart3) this._chart3.resize();
+    },
+    handleOpenChart4() {
+      if (this._chart4) this._chart4.resize();
+    },
   },
 };
 </script>
@@ -284,5 +296,10 @@ export default {
       align-items: center;
     }
   }
+}
+.chart3,
+.chart4 {
+  width: 800px;
+  height: 600px;
 }
 </style>
