@@ -293,7 +293,7 @@
   },
   "智慧公交线网仿真与在线优化平台": {
     "zh-CN":"智慧公交线网仿真与在线优化平台",
-    "en-US":"MATSim Viz & Public Transit Optimization with AIGC",
+    "en-US":"MATSim Viz & PT Optimization with AIGC",
   },
   "城市公交路线规划平台": {
     "zh-CN":"城市公交路线规划平台",
