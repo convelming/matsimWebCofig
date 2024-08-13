@@ -4,10 +4,16 @@
       <div class="title" style="max-width: 100%">{{ $l("停车需求详情") }}</div>
     </div>
     <div class="toolbar_item_bodyer" v-loading="loading" ref="body">
-      <div>{{ $l("停车需求图表") }}</div>
+      <div class="title">
+        <span>{{ $l("停车需求图表") }}</span>
+        <el-button type="text" icon="el-icon-full-screen" @click="" />
+      </div>
       <div ref="chart1" class="chart1"></div>
       <div v-show="showChart2">
-        <div>{{ $l("停车供需比图表") }}</div>
+        <div class="title">
+          <span>{{ $l("停车供需比图表") }}</span>
+          <el-button type="text" icon="el-icon-full-screen" @click="" />
+        </div>
         <div ref="chart2" class="chart2"></div>
       </div>
     </div>
@@ -20,12 +26,12 @@
     "zh-CN": "停车需求详情",
     "en-US": "Parking Demand Details"
   },
-  "停车需求":{
-    "zh-CN": "停车需求",
+  "停车需求图表":{
+    "zh-CN": "停车需求图表",
     "en-US": "Parking Demand Chart"
   },
-  "停车供需比":{
-    "zh-CN": "停车供需比",
+  "停车供需比图表":{
+    "zh-CN": "停车供需比图表",
     "en-US": "Parking supply-demand ratio Chart"
   },
 }
@@ -212,7 +218,7 @@ export default {
               intensity: 0.3,
             },
           },
-        }, 
+        },
         series: [
           {
             type: "bar3D",
@@ -269,6 +275,13 @@ export default {
       width: 100%;
       height: 300px;
       margin-bottom: 20px;
+    }
+    .title {
+      font-size: 15px;
+      font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
   }
 }

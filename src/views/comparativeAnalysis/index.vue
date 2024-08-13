@@ -22,7 +22,7 @@
           <div class="Drawer_col">
             <div></div>
             <div class="mapBox">
-              <NewClock class="NewClock" :time="time" :speed.sync="speed" :minTime="minTime" :maxTime="maxTime" @update:time="handleUpdateTime" @showHelp="handleShowHelp"></NewClock>
+              <NewClock class="NewClock" :time="time" :speed="speed" @update:speed="speedCommand" :minTime="minTime" :maxTime="maxTime" @update:time="handleUpdateTime" @showHelp="handleShowHelp"></NewClock>
               <div id="mapRoot"></div>
             </div>
           </div>
@@ -36,8 +36,6 @@
     </template>
   </div>
 </template>
-
-
 
 <script>
 import mixins from "../operationsAnalysis/mixins";
@@ -76,12 +74,12 @@ export default {
     HelpDialog,
     Toolbar,
     NewClock,
-    Parking
+    Parking,
   },
 
   data() {
     return {
-      activeNames: ["LinesAnalysis", "AnalysisReport", "PublicTransit", "MotorizedTravel", "Build3D", "Network", "Activity3D", "GeoJSON", "CarTravel"],
+      activeNames: ["LinesAnalysis", "AnalysisReport", "PublicTransit", "MotorizedTravel", "Build3D", "Network", "Activity3D", "GeoJSON", "CarTravel", "Parking"],
 
       showLayerLinesAnalysis: true,
       lock2DLinesAnalysis: false,
@@ -125,6 +123,10 @@ export default {
     this.$store.dispatch("setDataSource", database1 + "/" + datasource1);
   },
   methods: {
+    speedCommand(value) {
+      this._speed = value;
+      this.speed = value;
+    },
     handleShowRouteFlows({ uuid, routeDetail }) {
       if (this.$refs.Toolbar) {
         this.$refs.Toolbar.add("RouteFlows", {
@@ -168,7 +170,7 @@ export default {
       if (this.showLayerCarTravel) enableRotate = true;
       if (this.showLayerParking) enableRotate = true;
       if (enableRotate) {
-        this.speed = 10;
+        this.speed = this._speed || 10;
       } else {
         this.speed = 0;
       }

@@ -25,3 +25,4 @@ pnpm-debug.log*
 *.sln
 *.sw?
 bus_route_correction_dist.*
+static.*

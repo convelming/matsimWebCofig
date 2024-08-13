@@ -32,7 +32,7 @@
     |   |   TimeRangeSlider.vue                                 /* 时间范围滑块 */
     |   |   TimeSlider.vue                                      /* 时间滑块 */
     |   |
-    |   +---Clock                                               /* 时钟组件 */
+    |   +---Clock                                               /* 时钟组件（已弃用） */
     |   |
     |   +---Drawer                                              /* 抽屉组件 */
     |   |
