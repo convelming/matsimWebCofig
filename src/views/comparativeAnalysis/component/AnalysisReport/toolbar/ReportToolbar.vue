@@ -23,7 +23,7 @@
 {
   "ReportToolbar":{
     "zh-CN": "公交出行影响对比分析报告",
-    "en-US": "Transit Travel Impact Comparison Analysis Report"
+    "en-US": "Transit Analysis & Comparison Report"
   },
   "label":{
     "zh-CN": "label_zh",
@@ -31,7 +31,7 @@
   },
   "分析报告生成":{
     "zh-CN": "分析报告生成",
-    "en-US": "Analysis report generation"
+    "en-US": "Generate Report "
   }
 }
 </language>
