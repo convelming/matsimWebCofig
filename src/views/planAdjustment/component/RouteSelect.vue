@@ -18,11 +18,11 @@
   },
   "新建线路": {
     "zh-CN":"新建线路",
-    "en-US":"Add new line"
+    "en-US":"Add new Line"
   },
   "已有线路": {
     "zh-CN":"已有线路",
-    "en-US":"Existing lines"
+    "en-US":"Existing Lines"
   }
 }
 </language>
