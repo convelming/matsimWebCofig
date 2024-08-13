@@ -176,19 +176,19 @@
   },
   "路内停车场字段":{
     "zh-CN": "路内停车场字段",
-    "en-US": "On road parking lot field"
+    "en-US": "On Street Parking Field:"
   },
   "公共停车场字段":{
     "zh-CN": "公共停车场字段",
-    "en-US": "Public parking lot fields"
+    "en-US": "Public Parking Field"
   },
   "专用停车场字段":{
     "zh-CN": "专用停车场字段",
-    "en-US": "Dedicated Parking Lot Fields"
+    "en-US": "Dedicated Parking Field"
   },
   "路边停车场字段":{
-    "zh-CN": "路边停车场字段",
-    "en-US": "Roadside parking lot field"
+    "zh-CN": "路外停车场字段",
+    "en-US": "Roadside Parking Field"
   },
   "立即上传":{
     "zh-CN": "立即上传",
