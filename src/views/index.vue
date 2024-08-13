@@ -253,7 +253,7 @@
   },
   "方案名称不能以base结尾": {
     "zh-CN":"方案名称不能以base结尾",
-    "en-US":"Do not use existed scheme name",
+    "en-US":"Scheme names already existed ",
   },
   "方案名称": {
     "zh-CN":"方案名称",
@@ -305,19 +305,19 @@
   },
   "线路方案调整": {
     "zh-CN":"线路方案调整",
-    "en-US":"Route scheme optimization",
+    "en-US":"PT Route Modification",
   },
   "按照一定的策略新建或调整公交线路，站点，发车信息，实时更新线路信息。": {
-    "zh-CN":"按照一定的策略新建或调整公交线路，站点，发车信息，实时更新线路信息。",
-    "en-US":"Create or revise bus routes, via stops, and time tables according to optimization strategies, and update user reactions in almost-real-time.",
+    "zh-CN":"按照一定的策略新建或调整公交线路、站点、发车信息并生成新的线路数据和模型。",
+    "en-US":"Create or revise bus routes, via-stops, and time tables according to optimization strategies, and update user reactions in almost-real-time.",
   },
   "方案对比分析": {
     "zh-CN":"方案对比分析",
-    "en-US":"Analysis & Comparison of Public Transit Optimizations",
+    "en-US":"Analysis & Comparison of PT Optimizations",
   },
   "根据调整优化的线路方案，呈现城市居民在线路调整后的反应，并将对比结果可视化呈现。": {
     "zh-CN":"根据调整优化的线路方案，呈现城市居民在线路调整后的反应，并将对比结果可视化呈现。",
-    "en-US":"According to the adjusted and optimized PT schemes, visualizing travel behaviours before and after, with AIGC reports",
+    "en-US":"According to modified PT schemes, visualizing travel behaviours before and after, with AIGC reports",
   },
   "公交系统评估": {
     "zh-CN":"公交系统评估",

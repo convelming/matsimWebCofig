@@ -10,7 +10,7 @@
           <span>x{{ s_speed }}</span>
         </div>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item v-for="item in speedList" :command="item" :key="item" :disabled="speed === item">速度 x{{ item }} </el-dropdown-item>
+          <el-dropdown-item v-for="item in speedList" :command="item" :key="item" :disabled="speed === item">speed x{{ item }} </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </div>
@@ -27,7 +27,7 @@ export default {
     },
     max: {
       type: Number,
-      default: 24 * 60 * 60,
+      default: 25 * 60 * 60,
     },
     min: {
       type: Number,
@@ -43,7 +43,7 @@ export default {
     },
     speedList: {
       type: Array,
-      default: () => [0, 1, 6, 10, 60, 100, 600],
+      default: () => [0, 1, 5, 10, 50, 100, 600],
     },
     speed: {
       type: Number,
