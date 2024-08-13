@@ -18,6 +18,8 @@ export class SelectBuild3DLayer extends Layer {
       color: this.buildColor,
       opacity: this.buildOpacity,
       transparent: true,
+      alphaTest: 0.1,
+      depthWrite: true
       // polygonOffset: true,
       // polygonOffsetFactor: -1,
       // polygonOffsetUnits: -1
