@@ -37,26 +37,7 @@
   </div>
 </template>
 
-<language>
-{
-  "时钟：":{
-    "zh-CN": "时钟：",
-    "en-US": "clocks："
-  },
-  "速度：":{
-    "zh-CN": "速度：",
-    "en-US": "tempo："
-  },
-  "时间：":{
-    "zh-CN": "时间：",
-    "en-US": "times："
-  },
-  "分/秒":{
-    "zh-CN": "分/秒",
-    "en-US": "minute/second"
-  },
-}
-</language>
+
 
 <script>
 import mixins from "../operationsAnalysis/mixins";

@@ -22,15 +22,15 @@
 {
   "出行方式":{
     "zh-CN": "出行方式",
-    "en-US": "TravelMode"
+    "en-US": "Mode"
   },
   "基础方案":{
     "zh-CN": "基础方案",
-    "en-US": "base"
+    "en-US": "Base Scenario"
   },
   "对比方案":{
     "zh-CN": "对比方案",
-    "en-US": "contrast"
+    "en-US": "Compared Scheme"
   },
   "图表":{
     "zh-CN": "图表",
@@ -38,7 +38,7 @@
   },
   "描述":{
     "zh-CN": "描述",
-    "en-US": "description"
+    "en-US": "AIGC"
   },
 }
 </language>

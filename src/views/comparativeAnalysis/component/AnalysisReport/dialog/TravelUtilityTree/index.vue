@@ -26,7 +26,7 @@
 {
   "出行效用决策树":{
     "zh-CN": "出行效用决策树",
-    "en-US": "Travel Utility Tree"
+    "en-US": "Trip Utility Deceision Tree"
   },
   "图表":{
     "zh-CN": "图表",
@@ -34,7 +34,7 @@
   },
   "描述":{
     "zh-CN": "描述",
-    "en-US": "description"
+    "en-US": "AIGC"
   },
 }
 </language>

@@ -57,47 +57,47 @@
 {
   "线路比对分析":{
     "zh-CN": "线路比对分析",
-    "en-US": "Line comparison analysis"
+    "en-US": "Transit Routes Comparison Analysis"
   },
   "所有修改线路：":{
     "zh-CN": "所有修改线路：",
-    "en-US": "All modified lines："
+    "en-US": "All Modified Routes："
   },
   "修改前线路颜色":{
     "zh-CN": "修改前线路颜色",
-    "en-US": "Line color before modification"
+    "en-US": "Base Line Color"
   },
   "修改后线路颜色":{
     "zh-CN": "修改后线路颜色",
-    "en-US": "Modified Line Colors"
+    "en-US": "Modified Line Color"
   },
   "（虚线为修改前线路， 实线为修改后线路）":{
     "zh-CN": "（虚线为修改前线路， 实线为修改后线路）",
-    "en-US": "(Dashed lines are pre-modification lines, solid lines are post-modification lines)"
+    "en-US": "(Dashed lines are based routes, solid lines are modified lines.)"
   },
   "受影响线路：":{
     "zh-CN": "受影响线路：",
-    "en-US": "Affected Lines："
+    "en-US": "Affected Routes："
   },
   "受影响线路颜色":{
     "zh-CN": "受影响线路颜色",
-    "en-US": "Affected Line Colors"
+    "en-US": "Affected Line Color"
   },
   "受影响站点：":{
     "zh-CN": "受影响站点：",
-    "en-US": "Affected stations："
+    "en-US": "Affected Stops："
   },
   "受影响站点颜色":{
     "zh-CN": "受影响站点颜色",
-    "en-US": "Affected site colors"
+    "en-US": "Affected Stop Color"
   },
   "修改前：":{
     "zh-CN": "修改前：",
-    "en-US": "before modification"
+    "en-US": "Base Scenario"
   },
   "修改后：":{
     "zh-CN": "修改后：",
-    "en-US": "after modification"
+    "en-US": "Modified"
   }
 }
 </language>

@@ -22,7 +22,7 @@
 {
   "出行者年龄":{
     "zh-CN": "出行者年龄",
-    "en-US": "Travelers Age"
+    "en-US": "Age"
   },
   "图表":{
     "zh-CN": "图表",
@@ -30,7 +30,7 @@
   },
   "描述":{
     "zh-CN": "描述",
-    "en-US": "description"
+    "en-US": "AIGC"
   },
 }
 </language>

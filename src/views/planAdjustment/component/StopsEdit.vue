@@ -82,19 +82,19 @@
 {
   "站点列表": {
     "zh-CN":"站点列表",
-    "en-US":"Stop list"
+    "en-US":"Stop List"
   },
   "沿线公交站点": {
     "zh-CN":"沿线公交站点",
-    "en-US":"Bus stops of the route"
+    "en-US":"Bus Stops of The Route"
   },
   "添加站点": {
     "zh-CN":"添加站点",
-    "en-US":"Add stop"
+    "en-US":"Add Stop"
   },
   "站点排序": {
     "zh-CN":"站点排序",
-    "en-US":"Stop Sort"
+    "en-US":"Sort Stops"
   },
   "站点名称": {
     "zh-CN":"站点名称",
@@ -106,7 +106,7 @@
   },
   "站点路段Id": {
     "zh-CN":"站点路段Id",
-    "en-US":"Stop Section Id"
+    "en-US":"Stop Link Id"
   },
   "鼠标左键选择路段": {
     "zh-CN":"鼠标左键选择路段",
@@ -122,31 +122,31 @@
   },
   "路段线宽": {
     "zh-CN":"路段线宽",
-    "en-US":"Link width"
+    "en-US":"Link Width"
   },
   "路段偏移": {
     "zh-CN":"路段偏移",
-    "en-US":"Link offset"
+    "en-US":"Link Sffset"
   },
   "站点坐标": {
     "zh-CN":"站点坐标",
-    "en-US":"Stop coordinate"
+    "en-US":"Stop Coord"
   },
   "鼠标左键点击地图确定坐标": {
     "zh-CN":"鼠标左键点击地图确定坐标",
-    "en-US":"Left click to get the coordinates"
+    "en-US":"Left click to get the coord"
   },
   "站点编辑": {
     "zh-CN":"站点编辑",
-    "en-US":"Stop edit"
+    "en-US":"Stop Ddit"
   },
   "添加站点": {
     "zh-CN":"添加站点",
-    "en-US":"Add stop"
+    "en-US":"Add Stop"
   },
   "站点位置距离线路超过200米，是否需要进行调整？": {
     "zh-CN":"站点位置距离线路超过200米，是否需要进行调整？",
-    "en-US":"Stop location is more than 200 meters away from the like, choose another link？"
+    "en-US":"Stop location is more than 200 meters away from the link, choose another link？"
   },
   "提示": {
     "zh-CN":"提示",
@@ -154,11 +154,11 @@
   },
   "继续保存": {
     "zh-CN":"继续保存",
-    "en-US":"Continue to save"
+    "en-US":"Continue to Save"
   },
   "需要调整": {
     "zh-CN":"需要调整",
-    "en-US":"Need to adjust"
+    "en-US":"Need to Adjust"
   },
 }
 </language>

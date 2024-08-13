@@ -33,26 +33,7 @@
   </div>
 </template>
 
-<language>
-{
-  "时钟：":{
-    "zh-CN": "时钟：",
-    "en-US": "Clock："
-  },
-  "速度：":{
-    "zh-CN": "速度：",
-    "en-US": "Speed："
-  },
-  "时间：":{
-    "zh-CN": "时间：",
-    "en-US": "time："
-  },
-  "分/秒":{
-    "zh-CN": "分/秒",
-    "en-US": "Min/Sec"
-  },
-}
-</language>
+
 
 <script>
 import mixins from "./mixins";

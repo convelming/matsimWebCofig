@@ -22,7 +22,7 @@
 {
   "出行者性别":{
     "zh-CN": "出行者性别",
-    "en-US": "Travelers Sex"
+    "en-US": "Gender"
   },
   "图表":{
     "zh-CN": "图表",
@@ -30,15 +30,15 @@
   },
   "描述":{
     "zh-CN": "描述",
-    "en-US": "description"
+    "en-US": "AIGC"
   },
   "男性":{
     "zh-CN": "男性",
-    "en-US": "male"
+    "en-US": "Male"
   },
   "女性":{
     "zh-CN": "女性",
-    "en-US": "famale"
+    "en-US": "Female"
   },
 }
 </language>

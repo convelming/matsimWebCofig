@@ -124,56 +124,56 @@
 <language>
 {
   "Line":{
-    "zh-CN": "线",
+    "zh-CN": "公交路线", // line 路线 route 线路
     "en-US": "Line"
   },
   "Route":{
-    "zh-CN": "路线",
+    "zh-CN": "上下行线路",
     "en-US": "Route"
   },
   "路线名称": {
-    "zh-CN":"路线名称",
-    "en-US":"Route name"
+    "zh-CN":"公交路线名称",
+    "en-US":"Line Name"
   },
   "添加线路": {
-    "zh-CN":"添加线路",
-    "en-US":"Add transit route"
+    "zh-CN":"添加单条上下行线路",
+    "en-US":"Add Transit Route"
   },
   "克隆线路": {
-    "zh-CN":"克隆线路",
-    "en-US":"Clone transit route"
+    "zh-CN":"复制单条上下行线路",
+    "en-US":"Copy Transit Route"
   },
   "线路": {
     "zh-CN":"线路",
-    "en-US":"transit route"
+    "en-US":"Transit Route"
   },
   "线路名称": {
     "zh-CN":"线路名称",
-    "en-US":"Uplink name"
+    "en-US":"Line name"
   },
   "编辑站点": {
     "zh-CN":"编辑站点",
-    "en-US":"Edit Stops"
+    "en-US":"Edit Stop"
   },
   "编辑路径": {
     "zh-CN":"编辑路径",
-    "en-US":"Edit Routes"
+    "en-US":"Edit Path"
   },
   "编辑发车信息": {
     "zh-CN":"编辑发车信息",
-    "en-US":"Edit departure info"
+    "en-US":"Edit Departures"
   },
   "生成反向线路": {
     "zh-CN":"生成反向线路",
-    "en-US":"Generate reverse"
+    "en-US":"Create Reversed Route"
   },
   "删除路线": {
     "zh-CN":"删除路线",
-    "en-US":"Delete route"
+    "en-US":"Delete Route"
   },
   "保存路线": {
     "zh-CN":"保存路线",
-    "en-US":"Save route"
+    "en-US":"Save Route"
   },
   "取消编辑": {
     "zh-CN":"取消编辑",
@@ -181,15 +181,15 @@
   },
   "站点编辑": {
     "zh-CN":"站点编辑",
-    "en-US":"Stop edit"
+    "en-US":"Edit Stops"
   },
   "路径编辑": {
     "zh-CN":"路径编辑",
-    "en-US":"Path edit"
+    "en-US":"Edit Paths"
   },
   "发车信息编辑": {
     "zh-CN":"发车信息编辑",
-    "en-US":"Departure Info Edit"
+    "en-US":"Edit Departures"
   },
   "保存成功": {
     "zh-CN":"保存成功",
@@ -197,7 +197,7 @@
   },
   "是否删除：": {
     "zh-CN":"是否删除：",
-    "en-US":"Do you want to delete it:"
+    "en-US":"Delete?"
   },
   "提示": {
     "zh-CN":"提示",
@@ -205,15 +205,15 @@
   },
   "反转：": {
     "zh-CN":"反转：",
-    "en-US":"reverse:"
+    "en-US":"Reverse:"
   },
   "克隆：": {
-    "zh-CN":"克隆：",
-    "en-US":"clone:"
+    "zh-CN":"拷贝：",
+    "en-US":"Copy:"
   },
   "请输入方案名称": {
     "zh-CN":"请输入方案名称",
-    "en-US":"Please enter the name of the program"
+    "en-US":"Please Enter Scheme Name"
   },
   "提示": {
     "zh-CN":"提示",
@@ -221,35 +221,35 @@
   },
   "确定": {
     "zh-CN":"确定",
-    "en-US":"confirm"
+    "en-US":"Confirm"
   },
   "取消": {
     "zh-CN":"取消",
-    "en-US":"cancel"
+    "en-US":"Cancel"
   },
   "方案名称只能使用英文字母，数字和下划线": {
     "zh-CN":"方案名称只能使用英文字母，数字和下划线",
-    "en-US":"Only letters, numbers and underscores may be used in program names"
+    "en-US":"Use Only letters, numbers or '_'"
   },
   "方案名称不能以base结尾": {
-    "zh-CN":"方案名称不能以base结尾",
-    "en-US":"Program names cannot end in base"
+    "zh-CN":"方案名称不能重复",
+    "en-US":"Scheme names cannot be the same."
   },
   "方案创建成功": {
     "zh-CN":"方案创建成功",
-    "en-US":"Program creation success"
+    "en-US":"Program Created"
   },
   "方案保存成功": {
     "zh-CN":"方案保存成功",
-    "en-US":"Program saving success"
+    "en-US":"Scheme Saved"
   },
   "删除线路": {
     "zh-CN":"删除线路",
-    "en-US":"Delete transit route"
+    "en-US":"Delete Route"
   },
   "获取路线详情失败：": {
     "zh-CN":"获取路线详情失败：",
-    "en-US":"Get route details failed:"
+    "en-US":"Getting Route Info Failed"
   },
   "另存为新方案": {
     "zh-CN":"另存为新方案",
@@ -257,11 +257,11 @@
   },
   "继续保存": {
     "zh-CN":"继续保存",
-    "en-US":"Continue saving"
+    "en-US":"Continue Saving"
   },
   "此方案模型已经运行，由于运行时间比较久，建议另存为新的方案": {
     "zh-CN":"此方案模型已经运行，由于运行时间比较久，建议另存为新的方案",
-    "en-US":"This solution model has already been running. Due to the long running time, it is recommended to save it as a new scheme."
+    "en-US":"This scenario is running. Create a new scheme to modify."
   },
 }
 </language>

@@ -97,15 +97,15 @@
   },
   "新增": {
     "zh-CN":"新增",
-    "en-US":"add"
+    "en-US":"Add"
   },
   "删除": {
     "zh-CN":"删除",
-    "en-US":"delete"
+    "en-US":"Delete"
   },
   "类型": {
     "zh-CN":"类型",
-    "en-US":"type"
+    "en-US":"Type"
   },
   "开始时间": {
     "zh-CN":"开始时间",
@@ -157,43 +157,43 @@
   },
   "发班类型": {
     "zh-CN":"发班类型",
-    "en-US":"Scheule Type"
+    "en-US":"Schedule Type"
   },
   "开始时间": {
     "zh-CN":"开始时间",
-    "en-US":"Start time"
+    "en-US":"Start Time"
   },
   "请选择开始时间": {
     "zh-CN":"请选择开始时间",
-    "en-US":"Please select start time"
+    "en-US":"Please Select Start Time"
   },
   "请选择结束时间": {
     "zh-CN":"请选择结束时间",
-    "en-US":"Please select end time"
+    "en-US":"Please Select End Time"
   },
   "时间间隔": {
     "zh-CN":"时间间隔",
-    "en-US":"Time interval"
+    "en-US":"Time Interval"
   },
   "运营车型": {
     "zh-CN":"运营车型",
-    "en-US":"Vehicle types"
+    "en-US":"Vehicle Type"
   },
   "车厢数量": {
     "zh-CN":"车厢数量",
-    "en-US":"Number of carriages"
+    "en-US":"Number of Carriages"
   },
   "车辆长度": {
     "zh-CN":"车辆长度",
-    "en-US":"Vehicle length"
+    "en-US":"Vehicle Length"
   },
   "车辆宽度": {
     "zh-CN":"车辆宽度",
-    "en-US":"Vehicle width"
+    "en-US":"Vehicle Width"
   },
   "总定员": {
     "zh-CN":"总定员",
-    "en-US":"Total passengers"
+    "en-US":"Total Passengers"
   },
   "座席": {
     "zh-CN":"座席",
@@ -201,7 +201,7 @@
   },
   "备注": {
     "zh-CN":"备注",
-    "en-US":"remark"
+    "en-US":"Remark"
   },
   "请输入内容": {
     "zh-CN":"请输入内容",

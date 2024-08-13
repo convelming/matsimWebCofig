@@ -50,11 +50,11 @@
   },
   "需求端": {
     "zh-CN": "需求端",
-    "en-US": "demand side"
+    "en-US": "demand "
   },
   "供给端": {
     "zh-CN": "供给端",
-    "en-US": "supply side"
+    "en-US": "supply "
   },
   "网格边长(x100m)：": {
     "zh-CN": "网格边长(x100m)：",

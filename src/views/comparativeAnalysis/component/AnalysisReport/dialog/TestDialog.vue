@@ -22,7 +22,7 @@
 {
   "停留时间":{
     "zh-CN": "停留时间",
-    "en-US": "Residence Time"
+    "en-US": "Duration"
   },
 }
 </language>

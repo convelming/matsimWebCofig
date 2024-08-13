@@ -6,9 +6,9 @@
         <component v-show="carouselIndex == item" v-for="item in pageNum" :key="item" :is="`page${item}`"></component>
       </div>
       <div slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="handleClose">关闭</el-button>
-        <el-button v-if="carouselIndex != 1" size="mini" type="info" @click="carouselIndex--">上一步</el-button>
-        <el-button v-if="carouselIndex < pageNum" size="mini" type="primary" @click="carouselIndex++">下一步</el-button>
+        <el-button size="mini" @click="handleClose">关闭/Close</el-button>
+        <el-button v-if="carouselIndex != 1" size="mini" type="info" @click="carouselIndex--">上一步/Last</el-button>
+        <el-button v-if="carouselIndex < pageNum" size="mini" type="primary" @click="carouselIndex++">下一步/Next</el-button>
       </div>
     </el-dialog>
   </div>
