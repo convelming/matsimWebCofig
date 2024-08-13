@@ -19,7 +19,7 @@
           </div>
           <div class="file_row">
             <div style="width: 100%; padding: 0 10px">
-              <el-slider :disabled="!s_showLayer" :title="$l('pointScale')"  v-model="item.labelParams.pointScale" :step="1" :min="1" :max="200" @change="handleChange('pointScale', index, $event)"> </el-slider>
+              <el-slider :disabled="!s_showLayer" :title="$l('pointScale')"  v-model="item.labelParams.pointScale" :step="1" :min="1" :max="1000" @change="handleChange('pointScale', index, $event)"> </el-slider>
             </div>
             <div class="file_btn">
               <el-color-picker :disabled="!s_showLayer" :title="$l('pointColor')" size="mini" :predefine="predefineColors" v-model="item.labelParams.pointColor" @change="handleChange('pointColor', index, $event)" />
@@ -30,7 +30,7 @@
           </div>
           <div class="file_row">
             <div style="width: 100%; padding: 0 10px">
-              <el-slider :disabled="!s_showLayer" :title="$l('lineWidth')"  v-model="item.labelParams.lineWidth" :step="1" :min="1" :max="200" @change="handleChange('lineWidth', index, $event)"> </el-slider>
+              <el-slider :disabled="!s_showLayer" :title="$l('lineWidth')"  v-model="item.labelParams.lineWidth" :step="1" :min="1" :max="1000" @change="handleChange('lineWidth', index, $event)"> </el-slider>
             </div>
             <div class="file_btn">
               <el-color-picker :disabled="!s_showLayer" :title="$l('lineColor')" size="mini" :predefine="predefineColors" v-model="item.labelParams.lineColor" @change="handleChange('lineColor', index, $event)" />
