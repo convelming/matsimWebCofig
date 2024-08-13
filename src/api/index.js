@@ -683,17 +683,18 @@ export function rangeParking(data) {
 // POST /pt/parking/uploadGeoJson
 // 接口ID：202028362
 // 接口地址：https://app.apifox.com/link/project/3709845/apis/api-202028362
-export function uploadGeoJson(file, onUploadProgress = () => { }) {
-  let data = new FormData();
-  data.append("file", file);
+export function uploadGeoJson(data) {
+  let formData = new FormData();
+  for (const key in data) {
+    formData.append(key, data[key]);
+  }
   return request({
     url: `/pt/parking/uploadGeoJson`,
     method: "post",
     headers: {
       "Content-Type": "multipart/form-data",
     },
-    data: data,
-    onUploadProgress
+    data: formData
   });
 }
 

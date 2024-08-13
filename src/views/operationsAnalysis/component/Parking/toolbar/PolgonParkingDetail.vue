@@ -6,10 +6,10 @@
     <div class="toolbar_item_bodyer" v-loading="loading" ref="body">
       <div>{{ $l("停车需求图表") }}</div>
       <div ref="chart1" class="chart1"></div>
-      <template v-if="showChart2">
+      <div v-show="showChart2">
         <div>{{ $l("停车供需比图表") }}</div>
         <div ref="chart2" class="chart2"></div>
-      </template>
+      </div>
     </div>
   </el-collapse-item>
 </template>
@@ -87,10 +87,13 @@ export default {
   created() {
     this.s_polgonParkingDetail = JSON.parse(JSON.stringify(this.polgonParkingDetail));
     this._PolygonSelectLayer = new PolygonSelectLayer({ zIndex: 50 });
-    this.rootVue.$on("Parking_Geojson_Uuid", this.getDetail);
+    this.rootVue.$on("Parking_Geojson_Uuid", this.handleChangeGeoId);
   },
   mounted() {
+    this._chart1 = echarts.init(this.$refs.chart1);
+    this._chart2 = echarts.init(this.$refs.chart2);
     this.getDetail();
+    this.handleChangeGeoId(this.s_polgonParkingDetail);
     this._resizeObserver = new ResizeObserver((entries) => {
       console.log("resize");
 
@@ -118,7 +121,7 @@ export default {
       this._chart2.dispose();
       this._chart2 = null;
     }
-    this.rootVue.$off("Parking_Geojson_Uuid", this.getDetail);
+    this.rootVue.$off("Parking_Geojson_Uuid", this.handleChangeGeoId);
   },
   methods: {
     handleEnable() {
@@ -130,35 +133,36 @@ export default {
     },
     handleChangeGeoId(data) {
       this.s_polgonParkingDetail.geoId = data.geoId;
-      this.getDetail();
+      if (this.s_polgonParkingDetail.geoId) {
+        rangeRequireRatio(this.s_polgonParkingDetail).then((res) => {
+          this.rangeRequireRatioData = res.data;
+          this._chart2.setOption(this.getChartOptions2(), true);
+          this.showChart2 = true;
+          this.$nextTick(() => {
+            this._chart2.resize();
+          });
+        });
+      } else {
+        this.showChart2 = false;
+      }
     },
     getDetail() {
       if (!this.s_polgonParkingDetail) return;
       this.loading = true;
       rangeParking(this.s_polgonParkingDetail).then((res) => {
         this.rangeParkingData = res.data;
-        this._chart1 = echarts.init(this.$refs.chart1);
         this._chart1.setOption(this.getChartOptions1(), true);
+        this._chart2.resize();
         this.loading = false;
       });
-      if (this.s_polgonParkingDetail.geoId) {
-        rangeRequireRatio(this.s_polgonParkingDetail).then((res) => {
-          this.rangeRequireRatioData = res.data;
-          this.showChart2 = true;
-          this.$nextTick(() => {
-            this._chart2 = echarts.init(this.$refs.chart2);
-            this._chart2.setOption(this.getChartOptions2(), true);
-          });
-        });
-      }
     },
     getChartOptions1() {
       // prettier-ignore
-      var hours = ['12a', '1a', '2a', '3a', '4a', '5a', '6a','7a', '8a', '9a', '10a', '11a','12p', '1p', '2p', '3p', '4p', '5p','6p', '7p', '8p', '9p', '10p', '11p'];
+      const hours = ['12a', '1a', '2a', '3a', '4a', '5a', '6a','7a', '8a', '9a', '10a', '11a','12p', '1p', '2p', '3p', '4p', '5p','6p', '7p', '8p', '9p', '10p', '11p'];
       // prettier-ignore
-      var type = Array.from(Object.keys(this.rangeParkingData[0]));
+      const type = Array.from(Object.keys(this.rangeParkingData[0]));
       // prettier-ignore
-      var data = [];
+      const data = [];
       for (let i = 0; i < hours.length; i++) {
         for (let j = 0; j < type.length; j++) {
           const hk = i,
@@ -208,7 +212,7 @@ export default {
               intensity: 0.3,
             },
           },
-        },
+        }, 
         series: [
           {
             type: "bar3D",
@@ -232,7 +236,25 @@ export default {
       };
     },
     getChartOptions2() {
-
+      const data = this.rangeRequireRatioData;
+      // prettier-ignore
+      const hours = ['12a', '1a', '2a', '3a', '4a', '5a', '6a','7a', '8a', '9a', '10a', '11a','12p', '1p', '2p', '3p', '4p', '5p','6p', '7p', '8p', '9p', '10p', '11p'];
+      return {
+        tooltip: {},
+        xAxis: {
+          type: "category",
+          data: hours,
+        },
+        yAxis: {
+          type: "value",
+        },
+        series: [
+          {
+            data: hours.map((v, i) => Number(data[i] || 0)),
+            type: "bar",
+          },
+        ],
+      };
     },
   },
 };

@@ -3,7 +3,7 @@ import * as THREE from "three";
 class Activity3DLayerWorker {
   timeObj = new Map();
   activityMap = new Map();
-  timeSpeed = 60 * 1;
+  timeSpeed = 60 * 20;
   center = [0, 0];
 
   getActivityByColor([pickColor]) {
@@ -18,7 +18,7 @@ class Activity3DLayerWorker {
 
   setData(array) {
     const data = JSON.parse(new TextDecoder().decode(new Uint8Array(array)));
-
+    
     this.activityMap.clear();
     this.timeObj.forEach((v) => (v.length = 0));
     this.timeObj.clear();

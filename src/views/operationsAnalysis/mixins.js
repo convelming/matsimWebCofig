@@ -35,7 +35,7 @@ export default {
       showLayerGeoJSON: false,
       lock2DGeoJSON: false,
 
-      showLayerParking: true,
+      showLayerParking: false,
       lock2DParking: false,
 
       showStopToolbar: false,
@@ -286,6 +286,15 @@ export default {
     handleShowActivityDetail({ uuid, activityDetail }) {
       if (this.$refs.Toolbar) {
         this.$refs.Toolbar.add("ActivityDetail", {
+          uuid: uuid,
+          activityDetail: activityDetail,
+        });
+        this.showStopToolbar = true;
+      }
+    },
+    handleShowParkingActivityDetail({ uuid, activityDetail }) {
+      if (this.$refs.Toolbar) {
+        this.$refs.Toolbar.add("ParkingActivityDetail", {
           uuid: uuid,
           activityDetail: activityDetail,
         });
