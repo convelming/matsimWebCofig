@@ -111,8 +111,8 @@
 <language>
 {
   "公共交通出行":{
-    "zh-CN": "公共交通出行",
-    "en-US": "Public Transit"
+    "zh-CN": "公共交通车辆",
+    "en-US": "PT Vehicles"
   },
   "视角跟随：":{
     "zh-CN": "视角跟随：",

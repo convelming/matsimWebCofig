@@ -140,7 +140,7 @@
   },
   "最多显示人数：":{
     "zh-CN": "最多显示人数：",
-    "en-US": "Max display Number："
+    "en-US": "Max Dsisplay Number："
   },
   "颜色：":{
     "zh-CN": "颜色：",

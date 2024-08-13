@@ -29,7 +29,7 @@
 {
   "私家车出行":{
     "zh-CN": "私家车出行",
-    "en-US": "car trips"
+    "en-US": "Car Trips"
   },
   "视角跟随：":{
     "zh-CN": "视角跟随：",

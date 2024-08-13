@@ -28,16 +28,16 @@
 <language>
 {
   "3D建筑":{
-    "zh-CN": "3D建筑",
-    "en-US": "3DBuilding"
+    "zh-CN": "建筑设施",
+    "en-US": "Buildings&Facilities"
   },
   "建筑颜色：":{
     "zh-CN": "建筑颜色：",
-    "en-US": "Building Colors："
+    "en-US": "Colors"
   },
   "建筑透明度：":{
     "zh-CN": "建筑透明度：",
-    "en-US": "Architectural transparency："
+    "en-US": "Transparency："
   }
 }
 </language>
