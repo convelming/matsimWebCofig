@@ -192,26 +192,6 @@ export default {
         params: {},
         list: [],
         activeName: "",
-
-        list: [
-          {
-            type: "PolgonParkingDetail",
-            data: {
-              uuid: "b6978a48-3ca1-4f28-a33d-c74223a2abd5",
-              polgonParkingDetail: {
-                xyarr: [
-                  [12614142.912075812, 2647049.121822725],
-                  [12614089.274436189, 2646533.6038326165],
-                  [12614855.10158639, 2646438.247928082],
-                  [12614914.699183678, 2647198.115502744],
-                ],
-                geoId: null,
-              },
-            },
-            name: "90061843-6de2-4302-a8f7-eb697d0ba0f0",
-          },
-        ],
-        activeName: "90061843-6de2-4302-a8f7-eb697d0ba0f0",
       },
       modelMap: {
         RouteDetail: "PublicTransit",
@@ -238,7 +218,6 @@ export default {
         ParkingActivityDetail: "Parking",
       },
       activeModel: "公共交通",
-      activeModel: "停车供需",
       activeName: "",
       list: [],
     };

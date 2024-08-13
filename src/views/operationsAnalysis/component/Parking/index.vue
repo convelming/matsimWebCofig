@@ -78,21 +78,37 @@
             </div>
             <div class="file_item" v-if="uploadForm.file">
               <span>{{ uploadForm.file.name }}</span>
-              <i class="el-icon-close" @click="uploadForm.file = null"></i>
+              <i
+                class="el-icon-close"
+                @click="
+                  uploadForm.file = null;
+                  typeList = [];
+                "
+              ></i>
             </div>
           </el-form-item>
-          <el-form-item :label="$l('路内停车场字段')" prop="road">
-            <el-input v-model="uploadForm.road"></el-input>
-          </el-form-item>
-          <el-form-item :label="$l('公共停车场字段')" prop="common">
-            <el-input v-model="uploadForm.common"></el-input>
-          </el-form-item>
-          <el-form-item :label="$l('专用停车场字段')" prop="special">
-            <el-input v-model="uploadForm.special"></el-input>
-          </el-form-item>
-          <el-form-item :label="$l('路边停车场字段')" prop="roadside">
-            <el-input v-model="uploadForm.roadside"></el-input>
-          </el-form-item>
+          <template v-if="uploadForm.file">
+            <el-form-item :label="$l('路内停车场字段')" prop="road">
+              <el-select v-model="uploadForm.road" clearable>
+                <el-option v-for="item in typeList" :key="item" :label="item" :value="item"> </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item :label="$l('公共停车场字段')" prop="common">
+              <el-select v-model="uploadForm.common" clearable>
+                <el-option v-for="item in typeList" :key="item" :label="item" :value="item"> </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item :label="$l('专用停车场字段')" prop="special">
+              <el-select v-model="uploadForm.special" clearable>
+                <el-option v-for="item in typeList" :key="item" :label="item" :value="item"> </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item :label="$l('路边停车场字段')" prop="roadside">
+              <el-select v-model="uploadForm.roadside" clearable>
+                <el-option v-for="item in typeList" :key="item" :label="item" :value="item"> </el-option>
+              </el-select>
+            </el-form-item>
+          </template>
           <el-form-item>
             <el-button type="primary" @click="handleUploadFile" :loading="uploading">{{ $l("立即上传") }}</el-button>
             <el-button @click="showUploadDialog = false">{{ $l("取消") }}</el-button>
@@ -202,7 +218,8 @@ import { MAP_EVENT } from "@/mymap";
 import { PolygonSelectLayer, POLYGON_SELECT_STATE_KEY, POLYGON_SELECT_EVENT } from "./layer/PolygonSelectLayer";
 import { Activity3DLayer } from "../Activity3D/layer/Activity3DLayer";
 import { allParking, getAllActivityType, uploadGeoJson } from "@/api/index";
-import { guid } from "@/utils/utils";
+import { guid, JsonParse } from "@/utils/utils";
+import ParkingGeoJSONWorker from "./worker/ParkingGeoJSON.worker";
 
 const CHANGE_COLOR_EVENT_KEY = "Parking_changeColor";
 
@@ -286,6 +303,7 @@ export default {
         },
       },
       uploading: false,
+      typeList: null,
       file: null,
 
       selectPolygon: false,
@@ -295,6 +313,17 @@ export default {
     };
   },
   created() {
+    this.worker = new ParkingGeoJSONWorker();
+    this.worker.onmessage = (event) => {
+      const decode = new TextDecoder();
+      const str = decode.decode(event.data);
+      this.typeList = JsonParse(str, null);
+      this.uploadForm.road = null;
+      this.uploadForm.common = null;
+      this.uploadForm.special = null;
+      this.uploadForm.roadside = null;
+    };
+
     this.s_showLayer = this.showLayer;
 
     this._PolygonSelectLayer = new PolygonSelectLayer({
@@ -418,6 +447,14 @@ export default {
       document.body.appendChild(input);
       input.onchange = (e) => {
         this.uploadForm.file = e.target.files[0];
+
+        let reader = new FileReader();
+        reader.readAsArrayBuffer(e.target.files[0]);
+        reader.onload = () => {
+          const arrayBuffer = reader.result;
+          const array = new Int8Array(arrayBuffer);
+          this.worker.postMessage(array, [array.buffer]);
+        };
         document.body.removeChild(input);
       };
       input.click();

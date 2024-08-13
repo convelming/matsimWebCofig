@@ -178,16 +178,18 @@ export default {
       // prettier-ignore
       const hours = ['12a', '1a', '2a', '3a', '4a', '5a', '6a','7a', '8a', '9a', '10a', '11a','12p', '1p', '2p', '3p', '4p', '5p','6p', '7p', '8p', '9p', '10p', '11p'];
       // prettier-ignore
-      const type = Array.from(Object.keys(this.rangeParkingData[0]));
+      const type = Array.from(Object.keys(this.rangeParkingData[0] || {}));
       // prettier-ignore
       const data = [];
+      let maxValue = -1;
       for (let i = 0; i < hours.length; i++) {
         for (let j = 0; j < type.length; j++) {
           const hk = i,
             tk = type[j];
-          const value = [hk, j, this.rangeParkingData[hk][tk]];
+          const value = this.rangeParkingData[hk][tk];
+          if (value > maxValue) maxValue = value;
           data.push({
-            value,
+            value: [hk, j, value],
           });
         }
       }
@@ -196,18 +198,20 @@ export default {
       return {
         tooltip: {},
         visualMap: {
-          max: 20,
+          max: maxValue,
           inRange: {
             color: ["#313695", "#4575b4", "#74add1", "#abd9e9", "#e0f3f8", "#ffffbf", "#fee090", "#fdae61", "#f46d43", "#d73027", "#a50026"],
           },
         },
         xAxis3D: {
           name: "hours",
+          nameGap: 40,
           type: "category",
           data: hours,
         },
         yAxis3D: {
           name: "type",
+          nameGap: 40,
           type: "category",
           data: type,
         },
@@ -219,10 +223,11 @@ export default {
           boxWidth: hours.length * 10,
           boxDepth: type.length * 20,
           viewControl: {
-            projection: 'perspective',
-            // minDistance: 50,
-            // maxDistance: hours.length * type.length * 10 * 1.5,
-            // distance: hours.length * type.length * 10,
+            projection: "perspective",
+            minDistance: 50,
+            maxDistance: Math.max(hours.length * 10, type.length * 20) * 4,
+            distance: Math.max(hours.length * 10, type.length * 20) * 1.5,
+            beta: 10,
           },
         },
         series: [
