@@ -37,11 +37,11 @@
   },
   "车辆大小：":{
     "zh-CN": "车辆大小：",
-    "en-US": "Vehicle length："
+    "en-US": "Vehicle Size："
   },
   "最大显示数量：":{
     "zh-CN": "最大显示数量：",
-    "en-US": "Maximum Display ："
+    "en-US": "Maximum Display："
   },
 }
 </language>
