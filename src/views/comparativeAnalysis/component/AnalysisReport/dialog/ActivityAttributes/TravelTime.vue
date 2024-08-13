@@ -21,8 +21,8 @@
 <language>
 {
   "出行时段":{
-    "zh-CN": "出行时段",
-    "en-US": "Travel Time"
+    "zh-CN": "出发时间",
+    "en-US": "Departure Time"
   },
   "基础方案":{
     "zh-CN": "基础方案",

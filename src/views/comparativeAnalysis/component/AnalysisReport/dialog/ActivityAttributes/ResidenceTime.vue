@@ -21,7 +21,7 @@
 <language>
 {
   "停留时间":{
-    "zh-CN": "停留时间",
+    "zh-CN": "活动停留时间",
     "en-US": "Activity Duration"
   },
   "基础方案":{
