@@ -12,25 +12,25 @@
             },
             {
               "label_zh": "年龄",
-              "label_en": "age",
+              "label_en": "Age",
               "key": "年龄",
               "disabled": false
             },
             {
               "label_zh": "职业",
-              "label_en": "careers",
+              "label_en": "Careers",
               "key": "职业",
               "disabled": false
             },
             {
               "label_zh": "收入",
-              "label_en": "incomes",
+              "label_en": "Incomes",
               "key": "收入",
               "disabled": false
             },
             {
               "label_zh": "学历",
-              "label_en": "education attainment",
+              "label_en": "education",
               "key": "学历",
               "disabled": false
             },
