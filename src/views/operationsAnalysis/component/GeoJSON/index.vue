@@ -167,11 +167,11 @@ export default {
     addGeoJSON(file) {
       const labelParams = {
         zIndex: 20,
-        pointColor: "#ffa500",
-        pointScale: 10,
-        lineColor: "#ffa500",
-        lineWidth: 20,
-        polygonColor: "#ffa500",
+        pointColor: "#5470c6",
+        pointScale: 50,
+        lineColor: "#5470c6",
+        lineWidth: 500,
+        polygonColor: "#5470c6",
       };
       const item = {
         uuid: guid(),
