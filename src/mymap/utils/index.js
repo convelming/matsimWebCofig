@@ -1,7 +1,14 @@
-
 export function send(obj, funcName, callback) {
   let oldFunc = obj[funcName];
   obj[funcName] = callback.bind(obj, oldFunc.bind(obj));
+}
+
+
+class TextImage{
+  constructor() {
+    this.canvas = document.createElement("canvas");
+    this.ctx = this.canvas.getContext("2d");
+  }
 }
 
 // 这个函数用于生成一个带有文本的图片，并返回图片的URL和宽高比。

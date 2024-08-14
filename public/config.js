@@ -11,7 +11,8 @@
 //     return `http://192.168.60.231:23334/osm/MapTilerBasic/${zoom}/${row}/${col}.png`;
 //   }
 // }
-window.MAP_LAYER_STYLE = [
+
+MAP_LAYER_STYLE = [
   {
     style_name: "OSM_LIDERTY",
     get_url: function (zoom, row, col) {
@@ -66,3 +67,7 @@ window.MAP_LAYER_STYLE = [
   },
 ]
 
+proj4Config = function (proj4) {
+  proj4.defs("EPSG:4526", "+proj=tmerc +lat_0=0 +lon_0=114 +k=1 +x_0=38500000 +y_0=0 +ellps=GRS80 +units=m +no_defs");
+  proj4.defs("urn:ogc:def:crs:OGC:1.3:CRS84", proj4.defs("EPSG:4326"));
+}

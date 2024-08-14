@@ -1,10 +1,18 @@
-import proj4 from 'proj4'
-proj4.defs("EPSG:4526", "+proj=tmerc +lat_0=0 +lon_0=114 +k=1 +x_0=38500000 +y_0=0 +ellps=GRS80 +units=m +no_defs");
-// proj4("EPSG:4526", "EPSG:3857", [lng, lat])
+import proj4 from "@/utils/proj4.util";
 
 class GeoJSONParser {
 
   static DEFAULT_CRS = { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3857" } };
+
+  // urn:ogc:def:crs:EPSG::3857
+  // urn:ogc:def:crs:OGC:1.3:CRS84
+  static decodeCrs(crs) {
+    try {
+      return crs.properties.name.match(/EPSG::\d+/)[0].replace("::", ":");
+    } catch (error) {
+      return crs.properties.name || "EPSG:3857";
+    }
+  }
 
   constructor(json) {
     this.pointList = [];
@@ -51,7 +59,7 @@ class GeoJSONParser {
   }
 
   getMultiPoint(coordinates, crs) {
-    const coordSys = crs.properties.name.match(/EPSG::\d+/)[0].replace("::", ":");
+    const coordSys = GeoJSONParser.decodeCrs(crs);
     for (let i = 0; i < coordinates.length; i++) {
       let [x, y] = coordinates[i];
       if (coordSys !== "EPSG:3857") [x, y] = proj4(coordSys, "EPSG:3857", [x, y]);
@@ -63,7 +71,7 @@ class GeoJSONParser {
   }
 
   getMultiLineString(coordinates, crs) {
-    const coordSys = crs.properties.name.match(/EPSG::\d+/)[0].replace("::", ":");
+    const coordSys = GeoJSONParser.decodeCrs(crs);
     for (let i = 0; i < coordinates.length; i++) {
       const line = [];
       let fromCoord = null;
@@ -89,7 +97,7 @@ class GeoJSONParser {
   }
 
   getMultiPolygon(coordinates, crs) {
-    const coordSys = crs.properties.name.match(/EPSG::\d+/)[0].replace("::", ":");
+    const coordSys = GeoJSONParser.decodeCrs(crs);
     for (let i = 0; i < coordinates.length; i++) {
       const coordinate = [];
       for (let j = 0; j < coordinates[i].length; j++) {
@@ -106,61 +114,55 @@ class GeoJSONParser {
       this.polygonList[this.polygonList.length] = coordinate;
     }
   }
+
+  getPointArray() {
+    return new Float64Array([this.center[0], this.center[1], this.pointList].flat(2));
+  }
+
+  getLineArray() {
+    const list = [this.center[0], this.center[1]];
+    for (let i = 0; i < this.lineList.length; i++) {
+      const v1 = this.lineList[i];
+      list[list.length] = v1.length * 3;
+      for (const v2 of v1) {
+        list[list.length] = v2[0];
+        list[list.length] = v2[1];
+        list[list.length] = v2[2];
+      }
+    }
+    return new Float64Array(list);
+  }
+
+  getPolygonArray() {
+    const list = [this.center[0], this.center[1]];
+    for (let i = 0; i < this.polygonList.length; i++) {
+      const polygon = this.polygonList[i];
+      const pl = [];
+      for (let j = 0; j < polygon.length; j++) {
+        const coordinate = polygon[j];
+        pl[pl.length] = coordinate.length * 2;
+        pl[pl.length] = coordinate;
+      }
+      const _l = pl.flat(2);
+      list[list.length] = _l.length;
+      list[list.length] = _l;
+    }
+    return new Float64Array(list.flat(2));
+  }
+
 }
 
 onmessage = function (e) {
-  if (e.data instanceof Int8Array) {
-    const [key] = e.data;
-    const data = e.data.slice(1);
-    switch (key) {
-      case 1: {
-        const reader = new FileReader();
-        reader.readAsText(new Blob([data]));
-        reader.onload = (e) => {
-          const parser = new GeoJSONParser(JSON.parse(e.target.result));
-          if (parser.pointList.length > 0) {
-            const array = new Float32Array([1, parser.center, parser.pointList].flat(2));
-            this.postMessage(array, [array.buffer]);
-          }
-          if (parser.lineList.length > 0) {
-            const list = [2, parser.center[0], parser.center[1]]
-            for (let i = 0; i < parser.lineList.length; i++) {
-              const v1 = parser.lineList[i];
-              list[list.length] = v1.length * 3;
-              for (const v2 of v1) {
-                list[list.length] = v2[0];
-                list[list.length] = v2[1];
-                list[list.length] = v2[2];
-              }
-            }
-            const array = new Float32Array(list);
-            this.postMessage(array, [array.buffer]);
-          }
-          console.log(parser.polygonList);
-          if (parser.polygonList.length > 0) {
-            const list = [3, parser.center];
-            for (let i = 0; i < parser.polygonList.length; i++) {
-              const polygon = parser.polygonList[i];
-              const pl = [];
-              for (let j = 0; j < polygon.length; j++) {
-                const coordinate = polygon[j];
-                pl[pl.length] = coordinate.length * 2;
-                pl[pl.length] = coordinate;
-              }
-              const _l = pl.flat(2);
-              list[list.length] = _l.length;
-              list[list.length] = _l;
-            }
-            console.log(list);
-            const array = new Float32Array(list.flat(2));
-            this.postMessage(array, [array.buffer]);
-          }
-        };
-        reader.onerror = (e) => {
-          reject(e);
-        };
-        break;
-      }
-    }
-  }
+  const decode = new TextDecoder();
+  const str = decode.decode(e.data);
+  const parser = new GeoJSONParser(JSON.parse(str));
+  const pointArray = parser.getPointArray();
+  const lineArray = parser.getLineArray();
+  const polygonArray = parser.getPolygonArray()
+  this.postMessage({
+    center: parser.center,
+    point: pointArray,
+    line: lineArray,
+    polygon: polygonArray,
+  }, [pointArray.buffer, lineArray.buffer, polygonArray.buffer]);
 };

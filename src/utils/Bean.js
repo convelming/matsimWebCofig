@@ -1,4 +1,4 @@
-import proj4 from "proj4";
+import proj4 from "@/utils/proj4.util";
 import { guid } from "@/utils";
 const moment = require("moment");
 
