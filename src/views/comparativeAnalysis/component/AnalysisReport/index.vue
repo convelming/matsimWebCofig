@@ -80,6 +80,7 @@ export default {
     this.handleDisable();
   },
   methods: {
+    // 显示隐藏
     handleChangeShowLayer(value) {
       this.s_showLayer = value;
       this.$emit("update:showLayer", value);
@@ -93,6 +94,7 @@ export default {
     },
     // 组件卸载事件
     handleDisable() {},
+    // 触发生成报告事件
     handleGenerateAnalysisReport() {
       this.rootVue.$emit("AnalysisReport_generateAnalysisReport");
     },

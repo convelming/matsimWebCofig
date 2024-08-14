@@ -95,6 +95,7 @@ export default {
     }
   },
   methods: {
+    // 显示弹窗
     show() {
       this.s_show = true;
       this.$nextTick(() => {
@@ -102,16 +103,19 @@ export default {
         this.updateChart();
       });
     },
+    // 关闭弹窗
     close() {
       this.s_show = false;
       this.$emit("close");
     },
+    // 更新图表
     updateChart() {
       if (this._chart && this._chartData) {
         this._chart.setOption(this.getChartOption(this._chartData), true);
         this._chart.resize();
       }
     },
+    // 获取图表配置
     getChartOption({ idMap, data, links }) {
       return {
         title: {
@@ -149,9 +153,11 @@ export default {
         ],
       };
     },
+    // 弹窗置顶
     toTop() {
       this.$refs.dialog.toTop();
     },
+    // 弹窗视图改变（包括大小和显隐）
     handleViewChange() {
       if (this._chart) this._chart.resize();
     },

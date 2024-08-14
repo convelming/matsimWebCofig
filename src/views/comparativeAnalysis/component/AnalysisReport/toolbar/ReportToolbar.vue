@@ -297,6 +297,7 @@ export default {
     this._dialogMap.clear();
   },
   methods: {
+    // 获取修改的线路列表
     getList1() {
       this.loading1 = true;
       const { database1, datasource1, database2, datasource2 } = this.$route.params;
@@ -318,6 +319,7 @@ export default {
           this.loading1 = false;
         });
     },
+    // 获取受影响的线路列表
     getList2() {
       this.loading2 = true;
       const { database1, datasource1, database2, datasource2 } = this.$route.params;
@@ -339,8 +341,11 @@ export default {
           this.loading2 = false;
         });
     },
+    // 组件初始化事件
     handleEnable() {},
+    // 组件卸载事件
     handleDisable() {},
+    // 根据点击的节点显示弹窗
     handleShowDialog(node, data) {
       switch (data.id) {
         /************* 活动属性 *************/
@@ -520,6 +525,7 @@ export default {
           break;
       }
     },
+    // 单例弹窗
     showDialog(DialogClass, data, key) {
       if (this._dialogMap.has(key)) {
         const _dialog = this._dialogMap.get(key);
@@ -536,6 +542,7 @@ export default {
         return _dialog;
       }
     },
+    // 多例弹窗
     showDialog2(DialogClass, data, key) {
       if (this._dialogMap.has(key)) {
         const _dialog = this._dialogMap.get(key);
@@ -556,6 +563,7 @@ export default {
         return _dialog;
       }
     },
+    // 生成报告
     handleGenerateAnalysisReport(cb) {
       if (this.reportLoading) return;
       this.reportLoading = true;
