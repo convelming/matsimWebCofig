@@ -19,7 +19,7 @@
         <div class="form_value">
           <div class="file_item" v-if="file">
             <div class="file_row">
-              <div style="width: 100%; padding: 0 10px;text-align: left;">{{ file.name }}</div>
+              <div class="file_name" :title="file.name">{{ file.name }}</div>
               <div class="file_btn" style="width: 81px">
                 <el-switch v-model="geojsonParams.show" :title="geojsonParams.show ? $l('hideGeoJSON') : $l('showGeoJSON')" @change="handleChangeGeoJsonParams('show', $event)"> </el-switch>
               </div>
@@ -355,7 +355,7 @@ export default {
       const decode = new TextDecoder();
       const str = decode.decode(event.data.type);
       this._fileSource = event.data.source;
-      
+
       this.typeList = JsonParse(str, []);
       this.uploadForm.road = null;
       this.uploadForm.common = null;
@@ -635,6 +635,14 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+  .file_name {
+    width: 100%;
+    padding: 0 10px;
+    text-align: left;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
   }
 }
 

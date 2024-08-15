@@ -12,14 +12,14 @@
       <div class="file_list" v-for="(item, index) in geoJSONList" :key="index">
         <div class="file_item">
           <div class="file_row">
-            <div style="width: 100%; padding: 0 10px">{{ item.name }}</div>
+            <div class="file_name" :title="file.name">{{ file.name }}</div>
             <div class="file_btn" style="width: 81px">
               <el-switch v-model="item.show" :title="item.show ? $l('hideGeoJSON') : $l('showGeoJSON')" @change="handleChange('show', index, $event)"> </el-switch>
             </div>
           </div>
           <div class="file_row">
             <div style="width: 100%; padding: 0 10px">
-              <el-slider :disabled="!s_showLayer" :title="$l('pointScale')"  v-model="item.labelParams.pointScale" :step="1" :min="1" :max="1000" @change="handleChange('pointScale', index, $event)"> </el-slider>
+              <el-slider :disabled="!s_showLayer" :title="$l('pointScale')" v-model="item.labelParams.pointScale" :step="1" :min="1" :max="1000" @change="handleChange('pointScale', index, $event)"> </el-slider>
             </div>
             <div class="file_btn">
               <el-color-picker :disabled="!s_showLayer" :title="$l('pointColor')" size="mini" :predefine="predefineColors" v-model="item.labelParams.pointColor" @change="handleChange('pointColor', index, $event)" />
@@ -30,7 +30,7 @@
           </div>
           <div class="file_row">
             <div style="width: 100%; padding: 0 10px">
-              <el-slider :disabled="!s_showLayer" :title="$l('lineWidth')"  v-model="item.labelParams.lineWidth" :step="1" :min="1" :max="1000" @change="handleChange('lineWidth', index, $event)"> </el-slider>
+              <el-slider :disabled="!s_showLayer" :title="$l('lineWidth')" v-model="item.labelParams.lineWidth" :step="1" :min="1" :max="1000" @change="handleChange('lineWidth', index, $event)"> </el-slider>
             </div>
             <div class="file_btn">
               <el-color-picker :disabled="!s_showLayer" :title="$l('lineColor')" size="mini" :predefine="predefineColors" v-model="item.labelParams.lineColor" @change="handleChange('lineColor', index, $event)" />
@@ -290,6 +290,14 @@ export default {
         display: flex;
         align-items: center;
         justify-content: center;
+      }
+      .file_name {
+        width: 100%;
+        padding: 0 10px;
+        text-align: left;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
       }
     }
   }
