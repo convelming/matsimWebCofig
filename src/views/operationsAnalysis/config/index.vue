@@ -61,7 +61,7 @@
   },
   "切换语言": {
     "zh-CN": "切换语言",
-    "en-US": "Switch Language"
+    "en-US": "Language"
   },
   "切换视图": {
     "zh-CN": "切换视图",
