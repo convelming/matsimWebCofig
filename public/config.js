@@ -13,12 +13,17 @@
 // }
 window.MAP_LAYER_STYLE = [
   {
+    style_name: "POSITRON",
+    get_url: function (zoom, row, col) {
+      return `http://192.168.60.231:23334/osm/Positron/${zoom}/${row}/${col}.png`;
+    }
+  },
+  {
     style_name: "OSM_LIDERTY",
     get_url: function (zoom, row, col) {
       return `http://192.168.60.231:23334/osm/OSMLiberty/${zoom}/${row}/${col}.png`;
     }
   },
-
   {
     style_name: "MAP_TILER_BASIC",
     get_url: function (zoom, row, col) {
@@ -36,13 +41,6 @@ window.MAP_LAYER_STYLE = [
     style_name: "OSM_BROGHT",
     get_url: function (zoom, row, col) {
       return `http://192.168.60.231:23334/osm/OSMBroght/${zoom}/${row}/${col}.png`;
-    }
-  },
-
-  {
-    style_name: "POSITRON",
-    get_url: function (zoom, row, col) {
-      return `http://192.168.60.231:23334/osm/Positron/${zoom}/${row}/${col}.png`;
     }
   },
   {

@@ -57,12 +57,12 @@
     "en-US": "Type: "
   },
   "startInBuild":{
-    "zh-CN": "从建筑出发",
-    "en-US": "From Architecture"
+    "zh-CN": "出行产生",
+    "en-US": "From Facility"
   },
   "endInBuild":{
-    "zh-CN": "最终到达建筑",
-    "en-US": "Final arrival at the building"
+    "zh-CN": "出行吸引",
+    "en-US": "To Facility"
   }
 }
 </language>
