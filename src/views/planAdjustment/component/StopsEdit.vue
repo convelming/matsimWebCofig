@@ -98,7 +98,7 @@
   },
   "站点名称": {
     "zh-CN":"站点名称",
-    "en-US":"Stop Name"
+    "en-US":"Name"
   },
   "鼠标左键选择站点": {
     "zh-CN":"鼠标左键选择站点",
@@ -106,7 +106,7 @@
   },
   "站点路段Id": {
     "zh-CN":"站点路段Id",
-    "en-US":"Stop Link Id"
+    "en-US":"Link Id"
   },
   "鼠标左键选择路段": {
     "zh-CN":"鼠标左键选择路段",
@@ -126,11 +126,11 @@
   },
   "路段偏移": {
     "zh-CN":"路段偏移",
-    "en-US":"Link Sffset"
+    "en-US":"Link Offset"
   },
   "站点坐标": {
     "zh-CN":"站点坐标",
-    "en-US":"Stop Coord"
+    "en-US":"Coord"
   },
   "鼠标左键点击地图确定坐标": {
     "zh-CN":"鼠标左键点击地图确定坐标",
@@ -138,7 +138,7 @@
   },
   "站点编辑": {
     "zh-CN":"站点编辑",
-    "en-US":"Stop Ddit"
+    "en-US":"Stop Edit"
   },
   "添加站点": {
     "zh-CN":"添加站点",
