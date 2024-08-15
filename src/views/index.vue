@@ -118,8 +118,8 @@
         <el-table-column :label="$l('操作')" width="250">
           <template slot-scope="{ row }">
             <el-button v-if="!row.noRun && row.loadStatus == '已加载'" type="primary" size="mini" @click="handlePlanAdjustmentToDetail(row)">{{ $l("修改") }}</el-button>
-            <el-button v-if="!row.noRun" type="success" size="mini" :loading="row.runStatus == '运行中'" @click="handleOperationsAnalysisRun(row)">{{ $l("运行") }}</el-button>
             <el-button v-if="!row.noLoad && row.loadStatus != '已加载'" :loading="row.loadStatus == '加载中'" type="warning" size="mini" @click="handlePlanAdjustmentLoad(row)">{{ $l("加载") }}</el-button>
+            <el-button v-if="!row.noRun" type="success" size="mini" :loading="row.runStatus == '运行中'" @click="handleOperationsAnalysisRun(row)">{{ $l("运行") }}</el-button>
             <el-button v-if="!row.noRun" type="danger" size="mini" @click="handleDelect(row)">{{ $l("删除") }}</el-button>
           </template>
         </el-table-column>
@@ -219,6 +219,30 @@
     "zh-CN":"新建方案",
     "en-US":"Create Scheme",
   },
+  "未运行": {
+  "zh-CN":"未运行",
+  "en-US":"Pending",
+  },
+  "运行中": {
+  "zh-CN":"运行中",
+  "en-US":"Running",
+  },
+  "已运行": {
+  "zh-CN":"已运行",
+  "en-US":"Executed",
+  },
+  "未加载": {
+  "zh-CN":"未加载",
+  "en-US":"Unload",
+  },
+  "加载中": {
+  "zh-CN":"加载中",
+  "en-US":"Loading",
+  },
+  "已加载": {
+  "zh-CN":"已加载",
+  "en-US":"Loaded",
+  },
   "保存方案": {
     "zh-CN":"保存方案",
     "en-US":"Save Scheme",
@@ -264,8 +288,8 @@
     "en-US":"Scheme Introduction",
   },
   "方案状态": {
-    "zh-CN":"方案状态",
-    "en-US":"Status",
+    "zh-CN":"内存/模型",
+    "en-US":"Memory/Model",
   },
   "基准名称": {
     "zh-CN":"基准名称",
