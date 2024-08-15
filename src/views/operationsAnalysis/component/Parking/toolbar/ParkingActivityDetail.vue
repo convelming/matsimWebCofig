@@ -108,10 +108,10 @@ import { MAP_EVENT } from "@/mymap";
 import { MercatorToWGS84 } from "@/mymap/utils/LngLatUtils";
 import { getPlan } from "@/api/index";
 import { formatHour } from "@/utils/utils";
-// import { SelectActivityLayer } from "../layer/SelectActivityLayer";
-// import { ActivityRoutesLayer } from "../layer/ActivityRoutesLayer";
-import { SelectActivityLayer } from "../../Activity3D/layer/SelectActivityLayer";
-import { ActivityRoutesLayer } from "../../Activity3D/layer/ActivityRoutesLayer";
+import { SelectActivityLayer } from "../layer/SelectActivityLayer";
+import { ActivityRoutesLayer } from "../layer/ActivityRoutesLayer";
+// import { SelectActivityLayer } from "../../Activity3D/layer/SelectActivityLayer";
+// import { ActivityRoutesLayer } from "../../Activity3D/layer/ActivityRoutesLayer";
 export default {
   inject: ["rootVue"],
   props: {
