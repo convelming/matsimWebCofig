@@ -273,11 +273,11 @@
   },
   "方案名称只能使用英文字母，数字和下划线": {
     "zh-CN":"方案名称只能使用英文字母，数字和下划线",
-    "en-US":"Please only use English letters, numbers, and underscores",
+    "en-US":"Please only use English letters, numbers, or underscores",
   },
   "方案名称不能以base结尾": {
     "zh-CN":"方案名称不能以base结尾",
-    "en-US":"Scheme names already existed ",
+    "en-US":"Scheme names already existed",
   },
   "方案名称": {
     "zh-CN":"方案名称",
