@@ -16,12 +16,15 @@ export class GeoJSONLayer extends Layer {
   pointColor = new THREE.Color(0xffa500);
   pointScale = 1;
   pointTexture = new THREE.TextureLoader().load(require("@/assets/image/point2.png"));
+  pointMesh = null;
 
   lineColor = new THREE.Color(0xffa500);
   lineWidth = 100;
   lineTexture = null;
+  lineGeoList = [];
 
   polygonColor = new THREE.Color(0xffa500);
+  polygonGeoList = [];
 
   async setPointScale(pointScale) {
     this.pointScale = pointScale;
@@ -93,23 +96,40 @@ export class GeoJSONLayer extends Layer {
 
     this.worker = new GeoJSONLayerWorker();
     this.worker.onmessage = (event) => {
-      const [key] = event.data;
-      const data = event.data.slice(1);
-      switch (key) {
-        case 1:
-          this.handleSetPoint(data);
-          break;
-        case 2:
-          this.handleSetLine(data);
-          break;
-        case 3:
-          this.handleSetPolygon(data);
-          break;
-      }
+      const {
+        point,
+        line,
+        polygon
+      } = event.data;
+
+      this.handleSetPoint(point);
+      this.handleSetLine(line);
+      this.handleSetPolygon(polygon);
     };
     this.worker.addEventListener("error", (error) => {
       console.log(error);
     });
+  }
+
+  dispose() {
+    this.clearScene();
+    this.worker.terminate();
+  }
+
+  clearScene() {
+    super.clearScene();
+    if (this.pointMesh) {
+      this.pointMesh.dispose();
+      this.pointMesh = null;
+    }
+    for (const geo of this.lineGeoList) {
+      geo.dispose()
+    }
+    this.lineGeoList = [];
+    for (const geo of this.polygonGeoList) {
+      geo.dispose()
+    }
+    this.polygonGeoList = [];
   }
 
   getLineMaterial(opt) {
@@ -224,11 +244,9 @@ export class GeoJSONLayer extends Layer {
   }
 
   setData(data) {
+    this.clearScene();
     if (data instanceof Int8Array) {
-      const array = new Int8Array(data.length + 1);
-      array.set([1], 0);
-      array.set(data, 1);
-      this.worker.postMessage(array, [array.buffer]);
+      this.worker.postMessage(data, [data.buffer]);
     } else {
       throw new Error("data instanceof Int8Array");
     }
@@ -261,6 +279,7 @@ export class GeoJSONLayer extends Layer {
     const [x, y] = this.map.WebMercatorToCanvasXY(pointCenter[0], pointCenter[1]);
     this.pointMesh.position.set(x, y, 0.02);
     this.pointMesh.userData.center = pointCenter;
+    this.pointMesh.userData.type = "point";
     this.scene.add(this.pointMesh);
 
   }
@@ -283,21 +302,28 @@ export class GeoJSONLayer extends Layer {
       if (index - time > 20000) {
         time = index;
         const geometry = BufferGeometryUtils.mergeBufferGeometries(geometryList, false);
+        this.lineGeoList.push(geometry);
         const mesh = new THREE.Mesh(geometry, this.lineMaterial);
         const [x, y] = this.map.WebMercatorToCanvasXY(lineCenter[0], lineCenter[1]);
         mesh.position.set(x, y, 0.01);
         mesh.userData.center = lineCenter;
+        mesh.userData.type = "line";
         this.scene.add(mesh);
         geometryList.length = 0;
         await new Promise(resolve => setTimeout(resolve, 0));
       }
     }
-    const geometry = BufferGeometryUtils.mergeBufferGeometries(geometryList, false);
-    const mesh = new THREE.Mesh(geometry, this.lineMaterial);
-    const [x, y] = this.map.WebMercatorToCanvasXY(lineCenter[0], lineCenter[1]);
-    mesh.position.set(x, y, 0.01);
-    mesh.userData.center = lineCenter;
-    this.scene.add(mesh);
+
+    if (geometryList.length > 0) {
+      const geometry = BufferGeometryUtils.mergeBufferGeometries(geometryList, false);
+      this.lineGeoList.push(geometry);
+      const mesh = new THREE.Mesh(geometry, this.lineMaterial);
+      const [x, y] = this.map.WebMercatorToCanvasXY(lineCenter[0], lineCenter[1]);
+      mesh.position.set(x, y, 0.01);
+      mesh.userData.center = lineCenter;
+      mesh.userData.type = "line";
+      this.scene.add(mesh);
+    }
 
     console.log(lineCenter);
   }
@@ -406,10 +432,12 @@ export class GeoJSONLayer extends Layer {
         time = i;
 
         const geometry = BufferGeometryUtils.mergeBufferGeometries(geometryList, false);
+        this.polygonGeoList.push(geometry);
         const mesh = new THREE.Mesh(geometry, this.polygonMaterial);
         const [x, y] = this.map.WebMercatorToCanvasXY(polygonCenter[0], polygonCenter[1]);
         mesh.position.set(x, y, 0.02);
         mesh.userData.center = polygonCenter;
+        mesh.userData.type = "polygon";
         this.scene.add(mesh);
 
         geometryList.length = 0;
@@ -417,14 +445,16 @@ export class GeoJSONLayer extends Layer {
       }
     }
 
-    const geometry = BufferGeometryUtils.mergeBufferGeometries(geometryList, false);
-    const mesh = new THREE.Mesh(geometry, this.lineMaterial);
-    const [x, y] = this.map.WebMercatorToCanvasXY(polygonCenter[0], polygonCenter[1]);
-    mesh.position.set(x, y, 0);
-    mesh.userData.center = polygonCenter;
-    this.scene.add(mesh);
-
-    console.log(polygonCenter);
+    if (geometryList.length > 0) {
+      const geometry = BufferGeometryUtils.mergeBufferGeometries(geometryList, false);
+      this.polygonGeoList.push(geometry);
+      const mesh = new THREE.Mesh(geometry, this.lineMaterial);
+      const [x, y] = this.map.WebMercatorToCanvasXY(polygonCenter[0], polygonCenter[1]);
+      mesh.position.set(x, y, 0);
+      mesh.userData.center = polygonCenter;
+      mesh.userData.type = "polygon";
+      this.scene.add(mesh);
+    }
   }
 
 }

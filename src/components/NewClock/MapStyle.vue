@@ -5,7 +5,7 @@
       <span class="text">{{ $l("地图") }}</span>
     </div>
     <div class="map-switch-list" v-show="open">
-      <img class="item" :class="{ active: active == i }" v-for="(v, i) in styleList" :src="v.url" :title="v.style_name" :key="i" @click="handleChangeStyle(i)" />
+      <img class="item" :class="{ active: active == i }" v-for="(v, i) in styleList" :src="v.url" :title="v.title" :key="i" @click="handleChangeStyle(i)" />
     </div>
   </div>
 </template>

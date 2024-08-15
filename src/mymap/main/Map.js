@@ -94,6 +94,8 @@ export class Map extends EventListener {
     return this._stats;
   }
 
+  // 启用或禁用摄像机水平或垂直旋转。默认值为true。
+  // 请注意，为true时可以通过设置minPitch和minRotation来控制单个轴旋转角度
   set enableRotate(enableRotate) {
     this._enableRotate = enableRotate;
     if (this.cameraControls) {
@@ -101,7 +103,33 @@ export class Map extends EventListener {
       if (!enableRotate) this.setPitchAndRotation(90, 0);
     }
   }
+  get enableRotate() {
+    return this._enableRotate;
+  }
 
+  // 启用或禁用摄像机平移，默认为true。
+  set enablePan(enablePan) {
+    this._enablePan = enablePan;
+    if (this.cameraControls) {
+      this.cameraControls.enablePan = enablePan;
+    }
+  }
+  get enableRotate() {
+    return this._enableRotate;
+  }
+
+  // 启用或禁用摄像机的缩放。
+  set enableZoom(enableZoom) {
+    this._enableZoom = enableZoom;
+    if (this.cameraControls) {
+      this.cameraControls.enableZoom = enableZoom;
+    }
+  }
+  get enableZoom() {
+    return this._enableZoom;
+  }
+
+  // 相机视线与地图平面的最小夹角 单位：度 0 ~ 90
   set minPitch(minPitch) {
     if (minPitch >= 90) minPitch = 90;
     this._minPitch = minPitch;
@@ -109,8 +137,44 @@ export class Map extends EventListener {
       this.cameraControls.maxPolarAngle = (Math.PI * (90 - minPitch)) / 180;
     }
   }
+  get minPitch() {
+    return this._minPitch;
+  }
 
-  constructor({ rootId, center = [12614426, 2646623], zoom = 15, pitch = 90, minPitch = 30, rotation = 0, openGPUPick = true, noControls = false, enableRotate = false, background = 0xd9ecff, ...opt }) {
+  // 获取摄像机旋转角度
+  get cameraRotation() {
+    try {
+      const height = Math.round(this.cameraControls.getDistance());
+      const [px, py, pz] = new THREE.Vector3().subVectors(this.camera.position, this.cameraControls.target);
+      let pitch = Math.asin(py / height);
+      let rotation = Math.atan(px / pz);
+      if (px >= 0 && pz >= 0) {
+        rotation = rotation;
+      } else if (px >= 0 && pz < 0) {
+        rotation = Math.PI + rotation;
+      } else if (px < 0 && pz < 0) {
+        rotation = Math.PI + rotation;
+      } else if (px < 0 && pz >= 0) {
+        rotation = Math.PI * 2 + rotation;
+      }
+      return { rotation, pitch };
+    } catch (error) {
+      return { rotation: 0, pitch: 0 };
+    }
+  }
+
+  // 比例尺 m:px 
+  get plottingScale() {
+    try {
+      const [x1, y1] = this.WindowXYToCanvasXY(0, 0);
+      const [x2, y2] = this.WindowXYToCanvasXY(30, 40);
+      return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)) / 50;
+    } catch (error) {
+      return 1;
+    }
+  }
+
+  constructor({ rootId, center = [12614426, 2646623], zoom = 15, pitch = 90, minPitch = 30, rotation = 0, minRotation = 360, openGPUPick = true, noControls = false, enableRotate = false, enablePan = true, enableZoom = true, background = 0xd9ecff, ...opt }) {
     super(opt);
     // 获取根节点dom
     this.rootDoc = document.getElementById(rootId);
@@ -127,12 +191,18 @@ export class Map extends EventListener {
     this.zoom = zoom;
     // 设置地图是否3D视角
     this.enableRotate = enableRotate;
+    // 设置地图是否平移
+    this.enablePan = enablePan;
+    // 设置地图是否缩放
+    this.enableZoom = enableZoom;
     // 相机视线与地图平面的夹角 单位：度 minPitch ~ 90
     this.pitch = pitch;
     // 相机视线与地图平面的最小夹角 单位：度 0 ~ 90
     this.minPitch = minPitch;
     // 相机与正南方向的夹角 单位：度
     this.rotation = rotation;
+    // 相机与正南方向的最小夹角 单位：度 0 ~ 360
+    this.minRotation = minRotation;
     // 打开GPU拾取
     this.openGPUPick = openGPUPick;
     // 地图背景色
@@ -278,6 +348,7 @@ export class Map extends EventListener {
     this.rootDoc.addEventListener("mousemove", (event) => {
       let data = {};
       data.event = event;
+      data.windowSize = [this.rootDoc.clientWidth, this.rootDoc.clientHeight];
       data.windowXY = [event.offsetX, event.offsetY];
       data.canvasXY = this.WindowXYToCanvasXY(event.offsetX, event.offsetY);
       data.webMercatorXY = this.CanvasXYToWebMercator(...data.canvasXY);
@@ -305,6 +376,7 @@ export class Map extends EventListener {
 
       let data = {};
       data.event = event;
+      data.windowSize = [this.rootDoc.clientWidth, this.rootDoc.clientHeight];
       data.windowXY = [event.offsetX, event.offsetY];
       data.canvasXY = this.WindowXYToCanvasXY(event.offsetX, event.offsetY);
       data.webMercatorXY = this.CanvasXYToWebMercator(...data.canvasXY);
@@ -322,6 +394,7 @@ export class Map extends EventListener {
     this.rootDoc.addEventListener("mouseup", (event) => {
       let data = {};
       data.event = event;
+      data.windowSize = [this.rootDoc.clientWidth, this.rootDoc.clientHeight];
       data.windowXY = [event.offsetX, event.offsetY];
       data.canvasXY = this.WindowXYToCanvasXY(event.offsetX, event.offsetY);
       data.webMercatorXY = this.CanvasXYToWebMercator(...data.canvasXY);
@@ -436,10 +509,12 @@ export class Map extends EventListener {
   initCameraControls() {
     // 设置相机控件轨道控制器OrbitControls
     this.cameraControls = new OrbitControls(this.camera, this.renderer.domElement);
-    // this.cameraControls.enableDamping = true;
     // 启用或禁用摄像机水平或垂直旋转。默认值为true。
-    // 请注意，可以通过将PolarAngle或者AzimuthAngle的min和max设置为相同的值来禁用单个轴， 这将使得水平旋转或垂直旋转固定为所设置的值。
     this.cameraControls.enableRotate = this._enableRotate;
+    // 启用或禁用摄像机平移，默认为true。
+    this.cameraControls.enablePan = this._enablePan;
+    // 启用或禁用摄像机的缩放。
+    this.cameraControls.enableZoom = this._enableZoom;
     // 限制垂直旋转角度
     this.cameraControls.maxPolarAngle = (Math.PI * (90 - this._minPitch)) / 180;
     // 限制水平旋转角度
@@ -468,19 +543,10 @@ export class Map extends EventListener {
       this.camera.updateProjectionMatrix();
       this.setZoom(zoom, true);
 
-      const [px, py, pz] = new THREE.Vector3().subVectors(this.camera.position, this.cameraControls.target);
-      let pitch = Math.round(Math.asin(py / height) * (180 / Math.PI));
-      let rotation = Math.round(Math.atan(px / pz) * (180 / Math.PI));
+      let { pitch, rotation } = this.cameraRotation;
+      pitch = Math.round(pitch * (180 / Math.PI));
+      rotation = Math.round(rotation * (180 / Math.PI));
 
-      if (px >= 0 && pz >= 0) {
-        rotation = rotation;
-      } else if (px >= 0 && pz < 0) {
-        rotation = 180 + rotation;
-      } else if (px < 0 && pz < 0) {
-        rotation = 180 + rotation;
-      } else if (px < 0 && pz >= 0) {
-        rotation = 360 + rotation;
-      }
       if (Math.abs(this.pitch - pitch) > 1 || Math.abs(this.rotation - rotation) > 1) {
         this.on(MAP_EVENT.UPDATE_CAMERA_ROTATE, {
           oldPitch: this.pitch,
@@ -515,7 +581,7 @@ export class Map extends EventListener {
 
   // 拾取逻辑：
   // 先对图层进行拾取
-  // 拾取到图层后在对图层里的模型进行拾取
+  // 拾取到图层后再对图层里的模型进行拾取
 
   // 对图层进行拾取
   handleGPUPickLayer(x, y) {
@@ -560,9 +626,12 @@ export class Map extends EventListener {
 
   // 添加图层
   addLayer(layer) {
-    layer.onAdd(this);
-    this.layers.push(layer);
-    this.layers.sort((a, b) => a.zIndex - b.zIndex);
+    const index = this.layers.findIndex((v) => v.id == layer.id);
+    if (index == -1) {
+      layer.onAdd(this);
+      this.layers.push(layer);
+      this.layers.sort((a, b) => a.zIndex - b.zIndex);
+    }
   }
 
   // 移除图层
@@ -629,6 +698,7 @@ export class Map extends EventListener {
     window.requestAnimationFrame(this.animation.bind(this));
   }
 
+  // 销毁地图，释放内存
   dispose() {
     // TODO
     const layers = [...this.layers];

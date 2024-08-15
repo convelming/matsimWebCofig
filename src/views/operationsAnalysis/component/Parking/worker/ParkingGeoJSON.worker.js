@@ -1,6 +1,3 @@
-import proj4 from 'proj4'
-proj4.defs("EPSG:4526", "+proj=tmerc +lat_0=0 +lon_0=114 +k=1 +x_0=38500000 +y_0=0 +ellps=GRS80 +units=m +no_defs");
-// proj4("EPSG:4526", "EPSG:3857", [lng, lat])
 
 function parse(data) {
   if (data.type === "FeatureCollection") {
@@ -27,5 +24,9 @@ onmessage = function (e) {
   const encode = new TextEncoder();
   const parser = parse(JSON.parse(decode.decode(e.data)));
   const array = encode.encode(JSON.stringify(Array.from(Object.keys(parser))))
-  this.postMessage(array, [array.buffer]);
+  this.postMessage({
+    key: 1,
+    type: array,
+    source: e.data
+  }, [array.buffer, e.data.buffer]);
 };

@@ -12,12 +12,40 @@
       <div class="form_item">
         <div class="form_label">{{ $l("上传文件：") }}</div>
         <div class="form_value">
-          <div>
-            <el-button :disabled="!s_showLayer" type="primary" size="mini" @click="handleShowUploadDialog">{{ $l("导入GeoJSON") }}</el-button>
-          </div>
+          <el-button :disabled="!s_showLayer" type="primary" size="mini" @click="handleShowUploadDialog">{{ $l("导入GeoJSON") }}</el-button>
+        </div>
+      </div>
+      <div class="form_item">
+        <div class="form_value">
           <div class="file_item" v-if="file">
-            <span>{{ file.name }}</span>
-            <i class="el-icon-close" @click="handleCloseFile"></i>
+            <div class="file_row">
+              <div style="width: 100%; padding: 0 10px;text-align: left;">{{ file.name }}</div>
+              <div class="file_btn" style="width: 81px">
+                <el-switch v-model="geojsonParams.show" :title="geojsonParams.show ? $l('hideGeoJSON') : $l('showGeoJSON')" @change="handleChangeGeoJsonParams('show', $event)"> </el-switch>
+              </div>
+            </div>
+            <div class="file_row">
+              <div style="width: 100%; padding: 0 10px">
+                <el-slider :disabled="!s_showLayer" :title="$l('pointScale')" v-model="geojsonParams.pointScale" :step="1" :min="1" :max="1000" @change="handleChangeGeoJsonParams('pointScale', $event)"> </el-slider>
+              </div>
+              <div class="file_btn">
+                <el-color-picker :disabled="!s_showLayer" :title="$l('pointColor')" size="mini" :predefine="predefineColors" v-model="geojsonParams.pointColor" @change="handleChangeGeoJsonParams('pointColor', $event)" />
+              </div>
+              <div class="file_btn">
+                <el-color-picker :disabled="!s_showLayer" :title="$l('polygonColor')" size="mini" :predefine="predefineColors" v-model="geojsonParams.polygonColor" @change="handleChangeGeoJsonParams('polygonColor', $event)" />
+              </div>
+            </div>
+            <div class="file_row">
+              <div style="width: 100%; padding: 0 10px">
+                <el-slider :disabled="!s_showLayer" :title="$l('lineWidth')" v-model="geojsonParams.lineWidth" :step="1" :min="1" :max="1000" @change="handleChangeGeoJsonParams('lineWidth', $event)"> </el-slider>
+              </div>
+              <div class="file_btn">
+                <el-color-picker :disabled="!s_showLayer" :title="$l('lineColor')" size="mini" :predefine="predefineColors" v-model="geojsonParams.lineColor" @change="handleChangeGeoJsonParams('lineColor', $event)" />
+              </div>
+              <div class="file_btn">
+                <el-button :disabled="!s_showLayer" type="danger" icon="el-icon-delete" size="mini" circle :title="$l('deleteGeoJSON')" @click="handleCloseFile"></el-button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -76,7 +104,7 @@
             <div>
               <el-button :disabled="!s_showLayer" type="primary" size="mini" @click="handleSelectFile">{{ $l("选择GeoJSON") }}</el-button>
             </div>
-            <div class="file_item" v-if="uploadForm.file">
+            <div class="file_item2" v-if="uploadForm.file">
               <span>{{ uploadForm.file.name }}</span>
               <i
                 class="el-icon-close"
@@ -220,6 +248,7 @@ import { Activity3DLayer } from "../Activity3D/layer/Activity3DLayer";
 import { allParking, getAllActivityType, uploadGeoJson } from "@/api/index";
 import { guid, JsonParse } from "@/utils/utils";
 import ParkingGeoJSONWorker from "./worker/ParkingGeoJSON.worker";
+import { GeoJSONLayer } from "../GeoJSON/layer/GeoJSONLayer";
 
 const CHANGE_COLOR_EVENT_KEY = "Parking_changeColor";
 
@@ -295,6 +324,14 @@ export default {
 
       showUploadDialog: false,
       uploadForm: {},
+      geojsonParams: {
+        show: true,
+        pointScale: 50,
+        pointColor: "#5470c6",
+        polygonColor: "#5470c6",
+        lineWidth: 500,
+        lineColor: "#5470c6",
+      },
       uploadRules: {
         file: {
           required: true,
@@ -303,7 +340,7 @@ export default {
         },
       },
       uploading: false,
-      typeList: null,
+      typeList: [],
       file: null,
 
       selectPolygon: false,
@@ -316,8 +353,10 @@ export default {
     this.worker = new ParkingGeoJSONWorker();
     this.worker.onmessage = (event) => {
       const decode = new TextDecoder();
-      const str = decode.decode(event.data);
-      this.typeList = JsonParse(str, null);
+      const str = decode.decode(event.data.type);
+      this._fileSource = event.data.source;
+      
+      this.typeList = JsonParse(str, []);
       this.uploadForm.road = null;
       this.uploadForm.common = null;
       this.uploadForm.special = null;
@@ -327,7 +366,7 @@ export default {
     this.s_showLayer = this.showLayer;
 
     this._PolygonSelectLayer = new PolygonSelectLayer({
-      zIndex: 40,
+      zIndex: 100,
       event: {
         [POLYGON_SELECT_EVENT.STATE_CHANGE]: (res) => {
           this.polygonSelectState = res.data.state;
@@ -359,6 +398,15 @@ export default {
       },
     });
 
+    this._GeoJSONLayer = new GeoJSONLayer({
+      zIndex: 30,
+      pointScale: this.geojsonParams.pointScale,
+      pointColor: this.geojsonParams.pointColor,
+      polygonColor: this.geojsonParams.polygonColor,
+      lineWidth: this.geojsonParams.lineWidth,
+      lineColor: this.geojsonParams.lineColor,
+    });
+
     getAllActivityType().then((res) => {
       this.legTypeList = res.data.leg.map((v, i) => ({ name: v, color: this.predefineColors[i % this.predefineColors.length] }));
       this.activityTypeList = res.data.activity.map((v, i) => ({ name: v, color: this.predefineColors[i % this.predefineColors.length] }));
@@ -377,8 +425,38 @@ export default {
     this.handleDisable();
     this._PolygonSelectLayer.dispose();
     this._Activity3DLayer.dispose();
+    this._GeoJSONLayer.dispose();
   },
   methods: {
+    handleChangeGeoJsonParams(type, value) {
+      this.geojsonParams[type] = value;
+      switch (type) {
+        case "show":
+          if (value && this._Map) {
+            this._Map.addLayer(this._GeoJSONLayer);
+          } else {
+            this._GeoJSONLayer.removeFromParent();
+          }
+          break;
+        case "pointScale":
+          this._GeoJSONLayer.setPointScale(value);
+          break;
+        case "pointColor":
+          this._GeoJSONLayer.setPointColor(value);
+          break;
+        case "polygonColor":
+          this._GeoJSONLayer.setPolygonColor(value);
+          break;
+        case "lineWidth":
+          this._GeoJSONLayer.setLineWidth(value);
+          break;
+        case "lineColor":
+          this._GeoJSONLayer.setLineColor(value);
+          break;
+        default:
+          break;
+      }
+    },
     getData() {
       if (this.loading) return;
       this.loading = true;
@@ -414,6 +492,7 @@ export default {
     handleEnable() {
       this.getData();
       this.handleShowActivity(this.showActivity);
+      this.handleChangeGeoJsonParams("show", this.geojsonParams.show);
       this._Map.addLayer(this._PolygonSelectLayer);
       this.rootVue.$on("timeChange", this.handleTimeChange);
     },
@@ -421,6 +500,7 @@ export default {
     handleDisable() {
       this.handleStopPolygonSelect();
       this.handleShowActivity(false);
+      this.handleChangeGeoJsonParams("show", false);
       this._Map.removeLayer(this._PolygonSelectLayer);
       this.rootVue.$off("timeChange", this.handleTimeChange);
     },
@@ -470,6 +550,10 @@ export default {
             geoId: res.data,
           };
           this.rootVue.$emit("Parking_Geojson_Uuid", { geoId: res.data });
+
+          this.handleChangeGeoJsonParams("show", true);
+          this._GeoJSONLayer.setData(this._fileSource);
+
           this.uploading = false;
         })
         .catch((res) => {
@@ -529,7 +613,31 @@ export default {
 
 .my_collapse_item {
 }
+
 .file_item {
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  border: 1px solid #000;
+  border-radius: 4px;
+}
+.file_row {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  & + .file_row {
+    border-top: 1px solid #000;
+  }
+  .file_btn {
+    flex-shrink: 0;
+    height: 40px;
+    width: 40px;
+    border-left: 1px solid #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.file_item2 {
   display: inline-block;
   padding: 7px 10px 7px 15px;
   font-size: 12px;
@@ -547,7 +655,6 @@ export default {
     margin-left: 10px;
   }
 }
-
 .flex-align-center {
   display: flex;
   align-items: center;

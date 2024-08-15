@@ -55,5 +55,6 @@ module.exports = defineConfig({
       .resourceQuery(/blockType=language/)
       .use("language")
       .loader(require.resolve("./src/language/loader.js"));
+
   },
 });
