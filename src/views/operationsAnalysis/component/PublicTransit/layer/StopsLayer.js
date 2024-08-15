@@ -409,6 +409,8 @@ export class StopsLayer extends Layer {
       transparent: true,
       sizeAttenuation: true,
       vertexColors: true,
+      
+      depthWrite: false,
 
       ...opt,
     });

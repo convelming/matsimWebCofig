@@ -4,7 +4,7 @@ export function send(obj, funcName, callback) {
 }
 
 
-class TextImage{
+class TextImage {
   constructor() {
     this.canvas = document.createElement("canvas");
     this.ctx = this.canvas.getContext("2d");
@@ -16,7 +16,7 @@ export function getTextImage(
   name,
   {
     padding = 20,
-    colNum: _colNum = 10,
+    colNum = 10,
     lineHeight = 1.2,
     backgroundColor = "#fffffc",
     color = "black",
@@ -25,16 +25,16 @@ export function getTextImage(
   } = {}
 ) {
   if (!name) name = "";
-  const colNum = Math.min(name.length, _colNum);
-  const rowNum = Math.ceil(name.length / colNum);
+  const _colNum = Math.min(name.length, colNum);
+  const _rowNum = Math.ceil(name.length / _colNum);
 
   const ctx = document.createElement("canvas").getContext("2d");
   const font = `${40}px bold`;
   ctx.font = font;
 
   const textWidth = ctx.measureText("测").width;
-  const width = textWidth * colNum + padding * 2 + border * 2;
-  const height = textWidth * rowNum * lineHeight + padding * 2 + border * 2;
+  const width = textWidth * _colNum + padding * 2 + border * 2;
+  const height = textWidth * _rowNum * lineHeight + padding * 2 + border * 2;
 
   ctx.canvas.width = width;
   ctx.canvas.height = height;
@@ -51,10 +51,10 @@ export function getTextImage(
   ctx.fillRect(border, border, width - border * 2, height - border * 2);
 
   ctx.fillStyle = color;
-  for (let row = 0; row <= rowNum; row++) {
+  for (let row = 0; row <= _rowNum; row++) {
     const x = width / 2;
     const y = (row + 0.5) * textWidth * lineHeight + padding + border;
-    const text = name.substr(row * colNum, colNum);
+    const text = name.substr(row * _colNum, _colNum);
     ctx.fillText(text, x, y);
   }
 

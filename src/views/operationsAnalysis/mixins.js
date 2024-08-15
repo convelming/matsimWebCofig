@@ -161,7 +161,7 @@ export default {
         rootId: "mapRoot",
         enableRotate: true,
       });
-      // this._Map.setFitZoomAndCenterByPoints(this.range);
+      this._Map.setFitZoomAndCenterByPoints(this.range);
 
       this._MapLayer = new MapLayer({ tileClass: MAP_LAYER_STYLE[0], zIndex: -1 });
       this._Map.addLayer(this._MapLayer);

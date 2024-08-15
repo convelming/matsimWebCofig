@@ -221,12 +221,14 @@ export class ActivityRoutesLayer extends Layer {
         const geometry = new THREE.PlaneGeometry(SIZE, SIZE);
         const material = this.getActMaterial({
           transparent: true,
+          // depthWrite: false,
           map: this.actTexture,
           color: color,
         });
         const geometry2 = new THREE.CylinderGeometry(SIZE / 2, SIZE / 2, height);
         const material2 = new THREE.MeshBasicMaterial({
           transparent: true,
+          // depthWrite: false,
           color: color,
           opacity: 0.8,
         });
@@ -264,6 +266,7 @@ export class ActivityRoutesLayer extends Layer {
         const geometry = this.getLegGeometry(path.paths);
         const material = this.getLegMaterial({
           side: THREE.DoubleSide,
+          // depthWrite: false,
           transparent: true,
           map: this.legTexture,
           color: color,
@@ -276,43 +279,40 @@ export class ActivityRoutesLayer extends Layer {
     }
     // 时间标签
     {
-      // const timeMap = {};
-      // for (let i = 0, l = this.actList.length; i < l; i++) {
-      //   const item = this.actList[i]
-      //   const { point, startTime, endTime, activity } = item;
-      //   const startZ = Number(startTime) / 60;
-      //   const endZ = Number(endTime) / 60;
-      //   timeMap[startTime] = [point[0], point[1], startZ]
-      //   timeMap[endTime] = [point[0], point[1], endZ];
-      // }
-      // const loader = new THREE.TextureLoader();
-      // const scale = this.labelScale * this.labelWidth;
-      // for (const key in timeMap) {
-      //   const { url, width, height } = getTextImage(formatHour(Number(key)));
-      //   const texture = loader.load(url);
-      //   texture.minFilter = THREE.LinearFilter;
-      //   texture.wrapS = THREE.ClampToEdgeWrapping;
-      //   texture.wrapT = THREE.ClampToEdgeWrapping;
-      //   const mesh = new THREE.Sprite(
-      //     new THREE.SpriteMaterial({
-      //       depthTest: false,
-      //       depthWrite: false,
-      //       depthFunc: THREE.AlwaysDepth,
-      //       transparent: true,
-      //       map: texture
-      //     })
-      //   );
+      const timeMap = {};
+      for (let i = 0, l = this.actList.length; i < l; i++) {
+        const item = this.actList[i]
+        const { point, startTime, endTime, activity } = item;
+        const startZ = Number(startTime) / 60;
+        const endZ = Number(endTime) / 60;
+        timeMap[startTime] = [point[0], point[1], startZ]
+        timeMap[endTime] = [point[0], point[1], endZ];
+      }
+      const loader = new THREE.TextureLoader();
+      const scale = this.labelScale * this.labelWidth;
+      for (const key in timeMap) {
+        const { url, width, height } = getTextImage(formatHour(Number(key)), { colNum: 8 });
+        const texture = loader.load(url);
+        texture.minFilter = THREE.LinearFilter;
+        texture.wrapS = THREE.ClampToEdgeWrapping;
+        texture.wrapT = THREE.ClampToEdgeWrapping;
+        const mesh = new THREE.Sprite(
+          new THREE.SpriteMaterial({
+            transparent: true,
+            map: texture
+          })
+        );
 
-      //   mesh.scale.set(width * scale, height * scale, 1);
-      //   mesh.center.set(0.5, 0);
-      //   mesh.position.set(...timeMap[key]);
+        mesh.scale.set(width * scale, height * scale, 1);
+        mesh.center.set(0.5, 0);
+        mesh.position.set(...timeMap[key]);
 
-      //   mesh.userData.width = width;
-      //   mesh.userData.height = height;
+        mesh.userData.width = width;
+        mesh.userData.height = height;
 
-      //   this.scaleScene.add(mesh);
-      //   this.labelMeshList.push(mesh);
-      // }
+        this.scaleScene.add(mesh);
+        this.labelMeshList.push(mesh);
+      }
     }
 
     const [x, y] = this.map.WebMercatorToCanvasXY(...this.center);
