@@ -378,7 +378,7 @@ export default {
     });
 
     this._Activity3DLayer = new Activity3DLayer({
-      zIndex: 20,
+      zIndex: 30,
       colors: this.activityTypeList,
       scale: this.scale,
       maxNum: this.maxNum,
@@ -399,7 +399,7 @@ export default {
     });
 
     this._GeoJSONLayer = new GeoJSONLayer({
-      zIndex: 30,
+      zIndex: 10,
       pointScale: this.geojsonParams.pointScale,
       pointColor: this.geojsonParams.pointColor,
       polygonColor: this.geojsonParams.polygonColor,
@@ -562,6 +562,7 @@ export default {
     },
     handleCloseFile() {
       this.file = null;
+      this.handleChangeGeoJsonParams("show", false);
       this.rootVue.$emit("Parking_Geojson_Uuid", { geoId: null });
     },
     // ******************************* 上传文件 -- end

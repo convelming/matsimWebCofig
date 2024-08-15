@@ -1,9 +1,7 @@
 import * as THREE from "three";
 import { Layer, MAP_EVENT } from "@/mymap/index.js";
 
-
 import Activity3DLayerWorker from "../worker/Activity3DLayer.worker";
-
 
 const SIZE = 80;
 
@@ -116,11 +114,11 @@ export class Activity3DLayer extends Layer {
     super.render();
   }
 
-
   callWorkerRender() {
     const array = new Float64Array([2, this.time, this.maxNum]);
     this.worker.postMessage(array, [array.buffer]);
   }
+
   clearScene() {
     super.clearScene();
     if (this.mesh) this.mesh.dispose();
