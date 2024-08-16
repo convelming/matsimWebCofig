@@ -1,5 +1,5 @@
 
-import { Map, MapLayer, MAP_LAYER_STYLE } from "@/mymap/index.js";
+import { MyMap, MapLayer, MAP_LAYER_STYLE } from "@/mymap/index.js";
 import { getTimeInterval, getCenterZoom } from "@/api/index.js";
 import { guid } from "@/utils/index.js";
 
@@ -34,11 +34,12 @@ export default {
 
       showLayerGeoJSON: false,
       lock2DGeoJSON: false,
+      GeoJSONList: [{ id: "1", _file: null, name: "test" }],
 
       showLayerParking: false,
       lock2DParking: false,
 
-      showStopToolbar: false,
+      showStopToolbar: true,
 
       showClock: true,
 
@@ -49,7 +50,8 @@ export default {
       minTime: 0,
       maxTime: 3600 * 24.5,
       range: [],
-      center: [0, 0]
+      center: [0, 0],
+
     };
   },
   watch: {
@@ -157,11 +159,11 @@ export default {
     handleChangeMapCameraControls() {
     },
     initMap() {
-      this._Map = new Map({
+      this._Map = new MyMap({
         rootId: "mapRoot",
         enableRotate: true,
       });
-      this._Map.setFitZoomAndCenterByPoints(this.range);
+      // this._Map.setFitZoomAndCenterByPoints(this.range);
 
       this._MapLayer = new MapLayer({ tileClass: MAP_LAYER_STYLE[0], zIndex: -1 });
       this._Map.addLayer(this._MapLayer);

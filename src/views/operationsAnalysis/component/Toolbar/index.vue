@@ -2,43 +2,49 @@
   <div class="toolbar-container">
     <div ref="typeScroll" class="toolbar-header">
       <div class="list">
-        <div class="item" id="PublicTransit" :class="{ active: activeModel === PublicTransit.name }" @click="handleActiveModel(PublicTransit)">{{ $l(PublicTransit.name) }}</div>
-        <div class="item" id="MotorizedTravel" :class="{ active: activeModel === MotorizedTravel.name }" @click="handleActiveModel(MotorizedTravel)">{{ $l(MotorizedTravel.name) }}</div>
-        <div class="item" id="Build3D" :class="{ active: activeModel === Build3D.name }" @click="handleActiveModel(Build3D)">{{ $l(Build3D.name) }}</div>
-        <div class="item" id="Network" :class="{ active: activeModel === Network.name }" @click="handleActiveModel(Network)">{{ $l(Network.name) }}</div>
-        <div class="item" id="Activity3D" :class="{ active: activeModel === Activity3D.name }" @click="handleActiveModel(Activity3D)">{{ $l(Activity3D.name) }}</div>
-        <div class="item" id="Parking" :class="{ active: activeModel === Parking.name }" @click="handleActiveModel(Parking)">{{ $l(Parking.name) }}</div>
+        <div class="item" :id="PublicTransit.id" :class="{ active: activeModel === PublicTransit.id }" @click="handleActiveModel(PublicTransit.id)">{{ $l(PublicTransit.name) }}</div>
+        <div class="item" :id="MotorizedTravel.id" :class="{ active: activeModel === MotorizedTravel.id }" @click="handleActiveModel(MotorizedTravel.id)">{{ $l(MotorizedTravel.name) }}</div>
+        <div class="item" :id="Build3D.id" :class="{ active: activeModel === Build3D.id }" @click="handleActiveModel(Build3D.id)">{{ $l(Build3D.name) }}</div>
+        <div class="item" :id="Network.id" :class="{ active: activeModel === Network.id }" @click="handleActiveModel(Network.id)">{{ $l(Network.name) }}</div>
+        <div class="item" :id="Activity3D.id" :class="{ active: activeModel === Activity3D.id }" @click="handleActiveModel(Activity3D.id)">{{ $l(Activity3D.name) }}</div>
+        <div class="item" :id="GeoJSON.id" :class="{ active: activeModel === GeoJSON.id }" @click="handleActiveModel(GeoJSON.id)">{{ $l(GeoJSON.name) }}</div>
+        <div class="item" :id="Parking.id" :class="{ active: activeModel === Parking.id }" @click="handleActiveModel(Parking.id)">{{ $l(Parking.name) }}</div>
       </div>
     </div>
-    <div class="toolbar-bodyer" v-show="activeModel === PublicTransit.name">
+    <div class="toolbar-bodyer" v-show="activeModel === PublicTransit.id">
       <SreachStopRoute />
       <el-collapse class="toolbar-collapse" v-model="PublicTransit.activeName" accordion>
         <component v-for="item in PublicTransit.list" :show="item.name == PublicTransit.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" />
       </el-collapse>
     </div>
-    <div class="toolbar-bodyer" v-show="activeModel === MotorizedTravel.name">
+    <div class="toolbar-bodyer" v-show="activeModel === MotorizedTravel.id">
       <el-collapse class="toolbar-collapse" v-model="MotorizedTravel.activeName" accordion>
         <component v-for="item in MotorizedTravel.list" :show="item.name == MotorizedTravel.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" />
       </el-collapse>
     </div>
-    <div class="toolbar-bodyer" v-show="activeModel === Build3D.name">
+    <div class="toolbar-bodyer" v-show="activeModel === Build3D.id">
       <SreachBuild />
       <el-collapse class="toolbar-collapse" v-model="Build3D.activeName" accordion>
         <component v-for="item in Build3D.list" :show="item.name == Build3D.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" />
       </el-collapse>
     </div>
-    <div class="toolbar-bodyer" v-show="activeModel === Network.name">
+    <div class="toolbar-bodyer" v-show="activeModel === Network.id">
       <SreachLineNode />
       <el-collapse class="toolbar-collapse" v-model="Network.activeName" accordion>
         <component v-for="item in Network.list" :show="item.name == Network.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" />
       </el-collapse>
     </div>
-    <div class="toolbar-bodyer" v-show="activeModel === Activity3D.name">
+    <div class="toolbar-bodyer" v-show="activeModel === Activity3D.id">
       <el-collapse class="toolbar-collapse" v-model="Activity3D.activeName" accordion>
         <component v-for="item in Activity3D.list" :show="item.name == Activity3D.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" />
       </el-collapse>
     </div>
-    <div class="toolbar-bodyer" v-show="activeModel === Parking.name">
+    <div class="toolbar-bodyer" v-show="activeModel === GeoJSON.id">
+      <el-collapse class="toolbar-collapse" v-model="GeoJSON.activeName" accordion>
+        <GeoJSONDetail v-for="item in GeoJSONIdList" :key="item" :name="item" :id="item" />
+      </el-collapse>
+    </div>
+    <div class="toolbar-bodyer" v-show="activeModel === Parking.id">
       <el-collapse class="toolbar-collapse" v-model="Parking.activeName" accordion>
         <component v-for="item in Parking.list" :show="item.name == Parking.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" />
       </el-collapse>
@@ -72,6 +78,10 @@
     "zh-CN": "公共交通",
     "en-US": "Public Transit"
   },
+  "GeoJSON":{
+    "zh-CN": "GeoJSON",
+    "en-US": "GeoJSON"
+  },
   "停车供需":{
     "zh-CN": "停车供需分析",
     "en-US": "Parking analysis"
@@ -104,6 +114,8 @@ import SelectLinkAnalysis from "../Network/toolbar/selectLinkAnalysis.vue";
 import ActivityDetail from "../Activity3D/toolbar/ActivityDetail.vue";
 // 私家车出行
 import CarTravelDetail from "../CarTravel/toolbar/carTravelDetail.vue";
+// GeoJson
+import GeoJSONDetail from "../GeoJSON/toolbar/geoJSONDetail.vue";
 // 停车供需
 import PolgonParkingDetail from "../Parking/toolbar/PolgonParkingDetail.vue";
 import ParkingActivityDetail from "../Parking/toolbar/ParkingActivityDetail.vue";
@@ -132,6 +144,8 @@ export default {
     ActivityDetail,
 
     CarTravelDetail,
+
+    GeoJSONDetail,
 
     PolgonParkingDetail,
     ParkingActivityDetail,
@@ -184,6 +198,15 @@ export default {
         list: [],
         activeName: "",
       },
+      GeoJSON: {
+        id: "GeoJSON",
+        name: "GeoJSON",
+        components: [],
+        sreach: {},
+        params: {},
+        list: [],
+        activeName: "",
+      },
       Parking: {
         id: "Parking",
         name: "停车供需",
@@ -217,13 +240,26 @@ export default {
         PolgonParkingDetail: "Parking",
         ParkingActivityDetail: "Parking",
       },
-      activeModel: "公共交通",
+      activeModel: "PublicTransit",
+      activeModel: "GeoJSON",
       activeName: "",
       list: [],
     };
   },
+  computed: {
+    GeoJSONIdList() {
+      try {
+        return this.rootVue.GeoJSONList.map((v) => v.id);
+      } catch (error) {
+        console.log("geojsonLength", error);
+        return 0;
+      }
+    },
+  },
   created() {},
-  mounted() {},
+  mounted() {
+    this.handleActiveModel(this.activeModel);
+  },
   beforeDestroy() {},
   methods: {
     add(type, data) {
@@ -286,9 +322,9 @@ export default {
       } catch (error) {}
       this.activeName = activeName;
     },
-    handleActiveModel(type) {
-      this.activeModel = type.name;
-      const doc = document.getElementById(type.id);
+    handleActiveModel(id) {
+      this.activeModel = id;
+      const doc = document.getElementById(id);
       if (doc) {
         doc.scrollIntoView({ inline: "center", block: "center", behavior: "smooth" });
       }

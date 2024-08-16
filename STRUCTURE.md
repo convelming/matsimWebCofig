@@ -73,7 +73,7 @@
     |   +---main
     |   |       EventListener.js                                /* 事件监听器 */
     |   |       Layer.js                                        /* 地图图层基类 */
-    |   |       Map.js                                          /* 地图核心类 */
+    |   |       MyMap.js                                        /* 地图核心类 */
     |   |
     |   +---material
     |   |       Line2DMaterial.js                               /* 线段材质 */

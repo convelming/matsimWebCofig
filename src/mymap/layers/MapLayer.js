@@ -1,6 +1,5 @@
-import { Layer } from "../main/Layer";
 import * as THREE from "three";
-import { MAP_EVENT } from "../main/Map.js";
+import { MAP_EVENT, Layer } from "../index.js";
 
 const Loader = new THREE.TextureLoader();
 const EARTH_RADIUS = 20037508.3427892;
@@ -102,10 +101,10 @@ export class MapLayer extends Layer {
         map.show = true;
         map.scene.position.setZ(0);
         this.scene.add(map.scene);
-      // } else if (z == zoom + 1) {
-      //   map.show = true;
-      //   map.scene.position.setZ(-0.1);
-      //   this.scene.add(map.scene);
+        // } else if (z == zoom + 1) {
+        //   map.show = true;
+        //   map.scene.position.setZ(-0.1);
+        //   this.scene.add(map.scene);
       } else if (map.show) {
         map.show = false;
         this.scene.remove(map.scene);

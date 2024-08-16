@@ -1,9 +1,7 @@
 import * as THREE from "three";
 import { Layer, MAP_EVENT } from "@/mymap/index.js";
-import { ColorBar2D } from "@/mymap/utils/ColorBar2D.js";
 
 import { getTileNetwork } from "@/api/index.js";
-
 import { guid } from "@/utils/utils";
 
 const BUILD_ZOOM = 11;
@@ -11,7 +9,7 @@ const EARTH_RADIUS = 20037508.3427892;
 
 export class NetworkLayer extends Layer {
   _noLoadTileList = [];
-  colors = ColorBar2D.defaultColors;
+  colors = ColorBar2DColors;
   lineWidth = 6;
   lineOffset = 0;
   time = 0;
@@ -78,7 +76,7 @@ export class NetworkLayer extends Layer {
   }
 
   setColors(colors) {
-    this.colors = colors || ColorBar2D.defaultColors;
+    this.colors = colors || ColorBar2DColors;
     for (const tile of Object.values(this.tileMap)) {
       tile.setColors(colors);
     }
@@ -235,7 +233,7 @@ export class NetworkTile {
     return this._flowNum;
   }
 
-  constructor({ row, col, flowNum = 0, lineWidth = 10, lineOffset = 0, colors = ColorBar2D.defaultColors, pickLayerColor = 0xff0000, showNode = false }) {
+  constructor({ row, col, flowNum = 0, lineWidth = 10, lineOffset = 0, colors = ColorBar2DColors, pickLayerColor = 0xff0000, showNode = false }) {
     this._row = row;
     this._col = col;
     this._x = ((row + 0.5) * (EARTH_RADIUS * 2)) / Math.pow(2, BUILD_ZOOM) - EARTH_RADIUS;
@@ -251,7 +249,7 @@ export class NetworkTile {
     this._geometry = new THREE.BufferGeometry();
     this._baseMaterial = new NetworkMaterial({
       color: 0xff0000,
-      colorBar: ColorBar2D.instance.drowColorBar(this._colors),
+      colorBar: ColorBar2DInstance.drowColorBar(this._colors),
       lineWidth: this._lineWidth,
       lineOffset: this._lineOffset,
       // map: NetworkTile.lineMap,
@@ -404,8 +402,8 @@ export class NetworkTile {
   }
 
   setColors(colors) {
-    this._colors = colors || ColorBar2D.defaultColors;
-    this._baseMaterial.uniforms.colorBar.value = ColorBar2D.instance.drowColorBar(this._colors);
+    this._colors = colors || ColorBar2DColors;
+    this._baseMaterial.uniforms.colorBar.value = ColorBar2DInstance.drowColorBar(this._colors);
     this._baseMaterial.needsUpdate = true;
   }
 
@@ -788,3 +786,69 @@ export class NetworkMaterial extends THREE.Material {
     this.setValues(params);
   }
 }
+
+export class ColorBar2D {
+  static width = 1024;
+  static height = 16;
+  get canvas2D() {
+    if (!this._canvas2D) {
+      this._canvas2D = document.createElement("canvas");
+      this._canvas2D.width = ColorBar2D.width;
+      this._canvas2D.height = ColorBar2D.height;
+      this._canvas2D.style.cssText = `
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: ${ColorBar2D.width}px;
+        height: ${ColorBar2D.height}px;
+        z-index: 9999;
+      `;
+    }
+    return this._canvas2D;
+  }
+
+  get context2D() {
+    if (!this._context2D) {
+      this._context2D = this.canvas2D.getContext("2d");
+    }
+    return this._context2D;
+  }
+
+  // 渐变颜色条图
+  drowColorBar(colors = ColorBar2DColors) {
+    try {
+      //颜色条的颜色分布
+      const values = Object.keys(colors).map((v) => Number(v)).sort();
+      const maxValue = values[values.length - 1];
+      const minValue = values[0];
+
+      // 创建线性渐变色
+      const linearGradient = this.context2D.createLinearGradient(0, 0, ColorBar2D.width, 0);
+      for (const v of values) {
+        const key = (v - minValue) / maxValue - minValue;
+        linearGradient.addColorStop(key, colors[v]);
+      }
+
+      // 绘制渐变色条
+      this.context2D.fillStyle = linearGradient;
+      this.context2D.fillRect(0, 0, ColorBar2D.width, ColorBar2D.height);
+
+      const url = this.canvas2D.toDataURL("image/png");
+      this.context2D.clearRect(0, 0, ColorBar2D.width, ColorBar2D.height);
+
+      return {
+        url: url,
+        map: new THREE.TextureLoader().load(url),
+        max: maxValue,
+        min: minValue,
+        range: maxValue - minValue,
+      };
+    } catch (error) {
+      return null;
+    }
+  }
+}
+
+const ColorBar2DInstance = new ColorBar2D();
+
+const ColorBar2DColors = { 0: "#313695", 0.4: "#74add1", 0.6: "#e0f3f8", 0.75: "#ffffbf", 0.85: "#fdae61", 0.95: "#f46d43", 1: "#a50026" };

@@ -1,5 +1,3 @@
-import * as THREE from "three";
-
 let ColorBar2DInstance = null;
 
 const defaultColors = { 0: "#313695", 0.4: "#74add1", 0.6: "#e0f3f8", 0.75: "#ffffbf", 0.85: "#fdae61", 0.95: "#f46d43", 1: "#a50026" };
@@ -44,31 +42,29 @@ export class ColorBar2D {
 
   // 渐变颜色条图
   drowColorBar(colors = defaultColors) {
-    //颜色条的颜色分布
-    const values = Object.keys(colors).map((v) => Number(v)).sort();
-    const maxValue = values[values.length - 1];
-    const minValue = values[0];
+    try {
+      //颜色条的颜色分布
+      const values = Object.keys(colors).map((v) => Number(v)).sort();
+      const maxValue = values[values.length - 1];
+      const minValue = values[0];
 
-    // 创建线性渐变色
-    const linearGradient = this.context2D.createLinearGradient(0, 0, ColorBar2D.width, 0);
-    for (const v of values) {
-      const key = (v - minValue) / maxValue - minValue;
-      linearGradient.addColorStop(key, colors[v]);
+      // 创建线性渐变色
+      const linearGradient = this.context2D.createLinearGradient(0, 0, ColorBar2D.width, 0);
+      for (const v of values) {
+        const key = (v - minValue) / maxValue - minValue;
+        linearGradient.addColorStop(key, colors[v]);
+      }
+
+      // 绘制渐变色条
+      this.context2D.fillStyle = linearGradient;
+      this.context2D.fillRect(0, 0, ColorBar2D.width, ColorBar2D.height);
+
+      const url = this.canvas2D.toDataURL("image/png");
+      this.context2D.clearRect(0, 0, ColorBar2D.width, ColorBar2D.height);
+
+      return url;
+    } catch (error) {
+      return null;
     }
-
-    // 绘制渐变色条
-    this.context2D.fillStyle = linearGradient;
-    this.context2D.fillRect(0, 0, ColorBar2D.width, ColorBar2D.height);
-
-    const url = this.canvas2D.toDataURL("image/png");
-    this.context2D.clearRect(0, 0, ColorBar2D.width, ColorBar2D.height);
-
-    return {
-      url: url,
-      map: new THREE.TextureLoader().load(url),
-      max: maxValue,
-      min: minValue,
-      range: maxValue - minValue,
-    };
   }
 }

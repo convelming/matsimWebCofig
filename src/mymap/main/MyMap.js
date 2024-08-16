@@ -67,7 +67,7 @@ export const MAP_ZOOM_RANGE = {
 // 地图层级缩放高度基数
 const MAP_ZOOM_HEIGHT = 300;
 
-export class Map extends EventListener {
+export class MyMap extends EventListener {
   name = "map";
   _pickLayerColorNum = 0xffffff;
   openGPUPick = true;

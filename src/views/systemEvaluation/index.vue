@@ -85,7 +85,7 @@
 </language>
 
 <script>
-import { Map, MapLayer, MAP_LAYER_STYLE } from "@/mymap/index.js";
+import { MyMap, MapLayer, MAP_LAYER_STYLE } from "@/mymap/index.js";
 import HelpDialog from "./component/HelpDialog/index.vue";
 import Accessibility from "./component/Accessibility/index.vue";
 
@@ -141,7 +141,7 @@ export default {
       }
     },
     initMap() {
-      this._Map = new Map({
+      this._Map = new MyMap({
         rootId: "mapRoot",
         center: [12632323, 2651517],
         zoom: 12,

@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import { Map, MapLayer, MAP_LAYER_STYLE } from "@/mymap/index.js";
+import { MyMap, MapLayer, MAP_LAYER_STYLE } from "@/mymap/index.js";
 import NewClock from "@/components/NewClock/index.vue";
 import { GeoJSONLayer } from "@/views/operationsAnalysis/component/GeoJSON/layer/GeoJSONLayer.js";
 export default {
@@ -43,7 +43,7 @@ export default {
     },
     // 初始化地图
     async initMap() {
-      this._Map = new Map({
+      this._Map = new MyMap({
         rootId: "map",
         // center: [12612545.3950225, 2617157.5169194015],
         center: [12599952, 2632734.5],

@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import { Map, MapLayer, MAP_LAYER_STYLE } from "@/mymap/index.js";
+import { MyMap, MapLayer, MAP_LAYER_STYLE } from "@/mymap/index.js";
 import NewClock from "@/components/NewClock/index.vue";
 
 
@@ -64,7 +64,7 @@ export default {
     },
     // 初始化地图
     async initMap() {
-      this._Map = new Map({
+      this._Map = new MyMap({
         rootId: "map",
         center: [12628397, 2655338.7],
         // zoom: 11,

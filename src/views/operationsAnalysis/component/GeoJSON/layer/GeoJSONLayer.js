@@ -3,29 +3,51 @@
 import * as THREE from "three";
 import { Layer, MAP_EVENT } from "@/mymap/index.js";
 import * as BufferGeometryUtils from "three/addons/utils/BufferGeometryUtils.js";
+import { ColorBar2D } from "@/mymap/utils/ColorBar2D.js";
 
-import GeoJSONLayerWorker from "./GeoJSONLayer.worker";
+import GeoJSONLayerWorker from "../worker/GeoJSONLayer.worker";
 
 const POINT_SIZE = 80;
+const textureLoader = new THREE.TextureLoader();
+
+export const LINE_STYPE = {
+  NONE: 0, // 不显示
+  SOLID: 1, // 实线
+  DASHED: 2 // 虚线
+}
 
 export class GeoJSONLayer extends Layer {
 
   color = new THREE.Color(0xffa500);
 
-
-  pointColor = new THREE.Color(0xffa500);
   pointScale = 1;
-  pointTexture = new THREE.TextureLoader().load(require("@/assets/image/point2.png"));
+  pointColor = new THREE.Color(0xffa500);
+  pointTexture = textureLoader.load(require("@/assets/image/point2.png"));
+  pointValue = null;
+  pointColorBar = null;
+  pointOpacity = 1;
   pointMesh = null;
 
-  lineColor = new THREE.Color(0xffa500);
   lineWidth = 100;
-  lineTexture = null;
-  lineGeoList = [];
+  lineColor = new THREE.Color(0xffa500);
+  lineStyle = LINE_STYPE.SOLID;
+  lineValue = null;
+  lineColorBar = null;
+  lineOpacity = 1;
+  lineMeshList = [];
 
   polygonColor = new THREE.Color(0xffa500);
-  polygonGeoList = [];
+  polygonOpacity = 1;
+  polygonBorderWidth = 1;
+  polygonBorderColor = new THREE.Color(0xffa500);
+  polygonBorderStyle = LINE_STYPE.SOLID;
+  polygonValue = null;
+  polygonColorBar = null;
+  polygon3D = false;
+  polygon3DHeight = false;
+  polygonMeshList = [];
 
+  // ******************** 点 ******************** //
   async setPointScale(pointScale) {
     this.pointScale = pointScale;
 
@@ -50,32 +72,94 @@ export class GeoJSONLayer extends Layer {
     this.pointMaterial.setValues({ color: this.pointColor })
     this.pointMaterial.needsUpdate = true;
   }
+  setPointTexture(pointTexture) {
+    this.pointTexture = pointTexture;
+  }
+  setPointValue(pointValue) {
+    this.pointValue = pointValue;
+  }
+  setPointColorBar(pointColorBar) {
+    this.pointColorBar = pointColorBar;
+  }
+  setPointOpacity(pointOpacity) {
+    this.pointOpacity = pointOpacity;
+  }
+
+  // ******************** 线 ******************** //
+  setLineWidth(lineWidth) {
+    this.lineWidth = lineWidth;
+    this.lineMaterial.needsUpdate = true;
+  }
   setLineColor(lineColor) {
     this.lineColor = new THREE.Color(lineColor);
     this.lineMaterial.setValues({ color: this.lineColor })
     this.lineMaterial.needsUpdate = true;
   }
-  setLineWidth(lineWidth) {
-    this.lineWidth = lineWidth;
-    this.lineMaterial.needsUpdate = true;
+  setLineStyle(lineStyle) {
+    this.lineStyle = lineStyle;
   }
+  setLineValue(lineValue) {
+    this.lineValue = lineValue;
+  }
+  setLineColorBar(lineColorBar) {
+    this.lineColorBar = lineColorBar;
+  }
+  setLineOpacity(lineOpacity) {
+    this.lineOpacity = lineOpacity;
+  }
+
+  // ******************** 面 ******************** //
+  setPolygonOpacity(polygonOpacity) {
+    this.polygonOpacity = polygonOpacity;
+    this.polygonMaterial.setValues({ opacity: this.polygonOpacity });
+    this.polygonMaterial.needsUpdate = true;
+  }
+
   setPolygonColor(polygonColor) {
     this.polygonColor = new THREE.Color(polygonColor);
     this.polygonMaterial.setValues({ color: this.polygonColor });
     this.polygonMaterial.needsUpdate = true;
   }
 
+  setPolygonBorderWidth(polygonBorderWidth) {
+    this.polygonBorderWidth = polygonBorderWidth;
+  }
+  setPolygonBorderColor(polygonBorderColor) {
+    this.polygonBorderColor = new THREE.Color(polygonBorderColor);
+  }
+  setPolygonBorderStyle(polygonBorderStyle) {
+    this.polygonBorderStyle = polygonBorderStyle;
+  }
+  setPolygonValue(polygonValue) {
+    this.polygonValue = polygonValue;
+  }
+  setPolygonColorBar(polygonColorBar) {
+    this.polygonColorBar = polygonColorBar;
+  }
+  setPolygon3D(polygon3D) {
+    this.polygon3D = polygon3D;
+  }
+  setPolygon3DHeight(polygon3DHeight) {
+    this.polygon3DHeight = polygon3DHeight;
+  }
+
   constructor(opt) {
     super(opt);
-    this.pointColor = new THREE.Color(opt.pointColor || this.pointColor);
-    this.pointScale = opt.pointScale || this.pointScale;
-    this.lineColor = new THREE.Color(opt.lineColor || this.lineColor);
-    this.lineWidth = opt.lineWidth || this.lineWidth;
-    this.polygonColor = new THREE.Color(opt.polygonColor || this.polygonColor);
 
+    // ******************** 点 ******************** //
+    this.pointScale = opt.pointScale || this.pointScale;
+    this.pointColor = new THREE.Color(opt.pointColor || this.pointColor);
+    this.pointTexture = opt.pointTexture || this.pointTexture;
+    this.pointValue = opt.pointValue || this.pointValue;
+    const pointColorBarUrl = ColorBar2D.instance.drow(opt.pointColorBar);
+    this.pointColorBar = {
+      maxValue: 1,
+      minValue: 0,
+      map: pointColorBarUrl ? textureLoader.load(pointColorBarUrl) : null
+    };
+    this.pointOpacity = opt.pointOpacity || this.pointOpacity;
 
     this.pointGeometry = new THREE.PlaneGeometry(POINT_SIZE, POINT_SIZE);
-
     this.pointMaterial = new THREE.MeshBasicMaterial({
       transparent: true,
       map: this.pointTexture,
@@ -83,16 +167,37 @@ export class GeoJSONLayer extends Layer {
     })
     this.pointMesh = null;
 
+
+
+    // ******************** 线 ******************** //
+
+    this.lineColor = new THREE.Color(opt.lineColor || this.lineColor);
+    this.lineWidth = opt.lineWidth || this.lineWidth;
+    this.lineStyle = opt.lineStyle || this.lineStyle;
+    this.lineValue = opt.lineValue || this.lineValue;
+    this.lineWidth = opt.lineWidth || this.lineWidth;
+    this.lineWidth = opt.lineWidth || this.lineWidth;
     this.lineMaterial = this.getLineMaterial({
       side: THREE.DoubleSide,
       transparent: true,
-      map: this.lineTexture,
       color: this.lineColor,
     });
+    this.lineMeshList = [];
+
+
+
+
+    // ******************** 面 ******************** //
+    this.polygonColor = new THREE.Color(opt.polygonColor || this.polygonColor);
     this.polygonMaterial = new THREE.MeshBasicMaterial({
       color: this.polygonColor,
       transparent: true,
     });
+    this.polygonMeshList = [];
+
+
+
+
 
     this.worker = new GeoJSONLayerWorker();
     this.worker.onmessage = (event) => {
@@ -102,9 +207,11 @@ export class GeoJSONLayer extends Layer {
         polygon
       } = event.data;
 
-      this.handleSetPoint(point);
-      this.handleSetLine(line);
-      this.handleSetPolygon(polygon);
+      this.pointData = point;
+      this.lineData = line;
+      this.polygonData = polygon;
+
+      this.update();
     };
     this.worker.addEventListener("error", (error) => {
       console.log(error);
@@ -122,14 +229,34 @@ export class GeoJSONLayer extends Layer {
       this.pointMesh.dispose();
       this.pointMesh = null;
     }
-    for (const geo of this.lineGeoList) {
-      geo.dispose()
+    for (const mesh of this.lineMeshList) {
+      mesh.geometry.dispose()
     }
-    this.lineGeoList = [];
-    for (const geo of this.polygonGeoList) {
-      geo.dispose()
+    this.lineMeshList = [];
+    for (const mesh of this.polygonMeshList) {
+      mesh.geometry.dispose()
     }
-    this.polygonGeoList = [];
+    this.polygonMeshList = [];
+  }
+
+  getPointMaterial(opt) {
+    const material = new THREE.MeshBasicMaterial(opt);
+    material.onBeforeCompile = (shader) => {
+    };
+    /**
+     * 当用到onBeforeCompile回调的时候，
+     * 这个回调函数可以用来定义在onBeforeCompile中使用的配置项，
+     * 这样three.js就可以根据这个回调返回的字符串来判定使用一个
+     * 缓存的编译好的着色器代码还是根据需求重新编译一段新的着色器代码。
+     * material.needsUpdate也要设置为true
+     */
+    material.customProgramCacheKey = () => {
+      return JSON.stringify({
+        uuid: material.uuid,
+        lineWidth: this.lineWidth,
+      });
+    };
+    return material;
   }
 
   getLineMaterial(opt) {
@@ -240,11 +367,10 @@ export class GeoJSONLayer extends Layer {
 
   onAdd(map) {
     super.onAdd(map);
-    // this.updatePoint()
+    this.update();
   }
 
   setData(data) {
-    this.clearScene();
     if (data instanceof Int8Array) {
       this.worker.postMessage(data, [data.buffer]);
     } else {
@@ -252,10 +378,14 @@ export class GeoJSONLayer extends Layer {
     }
   }
 
-  handleSetPoint(array) {
-    this.pointData = array;
-    this.updatePoint()
+  update() {
+    this.clearScene();
+    if (!this.map) return;
+    if (this.pointData) this.updatePoint();
+    if (this.lineData) this.updateLine();
+    if (this.polygonData) this.updatePolygon();
   }
+
   async updatePoint() {
     if (!this.map) return;
     if (!this.pointData) return;
@@ -284,10 +414,6 @@ export class GeoJSONLayer extends Layer {
 
   }
 
-  handleSetLine(array) {
-    this.lineData = array;
-    this.updateLine()
-  }
   async updateLine() {
     if (!this.map) return;
     if (!this.lineData) return;
@@ -302,13 +428,14 @@ export class GeoJSONLayer extends Layer {
       if (index - time > 20000) {
         time = index;
         const geometry = BufferGeometryUtils.mergeBufferGeometries(geometryList, false);
-        this.lineGeoList.push(geometry);
         const mesh = new THREE.Mesh(geometry, this.lineMaterial);
         const [x, y] = this.map.WebMercatorToCanvasXY(lineCenter[0], lineCenter[1]);
         mesh.position.set(x, y, 0.01);
         mesh.userData.center = lineCenter;
         mesh.userData.type = "line";
+        this.lineMeshList.push(mesh);
         this.scene.add(mesh);
+
         geometryList.length = 0;
         await new Promise(resolve => setTimeout(resolve, 0));
       }
@@ -316,12 +443,12 @@ export class GeoJSONLayer extends Layer {
 
     if (geometryList.length > 0) {
       const geometry = BufferGeometryUtils.mergeBufferGeometries(geometryList, false);
-      this.lineGeoList.push(geometry);
       const mesh = new THREE.Mesh(geometry, this.lineMaterial);
       const [x, y] = this.map.WebMercatorToCanvasXY(lineCenter[0], lineCenter[1]);
       mesh.position.set(x, y, 0.01);
       mesh.userData.center = lineCenter;
       mesh.userData.type = "line";
+      this.lineMeshList.push(mesh);
       this.scene.add(mesh);
     }
 
@@ -400,11 +527,6 @@ export class GeoJSONLayer extends Layer {
     return geometry
   }
 
-  handleSetPolygon(array) {
-    this.polygonData = array;
-    this.updatePolygon()
-  }
-
   async updatePolygon() {
     const polygonCenter = Array.from(this.polygonData.slice(0, 2));
     const geometryList = [];
@@ -432,12 +554,12 @@ export class GeoJSONLayer extends Layer {
         time = i;
 
         const geometry = BufferGeometryUtils.mergeBufferGeometries(geometryList, false);
-        this.polygonGeoList.push(geometry);
         const mesh = new THREE.Mesh(geometry, this.polygonMaterial);
         const [x, y] = this.map.WebMercatorToCanvasXY(polygonCenter[0], polygonCenter[1]);
         mesh.position.set(x, y, 0.02);
         mesh.userData.center = polygonCenter;
         mesh.userData.type = "polygon";
+        this.polygonMeshList.push(mesh);
         this.scene.add(mesh);
 
         geometryList.length = 0;
@@ -447,12 +569,12 @@ export class GeoJSONLayer extends Layer {
 
     if (geometryList.length > 0) {
       const geometry = BufferGeometryUtils.mergeBufferGeometries(geometryList, false);
-      this.polygonGeoList.push(geometry);
       const mesh = new THREE.Mesh(geometry, this.lineMaterial);
       const [x, y] = this.map.WebMercatorToCanvasXY(polygonCenter[0], polygonCenter[1]);
       mesh.position.set(x, y, 0);
       mesh.userData.center = polygonCenter;
       mesh.userData.type = "polygon";
+      this.polygonMeshList.push(mesh);
       this.scene.add(mesh);
     }
   }
@@ -460,6 +582,341 @@ export class GeoJSONLayer extends Layer {
 }
 
 
+export class GeoJSONLineListGeometry extends THREE.BufferGeometry {
+  constructor(routeList) {
+    super();
+    this.type = "GeoJSONLineListGeometry";
+    this.isGeoJSONLineListGeometry = true;
+
+    const attrPosition = new Array();
+    const attrStartPosition = new Array();
+    const attrEndPosition = new Array();
+    const attrSide = new Array();
+    const attrTime = new Array();
+    const attrIndex = new Array();
+    let indexOffset = 0;
+    for (let i1 = 0, l1 = routeList.length; i1 < l1; i1++) {
+      const array = routeList[i1];
+      for (let i2 = 0, l2 = array.length / 3; i2 < l2; i2++) {
+        let prevX = array[i2 * 3 - 3];
+        let prevY = array[i2 * 3 - 2];
+        let prevL = array[i2 * 3 - 1];
+        let thatX = array[i2 * 3 + 0];
+        let thatY = array[i2 * 3 + 1];
+        let thatL = array[i2 * 3 + 2];
+        let nextX = array[i2 * 3 + 3];
+        let nextY = array[i2 * 3 + 4];
+        let nextL = array[i2 * 3 + 5];
+        if (i2 === 0) {
+          prevX = thatX * 2 - nextX;
+          prevY = thatY * 2 - nextY;
+        }
+        if (i2 >= l2 - 1) {
+          nextX = thatX * 2 - prevX;
+          nextY = thatY * 2 - prevY;
+        }
+
+        attrPosition[attrPosition.length] = thatX;
+        attrPosition[attrPosition.length] = thatY;
+        attrPosition[attrPosition.length] = 0;
+        attrPosition[attrPosition.length] = thatX;
+        attrPosition[attrPosition.length] = thatY;
+        attrPosition[attrPosition.length] = 0;
+
+        attrStartPosition[attrStartPosition.length] = prevX;
+        attrStartPosition[attrStartPosition.length] = prevY;
+        attrStartPosition[attrStartPosition.length] = prevX;
+        attrStartPosition[attrStartPosition.length] = prevY;
+
+        attrEndPosition[attrEndPosition.length] = nextX;
+        attrEndPosition[attrEndPosition.length] = nextY;
+        attrEndPosition[attrEndPosition.length] = nextX;
+        attrEndPosition[attrEndPosition.length] = nextY;
+
+        attrTime[attrTime.length] = thatL;
+        attrTime[attrTime.length] = thatL;
+
+        attrSide[attrSide.length] = -1;
+        attrSide[attrSide.length] = 1;
+
+        if (i2 < l2 - 1) {
+          attrIndex[attrIndex.length] = indexOffset + 0;
+          attrIndex[attrIndex.length] = indexOffset + 1;
+          attrIndex[attrIndex.length] = indexOffset + 3;
+          attrIndex[attrIndex.length] = indexOffset + 0;
+          attrIndex[attrIndex.length] = indexOffset + 3;
+          attrIndex[attrIndex.length] = indexOffset + 2;
+        };
+        indexOffset += 2;
+      }
+    }
+    this.setAttribute("position", new THREE.Float32BufferAttribute(attrPosition, 3));
+    this.setAttribute("startPosition", new THREE.Float32BufferAttribute(attrStartPosition, 2));
+    this.setAttribute("endPosition", new THREE.Float32BufferAttribute(attrEndPosition, 2));
+    this.setAttribute("side", new THREE.Int8BufferAttribute(attrSide, 1));
+    this.setAttribute("time", new THREE.Float32BufferAttribute(attrTime, 1));
+    this.setIndex(attrIndex);
+    this.computeVertexNormals();
+  }
+}
+
+export class GeoJSONLineMaterial extends THREE.Material {
+  constructor(argu) {
+    super();
+    this.isGeoJSONLineMaterial = true;
+    const { color = 0xff0000, opacity = 1, lineWidth = 50, lineOffset = 0, map = null, trailLength = 10, trailTime = 0, ...params } = argu || {};
+    this.alphaTest = 0.1;
+    this.transparent = true;
+    this.depthWrite = false;
+    this.defines = {
+      USE_MAP: !!map,
+    };
+    this.uniforms = {
+      diffuse: {
+        value: new THREE.Color(color),
+      },
+      opacity: {
+        value: opacity,
+      },
+      lineWidth: {
+        value: lineWidth,
+      },
+      lineOffset: {
+        value: lineOffset,
+      },
+      map: {
+        value: map,
+      },
+      uvTransform: {
+        value: new THREE.Matrix3(),
+      },
+      trailTime: {
+        value: trailTime,
+      },
+    };
+    this.vertexShader = `
+      #include <common>
+      #include <logdepthbuf_pars_vertex>
+
+      attribute vec3 pickColor;
+      attribute float side;
+      attribute float length;
+      attribute vec2 startPosition;
+      attribute vec2 endPosition;
+      
+      varying vec3 vColor;
+      varying vec2 vUv;
+
+      uniform float lineWidth;
+      uniform float lineOffset;
+      uniform mat3 uvTransform;
+
+      void main() {
+
+        #ifdef USE_MAP
+          vUv = ( uvTransform * vec3( uv, 1 ) ).xy;
+        #endif
+        
+        vec3 transformed = vec3(1.0);
+
+        float offset = lineWidth / 2.0 * side + lineOffset;
+
+        float lenA = length(position.xy - startPosition);
+        float lenB = length(position.xy - endPosition);
+
+        if(lenA == 0. && lenB == 0.) {
+          transformed = position;
+        } else {
+          vec2 dirA = normalize(position.xy - startPosition);
+          vec2 dirB = normalize(position.xy - endPosition);
+
+          if(lenA == 0.) {
+            float angle = PI / 2.0;
+            vec2 normal = vec2(-dirB.y, dirB.x);
+            transformed = vec3(position.xy + normal * offset / sin(angle), position.z);
+          } else if(lenB == 0.) {
+            float angle = PI / 2.0;
+            vec2 normal = vec2(dirA.y, -dirA.x);
+            transformed = vec3(position.xy + normal * offset / sin(angle), position.z);
+          } else {
+            vec2 dir = normalize(dirB - dirA);
+            vec2 normal = vec2(-dir.y, dir.x);
+            float angle = mod(acos(dot(dirB, normal)), 3.14);
+            if(angle < 0.2) angle = 0.2;
+            if(angle > 2.94) angle = 2.94;
+            transformed = vec3(position.xy + normal * offset / sin(angle), position.z);
+          }
+        }
+
+        gl_Position = projectionMatrix * modelViewMatrix * vec4( transformed, 1.0 );
+
+        #include <logdepthbuf_vertex>
+
+      }
+    `;
+    this.fragmentShader = `
+      #include <common>
+      #include <logdepthbuf_pars_fragment>
+
+
+      // 当前时间
+      uniform float trailLength;
+      uniform float lineWidth;
+      uniform vec3 diffuse;
+      uniform float opacity;
+      uniform sampler2D map;
+      
+      varying vec3 vColor;
+      varying vec3 vPickColor;
+      varying vec2 vUv;
+
+      void main() {
+        vec4 diffuseColor = vec4( diffuse, opacity );
+        
+        #include <logdepthbuf_fragment>
+
+        #ifdef USE_MAP
+          vec2 uv = vUv;
+          uv.x = mod(vUv.x * vLineLength, lineWidth) / lineWidth;
+          vec4 sampledDiffuseColor = texture2D(map, uv);
+          sampledDiffuseColor.rgb *= sampledDiffuseColor.a;
+          diffuseColor.rgb += sampledDiffuseColor.rgb;
+        #endif
+
+        gl_FragColor = diffuseColor;
+
+      }
+    `;
+    this.setValues(params);
+  }
+}
+export class NetworkMaterial extends THREE.Material {
+  constructor(argu) {
+    super();
+    const { color = 0xffffff, opacity = 1, lineWidth = 10, lineOffset = 0, colorBar = null, ...params } = argu || {};
+    this.defines = {
+      USE_COLOR_BAR: !!colorBar,
+    };
+    this.uniforms = {
+      diffuse: {
+        value: new THREE.Color(color),
+      },
+      opacity: {
+        value: opacity,
+      },
+      lineWidth: {
+        value: lineWidth,
+      },
+      lineOffset: {
+        value: lineOffset,
+      },
+      colorBar: {
+        value: colorBar,
+        properties: {
+          map: {},
+          max: {},
+          min: {},
+          range: {},
+        },
+      },
+    };
+    this.vertexShader = `
+      #include <common>
+      #include <logdepthbuf_pars_vertex>
+
+      attribute vec3 pickColor;
+      attribute float side;
+      attribute float length;
+      attribute vec2 startPosition;
+      attribute vec2 endPosition;
+      
+      varying vec3 vColor;
+      varying vec2 vUv;
+      varying float vValue;
+
+      uniform float lineWidth;
+      uniform float lineOffset;
+      uniform float maxValue;
+      uniform float minValue;
+
+      void main() {
+        
+        vec3 transformed = vec3(1.0);
+
+        float offset = lineWidth / 2.0 * side + lineOffset;
+
+        float lenA = length(position.xy - startPosition);
+        float lenB = length(position.xy - endPosition);
+
+        if(lenA == 0. && lenB == 0.) {
+          transformed = position;
+        } else {
+          vec2 dirA = normalize(position.xy - startPosition);
+          vec2 dirB = normalize(position.xy - endPosition);
+
+          if(lenA == 0.) {
+            float angle = PI / 2.0;
+            vec2 normal = vec2(-dirB.y, dirB.x);
+            transformed = vec3(position.xy + normal * offset / sin(angle), position.z);
+          } else if(lenB == 0.) {
+            float angle = PI / 2.0;
+            vec2 normal = vec2(dirA.y, -dirA.x);
+            transformed = vec3(position.xy + normal * offset / sin(angle), position.z);
+          } else {
+            vec2 dir = normalize(dirB - dirA);
+            vec2 normal = vec2(-dir.y, dir.x);
+            float angle = mod(acos(dot(dirB, normal)), 3.14);
+            if(angle < 0.2) angle = 0.2;
+            if(angle > 2.94) angle = 2.94;
+            transformed = vec3(position.xy + normal * offset / sin(angle), position.z);
+          }
+        }
+
+        gl_Position = projectionMatrix * modelViewMatrix * vec4( transformed, 1.0 );
+
+        #include <logdepthbuf_vertex>
+
+      }
+    `;
+    this.fragmentShader = `
+      #include <common>
+      #include <logdepthbuf_pars_fragment>
+
+      struct ColorBar {
+        sampler2D map;
+        float max;
+        float min;
+        float range;
+      };
+
+      uniform float lineWidth;
+      uniform vec3 diffuse;
+      uniform float opacity;
+      uniform sampler2D map;
+      uniform ColorBar colorBar;
+      
+      varying vec3 vColor;
+      varying vec2 vUv;
+      varying float vValue;
+
+
+      void main() {
+        vec4 diffuseColor = vec4( diffuse, opacity );
+        
+        #include <logdepthbuf_fragment>
+        
+        #ifdef USE_COLOR_BAR
+          vec4 barDiffuseColor = texture2D(colorBar.map, vec2(vValue / colorBar.range , 0.5));
+          diffuseColor = barDiffuseColor;
+        #endif
+
+        gl_FragColor = diffuseColor;
+
+      }
+    `;
+    this.setValues(params);
+  }
+}
 
 
 
