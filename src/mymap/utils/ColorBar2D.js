@@ -41,7 +41,7 @@ export class ColorBar2D {
   }
 
   // 渐变颜色条图
-  drowColorBar(colors = defaultColors) {
+  drow(colors = defaultColors) {
     try {
       //颜色条的颜色分布
       const values = Object.keys(colors).map((v) => Number(v)).sort();
