@@ -25,6 +25,8 @@ export class GeoJSONLayer extends Layer {
   pointTexture = textureLoader.load(require("@/assets/image/point2.png"));
   pointValue = null;
   pointColorBar = null;
+  pointMaxValue = 1;
+  pointMinValue = 0;
   pointOpacity = 1;
   pointMesh = null;
 
@@ -33,6 +35,8 @@ export class GeoJSONLayer extends Layer {
   lineStyle = LINE_STYPE.SOLID;
   lineValue = null;
   lineColorBar = null;
+  lineMaxValue = 1;
+  lineMinValue = 0;
   lineOpacity = 1;
   lineMeshList = [];
 
@@ -43,6 +47,8 @@ export class GeoJSONLayer extends Layer {
   polygonBorderStyle = LINE_STYPE.SOLID;
   polygonValue = null;
   polygonColorBar = null;
+  polygonMaxValue = 1;
+  polygonMinValue = 0;
   polygon3D = false;
   polygon3DHeight = false;
   polygonMeshList = [];
@@ -72,7 +78,7 @@ export class GeoJSONLayer extends Layer {
     this.pointMaterial.setValues({ color: this.pointColor })
     this.pointMaterial.needsUpdate = true;
   }
-  setPointTexture(pointTexture) {
+  setPointTexture(url) {
     this.pointTexture = pointTexture;
   }
   setPointValue(pointValue) {
@@ -80,6 +86,8 @@ export class GeoJSONLayer extends Layer {
   }
   setPointColorBar(pointColorBar) {
     this.pointColorBar = pointColorBar;
+    const pointColorBarUrl = ColorBar2D.instance.drow(this.pointColorBar);
+    this.pointColorBarMap = pointColorBarUrl ? textureLoader.load(pointColorBarUrl) : null;
   }
   setPointOpacity(pointOpacity) {
     this.pointOpacity = pointOpacity;
@@ -114,13 +122,11 @@ export class GeoJSONLayer extends Layer {
     this.polygonMaterial.setValues({ opacity: this.polygonOpacity });
     this.polygonMaterial.needsUpdate = true;
   }
-
   setPolygonColor(polygonColor) {
     this.polygonColor = new THREE.Color(polygonColor);
     this.polygonMaterial.setValues({ color: this.polygonColor });
     this.polygonMaterial.needsUpdate = true;
   }
-
   setPolygonBorderWidth(polygonBorderWidth) {
     this.polygonBorderWidth = polygonBorderWidth;
   }
@@ -147,36 +153,19 @@ export class GeoJSONLayer extends Layer {
     super(opt);
 
     // ******************** 点 ******************** //
-    this.pointScale = opt.pointScale || this.pointScale;
-    this.pointColor = new THREE.Color(opt.pointColor || this.pointColor);
-    this.pointTexture = opt.pointTexture || this.pointTexture;
-    this.pointValue = opt.pointValue || this.pointValue;
-    const pointColorBarUrl = ColorBar2D.instance.drow(opt.pointColorBar);
-    this.pointColorBar = {
-      maxValue: 1,
-      minValue: 0,
-      map: pointColorBarUrl ? textureLoader.load(pointColorBarUrl) : null
-    };
-    this.pointOpacity = opt.pointOpacity || this.pointOpacity;
+    this.pointMaterial = new GeoJSONPointMaterial({ transparent: true });
+    this.pointMeshList = [];
 
-    this.pointGeometry = new THREE.PlaneGeometry(POINT_SIZE, POINT_SIZE);
-    this.pointMaterial = new THREE.MeshBasicMaterial({
-      transparent: true,
-      map: this.pointTexture,
-      color: this.pointColor,
-    })
-    this.pointMesh = null;
+    this.setPointScale(opt.pointScale);
+    this.setPointColor(opt.pointColor);
+    this.setPointIcon(opt.pointIcon);
+    this.setPointValue(opt.pointValue);
+    this.setPointColorBar(opt.pointColorBar);
+    this.setPointOpacity(opt.pointOpacity);
 
 
 
     // ******************** 线 ******************** //
-
-    this.lineColor = new THREE.Color(opt.lineColor || this.lineColor);
-    this.lineWidth = opt.lineWidth || this.lineWidth;
-    this.lineStyle = opt.lineStyle || this.lineStyle;
-    this.lineValue = opt.lineValue || this.lineValue;
-    this.lineWidth = opt.lineWidth || this.lineWidth;
-    this.lineWidth = opt.lineWidth || this.lineWidth;
     this.lineMaterial = this.getLineMaterial({
       side: THREE.DoubleSide,
       transparent: true,
@@ -184,17 +173,30 @@ export class GeoJSONLayer extends Layer {
     });
     this.lineMeshList = [];
 
-
+    this.setLineWidth(opt.lineWidth);
+    this.setLineColor(opt.lineColor);
+    this.setLineStyle(opt.lineStyle);
+    this.setLineValue(opt.lineValue);
+    this.setLineColorBar(opt.lineColorBar);
+    this.setLineOpacity(opt.lineOpacity);
 
 
     // ******************** 面 ******************** //
-    this.polygonColor = new THREE.Color(opt.polygonColor || this.polygonColor);
     this.polygonMaterial = new THREE.MeshBasicMaterial({
       color: this.polygonColor,
       transparent: true,
     });
     this.polygonMeshList = [];
 
+    this.setPolygonOpacity(opt.polygonOpacity);
+    this.setPolygonColor(opt.polygonColor);
+    this.setPolygonBorderWidth(opt.polygonBorderWidth);
+    this.setPolygonBorderColor(opt.polygonBorderColor);
+    this.setPolygonBorderStyle(opt.polygonBorderStyle);
+    this.setPolygonValue(opt.polygonValue);
+    this.setPolygonColorBar(opt.polygonColorBar);
+    this.setPolygon3D(opt.polygon3D);
+    this.setPolygon3DHeight(opt.polygon3DHeight);
 
 
 
@@ -390,28 +392,18 @@ export class GeoJSONLayer extends Layer {
     if (!this.map) return;
     if (!this.pointData) return;
     const pointCenter = Array.from(this.pointData.slice(0, 2));
-    const pointArray = this.pointData.slice(2);
-    this.pointMesh = new THREE.InstancedMesh(this.pointGeometry, this.pointMaterial, pointArray.length / 2);
-    const scale = this.pointScale;
-    for (let i = 0, l = this.pointMesh.count, time = 0; i < l; i++, time++) {
-      const x = pointArray[i * 2];
-      const y = pointArray[i * 2 + 1];
-      const matrix = new THREE.Matrix4().makeTranslation(x, y, 0);
-      matrix.scale(new THREE.Vector3(scale, scale, scale));
-      this.pointMesh.setMatrixAt(i, matrix);
-      // 每20000个数据等待下一个事件循环执行 避免卡顿
-      if (time > 20000) {
-        time = 0;
-        await new Promise(resolve => setTimeout(resolve, 0));
-      }
-    }
-    if (this.pointMesh.instanceMatrix) this.pointMesh.instanceMatrix.needsUpdate = true;
     const [x, y] = this.map.WebMercatorToCanvasXY(pointCenter[0], pointCenter[1]);
-    this.pointMesh.position.set(x, y, 0.02);
-    this.pointMesh.userData.center = pointCenter;
-    this.pointMesh.userData.type = "point";
-    this.scene.add(this.pointMesh);
-
+    const meshPoint = 20000
+    for (let i = 2, l = this.pointMesh.count; i < l; i += meshPoint * 3) {
+      const pointArray = this.pointData.slice(i, i + meshPoint * 3 + 1);
+      const geometry = new GeoJSONPointListGeometry(pointArray);
+      const mesh = new THREE.Mesh(geometry, this.pointMaterial);
+      mesh.position.set(x, y, 0.02);
+      mesh.userData.center = pointCenter;
+      this.pointMeshList.push(mesh)
+      this.scene.add(mesh);
+      await new Promise(resolve => setTimeout(resolve, 0));
+    }
   }
 
   async updateLine() {
@@ -582,6 +574,170 @@ export class GeoJSONLayer extends Layer {
 }
 
 
+export class GeoJSONPointListGeometry extends THREE.BufferGeometry {
+  constructor(pointArray = []) {
+    super();
+    this.type = "GeoJSONPointListGeometry";
+    this.isGeoJSONPointListGeometry = true;
+
+    const attrPosition = new Array();
+    const attrSide = new Array();
+    const attrValue = new Array();
+    const attrIndex = new Array();
+    for (let i1 = 0, l1 = pointArray.length / 3; i1 < l1; i1++) {
+      const x = pointArray[i1 * 3];
+      const y = pointArray[i1 * 3 + 1];
+      const value = pointArray[i1 * 3 + 1];
+
+      for (let i2 = 0; i2 < 4; i2++) {
+        attrPosition[attrPosition.length] = x
+        attrPosition[attrPosition.length] = y
+        attrPosition[attrPosition.length] = 0
+        attrValue[attrValue.length] = value;
+        attrSide[attrSide.length] = i2;
+      }
+
+      attrIndex[attrIndex.length] = i1 * 4 + 0;
+      attrIndex[attrIndex.length] = i1 * 4 + 1;
+      attrIndex[attrIndex.length] = i1 * 4 + 3;
+      attrIndex[attrIndex.length] = i1 * 4 + 0;
+      attrIndex[attrIndex.length] = i1 * 4 + 3;
+      attrIndex[attrIndex.length] = i1 * 4 + 2;
+    }
+    this.setAttribute("position", new THREE.Float32BufferAttribute(attrPosition, 3));
+    this.setAttribute("side", new THREE.Int8BufferAttribute(attrSide, 1));
+    this.setAttribute("value", new THREE.Float32BufferAttribute(attrValue, 1));
+    this.setIndex(attrIndex);
+    this.computeVertexNormals();
+  }
+}
+
+
+export class GeoJSONPointMaterial extends THREE.Material {
+  constructor(argu) {
+
+    super();
+    this.isGeoJSONLineMaterial = true;
+    const { color = 0xff0000, opacity = 1, size = 50, map = null, colorBar = null, minValue = 0, maxValue = 1, ...params } = argu || {};
+    this.alphaTest = 0.1;
+    this.transparent = true;
+    this.depthWrite = false;
+    this.defines = {
+      USE_COLOR_BAR: !!colorBar,
+      USE_MAP: !!map,
+    };
+    this.uniforms = {
+      diffuse: {
+        value: new THREE.Color(color),
+      },
+      opacity: {
+        value: opacity,
+      },
+      size: {
+        value: size,
+      },
+      map: {
+        value: map,
+      },
+      uvTransform: {
+        value: new THREE.Matrix3(),
+      },
+      colorBar: {
+        value: colorBar,
+      },
+      minValue: {
+        value: minValue,
+      },
+      maxValue: {
+        value: maxValue,
+      },
+    };
+    this.vertexShader = `
+      #include <common>
+      #include <logdepthbuf_pars_vertex>
+
+      attribute float side;
+      attribute float value;
+      
+      varying vec3 vColor;
+      varying vec2 vUv;
+      varying vec2 vValue;
+
+      uniform float size;
+      uniform mat3 uvTransform;
+
+      void main() {
+        vValue = value;
+
+        vec3 transformed = position;
+
+        if(side == 0.0) {
+          transformed.x -= size / 2;
+          transformed.y -= size / 2;
+          vUv = ( uvTransform * vec3( 0.0, 0.0, 1.0 ) ).xy;
+        } else if(side == 1.0) {
+          transformed.x -= size / 2;
+          transformed.y += size / 2;
+          vUv = ( uvTransform * vec3( 0.0, 1.0, 1.0 ) ).xy;
+        } else if(side == 2.0) {
+          transformed.x += size / 2;
+          transformed.y -= size / 2;
+          vUv = ( uvTransform * vec3( 1.0, 0.0, 1.0 ) ).xy;
+        } else if(side == 3.0) {
+          transformed.x += size / 2;
+          transformed.y += size / 2;
+          vUv = ( uvTransform * vec3( 1.0, 1.0, 1.0 ) ).xy;
+        }
+
+        gl_Position = projectionMatrix * modelViewMatrix * vec4( transformed, 1.0 );
+
+        #include <logdepthbuf_vertex>
+
+      }
+    `;
+    this.fragmentShader = `
+      #include <common>
+      #include <logdepthbuf_pars_fragment>
+
+
+      // 当前时间
+      uniform vec3 diffuse;
+      uniform float opacity;
+      uniform sampler2D map;
+      uniform sampler2D colorBar;
+      uniform float maxValue;
+      uniform float minValue;
+      
+      varying vec3 vColor;
+      varying vec2 vUv;
+      varying vec2 vValue;
+
+      void main() {
+        vec4 diffuseColor = vec4( diffuse, opacity );
+        
+        #include <logdepthbuf_fragment>
+        
+        #ifdef USE_COLOR_BAR
+          float p = (vValue - minValue) / (maxValue - minValue);
+          vec4 barDiffuseColor = texture2D(colorBar.map, vec2(p , 0.5));
+          diffuseColor = barDiffuseColor;
+        #endif
+
+        #ifdef USE_MAP
+          vec4 sampledDiffuseColor = texture2D(map, vUv);
+          diffuseColor *= sampledDiffuseColor;
+        #endif
+
+        gl_FragColor = diffuseColor;
+
+      }
+    `;
+    this.setValues(params);
+  }
+}
+
+
+
 export class GeoJSONLineListGeometry extends THREE.BufferGeometry {
   constructor(routeList) {
     super();
@@ -664,11 +820,12 @@ export class GeoJSONLineMaterial extends THREE.Material {
   constructor(argu) {
     super();
     this.isGeoJSONLineMaterial = true;
-    const { color = 0xff0000, opacity = 1, lineWidth = 50, lineOffset = 0, map = null, trailLength = 10, trailTime = 0, ...params } = argu || {};
+    const { color = 0xff0000, opacity = 1, lineWidth = 50, lineOffset = 0, colorBar = null, maxValue = 1, minValue = 0, ...params } = argu || {};
     this.alphaTest = 0.1;
     this.transparent = true;
     this.depthWrite = false;
     this.defines = {
+      USE_COLOR_BAR: !!colorBar,
       USE_MAP: !!map,
     };
     this.uniforms = {
@@ -684,34 +841,36 @@ export class GeoJSONLineMaterial extends THREE.Material {
       lineOffset: {
         value: lineOffset,
       },
-      map: {
-        value: map,
+      colorBar: {
+        value: colorBar,
       },
-      uvTransform: {
-        value: new THREE.Matrix3(),
+      maxValue: {
+        value: maxValue,
       },
-      trailTime: {
-        value: trailTime,
+      minValue: {
+        value: minValue,
       },
     };
     this.vertexShader = `
       #include <common>
       #include <logdepthbuf_pars_vertex>
 
-      attribute vec3 pickColor;
       attribute float side;
+      attribute float value;
       attribute float length;
       attribute vec2 startPosition;
       attribute vec2 endPosition;
       
       varying vec3 vColor;
       varying vec2 vUv;
+      varying vec2 vValue;
 
       uniform float lineWidth;
       uniform float lineOffset;
       uniform mat3 uvTransform;
 
       void main() {
+        vValue = value;
 
         #ifdef USE_MAP
           vUv = ( uvTransform * vec3( uv, 1 ) ).xy;
@@ -781,133 +940,6 @@ export class GeoJSONLineMaterial extends THREE.Material {
           vec4 sampledDiffuseColor = texture2D(map, uv);
           sampledDiffuseColor.rgb *= sampledDiffuseColor.a;
           diffuseColor.rgb += sampledDiffuseColor.rgb;
-        #endif
-
-        gl_FragColor = diffuseColor;
-
-      }
-    `;
-    this.setValues(params);
-  }
-}
-export class NetworkMaterial extends THREE.Material {
-  constructor(argu) {
-    super();
-    const { color = 0xffffff, opacity = 1, lineWidth = 10, lineOffset = 0, colorBar = null, ...params } = argu || {};
-    this.defines = {
-      USE_COLOR_BAR: !!colorBar,
-    };
-    this.uniforms = {
-      diffuse: {
-        value: new THREE.Color(color),
-      },
-      opacity: {
-        value: opacity,
-      },
-      lineWidth: {
-        value: lineWidth,
-      },
-      lineOffset: {
-        value: lineOffset,
-      },
-      colorBar: {
-        value: colorBar,
-        properties: {
-          map: {},
-          max: {},
-          min: {},
-          range: {},
-        },
-      },
-    };
-    this.vertexShader = `
-      #include <common>
-      #include <logdepthbuf_pars_vertex>
-
-      attribute vec3 pickColor;
-      attribute float side;
-      attribute float length;
-      attribute vec2 startPosition;
-      attribute vec2 endPosition;
-      
-      varying vec3 vColor;
-      varying vec2 vUv;
-      varying float vValue;
-
-      uniform float lineWidth;
-      uniform float lineOffset;
-      uniform float maxValue;
-      uniform float minValue;
-
-      void main() {
-        
-        vec3 transformed = vec3(1.0);
-
-        float offset = lineWidth / 2.0 * side + lineOffset;
-
-        float lenA = length(position.xy - startPosition);
-        float lenB = length(position.xy - endPosition);
-
-        if(lenA == 0. && lenB == 0.) {
-          transformed = position;
-        } else {
-          vec2 dirA = normalize(position.xy - startPosition);
-          vec2 dirB = normalize(position.xy - endPosition);
-
-          if(lenA == 0.) {
-            float angle = PI / 2.0;
-            vec2 normal = vec2(-dirB.y, dirB.x);
-            transformed = vec3(position.xy + normal * offset / sin(angle), position.z);
-          } else if(lenB == 0.) {
-            float angle = PI / 2.0;
-            vec2 normal = vec2(dirA.y, -dirA.x);
-            transformed = vec3(position.xy + normal * offset / sin(angle), position.z);
-          } else {
-            vec2 dir = normalize(dirB - dirA);
-            vec2 normal = vec2(-dir.y, dir.x);
-            float angle = mod(acos(dot(dirB, normal)), 3.14);
-            if(angle < 0.2) angle = 0.2;
-            if(angle > 2.94) angle = 2.94;
-            transformed = vec3(position.xy + normal * offset / sin(angle), position.z);
-          }
-        }
-
-        gl_Position = projectionMatrix * modelViewMatrix * vec4( transformed, 1.0 );
-
-        #include <logdepthbuf_vertex>
-
-      }
-    `;
-    this.fragmentShader = `
-      #include <common>
-      #include <logdepthbuf_pars_fragment>
-
-      struct ColorBar {
-        sampler2D map;
-        float max;
-        float min;
-        float range;
-      };
-
-      uniform float lineWidth;
-      uniform vec3 diffuse;
-      uniform float opacity;
-      uniform sampler2D map;
-      uniform ColorBar colorBar;
-      
-      varying vec3 vColor;
-      varying vec2 vUv;
-      varying float vValue;
-
-
-      void main() {
-        vec4 diffuseColor = vec4( diffuse, opacity );
-        
-        #include <logdepthbuf_fragment>
-        
-        #ifdef USE_COLOR_BAR
-          vec4 barDiffuseColor = texture2D(colorBar.map, vec2(vValue / colorBar.range , 0.5));
-          diffuseColor = barDiffuseColor;
         #endif
 
         gl_FragColor = diffuseColor;

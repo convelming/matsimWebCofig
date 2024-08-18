@@ -8,10 +8,12 @@
       <div class="file_item">
         <div class="file_row">
           <div class="file_l_col" style="padding: 0 15px">
-            <el-slider :title="$l('pointScale')" v-model="pointScale" @change="handleChange('pointScale', $event)" :step="1" :min="1" :max="1000"> </el-slider>
+            <el-slider :title="$l('pointScale')" v-model="pointScale" @change="handleChange('pointScale', $event)"
+              :step="1" :min="1" :max="1000"> </el-slider>
           </div>
           <div class="file_s_col">
-            <el-color-picker :title="$l('pointColor')" v-model="pointColor" @change="handleChange('pointColor', $event)" size="mini" :predefine="predefineColors" />
+            <el-color-picker :title="$l('pointColor')" v-model="pointColor" @change="handleChange('pointColor', $event)"
+              size="mini" :predefine="predefineColors" />
           </div>
           <div class="file_s_col" style="width: 80px">icon</div>
         </div>
@@ -30,10 +32,12 @@
       <div class="file_item">
         <div class="file_row">
           <div class="file_l_col" style="padding: 0 15px">
-            <el-slider :title="$l('lineWidth')" v-model="lineWidth" @change="handleChange('lineWidth', $event)" :step="1" :min="1" :max="1000"> </el-slider>
+            <el-slider :title="$l('lineWidth')" v-model="lineWidth" @change="handleChange('lineWidth', $event)"
+              :step="1" :min="1" :max="1000"> </el-slider>
           </div>
           <div class="file_s_col">
-            <el-color-picker :title="$l('lineColor')" v-model="lineColor" @change="handleChange('lineColor', $event)" size="mini" :predefine="predefineColors" />
+            <el-color-picker :title="$l('lineColor')" v-model="lineColor" @change="handleChange('lineColor', $event)"
+              size="mini" :predefine="predefineColors" />
           </div>
           <div class="file_s_col" style="width: 100px">
             <el-select v-model="lineStyle" @change="handleChange('lineStyle', $event)">
@@ -48,7 +52,8 @@
             </el-select>
           </div>
           <div class="file_l_col">
-            <ColorSelect style="width: 100%" v-model="lineColors" @change="handleChange('lineColors', $event)" :colorsList="COLOR_LIST" />
+            <ColorSelect style="width: 100%" v-model="lineColors" @change="handleChange('lineColors', $event)"
+              :colorsList="COLOR_LIST" />
           </div>
         </div>
       </div>
@@ -56,18 +61,22 @@
       <div class="file_item">
         <div class="file_row">
           <div class="file_l_col" style="padding: 0 15px">
-            <el-slider :title="$l('polygonOpacity')" v-model="polygonOpacity" @change="handleChange('polygonOpacity', $event)" :step="1" :min="1" :max="1000"> </el-slider>
+            <el-slider :title="$l('polygonOpacity')" v-model="polygonOpacity"
+              @change="handleChange('polygonOpacity', $event)" :step="1" :min="1" :max="1000"> </el-slider>
           </div>
           <div class="file_s_col">
-            <el-color-picker :title="$l('polygonColor')" v-model="polygonColor" @change="handleChange('polygonColor', $event)" size="mini" :predefine="predefineColors" />
+            <el-color-picker :title="$l('polygonColor')" v-model="polygonColor"
+              @change="handleChange('polygonColor', $event)" size="mini" :predefine="predefineColors" />
           </div>
         </div>
         <div class="file_row">
           <div class="file_l_col" style="padding: 0 15px">
-            <el-slider :title="$l('polygonBorderWidth')" v-model="polygonBorderWidth" @change="handleChange('polygonBorderWidth', $event)" :step="1" :min="1" :max="1000"> </el-slider>
+            <el-slider :title="$l('polygonBorderWidth')" v-model="polygonBorderWidth"
+              @change="handleChange('polygonBorderWidth', $event)" :step="1" :min="1" :max="1000"> </el-slider>
           </div>
           <div class="file_s_col">
-            <el-color-picker :title="$l('polygonBorderColor')" v-model="polygonBorderColor" @change="handleChange('polygonBorderColor', $event)" size="mini" :predefine="predefineColors" />
+            <el-color-picker :title="$l('polygonBorderColor')" v-model="polygonBorderColor"
+              @change="handleChange('polygonBorderColor', $event)" size="mini" :predefine="predefineColors" />
           </div>
           <div class="file_s_col" style="width: 100px">
             <el-select v-model="polygonBorderStyle" @change="handleChange('polygonBorderStyle', $event)">
@@ -82,7 +91,8 @@
             </el-select>
           </div>
           <div class="file_l_col">
-            <ColorSelect style="width: 100%" v-model="polygonColors" @change="handleChange('polygonColors', $event)" :colorsList="COLOR_LIST" />
+            <ColorSelect style="width: 100%" v-model="polygonColors" @change="handleChange('polygonColors', $event)"
+              :colorsList="COLOR_LIST" />
           </div>
         </div>
       </div>
@@ -185,12 +195,12 @@ export default {
       polygon3DHeight: 100,
       polygon3D: false,
 
-      GeoJSON: null,
+      GeoJSON: {},
       GeoJSONParams: [],
     };
   },
   created() {
-    this.GeoJSON = this.rootVue.GeoJSONList.find((v) => v.id == this.id);
+    this.GeoJSON = this.rootVue.GeoJSONList.find((v) => v.id == this.id) || {};
     this._GeoJSONLayer = new GeoJSONLayer({
       zIndex: 30,
 
@@ -232,7 +242,7 @@ export default {
     this.handleDisable();
   },
   methods: {
-    handleActivity3DChangeColor(val) {},
+    handleActivity3DChangeColor(val) { },
     handleEnable() {
       this._Map.addLayer(this._GeoJSONLayer);
     },
@@ -323,7 +333,7 @@ export default {
           break;
       }
     },
-    removeGeoJSON() {},
+    removeGeoJSON() { },
   },
 };
 </script>
@@ -331,19 +341,23 @@ export default {
 <style lang="scss" scoped>
 .toolbar_item {
   font-size: 13px;
+
   .toolbar_item_bodyer {
     .file_item {
       border: 1px solid #000;
       border-radius: 4px;
     }
+
     .file_row {
       height: 40px;
       display: flex;
       align-items: center;
-      & + .file_row {
+
+      &+.file_row {
         border-top: 1px solid #000;
       }
     }
+
     .file_s_col {
       box-sizing: border-box;
       display: flex;
@@ -352,17 +366,19 @@ export default {
       flex-shrink: 0;
       height: 40px;
       width: 40px;
-      & + .file_s_col,
-      & + .file_l_col {
+
+      &+.file_s_col,
+      &+.file_l_col {
         border-left: 1px solid #000;
       }
     }
+
     .file_l_col {
       box-sizing: border-box;
       width: 100%;
 
-      & + .file_s_col,
-      & + .file_l_col {
+      &+.file_s_col,
+      &+.file_l_col {
         border-left: 1px solid #000;
       }
     }

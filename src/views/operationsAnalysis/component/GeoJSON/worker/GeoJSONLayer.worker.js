@@ -20,41 +20,40 @@ class GeoJSONParser {
     this.polygonList = [];
     this.center = null;
     this.json = json;
-    this.parse(this.json, GeoJSONParser.DEFAULT_CRS);
+    this.crs = json.crs;
+    this.coordSys = GeoJSONParser.decodeCrs(json.crs);
+    this.parse(this.json);
   }
 
-  parse(data, parentCrs) {
-    if (data.type === "FeatureCollection") {
-      const { features, crs, ...other } = data;
-      for (const item of features) {
-        this.parse(item, crs || parentCrs)
+  parse(data) {
+    const list = [data];
+    while (list.length > 1) {
+      const item = list.shift();
+      if (data.type === "FeatureCollection") {
+        list.push(...item.features);
+      } else if (data.type === "Feature") {
+        const { properties, geometry } = item;
+      } else if (data.type === "GeometryCollection") {
+        list.push(...item.geometries);
+      } else if (data.type === "Point") {
+        const { coordinates, crs, ...other } = data;
+        this.getMultiPoint([coordinates], crs || parentCrs);
+      } else if (data.type === "MultiPoint") {
+        const { coordinates, crs, ...other } = data;
+        this.getMultiPoint(coordinates, crs || parentCrs);
+      } else if (data.type === "LineString") {
+        const { coordinates, crs, ...other } = data;
+        this.getMultiLineString([coordinates], crs || parentCrs);
+      } else if (data.type === "MultiLineString") {
+        const { coordinates, crs, ...other } = data;
+        this.getMultiLineString(coordinates, crs || parentCrs);
+      } else if (data.type === "Polygon") {
+        const { coordinates, crs, ...other } = data;
+        this.getMultiPolygon([coordinates], crs || parentCrs);
+      } else if (data.type === "MultiPolygon") {
+        const { coordinates, crs, ...other } = data;
+        this.getMultiPolygon(coordinates, crs || parentCrs);
       }
-    } else if (data.type === "Feature") {
-      const { geometry, crs, ...other } = data;
-      this.parse(geometry, crs || parentCrs)
-    } else if (data.type === "GeometryCollection") {
-      const { geometries, crs, ...other } = data;
-      for (const item of geometries) {
-        this.parse(item, crs || parentCrs);
-      }
-    } else if (data.type === "Point") {
-      const { coordinates, crs, ...other } = data;
-      this.getMultiPoint([coordinates], crs || parentCrs);
-    } else if (data.type === "MultiPoint") {
-      const { coordinates, crs, ...other } = data;
-      this.getMultiPoint(coordinates, crs || parentCrs);
-    } else if (data.type === "LineString") {
-      const { coordinates, crs, ...other } = data;
-      this.getMultiLineString([coordinates], crs || parentCrs);
-    } else if (data.type === "MultiLineString") {
-      const { coordinates, crs, ...other } = data;
-      this.getMultiLineString(coordinates, crs || parentCrs);
-    } else if (data.type === "Polygon") {
-      const { coordinates, crs, ...other } = data;
-      this.getMultiPolygon([coordinates], crs || parentCrs);
-    } else if (data.type === "MultiPolygon") {
-      const { coordinates, crs, ...other } = data;
-      this.getMultiPolygon(coordinates, crs || parentCrs);
     }
   }
 
