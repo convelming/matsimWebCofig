@@ -5,12 +5,14 @@
         <div></div>
         <div class="mapBox">
           <div id="mapRoot">
-            <NewClock class="NewClock" :time="time" :speed.sync="speed" :minTime="minTime" :maxTime="maxTime"
-              @update:time="handleUpdateTime" @showHelp="handleShowHelp"></NewClock>
+            <NewClock class="NewClock" :time="time" :speed.sync="speed" :minTime="minTime" :maxTime="maxTime" @update:time="handleUpdateTime" @showHelp="handleShowHelp"></NewClock>
           </div>
         </div>
         <Drawer show direction="right" :size="300">
           <el-collapse v-model="activeName" accordion>
+            <el-collapse-item class="toolbar_item" name="name">
+              <el-button type="primary" size="default" @click="handleSelectFile">选择文件</el-button>
+            </el-collapse-item>
             <GeoJSONDetail name="GeoJSONDetail" id="1" />
           </el-collapse>
         </Drawer>
@@ -19,16 +21,16 @@
   </div>
 </template>
 
-
 <script>
-import { MyMap, } from "@/mymap/index.js";
+import { MyMap } from "@/mymap/index.js";
 import NewClock from "@/components/NewClock/index.vue";
 import GeoJSONDetail from "../operationsAnalysis/component/GeoJSON/toolbar/geoJSONDetail.vue";
+import GeoJSONLayerWorker from "../operationsAnalysis/component/GeoJSON/worker/GeoJSONLayer.worker";
 
 export default {
   components: {
     NewClock,
-    GeoJSONDetail
+    GeoJSONDetail,
   },
   provide() {
     return {
@@ -43,10 +45,23 @@ export default {
       maxTime: 3600 * 24.5,
       range: [],
       GeoJSONList: [],
-      activeName: "GeoJSONDetail"
+      activeName: ["name", "GeoJSONDetail"],
     };
   },
   created() {
+    this.worker = new GeoJSONLayerWorker();
+    this.worker.onmessage = (event) => {
+      const { point, line, polygon } = event.data;
+
+      this.pointData = point;
+      this.lineData = line;
+      this.polygonData = polygon;
+
+      this.update();
+    };
+    this.worker.addEventListener("error", (error) => {
+      console.log(error);
+    });
   },
   async mounted() {
     this.initMap();
@@ -80,6 +95,25 @@ export default {
         minPitch: -90,
       });
       this._Map.cameraControls.enableRotate = true;
+    },
+    handleSelectFile() {
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = ".geojson";
+      input.style = "position:absolute;width:0;height:0;top: -100px;";
+      document.body.appendChild(input);
+      input.onchange = (e) => {
+        const file = e.target.files[0];
+
+        let reader = new FileReader();
+        reader.readAsArrayBuffer(file);
+        reader.onload = () => {
+          const arrayBuffer = reader.result;
+          const array = new Int8Array(arrayBuffer)
+          this.worker.postMessage(array, [array.buffer]);
+        };
+      };
+      input.click();
     },
   },
 };
