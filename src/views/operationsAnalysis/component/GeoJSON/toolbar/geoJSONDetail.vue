@@ -48,7 +48,7 @@
             </el-select>
           </div>
           <div class="file_l_col">
-            <ColorSelect style="width: 100%" v-model="lineColors" @change="handleChange('lineColors', $event)" :colorsList="COLOR_LIST" />
+            <ColorSelect style="width: 100%" v-model="lineColors" @change="handleChange('lineColors', $event.value)" :colorsList="COLOR_LIST" />
           </div>
         </div>
       </div>
@@ -82,7 +82,7 @@
             </el-select>
           </div>
           <div class="file_l_col">
-            <ColorSelect style="width: 100%" v-model="polygonColors" @change="handleChange('polygonColors', $event)" :colorsList="COLOR_LIST" />
+            <ColorSelect style="width: 100%" v-model="polygonColors" @change="handleChange('polygonColors', $event.value)" :colorsList="COLOR_LIST" />
           </div>
         </div>
       </div>

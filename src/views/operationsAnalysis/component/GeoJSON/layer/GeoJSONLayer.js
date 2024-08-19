@@ -154,6 +154,7 @@ export class GeoJSONLayer extends Layer {
     this.lineMaterial.defines.USE_COLOR_BAR = !!this.lineColorBarMap && !!this.lineValue;
     this.lineMaterial.uniforms.colorBar.value = this.lineColorBarMap;
     this.lineMaterial.needsUpdate = true;
+    console.log(this.lineMaterial);
   }
   setLineOpacity(lineOpacity) {
     this.lineOpacity = lineOpacity;
@@ -261,9 +262,9 @@ export class GeoJSONLayer extends Layer {
 
     this.setLineWidth(opt.lineWidth);
     this.setLineColor(opt.lineColor);
-    // this.setLineStyle(opt.lineStyle);
-    // this.setLineValue(opt.lineValue);
-    // this.setLineColorBar(opt.lineColorBar);
+    this.setLineStyle(opt.lineStyle);
+    this.setLineValue(opt.lineValue);
+    this.setLineColorBar(opt.lineColorBar);
     this.setLineOpacity(opt.lineOpacity);
 
 
@@ -378,6 +379,7 @@ export class GeoJSONLayer extends Layer {
       lineList.length = 0;
       await new Promise(resolve => setTimeout(resolve, 0));
     }
+    console.log(this.scene);
 
   }
 
@@ -564,19 +566,22 @@ export class GeoJSONPointMaterial extends THREE.Material {
       #include <logdepthbuf_pars_vertex>
 
       attribute float side;
+      attribute float distance;
       attribute float value;
       
       varying vec3 vColor;
       varying vec2 vUv;
       varying float vValue;
+      varying float vDistance;
 
       uniform float size;
       uniform mat3 uvTransform;
 
       void main() {
         vValue = value;
+        vDistance = distance;
 
-        vec3 transformed = vec3(0.0);
+        vec3 transformed = vec3(1.0);
 
         if(side == 0.0) {
           transformed.x = position.x - size / 2.0;
@@ -611,7 +616,6 @@ export class GeoJSONPointMaterial extends THREE.Material {
       #include <logdepthbuf_pars_fragment>
 
 
-      // 当前时间
       uniform vec3 diffuse;
       uniform float opacity;
       uniform sampler2D map;
@@ -664,15 +668,16 @@ export class GeoJSONLineListGeometry extends THREE.BufferGeometry {
     const attrStartPosition = new Array();
     const attrEndPosition = new Array();
     const attrSide = new Array();
+    const attrDistance = new Array();
     const attrValue = new Array();
     const attrIndex = new Array();
     let indexOffset = 0;
     console.log(lineList);
 
     for (let i1 = 0, l1 = lineList.length; i1 < l1; i1++) {
-      const array = lineList[i1];
-      const value = array[0];
-      for (let i2 = 1, l2 = Math.floor(array.length / 3); i2 < l2; i2++) {
+      const value = lineList[i1][0];
+      const array = lineList[i1].slice(1);
+      for (let i2 = 0, l2 = array.length / 3; i2 < l2; i2++) {
         let prevX = array[i2 * 3 - 3];
         let prevY = array[i2 * 3 - 2];
         let prevL = array[i2 * 3 - 1];
@@ -711,8 +716,8 @@ export class GeoJSONLineListGeometry extends THREE.BufferGeometry {
         propertiesKeyList[propertiesKeyList.length] = value;
         propertiesKeyList[propertiesKeyList.length] = value;
 
-        // attrTime[attrTime.length] = thatL;
-        // attrTime[attrTime.length] = thatL;
+        attrDistance[attrDistance.length] = thatL;
+        attrDistance[attrDistance.length] = thatL;
 
         attrSide[attrSide.length] = -1;
         attrSide[attrSide.length] = 1;
@@ -733,6 +738,7 @@ export class GeoJSONLineListGeometry extends THREE.BufferGeometry {
     this.setAttribute("endPosition", new THREE.Float32BufferAttribute(attrEndPosition, 2));
     this.setAttribute("side", new THREE.Int8BufferAttribute(attrSide, 1));
     this.setAttribute("value", new THREE.Float32BufferAttribute(attrValue, 1));
+    this.setAttribute("distance", new THREE.Float32BufferAttribute(attrDistance, 1));
     this.setIndex(attrIndex);
     this.computeVertexNormals();
 
@@ -817,12 +823,14 @@ export class GeoJSONLineMaterial extends THREE.Material {
 
       attribute float side;
       attribute float value;
+      attribute float distance;
       attribute vec2 startPosition;
       attribute vec2 endPosition;
       
       varying vec3 vColor;
       varying vec2 vUv;
       varying float vValue;
+      varying float vDistance;
 
       uniform float lineWidth;
       uniform float lineOffset;
@@ -830,6 +838,7 @@ export class GeoJSONLineMaterial extends THREE.Material {
 
       void main() {
         vValue = value;
+        vDistance = distance;
 
         #ifdef USE_MAP
           vUv = ( uvTransform * vec3( uv, 1 ) ).xy;
@@ -877,32 +886,44 @@ export class GeoJSONLineMaterial extends THREE.Material {
       #include <logdepthbuf_pars_fragment>
 
 
-      // 当前时间
-      uniform float trailLength;
       uniform float lineWidth;
+      uniform float lineStyle;
+
       uniform vec3 diffuse;
       uniform float opacity;
       uniform sampler2D map;
+      uniform sampler2D colorBar;
+      uniform float maxValue;
+      uniform float minValue;
       
       varying vec3 vColor;
-      varying vec3 vPickColor;
       varying vec2 vUv;
+      varying float vValue;
+      varying float vDistance;
 
       void main() {
         vec4 diffuseColor = vec4( diffuse, opacity );
         
         #include <logdepthbuf_fragment>
-
-        #ifdef USE_MAP
-          vec2 uv = vUv;
-          uv.x = mod(vUv.x * vLineLength, lineWidth) / lineWidth;
-          vec4 sampledDiffuseColor = texture2D(map, uv);
-          sampledDiffuseColor.rgb *= sampledDiffuseColor.a;
-          diffuseColor.rgb += sampledDiffuseColor.rgb;
+        
+        #ifdef USE_COLOR_BAR
+          float p = (vValue - minValue) / (maxValue - minValue);
+          if(p> 1.0) p = 1.0;
+          if(p< 0.0) p = 0.0;
+          vec4 barDiffuseColor = texture2D(colorBar, vec2(p , 0.5));
+          diffuseColor = barDiffuseColor;
         #endif
 
-        // gl_FragColor = diffuseColor;
-        gl_FragColor = vec4(1.0,0.0,0.0,1.0);
+        if(lineStyle == ${Number(LINE_STYPE.DASHED).toFixed(1)}){
+          float dl = mod(vDistance, lineWidth * 3.0) / (lineWidth * 3.0);
+          if(0.33 < dl && dl < 0.66){
+            diffuseColor.a = 0.0;
+          }
+        } else if(lineStyle == ${Number(LINE_STYPE.NONE).toFixed(1)}){
+          diffuseColor.a = 0.0;
+        }
+
+        gl_FragColor = diffuseColor;
 
       }
     `;
