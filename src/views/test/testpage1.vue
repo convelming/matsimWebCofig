@@ -13,7 +13,7 @@
             <el-collapse-item class="toolbar_item" name="name">
               <el-button type="primary" size="default" @click="handleSelectFile">选择文件</el-button>
             </el-collapse-item>
-            <GeoJSONDetail name="GeoJSONDetail" id="1" />
+            <GeoJSONDetail v-for="item in GeoJSONIdList" :key="item" :name="item" :id="item" />
           </el-collapse>
         </Drawer>
       </div>
@@ -22,7 +22,8 @@
 </template>
 
 <script>
-import { MyMap } from "@/mymap/index.js";
+import { guid } from "@/utils/utils";
+import { MyMap, MapLayer, MAP_LAYER_STYLE } from "@/mymap/index.js";
 import NewClock from "@/components/NewClock/index.vue";
 import GeoJSONDetail from "../operationsAnalysis/component/GeoJSON/toolbar/geoJSONDetail.vue";
 import GeoJSONLayerWorker from "../operationsAnalysis/component/GeoJSON/worker/GeoJSONLayer.worker";
@@ -36,6 +37,11 @@ export default {
     return {
       rootVue: this,
     };
+  },
+  computed: {
+    GeoJSONIdList() {
+      return this.GeoJSONList.map((item) => item.id);
+    },
   },
   data() {
     return {
@@ -91,10 +97,15 @@ export default {
     async initMap() {
       this._Map = new MyMap({
         rootId: "mapRoot",
-        center: [12628397, 2655338.7],
+        // center: [12612545.3950225, 2617157.5169194015],
+        center: [12631209.560373351, 2598756.097409454],
+        center: [12600004.608731592, 2632755.69300154],
+        zoom: 17,
         minPitch: -90,
       });
       this._Map.cameraControls.enableRotate = true;
+      this._MapLayer = new MapLayer({ tileClass: MAP_LAYER_STYLE[0], zIndex: -1 });
+      this._Map.addLayer(this._MapLayer);
     },
     handleSelectFile() {
       const input = document.createElement("input");
@@ -104,14 +115,12 @@ export default {
       document.body.appendChild(input);
       input.onchange = (e) => {
         const file = e.target.files[0];
-
-        let reader = new FileReader();
-        reader.readAsArrayBuffer(file);
-        reader.onload = () => {
-          const arrayBuffer = reader.result;
-          const array = new Int8Array(arrayBuffer)
-          this.worker.postMessage(array, [array.buffer]);
+        const GeoJSON = {
+          id: guid(),
+          _file: file,
+          name: file.name,
         };
+        this.GeoJSONList.push(GeoJSON);
       };
       input.click();
     },

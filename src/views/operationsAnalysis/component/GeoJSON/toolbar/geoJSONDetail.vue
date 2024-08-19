@@ -8,23 +8,21 @@
       <div class="file_item">
         <div class="file_row">
           <div class="file_l_col" style="padding: 0 15px">
-            <el-slider :title="$l('pointScale')" v-model="pointScale" @change="handleChange('pointScale', $event)"
-              :step="1" :min="1" :max="1000"> </el-slider>
+            <el-slider :title="$l('pointSize')" v-model="pointSize" @change="handleChange('pointSize', $event)" :step="1" :min="1" :max="1000"> </el-slider>
           </div>
           <div class="file_s_col">
-            <el-color-picker :title="$l('pointColor')" v-model="pointColor" @change="handleChange('pointColor', $event)"
-              size="mini" :predefine="predefineColors" />
+            <el-color-picker :title="$l('pointColor')" v-model="pointColor" @change="handleChange('pointColor', $event)" size="mini" :predefine="predefineColors" />
           </div>
           <div class="file_s_col" style="width: 80px">icon</div>
         </div>
         <div class="file_row">
           <div class="file_s_col" style="width: 100px">
             <el-select v-model="pointValue" @change="handleChange('pointValue', $event)" clearable>
-              <el-option v-for="item in GeoJSONParams" :key="item" :label="item" :value="item"></el-option>
+              <el-option v-for="(item, key) in propertiesLabels" :key="key" :label="key" :value="key"></el-option>
             </el-select>
           </div>
           <div class="file_l_col">
-            <ColorSelect v-model="pointColors" @change="handleChange('pointColors', $event)" :colorsList="COLOR_LIST" />
+            <ColorSelect v-model="pointColors" @change="handleChange('pointColors', $event.value)" :colorsList="COLOR_LIST" />
           </div>
         </div>
       </div>
@@ -32,12 +30,10 @@
       <div class="file_item">
         <div class="file_row">
           <div class="file_l_col" style="padding: 0 15px">
-            <el-slider :title="$l('lineWidth')" v-model="lineWidth" @change="handleChange('lineWidth', $event)"
-              :step="1" :min="1" :max="1000"> </el-slider>
+            <el-slider :title="$l('lineWidth')" v-model="lineWidth" @change="handleChange('lineWidth', $event)" :step="1" :min="1" :max="1000"> </el-slider>
           </div>
           <div class="file_s_col">
-            <el-color-picker :title="$l('lineColor')" v-model="lineColor" @change="handleChange('lineColor', $event)"
-              size="mini" :predefine="predefineColors" />
+            <el-color-picker :title="$l('lineColor')" v-model="lineColor" @change="handleChange('lineColor', $event)" size="mini" :predefine="predefineColors" />
           </div>
           <div class="file_s_col" style="width: 100px">
             <el-select v-model="lineStyle" @change="handleChange('lineStyle', $event)">
@@ -48,12 +44,11 @@
         <div class="file_row">
           <div class="file_s_col" style="width: 100px">
             <el-select v-model="lineValue" @change="handleChange('lineValue', $event)" clearable>
-              <el-option v-for="item in GeoJSONParams" :key="item" :label="item" :value="item"></el-option>
+              <el-option v-for="(item, key) in propertiesLabels" :key="key" :label="key" :value="key"></el-option>
             </el-select>
           </div>
           <div class="file_l_col">
-            <ColorSelect style="width: 100%" v-model="lineColors" @change="handleChange('lineColors', $event)"
-              :colorsList="COLOR_LIST" />
+            <ColorSelect style="width: 100%" v-model="lineColors" @change="handleChange('lineColors', $event)" :colorsList="COLOR_LIST" />
           </div>
         </div>
       </div>
@@ -61,22 +56,18 @@
       <div class="file_item">
         <div class="file_row">
           <div class="file_l_col" style="padding: 0 15px">
-            <el-slider :title="$l('polygonOpacity')" v-model="polygonOpacity"
-              @change="handleChange('polygonOpacity', $event)" :step="1" :min="1" :max="1000"> </el-slider>
+            <el-slider :title="$l('polygonOpacity')" v-model="polygonOpacity" @change="handleChange('polygonOpacity', $event)" :step="1" :min="1" :max="1000"> </el-slider>
           </div>
           <div class="file_s_col">
-            <el-color-picker :title="$l('polygonColor')" v-model="polygonColor"
-              @change="handleChange('polygonColor', $event)" size="mini" :predefine="predefineColors" />
+            <el-color-picker :title="$l('polygonColor')" v-model="polygonColor" @change="handleChange('polygonColor', $event)" size="mini" :predefine="predefineColors" />
           </div>
         </div>
         <div class="file_row">
           <div class="file_l_col" style="padding: 0 15px">
-            <el-slider :title="$l('polygonBorderWidth')" v-model="polygonBorderWidth"
-              @change="handleChange('polygonBorderWidth', $event)" :step="1" :min="1" :max="1000"> </el-slider>
+            <el-slider :title="$l('polygonBorderWidth')" v-model="polygonBorderWidth" @change="handleChange('polygonBorderWidth', $event)" :step="1" :min="1" :max="1000"> </el-slider>
           </div>
           <div class="file_s_col">
-            <el-color-picker :title="$l('polygonBorderColor')" v-model="polygonBorderColor"
-              @change="handleChange('polygonBorderColor', $event)" size="mini" :predefine="predefineColors" />
+            <el-color-picker :title="$l('polygonBorderColor')" v-model="polygonBorderColor" @change="handleChange('polygonBorderColor', $event)" size="mini" :predefine="predefineColors" />
           </div>
           <div class="file_s_col" style="width: 100px">
             <el-select v-model="polygonBorderStyle" @change="handleChange('polygonBorderStyle', $event)">
@@ -87,12 +78,11 @@
         <div class="file_row">
           <div class="file_s_col" style="width: 100px">
             <el-select v-model="polygonValue" @change="handleChange('polygonValue', $event)" clearable>
-              <el-option v-for="item in GeoJSONParams" :key="item" :label="item" :value="item"></el-option>
+              <el-option v-for="(item, key) in propertiesLabels" :key="key" :label="key" :value="key"></el-option>
             </el-select>
           </div>
           <div class="file_l_col">
-            <ColorSelect style="width: 100%" v-model="polygonColors" @change="handleChange('polygonColors', $event)"
-              :colorsList="COLOR_LIST" />
+            <ColorSelect style="width: 100%" v-model="polygonColors" @change="handleChange('polygonColors', $event)" :colorsList="COLOR_LIST" />
           </div>
         </div>
       </div>
@@ -111,6 +101,7 @@
 
 <script>
 import { GeoJSONLayer, LINE_STYPE } from "../layer/GeoJSONLayer";
+import GeoJSONLayerWorker from "../worker/GeoJSONLayer.worker";
 
 const COLOR_LIST = [
   ["#313695", "#74add1", "#e0f3f8", "#fdae61", "#f46d43", "#a50026"],
@@ -171,12 +162,12 @@ export default {
       show: true,
       predefineColors: ["#5470c6", "#91cc75", "#fac858", "#ee6666", "#73c0de", "#3ba272", "#fc8452", "#9a60b4", "#ea7ccc"],
 
-      pointScale: 1,
+      pointSize: 1000,
       pointColor: "#ffa500",
-      pointTexture: require("@/assets/image/point2.png"),
+      pointIcon: require("@/assets/image/point2.png"),
       pointValue: "",
       pointColors: 0,
-      pointOpacity: 0,
+      pointOpacity: 1,
 
       lineWidth: 100,
       lineColor: "#ffa500",
@@ -197,6 +188,7 @@ export default {
 
       GeoJSON: {},
       GeoJSONParams: [],
+      propertiesLabels: [],
     };
   },
   created() {
@@ -205,9 +197,9 @@ export default {
       zIndex: 30,
 
       // ******************** 点 ******************** //
-      pointScale: this.pointScale,
+      pointSize: this.pointSize,
       pointColor: this.pointColor,
-      pointTexture: this.pointTexture,
+      pointIcon: this.pointIcon,
       pointValue: this.pointValue,
       pointColorBar: this.COLOR_LIST[this.pointColors],
       pointOpacity: this.pointOpacity,
@@ -231,18 +223,41 @@ export default {
     });
   },
   mounted() {
-    // let reader = new FileReader();
-    // reader.readAsArrayBuffer(this.GeoJSON._file);
-    // reader.onload = () => {
-    //   const arrayBuffer = reader.result;
-    //   this._GeoJSONLayer.setData(new Int8Array(arrayBuffer));
-    // };
+    const worker = new GeoJSONLayerWorker();
+    worker.onmessage = (event) => {
+      const { center, propertiesLabels, pointArray, lineArray, polygonArray, propertiesListArray } = event.data;
+
+      console.time("onmessage");
+      console.log(center);
+      
+      this.propertiesLabels = propertiesLabels;
+      this._GeoJSONLayer.setCenter(center);
+      this._GeoJSONLayer.setPointArray(pointArray);
+      this._GeoJSONLayer.setLineArray(lineArray);
+      this._GeoJSONLayer.setPolygonArray(polygonArray);
+
+      const propertiesList = JSON.parse(new TextDecoder().decode(propertiesListArray));
+      this._GeoJSONLayer.setPropertiesList(propertiesList, propertiesLabels);
+      console.timeEnd("onmessage");
+      worker.terminate();
+    };
+    worker.addEventListener("error", (error) => {
+      console.log(error);
+      worker.terminate();
+    });
+
+    let reader = new FileReader();
+    reader.readAsArrayBuffer(this.GeoJSON._file);
+    reader.onload = () => {
+      const array = new Int8Array(reader.result);
+      worker.postMessage(array, [array.buffer]);
+    };
   },
   beforeDestroy() {
     this.handleDisable();
   },
   methods: {
-    handleActivity3DChangeColor(val) { },
+    handleActivity3DChangeColor(val) {},
     handleEnable() {
       this._Map.addLayer(this._GeoJSONLayer);
     },
@@ -251,6 +266,8 @@ export default {
     },
 
     handleChange(type, value) {
+      console.log(type, value);
+
       this[type] = value;
       switch (type) {
         case "show":
@@ -261,14 +278,14 @@ export default {
           }
           break;
         // ******************** 点
-        case "pointScale":
-          this._GeoJSONLayer.setPointScale(value);
+        case "pointSize":
+          this._GeoJSONLayer.setPointSize(value);
           break;
         case "pointColor":
           this._GeoJSONLayer.setPointColor(value);
           break;
-        case "pointTexture":
-          this._GeoJSONLayer.setPointTexture(value);
+        case "pointIcon":
+          this._GeoJSONLayer.setPointIcon(value);
           break;
         case "pointValue":
           this._GeoJSONLayer.setPointValue(value);
@@ -333,7 +350,7 @@ export default {
           break;
       }
     },
-    removeGeoJSON() { },
+    removeGeoJSON() {},
   },
 };
 </script>
@@ -353,7 +370,7 @@ export default {
       display: flex;
       align-items: center;
 
-      &+.file_row {
+      & + .file_row {
         border-top: 1px solid #000;
       }
     }
@@ -367,8 +384,8 @@ export default {
       height: 40px;
       width: 40px;
 
-      &+.file_s_col,
-      &+.file_l_col {
+      & + .file_s_col,
+      & + .file_l_col {
         border-left: 1px solid #000;
       }
     }
@@ -377,8 +394,8 @@ export default {
       box-sizing: border-box;
       width: 100%;
 
-      &+.file_s_col,
-      &+.file_l_col {
+      & + .file_s_col,
+      & + .file_l_col {
         border-left: 1px solid #000;
       }
     }

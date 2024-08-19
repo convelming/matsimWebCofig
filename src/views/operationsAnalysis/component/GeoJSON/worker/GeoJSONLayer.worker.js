@@ -15,146 +15,98 @@ class GeoJSONParser {
   }
 
   constructor(json) {
-    this.json = json;
     this.crs = json.crs;
     this.coordSys = GeoJSONParser.decodeCrs(json.crs);
     console.time("GeoJSONParser");
-    this.#parse(this.json);
+    this.#parse(json);
     console.timeEnd("GeoJSONParser");
-    console.log(this.pointList, this.lineList, this.polygonList);
   }
-
-  // #parse(item) {
-  //   let propertiesKey = item.propertiesKey || 0;
-  //   if (item.properties) {
-  //     propertiesKey = ++this._propertiesKey;
-  //     this.propertiesMap[propertiesKey] = item.properties;
-  //   }
-  //   if (item.type === "FeatureCollection") {
-  //     for (const f of item.features) {
-  //       f.propertiesKey = propertiesKey;
-  //       this.#parse(f);
-  //     }
-  //   } else if (item.type === "Feature") {
-  //     item.geometry.propertiesKey = propertiesKey;
-  //     this.#parse(item.geometry)
-  //   } else if (item.type === "GeometryCollection") {
-  //     for (const g of item.geometries) {
-  //       g.propertiesKey = propertiesKey;
-  //       this.#parse(g);
-  //     }
-  //   } else if (item.type === "Point") {
-  //     this.pointList[this.pointList.length] = {
-  //       propertiesKey: item.propertiesKey || 0,
-  //       geometry: this.getMultiPoint([item.coordinates])
-  //     }
-  //   } else if (item.type === "MultiPoint") {
-  //     this.pointList[this.pointList.length] = {
-  //       propertiesKey: item.propertiesKey || 0,
-  //       geometry: this.getMultiPoint(item.coordinates)
-  //     }
-  //   } else if (item.type === "LineString") {
-  //     this.pointList[this.pointList.length] = {
-  //       propertiesKey: item.propertiesKey || 0,
-  //       geometry: this.getMultiLineString([item.coordinates])
-  //     }
-  //       ;
-  //   } else if (item.type === "MultiLineString") {
-  //     this.pointList[this.pointList.length] = {
-  //       propertiesKey: item.propertiesKey || 0,
-  //       geometry: this.getMultiLineString(item.coordinates)
-  //     }
-  //   } else if (item.type === "Polygon") {
-  //     this.pointList[this.pointList.length] = {
-  //       propertiesKey: item.propertiesKey || 0,
-  //       geometry: this.getMultiPolygon([item.coordinates])
-  //     }
-  //   } else if (item.type === "MultiPolygon") {
-  //     this.pointList[this.pointList.length] = {
-  //       propertiesKey: item.propertiesKey || 0,
-  //       geometry: this.getMultiPolygon(item.coordinates)
-  //     }
-  //   }
-  // }
 
   #parse(data) {
     const list = [data];
 
-    const propertiesMap = {
-      0: {},
-    };
+    const propertiesLabels = {};
+    const propertiesList = [{}];
     const pointList = [];
     const lineList = [];
     const polygonList = [];
-    let _propertiesKey = 0;
     while (list.length > 0) {
       const item = list.pop();
+      let propertiesKey = item.propertiesKey || 0;
+      if (item.properties) {
+        propertiesKey = propertiesList.length;
+        propertiesList[propertiesKey] = item.properties;
+        for (const key in item.properties) {
+          const pv = Number(item.properties[key] || 0) || 0;
+          if (!propertiesLabels[key]) {
+            propertiesLabels[key] = {
+              min: pv,
+              max: pv,
+            }
+          } else {
+            propertiesLabels[key].min = Math.min(propertiesLabels[key].min, pv);
+            propertiesLabels[key].max = Math.max(propertiesLabels[key].max, pv);
+          }
+        }
+      }
       if (item.type === "FeatureCollection") {
         for (const f of item.features) {
+          f.propertiesKey = propertiesKey;
           list.push(f)
         }
       } else if (item.type === "Feature") {
-        const propertiesKey = ++_propertiesKey;
-        const { properties, geometry } = item;
-        propertiesMap[propertiesKey] = properties;
-        if (geometry.type === "GeometryCollection") {
-          for (const g of geometry.geometries) {
-            g.propertiesKey = propertiesKey;
-            list.push(g);
-          }
-        } else {
-          geometry.propertiesKey = propertiesKey;
-          list.push(geometry);
-        }
+        item.geometry.propertiesKey = propertiesKey;
+        list.push(item.geometry);
       } else if (item.type === "GeometryCollection") {
         for (const g of item.geometries) {
+          g.propertiesKey = propertiesKey;
           list.push(g);
         }
       } else if (item.type === "Point") {
         const geometry = this.getMultiPoint([item.coordinates]);
         pointList[pointList.length] = {
-          propertiesKey: item.propertiesKey || 0,
+          propertiesKey: propertiesKey || 0,
           geometry: geometry
         };
       } else if (item.type === "MultiPoint") {
         const geometry = this.getMultiPoint(item.coordinates);
         pointList[pointList.length] = {
-          propertiesKey: item.propertiesKey || 0,
+          propertiesKey: propertiesKey || 0,
           geometry: geometry
         };
       } else if (item.type === "LineString") {
         const geometry = this.getMultiLineString([item.coordinates]);
         lineList[lineList.length] = {
-          propertiesKey: item.propertiesKey || 0,
+          propertiesKey: propertiesKey || 0,
           geometry: geometry
         };
       } else if (item.type === "MultiLineString") {
         const geometry = this.getMultiLineString(item.coordinates);
         lineList[lineList.length] = {
-          propertiesKey: item.propertiesKey || 0,
+          propertiesKey: propertiesKey || 0,
           geometry: geometry
         };
       } else if (item.type === "Polygon") {
         const geometry = this.getMultiPolygon([item.coordinates]);
         polygonList[polygonList.length] = {
-          propertiesKey: item.propertiesKey || 0,
+          propertiesKey: propertiesKey || 0,
           geometry: geometry
         };
       } else if (item.type === "MultiPolygon") {
         const geometry = this.getMultiPolygon(item.coordinates);
         polygonList[polygonList.length] = {
-          propertiesKey: item.propertiesKey || 0,
+          propertiesKey: propertiesKey || 0,
           geometry: geometry
         };
       }
     }
+
     {
       const list = [];
       for (const { propertiesKey, geometry } of pointList) {
-        const l = geometry.flat();
-        list.push(l.length + 1);
-        list.push(propertiesKey);
-        list.push(...l);
+        for (const [x, y] of geometry) {
+          list.push(x, y, propertiesKey)
+        }
       }
       this.pointArray = new Float64Array(list);
     }
@@ -190,14 +142,14 @@ class GeoJSONParser {
     }
     {
       const encode = new TextEncoder();
-      const uint8 = encode.encode(JSON.stringify(propertiesMap));
-      this.propertiesMapArray = new Float64Array(list);
+      this.propertiesListArray = encode.encode(JSON.stringify(propertiesList));
     }
 
-    this.pointList = pointList;
-    this.lineList = lineList;
-    this.polygonList = polygonList;
-    this.propertiesMap = propertiesMap;
+    // this.pointList = pointList;
+    // this.lineList = lineList;
+    // this.polygonList = polygonList;
+    // this.propertiesList = propertiesList;
+    this.propertiesLabels = propertiesLabels;
   }
 
   getMultiPoint(coordinates, propertiesKey) {
@@ -260,19 +212,20 @@ class GeoJSONParser {
     return list;
   }
 
+
 }
 
 onmessage = function (e) {
   const decode = new TextDecoder();
   const str = decode.decode(e.data);
   const parser = new GeoJSONParser(JSON.parse(str));
-  // const pointArray = parser.getPointArray();
-  // const lineArray = parser.getLineArray();
-  // const polygonArray = parser.getPolygonArray()
-  // this.postMessage({
-  //   center: parser.center,
-  //   point: pointArray,
-  //   line: lineArray,
-  //   polygon: polygonArray,
-  // }, [pointArray.buffer, lineArray.buffer, polygonArray.buffer]);
+  const time1 = new Date().getTime();
+  this.postMessage({
+    center: parser.center,
+    propertiesLabels: parser.propertiesLabels,
+    pointArray: parser.pointArray,
+    lineArray: parser.lineArray,
+    polygonArray: parser.polygonArray,
+    propertiesListArray: parser.propertiesListArray
+  }, [parser.pointArray.buffer, parser.lineArray.buffer, parser.polygonArray.buffer, parser.propertiesListArray.buffer]);
 };
