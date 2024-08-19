@@ -12,7 +12,7 @@
       <div class="file_list" v-for="(item, index) in geoJSONList" :key="index">
         <div class="file_item">
           <div class="file_row">
-            <div class="file_name" :title="file.name">{{ file.name }}</div>
+            <div class="file_name" :title="item.name">{{ item.name }}</div>
             <div class="file_btn" style="width: 81px">
               <el-switch v-model="item.show" :title="item.show ? $l('hideGeoJSON') : $l('showGeoJSON')" @change="handleChange('show', index, $event)"> </el-switch>
             </div>
