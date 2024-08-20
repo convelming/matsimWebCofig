@@ -34,7 +34,7 @@ export default {
 
       showLayerGeoJSON: false,
       lock2DGeoJSON: false,
-      GeoJSONList: [{ id: "1", _file: null, name: "test" }],
+      GeoJSONList: [],
 
       showLayerParking: false,
       lock2DParking: false,

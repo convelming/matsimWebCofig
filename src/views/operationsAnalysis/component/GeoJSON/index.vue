@@ -70,7 +70,6 @@
 </language>
 
 <script>
-import { GeoJSONLayer } from "./layer/GeoJSONLayer";
 import { guid } from "@/utils/utils";
 
 export default {

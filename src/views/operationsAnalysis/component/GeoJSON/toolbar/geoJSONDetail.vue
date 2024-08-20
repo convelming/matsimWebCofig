@@ -4,88 +4,102 @@
       <div class="title" style="max-width: 100%">{{ GeoJSON.name }}</div>
     </div>
     <div class="toolbar_item_bodyer">
-      <div class="title">点</div>
-      <div class="file_item">
-        <div class="file_row">
-          <div class="file_l_col" style="padding: 0 15px">
-            <el-slider :title="$l('pointSize')" v-model="pointSize" @change="handleChange('pointSize', $event)" :step="1" :min="1" :max="1000"> </el-slider>
+      <template v-if="showPointSetting">
+        <div class="title">{{ $l("point") }}</div>
+        <div class="file_item">
+          <div class="file_row">
+            <div class="file_l_col" style="padding: 0 15px">
+              <el-slider :title="$l('pointSize')" v-model="pointSize" @change="handleChange('pointSize', $event)" :step="1" :min="1" :max="1000"> </el-slider>
+            </div>
+            <div class="file_s_col">
+              <el-color-picker :title="$l('pointColor')" v-model="pointColor" @change="handleChange('pointColor', $event)" size="mini" :predefine="predefineColors" />
+            </div>
+            <div class="file_s_col" style="width: 80px">icon</div>
           </div>
-          <div class="file_s_col">
-            <el-color-picker :title="$l('pointColor')" v-model="pointColor" @change="handleChange('pointColor', $event)" size="mini" :predefine="predefineColors" />
-          </div>
-          <div class="file_s_col" style="width: 80px">icon</div>
-        </div>
-        <div class="file_row">
-          <div class="file_s_col" style="width: 100px">
-            <el-select v-model="pointValue" @change="handleChange('pointValue', $event)" clearable>
-              <el-option v-for="(item, key) in propertiesLabels" :key="key" :label="key" :value="key"></el-option>
-            </el-select>
-          </div>
-          <div class="file_l_col">
-            <ColorSelect v-model="pointColors" @change="handleChange('pointColors', $event.value)" :colorsList="COLOR_LIST" />
-          </div>
-        </div>
-      </div>
-      <div class="title">线</div>
-      <div class="file_item">
-        <div class="file_row">
-          <div class="file_l_col" style="padding: 0 15px">
-            <el-slider :title="$l('lineWidth')" v-model="lineWidth" @change="handleChange('lineWidth', $event)" :step="1" :min="1" :max="1000"> </el-slider>
-          </div>
-          <div class="file_s_col">
-            <el-color-picker :title="$l('lineColor')" v-model="lineColor" @change="handleChange('lineColor', $event)" size="mini" :predefine="predefineColors" />
-          </div>
-          <div class="file_s_col" style="width: 100px">
-            <el-select v-model="lineStyle" @change="handleChange('lineStyle', $event)">
-              <el-option v-for="(v, k) in LINE_STYPE" :key="v" :label="k" :value="v"></el-option>
-            </el-select>
+          <div class="file_row">
+            <div class="file_s_col" style="width: 100px">
+              <el-select v-model="pointValue" @change="handleChange('pointValue', $event)" clearable>
+                <el-option v-for="(item, key) in propertiesLabels" :key="key" :label="key" :value="key"></el-option>
+              </el-select>
+            </div>
+            <div class="file_l_col">
+              <ColorSelect v-model="pointColors" @change="handleChange('pointColors', $event.value)" :colorsList="COLOR_LIST" />
+            </div>
           </div>
         </div>
-        <div class="file_row">
-          <div class="file_s_col" style="width: 100px">
-            <el-select v-model="lineValue" @change="handleChange('lineValue', $event)" clearable>
-              <el-option v-for="(item, key) in propertiesLabels" :key="key" :label="key" :value="key"></el-option>
-            </el-select>
+      </template>
+      <template v-if="showLineSetting">
+        <div class="title">{{ $l("line") }}</div>
+        <div class="file_item">
+          <div class="file_row">
+            <div class="file_l_col" style="padding: 0 15px">
+              <el-slider :title="$l('lineWidth')" v-model="lineWidth" @change="handleChange('lineWidth', $event)" :step="1" :min="1" :max="1000"> </el-slider>
+            </div>
+            <div class="file_s_col">
+              <el-color-picker :title="$l('lineColor')" v-model="lineColor" @change="handleChange('lineColor', $event)" size="mini" :predefine="predefineColors" />
+            </div>
+            <div class="file_s_col" style="width: 100px">
+              <el-select v-model="lineStyle" @change="handleChange('lineStyle', $event)">
+                <el-option v-for="(v, k) in LINE_STYPE" :key="v" :label="k" :value="v"></el-option>
+              </el-select>
+            </div>
           </div>
-          <div class="file_l_col">
-            <ColorSelect style="width: 100%" v-model="lineColors" @change="handleChange('lineColors', $event.value)" :colorsList="COLOR_LIST" />
-          </div>
-        </div>
-      </div>
-      <div class="title">面</div>
-      <div class="file_item">
-        <div class="file_row">
-          <div class="file_l_col" style="padding: 0 15px">
-            <el-slider :title="$l('polygonOpacity')" v-model="polygonOpacity" @change="handleChange('polygonOpacity', $event)" :step="1" :min="1" :max="1000"> </el-slider>
-          </div>
-          <div class="file_s_col">
-            <el-color-picker :title="$l('polygonColor')" v-model="polygonColor" @change="handleChange('polygonColor', $event)" size="mini" :predefine="predefineColors" />
-          </div>
-        </div>
-        <div class="file_row">
-          <div class="file_l_col" style="padding: 0 15px">
-            <el-slider :title="$l('polygonBorderWidth')" v-model="polygonBorderWidth" @change="handleChange('polygonBorderWidth', $event)" :step="1" :min="1" :max="1000"> </el-slider>
-          </div>
-          <div class="file_s_col">
-            <el-color-picker :title="$l('polygonBorderColor')" v-model="polygonBorderColor" @change="handleChange('polygonBorderColor', $event)" size="mini" :predefine="predefineColors" />
-          </div>
-          <div class="file_s_col" style="width: 100px">
-            <el-select v-model="polygonBorderStyle" @change="handleChange('polygonBorderStyle', $event)">
-              <el-option v-for="(v, k) in LINE_STYPE" :key="v" :label="k" :value="v"></el-option>
-            </el-select>
+          <div class="file_row">
+            <div class="file_s_col" style="width: 100px">
+              <el-select v-model="lineValue" @change="handleChange('lineValue', $event)" clearable>
+                <el-option v-for="(item, key) in propertiesLabels" :key="key" :label="key" :value="key"></el-option>
+              </el-select>
+            </div>
+            <div class="file_l_col">
+              <ColorSelect style="width: 100%" v-model="lineColors" @change="handleChange('lineColors', $event.value)" :colorsList="COLOR_LIST" />
+            </div>
           </div>
         </div>
-        <div class="file_row">
-          <div class="file_s_col" style="width: 100px">
-            <el-select v-model="polygonValue" @change="handleChange('polygonValue', $event)" clearable>
-              <el-option v-for="(item, key) in propertiesLabels" :key="key" :label="key" :value="key"></el-option>
-            </el-select>
+      </template>
+      <template v-if="showPolygonSetting">
+        <div class="title">{{ $l("polygon") }}</div>
+        <div class="file_item">
+          <div class="file_row">
+            <div class="file_l_col" style="padding: 0 15px">
+              <el-slider :title="$l('polygonOpacity')" v-model="polygonOpacity" @change="handleChange('polygonOpacity', $event)" :step="0.01" :min="0" :max="1"> </el-slider>
+            </div>
+            <div class="file_s_col">
+              <el-color-picker :title="$l('polygonColor')" v-model="polygonColor" @change="handleChange('polygonColor', $event)" size="mini" :predefine="predefineColors" />
+            </div>
           </div>
-          <div class="file_l_col">
-            <ColorSelect style="width: 100%" v-model="polygonColors" @change="handleChange('polygonColors', $event.value)" :colorsList="COLOR_LIST" />
+          <div class="file_row">
+            <div class="file_l_col" style="padding: 0 15px">
+              <el-slider :title="$l('polygonBorderWidth')" v-model="polygonBorderWidth" @change="handleChange('polygonBorderWidth', $event)" :step="1" :min="1" :max="300"> </el-slider>
+            </div>
+            <div class="file_s_col">
+              <el-color-picker :title="$l('polygonBorderColor')" v-model="polygonBorderColor" @change="handleChange('polygonBorderColor', $event)" size="mini" :predefine="predefineColors" />
+            </div>
+            <div class="file_s_col" style="width: 100px">
+              <el-select v-model="polygonBorderStyle" @change="handleChange('polygonBorderStyle', $event)">
+                <el-option v-for="(v, k) in LINE_STYPE" :key="v" :label="k" :value="v"></el-option>
+              </el-select>
+            </div>
+          </div>
+          <div class="file_row">
+            <div class="file_s_col" style="width: 100px">
+              <el-select v-model="polygonValue" @change="handleChange('polygonValue', $event)" clearable>
+                <el-option v-for="(item, key) in propertiesLabels" :key="key" :label="key" :value="key"></el-option>
+              </el-select>
+            </div>
+            <div class="file_l_col">
+              <ColorSelect style="width: 100%" v-model="polygonColors" @change="handleChange('polygonColors', $event.value)" :colorsList="COLOR_LIST" />
+            </div>
+          </div>
+          <div class="file_row">
+            <div class="file_s_col" style="width: 100px">
+              <el-switch v-model="polygon3D" @change="handleChange('polygon3D', $event)" :active-value="true" :inactive-value="false" />
+            </div>
+            <div class="file_l_col" style="padding: 0 15px">
+              <el-slider :title="$l('polygon3DHeight')" v-model="polygon3DHeight" @change="handleChange('polygon3DHeight', $event)" :step="1" :min="1" :max="5000"> </el-slider>
+            </div>
           </div>
         </div>
-      </div>
+      </template>
     </div>
   </el-collapse-item>
 </template>
@@ -168,6 +182,7 @@ export default {
       pointValue: "",
       pointColors: 0,
       pointOpacity: 1,
+      showPointSetting: false,
 
       lineWidth: 100,
       lineColor: "#ffa500",
@@ -175,16 +190,18 @@ export default {
       lineValue: "",
       lineColors: 0,
       lineOpacity: 1,
+      showLineSetting: false,
 
       polygonOpacity: 1,
       polygonColor: "#ffa500",
-      polygonBorderWidth: 1,
-      polygonBorderColor: "#ffa500",
+      polygonBorderWidth: 100,
+      polygonBorderColor: "#5470C6",
       polygonBorderStyle: LINE_STYPE.SOLID,
       polygonValue: "",
       polygonColors: 0,
-      polygon3DHeight: 100,
+      polygon3DHeight: 2500,
       polygon3D: false,
+      showPolygonSetting: false,
 
       GeoJSON: {},
       GeoJSONParams: [],
@@ -228,13 +245,17 @@ export default {
       const { center, propertiesLabels, pointArray, lineArray, polygonArray, propertiesListArray } = event.data;
 
       console.time("onmessage");
-      console.log(center);
-      
+      console.log(center, pointArray, lineArray, polygonArray);
+
       this.propertiesLabels = propertiesLabels;
       this._GeoJSONLayer.setCenter(center);
       this._GeoJSONLayer.setPointArray(pointArray);
       this._GeoJSONLayer.setLineArray(lineArray);
       this._GeoJSONLayer.setPolygonArray(polygonArray);
+
+      this.showPointSetting = !!pointArray.length;
+      this.showLineSetting = !!lineArray.length;
+      this.showPolygonSetting = !!polygonArray.length;
 
       const propertiesList = JSON.parse(new TextDecoder().decode(propertiesListArray));
       this._GeoJSONLayer.setPropertiesList(propertiesList, propertiesLabels);
@@ -360,8 +381,12 @@ export default {
   font-size: 13px;
 
   .toolbar_item_bodyer {
+    .title {
+      font-size: 18px;
+      margin: 5px 0;
+    }
     .file_item {
-      border: 1px solid #000;
+      border: 1px solid transparent;
       border-radius: 4px;
     }
 
@@ -371,7 +396,7 @@ export default {
       align-items: center;
 
       & + .file_row {
-        border-top: 1px solid #000;
+        border-top: 1px solid transparent;
       }
     }
 
@@ -386,7 +411,7 @@ export default {
 
       & + .file_s_col,
       & + .file_l_col {
-        border-left: 1px solid #000;
+        border-left: 1px solid transparent;
       }
     }
 
@@ -396,7 +421,7 @@ export default {
 
       & + .file_s_col,
       & + .file_l_col {
-        border-left: 1px solid #000;
+        border-left: 1px solid transparent;
       }
     }
   }
