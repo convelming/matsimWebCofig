@@ -66,6 +66,10 @@
     "zh-CN": "显示GeoJSON",
     "en-US": "Show GeoJSON"
   },
+  "GeoJSON文件已存在！":{
+    "zh-CN": "GeoJSON文件已存在！",
+    "en-US": "GeoJSON file already exists!"
+  },
 }
 </language>
 
@@ -146,13 +150,18 @@ export default {
       document.body.appendChild(input);
       input.onchange = (e) => {
         const file = e.target.files[0];
-        const GeoJSON = {
-          id: guid(),
-          _file: file,
-          name: file.name,
-        };
-        this.rootVue.GeoJSONList.push(GeoJSON);
-        document.body.removeChild(input);
+        const index = this.rootVue.GeoJSONList.findIndex((item) => item.name == file.name);
+        if (index > -1) {
+          this.$message.error(this.$l("GeoJSON文件已存在！"));
+        } else {
+          const GeoJSON = {
+            id: guid(),
+            _file: file,
+            name: file.name,
+          };
+          this.rootVue.GeoJSONList.push(GeoJSON);
+          document.body.removeChild(input);
+        }
       };
       input.click();
     },

@@ -4,6 +4,15 @@
       <div class="title" style="max-width: 100%">{{ GeoJSON.name }}</div>
     </div>
     <div class="toolbar_item_bodyer">
+      <div class="file_item">
+        <div class="file_row">
+          <div class="file_l_col" style="padding: 0 15px">{{ $l("Show GeoJSON") }}</div>
+          <div class="file_s_col" style="width: 80px">
+            <el-switch v-model="show" :active-value="true" :inactive-value="false" />
+          </div>
+        </div>
+      </div>
+
       <template v-if="showPointSetting">
         <div class="title">{{ $l("point") }}</div>
         <div class="file_item">
@@ -18,12 +27,12 @@
           </div>
           <div class="file_row">
             <div class="file_s_col" style="width: 100px">
-              <el-select v-model="pointValue" @change="handleChange('pointValue', $event)" clearable>
+              <el-select :title="$l('pointValue')" v-model="pointValue" @change="handleChange('pointValue', $event)" clearable>
                 <el-option v-for="(item, key) in propertiesLabels" :key="key" :label="key" :value="key"></el-option>
               </el-select>
             </div>
             <div class="file_l_col">
-              <ColorSelect v-model="pointColors" @change="handleChange('pointColors', $event.value)" :colorsList="COLOR_LIST" />
+              <ColorSelect :title="$l('pointColors')" v-model="pointColors" @change="handleChange('pointColors', $event.value)" :colorsList="COLOR_LIST" />
             </div>
           </div>
         </div>
@@ -39,19 +48,19 @@
               <el-color-picker :title="$l('lineColor')" v-model="lineColor" @change="handleChange('lineColor', $event)" size="mini" :predefine="predefineColors" />
             </div>
             <div class="file_s_col" style="width: 100px">
-              <el-select v-model="lineStyle" @change="handleChange('lineStyle', $event)">
+              <el-select :title="$l('lineStyle')" v-model="lineStyle" @change="handleChange('lineStyle', $event)">
                 <el-option v-for="(v, k) in LINE_STYPE" :key="v" :label="k" :value="v"></el-option>
               </el-select>
             </div>
           </div>
           <div class="file_row">
             <div class="file_s_col" style="width: 100px">
-              <el-select v-model="lineValue" @change="handleChange('lineValue', $event)" clearable>
+              <el-select :title="$l('lineValue')" v-model="lineValue" @change="handleChange('lineValue', $event)" clearable>
                 <el-option v-for="(item, key) in propertiesLabels" :key="key" :label="key" :value="key"></el-option>
               </el-select>
             </div>
             <div class="file_l_col">
-              <ColorSelect style="width: 100%" v-model="lineColors" @change="handleChange('lineColors', $event.value)" :colorsList="COLOR_LIST" />
+              <ColorSelect :title="$l('lineColors')" style="width: 100%" v-model="lineColors" @change="handleChange('lineColors', $event.value)" :colorsList="COLOR_LIST" />
             </div>
           </div>
         </div>
@@ -75,24 +84,24 @@
               <el-color-picker :title="$l('polygonBorderColor')" v-model="polygonBorderColor" @change="handleChange('polygonBorderColor', $event)" size="mini" :predefine="predefineColors" />
             </div>
             <div class="file_s_col" style="width: 100px">
-              <el-select v-model="polygonBorderStyle" @change="handleChange('polygonBorderStyle', $event)">
+              <el-select :title="$l('polygonBorderStyle')" v-model="polygonBorderStyle" @change="handleChange('polygonBorderStyle', $event)">
                 <el-option v-for="(v, k) in LINE_STYPE" :key="v" :label="k" :value="v"></el-option>
               </el-select>
             </div>
           </div>
           <div class="file_row">
             <div class="file_s_col" style="width: 100px">
-              <el-select v-model="polygonValue" @change="handleChange('polygonValue', $event)" clearable>
+              <el-select :title="$l('polygonValue')" v-model="polygonValue" @change="handleChange('polygonValue', $event)" clearable>
                 <el-option v-for="(item, key) in propertiesLabels" :key="key" :label="key" :value="key"></el-option>
               </el-select>
             </div>
             <div class="file_l_col">
-              <ColorSelect style="width: 100%" v-model="polygonColors" @change="handleChange('polygonColors', $event.value)" :colorsList="COLOR_LIST" />
+              <ColorSelect :title="$l('polygonColors')" style="width: 100%" v-model="polygonColors" @change="handleChange('polygonColors', $event.value)" :colorsList="COLOR_LIST" />
             </div>
           </div>
           <div class="file_row">
             <div class="file_s_col" style="width: 100px">
-              <el-switch v-model="polygon3D" @change="handleChange('polygon3D', $event)" :active-value="true" :inactive-value="false" />
+              <el-switch :title="$l('polygon3D')" v-model="polygon3D" @change="handleChange('polygon3D', $event)" :active-value="true" :inactive-value="false" />
             </div>
             <div class="file_l_col" style="padding: 0 15px">
               <el-slider :title="$l('polygon3DHeight')" v-model="polygon3DHeight" @change="handleChange('polygon3DHeight', $event)" :step="1" :min="1" :max="5000"> </el-slider>
@@ -109,6 +118,94 @@
   "活动详情":{
     "zh-CN": "活动详情",
     "en-US": "Activity Details"
+  },
+  "Show GeoJSON":{
+    "zh-CN": "显示GeoJSON",
+    "en-US": "Show GeoJSON"
+  },
+  "point":{
+    "zh-CN": "point",
+    "en-US": "point"
+  },
+  "pointSize":{
+    "zh-CN": "pointSize",
+    "en-US": "pointSize"
+  },
+  "pointColor":{
+    "zh-CN": "pointColor",
+    "en-US": "pointColor"
+  },
+  "pointValue":{
+    "zh-CN": "pointValue",
+    "en-US": "pointValue"
+  },
+  "pointColors":{
+    "zh-CN": "pointColors",
+    "en-US": "pointColors"
+  },
+  "line":{
+    "zh-CN": "line",
+    "en-US": "line"
+  },
+  "lineWidth":{
+    "zh-CN": "lineWidth",
+    "en-US": "lineWidth"
+  },
+  "lineColor":{
+    "zh-CN": "lineColor",
+    "en-US": "lineColor"
+  },
+  "lineStyle":{
+    "zh-CN": "lineStyle",
+    "en-US": "lineStyle"
+  },
+  "lineValue":{
+    "zh-CN": "lineValue",
+    "en-US": "lineValue"
+  },
+  "lineColors":{
+    "zh-CN": "lineColors",
+    "en-US": "lineColors"
+  },
+  "polygon":{
+    "zh-CN": "polygon",
+    "en-US": "polygon"
+  },
+  "polygonOpacity":{
+    "zh-CN": "polygonOpacity",
+    "en-US": "polygonOpacity"
+  },
+  "polygonColor":{
+    "zh-CN": "polygonColor",
+    "en-US": "polygonColor"
+  },
+  "polygonBorderWidth":{
+    "zh-CN": "polygonBorderWidth",
+    "en-US": "polygonBorderWidth"
+  },
+  "polygonBorderColor":{
+    "zh-CN": "polygonBorderColor",
+    "en-US": "polygonBorderColor"
+  },
+  "polygonBorderStyle":{
+    "zh-CN": "polygonBorderStyle",
+    "en-US": "polygonBorderStyle"
+  },
+  "polygonValue":{
+    "zh-CN": "polygonValue",
+    "en-US": "polygonValue"
+  },
+  "polygonColors":{
+    "zh-CN": "polygonColors",
+    "en-US": "polygonColors"
+  },
+  "polygon3D":{
+    "zh-CN": "polygon3D",
+    "en-US": "polygon3D"
+  },
+  "polygon3DHeight":{
+    "zh-CN": "polygon3DHeight",
+    "en-US": "polygon3DHeight"
   },
 }
 </language>
@@ -247,6 +344,7 @@ export default {
       console.time("onmessage");
       console.log(center, pointArray, lineArray, polygonArray);
 
+      this.GeoJSON._propertiesLabels = propertiesLabels;
       this.propertiesLabels = propertiesLabels;
       this._GeoJSONLayer.setCenter(center);
       this._GeoJSONLayer.setPointArray(pointArray);

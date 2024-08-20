@@ -58,6 +58,7 @@ export default {
     showLayerPublicTransit(val) {
       this.handleChangeTimeSpeed();
       this.handleChangeMapCameraControls();
+      this.handleToolbarActiveModel("PublicTransit");
     },
     lock2DPublicTransit(val) {
       this.handleChangeTimeSpeed();
@@ -66,6 +67,7 @@ export default {
     showLayerMotorizedTravel(val) {
       this.handleChangeTimeSpeed();
       this.handleChangeMapCameraControls();
+      this.handleToolbarActiveModel("MotorizedTravel");
     },
     lock2DMotorizedTravel(val) {
       this.handleChangeTimeSpeed();
@@ -74,6 +76,7 @@ export default {
     showLayerBuild3D(val) {
       this.handleChangeTimeSpeed();
       this.handleChangeMapCameraControls();
+      this.handleToolbarActiveModel("Build3D");
     },
     lock2DBuild3D(val) {
       this.handleChangeTimeSpeed();
@@ -82,6 +85,7 @@ export default {
     showLayerNetwork(val) {
       this.handleChangeTimeSpeed();
       this.handleChangeMapCameraControls();
+      this.handleToolbarActiveModel("Network");
     },
     lock2DNetwork(val) {
       this.handleChangeTimeSpeed();
@@ -90,6 +94,7 @@ export default {
     showLayerActivity3D(val) {
       this.handleChangeTimeSpeed();
       this.handleChangeMapCameraControls();
+      this.handleToolbarActiveModel("Activity3D");
     },
     lock2DActivity3D(val) {
       this.handleChangeTimeSpeed();
@@ -98,6 +103,7 @@ export default {
     showLayerCarTravel(val) {
       this.handleChangeTimeSpeed();
       this.handleChangeMapCameraControls();
+      this.handleToolbarActiveModel("CarTravel");
     },
     lock2DCarTravel(val) {
       this.handleChangeTimeSpeed();
@@ -106,6 +112,7 @@ export default {
     showLayerGeoJSON(val) {
       this.handleChangeTimeSpeed();
       this.handleChangeMapCameraControls();
+      this.handleToolbarActiveModel("GeoJSON");
     },
     lock2DGeoJSON(val) {
       this.handleChangeTimeSpeed();
@@ -114,6 +121,7 @@ export default {
     showLayerParking(val) {
       this.handleChangeTimeSpeed();
       this.handleChangeMapCameraControls();
+      this.handleToolbarActiveModel("Parking");
     },
     lock2DParking(val) {
       this.handleChangeTimeSpeed();
@@ -147,6 +155,13 @@ export default {
   beforeDestroy() {
   },
   methods: {
+    handleToolbarActiveModel(id) {
+      try {
+        this.$refs.Toolbar.handleActiveModel(id);
+      } catch (error) {
+
+      }
+    },
     handleShowHelp() {
       this.showHelpDialog = true;
     },
