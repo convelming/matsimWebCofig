@@ -68,7 +68,7 @@ export default {
   data() {
     return {
       activeNames: ["PublicTransit", "MotorizedTravel", "CarTravel", "Build3D", "Network", "Activity3D", "GeoJSON", "Parking"],
-      // activeNames: ["Parking"],
+      activeNames: ["Parking"],
     };
   },
   methods: {

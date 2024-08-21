@@ -153,7 +153,6 @@ export class GeoJSONLayer extends Layer {
     this.lineMaterial.defines.USE_COLOR_BAR = !!this.lineColorBarMap && !!this.lineValue;
     this.lineMaterial.uniforms.colorBar.value = this.lineColorBarMap;
     this.lineMaterial.needsUpdate = true;
-    console.log(this.lineMaterial);
   }
   setLineOpacity(lineOpacity) {
     this.lineOpacity = lineOpacity;
@@ -385,7 +384,7 @@ export class GeoJSONLayer extends Layer {
 
       const geometry = new GeoJSONPointListGeometry(pointArray, this.propertiesList, this.propertiesLabels, "");
       const mesh = new THREE.Mesh(geometry, this.pointMaterial);
-      mesh.position.set(cx, cy, 0.04);
+      mesh.position.set(cx, cy, 0.004);
       this.pointMeshList.push(mesh)
       this.scene.add(mesh);
 
@@ -415,7 +414,7 @@ export class GeoJSONLayer extends Layer {
 
         const geometry = new GeoJSONLineListGeometry(lineList, this.propertiesList, this.propertiesLabels, "");
         const mesh = new THREE.Mesh(geometry, this.lineMaterial);
-        mesh.position.set(cx, cy, 0.03);
+        mesh.position.set(cx, cy, 0.003);
         this.lineMeshList.push(mesh);
         this.scene.add(mesh);
 
@@ -427,7 +426,7 @@ export class GeoJSONLayer extends Layer {
     if (lineList.length > 0) {
       const geometry = new GeoJSONLineListGeometry(lineList, this.propertiesList, this.propertiesLabels, "");
       const mesh = new THREE.Mesh(geometry, this.lineMaterial);
-      mesh.position.set(cx, cy, 0.03);
+      mesh.position.set(cx, cy, 0.003);
       this.lineMeshList.push(mesh);
       this.scene.add(mesh);
 
@@ -465,13 +464,13 @@ export class GeoJSONLayer extends Layer {
 
         const geometry = new GeoJSONPolygonListGeometry(polygonList, this.propertiesList, this.propertiesLabels, "");
         const mesh = new THREE.Mesh(geometry, this.polygonMaterial);
-        mesh.position.set(cx, cy, 0.01);
+        mesh.position.set(cx, cy, 0.001);
         this.polygonMeshList.push(mesh);
         this.scene.add(mesh);
 
         const borderGeometry = new GeoJSONPolygonBorderListGeometry(polygonList, this.propertiesList, this.propertiesLabels, "");
         const borderMesh = new THREE.Mesh(borderGeometry, this.polygonBorderMaterial);
-        borderMesh.position.set(cx, cy, 0.02);
+        borderMesh.position.set(cx, cy, 0.002);
         this.polygonBorderMeshList.push(borderMesh);
         this.scene.add(borderMesh);
 
@@ -484,13 +483,13 @@ export class GeoJSONLayer extends Layer {
     if (polygonList.length > 0) {
       const geometry = new GeoJSONPolygonListGeometry(polygonList, this.propertiesList, this.propertiesLabels, "");
       const mesh = new THREE.Mesh(geometry, this.polygonMaterial);
-      mesh.position.set(cx, cy, 0.01);
+      mesh.position.set(cx, cy, 0.001);
       this.polygonMeshList.push(mesh);
       this.scene.add(mesh);
 
       const borderGeometry = new GeoJSONPolygonBorderListGeometry(polygonList, this.propertiesList, this.propertiesLabels, "");
       const borderMesh = new THREE.Mesh(borderGeometry, this.polygonBorderMaterial);
-      borderMesh.position.set(cx, cy, 0.02);
+      borderMesh.position.set(cx, cy, 0.002);
       this.polygonBorderMeshList.push(borderMesh);
       this.scene.add(borderMesh);
 
@@ -555,19 +554,21 @@ export class GeoJSONPointListGeometry extends THREE.BufferGeometry {
         map[label] = new THREE.Float32BufferAttribute(l, 1);
       }
       this.valueMap = map;
+      this.setValueKey(this._valuekey);
     } catch (error) {
       console.log(error);
       this.valueMap = {};
+      this.setValueKey(this._valuekey);
     }
   }
 
   setValueKey(valueKey) {
     try {
+      this._valuekey = valueKey;
       const attrValue = this.valueMap[valueKey];
       if (attrValue) {
         this.setAttribute("value", attrValue);
         console.log(attrValue);
-
       } else {
         this.setAttribute("value", new THREE.Float32BufferAttribute([], 1));
       }
@@ -807,6 +808,7 @@ export class GeoJSONLineListGeometry extends THREE.BufferGeometry {
     }
   }
 
+
   setPropertiesList(propertiesList, propertiesLabels) {
     try {
       const _pl = this.propertiesKeyList.map(v => propertiesList[v]);
@@ -816,19 +818,21 @@ export class GeoJSONLineListGeometry extends THREE.BufferGeometry {
         map[label] = new THREE.Float32BufferAttribute(l, 1);
       }
       this.valueMap = map;
+      this.setValueKey(this._valuekey);
     } catch (error) {
       console.log(error);
       this.valueMap = {};
+      this.setValueKey(this._valuekey);
     }
   }
 
   setValueKey(valueKey) {
     try {
+      this._valuekey = valueKey;
       const attrValue = this.valueMap[valueKey];
       if (attrValue) {
         this.setAttribute("value", attrValue);
         console.log(attrValue);
-
       } else {
         this.setAttribute("value", new THREE.Float32BufferAttribute([], 1));
       }
@@ -1192,6 +1196,7 @@ export class GeoJSONPolygonListGeometry extends THREE.BufferGeometry {
     this.setValueKey(valueKey);
   }
 
+
   setPropertiesList(propertiesList, propertiesLabels) {
     try {
       const _pl = this.propertiesKeyList.map(v => propertiesList[v]);
@@ -1201,14 +1206,17 @@ export class GeoJSONPolygonListGeometry extends THREE.BufferGeometry {
         map[label] = new THREE.Float32BufferAttribute(l, 1);
       }
       this.valueMap = map;
+      this.setValueKey(this._valuekey);
     } catch (error) {
       console.log(error);
       this.valueMap = {};
+      this.setValueKey(this._valuekey);
     }
   }
 
   setValueKey(valueKey) {
     try {
+      this._valuekey = valueKey;
       const attrValue = this.valueMap[valueKey];
       if (attrValue) {
         this.setAttribute("value", attrValue);
@@ -1321,7 +1329,7 @@ export class GeoJSONPolygonMaterial extends THREE.Material {
           if(p> 1.0) p = 1.0;
           if(p< 0.0) p = 0.0;
           vec4 barDiffuseColor = texture2D(colorBar, vec2(p , 0.5));
-          diffuseColor = barDiffuseColor;
+          diffuseColor.rgb = barDiffuseColor.rgb;
         #endif
 
         gl_FragColor = diffuseColor;
@@ -1467,14 +1475,17 @@ export class GeoJSONPolygonBorderListGeometry extends THREE.BufferGeometry {
         map[label] = new THREE.Float32BufferAttribute(l, 1);
       }
       this.valueMap = map;
+      this.setValueKey(this._valuekey);
     } catch (error) {
       console.log(error);
       this.valueMap = {};
+      this.setValueKey(this._valuekey);
     }
   }
 
   setValueKey(valueKey) {
     try {
+      this._valuekey = valueKey;
       const attrValue = this.valueMap[valueKey];
       if (attrValue) {
         this.setAttribute("value", attrValue);

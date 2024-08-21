@@ -10,7 +10,8 @@
     </div>
     <div class="form">
       <div class="btn_list" style="text-align: right">
-        <el-button :disabled="!s_showLayer" type="primary" size="mini" @click="handleSelectFile">{{ $l("导入GeoJSON") }}</el-button>
+        <!-- :disabled="!s_showLayer" -->
+        <el-button type="primary" size="mini" @click="handleSelectFile">{{ $l("导入GeoJSON") }}</el-button>
       </div>
     </div>
   </el-collapse-item>
@@ -158,6 +159,7 @@ export default {
             id: guid(),
             _file: file,
             name: file.name,
+            show: true,
           };
           this.rootVue.GeoJSONList.push(GeoJSON);
           document.body.removeChild(input);

@@ -8,11 +8,10 @@
         <div class="file_row">
           <div class="file_l_col" style="padding: 0 15px">{{ $l("Show GeoJSON") }}</div>
           <div class="file_s_col" style="width: 80px">
-            <el-switch v-model="show" :active-value="true" :inactive-value="false" />
+            <el-switch v-model="GeoJSON.show" :active-value="true" :inactive-value="false" />
           </div>
         </div>
       </div>
-
       <template v-if="showPointSetting">
         <div class="title">{{ $l("point") }}</div>
         <div class="file_item">
@@ -249,13 +248,13 @@ export default {
     },
   },
   watch: {
-    show: {
+    "GeoJSON.show": {
       handler(val) {
         this.$nextTick(() => {
           this._interval = setInterval(() => {
             if (!this._Map) return;
             clearInterval(this._interval);
-            if (this.show) {
+            if (this.GeoJSON.show) {
               this.handleEnable();
             } else {
               this.handleDisable();
@@ -263,7 +262,6 @@ export default {
           }, 1000);
         });
       },
-      immediate: true,
     },
   },
   data() {
@@ -342,9 +340,7 @@ export default {
       const { center, propertiesLabels, pointArray, lineArray, polygonArray, propertiesListArray } = event.data;
 
       console.time("onmessage");
-      console.log(center, pointArray, lineArray, polygonArray);
-
-      this.GeoJSON._propertiesLabels = propertiesLabels;
+      this.$set(this.GeoJSON, "propertiesLabels", propertiesLabels);
       this.propertiesLabels = propertiesLabels;
       this._GeoJSONLayer.setCenter(center);
       this._GeoJSONLayer.setPointArray(pointArray);

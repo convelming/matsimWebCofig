@@ -45,6 +45,7 @@
       </el-collapse>
     </div>
     <div class="toolbar-bodyer" v-show="activeModel === Parking.id">
+      <ParkingGeoJSONDetail />
       <el-collapse class="toolbar-collapse" v-model="Parking.activeName" accordion>
         <component v-for="item in Parking.list" :show="item.name == Parking.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" />
       </el-collapse>
@@ -119,6 +120,7 @@ import GeoJSONDetail from "../GeoJSON/toolbar/geoJSONDetail.vue";
 // 停车供需
 import PolgonParkingDetail from "../Parking/toolbar/PolgonParkingDetail.vue";
 import ParkingActivityDetail from "../Parking/toolbar/ParkingActivityDetail.vue";
+import ParkingGeoJSONDetail from "../Parking/toolbar/ParkingGeoJSONDetail.vue";
 
 export default {
   components: {
@@ -149,6 +151,7 @@ export default {
 
     PolgonParkingDetail,
     ParkingActivityDetail,
+    ParkingGeoJSONDetail,
   },
   inject: ["rootVue"],
   data() {
@@ -241,7 +244,7 @@ export default {
         ParkingActivityDetail: "Parking",
       },
       activeModel: "PublicTransit",
-      activeModel: "GeoJSON",
+      activeModel: "Parking",
       activeName: "",
       list: [],
     };
@@ -309,7 +312,7 @@ export default {
 
       this.$set(obj, "list", list);
       this.$set(obj, "activeName", activeName);
-      this.handleActiveModel(obj);
+      this.handleActiveModel(obj.id);
     },
     handleChangeActive(activeName) {
       try {

@@ -19,9 +19,9 @@
     |   App.vue                                                 /* vue根节点 */
     |   main.js                                                 /* vue 启动入口文件 */
     +---api                                                     /* api接口目录 */
-    |   
+    |
     +---assets                                                  /* 静态资源目录（项目运行和打包时会编译当前目录的文件） */
-    |   
+    |
     +---components                                              /* 全局通用组件目录 */
     |   |   ColorPicker.vue                                     /* 单个颜色选择器 */
     |   |   ColorSelect.vue                                     /* 渐变颜色选择器 */
@@ -233,9 +233,14 @@
         |   |   +---GeoJSON                                     /* GeoJSON */
         |   |   |   |   index.vue                               /* 左侧工具控件 */
         |   |   |   |
+        |   |   |   +---toolbar                                 /* 右侧工具控件 */
+        |   |   |   |       geoJSONDetail.vue                   /* GeoJSON样式调整控件 */
+        |   |   |   |
+        |   |   |   +---worker                                 /* 右侧工具控件 */
+        |   |   |   |       GeoJSONLayer.worker.js              /* GeoJSON图层多线程处理数据js */
+        |   |   |   |
         |   |   |   \---layer                                   /* 地图图层文件夹 */
         |   |   |           GeoJSONLayer.js                     /* GeoJSON图层 */
-        |   |   |           GeoJSONLayer.worker.js              /* GeoJSON图层多线程处理数据js */
         |   |   |
         |   |   +---HelpDialog                                  /* 帮助弹窗 */
         |   |   |
@@ -292,6 +297,8 @@
         |   |   |   |
         |   |   |   \---toolbar                                 /* 右侧工具控件 */
         |   |   |           PolgonParkingDetail.vue             /* 多边形划定停车详情 */
+        |   |   |           ParkingActivityDetail.vue           /* 停车活动详情 */
+        |   |   |           ParkingGeoJSONDetail.vue            /* 停车GsoJSON详情 */
         |   |   |
         |   |   +---PublicTransit                               /* 公交轨道站点 */
         |   |   |   |   enum.js                                 /* 公交轨道站点枚举 */
@@ -314,7 +321,7 @@
         |   |   |   |   |       VehicleLoad.vue                 /* Vehicle Load图表 */
         |   |   |   |   |
         |   |   |   |   \---TransitStopLoad                     /* 停靠站点的乘客弹窗 */
-        |   |   |   |           index.vue                       
+        |   |   |   |           index.vue
         |   |   |   |
         |   |   |   +---layer                                   /* 地图图层文件夹 */
         |   |   |   |       LinkLayer.js                        /* Link图层（没有使用） */
@@ -325,10 +332,10 @@
         |   |   |   |
         |   |   |   +---menu                                    /* 地图右键菜单 */
         |   |   |   |       Route.vue                           /* Route的地图右键菜单 */
-        |   |   |   |       Stop.vue                            /* Stop的地图右键菜单 */       
+        |   |   |   |       Stop.vue                            /* Stop的地图右键菜单 */
         |   |   |   |
         |   |   |   \---toolbar                                 /* 右侧工具控件 */
-        |   |   |           routeDepartures.vue                        
+        |   |   |           routeDepartures.vue
         |   |   |           routeDetail.vue                     /* Route详情 */
         |   |   |           sreachStopRoute.vue                 /* Stop和Route搜索 */
         |   |   |           stopAndRoute.vue                    /* Stop和Route详情 */
@@ -377,5 +384,6 @@
         |           NetworkLayer.worker.js                      /* NetworkLayer图层多线程处理数据js */
         |
         +---systemEvaluation                                    /* 公交系统评估 （已弃用） */
-        |  
+        |
         \---test                                                /* 测试模块 */
+```
