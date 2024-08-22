@@ -109,6 +109,7 @@ export default {
       this.handleChangeTimeSpeed();
       this.handleChangeMapCameraControls();
     },
+    
     showLayerLinesAnalysis(val) {
       this.handleChangeTimeSpeed();
       this.handleChangeMapCameraControls();

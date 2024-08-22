@@ -40,7 +40,7 @@
       </el-collapse>
     </div>
     <div class="toolbar-bodyer" v-show="activeModel === GeoJSON.id">
-      <el-collapse class="toolbar-collapse" v-model="GeoJSON.activeName" accordion>
+      <el-collapse class="toolbar-collapse" v-model="GeoJSON.activeName">
         <GeoJSONDetail v-for="item in GeoJSONIdList" :key="item" :name="item" :id="item" />
       </el-collapse>
     </div>
@@ -208,7 +208,7 @@ export default {
         sreach: {},
         params: {},
         list: [],
-        activeName: "",
+        activeName: [],
       },
       Parking: {
         id: "Parking",
@@ -244,7 +244,6 @@ export default {
         ParkingActivityDetail: "Parking",
       },
       activeModel: "PublicTransit",
-      activeModel: "Parking",
       activeName: "",
       list: [],
     };
@@ -313,17 +312,6 @@ export default {
       this.$set(obj, "list", list);
       this.$set(obj, "activeName", activeName);
       this.handleActiveModel(obj.id);
-    },
-    handleChangeActive(activeName) {
-      try {
-        const index = this.list.findIndex((v) => v.name == activeName);
-        if (index > -1) {
-          const item = this.list[index];
-          this.list.splice(index, 1);
-          this.list.unshift(item);
-        }
-      } catch (error) {}
-      this.activeName = activeName;
     },
     handleActiveModel(id) {
       this.activeModel = id;
