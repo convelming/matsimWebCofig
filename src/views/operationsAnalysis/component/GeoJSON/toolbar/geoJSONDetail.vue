@@ -381,8 +381,6 @@ export default {
     },
 
     handleChange(type, value) {
-      console.log(type, value);
-
       this[type] = value;
       switch (type) {
         case "show":

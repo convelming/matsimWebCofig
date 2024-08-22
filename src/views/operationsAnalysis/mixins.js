@@ -39,6 +39,7 @@ export default {
       showLayerParking: false,
       lock2DParking: false,
       parkingGeoJSON: null,
+      parkingGeoJSON: { geoId: "9c5791a5-e5ce-4637-9731-7664cc53cea3" },
 
       showStopToolbar: true,
 

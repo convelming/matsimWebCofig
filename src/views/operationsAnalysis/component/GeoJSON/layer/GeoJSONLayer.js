@@ -172,6 +172,8 @@ export class GeoJSONLayer extends Layer {
 
     this.polygonMaterial.uniforms.opacity.value = this.polygonOpacity;
     this.polygonMaterial.needsUpdate = true;
+    this.polygonBorderMaterial.uniforms.opacity.value = this.polygonOpacity;
+    this.polygonBorderMaterial.needsUpdate = true;
   }
   setPolygonColor(polygonColor) {
     this.polygonColor = new THREE.Color(polygonColor);
@@ -272,6 +274,8 @@ export class GeoJSONLayer extends Layer {
       this.lineMaterial.uniforms.maxValue.value = properties.max;
       this.polygonMaterial.uniforms.minValue.value = properties.min;
       this.polygonMaterial.uniforms.maxValue.value = properties.max;
+      this.polygonBorderMaterial.uniforms.minValue.value = properties.min;
+      this.polygonBorderMaterial.uniforms.maxValue.value = properties.max;
     }
     for (const mesh of this.pointMeshList) {
       mesh.geometry.setPropertiesList(this.propertiesList, this.propertiesLabels);
@@ -382,7 +386,7 @@ export class GeoJSONLayer extends Layer {
     for (let i = 0, l = this.pointArray.length; i < l; i += maxPoint * 3) {
       const pointArray = this.pointArray.slice(i, i + maxPoint * 3 + 1);
 
-      const geometry = new GeoJSONPointListGeometry(pointArray, this.propertiesList, this.propertiesLabels, "");
+      const geometry = new GeoJSONPointListGeometry(pointArray, this.propertiesList, this.propertiesLabels, this.pointValue);
       const mesh = new THREE.Mesh(geometry, this.pointMaterial);
       mesh.position.set(cx, cy, 0.004);
       this.pointMeshList.push(mesh)
@@ -412,7 +416,7 @@ export class GeoJSONLayer extends Layer {
       if (index - num > maxLine) {
         num = index;
 
-        const geometry = new GeoJSONLineListGeometry(lineList, this.propertiesList, this.propertiesLabels, "");
+        const geometry = new GeoJSONLineListGeometry(lineList, this.propertiesList, this.propertiesLabels, this.lineValue);
         const mesh = new THREE.Mesh(geometry, this.lineMaterial);
         mesh.position.set(cx, cy, 0.003);
         this.lineMeshList.push(mesh);
@@ -424,7 +428,7 @@ export class GeoJSONLayer extends Layer {
     }
 
     if (lineList.length > 0) {
-      const geometry = new GeoJSONLineListGeometry(lineList, this.propertiesList, this.propertiesLabels, "");
+      const geometry = new GeoJSONLineListGeometry(lineList, this.propertiesList, this.propertiesLabels, this.lineValue);
       const mesh = new THREE.Mesh(geometry, this.lineMaterial);
       mesh.position.set(cx, cy, 0.003);
       this.lineMeshList.push(mesh);
@@ -433,8 +437,6 @@ export class GeoJSONLayer extends Layer {
       lineList.length = 0;
       await new Promise(resolve => setTimeout(resolve, 0));
     }
-    console.log(this.scene);
-
   }
 
   clearPolygon() {
@@ -462,13 +464,13 @@ export class GeoJSONLayer extends Layer {
       if (index - num > maxPolygon) {
         num = index;
 
-        const geometry = new GeoJSONPolygonListGeometry(polygonList, this.propertiesList, this.propertiesLabels, "");
+        const geometry = new GeoJSONPolygonListGeometry(polygonList, this.propertiesList, this.propertiesLabels, this.polygonValue);
         const mesh = new THREE.Mesh(geometry, this.polygonMaterial);
         mesh.position.set(cx, cy, 0.001);
         this.polygonMeshList.push(mesh);
         this.scene.add(mesh);
 
-        const borderGeometry = new GeoJSONPolygonBorderListGeometry(polygonList, this.propertiesList, this.propertiesLabels, "");
+        const borderGeometry = new GeoJSONPolygonBorderListGeometry(polygonList, this.propertiesList, this.propertiesLabels, this.polygonValue);
         const borderMesh = new THREE.Mesh(borderGeometry, this.polygonBorderMaterial);
         borderMesh.position.set(cx, cy, 0.002);
         this.polygonBorderMeshList.push(borderMesh);
@@ -481,13 +483,13 @@ export class GeoJSONLayer extends Layer {
     }
 
     if (polygonList.length > 0) {
-      const geometry = new GeoJSONPolygonListGeometry(polygonList, this.propertiesList, this.propertiesLabels, "");
+      const geometry = new GeoJSONPolygonListGeometry(polygonList, this.propertiesList, this.propertiesLabels, this.polygonValue);
       const mesh = new THREE.Mesh(geometry, this.polygonMaterial);
       mesh.position.set(cx, cy, 0.001);
       this.polygonMeshList.push(mesh);
       this.scene.add(mesh);
 
-      const borderGeometry = new GeoJSONPolygonBorderListGeometry(polygonList, this.propertiesList, this.propertiesLabels, "");
+      const borderGeometry = new GeoJSONPolygonBorderListGeometry(polygonList, this.propertiesList, this.propertiesLabels, this.polygonValue);
       const borderMesh = new THREE.Mesh(borderGeometry, this.polygonBorderMaterial);
       borderMesh.position.set(cx, cy, 0.002);
       this.polygonBorderMeshList.push(borderMesh);
@@ -568,7 +570,6 @@ export class GeoJSONPointListGeometry extends THREE.BufferGeometry {
       const attrValue = this.valueMap[valueKey];
       if (attrValue) {
         this.setAttribute("value", attrValue);
-        console.log(attrValue);
       } else {
         this.setAttribute("value", new THREE.Float32BufferAttribute([], 1));
       }
@@ -728,7 +729,6 @@ export class GeoJSONLineListGeometry extends THREE.BufferGeometry {
     const attrValue = new Array();
     const attrIndex = new Array();
     let indexOffset = 0;
-    console.log(lineList);
 
     for (let i1 = 0, l1 = lineList.length; i1 < l1; i1++) {
       const value = lineList[i1][0];
@@ -832,7 +832,6 @@ export class GeoJSONLineListGeometry extends THREE.BufferGeometry {
       const attrValue = this.valueMap[valueKey];
       if (attrValue) {
         this.setAttribute("value", attrValue);
-        console.log(attrValue);
       } else {
         this.setAttribute("value", new THREE.Float32BufferAttribute([], 1));
       }
@@ -1220,7 +1219,6 @@ export class GeoJSONPolygonListGeometry extends THREE.BufferGeometry {
       const attrValue = this.valueMap[valueKey];
       if (attrValue) {
         this.setAttribute("value", attrValue);
-        console.log(attrValue);
       } else {
         this.setAttribute("value", new THREE.Float32BufferAttribute([], 1));
       }
@@ -1489,7 +1487,6 @@ export class GeoJSONPolygonBorderListGeometry extends THREE.BufferGeometry {
       const attrValue = this.valueMap[valueKey];
       if (attrValue) {
         this.setAttribute("value", attrValue);
-        console.log(attrValue);
       } else {
         this.setAttribute("value", new THREE.Float32BufferAttribute([], 1));
       }
@@ -1598,7 +1595,7 @@ export class GeoJSONPolygonBorderMaterial extends THREE.Material {
           if(maxValue != minValue) {
             p = (vValue - minValue) / (maxValue - minValue);
           }
-          transformed.z *= p * height3D;
+          transformed.z = position.z * p * height3D;
         #else
           transformed.z = 0.0;
         #endif

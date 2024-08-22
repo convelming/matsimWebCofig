@@ -1,9 +1,10 @@
 <template>
   <div class="ParkingGeoJSONDetail" v-if="rootVue">
     <div v-if="rootVue.parkingGeoJSON && !reselect">
+      <el-button style="display: block; margin-bottom: 10px; width: 100%" size="mini" type="primary" @click="reselect = true">{{ $l("重新选择文件") }}</el-button>
       <div class="collapse" v-for="layer in layerList" :key="layer.name">
         <div class="collapse_header">
-          <el-checkbox v-model="layer.show" :label="layer.name" :indeterminate="false" @change="">{{ layer.name }}</el-checkbox>
+          <el-checkbox v-model="layer.show" :label="layer.name" :indeterminate="false" @change="handleChangeLayerParams(layer.name, 'show', $event)">{{ layer.name }}</el-checkbox>
           <span class="icon el-icon-caret-bottom" :class="layer.showSetting ? 'show' : 'hide'" @click.stop="layer.showSetting = !layer.showSetting"></span>
         </div>
         <div class="collapse_bodyer" v-if="layer.showSetting">
@@ -57,16 +58,13 @@
           </el-descriptions>
         </div>
       </div>
-      <div class="btn_box">
-        <el-button size="mini" type="primary" @click="reselect = true">{{ $l("重新选择文件") }}</el-button>
-      </div>
     </div>
     <div v-else v-loading="uploading" :element-loading-text="$l('文件上传中...')" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
       <el-select class="select_box" :value="s_value" @change="handleChangeGeoJSON" :placeholder="$l('请选择GeoJSON')" clearable size="mini">
         <el-option value="localhost" :label="$l('本地文件')"></el-option>
         <el-option v-for="item in rootVue.GeoJSONList" :key="item.id" :label="item.name" :value="item.id"> </el-option>
       </el-select>
-      <el-form class="form_box" v-if="selectGeoJSON" :model="uploadForm" ref="form" label-width="auto" :inline="false" size="mini">
+      <el-form class="form_box" v-if="selectGeoJSON && s_value" :model="uploadForm" ref="form" label-width="auto" :inline="false" size="mini">
         <el-form-item :label="$l('路内停车场字段')" prop="road">
           <el-select v-model="uploadForm.road" clearable>
             <el-option v-for="(item, key) in selectGeoJSON.propertiesLabels" :key="key" :label="key" :value="key"></el-option>
@@ -95,14 +93,7 @@
         <div class="tip">{{ $l("总停车场字段不选择时，将会采用其他4个字段的和作为总停车场数量") }}</div>
         <div class="btn_box">
           <el-button size="mini" type="primary" @click="handleUploadFile" :loading="uploading">{{ $l("立即上传") }}</el-button>
-          <el-button
-            size="mini"
-            @click="
-              s_value = null;
-              reselect = false;
-            "
-            >{{ $l("取消") }}</el-button
-          >
+          <el-button size="mini" @click="handleCloseSelect">{{ $l("取消") }}</el-button>
         </div>
       </el-form>
     </div>
@@ -207,9 +198,7 @@ export default {
       layerList: [],
     };
   },
-  created() {
-    console.log(this);
-  },
+  created() {},
   mounted() {
     this.$nextTick(() => {
       this._interval = setInterval(() => {
@@ -321,6 +310,10 @@ export default {
           break;
       }
     },
+    handleCloseSelect() {
+      this.s_value = null;
+      this.reselect = false;
+    },
     handleChangeGeoJSON(value) {
       if (value == "localhost") {
         const input = document.createElement("input");
@@ -350,14 +343,13 @@ export default {
       } else {
         this.s_value = value;
         this.selectGeoJSON = this.rootVue.GeoJSONList.find((item) => item.id === value);
-        console.log(this.selectGeoJSON);
-
         this.uploadForm = {
           road: null,
           common: null,
           special: null,
           roadside: null,
           total: null,
+          total2: "total2",
         };
       }
     },
@@ -366,27 +358,28 @@ export default {
       const form = JSON.parse(JSON.stringify(this.uploadForm));
       form.file = this.selectGeoJSON._file;
       let res = { data: "" };
-      // uploadGeoJson(form)
-      //   .then((res) => {
-      const parkingGeoJSON = {
-        _file: form.file,
-        name: form.file.name,
-        road: form.road,
-        common: form.common,
-        special: form.special,
-        roadside: form.roadside,
-        total: form.total,
-        geoId: res.data,
-      };
-      this.handleDrowFile(form);
-      this.rootVue.parkingGeoJSON = parkingGeoJSON;
-      this.rootVue.$emit("Parking_Geojson_Uuid", { geoId: res.data });
-      this.uploading = false;
-
-      // })
-      // .catch((res) => {
-      //   this.uploading = false;
-      // });
+      uploadGeoJson(form)
+        .then((res) => {
+          const parkingGeoJSON = {
+            _file: form.file,
+            name: form.file.name,
+            road: form.road,
+            common: form.common,
+            special: form.special,
+            roadside: form.roadside,
+            total: form.total,
+            total2: form.total2,
+            geoId: res.data,
+          };
+          this.handleDrowFile(form);
+          this.rootVue.parkingGeoJSON = parkingGeoJSON;
+          this.rootVue.$emit("Parking_Geojson_Uuid", { geoId: res.data });
+          this.uploading = false;
+          this.reselect = false;
+        })
+        .catch((res) => {
+          this.uploading = false;
+        });
     },
     handleDrowFile(form) {
       for (const layer of this.layerList) {
@@ -399,15 +392,16 @@ export default {
       if (!!form.common) layerNameList.push("common");
       if (!!form.special) layerNameList.push("special");
       if (!!form.roadside) layerNameList.push("roadside");
-      // if (!!form.total) layerNameList.push("total");
-      // else if (!!layerNameList.length) layerNameList.push("total");
+      if (!!form.total) layerNameList.push("total");
+      else if (!!layerNameList.length) layerNameList.push("total2");
 
       const layerList = [];
 
       for (const layerName of layerNameList) {
         const layer = {
           name: layerName,
-          show: true,
+          valueKey: form[layerName],
+          show: false,
           showSetting: false,
           showPointSetting: false,
           showLineSetting: false,
@@ -441,7 +435,7 @@ export default {
         };
 
         layer._geojsonLayer = new GeoJSONLayer({
-          zIndex: 30,
+          zIndex: 10,
 
           // ******************** 点 ******************** //
           pointSize: layer.params.pointSize,
@@ -479,9 +473,28 @@ export default {
       worker.onmessage = (event) => {
         const { center, propertiesLabels, pointArray, lineArray, polygonArray, propertiesListArray } = event.data;
         const propertiesList = JSON.parse(new TextDecoder().decode(propertiesListArray));
-        for (const layer of layerList) {
-          console.log(propertiesLabels);
+        let total2Min = Number.MAX_SAFE_INTEGER,
+          total2Max = Number.MIN_SAFE_INTEGER;
 
+        propertiesList.forEach((item, index) => {
+          if (index == 0) return;
+          let total2 = 0;
+          if (!!form.road) total2 += Number(item[form.road] || 0) || 0;
+          if (!!form.common) total2 += Number(item[form.common] || 0) || 0;
+          if (!!form.special) total2 += Number(item[form.special] || 0) || 0;
+          if (!!form.roadside) total2 += Number(item[form.roadside] || 0) || 0;
+
+          if (total2Min > total2) total2Min = total2;
+          if (total2Max < total2) total2Max = total2;
+          item.total2 = total2;
+        });
+        propertiesLabels.total2 = {
+          max: total2Max,
+          min: total2Min,
+        };
+
+        console.log(propertiesList);
+        for (const layer of layerList) {
           console.time("onmessage");
 
           layer.showPointSetting = !!pointArray.length;
@@ -498,7 +511,7 @@ export default {
         }
         if (this._Map) {
           for (const layer of this.layerList) {
-            this._Map.addLayer(layer._geojsonLayer);
+            if (layer.show) this._Map.addLayer(layer._geojsonLayer);
           }
         }
         worker.terminate();

@@ -123,7 +123,7 @@
 import { MAP_EVENT } from "@/mymap";
 import { PolygonSelectLayer, POLYGON_SELECT_STATE_KEY, POLYGON_SELECT_EVENT } from "./layer/PolygonSelectLayer";
 import { Activity3DLayer } from "../Activity3D/layer/Activity3DLayer";
-import { allParking, getAllActivityType,  } from "@/api/index";
+import { allParking, getAllActivityType } from "@/api/index";
 import { guid } from "@/utils/utils";
 
 const CHANGE_COLOR_EVENT_KEY = "Parking_changeColor";
@@ -205,11 +205,10 @@ export default {
     };
   },
   created() {
-
     this.s_showLayer = this.showLayer;
 
     this._PolygonSelectLayer = new PolygonSelectLayer({
-      zIndex: 100,
+      zIndex: 200,
       event: {
         [POLYGON_SELECT_EVENT.STATE_CHANGE]: (res) => {
           this.polygonSelectState = res.data.state;
@@ -221,7 +220,7 @@ export default {
     });
 
     this._Activity3DLayer = new Activity3DLayer({
-      zIndex: 30,
+      zIndex: 50,
       colors: this.activityTypeList,
       scale: this.scale,
       maxNum: this.maxNum,
@@ -313,11 +312,11 @@ export default {
     handleShowParkDetail(path) {
       this.handleStopPolygonSelect();
       console.log(path);
-
       this.rootVue.handleShowPolgonParkingDetail({
         uuid: guid(),
         polgonParkingDetail: {
           xyarr: path,
+          geoId: this.rootVue.parkingGeoJSON ? this.rootVue.parkingGeoJSON.geoId : null,
         },
       });
     },
@@ -356,5 +355,4 @@ export default {
 
 .my_collapse_item {
 }
-
 </style>

@@ -96,6 +96,41 @@ export class PolygonSelectLayer extends Layer {
   }
 
   handleStateChange() {
+    switch (this.state) {
+      case POLYGON_SELECT_STATE_KEY.NOT_STARTED:
+        {
+          if (this._changeMap && this.map) {
+            this._changeMap = false;
+            this.map.enableRotate = this._mapEnableRotate;
+            this.map.openGPUPick = true;
+          }
+        }
+        break;
+      case POLYGON_SELECT_STATE_KEY.CAN_START:
+        {
+          if (this.map) {
+            this._changeMap = true;
+            this._mapEnableRotate = this.map.enableRotate;
+            this.map.enableRotate = false;
+            this.map.openGPUPick = false;
+            this.map.setPitchAndRotation(90, 0);
+          }
+        }
+        break;
+      case POLYGON_SELECT_STATE_KEY.IN_PROGREES:
+        {
+        }
+        break;
+      case POLYGON_SELECT_STATE_KEY.ENDED:
+        if (this.map) {
+          this._changeMap = false;
+          this.map.enableRotate = this._mapEnableRotate;
+          this.map.openGPUPick = true;
+        }
+        break;
+
+    }
+
     this.handleEventListener(POLYGON_SELECT_EVENT.STATE_CHANGE, {
       state: this.state,
       path: this.path,
@@ -127,7 +162,7 @@ export class PolygonSelectLayer extends Layer {
     this.handleStateChange();
   }
 
-  setPath(path){
+  setPath(path) {
     this.center = path[0];
     this.path = path;
     this.movePoint = path[0];

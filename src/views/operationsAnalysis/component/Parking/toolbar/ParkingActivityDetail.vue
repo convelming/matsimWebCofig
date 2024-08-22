@@ -202,7 +202,6 @@ export default {
     };
   },
   created() {
-    console.log(this.activityDetail);
     this._SelectActivityLayer = new SelectActivityLayer({
       zIndex: 30,
       color: this.color,
