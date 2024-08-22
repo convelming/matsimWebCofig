@@ -331,8 +331,9 @@ export default {
               id: guid(),
               _file: file,
               name: file.name,
+              show: false,
             };
-            this.rootVue.GeoJSONList.push(GeoJSON);
+            this.rootVue.handleAddGeoJSON(GeoJSON);
             this.$nextTick(() => {
               this.handleChangeGeoJSON(GeoJSON.id);
             });
@@ -358,8 +359,8 @@ export default {
       const form = JSON.parse(JSON.stringify(this.uploadForm));
       form.file = this.selectGeoJSON._file;
       let res = { data: "" };
-      uploadGeoJson(form)
-        .then((res) => {
+      // uploadGeoJson(form)
+      //   .then((res) => {
           const parkingGeoJSON = {
             _file: form.file,
             name: form.file.name,
@@ -376,10 +377,10 @@ export default {
           this.rootVue.$emit("Parking_Geojson_Uuid", { geoId: res.data });
           this.uploading = false;
           this.reselect = false;
-        })
-        .catch((res) => {
-          this.uploading = false;
-        });
+        // })
+        // .catch((res) => {
+        //   this.uploading = false;
+        // });
     },
     handleDrowFile(form) {
       for (const layer of this.layerList) {

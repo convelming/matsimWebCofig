@@ -405,7 +405,7 @@ export default {
             type: "strategysettings",
           },
           nodes: nodes
-            .filter((v2) => v[v2] !== "" && v[v2] !== null && v[v2] !== "null")
+            .filter((v2) => (v[v2] !== "" && v[v2] !== null && v[v2] !== "null") || v2 === "subpopulation")
             .map((v2) => ({
               name: "param",
               attrs: { name: v2, value: v[v2] },

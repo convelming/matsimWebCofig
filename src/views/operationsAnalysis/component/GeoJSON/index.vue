@@ -155,13 +155,23 @@ export default {
         if (index > -1) {
           this.$message.error(this.$l("GeoJSON文件已存在！"));
         } else {
-          const GeoJSON = {
-            id: guid(),
-            _file: file,
-            name: file.name,
-            show: true,
-          };
-          this.rootVue.GeoJSONList.push(GeoJSON);
+          // const GeoJSON = {
+          //   id: guid(),
+          //   _file: file,
+          //   name: file.name,
+          //   show: true,
+          // };
+          // this.rootVue.GeoJSONList.push(GeoJSON);
+          // this.rootVue.handleToolbarActiveModel("GeoJSON");
+          this.rootVue.handleAddGeoJSON(
+            {
+              id: guid(),
+              _file: file,
+              name: file.name,
+              show: true,
+            },
+            true
+          );
           document.body.removeChild(input);
         }
       };

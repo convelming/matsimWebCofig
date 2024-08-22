@@ -328,5 +328,17 @@ export default {
         this.showStopToolbar = true;
       }
     },
+    handleAddGeoJSON(GeoJSON, open) {
+      try {
+        this.GeoJSONList.push(GeoJSON);
+        this.$refs.Toolbar.GeoJSON.activeName.push(GeoJSON.id);
+        if (open) {
+          this.$refs.Toolbar.handleActiveModel("GeoJSON");
+        }
+      } catch (error) {
+        console.log(error);
+        
+      }
+    }
   },
 };
