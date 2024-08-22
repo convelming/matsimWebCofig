@@ -9,6 +9,41 @@
       </el-checkbox>
     </div>
     <div class="form">
+<<<<<<< HEAD
+=======
+      <div class="file_list" v-for="(item, index) in geoJSONList" :key="index">
+        <div class="file_item">
+          <div class="file_row">
+            <div class="file_name" :title="item.name">{{ item.name }}</div>
+            <div class="file_btn" style="width: 81px">
+              <el-switch v-model="item.show" :title="item.show ? $l('hideGeoJSON') : $l('showGeoJSON')" @change="handleChange('show', index, $event)"> </el-switch>
+            </div>
+          </div>
+          <div class="file_row">
+            <div style="width: 100%; padding: 0 10px">
+              <el-slider :disabled="!s_showLayer" :title="$l('pointScale')" v-model="item.labelParams.pointScale" :step="1" :min="1" :max="1000" @change="handleChange('pointScale', index, $event)"> </el-slider>
+            </div>
+            <div class="file_btn">
+              <el-color-picker :disabled="!s_showLayer" :title="$l('pointColor')" size="mini" :predefine="predefineColors" v-model="item.labelParams.pointColor" @change="handleChange('pointColor', index, $event)" />
+            </div>
+            <div class="file_btn">
+              <el-color-picker :disabled="!s_showLayer" :title="$l('polygonColor')" size="mini" :predefine="predefineColors" v-model="item.labelParams.polygonColor" @change="handleChange('polygonColor', index, $event)" />
+            </div>
+          </div>
+          <div class="file_row">
+            <div style="width: 100%; padding: 0 10px">
+              <el-slider :disabled="!s_showLayer" :title="$l('lineWidth')" v-model="item.labelParams.lineWidth" :step="1" :min="1" :max="1000" @change="handleChange('lineWidth', index, $event)"> </el-slider>
+            </div>
+            <div class="file_btn">
+              <el-color-picker :disabled="!s_showLayer" :title="$l('lineColor')" size="mini" :predefine="predefineColors" v-model="item.labelParams.lineColor" @change="handleChange('lineColor', index, $event)" />
+            </div>
+            <div class="file_btn">
+              <el-button :disabled="!s_showLayer" type="danger" icon="el-icon-delete" size="mini" circle :title="$l('deleteGeoJSON')" @click="removeGeoJSON(index)"></el-button>
+            </div>
+          </div>
+        </div>
+      </div>
+>>>>>>> master
       <div class="btn_list" style="text-align: right">
         <!-- :disabled="!s_showLayer" -->
         <el-button type="primary" size="mini" @click="handleSelectFile">{{ $l("导入GeoJSON") }}</el-button>
