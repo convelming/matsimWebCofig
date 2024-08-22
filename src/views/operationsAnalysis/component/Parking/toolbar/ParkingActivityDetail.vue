@@ -207,7 +207,7 @@ export default {
       color: this.color,
     });
     this._ActivityRoutesLayer1 = new ActivityRoutesLayer({
-      zIndex: 40,
+      zIndex: 100,
       activityColors: this.activityDetail.activityColors,
       legColors: this.activityDetail.legColors,
       height: this.height,

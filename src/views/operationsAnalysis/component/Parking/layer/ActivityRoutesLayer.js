@@ -28,7 +28,7 @@ export class ActivityRoutesLayer extends Layer {
   legMeshList = [];
 
 
-  labelScale = 1;
+  labelScale = 1.5;
   labelWidth = 2;
   labelColor = 0x000000;
   labelMeshList = [];
@@ -38,7 +38,6 @@ export class ActivityRoutesLayer extends Layer {
 
   constructor(opt) {
     super(opt);
-
 
     this.height = opt.height || this.height;
     this.actScale = opt.actScale || this.actScale;
@@ -196,12 +195,13 @@ export class ActivityRoutesLayer extends Layer {
 
   update() {
     if (!this.map) return;
-    [this.actStartMeshList, this.actEndMeshList, this.actCylMeshList, this.legMeshList].flat().forEach((v) => {
+    [this.actStartMeshList, this.actEndMeshList, this.labelMeshList, this.actCylMeshList, this.legMeshList].flat().forEach((v) => {
       v.removeFromParent();
       v.geometry.dispose();
     });
     this.actStartMeshList = [];
     this.actEndMeshList = [];
+    this.labelMeshList = [];
     this.actCylMeshList = [];
     this.labelMeshList = [];
     console.log(this.actList);
@@ -299,9 +299,11 @@ export class ActivityRoutesLayer extends Layer {
         const mesh = new THREE.Sprite(
           new THREE.SpriteMaterial({
             transparent: true,
-            map: texture
+            map: texture,
+            depthTest: false,
           })
         );
+        mesh.renderOrder = 999;
 
         mesh.scale.set(width * scale, height * scale, 1);
         mesh.center.set(0.5, 0);
