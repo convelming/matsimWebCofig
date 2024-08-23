@@ -107,7 +107,6 @@ export class ColorBar2D {
       // 创建线性渐变色
       const linearGradient = this.context2D.createLinearGradient(0, 0, ColorBar2D.width, 0);
       const drowColors = ColorBar2D.getDrowColors(colors);
-      console.log(drowColors);
       for (const { key, color } of drowColors) {
         linearGradient.addColorStop(key, color);
       }

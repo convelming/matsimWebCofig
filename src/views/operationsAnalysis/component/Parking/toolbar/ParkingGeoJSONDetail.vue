@@ -7,7 +7,7 @@
           <el-checkbox v-model="layer.show" :label="layer.name" :indeterminate="false" @change="handleChangeLayerParams(layer.name, 'show', $event)">{{ layer.name }}</el-checkbox>
           <span class="icon el-icon-caret-bottom" :class="layer.showSetting ? 'show' : 'hide'" @click.stop="layer.showSetting = !layer.showSetting"></span>
         </div>
-        <div class="collapse_bodyer" v-if="layer.showSetting">
+        <div class="collapse_bodyer" v-show="layer.showSetting">
           <el-descriptions :column="1" size="mini">
             <template v-if="layer.showPointSetting">
               <el-descriptions-item label="pointSize">
@@ -16,11 +16,10 @@
               <el-descriptions-item label="pointColors">
                 <ColorSelect :title="$l('pointColors')" v-model="layer.params.pointColors" @change="handleChangeLayerParams(layer.name, 'pointColors', $event.value)" :colorsList="COLOR_LIST" size="mini" />
               </el-descriptions-item>
-
-              <!-- <el-descriptions-item label="showPointVisualMap">
-                <el-switch :title="$l('showPointVisualMap')" v-model="layer.showPointVisualMap" :active-value="true" :inactive-value="false"> </el-switch>
+              <el-descriptions-item label="showPointVisualMap">
+                <el-switch :title="$l('showPointVisualMap')" v-model="layer.showPointVisualMap" :active-value="true" :inactive-value="false"></el-switch>
+                <GeoJSONVisualMap v-show="layer.showPointVisualMap" :color="COLOR_LIST[layer.params.pointColors]" :max="layer.valueLabel.max" :min="layer.valueLabel.min" />
               </el-descriptions-item>
-              <GeoJSONVisualMap v-show="layer.showPointVisualMap" :color="COLOR_LIST[layer.params.pointColors]" :max="layer.valueLabel.max" :min="layer.valueLabel.min" /> -->
             </template>
             <template v-if="layer.showLineSetting">
               <el-descriptions-item label="lineWidth">
@@ -35,10 +34,10 @@
                 <ColorSelect :title="$l('lineColors')" style="width: 100%" v-model="layer.params.lineColors" @change="handleChangeLayerParams(layer.name, 'lineColors', $event.value)" :colorsList="COLOR_LIST" size="mini" />
               </el-descriptions-item>
 
-              <!-- <el-descriptions-item label="showLineVisualMap">
+              <el-descriptions-item label="showLineVisualMap">
                 <el-switch :title="$l('showLineVisualMap')" v-model="layer.showLineVisualMap" :active-value="true" :inactive-value="false"> </el-switch>
+                <GeoJSONVisualMap v-show="layer.showLineVisualMap" :color="COLOR_LIST[layer.params.lineColors]" :max="layer.valueLabel.max" :min="layer.valueLabel.min" />
               </el-descriptions-item>
-              <GeoJSONVisualMap v-show="layer.showLineVisualMap" :color="COLOR_LIST[layer.params.lineColors]" :max="layer.valueLabel.max" :min="layer.valueLabel.min" /> -->
             </template>
             <template v-if="layer.showPolygonSetting">
               <el-descriptions-item label="polygonOpacity">
@@ -65,10 +64,11 @@
                 </el-select>
               </el-descriptions-item>
 
-              <!-- <el-descriptions-item label="showPolygonVisualMap">
+              <el-descriptions-item label="showPolygonVisualMap">
                 <el-switch :title="$l('showPolygonVisualMap')" v-model="layer.showPolygonVisualMap" :active-value="true" :inactive-value="false"> </el-switch>
+                {{ layer.showPolygonVisualMap }}
+                <GeoJSONVisualMap v-show="layer.showPolygonVisualMap" :color="COLOR_LIST[layer.params.polygonColors]" :max="layer.valueLabel.max" :min="layer.valueLabel.min" />
               </el-descriptions-item>
-              <GeoJSONVisualMap v-show="layer.showPolygonVisualMap" :color="COLOR_LIST[layer.params.polygonColors]" :max="layer.valueLabel.max" :min="layer.valueLabel.min" /> -->
             </template>
           </el-descriptions>
         </div>
@@ -168,6 +168,7 @@
 import { GeoJSONLayer, LINE_STYPE } from "../../GeoJSON/layer/GeoJSONLayer";
 import GeoJSONLayerWorker from "../../GeoJSON/worker/GeoJSONLayer.worker";
 import GeoJSONVisualMap from "../../GeoJSON/component/GeoJSONVisualMap.vue";
+
 import { uploadGeoJson } from "@/api/index";
 import { guid } from "@/utils/utils";
 
@@ -375,28 +376,28 @@ export default {
       const form = JSON.parse(JSON.stringify(this.uploadForm));
       form.file = this.selectGeoJSON._file;
       let res = { data: "" };
-      uploadGeoJson(form)
-        .then((res) => {
-          const parkingGeoJSON = {
-            _file: form.file,
-            name: form.file.name,
-            road: form.road,
-            common: form.common,
-            special: form.special,
-            roadside: form.roadside,
-            total: form.total,
-            total2: form.total2,
-            geoId: res.data,
-          };
-          this.handleDrowFile(form);
-          this.rootVue.parkingGeoJSON = parkingGeoJSON;
-          this.rootVue.$emit("Parking_Geojson_Uuid", { geoId: res.data });
-          this.uploading = false;
-          this.reselect = false;
-        })
-        .catch((res) => {
-          this.uploading = false;
-        });
+      // uploadGeoJson(form)
+      //   .then((res) => {
+      const parkingGeoJSON = {
+        _file: form.file,
+        name: form.file.name,
+        road: form.road,
+        common: form.common,
+        special: form.special,
+        roadside: form.roadside,
+        total: form.total,
+        total2: form.total2,
+        geoId: res.data,
+      };
+      this.handleDrowFile(form);
+      this.rootVue.parkingGeoJSON = parkingGeoJSON;
+      this.rootVue.$emit("Parking_Geojson_Uuid", { geoId: res.data });
+      this.uploading = false;
+      this.reselect = false;
+      // })
+      // .catch((res) => {
+      //   this.uploading = false;
+      // });
     },
     handleDrowFile(form) {
       for (const layer of this.layerList) {

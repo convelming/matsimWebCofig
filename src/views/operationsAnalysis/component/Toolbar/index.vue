@@ -244,6 +244,7 @@ export default {
         ParkingActivityDetail: "Parking",
       },
       activeModel: "PublicTransit",
+      activeModel: "Parking",
       activeName: "",
       list: [],
     };

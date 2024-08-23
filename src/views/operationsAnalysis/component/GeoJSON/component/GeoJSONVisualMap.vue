@@ -1,7 +1,7 @@
 <template>
   <div class="GeoJSONVisualMap" @mousedown="startMove" :style="s_style">
     <div class="item" v-for="(item, index) in list" :key="index">
-      <div class="text">{{ Number(Number(item.min).toFixed(4)) }} ~~ {{ Number(Number(item.max).toFixed(4)) }}</div>
+      <div class="text">{{ Number(Number(item.min).toFixed(4)) }} ~ {{ Number(Number(item.max).toFixed(4)) }}</div>
       <div class="color" :style="{ backgroundColor: item.color }"></div>
     </div>
   </div>
