@@ -12,7 +12,7 @@
       <div class="form_item">
         <div class="form_label">{{ $l("图标大小：") }}</div>
         <div class="form_value">
-          <el-slider :disabled="!s_showLayer" v-model="stopScale" :min="1" :max="20"></el-slider>
+          <el-slider :disabled="!s_showLayer" v-model="stopScale" :min="1" :max="10"></el-slider>
         </div>
       </div>
       <div class="form_item">
@@ -121,7 +121,7 @@ export default {
 
       showStopName: false,
       stopColor: "#2656C6",
-      stopScale: 2,
+      stopScale: 1,
 
       sreachLine: false,
       frameSelectState: undefined,
