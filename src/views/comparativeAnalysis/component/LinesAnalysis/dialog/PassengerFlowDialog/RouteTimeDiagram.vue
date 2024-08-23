@@ -136,6 +136,7 @@ export default {
         });
       }
     },
+    // 把接口返回的数据转换成页面渲染需要的格式
     changeData(data, type) {
       try {
         const stopMap = new Map(data[0].data.map((v, i) => [v.stopId, { stopId: v.stopId, stopName: v.stopName, index: i + 1, type: type, arrScheduled: [], arrSimulated: [], depScheduled: [], depSimulated: [] }]));
@@ -408,6 +409,7 @@ export default {
         return "";
       }
     },
+    // 导出csv
     handleExport() {
       const rowList = [];
       rowList.push(`"${this.routeInfo.routeId}"`);

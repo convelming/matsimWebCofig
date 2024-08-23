@@ -1,5 +1,5 @@
 
-import { Map, MapLayer, MAP_LAYER_STYLE } from "@/mymap/index.js";
+import { MyMap, MapLayer, MAP_LAYER_STYLE } from "@/mymap/index.js";
 import { getTimeInterval, getCenterZoom } from "@/api/index.js";
 import { guid } from "@/utils/index.js";
 
@@ -34,11 +34,13 @@ export default {
 
       showLayerGeoJSON: false,
       lock2DGeoJSON: false,
+      GeoJSONList: [],
 
       showLayerParking: false,
       lock2DParking: false,
+      parkingGeoJSON: null,
 
-      showStopToolbar: false,
+      showStopToolbar: true,
 
       showClock: true,
 
@@ -49,13 +51,15 @@ export default {
       minTime: 0,
       maxTime: 3600 * 24.5,
       range: [],
-      center: [0, 0]
+      center: [0, 0],
+
     };
   },
   watch: {
     showLayerPublicTransit(val) {
       this.handleChangeTimeSpeed();
       this.handleChangeMapCameraControls();
+      this.handleToolbarActiveModel("PublicTransit");
     },
     lock2DPublicTransit(val) {
       this.handleChangeTimeSpeed();
@@ -64,6 +68,7 @@ export default {
     showLayerMotorizedTravel(val) {
       this.handleChangeTimeSpeed();
       this.handleChangeMapCameraControls();
+      this.handleToolbarActiveModel("MotorizedTravel");
     },
     lock2DMotorizedTravel(val) {
       this.handleChangeTimeSpeed();
@@ -72,6 +77,7 @@ export default {
     showLayerBuild3D(val) {
       this.handleChangeTimeSpeed();
       this.handleChangeMapCameraControls();
+      this.handleToolbarActiveModel("Build3D");
     },
     lock2DBuild3D(val) {
       this.handleChangeTimeSpeed();
@@ -80,6 +86,7 @@ export default {
     showLayerNetwork(val) {
       this.handleChangeTimeSpeed();
       this.handleChangeMapCameraControls();
+      this.handleToolbarActiveModel("Network");
     },
     lock2DNetwork(val) {
       this.handleChangeTimeSpeed();
@@ -88,6 +95,7 @@ export default {
     showLayerActivity3D(val) {
       this.handleChangeTimeSpeed();
       this.handleChangeMapCameraControls();
+      this.handleToolbarActiveModel("Activity3D");
     },
     lock2DActivity3D(val) {
       this.handleChangeTimeSpeed();
@@ -96,6 +104,7 @@ export default {
     showLayerCarTravel(val) {
       this.handleChangeTimeSpeed();
       this.handleChangeMapCameraControls();
+      this.handleToolbarActiveModel("CarTravel");
     },
     lock2DCarTravel(val) {
       this.handleChangeTimeSpeed();
@@ -104,6 +113,7 @@ export default {
     showLayerGeoJSON(val) {
       this.handleChangeTimeSpeed();
       this.handleChangeMapCameraControls();
+      this.handleToolbarActiveModel("GeoJSON");
     },
     lock2DGeoJSON(val) {
       this.handleChangeTimeSpeed();
@@ -112,6 +122,7 @@ export default {
     showLayerParking(val) {
       this.handleChangeTimeSpeed();
       this.handleChangeMapCameraControls();
+      this.handleToolbarActiveModel("Parking");
     },
     lock2DParking(val) {
       this.handleChangeTimeSpeed();
@@ -145,6 +156,13 @@ export default {
   beforeDestroy() {
   },
   methods: {
+    handleToolbarActiveModel(id) {
+      try {
+        this.$refs.Toolbar.handleActiveModel(id);
+      } catch (error) {
+
+      }
+    },
     handleShowHelp() {
       this.showHelpDialog = true;
     },
@@ -157,11 +175,11 @@ export default {
     handleChangeMapCameraControls() {
     },
     initMap() {
-      this._Map = new Map({
+      this._Map = new MyMap({
         rootId: "mapRoot",
         enableRotate: true,
       });
-      this._Map.setFitZoomAndCenterByPoints(this.range);
+      // this._Map.setFitZoomAndCenterByPoints(this.range);
 
       this._MapLayer = new MapLayer({ tileClass: MAP_LAYER_STYLE[0], zIndex: -1 });
       this._Map.addLayer(this._MapLayer);
@@ -310,5 +328,17 @@ export default {
         this.showStopToolbar = true;
       }
     },
+    handleAddGeoJSON(GeoJSON, open) {
+      try {
+        this.GeoJSONList.push(GeoJSON);
+        this.$refs.Toolbar.GeoJSON.activeName.push(GeoJSON.id);
+        if (open) {
+          this.$refs.Toolbar.handleActiveModel("GeoJSON");
+        }
+      } catch (error) {
+        console.log(error);
+        
+      }
+    }
   },
 };

@@ -712,6 +712,18 @@ export function rangeRequireRatio(data) {
 }
 
 
+// 范围查询供需比
+// POST /pt/parking/rangeRequireRatio2
+// 接口ID：202536443
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-202536443
+export function rangeRequireRatio2(data) {
+  return request({
+    url: `/pt/parking/rangeRequireRatio2`,
+    data: data,
+    method: "post",
+  });
+}
+
 
 
 

@@ -1,7 +1,5 @@
 import * as THREE from "three";
-import { send } from "../utils/index";
 import { EventListener } from "./EventListener";
-import { MAP_EVENT } from "./Map";
 
 const RENDER_ORDER_MAX_NUM = 9999999;
 

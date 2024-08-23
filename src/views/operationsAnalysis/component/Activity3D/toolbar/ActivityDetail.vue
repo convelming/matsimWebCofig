@@ -49,7 +49,7 @@
           <div class="form_item" style="align-items: center">
             <div class="form_label">{{ $l("height") }}</div>
             <div class="form_value">
-              <el-slider style="padding: 0 calc(2em - 10px)" v-model="height" :min="0" :max="500" :format-tooltip="(v) => `${v}%`" />
+              <el-slider style="padding: 0 calc(2em - 10px)" v-model="height" :min="0" :max="500" :step="0.1" :format-tooltip="(v) => `${v}%`" />
             </div>
           </div>
         </div>

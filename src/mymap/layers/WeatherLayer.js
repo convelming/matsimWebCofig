@@ -1,6 +1,5 @@
-import { Layer } from "../main/Layer";
+import { MAP_EVENT, Layer } from "../index.js";
 import * as THREE from "three";
-import { MAP_EVENT } from "../main/Map.js";
 
 const Loader = new THREE.TextureLoader();
 

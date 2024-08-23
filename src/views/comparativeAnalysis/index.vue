@@ -103,14 +103,17 @@ export default {
       }
       this.handleChangeTimeSpeed();
       this.handleChangeMapCameraControls();
+      this.handleToolbarActiveModel("AnalysisReport");
     },
     lock2DAnalysisReport(val) {
       this.handleChangeTimeSpeed();
       this.handleChangeMapCameraControls();
     },
+    
     showLayerLinesAnalysis(val) {
       this.handleChangeTimeSpeed();
       this.handleChangeMapCameraControls();
+      this.handleToolbarActiveModel("LinesAnalysis");
     },
     lock2DLinesAnalysis(val) {
       this.handleChangeTimeSpeed();

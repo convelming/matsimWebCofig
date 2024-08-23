@@ -81,6 +81,13 @@ export default {
     transition: unset;
     pointer-events: none;
   }
+  &.el-select--mini,
+  &.el-select--small {
+    .el-input__prefix {
+      top: 0px;
+      bottom: 0px;
+    }
+  }
 }
 .ColorSelect_color_list {
   box-sizing: border-box;

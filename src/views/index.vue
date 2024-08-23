@@ -89,8 +89,8 @@
       <el-table height="400" :data="dataSourceList" border stripe v-loading="dateSourceListLoading">
         <el-table-column prop="name" :label="$l('方案名称')" width="100" />
         <el-table-column prop="detail" :label="$l('方案简介')" />
-        <el-table-column prop="loadStatus" :label="$l('方案状态')" width="130">
-          <template slot-scope="{ row }">{{ row.loadStatus }} / {{ row.runStatus }}</template>
+        <el-table-column prop="loadStatus" :label="$l('方案状态')" width="150">
+          <template slot-scope="{ row }">{{ $l(row.loadStatus) }} / {{ $l(row.runStatus) }}</template>
         </el-table-column>
         <el-table-column :label="$l('操作')" width="250">
           <template slot-scope="{ row }">
@@ -112,8 +112,8 @@
       <el-table height="400" :data="dataSourceList.filter((v) => !v.noRun)" border stripe v-loading="dateSourceListLoading">
         <el-table-column prop="name" :label="$l('方案名称')" width="100" />
         <el-table-column prop="detail" :label="$l('方案简介')" />
-        <el-table-column prop="loadStatus" :label="$l('方案状态')" width="130">
-          <template slot-scope="{ row }">{{ row.loadStatus }} / {{ row.runStatus }}</template>
+        <el-table-column prop="loadStatus" :label="$l('方案状态')" width="150">
+          <template slot-scope="{ row }">{{ $l(row.loadStatus) }} / {{ $l(row.runStatus) }}</template>
         </el-table-column>
         <el-table-column :label="$l('操作')" width="250">
           <template slot-scope="{ row }">
@@ -145,8 +145,8 @@
         </el-table-column>
         <el-table-column prop="name" :label="$l('方案名称')" />
         <el-table-column prop="detail" :label="$l('方案简介')" />
-        <el-table-column prop="loadStatus" :label="$l('方案状态')">
-          <template slot-scope="{ row }">{{ row.loadStatus }} / {{ row.runStatus }}</template>
+        <el-table-column prop="loadStatus" :label="$l('方案状态')" width="150">
+          <template slot-scope="{ row }">{{ $l(row.loadStatus) }} / {{ $l(row.runStatus) }}</template>
         </el-table-column>
         <el-table-column :label="$l('操作')" width="180">
           <template slot-scope="{ row }">
@@ -168,8 +168,8 @@
       <el-table height="400" :data="dataSourceList" border stripe v-loading="dateSourceListLoading">
         <el-table-column prop="name" :label="$l('方案名称')" />
         <el-table-column prop="detail" :label="$l('方案简介')" />
-        <el-table-column prop="loadStatus" :label="$l('方案状态')">
-          <template slot-scope="{ row }">{{ row.loadStatus }} / {{ row.runStatus }}</template>
+        <el-table-column prop="loadStatus" :label="$l('方案状态')" width="150">
+          <template slot-scope="{ row }">{{ $l(row.loadStatus) }} / {{ $l(row.runStatus) }}</template>
         </el-table-column>
         <el-table-column :label="$l('操作')" width="180">
           <template slot-scope="{ row }">

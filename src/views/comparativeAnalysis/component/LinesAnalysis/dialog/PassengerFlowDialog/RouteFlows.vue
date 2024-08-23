@@ -110,6 +110,7 @@ export default {
     headerCellStyle({ row, column, rowIndex, columnIndex }) {
       return rowIndex == 3 ? "display:none" : "";
     },
+    // 把接口返回的数据转换成link数据，并计算出最大值
     getListObj(list) {
       const linkObj = {};
       const fromOffsetObj = {};
@@ -158,6 +159,7 @@ export default {
           this.loading = false;
         });
     },
+    // 创建svg图表
     getChart() {
       const nodes = this.list;
       const maxValue = this.maxPassenger <= 0 ? 1 : this.maxPassenger;
@@ -357,6 +359,7 @@ export default {
       const newLine = this.newLinkObj[`${from}-${to}`] || { value: 0 };
       return `old:${oldLine.value} -- new:${newLine.value}`;
     },
+    // 显示到地图上
     showOnMap() {
       this.rootVue.handleShowRouteFlows({
         uuid: this.routeInfo.routeId,
@@ -364,6 +367,7 @@ export default {
       });
       this.$parent.$emit("close");
     },
+    // 导出csv
     handleExport() {
       const rowList = [];
       rowList.push(`"${this.routeInfo.routeId}"`);

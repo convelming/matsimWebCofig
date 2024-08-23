@@ -135,8 +135,15 @@ const defaultForm = {
   clearDefaultTeleportedModeParams: "",
   networkModes: "",
   routingRandomness: "",
-  TeleportedMode: [],
 };
+
+const defaultTeleportedMode = {
+  beelineDistanceFactor: "",
+  mode: "",
+  teleportedModeFreespeedFactor: "",
+  teleportedModeSpeed: "",
+};
+
 const defaultXml = `
 	<module name="planscalcroute" >
 		<!-- Defines how access and egress to main mode is simulated. Either of [none, accessEgressModeToLink, walkConstantTimeToLink, accessEgressModeToLinkPlusTimeConstant], Current default=none which means no access or egress trips are simulated. -->
@@ -219,16 +226,19 @@ export default {
     getForm(xml) {
       const json = xmlToJson(xml);
       const form = JSON.parse(JSON.stringify(defaultForm));
+      form.TeleportedMode = [];
+
       function getTeleportedMode(node) {
-        const obj = {
-          uuid: guid(),
-          open: false,
-        };
+        const obj = JSON.parse(JSON.stringify(defaultTeleportedMode));
+        obj.uuid = guid();
+        obj.open = false;
+        obj.type = `TeleportedMode`;
         for (const { attrs } of node.nodes) {
           obj[attrs.name] = attrs.value;
         }
         return obj;
       }
+
       const nodes = json.nodes[0].nodes;
       for (const node of nodes) {
         if (node.name == "param") {
@@ -237,7 +247,6 @@ export default {
           const item = getTeleportedMode(node);
           item.index = form.TeleportedMode.length + 1;
           item.name = item.index;
-          item.type = `TeleportedMode`;
           form.TeleportedMode.push(item);
         }
       }
@@ -284,17 +293,14 @@ export default {
     },
     handleAddTeleportedMode() {
       let index = this.form.TeleportedMode.length > 0 ? this.form.TeleportedMode[this.form.TeleportedMode.length - 1].index + 1 : 1;
-      this.form.TeleportedMode.push({
-        open: false,
-        name: `${index}`,
-        type: "TeleportedMode",
-        index: index,
-        uuid: guid(),
-        beelineDistanceFactor: "",
-        mode: "",
-        teleportedModeFreespeedFactor: "",
-        teleportedModeSpeed: "",
-      });
+
+      const obj = JSON.parse(JSON.stringify(defaultTeleportedMode));
+      obj.uuid = guid();
+      obj.open = false;
+      obj.type = `TeleportedMode`;
+      obj.index = index;
+      obj.name = `${index}`;
+      this.form.TeleportedMode.push(obj);
     },
     handleDeleteTeleportedMode(uuid) {
       let index = this.form.TeleportedMode.findIndex((item) => item.uuid === uuid);

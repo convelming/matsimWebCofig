@@ -340,20 +340,39 @@ const defaultForm = {
   learningRate: "",
   usingOldScoringBelowZeroUtilityDuration: "",
   writeExperiencedPlans: "",
-  Scoring: [
-    // {
-    //   earlyDeparture: "",
-    //   lateArrival: "",
-    //   marginalUtilityOfMoney: "",
-    //   performing: "",
-    //   subpopulation: "",
-    //   utilityOfLineSwitch: "",
-    //   waiting: "",
-    //   waitingPt: "",
-    //   ActivityOrMode: [],
-    // },
-  ],
 };
+const defaultScoring = {
+  earlyDeparture: "0.0",
+  lateArrival: "-18.0",
+  marginalUtilityOfMoney: "1.0",
+  performing: "6.0",
+  subpopulation: "null",
+  utilityOfLineSwitch: "-1.0",
+  waiting: "0.0",
+  waitingPt: "-6.0",
+};
+const defaultActivity = {
+  activityType: "car interaction",
+  closingTime: "undefined",
+  earliestEndTime: "undefined",
+  latestStartTime: "undefined",
+  minimalDuration: "undefined",
+  openingTime: "undefined",
+  priority: "1.0",
+  scoringThisActivityAtAll: "false",
+  typicalDuration: "undefined",
+  typicalDurationScoreComputation: "relative",
+};
+const defaultMode = {
+  constant: "0.0",
+  dailyMonetaryConstant: "0.0",
+  dailyUtilityConstant: "0.0",
+  marginalUtilityOfDistance_util_m: "0.0",
+  marginalUtilityOfTraveling_util_hr: "-6.0",
+  mode: "pt",
+  monetaryDistanceRate: "0.0",
+};
+
 const defaultXml = `
 	<module name="planCalcScore" >
 		<!-- logit model scale parameter. default: 1.  Has name and default value for historical reasons (see Bryan Raney's phd thesis). -->
@@ -575,45 +594,55 @@ export default {
     getForm(xml) {
       const json = xmlToJson(xml);
       const form = JSON.parse(JSON.stringify(defaultForm));
-      function getActivityPOrMode(node) {
-        const obj = {
-          uuid: guid(),
-          open: false,
-        };
+      form.Scoring = [];
+      
+      function getActivity(node) {
+        const obj = JSON.parse(JSON.stringify(defaultActivity));
+        obj.uuid = guid();
+        obj.open = false;
+        obj.type = `Activity`;
         for (const { name, attrs } of node.nodes) {
           obj[attrs.name] = attrs.value;
         }
         return obj;
       }
-
+      function getMode(node) {
+        const obj = JSON.parse(JSON.stringify(defaultMode));
+        obj.uuid = guid();
+        obj.open = false;
+        obj.type = `Mode`;
+        for (const { name, attrs } of node.nodes) {
+          obj[attrs.name] = attrs.value;
+        }
+        return obj;
+      }
       function getScoring(_node) {
-        const obj = {
-          uuid: guid(),
-          open: false,
+        const obj = JSON.parse(JSON.stringify(defaultScoring));
+        obj.uuid = guid();
+        obj.open = false;
+        obj.Activitys = [];
+        obj.Modes = [];
+        obj.type = `Scoring`;
 
-          ActivityOrMode: [],
-          Activitys: [],
-          Modes: [],
-        };
         for (const node of _node.nodes) {
           if (node.name == "param") {
             obj[node.attrs.name] = node.attrs.value;
           } else if (node.name == "parameterset" && node.attrs.type == "activityParams") {
-            const item = getActivityPOrMode(node);
+            const item = getActivity(node);
             item.index = obj.Activitys.length + 1;
             item.name = item.index;
-            item.type = `Activity`;
             obj.Activitys.push(item);
           } else if (node.name == "parameterset" && node.attrs.type == "modeParams") {
-            const item = getActivityPOrMode(node);
+            const item = getMode(node);
             item.index = obj.Modes.length + 1;
             item.name = item.index;
-            item.type = `Mode`;
             obj.Modes.push(item);
           }
         }
+
         return obj;
       }
+
       const nodes = json.nodes[0].nodes;
       for (const node of nodes) {
         if (node.name == "param") {
@@ -622,7 +651,6 @@ export default {
           const item = getScoring(node);
           item.index = form.Scoring.length + 1;
           item.name = item.index;
-          item.type = `Scoring`;
           form.Scoring.push(item);
         }
       }
@@ -648,7 +676,7 @@ export default {
         ...Scoring.map((v) => {
           const nodes = ["earlyDeparture", "lateArrival", "marginalUtilityOfMoney", "performing", "subpopulation", "utilityOfLineSwitch", "waiting", "waitingPt"];
           const nodeList = nodes
-            .filter((v2) => v[v2] !== "" && v[v2] !== null && v[v2] !== "null")
+            .filter((v2) => (v[v2] !== "" && v[v2] !== null && v[v2] !== "null") || v2 === "subpopulation")
             .map((v2) => ({
               name: "param",
               attrs: { name: v2, value: v[v2] },
@@ -704,22 +732,18 @@ export default {
     },
     handleAddScoring() {
       let index = this.form.Scoring.length > 0 ? this.form.Scoring[this.form.Scoring.length - 1].index + 1 : 1;
-      this.form.Scoring.push({
-        open: false,
-        name: `${this.$l("Scoring")} ${index}`,
-        index: index,
-        uuid: guid(),
 
-        earlyDeparture: "",
-        lateArrival: "",
-        marginalUtilityOfMoney: "",
-        performing: "",
-        subpopulation: "",
-        utilityOfLineSwitch: "",
-        waiting: "",
-        waitingPt: "",
-        ActivityOrMode: [],
-      });
+      const obj = JSON.parse(JSON.stringify(defaultScoring));
+      obj.uuid = guid();
+      obj.open = false;
+      obj.Activitys = [];
+      obj.Modes = [];
+      obj.type = `Scoring`;
+
+      obj.index = index;
+      obj.name = `${this.$l("Scoring")} ${index}`;
+
+      this.form.Scoring.push(obj);
     },
     handleDeleteScoring(uuid) {
       let index = this.form.Scoring.findIndex((item) => item.uuid === uuid);
@@ -729,6 +753,13 @@ export default {
       const scoring = this.form.Scoring.find((item) => item.uuid === scoringUuid);
       if (scoring) {
         let index = scoring.Activitys.length > 0 ? scoring.Activitys[scoring.Activitys.length - 1].index + 1 : 1;
+
+        const obj = JSON.parse(JSON.stringify(defaultScoring));
+        obj.uuid = guid();
+        obj.open = false;
+        obj.Activitys = [];
+        obj.Modes = [];
+
         scoring.Activitys.push({
           open: false,
           name: index,

@@ -2,237 +2,364 @@
 
 import * as THREE from "three";
 import { Layer, MAP_EVENT } from "@/mymap/index.js";
-import * as BufferGeometryUtils from "three/addons/utils/BufferGeometryUtils.js";
+import { ColorBar2D } from "@/mymap/utils/ColorBar2D.js";
 
-import GeoJSONLayerWorker from "./GeoJSONLayer.worker";
+const textureLoader = new THREE.TextureLoader();
 
-const POINT_SIZE = 80;
+export const LINE_STYPE = {
+  NONE: 0, // 不显示
+  SOLID: 1, // 实线
+  DASHED: 2 // 虚线
+}
 
 export class GeoJSONLayer extends Layer {
 
   color = new THREE.Color(0xffa500);
+  center = [0, 0];
+  propertiesLabels = {};
+  propertiesList = [];
 
-
+  pointSize = 1;
   pointColor = new THREE.Color(0xffa500);
-  pointScale = 1;
-  pointTexture = new THREE.TextureLoader().load(require("@/assets/image/point2.png"));
+  pointTexture = textureLoader.load(require("@/assets/image/point2.png"));
+  pointValue = null;
+  pointColorBar = null;
+  pointMaxValue = 1;
+  pointMinValue = 0;
+  pointOpacity = 1;
   pointMesh = null;
 
-  lineColor = new THREE.Color(0xffa500);
+
   lineWidth = 100;
-  lineTexture = null;
-  lineGeoList = [];
+  lineColor = new THREE.Color(0xffa500);
+  lineStyle = LINE_STYPE.SOLID;
+  lineValue = null;
+  lineColorBar = null;
+  lineMaxValue = 1;
+  lineMinValue = 0;
+  lineOpacity = 1;
+  lineMeshList = [];
 
   polygonColor = new THREE.Color(0xffa500);
-  polygonGeoList = [];
+  polygonOpacity = 1;
+  polygonBorderWidth = 1;
+  polygonBorderColor = new THREE.Color(0xffa500);
+  polygonBorderStyle = LINE_STYPE.SOLID;
+  polygonValue = null;
+  polygonColorBar = null;
+  polygonMaxValue = 1;
+  polygonMinValue = 0;
+  polygon3D = false;
+  polygon3DHeight = 100;
+  polygonMeshList = [];
+  polygonBorderMeshList = [];
 
-  async setPointScale(pointScale) {
-    this.pointScale = pointScale;
-
-    const pointArray = this.pointData.slice(2);
-    const scale = this.pointScale;
-    for (let i = 0, l = this.pointMesh.count, time = 0; i < l; i++, time++) {
-      const x = pointArray[i * 2];
-      const y = pointArray[i * 2 + 1];
-      const matrix = new THREE.Matrix4().makeTranslation(x, y, 0);
-      matrix.scale(new THREE.Vector3(scale, scale, scale));
-      this.pointMesh.setMatrixAt(i, matrix);
-
-      if (time > 20000) {
-        time = 0;
-        await new Promise(resolve => setTimeout(resolve, 0));
-      }
-    }
-    if (this.pointMesh.instanceMatrix) this.pointMesh.instanceMatrix.needsUpdate = true;
+  // ******************** 点 ******************** //
+  async setPointSize(pointSize) {
+    this.pointSize = pointSize;
+    this.pointMaterial.uniforms.size.value = this.pointSize;
+    this.pointMaterial.needsUpdate = true;
   }
   setPointColor(pointColor) {
     this.pointColor = new THREE.Color(pointColor);
-    this.pointMaterial.setValues({ color: this.pointColor })
+    this.pointMaterial.uniforms.diffuse.value = this.pointColor;
     this.pointMaterial.needsUpdate = true;
+  }
+  setPointIcon(pointIcon) {
+    textureLoader.load(pointIcon, (data) => {
+      this.pointTexture = data;
+      this.pointMaterial.defines.USE_MAP = !!this.pointTexture;
+      this.pointMaterial.uniforms.map.value = this.pointTexture;
+      this.pointMaterial.needsUpdate = true;
+    }, null, () => {
+      this.pointMaterial.defines.USE_MAP = false;
+      this.pointMaterial.uniforms.map.value = null;
+      this.pointMaterial.needsUpdate = true;
+    })
+  }
+  setPointValue(pointValue) {
+    this.pointValue = pointValue;
+
+    const properties = this.propertiesLabels[this.pointValue];
+    if (properties) {
+      this.pointMaterial.uniforms.minValue.value = properties.min;
+      this.pointMaterial.uniforms.maxValue.value = properties.max;
+    }
+    for (const mesh of this.pointMeshList) {
+      mesh.geometry.setValueKey(this.pointValue);
+    }
+    this.pointMaterial.defines.USE_COLOR_BAR = !!this.pointColorBarMap && !!this.pointValue;
+    this.pointMaterial.needsUpdate = true;
+  }
+  setPointColorBar(pointColorBar) {
+    this.pointColorBar = pointColorBar;
+    const pointColorBarUrl = ColorBar2D.instance.drow(this.pointColorBar);
+    this.pointColorBarMap = pointColorBarUrl ? textureLoader.load(pointColorBarUrl) : null;
+
+    this.pointMaterial.defines.USE_COLOR_BAR = !!this.pointColorBarMap && !!this.pointValue;
+    this.pointMaterial.uniforms.colorBar.value = this.pointColorBarMap;
+    this.pointMaterial.needsUpdate = true;
+  }
+  setPointOpacity(pointOpacity) {
+    this.pointOpacity = pointOpacity;
+
+    this.pointMaterial.uniforms.opacity.value = this.pointOpacity;
+    this.pointMaterial.needsUpdate = true;
+  }
+  setPointArray(pointArray) {
+    this.pointArray = pointArray;
+    this.clearPoint();
+    this.updatePoint();
+  }
+
+  // ******************** 线 ******************** //
+  setLineWidth(lineWidth) {
+    this.lineWidth = lineWidth;
+
+    this.lineMaterial.uniforms.lineWidth.value = this.lineWidth;
+    this.lineMaterial.needsUpdate = true;
   }
   setLineColor(lineColor) {
     this.lineColor = new THREE.Color(lineColor);
-    this.lineMaterial.setValues({ color: this.lineColor })
+
+    this.lineMaterial.uniforms.diffuse.value = this.lineColor;
     this.lineMaterial.needsUpdate = true;
   }
-  setLineWidth(lineWidth) {
-    this.lineWidth = lineWidth;
+  setLineStyle(lineStyle) {
+    this.lineStyle = lineStyle;
+
+    this.lineMaterial.uniforms.lineStyle.value = this.lineStyle;
     this.lineMaterial.needsUpdate = true;
+  }
+  setLineValue(lineValue) {
+    this.lineValue = lineValue;
+
+    const properties = this.propertiesLabels[this.lineValue];
+    if (properties) {
+      this.lineMaterial.uniforms.minValue.value = properties.min;
+      this.lineMaterial.uniforms.maxValue.value = properties.max;
+    }
+    for (const mesh of this.lineMeshList) {
+      mesh.geometry.setValueKey(this.lineValue);
+    }
+    this.lineMaterial.defines.USE_COLOR_BAR = !!this.lineColorBarMap && !!this.lineValue;
+    this.lineMaterial.needsUpdate = true;
+  }
+  setLineColorBar(lineColorBar) {
+    this.lineColorBar = lineColorBar;
+    const lineColorBarUrl = ColorBar2D.instance.drow(this.lineColorBar);
+    this.lineColorBarMap = lineColorBarUrl ? textureLoader.load(lineColorBarUrl) : null;
+
+    this.lineMaterial.defines.USE_COLOR_BAR = !!this.lineColorBarMap && !!this.lineValue;
+    this.lineMaterial.uniforms.colorBar.value = this.lineColorBarMap;
+    this.lineMaterial.needsUpdate = true;
+  }
+  setLineOpacity(lineOpacity) {
+    this.lineOpacity = lineOpacity;
+
+    this.lineMaterial.uniforms.opacity.value = this.lineOpacity;
+    this.lineMaterial.needsUpdate = true;
+  }
+  setLineArray(lineArray) {
+    this.lineArray = lineArray;
+    this.clearLine();
+    this.updateLine();
+  }
+
+  // ******************** 面 ******************** //
+  setPolygonOpacity(polygonOpacity) {
+    this.polygonOpacity = polygonOpacity;
+
+    this.polygonMaterial.uniforms.opacity.value = this.polygonOpacity;
+    this.polygonMaterial.needsUpdate = true;
+    this.polygonBorderMaterial.uniforms.opacity.value = this.polygonOpacity;
+    this.polygonBorderMaterial.needsUpdate = true;
   }
   setPolygonColor(polygonColor) {
     this.polygonColor = new THREE.Color(polygonColor);
-    this.polygonMaterial.setValues({ color: this.polygonColor });
+
+    this.polygonMaterial.uniforms.diffuse.value = this.polygonColor;
     this.polygonMaterial.needsUpdate = true;
+  }
+  setPolygonBorderWidth(polygonBorderWidth) {
+    this.polygonBorderWidth = polygonBorderWidth;
+
+    this.polygonBorderMaterial.uniforms.lineWidth.value = this.polygonBorderWidth;
+    this.polygonBorderMaterial.needsUpdate = true;
+  }
+  setPolygonBorderColor(polygonBorderColor) {
+    this.polygonBorderColor = new THREE.Color(polygonBorderColor);
+
+    this.polygonBorderMaterial.uniforms.diffuse.value = this.polygonBorderColor;
+    this.polygonBorderMaterial.needsUpdate = true;
+  }
+  setPolygonBorderStyle(polygonBorderStyle) {
+    this.polygonBorderStyle = polygonBorderStyle;
+
+    this.polygonBorderMaterial.uniforms.lineStyle.value = this.polygonBorderStyle;
+    this.polygonBorderMaterial.needsUpdate = true;
+  }
+  setPolygonValue(polygonValue) {
+    this.polygonValue = polygonValue;
+
+    const properties = this.propertiesLabels[this.polygonValue];
+    if (properties) {
+      this.polygonMaterial.uniforms.minValue.value = properties.min;
+      this.polygonMaterial.uniforms.maxValue.value = properties.max;
+
+      this.polygonBorderMaterial.uniforms.minValue.value = properties.min;
+      this.polygonBorderMaterial.uniforms.maxValue.value = properties.max;
+    }
+    for (const mesh of this.polygonMeshList) {
+      mesh.geometry.setValueKey(this.polygonValue);
+    }
+    for (const mesh of this.polygonBorderMeshList) {
+      mesh.geometry.setValueKey(this.polygonValue);
+    }
+
+    this.polygonMaterial.defines.USE_COLOR_BAR = !!this.polygonColorBarMap && !!this.polygonValue;
+    this.polygonMaterial.needsUpdate = true;
+
+    this.polygonBorderMaterial.needsUpdate = true;
+  }
+  setPolygonColorBar(polygonColorBar) {
+    this.polygonColorBar = polygonColorBar;
+    const polygonColorBarUrl = ColorBar2D.instance.drow(this.polygonColorBar);
+    this.polygonColorBarMap = polygonColorBarUrl ? textureLoader.load(polygonColorBarUrl) : null;
+
+    this.polygonMaterial.defines.USE_COLOR_BAR = !!this.polygonColorBarMap && !!this.polygonValue;
+    this.polygonMaterial.uniforms.colorBar.value = this.polygonColorBarMap;
+    this.polygonMaterial.needsUpdate = true;
+  }
+  setPolygon3D(polygon3D) {
+    this.polygon3D = polygon3D;
+
+    this.polygonMaterial.defines.USE_3D = !!this.polygon3D;
+    this.polygonMaterial.needsUpdate = true;
+
+    this.polygonBorderMaterial.defines.USE_3D = !!this.polygon3D;
+    this.polygonBorderMaterial.needsUpdate = true;
+  }
+  setPolygon3DHeight(polygon3DHeight) {
+    this.polygon3DHeight = polygon3DHeight;
+
+    this.polygonMaterial.uniforms.height3D.value = this.polygon3DHeight;
+    this.polygonMaterial.needsUpdate = true;
+
+    this.polygonBorderMaterial.uniforms.height3D.value = this.polygon3DHeight;
+    this.polygonBorderMaterial.needsUpdate = true;
+  }
+  setPolygonArray(polygonArray) {
+    this.polygonArray = polygonArray;
+    this.clearPolygon();
+    this.updatePolygon();
+  }
+
+
+  setCenter(center) {
+    this.center = center;
+    if (this.map) this.on(MAP_EVENT.UPDATE_CENTER, {});
+  }
+
+  setPropertiesList(propertiesList, propertiesLabels) {
+    this.propertiesList = propertiesList;
+    this.propertiesLabels = propertiesLabels;
+
+    const properties = this.propertiesLabels[this.pointValue];
+
+    if (properties) {
+      this.pointMaterial.uniforms.minValue.value = properties.min;
+      this.pointMaterial.uniforms.maxValue.value = properties.max;
+      this.lineMaterial.uniforms.minValue.value = properties.min;
+      this.lineMaterial.uniforms.maxValue.value = properties.max;
+      this.polygonMaterial.uniforms.minValue.value = properties.min;
+      this.polygonMaterial.uniforms.maxValue.value = properties.max;
+      this.polygonBorderMaterial.uniforms.minValue.value = properties.min;
+      this.polygonBorderMaterial.uniforms.maxValue.value = properties.max;
+    }
+    for (const mesh of this.pointMeshList) {
+      mesh.geometry.setPropertiesList(this.propertiesList, this.propertiesLabels);
+    }
+    for (const mesh of this.lineMeshList) {
+      mesh.geometry.setPropertiesList(this.propertiesList, this.propertiesLabels);
+    }
+    for (const mesh of this.polygonMeshList) {
+      mesh.geometry.setPropertiesList(this.propertiesList, this.propertiesLabels);
+    }
+    for (const mesh of this.polygonBorderMeshList) {
+      mesh.geometry.setPropertiesList(this.propertiesList, this.propertiesLabels);
+    }
   }
 
   constructor(opt) {
     super(opt);
-    this.pointColor = new THREE.Color(opt.pointColor || this.pointColor);
-    this.pointScale = opt.pointScale || this.pointScale;
-    this.lineColor = new THREE.Color(opt.lineColor || this.lineColor);
-    this.lineWidth = opt.lineWidth || this.lineWidth;
-    this.polygonColor = new THREE.Color(opt.polygonColor || this.polygonColor);
+
+    // ******************** 点 ******************** //
+    this.pointMaterial = new GeoJSONPointMaterial({
+      transparent: true
+    });
+    this.pointMeshList = [];
+
+    this.setPointSize(opt.pointSize);
+    this.setPointColor(opt.pointColor);
+    this.setPointIcon(opt.pointIcon);
+    this.setPointValue(opt.pointValue);
+    this.setPointColorBar(opt.pointColorBar);
+    this.setPointOpacity(opt.pointOpacity);
 
 
-    this.pointGeometry = new THREE.PlaneGeometry(POINT_SIZE, POINT_SIZE);
-
-    this.pointMaterial = new THREE.MeshBasicMaterial({
+    // ******************** 线 ******************** //
+    this.lineMaterial = new GeoJSONLineMaterial({
       transparent: true,
-      map: this.pointTexture,
-      color: this.pointColor,
+    });
+    this.lineMeshList = [];
+
+    this.setLineWidth(opt.lineWidth);
+    this.setLineColor(opt.lineColor);
+    this.setLineStyle(opt.lineStyle);
+    this.setLineValue(opt.lineValue);
+    this.setLineColorBar(opt.lineColorBar);
+    this.setLineOpacity(opt.lineOpacity);
+
+
+    // ******************** 面 ******************** //
+    this.polygonMaterial = new GeoJSONPolygonMaterial({
+      transparent: true,
+    });
+    this.polygonBorderMaterial = new GeoJSONPolygonBorderMaterial({
+      color: "#ff0000",
+      transparent: true,
     })
-    this.pointMesh = null;
+    this.polygonMeshList = [];
+    this.polygonBorderMeshList = [];
 
-    this.lineMaterial = this.getLineMaterial({
-      side: THREE.DoubleSide,
-      transparent: true,
-      map: this.lineTexture,
-      color: this.lineColor,
-    });
-    this.polygonMaterial = new THREE.MeshBasicMaterial({
-      color: this.polygonColor,
-      transparent: true,
-    });
+    this.setPolygonOpacity(opt.polygonOpacity);
+    this.setPolygonColor(opt.polygonColor);
+    this.setPolygonBorderWidth(opt.polygonBorderWidth);
+    this.setPolygonBorderColor(opt.polygonBorderColor);
+    this.setPolygonBorderStyle(opt.polygonBorderStyle);
+    this.setPolygonValue(opt.polygonValue);
+    this.setPolygonColorBar(opt.polygonColorBar);
+    this.setPolygon3D(opt.polygon3D);
+    this.setPolygon3DHeight(opt.polygon3DHeight);
 
-    this.worker = new GeoJSONLayerWorker();
-    this.worker.onmessage = (event) => {
-      const {
-        point,
-        line,
-        polygon
-      } = event.data;
-
-      this.handleSetPoint(point);
-      this.handleSetLine(line);
-      this.handleSetPolygon(polygon);
-    };
-    this.worker.addEventListener("error", (error) => {
-      console.log(error);
-    });
   }
 
   dispose() {
     this.clearScene();
-    this.worker.terminate();
   }
 
   clearScene() {
     super.clearScene();
-    if (this.pointMesh) {
-      this.pointMesh.dispose();
-      this.pointMesh = null;
-    }
-    for (const geo of this.lineGeoList) {
-      geo.dispose()
-    }
-    this.lineGeoList = [];
-    for (const geo of this.polygonGeoList) {
-      geo.dispose()
-    }
-    this.polygonGeoList = [];
-  }
-
-  getLineMaterial(opt) {
-    const material = new THREE.MeshBasicMaterial(opt);
-    material.onBeforeCompile = (shader) => {
-      shader.vertexShader = shader.vertexShader.replace(
-        "#include <common>",
-        `
-          #include <common>
-          attribute vec3 pickColor;
-          attribute float side;
-          attribute float lineLength;
-          attribute float totalLength;
-          attribute vec2 startPosition;
-          attribute vec2 endPosition;
-          varying float vLineLength;
-          varying float vTotalLength;
-          varying vec2 vSide;
-        `
-      );
-      shader.vertexShader = shader.vertexShader.replace(
-        "#include <begin_vertex>",
-        `
-          #include <begin_vertex>
-          float lineWidth = ${Number(this.lineWidth).toFixed(2)};
-          float offset = lineWidth / 2.0 * side;
-          vLineLength = lineLength;
-
-          float lenA = length(position.xy - startPosition);
-          float lenB = length(position.xy - endPosition);
-
-          if(lenA == 0. && lenB == 0.) {
-            transformed = position;
-          } else {
-            vec2 dirA = normalize(position.xy - startPosition);
-            vec2 dirB = normalize(position.xy - endPosition);
-  
-            if(lenA == 0.) {
-              float angle = PI / 2.0;
-              vec2 normal = vec2(-dirB.y, dirB.x);
-              transformed = vec3(position.xy + normal * offset / sin(angle), position.z);
-            } else if(lenB == 0.) {
-              float angle = PI / 2.0;
-              vec2 normal = vec2(dirA.y, -dirA.x);
-              transformed = vec3(position.xy + normal * offset / sin(angle), position.z);
-            } else {
-              vec2 dir = normalize(dirB - dirA);
-              vec2 normal = vec2(-dir.y, dir.x);
-              float angle = acos(dot(dirB, normal));
-              if(angle < 0.2) angle = 0.2;
-              if(angle > 2.94) angle = 2.94;
-              transformed = vec3(position.xy + normal * offset / sin(angle), position.z);
-            }
-          }
-        `
-      );
-      shader.fragmentShader = shader.fragmentShader.replace(
-        "#include <common>",
-        `
-          #include <common>
-          varying float vLineLength;
-          varying float vTotalLength;
-          varying vec2 vSide;
-          `
-      );
-      shader.fragmentShader = shader.fragmentShader.replace(
-        "#include <map_fragment>",
-        `
-            #ifdef USE_MAP
-              float lineWidth = ${Number(this.lineWidth).toFixed(2)} * 2.0;
-              float l = mod(vLineLength, lineWidth * 5.0) / lineWidth ;
-              if(0.0 < l && l < 1.0){
-                float side = 0.0;
-                if(vSide == 1.0) side = 1.0;
-                vec4 sampledDiffuseColor = texture2D(map, vec2(side,  l));
-                if(sampledDiffuseColor.a > 0.6) {
-                  diffuseColor = vec4(1.0);
-                }
-              }
-            #endif
-          `
-      );
-    };
-    /**
-     * 当用到onBeforeCompile回调的时候，
-     * 这个回调函数可以用来定义在onBeforeCompile中使用的配置项，
-     * 这样three.js就可以根据这个回调返回的字符串来判定使用一个
-     * 缓存的编译好的着色器代码还是根据需求重新编译一段新的着色器代码。
-     * material.needsUpdate也要设置为true
-     */
-    material.customProgramCacheKey = () => {
-      return JSON.stringify({
-        uuid: material.uuid,
-        lineWidth: this.lineWidth,
-      });
-    };
-    return material;
+    this.clearPoint();
+    this.clearLine();
+    this.clearPolygon();
   }
 
   on(type, data) {
     if (type == MAP_EVENT.UPDATE_CENTER) {
       for (const mesh of this.scene.children) {
-        const [x, y] = this.map.WebMercatorToCanvasXY(...mesh.userData.center);
+        const [x, y] = this.map.WebMercatorToCanvasXY(...this.center);
         mesh.position.set(x, y, mesh.position.z);
       }
     }
@@ -240,183 +367,818 @@ export class GeoJSONLayer extends Layer {
 
   onAdd(map) {
     super.onAdd(map);
-    // this.updatePoint()
+    this.on(MAP_EVENT.UPDATE_CENTER, {});
   }
 
-  setData(data) {
-    this.clearScene();
-    if (data instanceof Int8Array) {
-      this.worker.postMessage(data, [data.buffer]);
-    } else {
-      throw new Error("data instanceof Int8Array");
+  clearPoint() {
+    for (const mesh of this.pointMeshList) {
+      mesh.removeFromParent();
+      mesh.geometry.dispose();
     }
+    this.pointMeshList = [];
   }
 
-  handleSetPoint(array) {
-    this.pointData = array;
-    this.updatePoint()
-  }
   async updatePoint() {
-    if (!this.map) return;
-    if (!this.pointData) return;
-    const pointCenter = Array.from(this.pointData.slice(0, 2));
-    const pointArray = this.pointData.slice(2);
-    this.pointMesh = new THREE.InstancedMesh(this.pointGeometry, this.pointMaterial, pointArray.length / 2);
-    const scale = this.pointScale;
-    for (let i = 0, l = this.pointMesh.count, time = 0; i < l; i++, time++) {
-      const x = pointArray[i * 2];
-      const y = pointArray[i * 2 + 1];
-      const matrix = new THREE.Matrix4().makeTranslation(x, y, 0);
-      matrix.scale(new THREE.Vector3(scale, scale, scale));
-      this.pointMesh.setMatrixAt(i, matrix);
-      // 每20000个数据等待下一个事件循环执行 避免卡顿
-      if (time > 20000) {
-        time = 0;
-        await new Promise(resolve => setTimeout(resolve, 0));
-      }
-    }
-    if (this.pointMesh.instanceMatrix) this.pointMesh.instanceMatrix.needsUpdate = true;
-    const [x, y] = this.map.WebMercatorToCanvasXY(pointCenter[0], pointCenter[1]);
-    this.pointMesh.position.set(x, y, 0.02);
-    this.pointMesh.userData.center = pointCenter;
-    this.pointMesh.userData.type = "point";
-    this.scene.add(this.pointMesh);
+    if (!this.pointArray) return this.clearPoint();
+    let cx = 0, cy = 0;
+    if (this.map) [cx, cy] = this.map.WebMercatorToCanvasXY(this.center[0], this.center[1]);
+    const maxPoint = 100000;
+    for (let i = 0, l = this.pointArray.length; i < l; i += maxPoint * 3) {
+      const pointArray = this.pointArray.slice(i, i + maxPoint * 3 + 1);
 
+      const geometry = new GeoJSONPointListGeometry(pointArray, this.propertiesList, this.propertiesLabels, this.pointValue);
+      const mesh = new THREE.Mesh(geometry, this.pointMaterial);
+      mesh.position.set(cx, cy, 0.004);
+      this.pointMeshList.push(mesh)
+      this.scene.add(mesh);
+
+      await new Promise(resolve => setTimeout(resolve, 0));
+    }
   }
 
-  handleSetLine(array) {
-    this.lineData = array;
-    this.updateLine()
+  clearLine() {
+    for (const mesh of this.lineMeshList) {
+      mesh.removeFromParent();
+      mesh.geometry.dispose();
+    }
+    this.lineMeshList = [];
   }
   async updateLine() {
-    if (!this.map) return;
-    if (!this.lineData) return;
-    const lineCenter = Array.from(this.lineData.slice(0, 2));
-    const lineArray = this.lineData.slice(2);
-    const geometryList = [];
-    for (let index = 0, l = lineArray.length, time = 0, lineDataSize = lineArray[0]; index < l; index += 1 + lineDataSize, lineDataSize = lineArray[index]) {
-      const line = lineArray.slice(index + 1, index + 1 + lineDataSize);
-      const geometry = this.getLineGeometry(line);
-      geometryList[geometryList.length] = geometry;
-      // 每20000个数据创建一个mesh，并等待下一个事件循环执行 避免卡顿
-      if (index - time > 20000) {
-        time = index;
-        const geometry = BufferGeometryUtils.mergeBufferGeometries(geometryList, false);
-        this.lineGeoList.push(geometry);
+    if (!this.lineArray) return this.clearLine();
+    let cx = 0, cy = 0;
+    if (this.map) [cx, cy] = this.map.WebMercatorToCanvasXY(this.center[0], this.center[1]);
+    const maxLine = 10000000;
+    const lineList = [];
+    for (let index = 0, l = this.lineArray.length, dataSize = this.lineArray[0], num = 0; index < l; index += 1 + dataSize, dataSize = this.lineArray[index]) {
+      const line = this.lineArray.slice(index + 1, index + 1 + dataSize);
+      lineList[lineList.length] = line;
+
+      if (index - num > maxLine) {
+        num = index;
+
+        const geometry = new GeoJSONLineListGeometry(lineList, this.propertiesList, this.propertiesLabels, this.lineValue);
         const mesh = new THREE.Mesh(geometry, this.lineMaterial);
-        const [x, y] = this.map.WebMercatorToCanvasXY(lineCenter[0], lineCenter[1]);
-        mesh.position.set(x, y, 0.01);
-        mesh.userData.center = lineCenter;
-        mesh.userData.type = "line";
+        mesh.position.set(cx, cy, 0.003);
+        this.lineMeshList.push(mesh);
         this.scene.add(mesh);
-        geometryList.length = 0;
+
+        lineList.length = 0;
         await new Promise(resolve => setTimeout(resolve, 0));
       }
     }
 
-    if (geometryList.length > 0) {
-      const geometry = BufferGeometryUtils.mergeBufferGeometries(geometryList, false);
-      this.lineGeoList.push(geometry);
+    if (lineList.length > 0) {
+      const geometry = new GeoJSONLineListGeometry(lineList, this.propertiesList, this.propertiesLabels, this.lineValue);
       const mesh = new THREE.Mesh(geometry, this.lineMaterial);
-      const [x, y] = this.map.WebMercatorToCanvasXY(lineCenter[0], lineCenter[1]);
-      mesh.position.set(x, y, 0.01);
-      mesh.userData.center = lineCenter;
-      mesh.userData.type = "line";
+      mesh.position.set(cx, cy, 0.003);
+      this.lineMeshList.push(mesh);
       this.scene.add(mesh);
+
+      lineList.length = 0;
+      await new Promise(resolve => setTimeout(resolve, 0));
     }
-
-    console.log(lineCenter);
   }
-  getLineGeometry(array) {
-    if (array.length < 6) return null;
-    const length = array.length / 3;
-    let totalLength = array[array.length - 1];
-    const attrPosition = new Float32Array(length * 6);
-    const attrStartPosition = new Float32Array(length * 4);
-    const attrEndPosition = new Float32Array(length * 4);
-    const attrSide = new Int8Array(length * 2);
-    const attrLength = new Float32Array(length * 2);
-    const attrIndex = new Uint16Array(length * 6 - 6);
-    for (let index = 0; index < length; index++) {
-      let prevX = array[index * 3 - 3]
-      let prevY = array[index * 3 - 2]
-      let prevL = array[index * 3 - 1]
-      let thatX = array[index * 3 + 0]
-      let thatY = array[index * 3 + 1]
-      let thatL = array[index * 3 + 2]
-      let nextX = array[index * 3 + 3]
-      let nextY = array[index * 3 + 4]
-      let nextL = array[index * 3 + 5]
-      if (index === 0) {
-        prevX = thatX * 2 - nextX;
-        prevY = thatY * 2 - nextY;
-      }
-      if (index >= length - 1) {
-        nextX = thatX * 2 - prevX;
-        nextY = thatY * 2 - prevY;
-      }
 
-      attrPosition[index * 6] = thatX;
-      attrPosition[index * 6 + 1] = thatY;
-      attrPosition[index * 6 + 2] = 0;
-      attrPosition[index * 6 + 3] = thatX;
-      attrPosition[index * 6 + 4] = thatY;
-      attrPosition[index * 6 + 5] = 0;
-
-      attrStartPosition[index * 4] = prevX;
-      attrStartPosition[index * 4 + 1] = prevY;
-      attrStartPosition[index * 4 + 2] = prevX;
-      attrStartPosition[index * 4 + 3] = prevY;
-
-      attrEndPosition[index * 4] = nextX;
-      attrEndPosition[index * 4 + 1] = nextY;
-      attrEndPosition[index * 4 + 2] = nextX;
-      attrEndPosition[index * 4 + 3] = nextY;
-
-      attrLength[index * 2] = thatL;
-      attrLength[index * 2 + 1] = thatL;
-
-      attrSide[index * 2] = -1;
-      attrSide[index * 2 + 1] = 1;
-
-      if (index < length - 1) {
-        attrIndex[index * 6] = index * 2 + 0
-        attrIndex[index * 6 + 1] = index * 2 + 1
-        attrIndex[index * 6 + 2] = index * 2 + 3
-        attrIndex[index * 6 + 3] = index * 2 + 0
-        attrIndex[index * 6 + 4] = index * 2 + 3
-        attrIndex[index * 6 + 5] = index * 2 + 2
-      };
+  clearPolygon() {
+    for (const mesh of this.polygonMeshList) {
+      mesh.removeFromParent();
+      mesh.geometry.dispose();
     }
+    this.polygonMeshList = [];
 
-    const geometry = new THREE.BufferGeometry();
-    geometry.setAttribute("position", new THREE.BufferAttribute(attrPosition, 3));
-    geometry.setAttribute("startPosition", new THREE.BufferAttribute(attrStartPosition, 2));
-    geometry.setAttribute("endPosition", new THREE.BufferAttribute(attrEndPosition, 2));
-    geometry.setAttribute("side", new THREE.BufferAttribute(attrSide, 1));
-    geometry.setAttribute("lineLength", new THREE.BufferAttribute(attrLength, 1));
-    geometry.setAttribute("totalLength", new THREE.BufferAttribute(new Float32Array(length).fill(totalLength), 1));
-    geometry.index = new THREE.BufferAttribute(attrIndex, 1);
-    return geometry
+    for (const mesh of this.polygonBorderMeshList) {
+      mesh.removeFromParent();
+      mesh.geometry.dispose();
+    }
+    this.polygonBorderMeshList = [];
   }
-
-  handleSetPolygon(array) {
-    this.polygonData = array;
-    this.updatePolygon()
-  }
-
   async updatePolygon() {
-    const polygonCenter = Array.from(this.polygonData.slice(0, 2));
-    const geometryList = [];
-    const array1 = this.polygonData.slice(2);
-    for (let i = 0, l1 = array1.length, time = 0, size1 = array1[0]; i < l1; i += 1 + size1, size1 = array1[i]) {
-      const array2 = array1.slice(i + 1, i + 1 + size1);
+    if (!this.polygonArray) return this.clearPolygon();
+    let cx = 0, cy = 0;
+    if (this.map) [cx, cy] = this.map.WebMercatorToCanvasXY(this.center[0], this.center[1]);
+    const maxPolygon = 10000000;
+    const polygonList = [];
+    for (let index = 0, l = this.polygonArray.length, num = 0, dataSize = this.polygonArray[0]; index < l; index += 1 + dataSize, dataSize = this.polygonArray[index]) {
+      const polygon = this.polygonArray.slice(index + 1, index + 1 + dataSize);
+      polygonList[polygonList.length] = polygon;
+      if (index - num > maxPolygon) {
+        num = index;
+
+        const geometry = new GeoJSONPolygonListGeometry(polygonList, this.propertiesList, this.propertiesLabels, this.polygonValue);
+        const mesh = new THREE.Mesh(geometry, this.polygonMaterial);
+        mesh.position.set(cx, cy, 0.001);
+        this.polygonMeshList.push(mesh);
+        this.scene.add(mesh);
+
+        const borderGeometry = new GeoJSONPolygonBorderListGeometry(polygonList, this.propertiesList, this.propertiesLabels, this.polygonValue);
+        const borderMesh = new THREE.Mesh(borderGeometry, this.polygonBorderMaterial);
+        borderMesh.position.set(cx, cy, 0.002);
+        this.polygonBorderMeshList.push(borderMesh);
+        this.scene.add(borderMesh);
+
+        polygonList.length = 0;
+        await new Promise(resolve => setTimeout(resolve, 0));
+      }
+
+    }
+
+    if (polygonList.length > 0) {
+      const geometry = new GeoJSONPolygonListGeometry(polygonList, this.propertiesList, this.propertiesLabels, this.polygonValue);
+      const mesh = new THREE.Mesh(geometry, this.polygonMaterial);
+      mesh.position.set(cx, cy, 0.001);
+      this.polygonMeshList.push(mesh);
+      this.scene.add(mesh);
+
+      const borderGeometry = new GeoJSONPolygonBorderListGeometry(polygonList, this.propertiesList, this.propertiesLabels, this.polygonValue);
+      const borderMesh = new THREE.Mesh(borderGeometry, this.polygonBorderMaterial);
+      borderMesh.position.set(cx, cy, 0.002);
+      this.polygonBorderMeshList.push(borderMesh);
+      this.scene.add(borderMesh);
+
+      polygonList.length = 0;
+    }
+  }
+
+}
+
+
+export class GeoJSONPointListGeometry extends THREE.BufferGeometry {
+  constructor(pointArray = [], propertiesList, propertiesLabels, valueKey) {
+    super();
+    this.type = "GeoJSONPointListGeometry";
+    this.isGeoJSONPointListGeometry = true;
+
+    this.valueMap = {};
+
+    const propertiesKeyList = [];
+
+    const attrPosition = new Array();
+    const attrSide = new Array();
+    const attrValue = new Array();
+    const attrIndex = new Array();
+    for (let i1 = 0, l1 = Math.floor(pointArray.length / 3); i1 < l1; i1++) {
+      const x = pointArray[i1 * 3];
+      const y = pointArray[i1 * 3 + 1];
+      const value = pointArray[i1 * 3 + 2];
+      for (let i2 = 0; i2 < 4; i2++) {
+        attrPosition[attrPosition.length] = x;
+        attrPosition[attrPosition.length] = y;
+        attrPosition[attrPosition.length] = 0;
+        attrSide[attrSide.length] = i2;
+        // attrValue[attrValue.length] = 0;
+        propertiesKeyList[propertiesKeyList.length] = value;
+      }
+
+      attrIndex[attrIndex.length] = i1 * 4 + 0;
+      attrIndex[attrIndex.length] = i1 * 4 + 1;
+      attrIndex[attrIndex.length] = i1 * 4 + 3;
+      attrIndex[attrIndex.length] = i1 * 4 + 0;
+      attrIndex[attrIndex.length] = i1 * 4 + 3;
+      attrIndex[attrIndex.length] = i1 * 4 + 2;
+    }
+    this.setAttribute("position", new THREE.Float32BufferAttribute(attrPosition, 3));
+    this.setAttribute("side", new THREE.Float32BufferAttribute(attrSide, 1));
+    this.setAttribute("value", new THREE.Float32BufferAttribute(attrValue, 1));
+    this.setIndex(attrIndex);
+    this.computeVertexNormals();
+
+    this.propertiesKeyList = propertiesKeyList;
+    this.setPropertiesList(propertiesList, propertiesLabels);
+    this.setValueKey(valueKey);
+  }
+
+  setPropertiesList(propertiesList, propertiesLabels) {
+    try {
+      const _pl = this.propertiesKeyList.map(v => propertiesList[v]);
+      const map = {};
+      for (const label in propertiesLabels) {
+        const l = _pl.map(v => Number(v ? v[label] || 0 : 0) || 0);
+        map[label] = new THREE.Float32BufferAttribute(l, 1);
+      }
+      this.valueMap = map;
+      this.setValueKey(this._valuekey);
+    } catch (error) {
+      console.log(error);
+      this.valueMap = {};
+      this.setValueKey(this._valuekey);
+    }
+  }
+
+  setValueKey(valueKey) {
+    try {
+      this._valuekey = valueKey;
+      const attrValue = this.valueMap[valueKey];
+      if (attrValue) {
+        this.setAttribute("value", attrValue);
+      } else {
+        this.setAttribute("value", new THREE.Float32BufferAttribute([], 1));
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+}
+
+export class GeoJSONPointMaterial extends THREE.Material {
+  constructor(argu) {
+    super();
+    this.isGeoJSONLineMaterial = true;
+    const { color = 0xff0000, opacity = 1, size = 50, map = null, colorBar = null, minValue = 0, maxValue = 1, ...params } = argu || {};
+    // this.alphaTest = 0.1;
+    // this.transparent = true;
+    // this.depthWrite = false;
+    this.defines = {
+      USE_COLOR_BAR: !!colorBar,
+      USE_MAP: !!map,
+    };
+    this.uniforms = {
+      diffuse: {
+        value: new THREE.Color(color),
+      },
+      opacity: {
+        value: opacity,
+      },
+      size: {
+        value: size,
+      },
+      map: {
+        value: map,
+      },
+      uvTransform: {
+        value: new THREE.Matrix3(),
+      },
+      colorBar: {
+        value: colorBar,
+      },
+      minValue: {
+        value: minValue,
+      },
+      maxValue: {
+        value: maxValue,
+      },
+    };
+    this.vertexShader = `
+      #include <common>
+      #include <logdepthbuf_pars_vertex>
+
+      attribute float side;
+      attribute float distance;
+      attribute float value;
+      
+      varying vec3 vColor;
+      varying vec2 vUv;
+      varying float vValue;
+      varying float vDistance;
+
+      uniform float size;
+      uniform mat3 uvTransform;
+
+      void main() {
+        vValue = value;
+        vDistance = distance;
+
+        vec3 transformed = vec3(1.0);
+
+        if(side == 0.0) {
+          transformed.x = position.x - size / 2.0;
+          transformed.y = position.y - size / 2.0;
+          transformed.z = position.z;
+          vUv = ( uvTransform * vec3( 0.0, 0.0, 1.0 ) ).xy;
+        } else if(side == 1.0) {
+          transformed.x = position.x - size / 2.0;
+          transformed.y = position.y + size / 2.0;
+          transformed.z = position.z;
+          vUv = ( uvTransform * vec3( 0.0, 1.0, 1.0 ) ).xy;
+        } else if(side == 2.0) {
+          transformed.x = position.x + size / 2.0;
+          transformed.y = position.y - size / 2.0;
+          transformed.z = position.z;
+          vUv = ( uvTransform * vec3( 1.0, 0.0, 1.0 ) ).xy;
+        } else if(side == 3.0) {
+          transformed.x = position.x + size / 2.0;
+          transformed.y = position.y + size / 2.0;
+          transformed.z = position.z;
+          vUv = ( uvTransform * vec3( 1.0, 1.0, 1.0 ) ).xy;
+        }
+
+        gl_Position = projectionMatrix * modelViewMatrix * vec4( transformed, 1.0 );
+
+        #include <logdepthbuf_vertex>
+
+      }
+    `;
+    this.fragmentShader = `
+      #include <common>
+      #include <logdepthbuf_pars_fragment>
+
+
+      uniform vec3 diffuse;
+      uniform float opacity;
+      uniform sampler2D map;
+      uniform sampler2D colorBar;
+      uniform float maxValue;
+      uniform float minValue;
+      
+      varying vec3 vColor;
+      varying vec2 vUv;
+      varying float vValue;
+
+      void main() {
+        vec4 diffuseColor = vec4( diffuse, opacity );
+        
+        #include <logdepthbuf_fragment>
+        
+        #ifdef USE_COLOR_BAR
+          float p = 0.0;
+          if(maxValue != minValue) {
+            p = (vValue - minValue) / (maxValue - minValue);
+          }
+          if(p> 1.0) p = 1.0;
+          if(p< 0.0) p = 0.0;
+          vec4 barDiffuseColor = texture2D(colorBar, vec2(p , 0.5));
+          diffuseColor = barDiffuseColor;
+        #endif
+
+        #ifdef USE_MAP
+          vec4 sampledDiffuseColor = texture2D(map, vUv);
+          diffuseColor *= sampledDiffuseColor;
+        #endif
+
+        gl_FragColor = diffuseColor;
+      }
+    `;
+    this.setValues(params);
+  }
+}
+
+export class GeoJSONLineListGeometry extends THREE.BufferGeometry {
+  constructor(lineList, propertiesList, propertiesLabels, valueKey) {
+    super();
+    this.type = "GeoJSONLineListGeometry";
+    this.isGeoJSONLineListGeometry = true;
+
+    this.valueMap = {};
+
+    const propertiesKeyList = [];
+
+    const attrPosition = new Array();
+    const attrStartPosition = new Array();
+    const attrEndPosition = new Array();
+    const attrSide = new Array();
+    const attrDistance = new Array();
+    const attrValue = new Array();
+    const attrIndex = new Array();
+    let indexOffset = 0;
+
+    for (let i1 = 0, l1 = lineList.length; i1 < l1; i1++) {
+      const value = lineList[i1][0];
+      const array = lineList[i1].slice(1);
+      addLine(array, value);
+    }
+    this.setAttribute("position", new THREE.Float32BufferAttribute(attrPosition, 3));
+    this.setAttribute("startPosition", new THREE.Float32BufferAttribute(attrStartPosition, 2));
+    this.setAttribute("endPosition", new THREE.Float32BufferAttribute(attrEndPosition, 2));
+    this.setAttribute("side", new THREE.Int8BufferAttribute(attrSide, 1));
+    this.setAttribute("value", new THREE.Float32BufferAttribute(attrValue, 1));
+    this.setAttribute("distance", new THREE.Float32BufferAttribute(attrDistance, 1));
+    this.setIndex(attrIndex);
+    this.computeVertexNormals();
+
+
+    this.propertiesKeyList = propertiesKeyList;
+    this.setPropertiesList(propertiesList, propertiesLabels);
+    this.setValueKey(valueKey);
+
+    function addLine(array, value) {
+      for (let i2 = 0, l2 = array.length / 3; i2 < l2; i2++) {
+        let prevX = array[i2 * 3 - 3];
+        let prevY = array[i2 * 3 - 2];
+        let prevL = array[i2 * 3 - 1];
+        let thatX = array[i2 * 3 + 0];
+        let thatY = array[i2 * 3 + 1];
+        let thatL = array[i2 * 3 + 2];
+        let nextX = array[i2 * 3 + 3];
+        let nextY = array[i2 * 3 + 4];
+        let nextL = array[i2 * 3 + 5];
+        if (i2 === 0) {
+          prevX = thatX * 2 - nextX;
+          prevY = thatY * 2 - nextY;
+        }
+        if (i2 >= l2 - 1) {
+          nextX = thatX * 2 - prevX;
+          nextY = thatY * 2 - prevY;
+        }
+
+        attrPosition[attrPosition.length] = thatX;
+        attrPosition[attrPosition.length] = thatY;
+        attrPosition[attrPosition.length] = 0;
+        attrPosition[attrPosition.length] = thatX;
+        attrPosition[attrPosition.length] = thatY;
+        attrPosition[attrPosition.length] = 0;
+
+        attrStartPosition[attrStartPosition.length] = prevX;
+        attrStartPosition[attrStartPosition.length] = prevY;
+        attrStartPosition[attrStartPosition.length] = prevX;
+        attrStartPosition[attrStartPosition.length] = prevY;
+
+        attrEndPosition[attrEndPosition.length] = nextX;
+        attrEndPosition[attrEndPosition.length] = nextY;
+        attrEndPosition[attrEndPosition.length] = nextX;
+        attrEndPosition[attrEndPosition.length] = nextY;
+
+        propertiesKeyList[propertiesKeyList.length] = value;
+        propertiesKeyList[propertiesKeyList.length] = value;
+
+        attrDistance[attrDistance.length] = thatL;
+        attrDistance[attrDistance.length] = thatL;
+
+        attrSide[attrSide.length] = -1;
+        attrSide[attrSide.length] = 1;
+
+        if (i2 < l2 - 1) {
+          attrIndex[attrIndex.length] = indexOffset + 0;
+          attrIndex[attrIndex.length] = indexOffset + 1;
+          attrIndex[attrIndex.length] = indexOffset + 3;
+          attrIndex[attrIndex.length] = indexOffset + 0;
+          attrIndex[attrIndex.length] = indexOffset + 3;
+          attrIndex[attrIndex.length] = indexOffset + 2;
+        };
+        indexOffset += 2;
+      }
+    }
+  }
+
+
+  setPropertiesList(propertiesList, propertiesLabels) {
+    try {
+      const _pl = this.propertiesKeyList.map(v => propertiesList[v]);
+      const map = {};
+      for (const label in propertiesLabels) {
+        const l = _pl.map(v => Number(v ? v[label] || 0 : 0) || 0);
+        map[label] = new THREE.Float32BufferAttribute(l, 1);
+      }
+      this.valueMap = map;
+      this.setValueKey(this._valuekey);
+    } catch (error) {
+      console.log(error);
+      this.valueMap = {};
+      this.setValueKey(this._valuekey);
+    }
+  }
+
+  setValueKey(valueKey) {
+    try {
+      this._valuekey = valueKey;
+      const attrValue = this.valueMap[valueKey];
+      if (attrValue) {
+        this.setAttribute("value", attrValue);
+      } else {
+        this.setAttribute("value", new THREE.Float32BufferAttribute([], 1));
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+}
+
+export class GeoJSONLineMaterial extends THREE.Material {
+  constructor(argu) {
+    super();
+    this.isGeoJSONLineMaterial = true;
+    const { color = 0xff0000, opacity = 1, lineStyle = LINE_STYPE.SOLID, lineWidth = 50, lineOffset = 0, colorBar = null, maxValue = 1, minValue = 0, ...params } = argu || {};
+    // this.alphaTest = 0.1;
+    // this.transparent = true;
+    // this.depthWrite = false;
+    this.defines = {
+      USE_COLOR_BAR: !!colorBar,
+    };
+    this.uniforms = {
+      diffuse: {
+        value: new THREE.Color(color),
+      },
+      opacity: {
+        value: opacity,
+      },
+      lineStyle: {
+        value: lineStyle
+      },
+      lineWidth: {
+        value: lineWidth,
+      },
+      lineOffset: {
+        value: lineOffset,
+      },
+      colorBar: {
+        value: colorBar,
+      },
+      maxValue: {
+        value: maxValue,
+      },
+      minValue: {
+        value: minValue,
+      },
+    };
+    this.vertexShader = `
+      #include <common>
+      #include <logdepthbuf_pars_vertex>
+
+      attribute float side;
+      attribute float value;
+      attribute float distance;
+      attribute vec2 startPosition;
+      attribute vec2 endPosition;
+      
+      varying vec3 vColor;
+      varying vec2 vUv;
+      varying float vValue;
+      varying float vDistance;
+
+      uniform float lineWidth;
+      uniform float lineOffset;
+      uniform mat3 uvTransform;
+
+      void main() {
+        vValue = value;
+        vDistance = distance;
+
+        #ifdef USE_MAP
+          vUv = ( uvTransform * vec3( uv, 1 ) ).xy;
+        #endif
+        
+        vec3 transformed = vec3(1.0);
+
+        float offset = lineWidth / 2.0 * side + lineOffset;
+
+        float lenA = length(position.xy - startPosition);
+        float lenB = length(position.xy - endPosition);
+
+        if(lenA == 0. && lenB == 0.) {
+          transformed = position;
+        } else {
+          vec2 dirA = normalize(position.xy - startPosition);
+          vec2 dirB = normalize(position.xy - endPosition);
+
+          if(lenA == 0.) {
+            float angle = PI / 2.0;
+            vec2 normal = vec2(-dirB.y, dirB.x);
+            transformed = vec3(position.xy + normal * offset / sin(angle), position.z);
+          } else if(lenB == 0.) {
+            float angle = PI / 2.0;
+            vec2 normal = vec2(dirA.y, -dirA.x);
+            transformed = vec3(position.xy + normal * offset / sin(angle), position.z);
+          } else {
+            vec2 dir = normalize(dirB - dirA);
+            vec2 normal = vec2(-dir.y, dir.x);
+            float angle = mod(acos(dot(dirB, normal)), 3.14);
+            if(angle < 0.2) angle = 0.2;
+            if(angle > 2.94) angle = 2.94;
+            transformed = vec3(position.xy + normal * offset / sin(angle), position.z);
+          }
+        }
+
+        gl_Position = projectionMatrix * modelViewMatrix * vec4( transformed, 1.0 );
+
+        #include <logdepthbuf_vertex>
+
+      }
+    `;
+    this.fragmentShader = `
+      #include <common>
+      #include <logdepthbuf_pars_fragment>
+
+
+      uniform float lineWidth;
+      uniform float lineStyle;
+
+      uniform vec3 diffuse;
+      uniform float opacity;
+      uniform sampler2D map;
+      uniform sampler2D colorBar;
+      uniform float maxValue;
+      uniform float minValue;
+      
+      varying vec3 vColor;
+      varying vec2 vUv;
+      varying float vValue;
+      varying float vDistance;
+
+      void main() {
+        vec4 diffuseColor = vec4( diffuse, opacity );
+        
+        #include <logdepthbuf_fragment>
+        
+        #ifdef USE_COLOR_BAR
+          float p = 0.0;
+          if(maxValue != minValue) {
+            p = (vValue - minValue) / (maxValue - minValue);
+          }
+          if(p> 1.0) p = 1.0;
+          if(p< 0.0) p = 0.0;
+          vec4 barDiffuseColor = texture2D(colorBar, vec2(p , 0.5));
+          diffuseColor = barDiffuseColor;
+        #endif
+
+        if(lineStyle == ${Number(LINE_STYPE.DASHED).toFixed(1)}){
+          float dl = mod(vDistance / (lineWidth * 3.0), 1.0);
+          if(0.50 < dl && dl <= 1.0){
+            diffuseColor.a = 0.0;
+          }
+        } else if(lineStyle == ${Number(LINE_STYPE.NONE).toFixed(1)}){
+          diffuseColor.a = 0.0;
+        }
+
+        gl_FragColor = diffuseColor;
+
+      }
+    `;
+    this.setValues(params);
+  }
+}
+
+export class GeoJSONPolygonListGeometry extends THREE.BufferGeometry {
+  constructor(polygonList = [], propertiesList, propertiesLabels, valueKey) {
+    super();
+    this.type = "GeoJSONPolygonListGeometry";
+    this.isGeoJSONPolygonListGeometry = true;
+
+    this.valueMap = {};
+
+    const propertiesKeyList = [];
+
+    // buffers
+    const indices = [];
+    const vertices = [];
+    const normals = [];
+    const uvs = [];
+    const values = [];
+    for (let i = 0; i < polygonList.length; i++) {
+      const { shape, value } = getShape(polygonList[i]);
+      addShape(shape, value);
+    }
+    // build geometry
+    this.setIndex(indices);
+    this.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+    // this.setAttribute('normal', new THREE.Float32BufferAttribute(normals, 3));
+    this.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
+    this.setAttribute('value', new THREE.Float32BufferAttribute(values, 1));
+    this.computeVertexNormals();
+    // helper functions
+    function addShape(shape, value) {
+
+      const points = shape.extractPoints(12);
+
+      let shapeVertices = points.shape;
+      const shapeHoles = points.holes;
+
+      // 把所有路径变成顺时针
+      if (THREE.ShapeUtils.isClockWise(shapeVertices) === false) {
+        shapeVertices = shapeVertices.reverse();
+      }
+
+      for (let i = 0, l = shapeHoles.length; i < l; i++) {
+        const shapeHole = shapeHoles[i];
+        if (THREE.ShapeUtils.isClockWise(shapeHole) === true) {
+          shapeHoles[i] = shapeHole.reverse();
+        }
+      }
+      // 根据路径和空洞生成面
+      const faces = THREE.ShapeUtils.triangulateShape(shapeVertices, shapeHoles);
+      for (let i = 0, l = shapeHoles.length; i < l; i++) {
+        const shapeHole = shapeHoles[i];
+        shapeVertices = shapeVertices.concat(shapeHole);
+      }
+
+      // 添加底面
+      // {
+      //   const indicesOffset = vertices.length / 3;
+      //   // 添加点，法向量，uv，保存点对应的valueKey
+      //   for (let i = 0, l = shapeVertices.length; i < l; i++) {
+      //     const vertex = shapeVertices[i];
+      //     vertices.push(vertex.x, vertex.y, 0);
+      //     // normals.push(0, 0, 1);
+      //     uvs.push(vertex.x, vertex.y); // world uvs
+
+      //     propertiesKeyList.push(value);
+      //   }
+      //   // 添加面
+      //   for (let i = 0, l = faces.length; i < l; i++) {
+      //     const face = faces[i];
+      //     const a = face[0] + indicesOffset;
+      //     const b = face[1] + indicesOffset;
+      //     const c = face[2] + indicesOffset;
+      //     indices.push(a, b, c);
+      //   }
+      // }
+
+      // 添加顶面
+      {
+        const indicesOffset = vertices.length / 3;
+        // 添加点，法向量，uv，保存点对应的valueKey
+        for (let i = 0, l = shapeVertices.length; i < l; i++) {
+          const vertex = shapeVertices[i];
+          vertices.push(vertex.x, vertex.y, 1);
+          // normals.push(0, 0, 1);
+          uvs.push(vertex.x, vertex.y); // world uvs
+
+          propertiesKeyList.push(value);
+        }
+        // 添加面
+        for (let i = 0, l = faces.length; i < l; i++) {
+          const face = faces[i];
+          const a = face[0] + indicesOffset;
+          const b = face[1] + indicesOffset;
+          const c = face[2] + indicesOffset;
+          indices.push(a, b, c);
+        }
+      }
+
+
+      // 添加外墙壁
+      {
+        const indicesOffset = vertices.length / 3;
+        const shapeList = [...points.shape, points.shape[0]];
+        for (let i = 0, l = shapeList.length - 1; i < l; i++) {
+          const vertex1 = shapeList[i];
+          const vertex2 = shapeList[i + 1];
+
+          vertices.push(vertex1.x, vertex1.y, 0);
+          vertices.push(vertex1.x, vertex1.y, 1);
+          vertices.push(vertex2.x, vertex2.y, 0);
+          vertices.push(vertex2.x, vertex2.y, 1);
+
+          propertiesKeyList.push(value);
+          propertiesKeyList.push(value);
+          propertiesKeyList.push(value);
+          propertiesKeyList.push(value);
+
+          // normals.push(0, 0, -1);
+          // normals.push(0, 0, -1);
+          // normals.push(0, 0, -1);
+          // normals.push(0, 0, -1);
+          uvs.push(vertex1.x, vertex1.y); // world uvs
+          uvs.push(vertex1.x, vertex1.y); // world uvs
+          uvs.push(vertex2.x, vertex2.y); // world uvs
+          uvs.push(vertex2.x, vertex2.y); // world uvs
+
+          const a = i * 4 + indicesOffset;
+          const b = i * 4 + 1 + indicesOffset;
+          const c = i * 4 + 2 + indicesOffset;
+          const d = i * 4 + 3 + indicesOffset;
+
+          indices.push(a, b, c);
+          indices.push(c, b, d);
+        }
+      }
+
+      // 添加孔洞墙壁
+      for (const holes of points.holes) {
+        const indicesOffset = vertices.length / 3;
+        const holeList = [...holes, holes[0]];
+        for (let i = 0, l = holeList.length - 1; i < l; i++) {
+          const vertex1 = holeList[i];
+          const vertex2 = holeList[i + 1];
+
+          vertices.push(vertex1.x, vertex1.y, 0);
+          vertices.push(vertex1.x, vertex1.y, 1);
+          vertices.push(vertex2.x, vertex2.y, 0);
+          vertices.push(vertex2.x, vertex2.y, 1);
+
+          propertiesKeyList.push(value);
+          propertiesKeyList.push(value);
+          propertiesKeyList.push(value);
+          propertiesKeyList.push(value);
+
+          // normals.push(0, 0, -1);
+          // normals.push(0, 0, -1);
+          // normals.push(0, 0, -1);
+          // normals.push(0, 0, -1);
+          uvs.push(vertex1.x, vertex1.y); // world uvs
+          uvs.push(vertex1.x, vertex1.y); // world uvs
+          uvs.push(vertex2.x, vertex2.y); // world uvs
+          uvs.push(vertex2.x, vertex2.y); // world uvs
+
+          const a = i * 4 + indicesOffset;
+          const b = i * 4 + 1 + indicesOffset;
+          const c = i * 4 + 2 + indicesOffset;
+          const d = i * 4 + 3 + indicesOffset;
+
+          indices.push(a, b, c);
+          indices.push(c, b, d);
+        }
+      }
+
+    }
+
+    function getShape(array) {
+      const value = array[0];
+      const shapeArray = array.slice(1);
       let shape = null;
-      for (let j = 0, l2 = array2.length, time = 0, size2 = array2[0]; j < l2; j += 1 + size2, size2 = array2[j]) {
-        const v2 = array2.slice(j + 1, j + 1 + size2);
+      for (let j = 0, l = shapeArray.length, size = shapeArray[0]; j < l; j += 1 + size, size = shapeArray[j]) {
+        const v = shapeArray.slice(j + 1, j + 1 + size);
         const points = [];
-        for (let k = 0, l3 = v2.length / 2; k < l3; k++) {
-          points[points.length] = new THREE.Vector2(v2[k * 2 + 0], v2[k * 2 + 1])
+        for (let k = 0, l3 = v.length / 2; k < l3; k++) {
+          points[points.length] = new THREE.Vector2(v[k * 2 + 0], v[k * 2 + 1])
         }
         if (!shape) {
           shape = new THREE.Shape(points);
@@ -425,45 +1187,461 @@ export class GeoJSONLayer extends Layer {
           shape.holes.push(holePath);
         }
       }
-      if (!shape) continue;
-      geometryList[geometryList.length] = new THREE.ShapeGeometry(shape);
-      // 每20000个数据创建一个mesh，并等待下一个事件循环执行 避免卡顿
-      if (i - time > 20000) {
-        time = i;
-
-        const geometry = BufferGeometryUtils.mergeBufferGeometries(geometryList, false);
-        this.polygonGeoList.push(geometry);
-        const mesh = new THREE.Mesh(geometry, this.polygonMaterial);
-        const [x, y] = this.map.WebMercatorToCanvasXY(polygonCenter[0], polygonCenter[1]);
-        mesh.position.set(x, y, 0.02);
-        mesh.userData.center = polygonCenter;
-        mesh.userData.type = "polygon";
-        this.scene.add(mesh);
-
-        geometryList.length = 0;
-        await new Promise(resolve => setTimeout(resolve, 0));
-      }
+      return { shape, value };
     }
 
-    if (geometryList.length > 0) {
-      const geometry = BufferGeometryUtils.mergeBufferGeometries(geometryList, false);
-      this.polygonGeoList.push(geometry);
-      const mesh = new THREE.Mesh(geometry, this.lineMaterial);
-      const [x, y] = this.map.WebMercatorToCanvasXY(polygonCenter[0], polygonCenter[1]);
-      mesh.position.set(x, y, 0);
-      mesh.userData.center = polygonCenter;
-      mesh.userData.type = "polygon";
-      this.scene.add(mesh);
+    this.propertiesKeyList = propertiesKeyList;
+    this.setPropertiesList(propertiesList, propertiesLabels);
+    this.setValueKey(valueKey);
+  }
+
+
+  setPropertiesList(propertiesList, propertiesLabels) {
+    try {
+      const _pl = this.propertiesKeyList.map(v => propertiesList[v]);
+      const map = {};
+      for (const label in propertiesLabels) {
+        const l = _pl.map(v => Number(v ? v[label] || 0 : 0) || 0);
+        map[label] = new THREE.Float32BufferAttribute(l, 1);
+      }
+      this.valueMap = map;
+      this.setValueKey(this._valuekey);
+    } catch (error) {
+      console.log(error);
+      this.valueMap = {};
+      this.setValueKey(this._valuekey);
     }
   }
 
+  setValueKey(valueKey) {
+    try {
+      this._valuekey = valueKey;
+      const attrValue = this.valueMap[valueKey];
+      if (attrValue) {
+        this.setAttribute("value", attrValue);
+      } else {
+        this.setAttribute("value", new THREE.Float32BufferAttribute([], 1));
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
 }
 
+export class GeoJSONPolygonMaterial extends THREE.Material {
+  constructor(argu) {
+    super();
+    this.isGeoJSONLineMaterial = true;
+    const { color = 0xff0000, opacity = 1, size = 50, colorBar = null, minValue = 0, maxValue = 1, use3D = false, height3D = 10000, ...params } = argu || {};
+    this.defines = {
+      USE_COLOR_BAR: !!colorBar,
+      USE_3D: !!use3D
+    };
+    this.uniforms = {
+      diffuse: {
+        value: new THREE.Color(color),
+      },
+      opacity: {
+        value: opacity,
+      },
+      size: {
+        value: size,
+      },
+      colorBar: {
+        value: colorBar,
+      },
+      minValue: {
+        value: minValue,
+      },
+      maxValue: {
+        value: maxValue,
+      },
+      height3D: {
+        value: height3D
+      }
+    };
+    this.vertexShader = `
+      #include <common>
+      #include <logdepthbuf_pars_vertex>
 
 
+      attribute float value;
+      
+      varying vec3 vColor;
+      varying vec2 vUv;
+      varying float vValue;
+
+      uniform float size;
+      uniform mat3 uvTransform;
+      uniform float maxValue;
+      uniform float minValue;
+      uniform float height3D;
+
+      void main() {
+        vValue = value;
+
+        vec3 transformed = position;
+        
+        #ifdef USE_3D
+          float p = 0.0;
+          if(maxValue != minValue) {
+            p = (vValue - minValue) / (maxValue - minValue);
+          }
+          transformed.z *= p * height3D;
+        #else
+          transformed.z = 0.0;
+        #endif
+
+        gl_Position = projectionMatrix * modelViewMatrix * vec4( transformed, 1.0 );
+
+        #include <logdepthbuf_vertex>
+
+      }
+    `;
+    this.fragmentShader = `
+      #include <common>
+      #include <logdepthbuf_pars_fragment>
+
+      uniform vec3 diffuse;
+      uniform float opacity;
+      uniform sampler2D map;
+      uniform sampler2D colorBar;
+      uniform float maxValue;
+      uniform float minValue;
+      uniform float height3D;
+      
+      varying vec3 vColor;
+      varying vec2 vUv;
+      varying float vValue;
+
+      void main() {
+        vec4 diffuseColor = vec4( diffuse, opacity );
+        
+        #include <logdepthbuf_fragment>
+        
+        #ifdef USE_COLOR_BAR
+          float p = 0.0;
+          if(maxValue != minValue) {
+            p = (vValue - minValue) / (maxValue - minValue);
+          }
+          if(p> 1.0) p = 1.0;
+          if(p< 0.0) p = 0.0;
+          vec4 barDiffuseColor = texture2D(colorBar, vec2(p , 0.5));
+          diffuseColor.rgb = barDiffuseColor.rgb;
+        #endif
+
+        gl_FragColor = diffuseColor;
+      }
+    `;
+    this.setValues(params);
+  }
+}
+
+export class GeoJSONPolygonBorderListGeometry extends THREE.BufferGeometry {
+  constructor(polygonList, propertiesList, propertiesLabels, valueKey) {
+    super();
+    this.type = "GeoJSONPolygonBorderListGeometry";
+    this.isGeoJSONPolygonBorderListGeometry = true;
+
+    this.valueMap = {};
+
+    const propertiesKeyList = [];
+
+    const attrPosition = new Array();
+    const attrStartPosition = new Array();
+    const attrEndPosition = new Array();
+    const attrSide = new Array();
+    const attrDistance = new Array();
+    const attrValue = new Array();
+    const attrIndex = new Array();
+    let indexOffset = 0;
+
+    for (let i = 0; i < polygonList.length; i++) {
+      const { shape, value } = getShape(polygonList[i]);
+      const points = shape.extractPoints(12);
+      let shapeVertices = points.shape;
+      const shapeHoles = points.holes;
+      // 把所有路径变成顺时针
+      if (THREE.ShapeUtils.isClockWise(shapeVertices) === false) {
+        shapeVertices = shapeVertices.reverse();
+      }
+      addLine(shapeVertices, value);
+
+      for (let i = 0, l = shapeHoles.length; i < l; i++) {
+        let shapeHole = shapeHoles[i];
+        if (THREE.ShapeUtils.isClockWise(shapeHole) === true) {
+          shapeHole = shapeHole.reverse();
+        }
+        addLine(shapeHole, value);
+      }
+    }
+
+    this.setAttribute("position", new THREE.Float32BufferAttribute(attrPosition, 3));
+    this.setAttribute("startPosition", new THREE.Float32BufferAttribute(attrStartPosition, 2));
+    this.setAttribute("endPosition", new THREE.Float32BufferAttribute(attrEndPosition, 2));
+    this.setAttribute("side", new THREE.Int8BufferAttribute(attrSide, 1));
+    this.setAttribute("value", new THREE.Float32BufferAttribute(attrValue, 1));
+    this.setAttribute("distance", new THREE.Float32BufferAttribute(attrDistance, 1));
+    this.setIndex(attrIndex);
+    this.computeVertexNormals();
 
 
+    this.propertiesKeyList = propertiesKeyList;
+    this.setPropertiesList(propertiesList, propertiesLabels);
+    this.setValueKey(valueKey);
+
+    function addLine(points, value) {
+      let distance = 0;
+      for (let i2 = 0, l2 = points.length; i2 < l2; i2++) {
+        let prev = points[i2 - 1];
+        let that = points[i2];
+        let next = points[i2 + 1];
+        if (i2 === 0) {
+          prev = that.clone().multiplyScalar(2).sub(next);
+        }
+        if (i2 >= l2 - 1) {
+          next = that.clone().multiplyScalar(2).sub(prev);
+        }
+
+        attrPosition[attrPosition.length] = that.x;
+        attrPosition[attrPosition.length] = that.y;
+        attrPosition[attrPosition.length] = 1;
+        attrPosition[attrPosition.length] = that.x;
+        attrPosition[attrPosition.length] = that.y;
+        attrPosition[attrPosition.length] = 1;
+
+        attrStartPosition[attrStartPosition.length] = prev.x;
+        attrStartPosition[attrStartPosition.length] = prev.y;
+        attrStartPosition[attrStartPosition.length] = prev.x;
+        attrStartPosition[attrStartPosition.length] = prev.y;
+
+        attrEndPosition[attrEndPosition.length] = next.x;
+        attrEndPosition[attrEndPosition.length] = next.y;
+        attrEndPosition[attrEndPosition.length] = next.x;
+        attrEndPosition[attrEndPosition.length] = next.y;
+
+        propertiesKeyList[propertiesKeyList.length] = value;
+        propertiesKeyList[propertiesKeyList.length] = value;
+
+        attrDistance[attrDistance.length] = distance;
+        attrDistance[attrDistance.length] = distance;
+
+        attrSide[attrSide.length] = -1;
+        attrSide[attrSide.length] = 1;
+
+        if (i2 < l2 - 1) {
+          attrIndex[attrIndex.length] = indexOffset + 0;
+          attrIndex[attrIndex.length] = indexOffset + 1;
+          attrIndex[attrIndex.length] = indexOffset + 3;
+          attrIndex[attrIndex.length] = indexOffset + 0;
+          attrIndex[attrIndex.length] = indexOffset + 3;
+          attrIndex[attrIndex.length] = indexOffset + 2;
+        };
+        indexOffset += 2;
+
+        distance += that.distanceTo(next);
+      }
+    }
+
+    function getShape(array) {
+      const value = array[0];
+      const shapeArray = array.slice(1);
+      let shape = null;
+      for (let j = 0, l = shapeArray.length, size = shapeArray[0]; j < l; j += 1 + size, size = shapeArray[j]) {
+        const v = shapeArray.slice(j + 1, j + 1 + size);
+        const points = [];
+        for (let k = 0, l3 = v.length / 2; k < l3; k++) {
+          points[points.length] = new THREE.Vector2(v[k * 2 + 0], v[k * 2 + 1])
+        }
+        if (!shape) {
+          shape = new THREE.Shape(points);
+        } else {
+          const holePath = new THREE.Path(points);
+          shape.holes.push(holePath);
+        }
+      }
+      return { shape, value };
+    }
+  }
+
+  setPropertiesList(propertiesList, propertiesLabels) {
+    try {
+      const _pl = this.propertiesKeyList.map(v => propertiesList[v]);
+      const map = {};
+      for (const label in propertiesLabels) {
+        const l = _pl.map(v => Number(v ? v[label] || 0 : 0) || 0);
+        map[label] = new THREE.Float32BufferAttribute(l, 1);
+      }
+      this.valueMap = map;
+      this.setValueKey(this._valuekey);
+    } catch (error) {
+      console.log(error);
+      this.valueMap = {};
+      this.setValueKey(this._valuekey);
+    }
+  }
+
+  setValueKey(valueKey) {
+    try {
+      this._valuekey = valueKey;
+      const attrValue = this.valueMap[valueKey];
+      if (attrValue) {
+        this.setAttribute("value", attrValue);
+      } else {
+        this.setAttribute("value", new THREE.Float32BufferAttribute([], 1));
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+}
+
+export class GeoJSONPolygonBorderMaterial extends THREE.Material {
+  constructor(argu) {
+    super();
+    this.isGeoJSONPolygonBorderMaterial = true;
+    const { color = 0xff0000, opacity = 1, lineStyle = LINE_STYPE.SOLID, lineWidth = 50, lineOffset = 0, maxValue = 1, minValue = 0, use3D = false, height3D = 10000, ...params } = argu || {};
+    this.defines = {
+      USE_3D: !!use3D
+    };
+    this.uniforms = {
+      diffuse: {
+        value: new THREE.Color(color),
+      },
+      opacity: {
+        value: opacity,
+      },
+      lineStyle: {
+        value: lineStyle
+      },
+      lineWidth: {
+        value: lineWidth,
+      },
+      lineOffset: {
+        value: lineOffset,
+      },
+      maxValue: {
+        value: maxValue,
+      },
+      minValue: {
+        value: minValue,
+      },
+      height3D: {
+        value: height3D
+      }
+    };
+    this.vertexShader = `
+      #include <common>
+      #include <logdepthbuf_pars_vertex>
+
+      attribute float side;
+      attribute float value;
+      attribute float distance;
+      attribute vec2 startPosition;
+      attribute vec2 endPosition;
+      
+      varying vec3 vColor;
+      varying vec2 vUv;
+      varying float vValue;
+      varying float vDistance;
+
+      uniform float lineWidth;
+      uniform float lineOffset;
+      uniform float height3D;
+      uniform float maxValue;
+      uniform float minValue;
+
+      void main() {
+        vValue = value;
+        vDistance = distance;
+
+        #ifdef USE_MAP
+          vUv = ( uvTransform * vec3( uv, 1 ) ).xy;
+        #endif
+        
+        vec3 transformed = vec3(1.0);
+
+        float offset = lineWidth / 2.0 * side + lineOffset;
+
+        float lenA = length(position.xy - startPosition);
+        float lenB = length(position.xy - endPosition);
+
+        if(lenA == 0. && lenB == 0.) {
+          transformed = position;
+        } else {
+          vec2 dirA = normalize(position.xy - startPosition);
+          vec2 dirB = normalize(position.xy - endPosition);
+
+          if(lenA == 0.) {
+            float angle = PI / 2.0;
+            vec2 normal = vec2(-dirB.y, dirB.x);
+            transformed = vec3(position.xy + normal * offset / sin(angle), position.z);
+          } else if(lenB == 0.) {
+            float angle = PI / 2.0;
+            vec2 normal = vec2(dirA.y, -dirA.x);
+            transformed = vec3(position.xy + normal * offset / sin(angle), position.z);
+          } else {
+            vec2 dir = normalize(dirB - dirA);
+            vec2 normal = vec2(-dir.y, dir.x);
+            float angle = mod(acos(dot(dirB, normal)), 3.14);
+            if(angle < 0.2) angle = 0.2;
+            if(angle > 2.94) angle = 2.94;
+            transformed = vec3(position.xy + normal * offset / sin(angle), position.z);
+          }
+        }
+          
+        #ifdef USE_3D
+          float p = 0.0;
+          if(maxValue != minValue) {
+            p = (vValue - minValue) / (maxValue - minValue);
+          }
+          transformed.z = position.z * p * height3D;
+        #else
+          transformed.z = 0.0;
+        #endif
+
+        gl_Position = projectionMatrix * modelViewMatrix * vec4( transformed, 1.0 );
+
+        #include <logdepthbuf_vertex>
+
+      }
+    `;
+    this.fragmentShader = `
+      #include <common>
+      #include <logdepthbuf_pars_fragment>
 
 
+      uniform float lineWidth;
+      uniform float lineStyle;
 
+      uniform vec3 diffuse;
+      uniform float opacity;
+      uniform sampler2D map;
+      uniform float maxValue;
+      uniform float minValue;
+      
+      varying vec3 vColor;
+      varying vec2 vUv;
+      varying float vValue;
+      varying float vDistance;
 
+      void main() {
+        vec4 diffuseColor = vec4( diffuse, opacity );
+        
+        #include <logdepthbuf_fragment>
+
+        if(lineStyle == ${Number(LINE_STYPE.DASHED).toFixed(1)}){
+          float dl = mod(vDistance / (lineWidth * 3.0), 1.0);
+          if(0.50 < dl && dl <= 1.0){
+            diffuseColor.a = 0.0;
+          }
+        } else if(lineStyle == ${Number(LINE_STYPE.NONE).toFixed(1)}){
+          diffuseColor.a = 0.0;
+        }
+
+        gl_FragColor = diffuseColor;
+      }
+    `;
+    this.setValues(params);
+  }
+}

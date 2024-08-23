@@ -268,7 +268,7 @@
 
 <script>
 const moment = require("moment");
-import { Map, MAP_EVENT, MapLayer, MAP_LAYER_STYLE } from "@/mymap/index.js";
+import { MyMap, MAP_EVENT, MapLayer, MAP_LAYER_STYLE } from "@/mymap/index.js";
 
 import { getByLineId, saveByLine, deleteTransitLine, changeLines, getCenterZoom, lineIsRun, saveNewScheme } from "@/api/index";
 
@@ -421,7 +421,7 @@ export default {
     },
     // 初始化地图
     initMap() {
-      this._map = new Map({
+      this._map = new MyMap({
         rootId: "mapRoot",
         center: this.bMapBoxObj.center,
         zoom: this.bMapBoxObj.zoom,

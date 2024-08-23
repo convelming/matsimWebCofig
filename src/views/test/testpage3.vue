@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import { Map, MapLayer, MAP_LAYER_STYLE, MAP_EVENT } from "@/mymap/index.js";
+import { MyMap, MapLayer, MAP_LAYER_STYLE, MAP_EVENT } from "@/mymap/index.js";
 import NewClock from "@/components/NewClock/index.vue";
 import { CarTravelLayer } from "@/views/operationsAnalysis/component/CarTravel/layer/CarTravelLayer.js";
 import { CarTravelLayer2 } from "@/views/operationsAnalysis/component/CarTravel/layer/CarTravelLayer2.js";
@@ -70,7 +70,7 @@ export default {
     },
     // 初始化地图
     async initMap() {
-      this._Map = new Map({
+      this._Map = new MyMap({
         rootId: "map",
         center: [12614648, 2654619.25],
         zoom: 13,

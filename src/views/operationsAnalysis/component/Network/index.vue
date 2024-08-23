@@ -12,14 +12,14 @@
       <div class="form_item">
         <div class="form_label">{{ $l("width") }}</div>
         <div class="form_value">
-          <el-slider style="padding: 0px calc(2em - 10px)" :disabled="!s_showLayer" v-model="width" :min="0" :max="50" :step="1" />
+          <el-slider style="padding: 0px calc(2em - 10px)" :disabled="!s_showLayer" v-model="width" :min="0" :max="50" :step="0.1" />
           <!-- <el-input-number class="my_input_number_1" style="width: 100%" size="medium" :disabled="!s_showLayer" v-model="width" :min="0" :max="50" :step="1" step-strictly> </el-input-number> -->
         </div>
       </div>
       <div class="form_item">
         <div class="form_label">{{ $l("offset") }}</div>
         <div class="form_value">
-          <el-slider style="padding: 0px calc(2em - 10px)" :disabled="!s_showLayer" v-model="offset" :min="0" :max="50" :step="1" />
+          <el-slider style="padding: 0px calc(2em - 10px)" :disabled="!s_showLayer" v-model="offset" :min="0" :max="50" :step="0.1" />
           <!-- <el-input-number class="my_input_number_1" style="width: 100%" size="medium" :disabled="!s_showLayer" v-model="offset" :min="0" :max="50" :step="1" step-strictly> </el-input-number> -->
         </div>
       </div>

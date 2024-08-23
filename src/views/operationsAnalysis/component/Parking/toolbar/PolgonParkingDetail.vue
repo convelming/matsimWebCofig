@@ -5,23 +5,34 @@
     </div>
     <div class="toolbar_item_bodyer" v-loading="loading" ref="body">
       <div class="title">
-        <span>{{ $l("停车需求图表") }}</span>
-        <el-button type="text" icon="el-icon-full-screen" @click="showChart3 = true" />
+        <span style="width: 100%">{{ $l("停车需求图表") }}</span>
+        <el-button type="text" icon="el-icon-full-screen" @click.stop="showChart1Big = true" />
+        <el-button type="text" icon="el-icon-caret-bottom" @click="handleOpenChart1" />
       </div>
-      <div ref="chart1" class="chart1"></div>
+      <div v-show="openChart1" ref="chart1" class="chart1"></div>
       <div v-show="showChart2">
         <div class="title">
-          <span>{{ $l("停车供需比图表") }}</span>
-          <el-button type="text" icon="el-icon-full-screen" @click="showChart4 = true" />
+          <span style="width: 100%">{{ $l("停车供给图表") }}</span>
+          <el-button type="text" icon="el-icon-full-screen" @click.stop="showChart3Big = true" />
+          <el-button type="text" icon="el-icon-caret-bottom" @click="handleOpenChart3" />
         </div>
-        <div ref="chart2" class="chart2"></div>
+        <div v-show="openChart3" ref="chart3" class="chart3"></div>
+        <div class="title">
+          <span style="width: 100%">{{ $l("停车供需比图表") }}</span>
+          <el-button type="text" icon="el-icon-full-screen" @click.stop="showChart2Big = true" />
+          <el-button type="text" icon="el-icon-caret-bottom" @click="handleOpenChart2" />
+        </div>
+        <div v-show="openChart2" ref="chart2" class="chart2"></div>
       </div>
     </div>
-    <Dialog :title="$l('停车需求图表')" hideMinimize :visible.sync="showChart3" @open="handleOpenChart3" left="center" :top="20" width="840px">
-      <div class="chart3" ref="chart3"></div>
+    <Dialog :title="$l('停车需求图表')" hideMinimize :visible.sync="showChart1Big" @open="handleOpenChart1Big" :left="120" :top="20" width="840px">
+      <div class="chart1Big" ref="chart1Big"></div>
     </Dialog>
-    <Dialog :title="$l('停车供需比图表')" hideMinimize :visible.sync="showChart4" @open="handleOpenChart4" left="center" :top="50" width="840px">
-      <div class="chart4" ref="chart4"></div>
+    <Dialog :title="$l('停车供给图表')" hideMinimize :visible.sync="showChart3Big" @open="handleOpenChart3Big" :left="150" :top="50" width="840px">
+      <div class="chart3Big" ref="chart3Big"></div>
+    </Dialog>
+    <Dialog :title="$l('停车供需比图表')" hideMinimize :visible.sync="showChart2Big" @open="handleOpenChart2Big" :left="180" :top="80" width="840px">
+      <div class="chart2Big" ref="chart2Big"></div>
     </Dialog>
   </el-collapse-item>
 </template>
@@ -36,6 +47,10 @@
     "zh-CN": "停车需求图表",
     "en-US": "Hourly Parking Demand"
   },
+  "停车供给图表":{
+    "zh-CN": "停车供给图表",
+    "en-US": "Hourly Parking Supply"
+  },
   "停车供需比图表":{
     "zh-CN": "停车供需比图表",
     "en-US": "Parking supply/demand Ratio"
@@ -46,7 +61,7 @@
 <script>
 import * as echarts from "echarts";
 import "echarts-gl";
-import { rangeParking, rangeRequireRatio } from "@/api/index";
+import { rangeParking, rangeRequireRatio, rangeRequireRatio2 } from "@/api/index";
 import { PolygonSelectLayer } from "../layer/PolygonSelectLayer";
 export default {
   inject: ["rootVue"],
@@ -92,10 +107,16 @@ export default {
       loading: true,
       resData: null,
       showChart2: false,
+
+      openChart1: true,
+      openChart2: true,
+      openChart3: true,
       rangeParkingData: null,
       rangeRequireRatioData: null,
-      showChart3: false,
-      showChart4: false,
+      supplyData: null,
+      showChart1Big: false,
+      showChart2Big: false,
+      showChart3Big: false,
     };
   },
   created() {
@@ -107,7 +128,9 @@ export default {
     this._chart1 = echarts.init(this.$refs.chart1);
     this._chart2 = echarts.init(this.$refs.chart2);
     this._chart3 = echarts.init(this.$refs.chart3);
-    this._chart4 = echarts.init(this.$refs.chart4);
+    this._chart1Big = echarts.init(this.$refs.chart1Big);
+    this._chart2Big = echarts.init(this.$refs.chart2Big);
+    this._chart3Big = echarts.init(this.$refs.chart3Big);
     this.getDetail();
     this.handleChangeGeoId(this.s_polgonParkingDetail);
     this._resizeObserver = new ResizeObserver((entries) => {
@@ -118,6 +141,7 @@ export default {
       this._setSizeTimeout = setTimeout(() => {
         if (this._chart1) this._chart1.resize();
         if (this._chart2) this._chart2.resize();
+        if (this._chart3) this._chart3.resize();
         this._setSizeTimeout = null;
       }, 1000 / 120);
     });
@@ -137,6 +161,10 @@ export default {
       this._chart2.dispose();
       this._chart2 = null;
     }
+    if (this._chart3) {
+      this._chart3.dispose();
+      this._chart3 = null;
+    }
     this.rootVue.$off("Parking_Geojson_Uuid", this.handleChangeGeoId);
   },
   methods: {
@@ -150,14 +178,23 @@ export default {
     handleChangeGeoId(data) {
       this.s_polgonParkingDetail.geoId = data.geoId;
       if (this.s_polgonParkingDetail.geoId) {
-        rangeRequireRatio(this.s_polgonParkingDetail).then((res) => {
-          this.rangeRequireRatioData = res.data;
+        rangeRequireRatio2(this.s_polgonParkingDetail).then((res) => {
+          console.log("rangeRequireRatio2", res);
+          this.rangeRequireRatioData = res.data.requireRatio;
           this._chart2.setOption(this.getChartOptions2(), true);
-          this._chart4.setOption(this.getChartOptions2(), true);
+          this._chart2Big.setOption(this.getChartOptions2(), true);
+
+          this.supplyData = res.data.supply;
+          this._chart3.setOption(this.getChartOptions3(), true);
+          this._chart3Big.setOption(this.getChartOptions3(), true);
           this.showChart2 = true;
           this.$nextTick(() => {
             this._chart2.resize();
+            this._chart3.resize();
           });
+        });
+        rangeRequireRatio(this.s_polgonParkingDetail).then((res) => {
+          console.log("rangeRequireRatio", res);
         });
       } else {
         this.showChart2 = false;
@@ -169,7 +206,7 @@ export default {
       rangeParking(this.s_polgonParkingDetail).then((res) => {
         this.rangeParkingData = res.data;
         this._chart1.setOption(this.getChartOptions1(), true);
-        this._chart3.setOption(this.getChartOptions1(), true);
+        this._chart1Big.setOption(this.getChartOptions1(), true);
         this._chart1.resize();
         this.loading = false;
       });
@@ -193,8 +230,6 @@ export default {
           });
         }
       }
-      console.log(data);
-
       return {
         tooltip: {},
         visualMap: {
@@ -273,11 +308,47 @@ export default {
         ],
       };
     },
+    getChartOptions3() {
+      const data = this.supplyData;
+      // prettier-ignore
+      const hours = ['12a', '1a', '2a', '3a', '4a', '5a', '6a','7a', '8a', '9a', '10a', '11a','12p', '1p', '2p', '3p', '4p', '5p','6p', '7p', '8p', '9p', '10p', '11p'];
+      return {
+        tooltip: {},
+        xAxis: {
+          type: "category",
+          data: hours,
+        },
+        yAxis: {
+          type: "value",
+        },
+        series: [
+          {
+            data: hours.map((v, i) => Number(data[i] || 0)),
+            type: "bar",
+          },
+        ],
+      };
+    },
+    handleOpenChart1() {
+      this.openChart1 = !this.openChart1;
+      if (this._chart1) this._chart1.resize();
+    },
+    handleOpenChart2() {
+      this.openChart2 = !this.openChart2;
+      if (this._chart2) this._chart2.resize();
+    },
     handleOpenChart3() {
+      this.openChart3 = !this.openChart3;
       if (this._chart3) this._chart3.resize();
     },
-    handleOpenChart4() {
-      if (this._chart4) this._chart4.resize();
+    handleOpenChart1Big() {
+      if (this._chart1Big) this._chart1Big.resize();
+    },
+    handleOpenChart2Big() {
+      if (this._chart2Big) this._chart2Big.resize();
+    },
+    handleOpenChart3Big() {
+      if (this._chart3Big) this._chart3Big.resize();
     },
   },
 };
@@ -288,7 +359,8 @@ export default {
   font-size: 13px;
   .toolbar_item_bodyer {
     .chart1,
-    .chart2 {
+    .chart2,
+    .chart3 {
       width: 100%;
       height: 300px;
       margin-bottom: 20px;
@@ -302,8 +374,9 @@ export default {
     }
   }
 }
-.chart3,
-.chart4 {
+.chart1Big,
+.chart2Big,
+.chart3Big {
   width: 800px;
   height: 600px;
 }

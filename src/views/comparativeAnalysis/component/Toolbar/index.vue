@@ -2,53 +2,71 @@
   <div class="toolbar-container">
     <div ref="typeScroll" class="toolbar-header">
       <div class="list">
-        <div class="item" id="LinesAnalysis" :class="{ active: activeModel === LinesAnalysis.name }" @click="handleActiveModel(LinesAnalysis)">{{ $l(LinesAnalysis.name) }}</div>
-        <div class="item" id="AnalysisReport" :class="{ active: activeModel === AnalysisReport.name }" @click="handleActiveModel(AnalysisReport)">{{ $l(AnalysisReport.name) }}</div>
-        <div class="item" id="PublicTransit" :class="{ active: activeModel === PublicTransit.name }" @click="handleActiveModel(PublicTransit)">{{ $l(PublicTransit.name) }}</div>
-        <div class="item" id="MotorizedTravel" :class="{ active: activeModel === MotorizedTravel.name }" @click="handleActiveModel(MotorizedTravel)">{{ $l(MotorizedTravel.name) }}</div>
-        <div class="item" id="Build3D" :class="{ active: activeModel === Build3D.name }" @click="handleActiveModel(Build3D)">{{ $l(Build3D.name) }}</div>
-        <div class="item" id="Network" :class="{ active: activeModel === Network.name }" @click="handleActiveModel(Network)">{{ $l(Network.name) }}</div>
-        <div class="item" id="Activity3D" :class="{ active: activeModel === Activity3D.name }" @click="handleActiveModel(Activity3D)">{{ $l(Activity3D.name) }}</div>
+        <!-- 比对分析 专属功能 -->
+        <div class="item" :id="LinesAnalysis.id" :class="{ active: activeModel === LinesAnalysis.id }" @click="handleActiveModel(LinesAnalysis.id)">{{ $l(LinesAnalysis.name) }}</div>
+        <div class="item" :id="AnalysisReport.id" :class="{ active: activeModel === AnalysisReport.id }" @click="handleActiveModel(AnalysisReport.id)">{{ $l(AnalysisReport.name) }}</div>
+        <!-- 比对分析 专属功能 -->
+        <div class="item" :id="PublicTransit.id" :class="{ active: activeModel === PublicTransit.id }" @click="handleActiveModel(PublicTransit.id)">{{ $l(PublicTransit.name) }}</div>
+        <div class="item" :id="MotorizedTravel.id" :class="{ active: activeModel === MotorizedTravel.id }" @click="handleActiveModel(MotorizedTravel.id)">{{ $l(MotorizedTravel.name) }}</div>
+        <div class="item" :id="Build3D.id" :class="{ active: activeModel === Build3D.id }" @click="handleActiveModel(Build3D.id)">{{ $l(Build3D.name) }}</div>
+        <div class="item" :id="Network.id" :class="{ active: activeModel === Network.id }" @click="handleActiveModel(Network.id)">{{ $l(Network.name) }}</div>
+        <div class="item" :id="Activity3D.id" :class="{ active: activeModel === Activity3D.id }" @click="handleActiveModel(Activity3D.id)">{{ $l(Activity3D.name) }}</div>
+        <div class="item" :id="GeoJSON.id" :class="{ active: activeModel === GeoJSON.id }" @click="handleActiveModel(GeoJSON.id)">{{ $l(GeoJSON.name) }}</div>
+        <div class="item" :id="Parking.id" :class="{ active: activeModel === Parking.id }" @click="handleActiveModel(Parking.id)">{{ $l(Parking.name) }}</div>
       </div>
     </div>
-    <div class="toolbar-bodyer" v-show="activeModel === LinesAnalysis.name">
+    <!-- 比对分析 专属功能 -->
+    <div class="toolbar-bodyer" v-show="activeModel === LinesAnalysis.id">
       <el-collapse class="toolbar-collapse" v-model="LinesAnalysis.activeName" accordion>
         <LinesChangeInfo name="LinesChangeInfo" />
         <component v-for="item in LinesAnalysis.list" :show="item.name == LinesAnalysis.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" />
       </el-collapse>
     </div>
-    <div class="toolbar-bodyer" v-show="activeModel === AnalysisReport.name">
+    <div class="toolbar-bodyer" v-show="activeModel === AnalysisReport.id">
       <el-collapse class="toolbar-collapse" v-model="AnalysisReport.activeName" accordion>
         <ReportToolbar name="ReportToolbar" />
         <component v-for="item in AnalysisReport.list" :show="item.name == AnalysisReport.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" />
       </el-collapse>
     </div>
-    <div class="toolbar-bodyer" v-show="activeModel === PublicTransit.name">
+    <!-- 比对分析 专属功能 -->
+
+    <div class="toolbar-bodyer" v-show="activeModel === PublicTransit.id">
       <SreachStopRoute />
       <el-collapse class="toolbar-collapse" v-model="PublicTransit.activeName" accordion>
         <component v-for="item in PublicTransit.list" :show="item.name == PublicTransit.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" />
       </el-collapse>
     </div>
-    <div class="toolbar-bodyer" v-show="activeModel === MotorizedTravel.name">
+    <div class="toolbar-bodyer" v-show="activeModel === MotorizedTravel.id">
       <el-collapse class="toolbar-collapse" v-model="MotorizedTravel.activeName" accordion>
         <component v-for="item in MotorizedTravel.list" :show="item.name == MotorizedTravel.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" />
       </el-collapse>
     </div>
-    <div class="toolbar-bodyer" v-show="activeModel === Build3D.name">
+    <div class="toolbar-bodyer" v-show="activeModel === Build3D.id">
       <SreachBuild />
       <el-collapse class="toolbar-collapse" v-model="Build3D.activeName" accordion>
         <component v-for="item in Build3D.list" :show="item.name == Build3D.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" />
       </el-collapse>
     </div>
-    <div class="toolbar-bodyer" v-show="activeModel === Network.name">
+    <div class="toolbar-bodyer" v-show="activeModel === Network.id">
       <SreachLineNode />
       <el-collapse class="toolbar-collapse" v-model="Network.activeName" accordion>
         <component v-for="item in Network.list" :show="item.name == Network.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" />
       </el-collapse>
     </div>
-    <div class="toolbar-bodyer" v-show="activeModel === Activity3D.name">
+    <div class="toolbar-bodyer" v-show="activeModel === Activity3D.id">
       <el-collapse class="toolbar-collapse" v-model="Activity3D.activeName" accordion>
         <component v-for="item in Activity3D.list" :show="item.name == Activity3D.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" />
+      </el-collapse>
+    </div>
+    <div class="toolbar-bodyer" v-show="activeModel === GeoJSON.id">
+      <el-collapse class="toolbar-collapse" v-model="GeoJSON.activeName">
+        <GeoJSONDetail v-for="item in GeoJSONIdList" :key="item" :name="item" :id="item" />
+      </el-collapse>
+    </div>
+    <div class="toolbar-bodyer" v-show="activeModel === Parking.id">
+      <ParkingGeoJSONDetail />
+      <el-collapse class="toolbar-collapse" v-model="Parking.activeName" accordion>
+        <component v-for="item in Parking.list" :show="item.name == Parking.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" />
       </el-collapse>
     </div>
   </div>
@@ -66,11 +84,11 @@
   },
   "活动":{
     "zh-CN": "活动",
-    "en-US": "Activity3D"
+    "en-US": "Activity"
   },
   "3D建筑":{
     "zh-CN": "3D建筑",
-    "en-US": "3DBuilding"
+    "en-US": "Building"
   },
   "导入GeoJSON":{
     "zh-CN": "导入GeoJSON",
@@ -78,7 +96,7 @@
   },
   "机动化出行":{
     "zh-CN": "机动化出行",
-    "en-US": "Motorized travel"
+    "en-US": "Motorized trips"
   },
   "路网":{
     "zh-CN": "路网",
@@ -86,7 +104,15 @@
   },
   "公共交通":{
     "zh-CN": "公共交通",
-    "en-US": "public transport"
+    "en-US": "Public Transit"
+  },
+  "GeoJSON":{
+    "zh-CN": "GeoJSON",
+    "en-US": "GeoJSON"
+  },
+  "停车供需":{
+    "zh-CN": "停车供需分析",
+    "en-US": "Parking analysis"
   },
 }
 </language>
@@ -120,6 +146,16 @@ import NodeDetail from "../../../operationsAnalysis/component/Network/toolbar/no
 import SelectLinkAnalysis from "../../../operationsAnalysis/component/Network/toolbar/selectLinkAnalysis.vue";
 // 活动
 import ActivityDetail from "../../../operationsAnalysis/component/Activity3D/toolbar/ActivityDetail.vue";
+
+// 私家车出行
+import CarTravelDetail from "../../../operationsAnalysis/component/CarTravel/toolbar/carTravelDetail.vue";
+// GeoJson
+import GeoJSONDetail from "../../../operationsAnalysis/component/GeoJSON/toolbar/geoJSONDetail.vue";
+// 停车供需
+import PolgonParkingDetail from "../../../operationsAnalysis/component/Parking/toolbar/PolgonParkingDetail.vue";
+import ParkingActivityDetail from "../../../operationsAnalysis/component/Parking/toolbar/ParkingActivityDetail.vue";
+import ParkingGeoJSONDetail from "../../../operationsAnalysis/component/Parking/toolbar/ParkingGeoJSONDetail.vue";
+
 export default {
   components: {
     ReportToolbar,
@@ -147,6 +183,14 @@ export default {
     SelectLinkAnalysis,
 
     ActivityDetail,
+
+    CarTravelDetail,
+
+    GeoJSONDetail,
+
+    PolgonParkingDetail,
+    ParkingActivityDetail,
+    ParkingGeoJSONDetail,
   },
   inject: ["rootVue"],
   data() {
@@ -167,9 +211,11 @@ export default {
         list: [],
         activeName: "ReportToolbar",
       },
+
       PublicTransit: {
         id: "PublicTransit",
         name: "公共交通",
+        components: ["RouteDetail", "StopAndRoute", "StopDetail", "RouteDepartures"],
         sreach: {},
         params: {},
         list: [],
@@ -178,6 +224,7 @@ export default {
       MotorizedTravel: {
         id: "MotorizedTravel",
         name: "机动化出行",
+        components: ["CarDetail", "BusDetail", "SubwayDetail", "CarTravelDetail"],
         sreach: {},
         params: {},
         list: [],
@@ -186,6 +233,7 @@ export default {
       Build3D: {
         id: "Build3D",
         name: "3D建筑",
+        components: ["BuildDetail"],
         sreach: {},
         params: {},
         list: [],
@@ -194,6 +242,7 @@ export default {
       Network: {
         id: "Network",
         name: "路网",
+        components: ["LineDetail", "NodeDetail", "SelectLinkAnalysis"],
         sreach: {},
         params: {},
         list: [],
@@ -208,12 +257,30 @@ export default {
         list: [],
         activeName: "",
       },
+      GeoJSON: {
+        id: "GeoJSON",
+        name: "GeoJSON",
+        components: [],
+        sreach: {},
+        params: {},
+        list: [],
+        activeName: [],
+      },
+      Parking: {
+        id: "Parking",
+        name: "停车供需",
+        components: ["PolgonParkingDetail", "ParkingActivityDetail"],
+        sreach: {},
+        params: {},
+        list: [],
+        activeName: "",
+      },
       modelMap: {
         RouteFlows: "LinesAnalysis",
 
         RouteDetail: "PublicTransit",
-        StopDetail: "PublicTransit",
         StopAndRoute: "PublicTransit",
+        StopDetail: "PublicTransit",
         RouteDepartures: "PublicTransit",
 
         CarDetail: "MotorizedTravel",
@@ -228,8 +295,13 @@ export default {
         SelectLinkAnalysis: "Network",
 
         ActivityDetail: "Activity3D",
+
+        CarTravelDetail: "MotorizedTravel",
+
+        PolgonParkingDetail: "Parking",
+        ParkingActivityDetail: "Parking",
       },
-      activeModel: "线路比对分析",
+      activeModel: "LinesAnalysis",
       activeName: "",
       list: [],
     };
@@ -260,7 +332,8 @@ export default {
         case "NodeDetail":
         case "SelectLinkAnalysis":
 
-        case "ActivityDetail": {
+        case "ActivityDetail":
+        case "ParkingActivityDetail": {
           const item = list.find((v) => v.data.uuid == data.uuid);
           if (item && data.uuid) {
             activeName = item.name;
@@ -286,22 +359,11 @@ export default {
 
       this.$set(obj, "list", list);
       this.$set(obj, "activeName", activeName);
-      this.handleActiveModel(obj);
+      this.handleActiveModel(obj.id);
     },
-    // handleChangeActive(activeName) {
-    //   try {
-    //     const index = this.list.findIndex((v) => v.name == activeName);
-    //     if (index > -1) {
-    //       const item = this.list[index];
-    //       this.list.splice(index, 1);
-    //       this.list.unshift(item);
-    //     }
-    //   } catch (error) {}
-    //   this.activeName = activeName;
-    // },
-    handleActiveModel(type) {
-      this.activeModel = type.name;
-      const doc = document.getElementById(type.id);
+    handleActiveModel(id) {
+      this.activeModel = id;
+      const doc = document.getElementById(id);
       if (doc) {
         doc.scrollIntoView({ inline: "center", block: "center", behavior: "smooth" });
       }

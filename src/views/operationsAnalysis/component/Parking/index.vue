@@ -10,46 +10,6 @@
     </div>
     <div class="form">
       <div class="form_item">
-        <div class="form_label">{{ $l("上传文件：") }}</div>
-        <div class="form_value">
-          <el-button :disabled="!s_showLayer" type="primary" size="mini" @click="handleShowUploadDialog">{{ $l("导入GeoJSON") }}</el-button>
-        </div>
-      </div>
-      <div class="form_item">
-        <div class="form_value">
-          <div class="file_item" v-if="file">
-            <div class="file_row">
-              <div style="width: 100%; padding: 0 10px;text-align: left;">{{ file.name }}</div>
-              <div class="file_btn" style="width: 81px">
-                <el-switch v-model="geojsonParams.show" :title="geojsonParams.show ? $l('hideGeoJSON') : $l('showGeoJSON')" @change="handleChangeGeoJsonParams('show', $event)"> </el-switch>
-              </div>
-            </div>
-            <div class="file_row">
-              <div style="width: 100%; padding: 0 10px">
-                <el-slider :disabled="!s_showLayer" :title="$l('pointScale')" v-model="geojsonParams.pointScale" :step="1" :min="1" :max="1000" @change="handleChangeGeoJsonParams('pointScale', $event)"> </el-slider>
-              </div>
-              <div class="file_btn">
-                <el-color-picker :disabled="!s_showLayer" :title="$l('pointColor')" size="mini" :predefine="predefineColors" v-model="geojsonParams.pointColor" @change="handleChangeGeoJsonParams('pointColor', $event)" />
-              </div>
-              <div class="file_btn">
-                <el-color-picker :disabled="!s_showLayer" :title="$l('polygonColor')" size="mini" :predefine="predefineColors" v-model="geojsonParams.polygonColor" @change="handleChangeGeoJsonParams('polygonColor', $event)" />
-              </div>
-            </div>
-            <div class="file_row">
-              <div style="width: 100%; padding: 0 10px">
-                <el-slider :disabled="!s_showLayer" :title="$l('lineWidth')" v-model="geojsonParams.lineWidth" :step="1" :min="1" :max="1000" @change="handleChangeGeoJsonParams('lineWidth', $event)"> </el-slider>
-              </div>
-              <div class="file_btn">
-                <el-color-picker :disabled="!s_showLayer" :title="$l('lineColor')" size="mini" :predefine="predefineColors" v-model="geojsonParams.lineColor" @change="handleChangeGeoJsonParams('lineColor', $event)" />
-              </div>
-              <div class="file_btn">
-                <el-button :disabled="!s_showLayer" type="danger" icon="el-icon-delete" size="mini" circle :title="$l('deleteGeoJSON')" @click="handleCloseFile"></el-button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="form_item">
         <div class="form_label">{{ $l("划定选择范围：") }}</div>
         <div class="form_value">
           <el-button v-if="polygonSelectState == POLYGON_SELECT_STATE_KEY.NOT_STARTED" :disabled="!s_showLayer" type="primary" size="mini" @click="handlePlayPolygonSelect">{{ $l("开始划定") }}</el-button>
@@ -97,52 +57,6 @@
           </div>
         </div>
       </template>
-
-      <el-dialog :title="$l('导入GeoJSON')" :visible.sync="showUploadDialog" width="600px" append-to-body>
-        <el-form :model="uploadForm" ref="form" :rules="uploadRules" label-width="auto" :inline="false" size="normal">
-          <el-form-item :label="$l('文件')" prop="file">
-            <div>
-              <el-button :disabled="!s_showLayer" type="primary" size="mini" @click="handleSelectFile">{{ $l("选择GeoJSON") }}</el-button>
-            </div>
-            <div class="file_item2" v-if="uploadForm.file">
-              <span>{{ uploadForm.file.name }}</span>
-              <i
-                class="el-icon-close"
-                @click="
-                  uploadForm.file = null;
-                  typeList = [];
-                "
-              ></i>
-            </div>
-          </el-form-item>
-          <template v-if="uploadForm.file">
-            <el-form-item :label="$l('路内停车场字段')" prop="road">
-              <el-select v-model="uploadForm.road" clearable>
-                <el-option v-for="item in typeList" :key="item" :label="item" :value="item"> </el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item :label="$l('公共停车场字段')" prop="common">
-              <el-select v-model="uploadForm.common" clearable>
-                <el-option v-for="item in typeList" :key="item" :label="item" :value="item"> </el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item :label="$l('专用停车场字段')" prop="special">
-              <el-select v-model="uploadForm.special" clearable>
-                <el-option v-for="item in typeList" :key="item" :label="item" :value="item"> </el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item :label="$l('路边停车场字段')" prop="roadside">
-              <el-select v-model="uploadForm.roadside" clearable>
-                <el-option v-for="item in typeList" :key="item" :label="item" :value="item"> </el-option>
-              </el-select>
-            </el-form-item>
-          </template>
-          <el-form-item>
-            <el-button type="primary" @click="handleUploadFile" :loading="uploading">{{ $l("立即上传") }}</el-button>
-            <el-button @click="showUploadDialog = false">{{ $l("取消") }}</el-button>
-          </el-form-item>
-        </el-form>
-      </el-dialog>
     </div>
   </el-collapse-item>
 </template>
@@ -152,14 +66,6 @@
   "停车供需":{
     "zh-CN": "停车供需分析",
     "en-US": "Parking Analysis"
-  },
-  "导入GeoJSON":{
-    "zh-CN": "导入GeoJSON",
-    "en-US": "Import GeoJSON"
-  },
-  "上传文件：":{
-    "zh-CN": "上传文件：",
-    "en-US": "Upload file:"
   },
   "划定选择范围：":{
     "zh-CN": "划定选择范围：",
@@ -210,34 +116,6 @@
     "zh-CN": "颜色",
     "en-US": "Color"
   },
-  "文件":{
-    "zh-CN": "文件",
-    "en-US": "File"
-  },
-  "选择GeoJSON":{
-    "zh-CN": "选择GeoJSON",
-    "en-US": "Select GeoJSON"
-  },
-  "路内停车场字段":{
-    "zh-CN": "路内停车场字段",
-    "en-US": "On Street Parking Field:"
-  },
-  "公共停车场字段":{
-    "zh-CN": "公共停车场字段",
-    "en-US": "Public Parking Field"
-  },
-  "专用停车场字段":{
-    "zh-CN": "专用停车场字段",
-    "en-US": "Dedicated Parking Field"
-  },
-  "路边停车场字段":{
-    "zh-CN": "路外停车场字段",
-    "en-US": "Roadside Parking Field"
-  },
-  "立即上传":{
-    "zh-CN": "立即上传",
-    "en-US": "Upload now"
-  },
 }
 </language>
 
@@ -245,10 +123,8 @@
 import { MAP_EVENT } from "@/mymap";
 import { PolygonSelectLayer, POLYGON_SELECT_STATE_KEY, POLYGON_SELECT_EVENT } from "./layer/PolygonSelectLayer";
 import { Activity3DLayer } from "../Activity3D/layer/Activity3DLayer";
-import { allParking, getAllActivityType, uploadGeoJson } from "@/api/index";
-import { guid, JsonParse } from "@/utils/utils";
-import ParkingGeoJSONWorker from "./worker/ParkingGeoJSON.worker";
-import { GeoJSONLayer } from "../GeoJSON/layer/GeoJSONLayer";
+import { allParking, getAllActivityType } from "@/api/index";
+import { guid } from "@/utils/utils";
 
 const CHANGE_COLOR_EVENT_KEY = "Parking_changeColor";
 
@@ -322,27 +198,6 @@ export default {
       activityTypeList: [],
       legTypeList: [],
 
-      showUploadDialog: false,
-      uploadForm: {},
-      geojsonParams: {
-        show: true,
-        pointScale: 50,
-        pointColor: "#5470c6",
-        polygonColor: "#5470c6",
-        lineWidth: 500,
-        lineColor: "#5470c6",
-      },
-      uploadRules: {
-        file: {
-          required: true,
-          message: "文件不能为空",
-          trigger: "blur",
-        },
-      },
-      uploading: false,
-      typeList: [],
-      file: null,
-
       selectPolygon: false,
       polygonSelectState: POLYGON_SELECT_STATE_KEY.NOT_STARTED,
 
@@ -350,23 +205,10 @@ export default {
     };
   },
   created() {
-    this.worker = new ParkingGeoJSONWorker();
-    this.worker.onmessage = (event) => {
-      const decode = new TextDecoder();
-      const str = decode.decode(event.data.type);
-      this._fileSource = event.data.source;
-      
-      this.typeList = JsonParse(str, []);
-      this.uploadForm.road = null;
-      this.uploadForm.common = null;
-      this.uploadForm.special = null;
-      this.uploadForm.roadside = null;
-    };
-
     this.s_showLayer = this.showLayer;
 
     this._PolygonSelectLayer = new PolygonSelectLayer({
-      zIndex: 100,
+      zIndex: 200,
       event: {
         [POLYGON_SELECT_EVENT.STATE_CHANGE]: (res) => {
           this.polygonSelectState = res.data.state;
@@ -378,7 +220,7 @@ export default {
     });
 
     this._Activity3DLayer = new Activity3DLayer({
-      zIndex: 20,
+      zIndex: 50,
       colors: this.activityTypeList,
       scale: this.scale,
       maxNum: this.maxNum,
@@ -396,15 +238,6 @@ export default {
           });
         },
       },
-    });
-
-    this._GeoJSONLayer = new GeoJSONLayer({
-      zIndex: 30,
-      pointScale: this.geojsonParams.pointScale,
-      pointColor: this.geojsonParams.pointColor,
-      polygonColor: this.geojsonParams.polygonColor,
-      lineWidth: this.geojsonParams.lineWidth,
-      lineColor: this.geojsonParams.lineColor,
     });
 
     getAllActivityType().then((res) => {
@@ -425,38 +258,8 @@ export default {
     this.handleDisable();
     this._PolygonSelectLayer.dispose();
     this._Activity3DLayer.dispose();
-    this._GeoJSONLayer.dispose();
   },
   methods: {
-    handleChangeGeoJsonParams(type, value) {
-      this.geojsonParams[type] = value;
-      switch (type) {
-        case "show":
-          if (value && this._Map) {
-            this._Map.addLayer(this._GeoJSONLayer);
-          } else {
-            this._GeoJSONLayer.removeFromParent();
-          }
-          break;
-        case "pointScale":
-          this._GeoJSONLayer.setPointScale(value);
-          break;
-        case "pointColor":
-          this._GeoJSONLayer.setPointColor(value);
-          break;
-        case "polygonColor":
-          this._GeoJSONLayer.setPolygonColor(value);
-          break;
-        case "lineWidth":
-          this._GeoJSONLayer.setLineWidth(value);
-          break;
-        case "lineColor":
-          this._GeoJSONLayer.setLineColor(value);
-          break;
-        default:
-          break;
-      }
-    },
     getData() {
       if (this.loading) return;
       this.loading = true;
@@ -492,7 +295,6 @@ export default {
     handleEnable() {
       this.getData();
       this.handleShowActivity(this.showActivity);
-      this.handleChangeGeoJsonParams("show", this.geojsonParams.show);
       this._Map.addLayer(this._PolygonSelectLayer);
       this.rootVue.$on("timeChange", this.handleTimeChange);
     },
@@ -500,81 +302,21 @@ export default {
     handleDisable() {
       this.handleStopPolygonSelect();
       this.handleShowActivity(false);
-      this.handleChangeGeoJsonParams("show", false);
       this._Map.removeLayer(this._PolygonSelectLayer);
       this.rootVue.$off("timeChange", this.handleTimeChange);
     },
     handleTimeChange(time) {
       if (this._Activity3DLayer) this._Activity3DLayer.setTime(time);
     },
-    // ******************************* 上传文件 -- start
-    handleShowUploadDialog() {
-      this.uploading = false;
-      this.uploadForm = {
-        file: null,
-        road: null,
-        common: null,
-        special: null,
-        roadside: null,
-      };
-      this.showUploadDialog = true;
-    },
-    handleSelectFile() {
-      const input = document.createElement("input");
-      input.type = "file";
-      input.accept = ".geojson";
-      input.style = "position:fixed;width:0;height:0;top: -100px;";
-      document.body.appendChild(input);
-      input.onchange = (e) => {
-        this.uploadForm.file = e.target.files[0];
-
-        let reader = new FileReader();
-        reader.readAsArrayBuffer(e.target.files[0]);
-        reader.onload = () => {
-          const arrayBuffer = reader.result;
-          const array = new Int8Array(arrayBuffer);
-          this.worker.postMessage(array, [array.buffer]);
-        };
-        document.body.removeChild(input);
-      };
-      input.click();
-    },
-    handleUploadFile(file) {
-      this.uploading = true;
-      uploadGeoJson(this.uploadForm)
-        .then((res) => {
-          this.showUploadDialog = false;
-          this.file = {
-            ...this.uploadForm,
-            name: this.uploadForm.file.name,
-            geoId: res.data,
-          };
-          this.rootVue.$emit("Parking_Geojson_Uuid", { geoId: res.data });
-
-          this.handleChangeGeoJsonParams("show", true);
-          this._GeoJSONLayer.setData(this._fileSource);
-
-          this.uploading = false;
-        })
-        .catch((res) => {
-          this.uploading = false;
-        });
-    },
-    handleCloseFile() {
-      this.file = null;
-      this.rootVue.$emit("Parking_Geojson_Uuid", { geoId: null });
-    },
-    // ******************************* 上传文件 -- end
     // ******************************* 交通交叉口 -- start
     handleShowParkDetail(path) {
       this.handleStopPolygonSelect();
       console.log(path);
-
       this.rootVue.handleShowPolgonParkingDetail({
         uuid: guid(),
         polgonParkingDetail: {
           xyarr: path,
-          geoId: this.file ? this.file.geoId : null,
+          geoId: this.rootVue.parkingGeoJSON ? this.rootVue.parkingGeoJSON.geoId : null,
         },
       });
     },
@@ -583,6 +325,7 @@ export default {
         this._PolygonSelectLayer.reset();
         this._PolygonSelectLayer.play();
         this.polygonSelectState = this._PolygonSelectLayer.state;
+        this.$emit("update:lock2D", true);
       }
     },
     handleReplayPolygonSelect() {
@@ -590,6 +333,7 @@ export default {
         this._PolygonSelectLayer.reset();
         this._PolygonSelectLayer.play();
         this.polygonSelectState = this._PolygonSelectLayer.state;
+        this.$emit("update:lock2D", true);
       }
     },
     handleStopPolygonSelect() {
@@ -597,6 +341,7 @@ export default {
         this._PolygonSelectLayer.reset();
         this._PolygonSelectLayer.stop();
         this.polygonSelectState = this._PolygonSelectLayer.state;
+        this.$emit("update:lock2D", false);
       }
     },
     // ******************************* 交通交叉口 -- end
@@ -612,51 +357,5 @@ export default {
 }
 
 .my_collapse_item {
-}
-
-.file_item {
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-  border: 1px solid #000;
-  border-radius: 4px;
-}
-.file_row {
-  height: 40px;
-  display: flex;
-  align-items: center;
-  & + .file_row {
-    border-top: 1px solid #000;
-  }
-  .file_btn {
-    flex-shrink: 0;
-    height: 40px;
-    width: 40px;
-    border-left: 1px solid #000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-}
-
-.file_item2 {
-  display: inline-block;
-  padding: 7px 10px 7px 15px;
-  font-size: 12px;
-  line-height: 18px;
-  border-radius: 3px;
-
-  color: #ffffff;
-  background-color: #409eff;
-  border-color: #409eff;
-  .el-icon-loading {
-    margin-left: 10px;
-  }
-  .el-icon-close {
-    cursor: pointer;
-    margin-left: 10px;
-  }
-}
-.flex-align-center {
-  display: flex;
-  align-items: center;
 }
 </style>

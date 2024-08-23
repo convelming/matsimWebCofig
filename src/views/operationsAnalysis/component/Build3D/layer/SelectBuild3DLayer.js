@@ -19,10 +19,7 @@ export class SelectBuild3DLayer extends Layer {
       opacity: this.buildOpacity,
       transparent: true,
       alphaTest: 0.1,
-      depthWrite: true
-      // polygonOffset: true,
-      // polygonOffsetFactor: -1,
-      // polygonOffsetUnits: -1
+      depthWrite: false,
     });
 
     this.geometry = new THREE.BufferGeometry();
@@ -34,7 +31,7 @@ export class SelectBuild3DLayer extends Layer {
     if (type == MAP_EVENT.UPDATE_CENTER) {
       const center = this.mesh.userData.center || [0, 0];
       const [x, y] = this.map.WebMercatorToCanvasXY(center[0], center[1]);
-      this.mesh.position.set(x, y, 0);
+      this.mesh.position.set(x + 0.5, y + 0.5, 0);
     }
 
     if (type == MAP_EVENT.UPDATE_CAMERA_ROTATE) {
@@ -43,7 +40,7 @@ export class SelectBuild3DLayer extends Layer {
       if (this.show3D != show3D) {
         this.show3D = show3D;
         if (this.show3D) {
-          this.mesh.scale.set(1.01, 1.01, 1.01);
+          this.mesh.scale.set(1.05, 1.05, 1.05);
         } else {
           this.mesh.scale.set(1, 1, 0.000001);
         }
@@ -88,7 +85,9 @@ export class SelectBuild3DLayer extends Layer {
     if (!this.data) return
     const { coordinates, coord, height } = this.data
     const center = [coord.x, coord.y]
-    const _coordinates = coordinates.map(v => v.map(v2 => [v2[0] - center[0], v2[1] - center[1]]))
+    const _coordinates = coordinates.map(v => v.map(v2 => [v2[0] - center[0], v2[1] - center[1]]));
+    console.log(expand(_coordinates[0], 1));
+
     const shapes = [
       {
         points: _coordinates[0],

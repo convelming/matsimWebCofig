@@ -127,7 +127,7 @@ export class PolygonSelectLayer extends Layer {
     this.handleStateChange();
   }
 
-  setPath(path){
+  setPath(path) {
     this.center = path[0];
     this.path = path;
     this.movePoint = path[0];
