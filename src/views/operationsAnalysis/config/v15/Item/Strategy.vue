@@ -265,6 +265,12 @@ const defaultForm = {
   Innovation: [],
   Selection: [],
 };
+const defaultItem = {
+  strategyName: "",
+  weight: "",
+  subpopulation: "",
+  planSelectorForRemoval: "",
+};
 const defaultXml = `
 	<module name="strategy" >
 		<!-- the external executable will be called with a config file as argument.  This is the pathname to a possible skeleton config, to which additional information will be added.  Can be null. -->
@@ -279,7 +285,7 @@ const defaultXml = `
 		<param name="maxAgentPlanMemorySize" value="5" />
 		<!-- strategyName of PlanSelector for plans removal.  Possible defaults: WorstPlanSelector SelectRandom SelectExpBetaForRemoval ChangeExpBetaForRemoval PathSizeLogitSelectorForRemoval . The current default, WorstPlanSelector is not a good choice from a discrete choice theoretical perspective. Alternatives, however, have not been systematically tested. kai, feb'12 -->
 		<param name="planSelectorForRemoval" value="WorstPlanSelector" />
-    <parameterset type="strategysettings">			
+    <parameterset type="strategysettings">
       <!-- iteration after which strategy will be disabled.  most
       useful for ''innovative'' strategies (new routes, new times, ...). Normally, better use
       fractionOfIterationsToDisableInnovation -->
@@ -339,10 +345,9 @@ export default {
       const json = xmlToJson(xml);
       const form = JSON.parse(JSON.stringify(defaultForm));
       function getInnovationAndSelection(node) {
-        const obj = {
-          uuid: guid(),
-          open: false,
-        };
+        const obj = JSON.parse(JSON.stringify(defaultItem));
+        obj.uuid = guid();
+        obj.open = false;
         for (const { attrs } of node.nodes) {
           obj[attrs.name] = attrs.value;
         }
