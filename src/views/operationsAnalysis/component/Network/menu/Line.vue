@@ -15,7 +15,7 @@
     "en-US": "Select Link Analysis"
   },
   "linkVolumes":{
-    "zh-CN": "路段卷",
+    "zh-CN": "路段流量",
     "en-US": "Link Volumes"
   },
 }
