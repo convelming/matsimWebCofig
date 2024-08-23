@@ -17,7 +17,7 @@
         <div class="file_item">
           <div class="file_row">
             <div class="file_l_col" style="padding: 0 15px">
-              <el-slider :title="$l('pointSize')" v-model="pointSize" @change="handleChange('pointSize', $event)" :step="1" :min="1" :max="1000"> </el-slider>
+              <el-slider :title="$l('pointSize')" v-model="pointSize" @change="handleChange('pointSize', $event)" :step="0.1" :min="0" :max="1000"> </el-slider>
             </div>
             <div class="file_s_col">
               <el-color-picker :title="$l('pointColor')" v-model="pointColor" @change="handleChange('pointColor', $event)" size="mini" :predefine="predefineColors" />
@@ -45,7 +45,7 @@
         <div class="file_item">
           <div class="file_row">
             <div class="file_l_col" style="padding: 0 15px">
-              <el-slider :title="$l('lineWidth')" v-model="lineWidth" @change="handleChange('lineWidth', $event)" :step="1" :min="1" :max="1000"> </el-slider>
+              <el-slider :title="$l('lineWidth')" v-model="lineWidth" @change="handleChange('lineWidth', $event)" :step="0.1" :min="0" :max="1000"> </el-slider>
             </div>
             <div class="file_s_col">
               <el-color-picker :title="$l('lineColor')" v-model="lineColor" @change="handleChange('lineColor', $event)" size="mini" :predefine="predefineColors" />
@@ -85,7 +85,7 @@
           </div>
           <div class="file_row">
             <div class="file_l_col" style="padding: 0 15px">
-              <el-slider :title="$l('polygonBorderWidth')" v-model="polygonBorderWidth" @change="handleChange('polygonBorderWidth', $event)" :step="1" :min="1" :max="300"> </el-slider>
+              <el-slider :title="$l('polygonBorderWidth')" v-model="polygonBorderWidth" @change="handleChange('polygonBorderWidth', $event)" :step="0.1" :min="0" :max="300"> </el-slider>
             </div>
             <div class="file_s_col">
               <el-color-picker :title="$l('polygonBorderColor')" v-model="polygonBorderColor" @change="handleChange('polygonBorderColor', $event)" size="mini" :predefine="predefineColors" />
@@ -115,7 +115,7 @@
               <el-switch :title="$l('polygon3D')" v-model="polygon3D" @change="handleChange('polygon3D', $event)" :active-value="true" :inactive-value="false" />
             </div>
             <div class="file_l_col" style="padding: 0 15px">
-              <el-slider :title="$l('polygon3DHeight')" v-model="polygon3DHeight" @change="handleChange('polygon3DHeight', $event)" :step="1" :min="1" :max="5000"> </el-slider>
+              <el-slider :title="$l('polygon3DHeight')" v-model="polygon3DHeight" @change="handleChange('polygon3DHeight', $event)" :step="0.1" :min="0" :max="5000"> </el-slider>
             </div>
           </div>
         </div>

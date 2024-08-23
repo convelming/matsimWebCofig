@@ -65,7 +65,7 @@
       <div class="form_item">
         <div class="form_label">{{ $l("车辆大小：") }}</div>
         <div class="form_value">
-          <el-slider :disabled="!s_showLayer" style="padding: 0 calc(2em - 10px)" v-model="modelSize" :step="1" :min="1" :max="20"> </el-slider>
+          <el-slider :disabled="!s_showLayer" style="padding: 0 calc(2em - 10px)" v-model="modelSize" :step="0.1" :min="0" :max="20"> </el-slider>
           <!--            <el-input-number class="my_input_number_1" style="width: 100%" :disabled="!s_showLayer" size="small"-->
           <!--            v-model="modelSize" :min="1" :max="30" :step="1" step-strictly> </el-input-number>-->
         </div>

@@ -12,7 +12,7 @@
       <div class="form_item">
         <div class="form_label">{{ $l("图标大小：") }}</div>
         <div class="form_value">
-          <el-slider :disabled="!s_showLayer" v-model="stopScale" :min="1" :max="20"></el-slider>
+          <el-slider style="padding: 0 calc(2em - 10px)" :disabled="!s_showLayer" v-model="stopScale" :min="0" :max="20" :step="0.1"></el-slider>
         </div>
       </div>
       <div class="form_item">
@@ -77,7 +77,7 @@ import LineDetail from "@/views/operationsAnalysis/component/Network/toolbar/lin
 export default {
   props: ["name", "showLayer", "lock2D"],
   inject: ["rootVue"],
-  components: {LineDetail},
+  components: { LineDetail },
   computed: {
     _Map() {
       return this.rootVue._Map;

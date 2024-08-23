@@ -11,7 +11,7 @@
           <el-descriptions :column="1" size="mini">
             <template v-if="layer.showPointSetting">
               <el-descriptions-item label="pointSize">
-                <el-slider :title="$l('pointSize')" v-model="layer.params.pointSize" @change="handleChangeLayerParams(layer.name, 'pointSize', $event)" :step="1" :min="1" :max="1000" size="mini"> </el-slider>
+                <el-slider :title="$l('pointSize')" v-model="layer.params.pointSize" @change="handleChangeLayerParams(layer.name, 'pointSize', $event)" :step="0.1" :min="0" :max="1000" size="mini"> </el-slider>
               </el-descriptions-item>
               <el-descriptions-item label="pointColors">
                 <ColorSelect :title="$l('pointColors')" v-model="layer.params.pointColors" @change="handleChangeLayerParams(layer.name, 'pointColors', $event.value)" :colorsList="COLOR_LIST" size="mini" />
@@ -23,7 +23,7 @@
             </template>
             <template v-if="layer.showLineSetting">
               <el-descriptions-item label="lineWidth">
-                <el-slider :title="$l('lineWidth')" v-model="layer.params.lineWidth" @change="handleChangeLayerParams(layer.name, 'lineWidth', $event)" :step="1" :min="1" :max="1000" size="mini"> </el-slider>
+                <el-slider :title="$l('lineWidth')" v-model="layer.params.lineWidth" @change="handleChangeLayerParams(layer.name, 'lineWidth', $event)" :step="0.1" :min="0" :max="1000" size="mini"> </el-slider>
               </el-descriptions-item>
               <el-descriptions-item label="lineStyle">
                 <el-select :title="$l('lineStyle')" v-model="layer.params.lineStyle" @change="handleChangeLayerParams(layer.name, 'lineStyle', $event)" size="mini">
@@ -50,10 +50,10 @@
                 <el-switch :title="$l('polygon3D')" v-model="layer.params.polygon3D" @change="handleChangeLayerParams(layer.name, 'polygon3D', $event)" :active-value="true" :inactive-value="false" size="mini" />
               </el-descriptions-item>
               <el-descriptions-item label="polygon3DHeight">
-                <el-slider :title="$l('polygon3DHeight')" v-model="layer.params.polygon3DHeight" @change="handleChangeLayerParams(layer.name, 'polygon3DHeight', $event)" :step="1" :min="1" :max="5000" size="mini"> </el-slider>
+                <el-slider :title="$l('polygon3DHeight')" v-model="layer.params.polygon3DHeight" @change="handleChangeLayerParams(layer.name, 'polygon3DHeight', $event)" :step="0.1" :min="0" :max="5000" size="mini"> </el-slider>
               </el-descriptions-item>
               <el-descriptions-item label="polygonBorderWidth">
-                <el-slider :title="$l('polygonBorderWidth')" v-model="layer.params.polygonBorderWidth" @change="handleChangeLayerParams(layer.name, 'polygonBorderWidth', $event)" :step="1" :min="1" :max="300" size="mini"> </el-slider>
+                <el-slider :title="$l('polygonBorderWidth')" v-model="layer.params.polygonBorderWidth" @change="handleChangeLayerParams(layer.name, 'polygonBorderWidth', $event)" :step="0.1" :min="0" :max="300" size="mini"> </el-slider>
               </el-descriptions-item>
               <el-descriptions-item label="polygonBorderColor">
                 <el-color-picker :title="$l('polygonBorderColor')" v-model="layer.params.polygonBorderColor" @change="handleChangeLayerParams(layer.name, 'polygonBorderColor', $event)" :predefine="predefineColors" size="mini" />
