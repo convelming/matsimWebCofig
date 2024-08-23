@@ -325,6 +325,7 @@ export default {
         this._PolygonSelectLayer.reset();
         this._PolygonSelectLayer.play();
         this.polygonSelectState = this._PolygonSelectLayer.state;
+        this.$emit("update:lock2D", true);
       }
     },
     handleReplayPolygonSelect() {
@@ -332,6 +333,7 @@ export default {
         this._PolygonSelectLayer.reset();
         this._PolygonSelectLayer.play();
         this.polygonSelectState = this._PolygonSelectLayer.state;
+        this.$emit("update:lock2D", true);
       }
     },
     handleStopPolygonSelect() {
@@ -339,6 +341,7 @@ export default {
         this._PolygonSelectLayer.reset();
         this._PolygonSelectLayer.stop();
         this.polygonSelectState = this._PolygonSelectLayer.state;
+        this.$emit("update:lock2D", false);
       }
     },
     // ******************************* 交通交叉口 -- end
