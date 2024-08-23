@@ -1,5 +1,5 @@
 <template>
-  <div class="GeoJSONVisualMap">
+  <div class="GeoJSONVisualMap" @mousedown="startMove" :style="s_style">
     <div class="item" v-for="(item, index) in list" :key="index">
       <div class="text">{{ Number(Number(item.min).toFixed(4)) }} ~~ {{ Number(Number(item.max).toFixed(4)) }}</div>
       <div class="color" :style="{ backgroundColor: item.color }"></div>
@@ -35,44 +35,92 @@ export default {
     },
   },
   components: {},
-  computed: {},
+  computed: {
+    s_style() {
+      let style = "";
+      style += `top:calc(${this.s_top}px + ${this.moveObj.top || 0}px);`;
+      style += `left:calc(${this.s_left}px + ${this.moveObj.left || 0}px);`;
+      return style;
+    },
+  },
   watch: {
     colors: {
       handler(val) {
         this.handleUpdate();
       },
       deep: true,
-      immediate: true,
     },
     max: {
       handler(val) {
         this.handleUpdate();
       },
       deep: true,
-      immediate: true,
     },
     min: {
       handler(val) {
         this.handleUpdate();
       },
       deep: true,
-      immediate: true,
     },
   },
   data() {
     return {
       list: [],
+      s_top: 0,
+      s_left: 0,
+
+      moveObj: {
+        s_top: 0,
+        s_left: 0,
+        top: 0,
+        left: 0,
+      },
     };
   },
-  created() {},
-  mounted() {},
+  created() {
+    this.handleUpdate();
+  },
+  mounted() {
+    document.body.appendChild(this.$el);
+  },
+  destroyed() {
+    if (this.$el && this.$el.parentNode) {
+      this.$el.parentNode.removeChild(this.$el);
+    }
+  },
   methods: {
+    startMove(event) {
+      this.moveObj = {
+        s_top: event.pageY,
+        s_left: event.pageX,
+        top: 0,
+        left: 0,
+      };
+      document.body.addEventListener("mousemove", this.moveing);
+      document.body.addEventListener("mouseup", this.endMove);
+      document.body.addEventListener("mouseleave", this.endMove);
+    },
+    moveing(event) {
+      this.moveObj.top = event.pageY - this.moveObj.s_top;
+      this.moveObj.left = event.pageX - this.moveObj.s_left;
+    },
+    endMove(event) {
+      this.s_top += this.moveObj.top;
+      this.s_left += this.moveObj.left;
+      this.moveObj = {
+        s_top: 0,
+        s_left: 0,
+        top: 0,
+        left: 0,
+      };
+      document.body.removeEventListener("mousemove", this.moveing);
+      document.body.removeEventListener("mouseleave", this.endMove);
+    },
     handleUpdate() {
       if (!this.colors) return;
       const d = this.max - this.min;
       const obj = {};
       ColorBar2D.getDrowColors(this.colors).forEach(({ key, color }, i, l) => {
-        console.log(l);
         if (!obj[color]) {
           obj[color] = { min: key * d + this.min, color: color, max: this.min };
         } else {
@@ -81,7 +129,6 @@ export default {
       });
       const list = Object.values(obj).sort((a, b) => a.min - b.min);
       this.list = list;
-      console.log(list);
     },
   },
 };
@@ -89,10 +136,14 @@ export default {
 
 <style lang="scss" scoped>
 .GeoJSONVisualMap {
+  cursor: move;
+  user-select: none;
   z-index: 9999;
   position: fixed;
-  padding: 20px;
-  background-color: rgba($color: #000000, $alpha: 0.5);
+  top: 0;
+  left: 0;
+  padding: 5px 10px;
+  background-color: rgba($color: #000000, $alpha: 0.8);
   border-radius: 5px;
   .item {
     line-height: 30px;

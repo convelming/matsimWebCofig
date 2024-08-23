@@ -57,8 +57,6 @@
           </div>
         </div>
       </template>
-
-      <GeoJSONVisualMap />
     </div>
   </el-collapse-item>
 </template>
@@ -128,14 +126,12 @@ import { Activity3DLayer } from "../Activity3D/layer/Activity3DLayer";
 import { allParking, getAllActivityType } from "@/api/index";
 import { guid } from "@/utils/utils";
 
-import GeoJSONVisualMap from "./component/GeoJSONVisualMap.vue";
-
 const CHANGE_COLOR_EVENT_KEY = "Parking_changeColor";
 
 export default {
   props: ["name", "showLayer", "lock2D"],
   inject: ["rootVue"],
-  components: { GeoJSONVisualMap },
+  components: {},
   computed: {
     _Map() {
       return this.rootVue._Map;

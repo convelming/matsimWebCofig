@@ -16,6 +16,11 @@
               <el-descriptions-item label="pointColors">
                 <ColorSelect :title="$l('pointColors')" v-model="layer.params.pointColors" @change="handleChangeLayerParams(layer.name, 'pointColors', $event.value)" :colorsList="COLOR_LIST" size="mini" />
               </el-descriptions-item>
+
+              <!-- <el-descriptions-item label="showPointVisualMap">
+                <el-switch :title="$l('showPointVisualMap')" v-model="layer.showPointVisualMap" :active-value="true" :inactive-value="false"> </el-switch>
+              </el-descriptions-item>
+              <GeoJSONVisualMap v-show="layer.showPointVisualMap" :color="COLOR_LIST[layer.params.pointColors]" :max="layer.valueLabel.max" :min="layer.valueLabel.min" /> -->
             </template>
             <template v-if="layer.showLineSetting">
               <el-descriptions-item label="lineWidth">
@@ -29,6 +34,11 @@
               <el-descriptions-item label="lineColors">
                 <ColorSelect :title="$l('lineColors')" style="width: 100%" v-model="layer.params.lineColors" @change="handleChangeLayerParams(layer.name, 'lineColors', $event.value)" :colorsList="COLOR_LIST" size="mini" />
               </el-descriptions-item>
+
+              <!-- <el-descriptions-item label="showLineVisualMap">
+                <el-switch :title="$l('showLineVisualMap')" v-model="layer.showLineVisualMap" :active-value="true" :inactive-value="false"> </el-switch>
+              </el-descriptions-item>
+              <GeoJSONVisualMap v-show="layer.showLineVisualMap" :color="COLOR_LIST[layer.params.lineColors]" :max="layer.valueLabel.max" :min="layer.valueLabel.min" /> -->
             </template>
             <template v-if="layer.showPolygonSetting">
               <el-descriptions-item label="polygonOpacity">
@@ -54,6 +64,11 @@
                   <el-option v-for="(v, k) in LINE_STYPE" :key="v" :label="k" :value="v"></el-option>
                 </el-select>
               </el-descriptions-item>
+
+              <!-- <el-descriptions-item label="showPolygonVisualMap">
+                <el-switch :title="$l('showPolygonVisualMap')" v-model="layer.showPolygonVisualMap" :active-value="true" :inactive-value="false"> </el-switch>
+              </el-descriptions-item>
+              <GeoJSONVisualMap v-show="layer.showPolygonVisualMap" :color="COLOR_LIST[layer.params.polygonColors]" :max="layer.valueLabel.max" :min="layer.valueLabel.min" /> -->
             </template>
           </el-descriptions>
         </div>
@@ -152,6 +167,7 @@
 <script>
 import { GeoJSONLayer, LINE_STYPE } from "../../GeoJSON/layer/GeoJSONLayer";
 import GeoJSONLayerWorker from "../../GeoJSON/worker/GeoJSONLayer.worker";
+import GeoJSONVisualMap from "../../GeoJSON/component/GeoJSONVisualMap.vue";
 import { uploadGeoJson } from "@/api/index";
 import { guid } from "@/utils/utils";
 
@@ -178,7 +194,7 @@ export default {
   name: "ParkingGeoJSONDetail",
   inject: ["rootVue"],
   props: {},
-  components: {},
+  components: { GeoJSONVisualMap },
   computed: {
     _Map() {
       return this.rootVue._Map;
@@ -359,8 +375,8 @@ export default {
       const form = JSON.parse(JSON.stringify(this.uploadForm));
       form.file = this.selectGeoJSON._file;
       let res = { data: "" };
-      // uploadGeoJson(form)
-      //   .then((res) => {
+      uploadGeoJson(form)
+        .then((res) => {
           const parkingGeoJSON = {
             _file: form.file,
             name: form.file.name,
@@ -377,10 +393,10 @@ export default {
           this.rootVue.$emit("Parking_Geojson_Uuid", { geoId: res.data });
           this.uploading = false;
           this.reselect = false;
-        // })
-        // .catch((res) => {
-        //   this.uploading = false;
-        // });
+        })
+        .catch((res) => {
+          this.uploading = false;
+        });
     },
     handleDrowFile(form) {
       for (const layer of this.layerList) {
@@ -402,11 +418,19 @@ export default {
         const layer = {
           name: layerName,
           valueKey: form[layerName],
+          valueLabel: { max: 0, min: 1 },
           show: false,
           showSetting: false,
+
           showPointSetting: false,
+          showPointVisualMap: false,
+
           showLineSetting: false,
+          showLineVisualMap: false,
+
           showPolygonSetting: false,
+          showPolygonVisualMap: false,
+
           params: {
             pointSize: 1000,
             pointColor: "#ffa500",
@@ -497,6 +521,8 @@ export default {
         console.log(propertiesList);
         for (const layer of layerList) {
           console.time("onmessage");
+
+          layer.valueLabel = propertiesLabels[layer.valueKey];
 
           layer.showPointSetting = !!pointArray.length;
           layer.showLineSetting = !!lineArray.length;
