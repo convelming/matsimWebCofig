@@ -7,8 +7,8 @@
       <div class="file_item">
         <div class="file_row">
           <div class="file_l_col" style="padding: 0 15px">{{ $l("Show GeoJSON") }}</div>
-          <div class="file_s_col" style="width: 80px">
-            <el-switch v-model="GeoJSON.show" :active-value="true" :inactive-value="false" />
+          <div class="file_s_col" style="width: 60px">
+            <el-switch v-model="GeoJSON.show" :active-value="true" :inactive-value="false" size="mini" />
           </div>
         </div>
       </div>
@@ -22,16 +22,20 @@
             <div class="file_s_col">
               <el-color-picker :title="$l('pointColor')" v-model="pointColor" @change="handleChange('pointColor', $event)" size="mini" :predefine="predefineColors" />
             </div>
-            <div class="file_s_col" style="width: 80px">icon</div>
+            <div class="file_s_col" style="width: 90px">icon</div>
           </div>
           <div class="file_row">
-            <div class="file_s_col" style="width: 100px">
+            <div class="file_s_col" style="width: 90px">
               <el-select :title="$l('pointValue')" v-model="pointValue" @change="handleChange('pointValue', $event)" clearable>
                 <el-option v-for="(item, key) in propertiesLabels" :key="key" :label="key" :value="key"></el-option>
               </el-select>
             </div>
             <div class="file_l_col">
               <ColorSelect :title="$l('pointColors')" v-model="pointColors" @change="handleChange('pointColors', $event.value)" :colorsList="COLOR_LIST" />
+            </div>
+            <div class="file_s_col" style="width: 60px">
+              <el-switch :title="$l('showPointVisualMap')" v-model="showPointVisualMap" :active-value="true" :inactive-value="false" />
+              <GeoJSONVisualMap v-show="showPointVisualMap" :colors="COLOR_LIST[pointColors]" :max="pointValueLabel.max" :min="pointValueLabel.min" />
             </div>
           </div>
         </div>
@@ -46,20 +50,24 @@
             <div class="file_s_col">
               <el-color-picker :title="$l('lineColor')" v-model="lineColor" @change="handleChange('lineColor', $event)" size="mini" :predefine="predefineColors" />
             </div>
-            <div class="file_s_col" style="width: 100px">
+            <div class="file_s_col" style="width: 90px">
               <el-select :title="$l('lineStyle')" v-model="lineStyle" @change="handleChange('lineStyle', $event)">
                 <el-option v-for="(v, k) in LINE_STYPE" :key="v" :label="k" :value="v"></el-option>
               </el-select>
             </div>
           </div>
           <div class="file_row">
-            <div class="file_s_col" style="width: 100px">
+            <div class="file_s_col" style="width: 90px">
               <el-select :title="$l('lineValue')" v-model="lineValue" @change="handleChange('lineValue', $event)" clearable>
                 <el-option v-for="(item, key) in propertiesLabels" :key="key" :label="key" :value="key"></el-option>
               </el-select>
             </div>
             <div class="file_l_col">
               <ColorSelect :title="$l('lineColors')" style="width: 100%" v-model="lineColors" @change="handleChange('lineColors', $event.value)" :colorsList="COLOR_LIST" />
+            </div>
+            <div class="file_s_col" style="width: 60px">
+              <el-switch :title="$l('showLineVisualMap')" v-model="showLineVisualMap" :active-value="true" :inactive-value="false" />
+              <GeoJSONVisualMap v-show="showLineVisualMap" :colors="COLOR_LIST[lineColors]" :max="lineValueLabel.max" :min="lineValueLabel.min" />
             </div>
           </div>
         </div>
@@ -82,24 +90,28 @@
             <div class="file_s_col">
               <el-color-picker :title="$l('polygonBorderColor')" v-model="polygonBorderColor" @change="handleChange('polygonBorderColor', $event)" size="mini" :predefine="predefineColors" />
             </div>
-            <div class="file_s_col" style="width: 100px">
-              <el-select :title="$l('polygonBorderStyle')" v-model="polygonBorderStyle" @change="handleChange('polygonBorderStyle', $event)">
+            <div class="file_s_col" style="width: 90px">
+              <el-select :title="$l('polygonBorderStyle')" v-model="polygonBorderStyle" @change="handleChange('polygonBorderStyle', $event)" size="mini">
                 <el-option v-for="(v, k) in LINE_STYPE" :key="v" :label="k" :value="v"></el-option>
               </el-select>
             </div>
           </div>
           <div class="file_row">
-            <div class="file_s_col" style="width: 100px">
-              <el-select :title="$l('polygonValue')" v-model="polygonValue" @change="handleChange('polygonValue', $event)" clearable>
+            <div class="file_s_col" style="width: 90px">
+              <el-select :title="$l('polygonValue')" v-model="polygonValue" @change="handleChange('polygonValue', $event)" clearable size="mini">
                 <el-option v-for="(item, key) in propertiesLabels" :key="key" :label="key" :value="key"></el-option>
               </el-select>
             </div>
             <div class="file_l_col">
-              <ColorSelect :title="$l('polygonColors')" style="width: 100%" v-model="polygonColors" @change="handleChange('polygonColors', $event.value)" :colorsList="COLOR_LIST" />
+              <ColorSelect :title="$l('polygonColors')" style="width: 100%" v-model="polygonColors" @change="handleChange('polygonColors', $event.value)" :colorsList="COLOR_LIST" size="mini" />
+            </div>
+            <div class="file_s_col" style="width: 60px">
+              <el-switch :title="$l('showPolygonVisualMap')" v-model="showPolygonVisualMap" :active-value="true" :inactive-value="false" />
+              <GeoJSONVisualMap v-show="showPolygonVisualMap" :colors="COLOR_LIST[polygonColors]" :max="polygonValueLabel.max" :min="polygonValueLabel.min" />
             </div>
           </div>
           <div class="file_row">
-            <div class="file_s_col" style="width: 100px">
+            <div class="file_s_col" style="width: 60px">
               <el-switch :title="$l('polygon3D')" v-model="polygon3D" @change="handleChange('polygon3D', $event)" :active-value="true" :inactive-value="false" />
             </div>
             <div class="file_l_col" style="padding: 0 15px">
@@ -211,6 +223,7 @@
 
 <script>
 import { GeoJSONLayer, LINE_STYPE } from "../layer/GeoJSONLayer";
+import GeoJSONVisualMap from "../component/GeoJSONVisualMap.vue";
 import GeoJSONLayerWorker from "../worker/GeoJSONLayer.worker";
 
 const COLOR_LIST = [
@@ -234,6 +247,7 @@ const COLOR_LIST = [
 
 export default {
   inject: ["rootVue"],
+  components: { GeoJSONVisualMap },
   props: {
     name: {
       type: String,
@@ -279,6 +293,9 @@ export default {
       pointOpacity: 1,
       showPointSetting: false,
 
+      showPointVisualMap: false,
+      pointValueLabel: { max: 1, min: 0 },
+
       lineWidth: 100,
       lineColor: "#ffa500",
       lineStyle: LINE_STYPE.SOLID,
@@ -286,6 +303,9 @@ export default {
       lineColors: 0,
       lineOpacity: 1,
       showLineSetting: false,
+
+      showLineVisualMap: false,
+      lineValueLabel: { max: 1, min: 0 },
 
       polygonOpacity: 1,
       polygonColor: "#ffa500",
@@ -297,6 +317,9 @@ export default {
       polygon3DHeight: 2500,
       polygon3D: false,
       showPolygonSetting: false,
+
+      showPolygonVisualMap: false,
+      polygonValueLabel: { max: 1, min: 0 },
 
       GeoJSON: {},
       GeoJSONParams: [],
@@ -402,6 +425,7 @@ export default {
           break;
         case "pointValue":
           this._GeoJSONLayer.setPointValue(value);
+          this.pointValueLabel = JSON.parse(JSON.stringify(this.propertiesLabels[value]));
           break;
         case "pointColors":
           const pointColorBar = this.COLOR_LIST[value];
@@ -423,6 +447,7 @@ export default {
           break;
         case "lineValue":
           this._GeoJSONLayer.setLineValue(value);
+          this.lineValueLabel = JSON.parse(JSON.stringify(this.propertiesLabels[value]));
           break;
         case "lineColors":
           const lineColorBar = this.COLOR_LIST[value];
@@ -450,6 +475,7 @@ export default {
           break;
         case "polygonValue":
           this._GeoJSONLayer.setPolygonValue(value);
+          this.polygonValueLabel = JSON.parse(JSON.stringify(this.propertiesLabels[value]));
           break;
         case "polygonColors":
           const polygonColorBar = this.COLOR_LIST[value];

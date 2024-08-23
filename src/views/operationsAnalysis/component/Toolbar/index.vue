@@ -244,7 +244,7 @@ export default {
         ParkingActivityDetail: "Parking",
       },
       activeModel: "PublicTransit",
-      activeModel: "Parking",
+      activeModel: "GeoJSON",
       activeName: "",
       list: [],
     };
