@@ -29,7 +29,7 @@
 <language>
 {
   "linkVolumes":{
-    "zh-CN": "路段卷",
+    "zh-CN": "路段流量",
     "en-US": "Link Volumes"
   },
   "chart":{
@@ -42,7 +42,7 @@
   },
   "vehicles":{
     "zh-CN": "#车辆",
-    "en-US": "#Vehicles"
+    "en-US": "Vehicles"
   },
   "time":{
     "zh-CN": "时间",
