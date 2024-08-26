@@ -160,6 +160,7 @@ export default {
       this._Map.removeLayer(this._OldBusStopLayer);
       this._Map.removeLayer(this._NewBusStopLayer);
     },
+    // 获取数据
     init() {
       this.loading1 = true;
       const { database1, datasource1, database2, datasource2 } = this.$route.params;
@@ -183,6 +184,7 @@ export default {
         this.loading1 = false;
       });
     },
+    // 根据数据定位
     handleLocationLine(data) {
       this._Map.setCenter(data.center.toList());
     },

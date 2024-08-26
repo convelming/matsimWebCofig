@@ -198,6 +198,7 @@ export default {
     this._Activity3DLayer.dispose();
   },
   methods: {
+    // 获取数据
     getData() {
       if (this.loading) return;
       this.loading = true;
@@ -207,6 +208,7 @@ export default {
         this.loading = false;
       });
     },
+    // 获取所有活动
     async getAllActivity() {
       try {
         const res = await getAllActivity(1000000);
@@ -214,6 +216,7 @@ export default {
         this._ActivityLoaded = true;
       } catch (error) {}
     },
+    // 显示隐藏
     handleChangeShowLayer(value) {
       this.s_showLayer = value;
       this.$emit("update:showLayer", value);
@@ -229,6 +232,7 @@ export default {
       this._Map.removeLayer(this._Activity3DLayer);
       this.rootVue.$off("timeChange", this.handleTimeChange);
     },
+    // 时间改变事件
     handleTimeChange(time) {
       if (this._Activity3DLayer) this._Activity3DLayer.setTime(time);
     },

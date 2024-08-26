@@ -266,6 +266,7 @@ export default {
     this._NewBusStopLayer.dispose();
   },
   methods: {
+    // 组件初始化事件
     getListObj(list) {
       const linkObj = {};
       const fromOffsetObj = {};
@@ -291,6 +292,7 @@ export default {
         maxPassenger: Math.max(...[...Object.values(fromOffsetObj), ...Object.values(toOffsetObj)]),
       };
     },
+    // 获取排序列表
     getSortList(oldLinkObj, newLinkObj) {
       const list = [];
       for (const key in oldLinkObj) {
@@ -318,6 +320,7 @@ export default {
         return b.value - a.value;
       });
     },
+    // 获取修改的线路
     getList1() {
       this.loading1 = true;
       const { database1, datasource1, database2, datasource2 } = this.$route.params;
@@ -356,6 +359,7 @@ export default {
           this.loading1 = false;
         });
     },
+    // 获取受影响的线路
     getList2() {
       this.loading1 = true;
       const { database1, datasource1, database2, datasource2 } = this.$route.params;
@@ -383,6 +387,7 @@ export default {
           this.loading1 = false;
         });
     },
+    // 启用事件
     handleEnable() {
       this._Map.addLayer(this._OldRouteFlowsLayer);
       this._Map.addLayer(this._OldBusStopLayer);
@@ -394,6 +399,7 @@ export default {
       this.getList1();
       this.getList2();
     },
+    // 禁用事件
     handleDisable() {
       this._Map.removeLayer(this._OldBusStopLayer);
       this._Map.removeLayer(this._OldRouteFlowsLayer);
@@ -403,6 +409,7 @@ export default {
       this._Map.removeLayer(this._NewRouteFlowsLayer);
       this._Map.removeLayer(this._NewBusLineLayer);
     },
+    // 显示客流变化图
     handleShowPassengerFlowDialog(data = this.routeDetail) {
       if (!this._passengerFlowDialogList) {
         this._passengerFlowDialogList = [];

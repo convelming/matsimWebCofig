@@ -156,6 +156,7 @@ export default {
   },
   mounted() {},
   methods: {
+    // 获取修改的线路
     getList1() {
       this.loading1 = true;
       const { database1, datasource1, database2, datasource2 } = this.$route.params;
@@ -172,6 +173,7 @@ export default {
           this.loading1 = false;
         });
     },
+    // 获取受影响的线路
     getList2() {
       this.loading2 = true;
       const { database1, datasource1, database2, datasource2 } = this.$route.params;
@@ -188,10 +190,13 @@ export default {
           this.loading2 = false;
         });
     },
+    // 组件初始化事件
     handleEnable() {},
+    // 组件卸载事件
     handleDisable() {
       if (this._passengerFlowDialog) [...this._passengerFlowDialog].forEach((v) => v.$emit("close"));
     },
+    // 菜单点击事件
     handleRouteMenu({ data, command }) {
       switch (command) {
         case "线路变动信息":
@@ -211,6 +216,7 @@ export default {
           break;
       }
     },
+    // 显示线路变动信息
     handleShowRoutesChangeDialog(data) {
       if (!this._routesChangeDialogList) {
         this._routesChangeDialogList = [];
@@ -229,6 +235,7 @@ export default {
       });
       document.body.append(_routesChangeDialog.$el);
     },
+    // 显示站点变动信息
     handleShowStopsChangeDialog(data) {
       if (!this._stopsChangeDialogList) {
         this._stopsChangeDialogList = [];
@@ -247,6 +254,7 @@ export default {
       });
       document.body.append(_stopsChangeDialog.$el);
     },
+    // 显示时刻表信息变动
     handleShowTimetableDialog(data) {
       if (!this._timetableDialogList) {
         this._timetableDialogList = [];
@@ -265,6 +273,7 @@ export default {
       });
       document.body.append(_timetableDialog.$el);
     },
+    // 显示Xml信息对比
     handleShowXmlComparisonDialog(data) {
       if (!this._xmlComparisonDialogList) {
         this._xmlComparisonDialogList = [];
@@ -283,6 +292,7 @@ export default {
       });
       document.body.append(_xmlComparisonDialog.$el);
     },
+    // 显示客流信息变化
     handleShowPassengerFlowDialog(data) {
       if (!this._passengerFlowDialogList) {
         this._passengerFlowDialogList = [];

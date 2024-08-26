@@ -238,10 +238,12 @@ export default {
     this._AffectedBusStopListLayer.dispose();
   },
   methods: {
+    // 触发showLayer变化事件
     handleChangeShowLayer(value) {
       this.s_showLayer = value;
       this.$emit("update:showLayer", value);
     },
+    // 加载数据
     loadData() {
       const { database1, datasource1, database2, datasource2 } = this.$route.params;
 

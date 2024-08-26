@@ -126,10 +126,12 @@ export default {
     this.$store.dispatch("setDataSource", database1 + "/" + datasource1);
   },
   methods: {
+    // 速度控制
     speedCommand(value) {
       this._speed = value;
       this.speed = value;
     },
+    // 显示线路流量
     handleShowRouteFlows({ uuid, routeDetail }) {
       if (this.$refs.Toolbar) {
         this.$refs.Toolbar.add("RouteFlows", {
@@ -139,6 +141,7 @@ export default {
         this.showStopToolbar = true;
       }
     },
+    // 切换地图3D控制
     handleChangeMapCameraControls() {
       let enableRotate = true;
       if (this.showLayerLinesAnalysis && this.lock2DLinesAnalysis) enableRotate = false;
@@ -159,6 +162,7 @@ export default {
         this._Map.setPitchAndRotation(90, 0);
       }
     },
+    // 切换时间默认值
     handleChangeTimeSpeed() {
       let enableRotate = false;
       if (this.showLayerLinesAnalysis) enableRotate = true;

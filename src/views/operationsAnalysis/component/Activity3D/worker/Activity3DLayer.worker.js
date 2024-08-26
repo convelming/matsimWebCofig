@@ -6,6 +6,7 @@ class Activity3DLayerWorker {
   timeSpeed = 60 * 20;
   center = [0, 0];
 
+  // 根据拾取颜色获取活动
   getActivityByColor([pickColor]) {
     for (const v of this.activityMap.values()) {
       if (pickColor > 0 && pickColor == v.pickColor) {
@@ -15,10 +16,10 @@ class Activity3DLayerWorker {
     }
     return [];
   }
-
+  // 设置数据
   setData(array) {
     const data = JSON.parse(new TextDecoder().decode(new Uint8Array(array)));
-    
+
     this.activityMap.clear();
     this.timeObj.forEach((v) => (v.length = 0));
     this.timeObj.clear();
@@ -59,12 +60,13 @@ class Activity3DLayerWorker {
     return center;
   }
 
+  // 计算需要渲染的活动
   render(array) {
     const [time, maxNum] = array;
     const timeKey = Math.ceil(time / this.timeSpeed);
     const _activityKeys = this.timeObj.get(timeKey) || [];
     const encode = new TextEncoder();
-    
+
     let runNum = 0;
     const runList = [];
     for (const activityKey of _activityKeys) {

@@ -14,6 +14,7 @@ export class BusStopListLayer extends Layer {
   center = [0, 0];
   texture = new THREE.TextureLoader().load(require("@/assets/image/point.png"));
 
+  // 初始化函数
   constructor(opt) {
     super(opt);
 
@@ -57,6 +58,7 @@ export class BusStopListLayer extends Layer {
     this.labelMesh.center.set(0.5, -0.5);
   }
 
+  // 监听事件
   on(type, data) {
     if (type == MAP_EVENT.UPDATE_CENTER) {
       for (const mesh of this.scene.children) {
@@ -106,12 +108,14 @@ export class BusStopListLayer extends Layer {
     }
   }
 
+  // 添加到地图时的回调
   onAdd(map) {
     super.onAdd(map);
     this.setSize(this.map.cameraHeight / 40);
     this.update();
   }
 
+  // 设置大小
   setSize(size) {
     const [cx, cy] = this.center;
     this.size = size;
@@ -142,6 +146,7 @@ export class BusStopListLayer extends Layer {
     }
   }
 
+  // 设置数据
   setData(data) {
     try {
       let maxX = 0,
@@ -185,6 +190,7 @@ export class BusStopListLayer extends Layer {
     }
   }
 
+  // 更新图层
   update() {
     this.clearScene();
     if (!this.map) return;
@@ -229,6 +235,7 @@ export class BusStopListLayer extends Layer {
     this.pickMeshScene.add(pickMesh);
   }
 
+  // 更新标签
   updateLabel() {
     if (!this.labelData) {
       this.scene.remove(this.labelMesh);
@@ -243,11 +250,13 @@ export class BusStopListLayer extends Layer {
     }
   }
 
+  // 设置颜色
   setColor(color) {
     this.color = new THREE.Color(color);
     this.material.setValues({ color: this.color });
   }
 
+  // 销毁
   dispose() {
     // this.texture.dispose();
     // this.geometry.dispose();

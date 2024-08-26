@@ -13,6 +13,7 @@ export class SelectActivityLayer extends Layer {
 
   texture = new THREE.TextureLoader().load(require("@/assets/image/point1.png"));
 
+  // 初始化函数
   constructor(opt) {
     super(opt);
 
@@ -41,6 +42,7 @@ export class SelectActivityLayer extends Layer {
     this.scene.add(this.mesh);
   }
 
+  // 监听事件
   on(type, data) {
     if (type == MAP_EVENT.UPDATE_CENTER) {
       const [x, y] = this.map.WebMercatorToCanvasXY(...this.center);
@@ -52,19 +54,23 @@ export class SelectActivityLayer extends Layer {
     }
   }
 
+  // 销毁函数
   dispose() {
     super.dispose();
   }
 
+  // 添加图层
   onAdd(map) {
     super.onAdd(map);
     this.update()
   }
 
+  // 地图渲染刷新
   render() {
     super.render();
   }
 
+  // 更新图层
   update() {
     if (!this.map) return
     if (!this.data) return;
@@ -75,18 +81,21 @@ export class SelectActivityLayer extends Layer {
     this.mesh.scale.set(_scale, _scale, _scale);
   }
 
+  // 设置缩放比例
   setScale(scale) {
     this.scale = scale;
     const _scale = this.map.cameraHeight / 1800 * this.scale;
     this.mesh.scale.set(_scale, _scale, _scale);
   }
 
+  // 设置颜色
   setColor(color) {
     this.color = color;
     this.material.setValues({ color: new THREE.Color(this.color) })
     this.material.needsUpdate = true;
   }
 
+  // 设置绘制数据
   setData(data) {
     try {
       this.data = data;

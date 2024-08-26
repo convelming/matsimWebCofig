@@ -67,6 +67,7 @@ export default {
   },
   destroyed() {},
   methods: {
+    // 获取数据
     init() {
       this.loading1 = true;
       const { database1, datasource1, database2, datasource2 } = this.$route.params;

@@ -310,6 +310,7 @@ export default {
   mounted() {},
   beforeDestroy() {},
   methods: {
+    // 添加/显示控件
     add(type, data) {
       const model = this.modelMap[type];
       const obj = this[model];
@@ -361,6 +362,7 @@ export default {
       this.$set(obj, "activeName", activeName);
       this.handleActiveModel(obj.id);
     },
+    // 根据id切换到对应模块
     handleActiveModel(id) {
       this.activeModel = id;
       const doc = document.getElementById(id);

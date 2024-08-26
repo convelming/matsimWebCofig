@@ -226,20 +226,24 @@ export default {
     this.rootVue.$off(this.activityDetail.changeColorEventKey, this.handleActivity3DChangeColor);
   },
   methods: {
+    // 活动颜色改变事件
     handleActivity3DChangeColor(val) {
       this._ActivityRoutesLayer.setActivityColors(val.activityColors);
       this._ActivityRoutesLayer.setLegColors(val.legColors);
       // this._ActivityRoutesLayer.setActColor(val.actColor);
       // this._ActivityRoutesLayer.setLegColor(val.legColor);
     },
+    // 启用
     handleEnable() {
       this._Map.addLayer(this._SelectActivityLayer);
       if (this.showActivityRoutes) this._Map.addLayer(this._ActivityRoutesLayer);
     },
+    // 禁用
     handleDisable() {
       this._Map.removeLayer(this._SelectActivityLayer);
       this._Map.removeLayer(this._ActivityRoutesLayer);
     },
+    // 获取详情
     getDetail() {
       if (!this.activityDetail) return;
       getPlan({
@@ -262,7 +266,9 @@ export default {
           this.loading = false;
         });
     },
+    // 格式化时间
     formatHour: formatHour,
+    // 格式化坐标
     MercatorToWGS84: MercatorToWGS84,
   },
 };

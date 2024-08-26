@@ -14,6 +14,7 @@ export class RouteFlowsLayer extends Layer {
 
   texture = new THREE.TextureLoader().load(require("@/assets/image/point.png"));
 
+  // 初始化函数
   constructor(opt) {
     super(opt);
     this.color = opt.color || this.color;
@@ -31,6 +32,7 @@ export class RouteFlowsLayer extends Layer {
     this.labelMesh.center.set(0.5, -0.5);
   }
 
+  // 监听事件
   on(type, data) {
     if (type == MAP_EVENT.UPDATE_CENTER) {
       for (const mesh of this.scene.children) {
@@ -78,29 +80,34 @@ export class RouteFlowsLayer extends Layer {
     }
   }
 
+  // 设置拾取颜色
   setPickLayerColor(pickLayerColor) {
     this.pickLayerColor = pickLayerColor;
     this.pickLayerMaterial.setValues({ color: this.pickLayerColor });
     this.pickLayerMaterial.needsUpdate = true;
   }
 
+  // 设置颜色
   setColor(color) {
     this.color = color;
     this.material.setValues({ color: this.color });
     this.material.needsUpdate = true;
   }
 
+  // 设置透明度
   setOpacity(opacity) {
     this.opacity = opacity;
     this.material.setValues({ opacity: this.opacity });
     this.material.needsUpdate = true;
   }
 
+  // 添加图层
   onAdd(map) {
     super.onAdd(map);
     this.update();
   }
 
+  // 设置数据
   setData(stops, data, maxValue) {
     try {
       const _data = [];
@@ -137,6 +144,7 @@ export class RouteFlowsLayer extends Layer {
     }
   }
 
+  // 清除场景
   clearScene() {
     super.clearScene();
     this.geometryList.forEach((v) => v.dispose());
@@ -147,6 +155,7 @@ export class RouteFlowsLayer extends Layer {
     this.pickMeshMaterialList = [];
   }
 
+  // 更新图层
   update() {
     this.clearScene();
     if (!this.map) return;
@@ -182,6 +191,7 @@ export class RouteFlowsLayer extends Layer {
     }
   }
 
+  // 更新标签
   updateLabel() {
     if (!this.labelData) {
       this.scene.remove(this.labelMesh);

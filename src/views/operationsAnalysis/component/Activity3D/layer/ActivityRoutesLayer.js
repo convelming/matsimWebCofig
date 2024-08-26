@@ -27,6 +27,7 @@ export class ActivityRoutesLayer extends Layer {
 
   height = 100;
 
+  // 构造函数
   constructor(opt) {
     super(opt);
 
@@ -42,13 +43,14 @@ export class ActivityRoutesLayer extends Layer {
     this.scene.add(this.scaleScene);
   }
 
-
+  // 添加到地图
   onAdd(map) {
     super.onAdd(map);
     this.updateSize();
     this.update();
   }
 
+  // 监听事件
   on(type, data) {
     if (type == MAP_EVENT.UPDATE_CENTER) {
       const [x, y] = this.map.WebMercatorToCanvasXY(...this.center);
@@ -59,6 +61,7 @@ export class ActivityRoutesLayer extends Layer {
     }
   }
 
+  // 销毁
   dispose() {
     this.scaleScene.removeFromParent();
     [this.actStartMeshList, this.actEndMeshList, this.actCylMeshList, this.legMeshList].flat().forEach((v) => {
@@ -75,6 +78,7 @@ export class ActivityRoutesLayer extends Layer {
     this.colors.clear()
   }
 
+  // 设置数据
   setData(data, center) {
     try {
       const actList = [];
@@ -120,12 +124,14 @@ export class ActivityRoutesLayer extends Layer {
     }
   }
 
+  // 设置高度
   setHeight(height) {
     this.height = height;
     this.scaleScene.scale.set(1, 1, this.height / 100);
   }
 
-  setActivityColors(activityColors){
+  // 设置活动颜色
+  setActivityColors(activityColors) {
     this.activityColors = new Map(activityColors.map(v => [v.name, v.color]));
     for (const mesh of this.actStartMeshList) {
       const color = new THREE.Color(this.activityColors.get(mesh.userData.activity) || COLOR);
@@ -143,7 +149,8 @@ export class ActivityRoutesLayer extends Layer {
       mesh.material.needsUpdate = true;
     }
   }
-  
+
+  // 设置出行方式颜色
   setLegColors(legColors) {
     this.legColors = new Map(legColors.map(v => [v.name, v.color]));
     for (const mesh of this.legMeshList) {
@@ -153,6 +160,7 @@ export class ActivityRoutesLayer extends Layer {
     }
   }
 
+  // 根据地图高度更新大小
   updateSize() {
     this.actWidth = this.map.cameraHeight / 400;
     this.legWidth = this.map.cameraHeight / 100;
@@ -171,6 +179,7 @@ export class ActivityRoutesLayer extends Layer {
     }
   }
 
+  // 更新图层
   update() {
     if (!this.map) return;
     [this.actStartMeshList, this.actEndMeshList, this.actCylMeshList, this.legMeshList].flat().forEach((v) => {
@@ -261,6 +270,7 @@ export class ActivityRoutesLayer extends Layer {
 
   }
 
+  // 获取活动材质
   getActMaterial(opt) {
     const material = new THREE.MeshBasicMaterial(opt);
     material.onBeforeCompile = (shader) => {
@@ -294,6 +304,7 @@ export class ActivityRoutesLayer extends Layer {
     };
     return material;
   }
+  // 获取出行方式材质
   getLegMaterial(opt) {
     const material = new THREE.MeshBasicMaterial(opt);
     material.onBeforeCompile = (shader) => {
@@ -385,6 +396,7 @@ export class ActivityRoutesLayer extends Layer {
     };
     return material;
   }
+  // 获取出行方式几何体
   getLegGeometry(data) {
     const length = data.length;
     const attrPosition = new THREE.BufferAttribute(

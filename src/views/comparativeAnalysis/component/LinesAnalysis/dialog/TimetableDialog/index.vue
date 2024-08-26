@@ -110,8 +110,9 @@ export default {
   },
   destroyed() {},
   methods: {
+    // 格式化时间
     formatHour,
-
+    // 把数据处理成页面渲染需要的格式
     changeData(data, type) {
       try {
         const stopMap = new Map(data[0].data.map((v, i) => [v.stopId, { stopId: v.stopId, stopName: v.stopName, index: i + 1, type: type, arrScheduled: [], arrSimulated: [], depScheduled: [], depSimulated: [] }]));
@@ -349,6 +350,7 @@ export default {
         return "";
       }
     },
+    // 选择旧的出发时间
     handleSelectOldDeparture(v) {
       if (this.selectOldDeparture == v.departureId) {
         this.selectOldDeparture = "";
@@ -357,6 +359,7 @@ export default {
       }
       this.updateChart();
     },
+    // 选择新的出发时间
     handleSelectNewDeparture(v) {
       if (this.selectNewDeparture == v.departureId) {
         this.selectNewDeparture = "";

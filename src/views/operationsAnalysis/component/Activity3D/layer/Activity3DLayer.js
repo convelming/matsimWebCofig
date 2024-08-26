@@ -17,6 +17,7 @@ export class Activity3DLayer extends Layer {
 
   texture = new THREE.TextureLoader().load(require("@/assets/image/point2.png"));
 
+  // 初始化函数
   constructor(opt) {
     super(opt);
 
@@ -76,6 +77,7 @@ export class Activity3DLayer extends Layer {
     });
   }
 
+  // 监听事件
   on(type, data) {
     if (type == MAP_EVENT.UPDATE_CAMERA_HEIGHT) {
       if (this.canRender) this.callWorkerRender();
@@ -100,25 +102,31 @@ export class Activity3DLayer extends Layer {
     }
   }
 
+  // 销毁函数
   dispose() {
     super.dispose();
     this.worker.terminate();
   }
 
+  // 添加到地图
   onAdd(map) {
     super.onAdd(map);
     this.on(MAP_EVENT.UPDATE_CENTER, {})
   }
 
+  // 地图渲染刷新
   render() {
     super.render();
   }
 
+  // 调用多线程渲染计算
   callWorkerRender() {
     const array = new Float64Array([2, this.time, this.maxNum]);
     this.worker.postMessage(array, [array.buffer]);
   }
 
+
+  // 清空图层
   clearScene() {
     super.clearScene();
     if (this.mesh) this.mesh.dispose();
@@ -129,6 +137,7 @@ export class Activity3DLayer extends Layer {
     this.pickMesh = null;
   }
 
+  // 多线程渲染计算回调
   handleRenderCallback(array) {
     if (!this.map) {
       this.clearScene();
@@ -191,6 +200,7 @@ export class Activity3DLayer extends Layer {
     }
   }
 
+  // 根据拾取颜色获取活动
   handleGetActivityByColor(array) {
     if (array.length > 0) {
       try {
@@ -202,6 +212,7 @@ export class Activity3DLayer extends Layer {
     }
   }
 
+  // 设置时间
   setTime(time) {
     if (this._changeTimeout || Math.abs(this.time - time) < 0.001) return;
     this._changeTimeout = setTimeout(() => {
@@ -211,27 +222,32 @@ export class Activity3DLayer extends Layer {
     }, 1000 / 60);
   }
 
+  // 设置最大渲染值
   setMaxNum(maxNum) {
     this.maxNum = maxNum;
     if (this.canRender) this.callWorkerRender();
   }
 
+  // 设置大小
   setScale(scale) {
     this.scale = scale;
     if (this.canRender) this.callWorkerRender();
   }
 
+  // 设置活动颜色
   setColors(colors) {
     this.colors = new Map(colors.map(v => [v.name, v.color]));
     if (this.canRender) this.callWorkerRender();
   }
 
+  // 设置图层拾取颜色
   setPickLayerColor(pickLayerColor) {
     this.pickLayerColor = new THREE.Color(pickLayerColor);
     this.pickMaterial.setValues({ color: this.pickLayerColor });
     if (this.canRender) this.callWorkerRender();
   }
 
+  // 设置数据
   setData(data) {
     this.canRender = false;
     const str = JSON.stringify(data);

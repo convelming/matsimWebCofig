@@ -10,6 +10,7 @@ export class BusLineLayer extends Layer {
   texture = new THREE.TextureLoader().load(require("@/assets/image/link_top5.png"));
   isDashed = false;
 
+  // 初始化函数
   constructor(opt) {
     super(opt);
     this.color = new THREE.Color(opt.color || this.color);
@@ -21,12 +22,14 @@ export class BusLineLayer extends Layer {
     });
   }
 
+  // 添加到地图时的回调
   onAdd(map) {
     super.onAdd(map);
     this.setLineWidth(this.map.cameraHeight / 130);
     this.update();
   }
 
+  // 事件处理
   on(type, data) {
     if (type == MAP_EVENT.UPDATE_CENTER) {
       for (const mesh of this.scene.children) {
@@ -51,11 +54,13 @@ export class BusLineLayer extends Layer {
     }
   }
 
+  // 地图渲染刷新回调函数
   render() {
     super.render();
     // this.texture.offset.y -= 0.01;
   }
 
+  // 设置线宽
   setLineWidth(lineWidth) {
     this.lineWidth = lineWidth;
     for (const mesh of this.scene.children) {
@@ -69,12 +74,14 @@ export class BusLineLayer extends Layer {
     }
   }
 
+  // 设置颜色
   setColor(color) {
     this.color = new THREE.Color(color);
     this.material.setValues({ color: this.color });
     this.material.needsUpdate = true;
   }
 
+  // 设置绘制数据
   setData(data) {
     try {
       const routelist = data.getRouteLink(data.route);
@@ -101,6 +108,7 @@ export class BusLineLayer extends Layer {
     }
   }
 
+  // 更新图层
   update() {
     this.clearScene();
     if (!this.map) return;
@@ -114,6 +122,7 @@ export class BusLineLayer extends Layer {
     this.scene.add(mesh);
   }
 
+  // 获取线纹理对象
   getLineMaterial({ ...opt }) {
     const material = new THREE.MeshBasicMaterial({
       side: THREE.DoubleSide,
@@ -215,6 +224,7 @@ export class BusLineLayer extends Layer {
     return material;
   }
 
+  // 获取线Geometry对象
   getLineGeometry() {
     const data = this.data;
     const length = data.length;
