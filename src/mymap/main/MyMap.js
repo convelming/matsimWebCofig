@@ -100,7 +100,7 @@ export class MyMap extends EventListener {
     this._enableRotate = enableRotate;
     if (this.cameraControls) {
       this.cameraControls.enableRotate = enableRotate;
-      if (!enableRotate) this.setPitchAndRotation(90, 0);
+      // if (!enableRotate) this.setPitchAndRotation(90, 0);
     }
   }
   get enableRotate() {
@@ -141,7 +141,7 @@ export class MyMap extends EventListener {
     return this._minPitch;
   }
 
-  // 获取摄像机旋转角度
+  // 获取摄像机旋转角度 rotation: 水平夹角 pitch：垂直夹角
   get cameraRotation() {
     try {
       const height = Math.round(this.cameraControls.getDistance());
