@@ -15,6 +15,7 @@ export class SelectStopLayer extends Layer {
 
   constructor(opt) {
     super(opt);
+    this.scene.renderOrder = this.zIndex;
 
     this.scale = opt.scale || this.scale;
     this.color = new THREE.Color(opt.color || this.color);

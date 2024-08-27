@@ -44,7 +44,7 @@
             <div style="display: flex; width: 100%; margin-bottom: 10px; align-items: center">
               <el-select v-model="colorType" :disabled="!s_showLayer" size="small">
                 <el-option :label="$l('activity')" value="activity" />
-                <el-option :label="$l('leg')" value="leg" />
+                <!-- <el-option :label="$l('leg')" value="leg" /> -->
               </el-select>
               <el-button :disabled="!s_showLayer" :icon="showColorTypeTable ? 'el-icon-caret-top' : 'el-icon-caret-bottom'" type="info" size="small" @click="showColorTypeTable = !showColorTypeTable"></el-button>
             </div>
@@ -105,8 +105,8 @@
     "en-US": "Mode"
   },
   "activity":{
-    "zh-CN": "活动类型",
-    "en-US": "Activity"
+    "zh-CN": "停车类型",
+    "en-US": "Parking Type"
   },
   "type":{
     "zh-CN": "类型",
@@ -148,7 +148,6 @@ export default {
         }
       },
     },
-
     activityTypeList: {
       handler(val) {
         if (this._Activity3DLayer) {

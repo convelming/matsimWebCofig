@@ -4,7 +4,7 @@ import { guid } from "@/utils/utils";
 
 export function getFloat32Buffer(url) {
   return axios({
-    url: url,
+    url: process.env.VUE_APP_BASE_API + url,
     headers: { uuid: guid(), dataSource: "" },
     method: "get",
     responseType: "arraybuffer",

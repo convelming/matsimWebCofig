@@ -18,6 +18,7 @@ export class ReachableStopsLayer extends Layer {
 
   constructor(opt) {
     super(opt);
+    this.scene.renderOrder = this.zIndex;
 
     this.size = opt.size || this.size;
     this.data = opt.data || this.data;

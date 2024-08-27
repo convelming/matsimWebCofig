@@ -145,7 +145,7 @@ export default {
   created() {
     this.s_showLayer = this.showLayer;
     this._StopsLayer = new StopsLayer({
-      zIndex: 30,
+      zIndex: 100,
       showName: this.showStopName,
       color: this.stopColor,
       scale: this.stopScale,

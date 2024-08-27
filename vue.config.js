@@ -1,4 +1,8 @@
 const { defineConfig } = require("@vue/cli-service");
+const path = require('path');
+function resolve(dir) {
+  return path.join(__dirname, dir)
+}
 
 module.exports = defineConfig({
   transpileDependencies: true,
@@ -16,6 +20,7 @@ module.exports = defineConfig({
   productionSourceMap: false,
   // webpack-dev-server 相关配置
   parallel: false,
+  // dev环境代理
   devServer: {
     client: {
       overlay: false
@@ -34,6 +39,7 @@ module.exports = defineConfig({
     },
   },
   css: {
+    // 配置css预处理器
     // loaderOptions: {
     //   scss: {
     //     additionalData: `@import "@/assets/css/element.variables.scss";`,
@@ -41,15 +47,18 @@ module.exports = defineConfig({
     // },
   },
   chainWebpack: (config) => {
+    // 配置 index.html 中的 htmlWebpackPlugin.options
     config.plugin("html").tap((args) => {
-      args[0].title = "";
+      args[0].title = process.env.VUE_APP_TITLE || "";
       return args;
     });
+    // 配置可以使用import导入webworker
     config.module
       .rule("worker")
       .test(/\.worker\.js$/) // 文件名必须要xxx.worker.js
       .use("worker")
       .loader("worker-loader");
+    // 配置多语言切换
     config.module
       .rule("language")
       .resourceQuery(/blockType=language/)

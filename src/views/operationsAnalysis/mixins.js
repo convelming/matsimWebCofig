@@ -179,7 +179,7 @@ export default {
         rootId: "mapRoot",
         enableRotate: true,
       });
-      // this._Map.setFitZoomAndCenterByPoints(this.range);
+      if (!this.isDev) this._Map.setFitZoomAndCenterByPoints(this.range);
 
       this._MapLayer = new MapLayer({ tileClass: MAP_LAYER_STYLE[0], zIndex: -1 });
       this._Map.addLayer(this._MapLayer);
@@ -337,7 +337,7 @@ export default {
         }
       } catch (error) {
         console.log(error);
-        
+
       }
     }
   },

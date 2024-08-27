@@ -29,7 +29,7 @@ export class Activity3DLayer extends Layer {
 
     this.geometry = new THREE.PlaneGeometry(SIZE, SIZE);
     this.material = new THREE.MeshBasicMaterial({
-      depthWrite: false,
+      // depthWrite: false,
       transparent: true,
       map: this.texture,
       // color: this.color,

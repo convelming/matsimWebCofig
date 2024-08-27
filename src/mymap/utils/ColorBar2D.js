@@ -116,6 +116,8 @@ export class ColorBar2D {
       const url = this.canvas2D.toDataURL("image/png");
       this.context2D.clearRect(0, 0, ColorBar2D.width, ColorBar2D.height);
       // this.testImg.src = url;
+      console.log("ColorBarUrl:", url);
+
       return url;
     } catch (error) {
       console.error(error);

@@ -1,7 +1,7 @@
 <template>
   <el-collapse-item class="toolbar_item" :name="name">
     <div class="toolbar_item_header" slot="title">
-      <div class="title" style="max-width: 100%">{{ $l("活动详情") }}</div>
+      <div class="title" style="max-width: 100%">{{ $l("停车详情") }}</div>
     </div>
     <div class="toolbar_item_bodyer" v-loading="loading">
       <div class="form" v-if="activityDetail">
@@ -52,17 +52,17 @@
 
 <language>
 {
-  "活动详情":{
-    "zh-CN": "活动详情",
-    "en-US": "Activity Details"
+  "停车详情":{
+    "zh-CN": "停车详情",
+    "en-US": "Parking Details"
   },
   "personId":{
     "zh-CN": "出行者Id：",
     "en-US": "Person Id:"
   },
   "actType":{
-    "zh-CN": "活动类型：",
-    "en-US": "Activity Type:"
+    "zh-CN": "停车类型：",
+    "en-US": "Parking Type:"
   },
   "coord":{
     "zh-CN": "位置：",
@@ -108,10 +108,8 @@ import { MAP_EVENT } from "@/mymap";
 import { MercatorToWGS84 } from "@/mymap/utils/LngLatUtils";
 import { getPlan } from "@/api/index";
 import { formatHour } from "@/utils/utils";
-import { SelectActivityLayer } from "../layer/SelectActivityLayer";
-import { ActivityRoutesLayer } from "../layer/ActivityRoutesLayer";
-// import { SelectActivityLayer } from "../../Activity3D/layer/SelectActivityLayer";
-// import { ActivityRoutesLayer } from "../../Activity3D/layer/ActivityRoutesLayer";
+import { SelectActivityLayer } from "../../Activity3D/layer/SelectActivityLayer";
+import { ActivityRoutesLayer } from "../../Activity3D/layer/ActivityRoutesLayer";
 export default {
   inject: ["rootVue"],
   props: {

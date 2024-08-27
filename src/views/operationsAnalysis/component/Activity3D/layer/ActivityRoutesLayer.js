@@ -1,5 +1,8 @@
 import * as THREE from "three";
 import { Layer, MAP_EVENT } from "@/mymap/index.js";
+import { getTextImage } from "@/mymap/utils/index";
+import { formatHour } from "@/utils/utils"
+// const { url, width, height } = getTextImage(item.data.stop.name);
 
 const SIZE = 10;
 const COLOR = "#000000"
@@ -25,16 +28,23 @@ export class ActivityRoutesLayer extends Layer {
   legMeshList = [];
 
 
+  labelScale = 1.5;
+  labelWidth = 2;
+  labelColor = 0x000000;
+  labelMeshList = [];
+
+
   height = 100;
 
   // 构造函数
   constructor(opt) {
     super(opt);
 
-
     this.height = opt.height || this.height;
     this.actScale = opt.actScale || this.actScale;
     this.legScale = opt.legScale || this.legScale;
+    this.labelScale = opt.labelScale || this.labelScale;
+    this.labelColor = opt.labelColor || this.labelColor;
     this.legColors = new Map((opt.legColors || []).map(v => [v.name, v.color]));
     this.activityColors = new Map((opt.activityColors || []).map(v => [v.name, v.color]));
 
@@ -42,6 +52,7 @@ export class ActivityRoutesLayer extends Layer {
     this.scaleScene.scale.set(1, 1, this.height / 100);
     this.scene.add(this.scaleScene);
   }
+
 
   // 添加到地图
   onAdd(map) {
@@ -164,34 +175,48 @@ export class ActivityRoutesLayer extends Layer {
   updateSize() {
     this.actWidth = this.map.cameraHeight / 400;
     this.legWidth = this.map.cameraHeight / 100;
-    const scale = this.actScale * this.actWidth;
-    for (const mesh of this.actStartMeshList) {
-      mesh.scale.set(scale, scale, 1)
+    this.labelWidth = this.map.cameraHeight / 4000;
+    {
+      const scale = this.actScale * this.actWidth;
+      for (const mesh of this.actStartMeshList) {
+        mesh.scale.set(scale, scale, 1)
+      }
+      for (const mesh of this.actEndMeshList) {
+        mesh.scale.set(scale, scale, 1)
+      }
+      for (const mesh of this.actCylMeshList) {
+        mesh.scale.set(scale, 1, scale)
+      }
     }
-    for (const mesh of this.actEndMeshList) {
-      mesh.scale.set(scale, scale, 1)
+    {
+      for (const mesh of this.legMeshList) {
+        mesh.material.needsUpdate = true;
+      }
     }
-    for (const mesh of this.actCylMeshList) {
-      mesh.scale.set(scale, 1, scale)
-    }
-    for (const mesh of this.legMeshList) {
-      mesh.material.needsUpdate = true;
+    {
+      const scale = this.labelScale * this.labelWidth;
+      for (const mesh of this.labelMeshList) {
+        const { width, height } = mesh.userData;
+        mesh.scale.set(width * scale, height * scale, 1);
+      }
     }
   }
 
   // 更新图层
   update() {
     if (!this.map) return;
-    [this.actStartMeshList, this.actEndMeshList, this.actCylMeshList, this.legMeshList].flat().forEach((v) => {
+    [this.actStartMeshList, this.actEndMeshList, this.labelMeshList, this.actCylMeshList, this.legMeshList].flat().forEach((v) => {
       v.removeFromParent();
       v.geometry.dispose();
     });
     this.actStartMeshList = [];
     this.actEndMeshList = [];
+    this.labelMeshList = [];
     this.actCylMeshList = [];
-    this.legMeshList = [];
-    console.log(this.legColors);
-    console.log(this.activityColors);
+    this.labelMeshList = [];
+    console.log(this.actList);
+    console.log(this.legList);
+
     // 活动
     {
       for (let i = 0, l = this.actList.length; i < l; i++) {
@@ -206,12 +231,14 @@ export class ActivityRoutesLayer extends Layer {
         const geometry = new THREE.PlaneGeometry(SIZE, SIZE);
         const material = this.getActMaterial({
           transparent: true,
+          // depthWrite: false,
           map: this.actTexture,
           color: color,
         });
         const geometry2 = new THREE.CylinderGeometry(SIZE / 2, SIZE / 2, height);
         const material2 = new THREE.MeshBasicMaterial({
           transparent: true,
+          // depthWrite: false,
           color: color,
           opacity: 0.8,
         });
@@ -241,11 +268,6 @@ export class ActivityRoutesLayer extends Layer {
     }
     // 路径
     {
-      for (const mesh of this.legMeshList) {
-        mesh.removeFromParent();
-        mesh.geometry.dispose();
-      }
-
       for (let i = 0, l = this.legList.length; i < l; i++) {
         const item = this.legList[i];
         const { path, activity } = item;
@@ -254,6 +276,7 @@ export class ActivityRoutesLayer extends Layer {
         const geometry = this.getLegGeometry(path.paths);
         const material = this.getLegMaterial({
           side: THREE.DoubleSide,
+          // depthWrite: false,
           transparent: true,
           map: this.legTexture,
           color: color,
@@ -264,10 +287,48 @@ export class ActivityRoutesLayer extends Layer {
         this.legMeshList.push(mesh);
       }
     }
+    // 时间标签
+    {
+      const timeMap = {};
+      for (let i = 0, l = this.actList.length; i < l; i++) {
+        const item = this.actList[i]
+        const { point, startTime, endTime, activity } = item;
+        const startZ = Number(startTime) / 60;
+        const endZ = Number(endTime) / 60;
+        timeMap[startTime] = [point[0], point[1], startZ]
+        timeMap[endTime] = [point[0], point[1], endZ];
+      }
+      const loader = new THREE.TextureLoader();
+      const scale = this.labelScale * this.labelWidth;
+      for (const key in timeMap) {
+        const { url, width, height } = getTextImage(formatHour(Number(key)), { colNum: 8 });
+        const texture = loader.load(url);
+        texture.minFilter = THREE.LinearFilter;
+        texture.wrapS = THREE.ClampToEdgeWrapping;
+        texture.wrapT = THREE.ClampToEdgeWrapping;
+        const mesh = new THREE.Sprite(
+          new THREE.SpriteMaterial({
+            transparent: true,
+            map: texture,
+            depthTest: false,
+          })
+        );
+        mesh.renderOrder = 999;
+
+        mesh.scale.set(width * scale, height * scale, 1);
+        mesh.center.set(0.5, 0);
+        mesh.position.set(...timeMap[key]);
+
+        mesh.userData.width = width;
+        mesh.userData.height = height;
+
+        this.scaleScene.add(mesh);
+        this.labelMeshList.push(mesh);
+      }
+    }
 
     const [x, y] = this.map.WebMercatorToCanvasXY(...this.center);
     this.scaleScene.position.set(x, y, 0);
-
   }
 
   // 获取活动材质
@@ -304,6 +365,7 @@ export class ActivityRoutesLayer extends Layer {
     };
     return material;
   }
+
   // 获取出行方式材质
   getLegMaterial(opt) {
     const material = new THREE.MeshBasicMaterial(opt);
@@ -396,6 +458,7 @@ export class ActivityRoutesLayer extends Layer {
     };
     return material;
   }
+
   // 获取出行方式几何体
   getLegGeometry(data) {
     const length = data.length;

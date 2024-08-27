@@ -26,15 +26,15 @@
           </div>
           <div class="file_row">
             <div class="file_s_col" style="width: 90px">
-              <el-select :title="$l('pointValue')" v-model="pointValue" @change="handleChange('pointValue', $event)" clearable>
+              <el-select :title="$l('pointValue')" v-model="pointValue" @change="handleChange('pointValue', $event)" clearable size="mini">
                 <el-option v-for="(item, key) in propertiesLabels" :key="key" :label="key" :value="key"></el-option>
               </el-select>
             </div>
             <div class="file_l_col">
-              <ColorSelect :title="$l('pointColors')" v-model="pointColors" @change="handleChange('pointColors', $event.value)" :colorsList="COLOR_LIST" />
+              <ColorSelect :title="$l('pointColors')" v-model="pointColors" @change="handleChange('pointColors', $event.value)" :colorsList="COLOR_LIST" size="mini" />
             </div>
             <div class="file_s_col" style="width: 60px">
-              <el-switch :title="$l('showPointVisualMap')" v-model="showPointVisualMap" :active-value="true" :inactive-value="false" />
+              <el-switch :title="$l('showPointVisualMap')" v-model="showPointVisualMap" :active-value="true" :inactive-value="false" size="mini" />
               <GeoJSONVisualMap v-show="showPointVisualMap" :colors="COLOR_LIST[pointColors]" :max="pointValueLabel.max" :min="pointValueLabel.min" />
             </div>
           </div>
@@ -51,22 +51,22 @@
               <el-color-picker :title="$l('lineColor')" v-model="lineColor" @change="handleChange('lineColor', $event)" size="mini" :predefine="predefineColors" />
             </div>
             <div class="file_s_col" style="width: 90px">
-              <el-select :title="$l('lineStyle')" v-model="lineStyle" @change="handleChange('lineStyle', $event)">
+              <el-select :title="$l('lineStyle')" v-model="lineStyle" @change="handleChange('lineStyle', $event)" size="mini">
                 <el-option v-for="(v, k) in LINE_STYPE" :key="v" :label="k" :value="v"></el-option>
               </el-select>
             </div>
           </div>
           <div class="file_row">
             <div class="file_s_col" style="width: 90px">
-              <el-select :title="$l('lineValue')" v-model="lineValue" @change="handleChange('lineValue', $event)" clearable>
+              <el-select :title="$l('lineValue')" v-model="lineValue" @change="handleChange('lineValue', $event)" clearable size="mini">
                 <el-option v-for="(item, key) in propertiesLabels" :key="key" :label="key" :value="key"></el-option>
               </el-select>
             </div>
             <div class="file_l_col">
-              <ColorSelect :title="$l('lineColors')" style="width: 100%" v-model="lineColors" @change="handleChange('lineColors', $event.value)" :colorsList="COLOR_LIST" />
+              <ColorSelect :title="$l('lineColors')" style="width: 100%" v-model="lineColors" @change="handleChange('lineColors', $event.value)" :colorsList="COLOR_LIST" size="mini" />
             </div>
             <div class="file_s_col" style="width: 60px">
-              <el-switch :title="$l('showLineVisualMap')" v-model="showLineVisualMap" :active-value="true" :inactive-value="false" />
+              <el-switch :title="$l('showLineVisualMap')" v-model="showLineVisualMap" :active-value="true" :inactive-value="false" size="mini" />
               <GeoJSONVisualMap v-show="showLineVisualMap" :colors="COLOR_LIST[lineColors]" :max="lineValueLabel.max" :min="lineValueLabel.min" />
             </div>
           </div>
@@ -77,7 +77,7 @@
         <div class="file_item">
           <div class="file_row">
             <div class="file_l_col" style="padding: 0 15px">
-              <el-slider :title="$l('polygonOpacity')" v-model="polygonOpacity" @change="handleChange('polygonOpacity', $event)" :step="0.01" :min="0" :max="1"> </el-slider>
+              <el-slider :title="$l('polygonOpacity')" v-model="polygonOpacity" @change="handleChange('polygonOpacity', $event)" :step="0.01" :min="0" :max="1" size="mini"> </el-slider>
             </div>
             <div class="file_s_col">
               <el-color-picker :title="$l('polygonColor')" v-model="polygonColor" @change="handleChange('polygonColor', $event)" size="mini" :predefine="predefineColors" />
@@ -85,7 +85,7 @@
           </div>
           <div class="file_row">
             <div class="file_l_col" style="padding: 0 15px">
-              <el-slider :title="$l('polygonBorderWidth')" v-model="polygonBorderWidth" @change="handleChange('polygonBorderWidth', $event)" :step="0.1" :min="0" :max="300"> </el-slider>
+              <el-slider :title="$l('polygonBorderWidth')" v-model="polygonBorderWidth" @change="handleChange('polygonBorderWidth', $event)" :step="0.1" :min="0" :max="300" size="mini"> </el-slider>
             </div>
             <div class="file_s_col">
               <el-color-picker :title="$l('polygonBorderColor')" v-model="polygonBorderColor" @change="handleChange('polygonBorderColor', $event)" size="mini" :predefine="predefineColors" />
@@ -112,10 +112,10 @@
           </div>
           <div class="file_row">
             <div class="file_s_col" style="width: 60px">
-              <el-switch :title="$l('polygon3D')" v-model="polygon3D" @change="handleChange('polygon3D', $event)" :active-value="true" :inactive-value="false" />
+              <el-switch :title="$l('polygon3D')" v-model="polygon3D" @change="handleChange('polygon3D', $event)" :active-value="true" :inactive-value="false" size="mini" />
             </div>
             <div class="file_l_col" style="padding: 0 15px">
-              <el-slider :title="$l('polygon3DHeight')" v-model="polygon3DHeight" @change="handleChange('polygon3DHeight', $event)" :step="0.1" :min="0" :max="5000"> </el-slider>
+              <el-slider :title="$l('polygon3DHeight')" v-model="polygon3DHeight" @change="handleChange('polygon3DHeight', $event)" :step="0.1" :min="0" :max="5000" size="mini"> </el-slider>
             </div>
           </div>
         </div>
@@ -225,25 +225,7 @@
 import { GeoJSONLayer, LINE_STYPE } from "../layer/GeoJSONLayer";
 import GeoJSONVisualMap from "../component/GeoJSONVisualMap.vue";
 import GeoJSONLayerWorker from "../worker/GeoJSONLayer.worker";
-
-const COLOR_LIST = [
-  ["#313695", "#74add1", "#e0f3f8", "#fdae61", "#f46d43", "#a50026"],
-  ["rgb(254, 224, 210)", "rgb(252, 187, 161)", "rgb(252, 146, 114)", "rgb(239, 59, 44)", "rgb(203, 24, 29)", "rgb(153, 0, 13)"],
-  ["rgb(251, 234, 215)", "rgb(249, 219, 195)", "rgb(247, 212, 175)", "rgb(245, 183, 133)", "rgb(241, 165, 102)", "rgb(237, 135, 52)"],
-  ["rgb(251, 234, 215)", "rgb(248, 230, 196)", "rgb(247, 212, 175)", "rgb(245, 199, 133)", "rgb(241, 185, 102)", "rgb(237, 161, 52)"],
-  ["rgb(249, 241, 217)", "rgb(248, 230, 196)", "rgb(245, 225, 177)", "rgb(239, 209, 139)", "rgb(235, 197, 108)", "rgb(227, 179, 60)"],
-  ["rgb(249, 245, 217)", "rgb(247, 239, 197)", "rgb(245, 233, 177)", "rgb(239, 223, 139)", "rgb(235, 215, 108)", "rgb(227, 201, 60)"],
-  ["rgb(240, 248, 213)", "rgb(235, 244, 190)", "rgb(222, 237, 169)", "rgb(215, 227, 124)", "rgb(205, 221, 92)", "rgb(187, 209, 38)"],
-  ["rgb(240, 248, 213)", "rgb(225, 241, 191)", "rgb(222, 237, 169)", "rgb(195, 227, 124)", "rgb(181, 221, 92)", "rgb(155, 209, 38)"],
-  ["rgb(223, 247, 213)", "rgb(207, 243, 189)", "rgb(193, 239, 169)", "rgb(161, 233, 124)", "rgb(137, 227, 92)", "rgb(96, 217, 38)"],
-  ["rgb(215, 245, 223)", "rgb(193, 241, 207)", "rgb(173, 235, 191)", "rgb(131, 225, 161)", "rgb(100, 219, 137)", "rgb(48, 205, 96)"],
-  ["rgb(211, 242, 236)", "rgb(188, 234, 227)", "rgb(171, 229, 211)", "rgb(129, 215, 191)", "rgb(106, 209, 179)", "rgb(42, 189, 147)"],
-  ["rgb(211, 242, 236)", "rgb(188, 234, 227)", "rgb(163, 227, 223)", "rgb(116, 213, 207)", "rgb(82, 201, 195)", "rgb(24, 183, 175)"],
-  ["rgb(207, 243, 245)", "rgb(186, 233, 242)", "rgb(163, 225, 238)", "rgb(112, 217, 227)", "rgb(86, 211, 221)", "rgb(16, 191, 207)"],
-  ["rgb(211, 240, 246)", "rgb(186, 233, 242)", "rgb(163, 225, 238)", "rgb(119, 207, 229)", "rgb(97, 199, 224)", "rgb(28, 181, 215)"],
-  ["rgb(211, 240, 246)", "rgb(186, 233, 242)", "rgb(163, 225, 238)", "rgb(119, 207, 229)", "rgb(97, 199, 224)", "rgb(30, 169, 207)"],
-  ["rgb(209, 227, 243)", "rgb(185, 211, 237)", "rgb(161, 197, 229)", "rgb(108, 165, 215)", "rgb(78, 145, 207)", "rgb(18, 108, 191)"],
-];
+import { COLOR_LIST } from "@/utils/utils";
 
 export default {
   inject: ["rootVue"],
@@ -425,7 +407,7 @@ export default {
           break;
         case "pointValue":
           this._GeoJSONLayer.setPointValue(value);
-          this.pointValueLabel = JSON.parse(JSON.stringify(this.propertiesLabels[value]));
+          this.pointValueLabel = JSON.parse(JSON.stringify(this.propertiesLabels[value] || { max: 1, min: 0 }));
           break;
         case "pointColors":
           const pointColorBar = this.COLOR_LIST[value];
@@ -447,7 +429,7 @@ export default {
           break;
         case "lineValue":
           this._GeoJSONLayer.setLineValue(value);
-          this.lineValueLabel = JSON.parse(JSON.stringify(this.propertiesLabels[value]));
+          this.lineValueLabel = JSON.parse(JSON.stringify(this.propertiesLabels[value] || { max: 1, min: 0 }));
           break;
         case "lineColors":
           const lineColorBar = this.COLOR_LIST[value];
@@ -475,7 +457,7 @@ export default {
           break;
         case "polygonValue":
           this._GeoJSONLayer.setPolygonValue(value);
-          this.polygonValueLabel = JSON.parse(JSON.stringify(this.propertiesLabels[value]));
+          this.polygonValueLabel = JSON.parse(JSON.stringify(this.propertiesLabels[value] || { max: 1, min: 0 }));
           break;
         case "polygonColors":
           const polygonColorBar = this.COLOR_LIST[value];
@@ -509,12 +491,12 @@ export default {
     }
 
     .file_row {
-      height: 40px;
+      // height: 40px;
       display: flex;
       align-items: center;
 
       & + .file_row {
-        border-top: 1px solid transparent;
+        border-top: 4px solid transparent;
       }
     }
 
@@ -524,12 +506,12 @@ export default {
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      height: 40px;
+      // height: 40px;
       width: 40px;
 
       & + .file_s_col,
       & + .file_l_col {
-        border-left: 1px solid transparent;
+        border-left: 4px solid transparent;
       }
     }
 

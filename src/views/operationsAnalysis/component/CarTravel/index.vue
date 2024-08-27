@@ -141,12 +141,12 @@ export default {
       },
     });
     this._CarTravelLayer2 = new CarTravelLayer2({
-      zIndex: 20,
+      zIndex: 200,
       dataSource: this.$store.getters.dataSource,
       color: "#ff0000",
     });
     this._CarTravelLayer3 = new CarTravelLayer3({
-      zIndex: 30,
+      zIndex: 300,
       dataSource: this.$store.getters.dataSource,
       color: "#ff0000",
     });

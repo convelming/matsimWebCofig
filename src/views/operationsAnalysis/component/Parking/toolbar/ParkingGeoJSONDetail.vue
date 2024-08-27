@@ -4,7 +4,7 @@
       <el-button style="display: block; margin-bottom: 10px; width: 100%" size="mini" type="primary" @click="reselect = true">{{ $l("重新选择文件") }}</el-button>
       <div class="collapse" v-for="layer in layerList" :key="layer.name">
         <div class="collapse_header">
-          <el-checkbox v-model="layer.show" :label="layer.name" :indeterminate="false" @change="handleChangeLayerParams(layer.name, 'show', $event)">{{ layer.name }}</el-checkbox>
+          <el-checkbox v-model="layer.show" :indeterminate="false" @change="handleChangeLayerParams(layer.name, 'show', $event)">{{ $l(layer.label) + layer.valueKey }}</el-checkbox>
           <span class="icon el-icon-caret-bottom" :class="layer.showSetting ? 'show' : 'hide'" @click.stop="layer.showSetting = !layer.showSetting"></span>
         </div>
         <div class="collapse_bodyer" v-show="layer.showSetting">
@@ -80,7 +80,7 @@
         <el-option v-for="item in rootVue.GeoJSONList" :key="item.id" :label="item.name" :value="item.id"> </el-option>
       </el-select>
       <el-form class="form_box" v-if="selectGeoJSON && s_value" :model="uploadForm" ref="form" label-width="auto" :inline="false" size="mini">
-        <el-form-item :label="$l('路内停车场字段')" prop="road">
+        <el-form-item :label="$l('路内停车位字段')" prop="road">
           <el-select v-model="uploadForm.road" clearable>
             <el-option v-for="(item, key) in selectGeoJSON.propertiesLabels" :key="key" :label="key" :value="key"></el-option>
           </el-select>
@@ -133,9 +133,9 @@
     "zh-CN": "请选择GeoJSON",
     "en-US": "请选择GeoJSON"
   },
-  "路内停车场字段":{
-    "zh-CN": "路内停车场字段",
-    "en-US": "On Street Parking Field:"
+  "路内停车位字段":{
+    "zh-CN": "路内停车位字段",
+    "en-US": "On Street Parking Field"
   },
   "公共停车场字段":{
     "zh-CN": "公共停车场字段",
@@ -161,6 +161,31 @@
     "zh-CN": "立即上传",
     "en-US": "Upload now"
   },
+  
+  "road_label":{
+    "zh-CN": "路内停车位：",
+    "en-US": "On Street Parking:"
+  },
+  "common_label":{
+    "zh-CN": "公共停车场：",
+    "en-US": "Public Parking Lot:"
+  },
+  "special_label":{
+    "zh-CN": "专用停车场：",
+    "en-US": "Dedicated Parking Lot:"
+  },
+  "roadside_label":{
+    "zh-CN": "路外停车场：",
+    "en-US": "Roadside Parking Lot:"
+  },
+  "total_label":{
+    "zh-CN": "总停车场：",
+    "en-US": "Total Parking Lot:"
+  },
+  "total2_label":{
+    "zh-CN": "总停车场：",
+    "en-US": "Total Parking Lot:"
+  },
 }
 </language>
 
@@ -170,26 +195,7 @@ import GeoJSONLayerWorker from "../../GeoJSON/worker/GeoJSONLayer.worker";
 import GeoJSONVisualMap from "../../GeoJSON/component/GeoJSONVisualMap.vue";
 
 import { uploadGeoJson } from "@/api/index";
-import { guid } from "@/utils/utils";
-
-const COLOR_LIST = [
-  ["#313695", "#74add1", "#e0f3f8", "#fdae61", "#f46d43", "#a50026"],
-  ["rgb(254, 224, 210)", "rgb(252, 187, 161)", "rgb(252, 146, 114)", "rgb(239, 59, 44)", "rgb(203, 24, 29)", "rgb(153, 0, 13)"],
-  ["rgb(251, 234, 215)", "rgb(249, 219, 195)", "rgb(247, 212, 175)", "rgb(245, 183, 133)", "rgb(241, 165, 102)", "rgb(237, 135, 52)"],
-  ["rgb(251, 234, 215)", "rgb(248, 230, 196)", "rgb(247, 212, 175)", "rgb(245, 199, 133)", "rgb(241, 185, 102)", "rgb(237, 161, 52)"],
-  ["rgb(249, 241, 217)", "rgb(248, 230, 196)", "rgb(245, 225, 177)", "rgb(239, 209, 139)", "rgb(235, 197, 108)", "rgb(227, 179, 60)"],
-  ["rgb(249, 245, 217)", "rgb(247, 239, 197)", "rgb(245, 233, 177)", "rgb(239, 223, 139)", "rgb(235, 215, 108)", "rgb(227, 201, 60)"],
-  ["rgb(240, 248, 213)", "rgb(235, 244, 190)", "rgb(222, 237, 169)", "rgb(215, 227, 124)", "rgb(205, 221, 92)", "rgb(187, 209, 38)"],
-  ["rgb(240, 248, 213)", "rgb(225, 241, 191)", "rgb(222, 237, 169)", "rgb(195, 227, 124)", "rgb(181, 221, 92)", "rgb(155, 209, 38)"],
-  ["rgb(223, 247, 213)", "rgb(207, 243, 189)", "rgb(193, 239, 169)", "rgb(161, 233, 124)", "rgb(137, 227, 92)", "rgb(96, 217, 38)"],
-  ["rgb(215, 245, 223)", "rgb(193, 241, 207)", "rgb(173, 235, 191)", "rgb(131, 225, 161)", "rgb(100, 219, 137)", "rgb(48, 205, 96)"],
-  ["rgb(211, 242, 236)", "rgb(188, 234, 227)", "rgb(171, 229, 211)", "rgb(129, 215, 191)", "rgb(106, 209, 179)", "rgb(42, 189, 147)"],
-  ["rgb(211, 242, 236)", "rgb(188, 234, 227)", "rgb(163, 227, 223)", "rgb(116, 213, 207)", "rgb(82, 201, 195)", "rgb(24, 183, 175)"],
-  ["rgb(207, 243, 245)", "rgb(186, 233, 242)", "rgb(163, 225, 238)", "rgb(112, 217, 227)", "rgb(86, 211, 221)", "rgb(16, 191, 207)"],
-  ["rgb(211, 240, 246)", "rgb(186, 233, 242)", "rgb(163, 225, 238)", "rgb(119, 207, 229)", "rgb(97, 199, 224)", "rgb(28, 181, 215)"],
-  ["rgb(211, 240, 246)", "rgb(186, 233, 242)", "rgb(163, 225, 238)", "rgb(119, 207, 229)", "rgb(97, 199, 224)", "rgb(30, 169, 207)"],
-  ["rgb(209, 227, 243)", "rgb(185, 211, 237)", "rgb(161, 197, 229)", "rgb(108, 165, 215)", "rgb(78, 145, 207)", "rgb(18, 108, 191)"],
-];
+import { guid, COLOR_LIST } from "@/utils/utils";
 
 export default {
   name: "ParkingGeoJSONDetail",
@@ -411,12 +417,13 @@ export default {
       if (!!form.special) layerNameList.push("special");
       if (!!form.roadside) layerNameList.push("roadside");
       if (!!form.total) layerNameList.push("total");
-      else if (!!layerNameList.length) layerNameList.push("total2");
+      else if (layerNameList.length > 0) layerNameList.push("total2");
 
       const layerList = [];
 
       for (const layerName of layerNameList) {
         const layer = {
+          label: layerName + "_label",
           name: layerName,
           valueKey: form[layerName],
           valueLabel: { max: 0, min: 1 },
@@ -523,7 +530,7 @@ export default {
         for (const layer of layerList) {
           console.time("onmessage");
 
-          layer.valueLabel = propertiesLabels[layer.valueKey];
+          layer.valueLabel = JSON.parse(JSON.stringify(propertiesLabels[layer.valueKey] || { max: 1, min: 0 }));
 
           layer.showPointSetting = !!pointArray.length;
           layer.showLineSetting = !!lineArray.length;

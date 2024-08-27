@@ -193,9 +193,6 @@ export default {
             this._chart3.resize();
           });
         });
-        rangeRequireRatio(this.s_polgonParkingDetail).then((res) => {
-          console.log("rangeRequireRatio", res);
-        });
       } else {
         this.showChart2 = false;
       }
@@ -309,21 +306,21 @@ export default {
       };
     },
     getChartOptions3() {
-      const data = this.supplyData;
       // prettier-ignore
-      const hours = ['12a', '1a', '2a', '3a', '4a', '5a', '6a','7a', '8a', '9a', '10a', '11a','12p', '1p', '2p', '3p', '4p', '5p','6p', '7p', '8p', '9p', '10p', '11p'];
       return {
-        tooltip: {},
+        tooltip: {
+          type:"item" 
+        },
         xAxis: {
           type: "category",
-          data: hours,
+          data: Array.from(Object.keys(this.supplyData)),
         },
         yAxis: {
           type: "value",
         },
         series: [
           {
-            data: hours.map((v, i) => Number(data[i] || 0)),
+            data: Array.from(Object.values(this.supplyData)).map((v, i) => Number(v || 0)),
             type: "bar",
           },
         ],

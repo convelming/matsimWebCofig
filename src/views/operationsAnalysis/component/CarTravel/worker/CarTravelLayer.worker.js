@@ -114,7 +114,7 @@ class Worker {
   async getTile(params) {
     const { dataSource, zoom, row, col, live } = params;
     const response = await axios({
-      url: `/pt/tiles/car/${dataSource}/${zoom}/${row}/${col}`,
+      url: process.env.VUE_APP_BASE_API + `/pt/tiles/car/${dataSource}/${zoom}/${row}/${col}`,
       headers: { uuid: guid(), dataSource: "" },
       method: "get",
       responseType: "arraybuffer",
