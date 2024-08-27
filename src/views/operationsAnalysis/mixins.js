@@ -178,6 +178,8 @@ export default {
       this._Map = new MyMap({
         rootId: "mapRoot",
         enableRotate: true,
+        center: [12643305.41805341, 2592283.755084164],
+        center: [12631209.560373351, 2598756.097409454]
       });
       if (!this.isDev) this._Map.setFitZoomAndCenterByPoints(this.range);
 

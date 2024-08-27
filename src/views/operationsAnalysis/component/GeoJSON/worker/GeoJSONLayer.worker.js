@@ -152,7 +152,7 @@ class GeoJSONParser {
     this.propertiesLabels = propertiesLabels;
   }
 
-  getMultiPoint(coordinates, propertiesKey) {
+  getMultiPoint(coordinates) {
     const list = []
     for (let i = 0; i < coordinates.length; i++) {
       let [x, y] = coordinates[i];
@@ -165,7 +165,7 @@ class GeoJSONParser {
     return list;
   }
 
-  getMultiLineString(coordinates, propertiesKey) {
+  getMultiLineString(coordinates) {
     const list = []
     for (let i = 0; i < coordinates.length; i++) {
       const line = [];
@@ -192,7 +192,7 @@ class GeoJSONParser {
     return list;
   }
 
-  getMultiPolygon(coordinates, propertiesKey) {
+  getMultiPolygon(coordinates) {
     const list = []
     for (let i = 0; i < coordinates.length; i++) {
       const coordinate = [];

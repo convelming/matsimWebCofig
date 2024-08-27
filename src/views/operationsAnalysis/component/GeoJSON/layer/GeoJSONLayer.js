@@ -296,6 +296,7 @@ export class GeoJSONLayer extends Layer {
 
     // ******************** 点 ******************** //
     this.pointMaterial = new GeoJSONPointMaterial({
+      // side: THREE.DoubleSide,
       transparent: true
     });
     this.pointMeshList = [];
@@ -359,8 +360,12 @@ export class GeoJSONLayer extends Layer {
   on(type, data) {
     if (type == MAP_EVENT.UPDATE_CENTER) {
       for (const mesh of this.scene.children) {
+        console.log(this.center,this.map.center);
+        
         const [x, y] = this.map.WebMercatorToCanvasXY(...this.center);
         mesh.position.set(x, y, mesh.position.z);
+        console.log(mesh);
+        
       }
     }
   }
@@ -513,6 +518,7 @@ export class GeoJSONPointListGeometry extends THREE.BufferGeometry {
     const propertiesKeyList = [];
 
     const attrPosition = new Array();
+    const attrNormal = new Array();
     const attrSide = new Array();
     const attrValue = new Array();
     const attrIndex = new Array();
@@ -524,6 +530,9 @@ export class GeoJSONPointListGeometry extends THREE.BufferGeometry {
         attrPosition[attrPosition.length] = x;
         attrPosition[attrPosition.length] = y;
         attrPosition[attrPosition.length] = 0;
+        attrNormal[attrNormal.length] = 0;
+        attrNormal[attrNormal.length] = 0;
+        attrNormal[attrNormal.length] = 1;
         attrSide[attrSide.length] = i2;
         // attrValue[attrValue.length] = 0;
         propertiesKeyList[propertiesKeyList.length] = value;
@@ -537,10 +546,12 @@ export class GeoJSONPointListGeometry extends THREE.BufferGeometry {
       attrIndex[attrIndex.length] = i1 * 4 + 2;
     }
     this.setAttribute("position", new THREE.Float32BufferAttribute(attrPosition, 3));
+    this.setAttribute("normal", new THREE.Float32BufferAttribute(attrNormal, 3));
     this.setAttribute("side", new THREE.Float32BufferAttribute(attrSide, 1));
     this.setAttribute("value", new THREE.Float32BufferAttribute(attrValue, 1));
     this.setIndex(attrIndex);
-    this.computeVertexNormals();
+    // this.computeVertexNormals();
+    this.computeBoundingBox();
 
     this.propertiesKeyList = propertiesKeyList;
     this.setPropertiesList(propertiesList, propertiesLabels);
@@ -622,41 +633,41 @@ export class GeoJSONPointMaterial extends THREE.Material {
       #include <logdepthbuf_pars_vertex>
 
       attribute float side;
-      attribute float distance;
       attribute float value;
       
       varying vec3 vColor;
       varying vec2 vUv;
       varying float vValue;
-      varying float vDistance;
 
       uniform float size;
       uniform mat3 uvTransform;
 
       void main() {
         vValue = value;
-        vDistance = distance;
 
         vec3 transformed = vec3(1.0);
 
+        // 0 2
+        // 1 3 
+
         if(side == 0.0) {
           transformed.x = position.x - size / 2.0;
-          transformed.y = position.y - size / 2.0;
+          transformed.y = position.y + size / 2.0;
           transformed.z = position.z;
           vUv = ( uvTransform * vec3( 0.0, 0.0, 1.0 ) ).xy;
         } else if(side == 1.0) {
           transformed.x = position.x - size / 2.0;
-          transformed.y = position.y + size / 2.0;
+          transformed.y = position.y - size / 2.0;
           transformed.z = position.z;
           vUv = ( uvTransform * vec3( 0.0, 1.0, 1.0 ) ).xy;
         } else if(side == 2.0) {
           transformed.x = position.x + size / 2.0;
-          transformed.y = position.y - size / 2.0;
+          transformed.y = position.y + size / 2.0;
           transformed.z = position.z;
           vUv = ( uvTransform * vec3( 1.0, 0.0, 1.0 ) ).xy;
         } else if(side == 3.0) {
           transformed.x = position.x + size / 2.0;
-          transformed.y = position.y + size / 2.0;
+          transformed.y = position.y - size / 2.0;
           transformed.z = position.z;
           vUv = ( uvTransform * vec3( 1.0, 1.0, 1.0 ) ).xy;
         }
@@ -743,6 +754,7 @@ export class GeoJSONLineListGeometry extends THREE.BufferGeometry {
     this.setAttribute("distance", new THREE.Float32BufferAttribute(attrDistance, 1));
     this.setIndex(attrIndex);
     this.computeVertexNormals();
+    this.computeBoundingBox();
 
 
     this.propertiesKeyList = propertiesKeyList;
@@ -1023,6 +1035,7 @@ export class GeoJSONPolygonListGeometry extends THREE.BufferGeometry {
     this.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
     this.setAttribute('value', new THREE.Float32BufferAttribute(values, 1));
     this.computeVertexNormals();
+    this.computeBoundingBox();
     // helper functions
     function addShape(shape, value) {
 
@@ -1384,6 +1397,7 @@ export class GeoJSONPolygonBorderListGeometry extends THREE.BufferGeometry {
     this.setAttribute("distance", new THREE.Float32BufferAttribute(attrDistance, 1));
     this.setIndex(attrIndex);
     this.computeVertexNormals();
+    this.computeBoundingBox();
 
 
     this.propertiesKeyList = propertiesKeyList;

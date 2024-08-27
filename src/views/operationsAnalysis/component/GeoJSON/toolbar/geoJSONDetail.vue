@@ -345,6 +345,8 @@ export default {
       const { center, propertiesLabels, pointArray, lineArray, polygonArray, propertiesListArray } = event.data;
 
       console.time("onmessage");
+      this.isDev && console.log(event.data);
+
       this.$set(this.GeoJSON, "propertiesLabels", propertiesLabels);
       this.propertiesLabels = propertiesLabels;
       this._GeoJSONLayer.setCenter(center);
