@@ -42,6 +42,15 @@ demo.vue
 
 <script>
 export default {
+  watch: {
+    page_language: {
+      handler(val) {
+        // 语言变化时的处理
+      },
+      immediate: true,
+      deep: true,
+    },
+  },
   mounted() {
     setInterval(() => {
       if (this.page_language == "zh-CN") {

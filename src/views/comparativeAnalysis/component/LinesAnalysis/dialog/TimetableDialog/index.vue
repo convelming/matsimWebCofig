@@ -82,6 +82,16 @@ export default {
   inject: ["rootVue"],
   components: {},
   computed: {},
+  watch: {
+    page_language: {
+      handler(val) {
+        // 语言变化时的处理
+        this.updateChart();
+      },
+      immediate: true,
+      deep: true,
+    },
+  },
   data() {
     return {
       s_form: {},
