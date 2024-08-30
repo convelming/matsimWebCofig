@@ -186,6 +186,14 @@ export default {
   .el-slider__marks-text {
     white-space: nowrap;
   }
+  .checkbox{
+    .el-checkbox__input{
+      display: none;
+    }
+    .el-checkbox__label{
+      padding-left: 35px;
+    }
+  }
 }
 
 .my_collapse_item {

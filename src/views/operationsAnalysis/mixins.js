@@ -180,6 +180,7 @@ export default {
         enableRotate: true,
       });
       if (!this.isDev) this._Map.setFitZoomAndCenterByPoints(this.range);
+      if(this.isDev) this._Map.minPitch = -90;
 
       this._MapLayer = new MapLayer({ tileClass: MAP_LAYER_STYLE[0], zIndex: -1 });
       this._Map.addLayer(this._MapLayer);

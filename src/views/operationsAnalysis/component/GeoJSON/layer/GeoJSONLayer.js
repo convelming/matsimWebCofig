@@ -360,12 +360,12 @@ export class GeoJSONLayer extends Layer {
   on(type, data) {
     if (type == MAP_EVENT.UPDATE_CENTER) {
       for (const mesh of this.scene.children) {
-        console.log(this.center,this.map.center);
-        
+        console.log(this.center, this.map.center);
+
         const [x, y] = this.map.WebMercatorToCanvasXY(...this.center);
         mesh.position.set(x, y, mesh.position.z);
         console.log(mesh);
-        
+
       }
     }
   }
@@ -534,7 +534,7 @@ export class GeoJSONPointListGeometry extends THREE.BufferGeometry {
         attrNormal[attrNormal.length] = 0;
         attrNormal[attrNormal.length] = 1;
         attrSide[attrSide.length] = i2;
-        // attrValue[attrValue.length] = 0;
+        attrValue[attrValue.length] = 0;
         propertiesKeyList[propertiesKeyList.length] = value;
       }
 
@@ -548,7 +548,8 @@ export class GeoJSONPointListGeometry extends THREE.BufferGeometry {
     this.setAttribute("position", new THREE.Float32BufferAttribute(attrPosition, 3));
     this.setAttribute("normal", new THREE.Float32BufferAttribute(attrNormal, 3));
     this.setAttribute("side", new THREE.Float32BufferAttribute(attrSide, 1));
-    this.setAttribute("value", new THREE.Float32BufferAttribute(attrValue, 1));
+    this.noValueAttribute = new THREE.Float32BufferAttribute(attrValue, 1);
+    this.setAttribute("value", this.noValueAttribute);
     this.setIndex(attrIndex);
     // this.computeVertexNormals();
     this.computeBoundingBox();
@@ -582,7 +583,9 @@ export class GeoJSONPointListGeometry extends THREE.BufferGeometry {
       if (attrValue) {
         this.setAttribute("value", attrValue);
       } else {
-        this.setAttribute("value", new THREE.Float32BufferAttribute([], 1));
+        // mac系统中不能设置空数组，不然图像不显示
+        // this.setAttribute("value", new THREE.Float32BufferAttribute([], 1));
+        this.setAttribute("value", this.noValueAttribute);
       }
     } catch (error) {
       console.log(error);
@@ -750,7 +753,8 @@ export class GeoJSONLineListGeometry extends THREE.BufferGeometry {
     this.setAttribute("startPosition", new THREE.Float32BufferAttribute(attrStartPosition, 2));
     this.setAttribute("endPosition", new THREE.Float32BufferAttribute(attrEndPosition, 2));
     this.setAttribute("side", new THREE.Int8BufferAttribute(attrSide, 1));
-    this.setAttribute("value", new THREE.Float32BufferAttribute(attrValue, 1));
+    this.noValueAttribute = new THREE.Float32BufferAttribute(attrValue, 1)
+    this.setAttribute("value", this.noValueAttribute);
     this.setAttribute("distance", new THREE.Float32BufferAttribute(attrDistance, 1));
     this.setIndex(attrIndex);
     this.computeVertexNormals();
@@ -801,6 +805,9 @@ export class GeoJSONLineListGeometry extends THREE.BufferGeometry {
         propertiesKeyList[propertiesKeyList.length] = value;
         propertiesKeyList[propertiesKeyList.length] = value;
 
+        attrValue[attrValue.length] = 0;
+        attrValue[attrValue.length] = 0;
+
         attrDistance[attrDistance.length] = thatL;
         attrDistance[attrDistance.length] = thatL;
 
@@ -845,7 +852,9 @@ export class GeoJSONLineListGeometry extends THREE.BufferGeometry {
       if (attrValue) {
         this.setAttribute("value", attrValue);
       } else {
-        this.setAttribute("value", new THREE.Float32BufferAttribute([], 1));
+        // mac系统中不能设置空数组，不然图像不显示
+        // this.setAttribute("value", new THREE.Float32BufferAttribute([], 1));
+        this.setAttribute("value", this.noValueAttribute);
       }
     } catch (error) {
       console.log(error);
@@ -1033,7 +1042,8 @@ export class GeoJSONPolygonListGeometry extends THREE.BufferGeometry {
     this.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
     // this.setAttribute('normal', new THREE.Float32BufferAttribute(normals, 3));
     this.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
-    this.setAttribute('value', new THREE.Float32BufferAttribute(values, 1));
+    this.noValueAttribute = new THREE.Float32BufferAttribute(values, 1)
+    this.setAttribute('value', this.noValueAttribute);
     this.computeVertexNormals();
     this.computeBoundingBox();
     // helper functions
@@ -1073,6 +1083,7 @@ export class GeoJSONPolygonListGeometry extends THREE.BufferGeometry {
       //     uvs.push(vertex.x, vertex.y); // world uvs
 
       //     propertiesKeyList.push(value);
+      //     values.push(0);
       //   }
       //   // 添加面
       //   for (let i = 0, l = faces.length; i < l; i++) {
@@ -1095,6 +1106,7 @@ export class GeoJSONPolygonListGeometry extends THREE.BufferGeometry {
           uvs.push(vertex.x, vertex.y); // world uvs
 
           propertiesKeyList.push(value);
+          values.push(0);
         }
         // 添加面
         for (let i = 0, l = faces.length; i < l; i++) {
@@ -1124,6 +1136,11 @@ export class GeoJSONPolygonListGeometry extends THREE.BufferGeometry {
           propertiesKeyList.push(value);
           propertiesKeyList.push(value);
           propertiesKeyList.push(value);
+
+          values.push(0);
+          values.push(0);
+          values.push(0);
+          values.push(0);
 
           // normals.push(0, 0, -1);
           // normals.push(0, 0, -1);
@@ -1161,6 +1178,11 @@ export class GeoJSONPolygonListGeometry extends THREE.BufferGeometry {
           propertiesKeyList.push(value);
           propertiesKeyList.push(value);
           propertiesKeyList.push(value);
+
+          values.push(0);
+          values.push(0);
+          values.push(0);
+          values.push(0);
 
           // normals.push(0, 0, -1);
           // normals.push(0, 0, -1);
@@ -1233,7 +1255,9 @@ export class GeoJSONPolygonListGeometry extends THREE.BufferGeometry {
       if (attrValue) {
         this.setAttribute("value", attrValue);
       } else {
-        this.setAttribute("value", new THREE.Float32BufferAttribute([], 1));
+        // mac系统中不能设置空数组，不然图像不显示
+        // this.setAttribute("value", new THREE.Float32BufferAttribute([], 1));
+        this.setAttribute("value", this.noValueAttribute);
       }
     } catch (error) {
       console.log(error);
@@ -1393,7 +1417,8 @@ export class GeoJSONPolygonBorderListGeometry extends THREE.BufferGeometry {
     this.setAttribute("startPosition", new THREE.Float32BufferAttribute(attrStartPosition, 2));
     this.setAttribute("endPosition", new THREE.Float32BufferAttribute(attrEndPosition, 2));
     this.setAttribute("side", new THREE.Int8BufferAttribute(attrSide, 1));
-    this.setAttribute("value", new THREE.Float32BufferAttribute(attrValue, 1));
+    this.noValueAttribute = new THREE.Float32BufferAttribute(attrValue, 1)
+    this.setAttribute("value", this.noValueAttribute);
     this.setAttribute("distance", new THREE.Float32BufferAttribute(attrDistance, 1));
     this.setIndex(attrIndex);
     this.computeVertexNormals();
@@ -1436,6 +1461,9 @@ export class GeoJSONPolygonBorderListGeometry extends THREE.BufferGeometry {
 
         propertiesKeyList[propertiesKeyList.length] = value;
         propertiesKeyList[propertiesKeyList.length] = value;
+        
+        attrValue[attrValue.length] = 0;
+        attrValue[attrValue.length] = 0;
 
         attrDistance[attrDistance.length] = distance;
         attrDistance[attrDistance.length] = distance;
@@ -1502,7 +1530,9 @@ export class GeoJSONPolygonBorderListGeometry extends THREE.BufferGeometry {
       if (attrValue) {
         this.setAttribute("value", attrValue);
       } else {
-        this.setAttribute("value", new THREE.Float32BufferAttribute([], 1));
+        // mac系统中不能设置空数组，不然图像不显示
+        // this.setAttribute("value", new THREE.Float32BufferAttribute([], 1));
+        this.setAttribute("value", this.noValueAttribute);
       }
     } catch (error) {
       console.log(error);
