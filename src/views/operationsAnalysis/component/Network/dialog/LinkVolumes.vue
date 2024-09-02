@@ -44,6 +44,14 @@
     "zh-CN": "#车辆",
     "en-US": "Vehicles"
   },
+  "Base":{
+    "zh-CN": "基础",
+    "en-US": "Base"
+  },
+  "Actual":{
+    "zh-CN": "实际",
+    "en-US": "Actual"
+  },
   "time":{
     "zh-CN": "时间",
     "en-US": "Time"
@@ -105,9 +113,10 @@ export default {
       };
       getLinkVolumes(form)
         .then((res) => {
-          this.tableList = (res.data || []).map((v, i) => ({
+          this.tableList = (res.data.real || []).map((v, i) => ({
             time: form.second * i,
-            vehicles: v,
+            real: v,
+            sim: res.data.sim[i],
           }));
           this.updateChart();
           this.loading = false;
@@ -134,9 +143,15 @@ export default {
             type: "shadow",
           },
           formatter: function (params, ticket, callback) {
-            return `${formatHour(params[0].name)}  ${params[0].value}`;
+            console.log(params);
+            const l1 = [`<div style="font-weight: bold;font-size:14px;">${formatHour(Number(params[0].name))}</div>`];
+            for (const v of params) {
+              l1.push(`<div style="font-size:12px;">${v.marker}<span style="margin-right: 10px;">${v.seriesName}</span><span >${v.data}</span></div>`);
+            }
+            return l1.join("\n");
           },
         },
+        legend: {},
         grid: {
           left: "3%",
           right: "4%",
@@ -167,9 +182,16 @@ export default {
         ],
         series: [
           {
+            name: this.$l("Base"),
             type: "bar",
             barWidth: "60%",
-            data: this.tableList.map((v) => v.vehicles),
+            data: this.tableList.map((v) => v.real),
+          },
+          {
+            name: this.$l("Actual"),
+            type: "bar",
+            barWidth: "60%",
+            data: this.tableList.map((v) => v.sim),
           },
         ],
       };
