@@ -67,8 +67,10 @@ export default {
   &.el-select--mini,
   &.el-select--small {
     .el-input__prefix {
-      top: 0px;
-      bottom: 0px;
+      top: 1px;
+      bottom: 1px;
+      left: 8px;
+      right: 28px;
     }
   }
 }

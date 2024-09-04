@@ -22,7 +22,14 @@
             <div class="file_s_col">
               <el-color-picker :title="$l('pointColor')" v-model="pointColor" @change="handleChange('pointColor', $event)" size="mini" :predefine="predefineColors" />
             </div>
-            <div class="file_s_col" style="width: 90px">icon</div>
+            <div class="file_s_col" style="width: 90px"> 
+              <IconSelect :title="$l('pointIcon')" v-model="pointIcon" @change="handleChange('pointIcon', $event.value)" size="mini" />
+              <!-- <el-select v-model="pointIcon" @change="handleChange('pointIcon', $event)" size="mini" popper-class="point_icon_popper">
+                <el-option v-for="(v, i) in iconOptions" :key="i" :label="i" :value="v">
+                  <img class="point_icon" :src="v" alt="" />
+                </el-option>
+              </el-select> -->
+            </div>
           </div>
           <div class="file_row">
             <div class="file_s_col" style="width: 90px">
@@ -222,6 +229,8 @@
 </language>
 
 <script>
+
+import { ICON_LIST } from "@/utils/utils";
 import { GeoJSONLayer, LINE_STYPE } from "../layer/GeoJSONLayer";
 import GeoJSONVisualMap from "../component/GeoJSONVisualMap.vue";
 import GeoJSONLayerWorker from "../worker/GeoJSONLayer.worker";
@@ -269,7 +278,7 @@ export default {
 
       pointSize: 1000,
       pointColor: "#ffa500",
-      pointIcon: require("@/assets/image/point2.png"),
+      pointIcon: ICON_LIST[0],
       pointValue: "",
       pointColors: 0,
       pointOpacity: 1,
