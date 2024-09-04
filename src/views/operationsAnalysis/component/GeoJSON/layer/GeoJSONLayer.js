@@ -657,22 +657,22 @@ export class GeoJSONPointMaterial extends THREE.Material {
           transformed.x = position.x - size / 2.0;
           transformed.y = position.y + size / 2.0;
           transformed.z = position.z;
-          vUv = ( uvTransform * vec3( 0.0, 0.0, 1.0 ) ).xy;
+          vUv = ( uvTransform * vec3( 0.0, 1.0, 1.0 ) ).xy;
         } else if(side == 1.0) {
           transformed.x = position.x - size / 2.0;
           transformed.y = position.y - size / 2.0;
           transformed.z = position.z;
-          vUv = ( uvTransform * vec3( 0.0, 1.0, 1.0 ) ).xy;
+          vUv = ( uvTransform * vec3( 0.0, 0.0, 1.0 ) ).xy;
         } else if(side == 2.0) {
           transformed.x = position.x + size / 2.0;
           transformed.y = position.y + size / 2.0;
           transformed.z = position.z;
-          vUv = ( uvTransform * vec3( 1.0, 0.0, 1.0 ) ).xy;
+          vUv = ( uvTransform * vec3( 1.0, 1.0, 1.0 ) ).xy;
         } else if(side == 3.0) {
           transformed.x = position.x + size / 2.0;
           transformed.y = position.y - size / 2.0;
           transformed.z = position.z;
-          vUv = ( uvTransform * vec3( 1.0, 1.0, 1.0 ) ).xy;
+          vUv = ( uvTransform * vec3( 1.0, 0.0, 1.0 ) ).xy;
         }
 
         gl_Position = projectionMatrix * modelViewMatrix * vec4( transformed, 1.0 );
