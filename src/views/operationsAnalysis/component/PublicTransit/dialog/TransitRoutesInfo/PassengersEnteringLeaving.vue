@@ -221,35 +221,18 @@ export default {
 
           formatter(params, ticket) {
             console.log(params);
-            
-            const obj = {};
-            for (const v of params) {
-              let [name1, name2] = v.seriesId.split("-");
-              if (!obj[name2]) obj[name2] = { marker: v.marker, data: {} };
-              obj[name2].data[name1] = v.data;
-            }
             let l1 = [];
-            for (const k1 in obj) {
-              const v1 = obj[k1];
-              const l2 = [];
-              for (const k2 in v1.data) {
-                const v2 = v1.data[k2];
-                l2.push(`
-                  <div>
-                    <span style="display: inline-block;width: 100px;padding-left: 10px;">${k2}：</span>
-                    <span style="display: inline-block;width: 50px;text-align:right">${v2}</span>
-                  </div>
-                `);
-              }
+
+            for (const v of params) {
               l1.push(`
-                <div style="font-weight: bold;font-size:14px;">
-                  ${v1.marker}
-                  <span>${k1}</span>
+                <div style="font-size:12px;">
+                  ${v.marker}
+                  <span style="display: inline-block;width: 100px;padding-left: 10px;">${v.seriesName}：</span>
+                  <span style="display: inline-block;width: 50px;text-align:right">${v.data}</span>
                 </div>
-                <div style="font-size:12px;">\n${l2.join("\n")}\n</div>
               `);
             }
-            return l1.join("<br/>\n");
+            return l1.join("\n");
           },
         },
         legend: {},
@@ -307,54 +290,54 @@ export default {
         ],
         series: [
           {
-            id: this.$l("#entering-base"),
-            name: this.$l("base"),
-            color: "#91cc75",
+            name: this.$l("#entering-base"),
+            // name: this.$l("base"),
+            // color: "#91cc75",
             type: "bar",
-            stack: "base",
+            // stack: "base",
             data: this.list.map((v) => v.entering),
           },
           {
-            id: this.$l("#leaving-base"),
-            name: this.$l("base"),
-            color: "#91cc75",
+            name: this.$l("#leaving-base"),
+            // name: this.$l("base"),
+            // color: "#91cc75",
             type: "bar",
-            stack: "base",
+            // stack: "base",
             data: this.list.map((v) => v.leaving * -1),
           },
           {
-            id: this.$l("#passengers-base"),
-            name: this.$l("base"),
-            color: "#91cc75",
+            name: this.$l("#passengers-base"),
+            // name: this.$l("base"),
+            // color: "#91cc75",
             type: "bar",
-            stack: "base",
+            // stack: "base",
             xAxisIndex: 1,
             yAxisIndex: 1,
             data: this.list.map((v) => v.passengers),
           },
           // 真实数据
           {
-            id: this.$l("#entering-actual"),
-            name: this.$l("actual"),
-            color: "#ee6666",
+            name: this.$l("#entering-actual"),
+            // name: this.$l("actual"),
+            // color: "#ee6666",
             type: "bar",
-            stack: "actual",
+            // stack: "actual",
             data: this.list.map((v) => v.realEntering),
           },
           {
-            id: this.$l("#leaving-actual"),
-            name: this.$l("actual"),
-            color: "#ee6666",
+            name: this.$l("#leaving-actual"),
+            // name: this.$l("actual"),
+            // color: "#ee6666",
             type: "bar",
-            stack: "actual",
+            // stack: "actual",
             data: this.list.map((v) => v.realLeaving * -1),
           },
           {
-            id: this.$l("#passengers-actual"),
-            name: this.$l("actual"),
-            color: "#ee6666",
+            name: this.$l("#passengers-actual"),
+            // name: this.$l("actual"),
+            // color: "#ee6666",
             type: "bar",
-            stack: "actual",
+            // stack: "actual",
             xAxisIndex: 1,
             yAxisIndex: 1,
             data: this.list.map((v) => v.realPassengers),

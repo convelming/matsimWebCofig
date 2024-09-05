@@ -3,7 +3,7 @@
     <div class="TransitRoutesInfo__bodyer">
       <div class="row">{{ $l("Analyzed Route：") }}{{ this.form.routeId }}</div>
       <div class="row">
-        <span>{{ $l("Analysis：") }}</span>
+        <span style="white-space: nowrap;">{{ $l("Analysis：") }}</span>
         <el-select v-model="chartType" size="small" style="width: 100%; margin-left: 10px">
           <el-option v-for="item in route_info_analysis" :key="item.value" :label="$l(item.label)" :value="item.value"> </el-option>
         </el-select>
