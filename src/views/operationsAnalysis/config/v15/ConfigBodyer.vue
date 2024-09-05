@@ -83,8 +83,16 @@
     "en-US": "run failed..."
   },
   "runSuccess": {
-    "zh-CN": "运行成功",
-    "en-US": "successfully runnd..."
+    "zh-CN": "模型已经开始运行，视模型大小可能需要加钟至几天的时间，请耐心等待",
+    "en-US": "Changed routes is updated and running. Based on the scale of the base scenario, it will last a few minutes or even days. Please confirm and check the status in the modify menu"
+  },
+  "返回页面": {
+    "zh-CN": "返回页面",
+    "en-US": "back to the page"
+  },
+  "确定并关闭页面": {
+    "zh-CN": "确定并关闭页面",
+    "en-US": "confirm and close the page"
   },
 }
 </language>
@@ -301,8 +309,16 @@ export default {
       uploadConfig(file, this.dataSource)
         .then((res) => runMatsim({ key: this.dataSource }))
         .then((res) => {
-          this.$message.success(this.$l("runSuccess"));
           this.runLoading = false;
+          this.$confirm(this.$l("runSuccess"), this.$l("提示"), {
+            confirmButtonText: this.$l("确定并关闭页面"),
+            cancelButtonText: this.$l("返回页面"),
+            type: "success",
+          })
+            .then(() => {
+              window.close();
+            })
+            .catch(() => {});
         })
         .catch((error) => {
           console.log("运行失败", error);
