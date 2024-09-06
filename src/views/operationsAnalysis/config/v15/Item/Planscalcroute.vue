@@ -276,6 +276,7 @@ export default {
           },
           nodes: nodes
             .filter((v2) => v[v2] !== "" && v[v2] !== null && v[v2] !== "null")
+            .filter((v2) => !(v2 == "teleportedModeSpeed" && v[v2] == 0))
             .map((v2) => ({
               name: "param",
               attrs: { name: v2, value: v[v2] },

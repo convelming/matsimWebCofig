@@ -452,7 +452,7 @@ export default {
 
         // ******************** 面
         case "polygonOpacity":
-          this._GeoJSONLayer.setLineOpacity(value);
+          this._GeoJSONLayer.setPolygonOpacity(value);
           break;
         case "polygonColor":
           this._GeoJSONLayer.setPolygonColor(value);
