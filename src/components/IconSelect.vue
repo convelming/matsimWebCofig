@@ -13,8 +13,8 @@ import { ICON_LIST } from "@/utils/utils";
 export default {
   props: {
     value: {
-      type: Number,
-      default: 0,
+      type: [String, Number],
+      default: "",
     },
     iconList: {
       type: Array,

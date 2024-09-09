@@ -2,15 +2,19 @@ import proj4 from "@/utils/proj4.util";
 
 class GeoJSONParser {
 
-  static DEFAULT_CRS = { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3857" } };
+  // static DEFAULT_CRS = { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3857" } };
 
   // urn:ogc:def:crs:EPSG::3857
   // urn:ogc:def:crs:OGC:1.3:CRS84
   static decodeCrs(crs) {
     try {
-      return crs.properties.name.match(/EPSG::\d+/)[0].replace("::", ":");
+      if (crs.properties.name.indexOf("EPSG") > -1) {
+        return crs.properties.name.match(/EPSG::\d+/)[0].replace("::", ":");
+      } else {
+        return crs.properties.name;
+      }
     } catch (error) {
-      return crs.properties.name || "EPSG:3857";
+      return "EPSG:3857";
     }
   }
 
