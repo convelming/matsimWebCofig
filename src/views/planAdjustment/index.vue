@@ -14,7 +14,7 @@
     <Dialog :visible="openSetting" width="350px" hideClose hideMinimize>
       <div class="setting_box">
         <el-form ref="tlForm" size="small" label-width="auto">
-          <el-form-item :label="$l('路线名称')" >
+          <el-form-item :label="$l('路线名称')">
             <RouteSelect ref="routeSelect" v-model="tlForm.id" :label.sync="tlForm.name" @change="handleGetRouteDetail" />
           </el-form-item>
         </el-form>
@@ -817,7 +817,7 @@ export default {
             },
           })
             .then((value) => {
-              this.saveLoading = false;
+              let params = this.tlForm.obj.toJSON();
               saveNewScheme({
                 transitLine: params,
                 key: value.value,
@@ -839,6 +839,7 @@ export default {
                 });
             })
             .catch((error) => {
+              console.log(error);
               if (error == "cancel") {
                 let params = this.tlForm.obj.toJSON();
                 saveByLine(params)

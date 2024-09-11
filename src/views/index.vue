@@ -371,6 +371,10 @@
     "zh-CN":"加载指定项目的MATSim模型可视化，分析整个城市区域居民出行活动及交通系统运行情况",
     "en-US":"Load a MATSim scenario to visualize, analyse travel behaviours and activities of the entire region",
   },
+  "是否删除方案：": {
+    "zh-CN":"是否删除方案：",
+    "en-US":"Do you want to delete the scheme:",
+  },
   "确认":{
     "zh-CN":"确认",
     "en-US":"confirm",
@@ -586,8 +590,8 @@ export default {
             detail: form.detail,
           })
           .then((res) => {
-            this.addPlanAdjustmentDialog.open = false;
             this.$message.success(this.$l("方案创建成功"));
+            this.addPlanAdjustmentDialog.show = false;
           })
           .finally(() => {
             this.addPlanAdjustmentDialog.loading = false;
@@ -641,7 +645,20 @@ export default {
       window.open(href, "_blank");
     },
     handleDelect(row) {
-      this.$store.dispatch("deleteDataSource", row);
+      console.log(row);
+
+      this.$confirm(this.$l("是否删除方案：") + row.name + "?", this.$l("警告"), {
+        confirmButtonText: this.$l("确定"),
+        cancelButtonText: this.$l("取消"),
+        type: "warning",
+      })
+        .then(() => {
+          return this.$store.dispatch("deleteDataSource", row);
+        })
+        .then(() => {
+          this.$message.success("删除成功");
+        })
+        .catch(() => {});
     },
     handleToSelectDataBase(key) {
       this.handleShowDataBase(key);
