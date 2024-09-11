@@ -10,9 +10,12 @@
       <el-table class="small" :data="list" border stripe height="calc(100vh - 400px)" v-loading="loading">
         <el-table-column :label="$l('Stop Name')" prop="stopName" show-overflow-tooltip />
         <el-table-column :label="$l('Stop Id')" prop="stopId" show-overflow-tooltip />
-        <el-table-column :label="$l('#entering')" prop="entering" />
-        <el-table-column :label="$l('#leaving')" prop="leaving" />
-        <el-table-column :label="$l('#passengers')" prop="passengers" />
+        <el-table-column :label="$l('#entering-base')" prop="entering" />
+        <el-table-column :label="$l('#leaving-base')" prop="leaving" />
+        <el-table-column :label="$l('#passengers-base')" prop="passengers" />
+        <el-table-column :label="$l('#entering-actual')" prop="realEntering" />
+        <el-table-column :label="$l('#leaving-actual')" prop="realLeaving" />
+        <el-table-column :label="$l('#passengers-actual')" prop="realPassengers" />
       </el-table>
     </el-tab-pane>
   </el-tabs>
@@ -347,9 +350,9 @@ export default {
     },
     handleExport() {
       const rowList = [];
-      rowList.push(`"Stop Name","Stop Id","#entering","#leaving","#passengers"`);
+      rowList.push(`"Stop Name","Stop Id","#entering-base","#leaving-base","#passengers-base","#entering-actual","#leaving-actual","#passengers-actual"`);
       for (const v1 of this.list) {
-        const colList = [v1.stopName, v1.stopId, v1.entering, v1.leaving, v1.passengers];
+        const colList = [v1.stopName, v1.stopId, v1.entering, v1.leaving, v1.passengers, v1.realEntering, v1.realLeaving, v1.realPassengers];
         rowList.push(`"${colList.join(`","`)}"`);
       }
       const tableText = rowList.join("\n");
