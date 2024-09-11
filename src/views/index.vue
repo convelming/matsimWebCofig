@@ -115,7 +115,7 @@
         <el-table-column prop="loadStatus" :label="$l('方案状态')" width="150">
           <template slot-scope="{ row }">{{ $l(row.loadStatus) }} / {{ $l(row.runStatus) }}</template>
         </el-table-column>
-        <el-table-column :label="$l('操作')" width="250">
+        <el-table-column :label="$l('操作')" width="300">
           <template slot-scope="{ row }">
             <el-button v-if="!row.noRun && row.loadStatus == '已加载'" type="primary" size="mini" @click="handlePlanAdjustmentToDetail(row)">{{ $l("修改") }}</el-button>
             <el-button v-if="!row.noLoad" :loading="row.loadStatus == '加载中'" type="warning" size="mini" @click="handlePlanAdjustmentLoad(row)">{{ $l("加载") }}</el-button>

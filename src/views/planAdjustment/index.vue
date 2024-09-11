@@ -817,7 +817,6 @@ export default {
             },
           })
             .then((value) => {
-              let params = this.tlForm.obj.toJSON();
               this.saveLoading = false;
               saveNewScheme({
                 transitLine: params,

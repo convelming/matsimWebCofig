@@ -182,7 +182,6 @@ export class TransitRoute {
     this.center = Coord.center(sStop.coord, eStop.coord);
 
     this._routeLink = JSON.parse(JSON.stringify(opt.route.routeLink || {}));
-
     const _routeMap = {};
     const _route = opt.route.route;
     for (let i = 0, prevStop = null; i < this.stops.length; i++) {
@@ -190,7 +189,8 @@ export class TransitRoute {
       if (i != 0) {
         const si = _route.findIndex((v) => v == prevStop.linkId);
         const ei = _route.findIndex((v) => v == stop.linkId);
-        const route = _route.slice(si, ei + 1);
+        const route = _route.splice(si, ei - si);
+        route.push(stop.linkId);
         const key = `${prevStop.uuid}-${stop.uuid}`;
         const label = `${prevStop.name}-${stop.name}`;
         _routeMap[key] = new StopsRouteItem({
