@@ -1,12 +1,12 @@
 <template>
   <el-dialog class="HelpDialog" :visible="s_visible" width="500px" append-to-body center @close="handleClose" :close-on-click-modal="false">
     <div class="body">
-      <!-- <component v-show="carouselIndex == item" v-for="item in pageNum" :key="item" :is="`page${item}`"></component> -->
+      <component v-show="carouselIndex == item" v-for="item in pageList" :key="item" :is="item"></component>
     </div>
     <div slot="footer" class="dialog-footer">
-      <el-button size="mini" @click="handleClose">关闭/Close</el-button>
-      <el-button v-if="carouselIndex != 1" size="mini" type="info" @click="carouselIndex--">上一步/Last</el-button>
-      <el-button v-if="carouselIndex < pageNum" size="mini" type="primary" @click="carouselIndex++">下一步/Next</el-button>
+      <el-button size="mini" @click="handleClose">关闭</el-button>
+      <el-button v-if="carouselIndex != 1" size="mini" type="info" @click="carouselIndex--">上一步</el-button>
+      <el-button v-if="carouselIndex < pageList.length - 1" size="mini" type="primary" @click="carouselIndex++">下一步</el-button>
     </div>
   </el-dialog>
 </template>
@@ -37,8 +37,8 @@ export default {
   data() {
     return {
       s_visible: false,
-      carouselIndex: 1,
-      pageNum: 6,
+      carouselIndex: 0,
+      pageList: ["page1", "page2", "page3", "page4", "page5", "page6"],
     };
   },
   watch: {
@@ -46,7 +46,7 @@ export default {
       handler(val) {
         if (val !== this.s_visible) {
           this.s_visible = val;
-          this.carouselIndex = 1;
+          this.carouselIndex = 0;
         }
       },
       immediate: true,
@@ -63,9 +63,6 @@ export default {
     },
     handlePrev() {
       this.$refs.carousel.prev();
-    },
-    changeLanguage(lan) {
-      this.$setLanguage(lan);
     },
   },
 };

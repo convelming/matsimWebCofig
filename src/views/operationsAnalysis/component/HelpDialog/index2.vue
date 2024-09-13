@@ -1,64 +1,55 @@
 <template>
-  <div class="HelpDialog">
-    <div class="el-icon-question" @click.stop="open = true"></div>
-    <el-dialog :visible.sync="open" width="500px" append-to-body center @close="handleClose" :close-on-click-modal="false">
-      <div class="body">
-        <component v-show="carouselIndex == item" v-for="item in pageNum" :key="item" :is="`page${item}`"></component>
+  <el-dialog class="HelpDialog" :visible="s_visible" width="500px" append-to-body center @close="handleClose" :close-on-click-modal="false">
+    <div class="body">
+      <div class="page1">
+        <h2>{{ $l("MATSim模型的可视化") }}</h2>
+        <el-image class="video" :src="img" :preview-src-list="[img]"> </el-image>
       </div>
-      <div slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="handleClose">关闭</el-button>
-        <el-button v-if="carouselIndex != 1" size="mini" type="info" @click="carouselIndex--">上一步</el-button>
-        <el-button v-if="carouselIndex < pageNum" size="mini" type="primary" @click="carouselIndex++">下一步</el-button>
-      </div>
-    </el-dialog>
-  </div>
+    </div>
+    <div slot="footer" class="dialog-footer">
+      <el-button size="mini" @click="handleClose">关闭</el-button>
+    </div>
+  </el-dialog>
 </template>
 
-<script>
-import page1 from "./page1.vue";
-import page2 from "./page2.vue";
-import page3 from "./page3.vue";
-import page4 from "./page4.vue";
-import page5 from "./page5.vue";
-import page6 from "./page6.vue";
+<language>
+{
+  "MATSim模型的可视化":{
+    "zh-CN": "MATSim模型的可视化",
+    "en-US": "MATSim visualizatin"
+  },
+}
+</language>
 
+<script>
 export default {
-  components: {
-    page1,
-    page2,
-    page3,
-    page4,
-    page5,
-    page6,
+  props: {
+    visible: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
-      // open: !localStorage.getItem("HelpDialogClose"),
-      open: false,
-      carouselIndex: 1,
-      pageNum: 6,
+      s_visible: false,
+      img: require("@/assets/helpImages/opAndca/MATSimGZ.mp4"),
     };
   },
   watch: {
-    open(val) {
-      if (val) {
-        this.carouselIndex = 1;
-      }
+    visible: {
+      handler(val) {
+        if (val !== this.s_visible) {
+          this.s_visible = val;
+        }
+      },
+      immediate: true,
+      deep: true,
     },
   },
   methods: {
     handleClose() {
-      this.open = false;
-      // localStorage.setItem("HelpDialogClose", true);
-    },
-    handleNext() {
-      this.$refs.carousel.next();
-    },
-    handlePrev() {
-      this.$refs.carousel.prev();
-    },
-    changeLanguage(lan) {
-      this.$setLanguage(lan);
+      this.s_visible = false;
+      this.$emit("update:visible", this.s_visible);
     },
   },
 };
@@ -88,24 +79,9 @@ export default {
     margin: 0;
     text-align: center;
   }
-
-  // .el-carousel__item:nth-child(2n) {
-  //   background-color: #99a9bf;
-  // }
-
-  // .el-carousel__item:nth-child(2n + 1) {
-  //   background-color: #d3dce6;
-  // }
 }
 .dialog-footer {
   display: flex;
   justify-content: flex-end;
-}
-.HelpDialog {
-  .el-icon-question {
-    color: #fff;
-    font-size: 20px;
-    cursor: pointer;
-  }
 }
 </style>

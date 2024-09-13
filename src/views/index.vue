@@ -24,7 +24,7 @@
           <div class="item_detail">
             {{ $l("加载指定项目的matsim模型可视化，分析整个城市区域居民出行活动及交通系统运行情况") }}
           </div>
-          <!-- <div class="el-icon-question item_help" @click.stop="showOAHelpDialog = true"></div> -->
+          <div class="el-icon-question item_help" @click.stop="showOAHelpDialog = true"></div>
         </div>
         <div @click="handleClickItem('planAdjustment')" class="item" style="background-color: #f0704b">
           <div class="item_title">
@@ -44,7 +44,7 @@
           <div class="item_detail">
             {{ $l("根据调整优化的线路方案，呈现城市居民在线路调整后的反应，并将对比结果可视化呈现。") }}
           </div>
-          <!-- <div class="el-icon-question item_help" @click.stop="showCAHelpDialog = true"></div> -->
+          <div class="el-icon-question item_help" @click.stop="showCAHelpDialog = true"></div>
         </div>
         <div @click="handleClickItem('systemEvaluation')" class="item" style="background-color: #0070c0">
           <div class="item_title">
@@ -383,9 +383,9 @@
 </language>
 
 <script>
-import OAHelpDialog from "./operationsAnalysis/component/HelpDialog/index.vue";
+import OAHelpDialog from "./operationsAnalysis/component/HelpDialog/index2.vue";
 import PAHelpDialog from "./planAdjustment/component/HelpDialog/index.vue";
-import CAHelpDialog from "./comparativeAnalysis/component/HelpDialog/index.vue";
+import CAHelpDialog from "./comparativeAnalysis/component/HelpDialog/index2.vue";
 import SEHelpDialog from "./systemEvaluation/component/HelpDialog/index.vue";
 
 export default {

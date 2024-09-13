@@ -10,7 +10,7 @@
 export default {
   data() {
     return {
-      img: require("@/assets/helpImages/operationsAnalysis/image1.png"),
+      img: require("@/assets/helpImages/systemEvaluation/image1.png"),
     };
   },
 };

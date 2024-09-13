@@ -1,17 +1,14 @@
 <template>
-  <div class="HelpDialog">
-    <div class="el-icon-question" @click.stop="open = true"></div>
-    <el-dialog :visible.sync="open" width="500px" append-to-body center @close="handleClose" :close-on-click-modal="false">
-      <div class="body">
-        <component v-show="carouselIndex == item" v-for="item in pageNum" :key="item" :is="`page${item}`"></component>
-      </div>
-      <div slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="handleClose">关闭/Close</el-button>
-        <el-button v-if="carouselIndex != 1" size="mini" type="info" @click="carouselIndex--">上一步/Last</el-button>
-        <el-button v-if="carouselIndex < pageNum" size="mini" type="primary" @click="carouselIndex++">下一步/Next</el-button>
-      </div>
-    </el-dialog>
-  </div>
+  <el-dialog class="HelpDialog" :visible="s_visible" width="500px" append-to-body center @close="handleClose" :close-on-click-modal="false">
+    <div class="body">
+      <component v-show="carouselIndex == item" v-for="item in pageList" :key="item" :is="item"></component>
+    </div>
+    <div slot="footer" class="dialog-footer">
+      <el-button size="mini" @click="handleClose">关闭</el-button>
+      <el-button v-if="carouselIndex != 1" size="mini" type="info" @click="carouselIndex--">上一步</el-button>
+      <el-button v-if="carouselIndex < pageList.length - 1" size="mini" type="primary" @click="carouselIndex++">下一步</el-button>
+    </div>
+  </el-dialog>
 </template>
 
 <script>
@@ -23,6 +20,12 @@ import page5 from "./page5.vue";
 import page6 from "./page6.vue";
 
 export default {
+  props: {
+    visible: {
+      type: Boolean,
+      default: false,
+    },
+  },
   components: {
     page1,
     page2,
@@ -33,32 +36,33 @@ export default {
   },
   data() {
     return {
-      // open: !localStorage.getItem("HelpDialogClose"),
-      open: false,
-      carouselIndex: 1,
-      pageNum: 6,
+      s_visible: false,
+      carouselIndex: 0,
+      pageList: ["page1", "page2", "page3", "page4", "page5", "page6"],
     };
   },
   watch: {
-    open(val) {
-      if (val) {
-        this.carouselIndex = 1;
-      }
+    visible: {
+      handler(val) {
+        if (val !== this.s_visible) {
+          this.s_visible = val;
+          this.carouselIndex = 0;
+        }
+      },
+      immediate: true,
+      deep: true,
     },
   },
   methods: {
     handleClose() {
-      this.open = false;
-      // localStorage.setItem("HelpDialogClose", true);
+      this.s_visible = false;
+      this.$emit("update:visible", this.s_visible);
     },
     handleNext() {
       this.$refs.carousel.next();
     },
     handlePrev() {
       this.$refs.carousel.prev();
-    },
-    changeLanguage(lan) {
-      this.$setLanguage(lan);
     },
   },
 };
@@ -88,24 +92,9 @@ export default {
     margin: 0;
     text-align: center;
   }
-
-  // .el-carousel__item:nth-child(2n) {
-  //   background-color: #99a9bf;
-  // }
-
-  // .el-carousel__item:nth-child(2n + 1) {
-  //   background-color: #d3dce6;
-  // }
 }
 .dialog-footer {
   display: flex;
   justify-content: flex-end;
-}
-.HelpDialog {
-  .el-icon-question {
-    color: #fff;
-    font-size: 20px;
-    cursor: pointer;
-  }
 }
 </style>
