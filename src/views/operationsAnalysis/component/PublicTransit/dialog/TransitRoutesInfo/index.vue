@@ -43,35 +43,35 @@
     "en-US": "Analysis："
   },
   "Single":{
-    "zh-CN": "单个",
+    "zh-CN": "单辆",
     "en-US": "Single"
   },
   "Multiple":{
-    "zh-CN": "多个",
+    "zh-CN": "多辆",
     "en-US": "Multiple"
   },
   "Passengers Entering / Leaving":{
-    "zh-CN": "乘客进出",
+    "zh-CN": "上下车客流",
     "en-US": "Passengers Entering / Leaving"
   },
   "Vehicle Load":{
-    "zh-CN": "车辆加载",
+    "zh-CN": "载客量",
     "en-US": "Vehicle Load"
   },
   "Aggregated Vehicle Load":{
-    "zh-CN": "车辆总加载",
+    "zh-CN": "总载客量",
     "en-US": "Aggregated Vehicle Load"
   },
   "Route Grid":{
-    "zh-CN": "路线图",
+    "zh-CN": "上下车站点热力图",
     "en-US": "Route Grid"
   },
   "Route Flows":{
-    "zh-CN": "路线流量",
+    "zh-CN": "站点OD客流量",
     "en-US": "Route Flows"
   },
   "Route-Time Diagram":{
-    "zh-CN": "路线-时间图",
+    "zh-CN": "发车时刻表",
     "en-US": "Route-Time Diagram"
   },
 }

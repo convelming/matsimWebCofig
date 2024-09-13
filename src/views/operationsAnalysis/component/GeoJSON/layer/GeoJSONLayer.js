@@ -121,9 +121,10 @@ export class GeoJSONLayer extends Layer {
   }
   setLineColor(lineColor) {
     this.lineColor = new THREE.Color(lineColor);
-
+    console.log(this.lineColor)
     this.lineMaterial.uniforms.diffuse.value = this.lineColor;
     this.lineMaterial.needsUpdate = true;
+    console.log(this.lineMaterial)
   }
   setLineStyle(lineStyle) {
     this.lineStyle = lineStyle;

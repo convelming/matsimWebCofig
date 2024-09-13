@@ -34,11 +34,11 @@
     "en-US": "Show："
   },
   "entering":{
-    "zh-CN": "进入",
+    "zh-CN": "上车",
     "en-US": "entering"
   },
   "leaving":{
-    "zh-CN": "离开",
+    "zh-CN": "下车",
     "en-US": "leaving"
   },
   "Chart":{

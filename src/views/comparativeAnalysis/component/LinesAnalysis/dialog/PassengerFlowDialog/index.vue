@@ -57,7 +57,7 @@
     "en-US": "Time: "
   },
   "Passengers Entering / Leaving":{
-    "zh-CN": "乘客进出",
+    "zh-CN": "上下车客流",
     "en-US": "Passengers Entering / Leaving"
   },
   "Route Flows":{
