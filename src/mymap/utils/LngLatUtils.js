@@ -16,7 +16,7 @@ export const EARTH_RADIUS = 20037508.3427892;
  * @returns 
  */
 export function EPSG4526ToMercator(lng, lat) {
-  return proj4("EPSG:4526", "EPSG:3857", [lng, lat]);
+  return proj4("EPSG:4526", "EPSG:3857", [lng, lat]).map(v => Number(Number(v).toFixed(2)));
 }
 
 
@@ -27,7 +27,7 @@ export function EPSG4526ToMercator(lng, lat) {
  * @returns 
  */
 export function EPSG4526ToWGS84(lng, lat) {
-  return proj4("EPSG:4526", "EPSG:4326", [lng, lat]);
+  return proj4("EPSG:4526", "EPSG:4326", [lng, lat]).map(v => Number(Number(v).toFixed(6)));
 }
 
 /**
@@ -37,7 +37,7 @@ export function EPSG4526ToWGS84(lng, lat) {
  * @returns 
  */
 export function WGS84ToEPSG4526(lng, lat) {
-  return proj4("EPSG:4326", "EPSG:4526", [lng, lat]);
+  return proj4("EPSG:4326", "EPSG:4526", [lng, lat]).map(v => Number(Number(v).toFixed(2)));
 }
 
 /**
@@ -47,7 +47,7 @@ export function WGS84ToEPSG4526(lng, lat) {
  * @returns 
  */
 export function MercatorToWGS84(lng, lat) {
-  return proj4("EPSG:3857", "EPSG:4326", [lng, lat]);
+  return proj4("EPSG:3857", "EPSG:4326", [lng, lat]).map(v => Number(Number(v).toFixed(6)));
 }
 
 /**
@@ -57,7 +57,7 @@ export function MercatorToWGS84(lng, lat) {
  * @returns 
  */
 export function WGS84ToMercator(lng, lat) {
-  return proj4("EPSG:4326", "EPSG:3857", [lng, lat]);
+  return proj4("EPSG:4326", "EPSG:3857", [lng, lat]).map(v => Number(Number(v).toFixed(2)));
 }
 
 /**

@@ -6,8 +6,8 @@ node_modules
 /src/assets/data
 /public/data
 
-/src/assets/helpImages/opAndca/MATSimGZ.gif
-/src/assets/helpImages/opAndca/matsimVisPTopt.gif
+# /src/assets/helpImages/opAndca/MATSimGZ.gif
+# /src/assets/helpImages/opAndca/matsimVisPTopt.gif
 
 # local env files
 .env.local

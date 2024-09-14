@@ -5,7 +5,7 @@
     </div>
     <div slot="footer" class="dialog-footer">
       <el-button size="mini" @click="handleClose">关闭</el-button>
-      <el-button v-if="carouselIndex != 1" size="mini" type="info" @click="carouselIndex--">上一步</el-button>
+      <el-button v-if="carouselIndex != 0" size="mini" type="info" @click="carouselIndex--">上一步</el-button>
       <el-button v-if="carouselIndex < pageList.length - 1" size="mini" type="primary" @click="carouselIndex++">下一步</el-button>
     </div>
   </el-dialog>

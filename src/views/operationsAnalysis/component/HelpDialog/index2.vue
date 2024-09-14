@@ -32,7 +32,7 @@ export default {
   data() {
     return {
       s_visible: false,
-      img: require("@/assets/helpImages/opAndca/MATSimGZ.mp4"),
+      img: require("@/assets/helpImages/opAndca/MATSimGZ.gif"),
     };
   },
   watch: {

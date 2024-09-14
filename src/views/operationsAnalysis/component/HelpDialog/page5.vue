@@ -1,22 +1,31 @@
 <template>
-  <div class="page5">
-    <h2>5. 基础信息查询</h2>
+  <div class="page1">
+    <h2>{{ $l("路网路段层") }}</h2>
     <el-image class="video" :src="img" :preview-src-list="[img]"> </el-image>
   </div>
 </template>
 
+<language>
+{
+  "路网路段层":{
+    "zh-CN": "路网路段层",
+    "en-US": "network and link volumes"
+  },
+}
+</language>
+  
 <script>
 export default {
   data() {
     return {
-      img: require("@/assets/helpImages/systemEvaluation/image5.gif"),
+      img: require("@/assets/helpImages/opAndca/network.gif"),
     };
   },
 };
 </script>
 
 <style lang="scss" scoped>
-.page5 {
+.page1 {
   .video {
     width: 100%;
   }

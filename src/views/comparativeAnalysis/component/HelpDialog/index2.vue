@@ -1,24 +1,27 @@
 <template>
   <el-dialog class="HelpDialog" :visible="s_visible" width="500px" append-to-body center @close="handleClose" :close-on-click-modal="false">
     <div class="body">
-      <component v-show="carouselIndex == item" v-for="item in pageList" :key="item" :is="item"></component>
+      <div class="page1">
+        <h2>{{ $l("公交方案的前后对比") }}</h2>
+        <el-image class="video" :src="img" :preview-src-list="[img]"> </el-image>
+      </div>
     </div>
     <div slot="footer" class="dialog-footer">
       <el-button size="mini" @click="handleClose">关闭</el-button>
-      <el-button v-if="carouselIndex != 1" size="mini" type="info" @click="carouselIndex--">上一步</el-button>
-      <el-button v-if="carouselIndex < pageList.length - 1" size="mini" type="primary" @click="carouselIndex++">下一步</el-button>
     </div>
   </el-dialog>
 </template>
 
-<script>
-import page1 from "./page1.vue";
-import page2 from "./page2.vue";
-import page3 from "./page3.vue";
-import page4 from "./page4.vue";
-import page5 from "./page5.vue";
-import page6 from "./page6.vue";
+<language>
+{
+  "公交方案的前后对比":{
+    "zh-CN": "公交方案的前后对比",
+    "en-US": "MATSim PT optimization comparison"
+  },
+}
+</language>
 
+<script>
 export default {
   props: {
     visible: {
@@ -26,19 +29,10 @@ export default {
       default: false,
     },
   },
-  components: {
-    page1,
-    page2,
-    page3,
-    page4,
-    page5,
-    page6,
-  },
   data() {
     return {
       s_visible: false,
-      carouselIndex: 0,
-      pageList: ["page1", "page2", "page3", "page4", "page5", "page6"],
+      img: require("@/assets/helpImages/opAndca/matsimVisPTopt.gif"),
     };
   },
   watch: {
@@ -46,7 +40,6 @@ export default {
       handler(val) {
         if (val !== this.s_visible) {
           this.s_visible = val;
-          this.carouselIndex = 0;
         }
       },
       immediate: true,
@@ -57,12 +50,6 @@ export default {
     handleClose() {
       this.s_visible = false;
       this.$emit("update:visible", this.s_visible);
-    },
-    handleNext() {
-      this.$refs.carousel.next();
-    },
-    handlePrev() {
-      this.$refs.carousel.prev();
     },
   },
 };

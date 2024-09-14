@@ -185,13 +185,13 @@ export default {
             name: this.$l("Base"),
             type: "bar",
             barWidth: "60%",
-            data: this.tableList.map((v) => v.real),
+            data: this.tableList.map((v) => v.sim),
           },
           {
             name: this.$l("Actual"),
             type: "bar",
             barWidth: "60%",
-            data: this.tableList.map((v) => v.sim),
+            data: this.tableList.map((v) => v.real),
           },
         ],
       };

@@ -1,22 +1,31 @@
 <template>
-  <div class="page4">
-    <h2>4. PTAL系列分析</h2>
+  <div class="page1">
+    <h2>{{ $l("公交线路运营信息") }}</h2>
     <el-image class="video" :src="img" :preview-src-list="[img]"> </el-image>
   </div>
 </template>
 
+<language>
+{
+  "公交线路运营信息":{
+    "zh-CN": "公交线路运营信息",
+    "en-US": "public transit lines"
+  },
+}
+</language>
+  
 <script>
 export default {
   data() {
     return {
-      img: require("@/assets/helpImages/systemEvaluation/image4.gif"),
+      img: require("@/assets/helpImages/opAndca/ptLines.gif"),
     };
   },
 };
 </script>
 
 <style lang="scss" scoped>
-.page4 {
+.page1 {
   .video {
     width: 100%;
   }

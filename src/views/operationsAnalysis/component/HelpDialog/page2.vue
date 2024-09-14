@@ -1,22 +1,31 @@
 <template>
-  <div class="page2">
-    <h2>2. 分析公交客流廊道</h2>
+  <div class="page1">
+    <h2>{{ $l("建筑或日常活动层") }}</h2>
     <el-image class="video" :src="img" :preview-src-list="[img]"> </el-image>
   </div>
 </template>
 
+<language>
+{
+  "建筑或日常活动层":{
+    "zh-CN": "建筑或日常活动层",
+    "en-US": "building or facilities"
+  },
+}
+</language>
+  
 <script>
 export default {
   data() {
     return {
-      img: require("@/assets/helpImages/systemEvaluation/image2.gif"),
+      img: require("@/assets/helpImages/opAndca/facilities.gif"),
     };
   },
 };
 </script>
 
 <style lang="scss" scoped>
-.page2 {
+.page1 {
   .video {
     width: 100%;
   }
