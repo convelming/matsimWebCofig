@@ -63,6 +63,12 @@ MAP_LAYER_STYLE = [
       return `https://api.mapbox.com/styles/v1/dasin/cltigm5bp010s01ptciblgffl/tiles/512/${zoom}/${row}/${col}@2x?access_token=pk.eyJ1IjoiY29udmVsIiwiYSI6ImNsaHB4cXA2MDBicGIzam1zb25zdGtiOHAifQ.UuaTujcOQlxywCJWWZ0SSg`
     }
   },
+  {
+    style_name: "卫星图",
+    get_url: function (zoom, row, col) {
+      return `http://192.168.60.231:23334/baidu/satellite/${zoom}/${row}/${col}.jpg`
+    }
+  },
 ]
 
 // geojson地图坐标系转换配置
