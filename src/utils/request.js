@@ -26,12 +26,12 @@ service.interceptors.request.use(
 
     // 设置国际化
     if (!config.headers["Content-language"]) {
-      headers["Content-Language"] = language.page_language;
+      headers["Content-Language"] = encodeURIComponent(language.page_language);
     }
 
     // 是否需要防止数据重复提交
     if (!config.isNoBatasource) {
-      headers["Datasource"] = store.getters.dataSource;
+      headers["Datasource"] = encodeURIComponent(store.getters.dataSource);
     }
 
     headers["Uuid"] = guid();
