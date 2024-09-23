@@ -157,6 +157,11 @@ export default {
             type: "value",
           },
         ],
+        toolbox: {
+          feature: {
+            saveAsImage: {},
+          },
+        },
         series: [
           {
             name: this.$l("基础方案"),

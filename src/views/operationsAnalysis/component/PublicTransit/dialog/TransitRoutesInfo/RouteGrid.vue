@@ -239,6 +239,11 @@ export default {
           left: "center",
           bottom: 0,
         },
+        toolbox: {
+          feature: {
+            saveAsImage: {},
+          },
+        },
         series: [
           {
             type: "heatmap",

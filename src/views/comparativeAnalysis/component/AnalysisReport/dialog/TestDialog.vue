@@ -123,6 +123,11 @@ export default {
             type: "value",
           },
         ],
+        toolbox: {
+          feature: {
+            saveAsImage: {},
+          },
+        },
         series: [
           {
             name: "Base",

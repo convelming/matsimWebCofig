@@ -139,6 +139,11 @@ export default {
             type: "value",
           },
         ],
+        toolbox: {
+          feature: {
+            saveAsImage: {},
+          },
+        },
         series: [
           {
             data: data.map((v) => v.value),

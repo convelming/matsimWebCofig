@@ -243,6 +243,11 @@ export default {
         },
 
         tooltip: {},
+        toolbox: {
+          feature: {
+            saveAsImage: {},
+          },
+        },
         series: [
           {
             name: this.$l("Route Attributes"),

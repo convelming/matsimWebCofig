@@ -141,11 +141,6 @@ export default {
           bottom: 50,
           containLabel: true,
         },
-        toolbox: {
-          feature: {
-            saveAsImage: {},
-          },
-        },
         xAxis: {
           type: "category",
           data: this.list.map((v) => v.stopName),
@@ -156,6 +151,11 @@ export default {
         },
         yAxis: {
           type: "value",
+        },
+        toolbox: {
+          feature: {
+            saveAsImage: {},
+          },
         },
         series: [
           {

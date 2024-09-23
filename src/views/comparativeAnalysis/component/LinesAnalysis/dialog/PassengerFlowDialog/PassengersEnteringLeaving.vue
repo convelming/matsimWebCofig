@@ -334,6 +334,11 @@ export default {
             splitNumber: 1,
           },
         ],
+        toolbox: {
+          feature: {
+            saveAsImage: {},
+          },
+        },
         series: [
           {
             id: this.$l("#entering-base"),

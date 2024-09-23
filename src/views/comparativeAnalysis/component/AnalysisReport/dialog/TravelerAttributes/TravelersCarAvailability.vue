@@ -135,6 +135,11 @@ export default {
           left: "center",
           bottom: 0,
         },
+        toolbox: {
+          feature: {
+            saveAsImage: {},
+          },
+        },
         series: [
           {
             name: this.$l("出行者车辆可使用情况"),

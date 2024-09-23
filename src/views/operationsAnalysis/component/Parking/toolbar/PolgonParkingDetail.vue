@@ -262,6 +262,11 @@ export default {
             beta: 10,
           },
         },
+        toolbox: {
+          feature: {
+            saveAsImage: {},
+          },
+        },
         series: [
           {
             type: "bar3D",
@@ -297,6 +302,11 @@ export default {
         yAxis: {
           type: "value",
         },
+        toolbox: {
+          feature: {
+            saveAsImage: {},
+          },
+        },
         series: [
           {
             data: hours.map((v, i) => Number(data[i] || 0)),
@@ -317,6 +327,11 @@ export default {
         },
         yAxis: {
           type: "value",
+        },
+        toolbox: {
+          feature: {
+            saveAsImage: {},
+          },
         },
         series: [
           {

@@ -1,5 +1,14 @@
 <template>
   <Dialog :title="$l('Transit Stop Load')" class="TransitStopLoad" :visible="true" @close="$emit('close')" left="center">
+    <div>
+      <el-select v-model="second" @change="getData">
+        <el-option label="5 minutes" value="300" />
+        <el-option label="15 minutes" value="900" />
+        <el-option label="20 minutes" value="1200" />
+        <el-option label="30 minutes" value="1800" />
+        <el-option label="1 hour" value="3600" />
+      </el-select>
+    </div>
     <div ref="StopLoadChart" class="chart" v-loading="loading"></div>
   </Dialog>
 </template>
@@ -9,6 +18,26 @@
   "Transit Stop Load":{
     "zh-CN": "转运站加载",
     "en-US": "Transit Stop Load"
+  },
+  "5 minutes":{
+    "zh-CN": "5 分钟",
+    "en-US": "5 minutes"
+  },
+  "15 minutes":{
+    "zh-CN": "15 分钟",
+    "en-US": "15 minutes"
+  },
+  "20 minutes'":{
+    "zh-CN": "20 分钟",
+    "en-US": "20 minutes'"
+  },
+  "30 minutes":{
+    "zh-CN": "30 分钟",
+    "en-US": "30 minutes"
+  },
+  "60 minutes":{
+    "zh-CN": "60 分钟",
+    "en-US": "60 minutes"
   },
 }
 </language>
@@ -38,6 +67,7 @@ export default {
     return {
       loading: false,
       data: [],
+      second: "1200",
     };
   },
   mounted() {
@@ -48,6 +78,7 @@ export default {
       if (this.loading) return;
       this.loading = true;
       transitStopLoad({
+        second: this.second,
         stopIds: this.form.list.map((v) => v.id),
       })
         .then((res) => {
@@ -96,17 +127,17 @@ export default {
           bottom: "50",
           containLabel: true,
         },
-        toolbox: {
-          feature: {
-            saveAsImage: {},
-          },
-        },
         xAxis: {
           type: "category",
           data: tlist,
         },
         yAxis: {
           type: "value",
+        },
+        toolbox: {
+          feature: {
+            saveAsImage: {},
+          },
         },
         series: [
           {

@@ -182,6 +182,11 @@ export default {
           // shape: 'circle',
           indicator: indicator,
         },
+        toolbox: {
+          feature: {
+            saveAsImage: {},
+          },
+        },
         series: [
           {
             name: this.$l("出行属性"),

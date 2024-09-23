@@ -132,6 +132,11 @@ export default {
             }
           },
         },
+        toolbox: {
+          feature: {
+            saveAsImage: {},
+          },
+        },
         series: [
           {
             type: "sankey",

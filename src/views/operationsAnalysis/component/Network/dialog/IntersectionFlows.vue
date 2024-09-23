@@ -162,6 +162,11 @@ export default {
             type: "value",
           },
         ],
+        toolbox: {
+          feature: {
+            saveAsImage: {},
+          },
+        },
         series: [
           {
             type: "bar",

@@ -291,6 +291,11 @@ export default {
             splitNumber: 1,
           },
         ],
+        toolbox: {
+          feature: {
+            saveAsImage: {},
+          },
+        },
         series: [
           {
             name: this.$l("#entering-base"),

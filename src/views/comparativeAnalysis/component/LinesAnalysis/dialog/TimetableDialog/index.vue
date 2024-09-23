@@ -296,11 +296,6 @@ export default {
           bottom: 20,
           containLabel: true,
         },
-        toolbox: {
-          feature: {
-            saveAsImage: {},
-          },
-        },
         dataZoom: [
           {
             start: 0,
@@ -340,6 +335,11 @@ export default {
             },
           },
         ],
+        toolbox: {
+          feature: {
+            saveAsImage: {},
+          },
+        },
         series: [...oldSeries, ...newSeries],
       };
       return options;
