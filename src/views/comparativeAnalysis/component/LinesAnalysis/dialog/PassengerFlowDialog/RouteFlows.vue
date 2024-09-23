@@ -61,6 +61,14 @@
     "zh-CN": "在地图上显示",
     "en-US": "Display on map"
   },
+  "上车":{
+    "zh-CN": "上车",
+    "en-US": "上车"
+  },
+  "下车":{
+    "zh-CN": "下车",
+    "en-US": "下车"
+  },
 }
 </language>
 
@@ -96,6 +104,9 @@ export default {
       handler(val) {
         // 语言变化时的处理
         // this.updateChart();
+        if(this.loading){
+          this.src = this.getChart();
+        }
       },
       immediate: true,
       deep: true,
@@ -107,7 +118,7 @@ export default {
       list: [],
       oldLinkObj: {},
       newLinkObj: {},
-      loading: false,
+      loading: true,
       src: "",
       maxPassenger: 0,
     };
@@ -176,7 +187,7 @@ export default {
       const margin = step / 4;
       const labelHeight = step * 2;
       const width = (nodes.length - 1) * step + margin * 2;
-      const titleHeight = width / 30 * 5;
+      const titleHeight = (width / 30) * 5;
       const height = width + titleHeight * 2 + labelHeight;
       const chart1Bottom = width / 2 + titleHeight;
       const chart2Bottom = chart1Bottom + labelHeight;
@@ -218,7 +229,7 @@ export default {
         .attr("text-anchor", "middle")
         .attr("x", width / 30)
         .attr("y", (width / 30) * 0.7)
-        .text("上车");
+        .text(this.$l("上车"));
 
       const lable_box2 = svg.append("g");
       lable_box2
@@ -236,7 +247,7 @@ export default {
         .attr("text-anchor", "middle")
         .attr("x", width / 30)
         .attr("y", (width / 30) * 0.7)
-        .text("下车");
+        .text(this.$l("下车"));
 
       const title_box = svg
         .append("g")

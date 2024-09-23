@@ -85,6 +85,7 @@
       <div class="tabel_toolbar">
         <el-button type="primary" size="mini" icon="el-icon-arrow-left" @click="handleToSelectDataBase('operationsAnalysis')">{{ $l("返回上一级") }}</el-button>
         <el-button type="primary" size="mini" icon="el-icon-refresh-right" @click="handleGetDateSourceList()">{{ $l("刷新列表") }}</el-button>
+        <!-- <el-input style="margin-left: auto" v-model="operationsAnalysisDialog.sreach" :placeholder="$l('搜索')" size="mini" clearable @change="" /> -->
       </div>
       <el-table height="400" :data="dataSourceList" border stripe v-loading="dateSourceListLoading">
         <el-table-column prop="name" :label="$l('方案名称')" width="100" />
@@ -431,10 +432,10 @@ export default {
             validator: (rule, value, callback) => {
               if (!value) {
                 callback(new Error(this.$l("请输入方案名称")));
-              // } else if (!/^[a-zA-Z0-9_]+$/.test(value)) {
-              //   callback(new Error(this.$l("方案名称只能使用英文字母，数字和下划线")));
-              // } else if (value.slice(-4).toLowerCase() == "base") {
-              //   callback(new Error(this.$l("方案名称不能以base结尾")));
+                // } else if (!/^[a-zA-Z0-9_]+$/.test(value)) {
+                //   callback(new Error(this.$l("方案名称只能使用英文字母，数字和下划线")));
+                // } else if (value.slice(-4).toLowerCase() == "base") {
+                //   callback(new Error(this.$l("方案名称不能以base结尾")));
               } else {
                 callback();
               }

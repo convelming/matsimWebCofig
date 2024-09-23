@@ -41,11 +41,11 @@
   },
   "站点上下客信息":{
     "zh-CN": "站点上下客信息",
-    "en-US": "站点上下客信息"
+    "en-US": "Stop Load..."
   },
   "车上乘客量":{
     "zh-CN": "车上乘客量",
-    "en-US": "车上乘客量"
+    "en-US": "Transfers At Stop..."
   },
   "#entering-base":{
     "zh-CN": "上车人数-基础",

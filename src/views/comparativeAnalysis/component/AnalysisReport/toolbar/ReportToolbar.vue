@@ -145,7 +145,8 @@ export default {
             {
               id: "1-1",
               label_zh: "出行目的",
-              label_en: "travel destination",
+              // label_en: "travel destination",
+              label_en: "trip purpose",
               showView: true,
             },
             {
@@ -157,7 +158,7 @@ export default {
             {
               id: "1-3",
               label_zh: "停留时间",
-              label_en: "dwell time",
+              label_en: "residence time",
               showView: true,
             },
             {
