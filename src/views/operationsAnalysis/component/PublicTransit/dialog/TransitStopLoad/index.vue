@@ -111,7 +111,7 @@ export default {
         series: [
           {
             name: seriesName,
-            type: "line",
+            type: "bar",
             step: "start",
             data: plist,
           },

@@ -184,6 +184,7 @@ export class TransitRoute {
     this._routeLink = JSON.parse(JSON.stringify(opt.route.routeLink || {}));
     const _routeMap = {};
     const _route = opt.route.route;
+    let length = 0;
     for (let i = 0, prevStop = null; i < this.stops.length; i++) {
       let stop = this.stops[i];
       if (i != 0) {
@@ -193,7 +194,7 @@ export class TransitRoute {
         route.push(stop.linkId);
         const key = `${prevStop.uuid}-${stop.uuid}`;
         const label = `${prevStop.name}-${stop.name}`;
-        _routeMap[key] = new StopsRouteItem({
+        const stopsRouteItem = new StopsRouteItem({
           startStop: prevStop.toJSON(),
           endStop: stop.toJSON(),
           routeIds: route,
@@ -201,10 +202,29 @@ export class TransitRoute {
           label: label,
           key: key,
         });
+        length += stopsRouteItem.length;
+        _routeMap[key] = stopsRouteItem;
       }
       prevStop = stop;
     }
     this._routeMap = _routeMap;
+    this.length = parseInt(length);
+  }
+
+  getStartDeparture(time) {
+    const list = this.departures.filter((v) => v.time == time);
+    if (list.length > 0) {
+      return list[0];
+    }
+    return new Departures();
+  }
+
+  getEndDeparture(time) {
+    const list = this.departures.filter((v) => v.time == time);
+    if (list.length > 0) {
+      return list[list.length - 1];
+    }
+    return new Departures();
   }
 
   getStopsRouteOptions() {
@@ -510,6 +530,10 @@ export class Departures {
     this.uuid = opt.uuid;
   }
 
+  getTimeStr() {
+    return moment(this.departureTime || 0).format("HH:mm:ss");
+  }
+
   toJSON() {
     return {
       id: this.id,
@@ -545,6 +569,7 @@ export class StopsRouteItem {
     this.endStop = new Stops(opt.endStop);
     this.routeIds = opt.routeIds;
     this.route = opt.route.map((v) => new RouteLinkItem(v));
+    this.length = this.route.reduce((a, b) => a + b.length, 0);
     this.label = opt.label;
     this.key = opt.key;
     this.middleLink = opt.middleLink;

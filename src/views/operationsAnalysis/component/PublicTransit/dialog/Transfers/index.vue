@@ -70,12 +70,12 @@
       <el-form label-position="top" size="small" class="Transfers_dialog2">
         <el-form-item :label="$l('Group Attribute (Incoming)')">
           <el-select v-model="s_form.inconming" @change="getData">
-            <el-option v-for="item in group_attribute" :key="item.value" :label="item.label" :value="item.value" />
+            <el-option v-for="item in group_attribute" :key="item.value" :label="item[$l('label')]" :value="item.value" />
           </el-select>
         </el-form-item>
         <el-form-item :label="$l('Group Attribute (Outgoing)')">
           <el-select v-model="s_form.outgoing" @change="getData">
-            <el-option v-for="item in group_attribute" :key="item.value" :label="item.label" :value="item.value" />
+            <el-option v-for="item in group_attribute" :key="item.value" :label="item[$l('label')]" :value="item.value" />
           </el-select>
         </el-form-item>
         <el-form-item>
@@ -208,6 +208,11 @@
     "zh-CN": "数据",
     "en-US": "Data"
   },
+  // 这个不需要修改
+  "label":{
+    "zh-CN": "cn_label",
+    "en-US": "label"
+  },
 }
 </language>
 
@@ -225,7 +230,7 @@ export default {
   },
   data() {
     return {
-      group_attribute: group_attribute,
+      group_attribute,
       stopList: [],
 
       showNum: false,

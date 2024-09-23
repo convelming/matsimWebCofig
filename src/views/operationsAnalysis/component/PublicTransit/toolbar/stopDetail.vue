@@ -11,9 +11,14 @@
           <el-color-picker size="mini" :predefine="predefineColors" v-model="stopColor" />
         </div>
         <div class="routes_type">
-          <el-select v-model="routesType" size="small">
-            <el-option v-for="item in routesTypeOptions" :key="item.value" :label="$l(item.label)" :value="item.value"> </el-option>
-          </el-select>
+          <el-dropdown @command="handleOneStopMenu({ data: stopDetail, command: $event })" trigger="click">
+            <el-button type="primary" size="mini">{{ $l("站点分析") }}</el-button>
+            <el-dropdown-menu slot="dropdown">
+              <template v-for="v in one_stop_menu">
+                <el-dropdown-item v-if="v.value != 'Transit Stop Details'" :key="v.value" :command="v.value">{{ v[$l("label")] }}</el-dropdown-item>
+              </template>
+            </el-dropdown-menu>
+          </el-dropdown>
         </div>
         <div class="routes_table">
           <el-table class="small my_tabel" :data="routeList" border stripe height="250">
@@ -23,7 +28,7 @@
               <el-dropdown slot-scope="{ row }" trigger="click" @command="handleRouteManu({ data: row, command: $event })">
                 <span class="el-dropdown-link el-icon-arrow-down el-icon--right" />
                 <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item v-for="v in route_menu" :key="v.value" :command="v.value">{{ $l(v.label) }}</el-dropdown-item>
+                  <el-dropdown-item v-for="v in route_menu" :key="v.value" :command="v.value">{{ v[$l("label")] }}</el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
             </el-table-column>
@@ -53,6 +58,10 @@
     "zh-CN": "线路",
     "en-US": "Line"
   },
+  "站点分析":{
+    "zh-CN": "站点分析",
+    "en-US": "Stop Analysis"
+  },
   "Route":{
     "zh-CN": "路线",
     "en-US": "Route"
@@ -65,30 +74,10 @@
     "zh-CN": "显示可到达的站点",
     "en-US": "Show Reachable Stops"
   },
-  
-  "Copy Id":{
-    "zh-CN": "复制编号",
-    "en-US": "Copy Id"
-  },
-  "Copy Transit Line Id":{
-    "zh-CN": "复制公交线路编号",
-    "en-US": "Copy Transit Line Id"
-  },
-  "Show Route Details":{
-    "zh-CN": "显示路线详情",
-    "en-US": "Show Route Details"
-  },
-  "Transit Route Analysis...":{
-    "zh-CN": "交通路线分析...",
-    "en-US": "Transit Route Analysis..."
-  },
-  "List Departures":{
-    "zh-CN": "出发名单",
-    "en-US": "List Departures"
-  },
-  "Create Passengers Agent Group...":{
-    "zh-CN": "创建乘客代理组...",
-    "en-US": "Create Passengers Agent Group..."
+  // 这个不需要修改
+  "label":{
+    "zh-CN": "cn_label",
+    "en-US": "label"
   },
 }
 </language>
@@ -104,7 +93,7 @@ import TransitStopLoad from "../dialog/TransitStopLoad/index.vue";
 import Transfers from "../dialog/Transfers/index.vue";
 import PassengersAtStop from "../dialog/PassengersAtStop/index.vue";
 import TransitRoutesInfo from "../dialog/TransitRoutesInfo/index.vue";
-import { one_stop_menu, many_stop_menu, route_menu } from "../enum";
+import { one_stop_menu, route_menu } from "../enum";
 
 import { getOverlappingStopFacilities, getRouteByFacilities } from "@/api/index";
 
@@ -223,7 +212,6 @@ export default {
       routeList: [],
 
       one_stop_menu,
-      many_stop_menu,
       route_menu,
 
       routesType: "Transit Lines",
@@ -368,6 +356,8 @@ export default {
       }
     },
     handleOneStopMenu({ data, command }) {
+      console.log(data, command);
+
       switch (command) {
         case "Stop Load...":
           this.handleShowTransitStopLoad({
@@ -504,8 +494,12 @@ export default {
     }
     .routes_type {
       margin-bottom: 10px;
-      .el-select {
-        width: 100%;
+      .el-button {
+        display: block;
+        margin-left: 0 !important;
+      }
+      .el-button + .el-button {
+        margin-top: 10px;
       }
     }
     .routes_table {

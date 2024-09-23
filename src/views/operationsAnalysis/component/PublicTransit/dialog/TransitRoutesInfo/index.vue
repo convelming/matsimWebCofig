@@ -3,9 +3,9 @@
     <div class="TransitRoutesInfo__bodyer">
       <div class="row">{{ $l("Analyzed Route：") }}{{ this.form.routeId }}</div>
       <div class="row">
-        <span style="white-space: nowrap;">{{ $l("Analysis：") }}</span>
+        <span style="white-space: nowrap">{{ $l("Analysis：") }}</span>
         <el-select v-model="chartType" size="small" style="width: 100%; margin-left: 10px">
-          <el-option v-for="item in route_info_analysis" :key="item.value" :label="$l(item.label)" :value="item.value"> </el-option>
+          <el-option v-for="item in route_info_analysis" :key="item.value" :label="item[$l('label')]" :value="item.value"> </el-option>
         </el-select>
       </div>
       <el-radio-group style="width: 100%; display: block" v-model="s_form.single">
@@ -50,29 +50,10 @@
     "zh-CN": "多辆",
     "en-US": "Multiple"
   },
-  "Passengers Entering / Leaving":{
-    "zh-CN": "上下车客流",
-    "en-US": "Passengers Entering / Leaving"
-  },
-  "Vehicle Load":{
-    "zh-CN": "载客量",
-    "en-US": "Vehicle Load"
-  },
-  "Aggregated Vehicle Load":{
-    "zh-CN": "总载客量",
-    "en-US": "Aggregated Vehicle Load"
-  },
-  "Route Grid":{
-    "zh-CN": "上下车站点热力图",
-    "en-US": "Route Grid"
-  },
-  "Route Flows":{
-    "zh-CN": "站点OD客流量",
-    "en-US": "Route Flows"
-  },
-  "Route-Time Diagram":{
-    "zh-CN": "发车时刻表",
-    "en-US": "Route-Time Diagram"
+  // 这个不需要修改
+  "label":{
+    "zh-CN": "cn_label",
+    "en-US": "label"
   },
 }
 </language>

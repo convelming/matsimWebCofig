@@ -38,7 +38,7 @@
     "en-US": "Line Detail"
   },
   "selectLinkAnalysis":{
-    "zh-CN": "选择路段分析",
+    "zh-CN": "路段流量溯源",
     "en-US": "Select Link Analysis"
   },
   "linkVolumes":{
@@ -50,11 +50,11 @@
     "en-US": "Link Id"
   },
   "fromNodeId":{
-    "zh-CN": "来自节点 Id",
+    "zh-CN": "起点 Id",
     "en-US": "From Node Id"
   },
   "toNodeId":{
-    "zh-CN": "前往节点 Id",
+    "zh-CN": "终点 Id",
     "en-US": "To Node Id"
   },
   "allowedTransportNode":{
@@ -66,11 +66,11 @@
     "en-US": "Length"
   },
   "capacity":{
-    "zh-CN": "容量",
+    "zh-CN": "通行能力",
     "en-US": "Capacity"
   },
   "freeSpeed":{
-    "zh-CN": "免费速度",
+    "zh-CN": "自由流速度",
     "en-US": "Free Speed"
   },
   "numberOfLanes":{
@@ -82,7 +82,7 @@
     "en-US": "origid"
   },
   "type":{
-    "zh-CN": "类型",
+    "zh-CN": "可通行车辆类型",
     "en-US": "type"
   },
   "originId":{

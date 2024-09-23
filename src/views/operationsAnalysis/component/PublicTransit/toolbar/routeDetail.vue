@@ -15,6 +15,17 @@
           </el-select>
         </div>
         <div class="stops_table">
+          <el-descriptions v-if="routeDetail" border size="small" :column="1">
+            <el-descriptions-item :label="$l('线路长度')">{{ routeDetail.length }} m</el-descriptions-item>
+            <el-descriptions-item :label="$l('首班时间')">{{ routeDetail.getStartDeparture().getTimeStr() }}</el-descriptions-item>
+            <el-descriptions-item :label="$l('末班时间')">{{ routeDetail.getEndDeparture().getTimeStr() }}</el-descriptions-item>
+            <el-descriptions-item :label="$l('直线系数')">暂无</el-descriptions-item>
+            <el-descriptions-item :label="$l('站点数量')">{{ routeDetail.stops.length }}</el-descriptions-item>
+            <el-descriptions-item :label="$l('平均站距')">{{ routeDetail.length / routeDetail.stops.length }} m</el-descriptions-item>
+            <el-descriptions-item :label="$l('日均客流')">暂无</el-descriptions-item>
+          </el-descriptions>
+        </div>
+        <div class="stops_table">
           <el-table class="small my_tabel" :data="routeDetail.stops" border stripe height="250">
             <!-- <el-table-column :label="$l('Route')" prop="route" show-overflow-tooltip /> -->
             <el-table-column :label="$l('Name')" prop="name" show-overflow-tooltip />
@@ -22,7 +33,7 @@
               <el-dropdown slot-scope="{ row }" trigger="click" @command="handleOneStopMenu({ data: row, command: $event })">
                 <span class="el-dropdown-link el-icon-arrow-down el-icon--right" />
                 <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item v-for="v in one_stop_menu" :key="v.value" :command="v.value">{{ $l(v.label) }}</el-dropdown-item>
+                  <el-dropdown-item v-for="v in one_stop_menu" :key="v.value" :command="v.value">{{ v[$l("label")] }}</el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
             </el-table-column>
@@ -49,7 +60,7 @@
     "en-US": "Line"
   },
   "Transit Route Analysis...":{
-    "zh-CN": "交通路线分析...",
+    "zh-CN": "线路分析",
     "en-US": "Transit Route Analysis..."
   },
   "Id":{
@@ -64,34 +75,6 @@
     "zh-CN": "名称",
     "en-US": "Name"
   },
-  "Copy Id":{
-    "zh-CN": "复制编号",
-    "en-US": "Copy Id"
-  },
-  "Copy Name":{
-    "zh-CN": "复制名称",
-    "en-US": "Copy Name"
-  },
-  "Copy Link Id":{
-    "zh-CN": "复制线路编号",
-    "en-US": "Copy Link Id"
-  },
-  "Transit Stop Details":{
-    "zh-CN": "中转站详情",
-    "en-US": "Transit Stop Details"
-  },
-  "Stop Load...":{
-    "zh-CN": "站点加载...",
-    "en-US": "Stop Load..."
-  },
-  "Transfers At Stop...":{
-    "zh-CN": "中转站详情...",
-    "en-US": "Transfers At Stop..."
-  },
-  "Passengers At Stop":{
-    "zh-CN": "停靠站点的乘客",
-    "en-US": "Passengers At Stop"
-  },
   "Show Transit Lines":{
     "zh-CN": "显示交通线路",
     "en-US": "Show Transit Lines"
@@ -99,6 +82,39 @@
   "Show Reachable Stops":{
     "zh-CN": "显示可到达的站点",
     "en-US": "Show Reachable Stops"
+  },
+  "线路长度":{
+    "zh-CN": "线路长度",
+    "en-US": "线路长度"
+  },
+  "首班时间":{
+    "zh-CN": "首班时间",
+    "en-US": "首班时间"
+  },
+  "末班时间":{
+    "zh-CN": "末班时间",
+    "en-US": "末班时间"
+  },
+  "直线系数":{
+    "zh-CN": "直线系数",
+    "en-US": "直线系数"
+  },
+  "站点数量":{
+    "zh-CN": "站点数量",
+    "en-US": "站点数量"
+  },
+  "平均站距":{
+    "zh-CN": "平均站距",
+    "en-US": "平均站距"
+  },
+  "日均客流":{
+    "zh-CN": "日均客流",
+    "en-US": "日均客流"
+  },
+  // 这个不需要修改
+  "label":{
+    "zh-CN": "cn_label",
+    "en-US": "label"
   },
 }
 </language>
@@ -113,7 +129,7 @@ import TransitStopLoad from "../dialog/TransitStopLoad/index.vue";
 import Transfers from "../dialog/Transfers/index.vue";
 import PassengersAtStop from "../dialog/PassengersAtStop/index.vue";
 import TransitRoutesInfo from "../dialog/TransitRoutesInfo/index.vue";
-import { one_stop_menu, many_stop_menu, route_menu } from "../enum";
+import { one_stop_menu } from "../enum";
 
 import { copyText } from "@/utils/utils";
 import { getTwoWayByRouteId } from "@/api/index.js";
@@ -208,8 +224,6 @@ export default {
       routeList: [],
 
       one_stop_menu,
-      many_stop_menu,
-      route_menu,
 
       showBusRouteMenu: false,
       busRouteMenuStyle: "top:100px;left:100px;z-index:1000;",

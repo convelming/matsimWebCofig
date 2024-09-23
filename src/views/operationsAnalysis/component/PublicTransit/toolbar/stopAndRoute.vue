@@ -18,7 +18,7 @@
             <el-dropdown slot-scope="{ row }" trigger="click" @command="handleOneStopMenu({ data: row, command: $event })">
               <span class="el-dropdown-link el-icon-arrow-down el-icon--right" />
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item v-for="v in one_stop_menu" :key="v.value" :command="v.value">{{ $l(v.label) }}</el-dropdown-item>
+                <el-dropdown-item v-for="v in one_stop_menu" :key="v.value" :command="v.value">{{ v[$l("label")] }}</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </el-table-column>
@@ -37,7 +37,7 @@
             <el-dropdown slot-scope="{ row }" trigger="click" @command="handleRouteManu({ data: row, command: $event })">
               <span class="el-dropdown-link el-icon-arrow-down el-icon--right" />
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item v-for="v in route_menu" :key="v.value" :command="v.value">{{ $l(v.label) }}</el-dropdown-item>
+                <el-dropdown-item v-for="v in route_menu" :key="v.value" :command="v.value">{{ v[$l("label")] }}</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </el-table-column>
@@ -74,34 +74,6 @@
     "zh-CN": "名称",
     "en-US": "Name"
   },
-  "Copy Id":{
-    "zh-CN": "复制编号",
-    "en-US": "Copy Id"
-  },
-  "Copy Name":{
-    "zh-CN": "复制名称",
-    "en-US": "Copy Name"
-  },
-  "Copy Link Id":{
-    "zh-CN": "复制线路编号",
-    "en-US": "Copy Link Id"
-  },
-  "Transit Stop Details":{
-    "zh-CN": "中转站详情",
-    "en-US": "Transit Stop Details"
-  },
-  "Stop Load...":{
-    "zh-CN": "站点加载...",
-    "en-US": "Stop Load..."
-  },
-  "Transfers At Stop...":{
-    "zh-CN": "中转站...",
-    "en-US": "Transfers At Stop..."
-  },
-  "Passengers At Stop":{
-    "zh-CN": "停靠站点的乘客",
-    "en-US": "Passengers At Stop"
-  },
   "Attributes":{
     "zh-CN": "属性",
     "en-US": "Attributes"
@@ -130,30 +102,6 @@
     "zh-CN": "路线",
     "en-US": "Route"
   },
-  "Copy Id":{
-    "zh-CN": "复制编号",
-    "en-US": "Copy Id"
-  },
-  "Copy Transit Line Id":{
-    "zh-CN": "复制公交线路编号",
-    "en-US": "Copy Transit Line Id"
-  },
-  "Show Route Details":{
-    "zh-CN": "显示路线详情",
-    "en-US": "Show Route Details"
-  },
-  "Transit Route Analysis...":{
-    "zh-CN": "公交线路分析...",
-    "en-US": "Transit Route Analysis..."
-  },
-  "List Departures":{
-    "zh-CN": "出发名单",
-    "en-US": "List Departures"
-  },
-  "Create Passengers Agent Group...":{
-    "zh-CN": "创建乘客代理组...",
-    "en-US": "Create Passengers Agent Group..."
-  },
   "Show Transit Lines":{
     "zh-CN": "显示交通线路",
     "en-US": "Show Transit Lines"
@@ -161,6 +109,11 @@
   "Show Reachable Stops":{
     "zh-CN": "显示可到达的站点",
     "en-US": "Show Reachable Stops"
+  },
+  // 这个不需要修改
+  "label":{
+    "zh-CN": "cn_label",
+    "en-US": "label"
   },
 }
 </language>
@@ -176,7 +129,7 @@ import TransitStopLoad from "../dialog/TransitStopLoad/index.vue";
 import Transfers from "../dialog/Transfers/index.vue";
 import PassengersAtStop from "../dialog/PassengersAtStop/index.vue";
 import TransitRoutesInfo from "../dialog/TransitRoutesInfo/index.vue";
-import { one_stop_menu, many_stop_menu, route_menu } from "../enum";
+import { one_stop_menu, route_menu } from "../enum";
 
 import { getOverlappingStopFacilities, getRouteByFacilities } from "@/api/index";
 
@@ -285,7 +238,6 @@ export default {
       routeList: [],
 
       one_stop_menu,
-      many_stop_menu,
       route_menu,
 
       routesType: "Transit Lines",

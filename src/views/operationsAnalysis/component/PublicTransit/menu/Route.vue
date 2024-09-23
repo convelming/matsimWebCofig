@@ -15,7 +15,7 @@
       class="el-dropdown-menu__item"
       @click="handleCommand({ data: route, command: v.value })"
     >
-      {{ $l(v.label) }}
+      {{ v[$l("label")] }}
     </div>
     <div x-arrow="" class="popper__arrow" style="left: 20px"></div>
   </div>
@@ -27,29 +27,10 @@
     "zh-CN": "交通路线",
     "en-US": "Transit Route"
   },
-  "Copy Id":{
-    "zh-CN": "复制编号",
-    "en-US": "Copy Id"
-  },
-  "Copy Transit Line Id":{
-    "zh-CN": "复制公交线路编号",
-    "en-US": "Copy Transit Line Id"
-  },
-  "Show Route Details":{
-    "zh-CN": "显示路线详情",
-    "en-US": "Show Route Details"
-  },
-  "Transit Route Analysis...":{
-    "zh-CN": "公交线路分析...",
-    "en-US": "Transit Route Analysis..."
-  },
-  "List Departures":{
-    "zh-CN": "出发名单",
-    "en-US": "List Departures"
-  },
-  "Create Passengers Agent Group...":{
-    "zh-CN": "创建乘客代理组...",
-    "en-US": "Create Passengers Agent Group..."
+  // 这个不需要修改
+  "label":{
+    "zh-CN": "cn_label",
+    "en-US": "label"
   },
 }
 </language>
