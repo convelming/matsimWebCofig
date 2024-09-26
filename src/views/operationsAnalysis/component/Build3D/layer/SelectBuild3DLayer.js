@@ -86,8 +86,6 @@ export class SelectBuild3DLayer extends Layer {
     const { coordinates, coord, height } = this.data
     const center = [coord.x, coord.y]
     const _coordinates = coordinates.map(v => v.map(v2 => [v2[0] - center[0], v2[1] - center[1]]));
-    console.log(expand(_coordinates[0], 1));
-
     const shapes = [
       {
         points: _coordinates[0],
@@ -111,6 +109,5 @@ export class SelectBuild3DLayer extends Layer {
   setData(data) {
     this.data = data;
     this.update()
-    console.log(data);
   }
 }

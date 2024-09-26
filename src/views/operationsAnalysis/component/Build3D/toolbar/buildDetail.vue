@@ -7,6 +7,7 @@
     <div class="toolbar_item_bodyer" v-loading="loading">
       <div class="form" v-if="resData">
         <div class="form_item" style="justify-content: flex-end">
+          <el-button type="primary" size="mini" icon="el-icon-aim" circle @click="handleChangeMapCenterAndZoom"></el-button>
           <el-button type="primary" size="mini" @click="handleMenu({ data: resData, command: 'selectBuildAnalysis' })">{{ $l("selectBuildAnalysis") }}</el-button>
         </div>
         <div class="form_item">
@@ -206,6 +207,7 @@ export default {
           res.data.activitiesList = Object.values(res.data.activities || {});
           this.resData = res.data;
           this._SelectBuild3DLayer.setData(res.data);
+          // this.handleChangeMapCenterAndZoom();
         })
         .finally(() => {
           this.loading = false;
@@ -222,6 +224,14 @@ export default {
             buildDetail: this.buildDetail,
           });
           break;
+      }
+    },
+    handleChangeMapCenterAndZoom() {
+      try {
+        this._Map.setCenter([this.resData.coord.x, this.resData.coord.y]);
+        this._Map.setZoom(16);
+      } catch (error) {
+        console.log(error);
       }
     },
   },

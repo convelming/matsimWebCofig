@@ -13,10 +13,10 @@
         <el-table-column :label="$l('Route')" prop="routeName" show-overflow-tooltip />
         <el-table-column width="50">
           <el-dropdown slot-scope="{ row }" trigger="click" @command="handleRouteMenu({ data: row, command: $event })">
-            <span class="el-dropdown-link el-icon-arrow-down el-icon--right" />
+            <span class="el-dropdown-link el-icon-arrow-down el-icon--right"></span>
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item command="线路变动信息" :disabled="!row.path">{{ $l("线路变动信息") }}</el-dropdown-item>
-              <el-dropdown-item command="站点变动信息" :disabled="!row.stop">{{ $l("站点变动信息") }}</el-dropdown-item>
+              <el-dropdown-item command="线路变动信息" :disabled="!row.path && !row.stop">{{ $l("线路变动信息") }}</el-dropdown-item>
+              <!-- <el-dropdown-item command="站点变动信息" :disabled="!row.stop">{{ $l("站点变动信息") }}</el-dropdown-item> -->
               <el-dropdown-item command="时刻表信息变动" :disabled="!row.time">{{ $l("时刻表信息变动") }}</el-dropdown-item>
               <el-dropdown-item command="Xml信息对比">{{ $l("Xml信息对比") }}</el-dropdown-item>
               <el-dropdown-item command="客流信息变化">{{ $l("客流信息变化") }}</el-dropdown-item>

@@ -6,6 +6,12 @@
     </div>
     <div class="toolbar_item_bodyer">
       <div class="form_item" style="align-items: center">
+        <div class="form_label">{{ $l("position") }}</div>
+        <div class="form_value">
+          <el-button type="primary" size="mini" icon="el-icon-aim" circle @click="handleChangeMapCenterAndZoom"></el-button>
+        </div>
+      </div>
+      <div class="form_item" style="align-items: center">
         <div class="form_label">{{ $l("type") }}</div>
         <div class="form_value">
           <el-select v-model="type" @change="getDetail">
@@ -39,6 +45,10 @@
   "selectBuildAnalysis":{
     "zh-CN": "选择构建分析",
     "en-US": "Select Build Analysis"
+  },
+  "position":{
+    "zh-CN": "位置：",
+    "en-US": "Position: "
   },
   "color":{
     "zh-CN": "颜色：",
@@ -165,7 +175,9 @@ export default {
         id: this.buildDetail.id,
       })
         .then((res) => {
+          this.resData = res.data;
           this._SelectBuild3DLayer.setData(res.data);
+          // this.handleChangeMapCenterAndZoom();
         })
         .finally(() => {
           this.loading = false;
@@ -174,10 +186,20 @@ export default {
     handleEnable() {
       this._Map.addLayer(this._BuildFlowLayer);
       this._Map.addLayer(this._SelectBuild3DLayer);
+      // this.handleChangeMapCenterAndZoom();
     },
     handleDisable() {
       this._Map.removeLayer(this._BuildFlowLayer);
       this._Map.removeLayer(this._SelectBuild3DLayer);
+    },
+    handleChangeMapCenterAndZoom() {
+      try {
+        console.log("handleChangeMapCenterAndZoom");
+        this._Map.setCenter([this.resData.coord.x, this.resData.coord.y]);
+        this._Map.setZoom(13);
+      } catch (error) {
+        console.log(error);
+      }
     },
   },
 };

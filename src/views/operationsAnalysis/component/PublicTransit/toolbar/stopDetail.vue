@@ -10,7 +10,7 @@
           <div>{{ stopDetail.name }}</div>
           <el-color-picker size="mini" :predefine="predefineColors" v-model="stopColor" />
         </div>
-        <div class="routes_type">
+        <div class="stop_title">
           <el-dropdown @command="handleOneStopMenu({ data: stopDetail, command: $event })" trigger="click">
             <el-button type="primary" size="mini">{{ $l("站点分析") }}</el-button>
             <el-dropdown-menu slot="dropdown">
@@ -19,6 +19,7 @@
               </template>
             </el-dropdown-menu>
           </el-dropdown>
+          <el-button type="primary" size="mini" icon="el-icon-aim" circle @click="handleChangeMapCenterAndZoom"></el-button>
         </div>
         <div class="routes_table">
           <el-table class="small my_tabel" :data="routeList" border stripe height="250">
@@ -84,6 +85,7 @@
 
 <script>
 import { MAP_EVENT } from "@/mymap/index.js";
+// import { MercatorToWGS84 } from "@/mymap/utils/LngLatUtils.js";
 import { SelectStopLayer } from "../layer/SelectStopLayer";
 import { TransitLinesLayer } from "../layer/TransitLinesLayer";
 import { ReachableStopsLayer } from "../layer/ReachableStopsLayer";
@@ -303,6 +305,7 @@ export default {
         this._TransitLinesLayer.setData(this.routeList);
         this._ReachableStopsLayer.setData(this.routeList);
         this.getRouteList();
+        this.handleChangeMapCenterAndZoom();
       });
     },
     getRouteList() {
@@ -324,6 +327,7 @@ export default {
       this._Map.addLayer(this._TransitLinesLayer);
       this._Map.addLayer(this._ReachableStopsLayer);
       window.addEventListener("mousedown", this.handleCloseMenu);
+      this.handleChangeMapCenterAndZoom();
     },
     handleDisable() {
       this._Map.removeEventListener(MAP_EVENT.HANDLE_CLICK_RIGHT, this._MapEvnetId1);
@@ -461,6 +465,15 @@ export default {
       });
       document.body.append(app.$el);
       this._passengersAtStop.push(app);
+    },
+
+    handleChangeMapCenterAndZoom() {
+      try {
+        this._Map.setCenter([this.stopDetail.x, this.stopDetail.y]);
+        this._Map.setZoom(13);
+      } catch (error) {
+        console.log(error);
+      }
     },
   },
 };

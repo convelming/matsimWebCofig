@@ -15,12 +15,12 @@
           <el-button style="margin-left: 10px" size="small" @click="dialog2 = true">{{ $l("Lines...") }}</el-button>
           <el-button size="small" @click="dialog3 = true">{{ $l("Create Agent Group...") }}</el-button>
         </div>
-        <div class="row">
+        <!-- <div class="row">
           <el-checkbox v-model="showNum" @change="updateChart">{{ $l("Show Numbers in Chart") }}</el-checkbox>
           <el-checkbox v-model="showPer" @change="updateChart">{{ $l("show Percentages in Table") }}</el-checkbox>
           <span class="text1" style="margin-left: auto; margin-right: 10px">{{ $l("Nultiplicator:") }}</span>
           <el-input-number v-model="s_form.nultiplicator" size="small" :step="0.01" />
-        </div>
+        </div> -->
         <div class="row">
           <TimeRangeSlider :value="[s_form.startSecond, s_form.endSecond]" :start.sync="s_form.startSecond" :end.sync="s_form.endSecond" />
         </div>

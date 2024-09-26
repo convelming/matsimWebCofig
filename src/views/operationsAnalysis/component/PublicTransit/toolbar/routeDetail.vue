@@ -8,6 +8,7 @@
       <div class="toolbar_item_bodyer">
         <div class="stop_title">
           <el-button type="primary" size="small" @click="handleRouteManu({ data: routeDetail, command: 'Transit Route Analysis...' })">{{ $l("Transit Route Analysis...") }}</el-button>
+          <el-button type="primary" size="mini" icon="el-icon-aim" circle @click="handleChangeMapCenterAndZoom"></el-button>
         </div>
         <div class="stop_title">
           <el-select v-model="routeSelect" @change="handleSelectRoute">
@@ -19,10 +20,10 @@
             <el-descriptions-item :label="$l('线路长度')">{{ routeDetail.length }} m</el-descriptions-item>
             <el-descriptions-item :label="$l('首班时间')">{{ routeDetail.getStartDeparture().getTimeStr() }}</el-descriptions-item>
             <el-descriptions-item :label="$l('末班时间')">{{ routeDetail.getEndDeparture().getTimeStr() }}</el-descriptions-item>
-            <el-descriptions-item :label="$l('直线系数')">暂无</el-descriptions-item>
+            <el-descriptions-item :label="$l('直线系数')">{{ routeDetail.linearCoefficient }}</el-descriptions-item>
             <el-descriptions-item :label="$l('站点数量')">{{ routeDetail.stops.length }}</el-descriptions-item>
-            <el-descriptions-item :label="$l('平均站距')">{{ routeDetail.length / routeDetail.stops.length }} m</el-descriptions-item>
-            <el-descriptions-item :label="$l('日均客流')">暂无</el-descriptions-item>
+            <el-descriptions-item :label="$l('平均站距')">{{ routeDetail.averageStopSpacing }} m</el-descriptions-item>
+            <el-descriptions-item :label="$l('日均客流')">{{ routeDetail.passenger }}</el-descriptions-item>
           </el-descriptions>
         </div>
         <div class="stops_table">
@@ -278,6 +279,7 @@ export default {
         this.routeList = res.data.map((v) => new Bean.TransitRoute(v));
         const index = this.routeList.findIndex((v) => v.routeId == this.routeId);
         this.handleSelectRoute(index > -1 ? index : 0);
+        this.handleChangeMapCenterAndZoom();
       });
     },
     handleSelectRoute(val) {
@@ -292,6 +294,7 @@ export default {
       this._Map.addLayer(this._TransitLinesLayer);
       this._Map.addLayer(this._ReachableStopsLayer);
       window.addEventListener("mousedown", this.handleCloseMenu);
+      this.handleChangeMapCenterAndZoom(); 
     },
     handleDisable() {
       this._Map.removeEventListener(MAP_EVENT.HANDLE_CLICK_RIGHT, this._MapEvnetId1);
@@ -426,6 +429,14 @@ export default {
       });
       document.body.append(app.$el);
       this._passengersAtStop.push(app);
+    },
+    handleChangeMapCenterAndZoom() {
+      try {
+        const list = this.routeDetail.stops.map((v) => v.coord.toList());
+        this._Map.setFitZoomAndCenterByPoints(list);
+      } catch (error) {
+        console.log(error);
+      }
     },
   },
 };

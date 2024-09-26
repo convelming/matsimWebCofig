@@ -114,6 +114,7 @@ export class TransitRouteParams {
   routeId = "";
   description = "";
   transportMode = "";
+  passenger = 0;
 
   route = {
     startLinkId: null,
@@ -209,6 +210,9 @@ export class TransitRoute {
     }
     this._routeMap = _routeMap;
     this.length = parseInt(length);
+    this.averageStopSpacing = parseInt(length / opt.stops.length);
+    this.linearCoefficient = Number(length / Coord.length(sStop.coord, eStop.coord)).toFixed(4);
+    this.passenger = opt.passenger;
   }
 
   getStartDeparture(time) {
@@ -324,6 +328,7 @@ export class TransitRoute {
       routeId: this.routeId,
       description: this.description,
       transportMode: this.transportMode,
+      passenger: this.passenger,
 
       route: route,
       stops: this.stops.map((v) => v.toJSON()),
@@ -355,6 +360,10 @@ export class DepartureRuleParams {
 }
 const YEAR_TIME = moment("2000-01-01 00:00:00").unix();
 export class DepartureRule {
+  get spacesStr() {
+    return moment.unix(YEAR_TIME + this.spacesNum * 60).format("HH:mm:ss");
+  }
+
   constructor(opt) {
     if (opt instanceof this.constructor) opt = opt.toJSON();
     opt = ObjectAssign(opt, new DepartureRuleParams());
@@ -363,7 +372,8 @@ export class DepartureRule {
     this.beginTime = opt.beginTime;
     this.endTime = opt.endTime;
     // this.spaces = opt.spaces;
-    this.spacesStr = moment.unix(YEAR_TIME + opt.spaces).format("HH:mm:ss");
+    // this.spacesStr = moment.unix(YEAR_TIME + opt.spaces).format("HH:mm:ss");
+    this.spacesNum = opt.spaces / 60;
     try {
       const modelJson = JSON.parse(opt.model);
       this.model = modelJson.model;
@@ -386,7 +396,8 @@ export class DepartureRule {
       type: this.type,
       beginTime: this.beginTime,
       endTime: this.endTime,
-      spaces: moment("2000-01-01 " + this.spacesStr).unix() - YEAR_TIME,
+      // spaces: moment("2000-01-01 " + this.spacesStr).unix() - YEAR_TIME,
+      spaces: parseInt(this.spacesNum * 60),
       model: modelJson,
       remark: this.remark,
 

@@ -48,10 +48,10 @@
           <el-form-item :label="$l('结束时间')" prop="endTime">
             <el-time-picker v-model="form.endTime" value-format="HH:mm:ss" :placeholder="$l('请选择结束时间')" />
           </el-form-item>
-          <el-form-item :label="$l('时间间隔')" prop="spacesStr">
-            <el-time-picker v-model="form.spacesStr" value-format="HH:mm:ss" format="HH:mm:ss" />
+          <el-form-item :label="$l('时间间隔')" prop="spacesNum">
+            <!-- <el-time-picker v-model="form.spacesStr" value-format="HH:mm:ss" format="HH:mm:ss" /> -->
+            <el-input-number v-model="form.spacesNum" label="" :step="1" :controls="true" controls-position="both" />&nbsp;&nbsp;{{ $l("分钟") }}
           </el-form-item>
-
           <el-form-item :label="$l('运营车型')" prop="model">
             <el-select v-model="form.model" @change="handleChangeModel">
               <el-option v-for="item in modelOptions" :key="item.value" :label="$l(item.label)" :value="item.value" />
@@ -346,6 +346,10 @@
   "其它": {
     "zh-CN":"其它",
     "en-US":"other"
+  },
+  "分钟": {
+    "zh-CN":"分钟",
+    "en-US":"min"
   },
 }
 </language>
@@ -665,7 +669,8 @@ export default {
         case "morning_valley":
           this.form.beginTime = "06:00:00";
           this.form.endTime = "07:00:00";
-          this.form.spacesStr = "00:20:00";
+          // this.form.spacesStr = "00:20:00";
+          this.form.spacesNum = 20;
           this.form.pickerOption = {
             start: "05:00:00",
             end: "09:00:00",
@@ -674,7 +679,8 @@ export default {
         case "morning_peak":
           this.form.beginTime = "07:00:00";
           this.form.endTime = "09:00:00";
-          this.form.spacesStr = "00:10:00";
+          // this.form.spacesStr = "00:10:00";
+          this.form.spacesNum = 10;
           this.form.pickerOption = {
             start: "06:00:00",
             end: "10:00:00",
@@ -684,7 +690,8 @@ export default {
         case "daytime_valley":
           this.form.beginTime = "09:00:00";
           this.form.endTime = "17:00:00";
-          this.form.spacesStr = "00:20:00";
+          // this.form.spacesStr = "00:20:00";
+          this.form.spacesNum = 20;
           this.form.pickerOption = {
             start: "07:00:00",
             end: "19:00:00",
@@ -694,7 +701,8 @@ export default {
         case "evening_peak":
           this.form.beginTime = "17:00:00";
           this.form.endTime = "19:00:00";
-          this.form.spacesStr = "00:10:00";
+          // this.form.spacesStr = "00:10:00";
+          this.form.spacesNum = 10;
           this.form.pickerOption = {
             start: "16:00:00",
             end: "20:00:00",
@@ -704,7 +712,8 @@ export default {
         case "evening_valley":
           this.form.beginTime = "19:00:00";
           this.form.endTime = "22:00:00";
-          this.form.spacesStr = "00:20:00";
+          // this.form.spacesStr = "00:20:00";
+          this.form.spacesNum = 20;
           this.form.pickerOption = {
             start: "17:00:00",
             end: "05:00:00",
@@ -713,14 +722,16 @@ export default {
         case "fixed_point":
           this.form.beginTime = "";
           this.form.endTime = "";
-          this.form.spacesStr = "";
+          // this.form.spacesStr = "";
+          this.form.spacesNum = 0;
           this.form.pickerOption = {};
           break;
 
         case "other":
           this.form.beginTime = "";
           this.form.endTime = "";
-          this.form.spacesStr = "";
+          // this.form.spacesStr = "";
+          this.form.spacesNum = 0;
           this.form.pickerOption = {};
           break;
       }
