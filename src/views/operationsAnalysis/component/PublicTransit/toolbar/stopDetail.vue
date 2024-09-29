@@ -151,6 +151,7 @@ export default {
           this.routeList = [];
           this._SelectStopLayer.setData([this.stopDetail].filter((v) => !!v));
           this._TransitLinesLayer.setData(this.routeList);
+          this._TransitLinesLayer.setShowLine(this.routeList.map((v) => v.routeId));
           this._ReachableStopsLayer.setData(this.routeList);
           this.getRouteList();
         });

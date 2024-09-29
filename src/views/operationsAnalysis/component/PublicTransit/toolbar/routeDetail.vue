@@ -287,6 +287,7 @@ export default {
       this.routeDetail = this.routeList[this.routeSelect];
       const list = this.routeDetail ? [this.routeDetail] : [];
       this._TransitLinesLayer.setData(list);
+      this._TransitLinesLayer.setShowLine(list.map((v) => v.routeId));
       this._ReachableStopsLayer.setData(list);
     },
     handleEnable() {
@@ -294,7 +295,7 @@ export default {
       this._Map.addLayer(this._TransitLinesLayer);
       this._Map.addLayer(this._ReachableStopsLayer);
       window.addEventListener("mousedown", this.handleCloseMenu);
-      this.handleChangeMapCenterAndZoom(); 
+      this.handleChangeMapCenterAndZoom();
     },
     handleDisable() {
       this._Map.removeEventListener(MAP_EVENT.HANDLE_CLICK_RIGHT, this._MapEvnetId1);

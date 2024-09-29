@@ -30,7 +30,8 @@
         </el-select>
       </div>
       <div class="routes_table">
-        <el-table class="small my_tabel" :data="routeList" border stripe height="250">
+        <el-table class="small my_tabel" :data="routeList" border stripe height="250" @selection-change="handleSelectionChange">
+          <el-table-column type="selection" width="55"> </el-table-column>
           <el-table-column :label="$l('Line')" prop="line" show-overflow-tooltip />
           <el-table-column :label="$l('Route')" prop="routeId" show-overflow-tooltip />
           <el-table-column width="50">
@@ -43,10 +44,10 @@
           </el-table-column>
         </el-table>
       </div>
-      <div class="stop_title">
+      <!-- <div class="stop_title">
         <el-checkbox v-model="showTransitLines">{{ $l("Show Transit Lines") }}</el-checkbox>
         <el-color-picker size="mini" :predefine="predefineColors" v-model="transitLinesColor" />
-      </div>
+      </div> -->
       <div class="stop_title">
         <el-checkbox v-model="showReachableStops">{{ $l("Show Reachable Stops") }}</el-checkbox>
         <el-color-picker size="mini" :predefine="predefineColors" v-model="reachableStopsColor" />
@@ -268,7 +269,7 @@ export default {
       showBusStopMenu: false,
       busStopMenuStyle: "top:100px;left:100px;z-index:1000;",
 
-      showTransitLines: false,
+      showTransitLines: true,
       transitLinesColor: "#ff8c00",
 
       showReachableStops: false,
@@ -315,6 +316,10 @@ export default {
     this.handleDisable();
   },
   methods: {
+    handleSelectionChange(val) {
+      this._TransitLinesLayer.setShowLine(val.map((v) => v.routeId));
+      // this.multipleSelection = val;
+    },
     getStopList() {
       this.$nextTick(async () => {
         if (this.ids.length) {

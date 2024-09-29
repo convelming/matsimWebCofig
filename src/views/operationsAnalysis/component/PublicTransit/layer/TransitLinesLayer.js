@@ -77,21 +77,27 @@ export class TransitLinesLayer extends Layer {
     try {
       const center = data[0].center;
       const list = [];
+      console.log(data);
       for (const transitRoute of data) {
         const routelist = transitRoute.getRouteLink(transitRoute.route);
         let lineLength = 0;
-        const item = routelist.map((v) => {
-          let _data = {
-            fromLength: lineLength,
-            fromCoord: v.fromCoord.offset(center),
-            toLength: lineLength + v.length,
-            toCoord: v.toCoord.offset(center),
-            pickColor: this.getPickMeshColor(),
-            data: v.toJSON(),
-          };
-          lineLength += v.length;
-          return _data;
-        });
+        const item = {
+          id: transitRoute.routeId,
+          path: routelist.map((v) => {
+            let _data = {
+              fromLength: lineLength,
+              fromCoord: v.fromCoord.offset(center),
+              toLength: lineLength + v.length,
+              toCoord: v.toCoord.offset(center),
+              pickColor: this.getPickMeshColor(),
+              data: v.toJSON(),
+            };
+            lineLength += v.length;
+            return _data;
+          }),
+          mesh: null,
+          show: false
+        };
         list.push(item);
       }
       this.data = list;
@@ -104,20 +110,35 @@ export class TransitLinesLayer extends Layer {
     }
   }
 
+  setShowLine(idList) {
+    this.showLine = idList;
+    if (this.map) {
+      for (const data of this.data) {
+        if (idList.includes(data.id)) {
+          const [x, y] = this.map.WebMercatorToCanvasXY(...this.center);
+          data.mesh.position.set(x, y, 0);
+          this.scene.add(data.mesh);
+        } else {
+          data.mesh.removeFromParent();
+        }
+      }
+    }
+  }
+
   update() {
     this.clearScene();
     if (!this.map) return;
     if (!this.data) return;
-    let geometry = this.getLineGeometry();
-    let material = this.getLineMaterial({
+    const material = this.getLineMaterial({
       map: this.texture,
       color: this.color,
     });
+    for (const data of this.data) {
+      const geometry = this.getLineGeometry(data.path);
 
-    let mesh = new THREE.Mesh(geometry, material);
-    const [x, y] = this.map.WebMercatorToCanvasXY(...this.center);
-    mesh.position.set(x, y, mesh.position.z);
-    this.scene.add(mesh);
+      data.mesh = new THREE.Mesh(geometry, material);
+    }
+    this.setShowLine(this.showLine || []);
   }
 
   getLineMaterial({ usePickColor, ...opt }) {
@@ -230,143 +251,139 @@ export class TransitLinesLayer extends Layer {
     return material;
   }
 
-  getLineGeometry() {
-    const geometryList = [];
-    for (const data of this.data) {
-      const length = data.length;
+  getLineGeometry(data) {
+    const length = data.length;
 
-      const attrPosition = new THREE.BufferAttribute(
-        new Float32Array(length * 4 * 3 + 2 * 3),
-        3
-      );
-      const attrStartPosition = new THREE.BufferAttribute(
-        new Float32Array(length * 4 * 2 + 2 * 2),
-        2
-      );
-      const attrEndPosition = new THREE.BufferAttribute(
-        new Float32Array(length * 4 * 2 + 2 * 2),
-        2
-      );
-      const attrSide = new THREE.BufferAttribute(
-        new Float32Array(length * 4 + 2),
-        1
-      );
-      const attrIndex = new THREE.BufferAttribute(
-        new Uint16Array(length * 2 * 3 + 6),
-        1
-      );
-      const attrUv = new THREE.BufferAttribute(
-        new Float32Array(length * 4 * 2 + 2),
-        2
-      );
-      const attrPickColor = new THREE.BufferAttribute(
-        new Float32Array(length * 4 * 3 + 2 * 3),
-        3
-      );
-      const attrColor = new THREE.BufferAttribute(
-        new Float32Array(length * 4 * 3 + 2 * 3),
-        3
-      );
-      const attrLength = new THREE.BufferAttribute(
-        new Float32Array(length * 4 + 2),
-        1
-      );
+    const attrPosition = new THREE.BufferAttribute(
+      new Float32Array(length * 4 * 3 + 2 * 3),
+      3
+    );
+    const attrStartPosition = new THREE.BufferAttribute(
+      new Float32Array(length * 4 * 2 + 2 * 2),
+      2
+    );
+    const attrEndPosition = new THREE.BufferAttribute(
+      new Float32Array(length * 4 * 2 + 2 * 2),
+      2
+    );
+    const attrSide = new THREE.BufferAttribute(
+      new Float32Array(length * 4 + 2),
+      1
+    );
+    const attrIndex = new THREE.BufferAttribute(
+      new Uint16Array(length * 2 * 3 + 6),
+      1
+    );
+    const attrUv = new THREE.BufferAttribute(
+      new Float32Array(length * 4 * 2 + 2),
+      2
+    );
+    const attrPickColor = new THREE.BufferAttribute(
+      new Float32Array(length * 4 * 3 + 2 * 3),
+      3
+    );
+    const attrColor = new THREE.BufferAttribute(
+      new Float32Array(length * 4 * 3 + 2 * 3),
+      3
+    );
+    const attrLength = new THREE.BufferAttribute(
+      new Float32Array(length * 4 + 2),
+      1
+    );
 
-      for (let index = 0; index < data.length; index++) {
-        const link = data[index];
-        const prevLink = index == 0 ? link : data[index - 1];
-        const nextLink = index == data.length - 1 ? link : data[index + 1];
-        const pickColor = link.pickColor;
-        const color = this.color;
+    for (let index = 0; index < data.length; index++) {
+      const link = data[index];
+      const prevLink = index == 0 ? link : data[index - 1];
+      const nextLink = index == data.length - 1 ? link : data[index + 1];
+      const pickColor = link.pickColor;
+      const color = this.color;
 
-        const prevFromxy = prevLink.fromCoord;
-        const linkFromxy = link.fromCoord;
-        const linkToxy = link.toCoord;
-        const nextToxy = nextLink.toCoord;
+      const prevFromxy = prevLink.fromCoord;
+      const linkFromxy = link.fromCoord;
+      const linkToxy = link.toCoord;
+      const nextToxy = nextLink.toCoord;
 
-        // fromNode
-        {
-          attrStartPosition.setXY(index * 4, prevFromxy.x, prevFromxy.y);
-          attrStartPosition.setXY(index * 4 + 1, prevFromxy.x, prevFromxy.y);
-          attrPosition.setXYZ(index * 4, linkFromxy.x, linkFromxy.y, 0);
-          attrPosition.setXYZ(index * 4 + 1, linkFromxy.x, linkFromxy.y, 0);
-          attrEndPosition.setXY(index * 4, linkToxy.x, linkToxy.y);
-          attrEndPosition.setXY(index * 4 + 1, linkToxy.x, linkToxy.y);
-          attrSide.setX(index * 4, 1);
-          attrSide.setX(index * 4 + 1, -1);
-          attrLength.setX(index * 4, link.fromLength);
-          attrLength.setX(index * 4 + 1, link.fromLength);
+      // fromNode
+      {
+        attrStartPosition.setXY(index * 4, prevFromxy.x, prevFromxy.y);
+        attrStartPosition.setXY(index * 4 + 1, prevFromxy.x, prevFromxy.y);
+        attrPosition.setXYZ(index * 4, linkFromxy.x, linkFromxy.y, 0);
+        attrPosition.setXYZ(index * 4 + 1, linkFromxy.x, linkFromxy.y, 0);
+        attrEndPosition.setXY(index * 4, linkToxy.x, linkToxy.y);
+        attrEndPosition.setXY(index * 4 + 1, linkToxy.x, linkToxy.y);
+        attrSide.setX(index * 4, 1);
+        attrSide.setX(index * 4 + 1, -1);
+        attrLength.setX(index * 4, link.fromLength);
+        attrLength.setX(index * 4 + 1, link.fromLength);
 
-          attrPickColor.setXYZ(
-            index * 4,
-            pickColor.r,
-            pickColor.g,
-            pickColor.b
-          );
-          attrPickColor.setXYZ(
-            index * 4 + 1,
-            pickColor.r,
-            pickColor.g,
-            pickColor.b
-          );
-          attrColor.setXYZ(index * 4, color.r, color.g, color.b);
-          attrColor.setXYZ(index * 4 + 1, color.r, color.g, color.b);
-        }
-        // toNode
-        {
-          attrStartPosition.setXY(index * 4 + 2, linkFromxy.x, linkFromxy.y);
-          attrStartPosition.setXY(index * 4 + 3, linkFromxy.x, linkFromxy.y);
-          attrPosition.setXYZ(index * 4 + 2, linkToxy.x, linkToxy.y, 0);
-          attrPosition.setXYZ(index * 4 + 3, linkToxy.x, linkToxy.y, 0);
-          attrEndPosition.setXY(index * 4 + 2, nextToxy.x, nextToxy.y);
-          attrEndPosition.setXY(index * 4 + 3, nextToxy.x, nextToxy.y);
-          attrSide.setX(index * 4 + 2, 1);
-          attrSide.setX(index * 4 + 3, -1);
-          attrLength.setX(index * 4 + 2, link.toLength);
-          attrLength.setX(index * 4 + 3, link.toLength);
+        attrPickColor.setXYZ(
+          index * 4,
+          pickColor.r,
+          pickColor.g,
+          pickColor.b
+        );
+        attrPickColor.setXYZ(
+          index * 4 + 1,
+          pickColor.r,
+          pickColor.g,
+          pickColor.b
+        );
+        attrColor.setXYZ(index * 4, color.r, color.g, color.b);
+        attrColor.setXYZ(index * 4 + 1, color.r, color.g, color.b);
+      }
+      // toNode
+      {
+        attrStartPosition.setXY(index * 4 + 2, linkFromxy.x, linkFromxy.y);
+        attrStartPosition.setXY(index * 4 + 3, linkFromxy.x, linkFromxy.y);
+        attrPosition.setXYZ(index * 4 + 2, linkToxy.x, linkToxy.y, 0);
+        attrPosition.setXYZ(index * 4 + 3, linkToxy.x, linkToxy.y, 0);
+        attrEndPosition.setXY(index * 4 + 2, nextToxy.x, nextToxy.y);
+        attrEndPosition.setXY(index * 4 + 3, nextToxy.x, nextToxy.y);
+        attrSide.setX(index * 4 + 2, 1);
+        attrSide.setX(index * 4 + 3, -1);
+        attrLength.setX(index * 4 + 2, link.toLength);
+        attrLength.setX(index * 4 + 3, link.toLength);
 
-          attrPickColor.setXYZ(
-            index * 4 + 2,
-            pickColor.r,
-            pickColor.g,
-            pickColor.b
-          );
-          attrPickColor.setXYZ(
-            index * 4 + 3,
-            pickColor.r,
-            pickColor.g,
-            pickColor.b
-          );
-          attrColor.setXYZ(index * 4 + 2, color.r, color.g, color.b);
-          attrColor.setXYZ(index * 4 + 3, color.r, color.g, color.b);
-        }
-
-        attrUv.setXY(index * 4, 0, 0);
-        attrUv.setXY(index * 4 + 1, 1, 0);
-        attrUv.setXY(index * 4 + 2, 0, 1);
-        attrUv.setXY(index * 4 + 3, 1, 1);
-
-        attrIndex.setX(index * 6, index * 4);
-        attrIndex.setX(index * 6 + 1, index * 4 + 1);
-        attrIndex.setX(index * 6 + 2, index * 4 + 3);
-        attrIndex.setX(index * 6 + 3, index * 4);
-        attrIndex.setX(index * 6 + 4, index * 4 + 3);
-        attrIndex.setX(index * 6 + 5, index * 4 + 2);
+        attrPickColor.setXYZ(
+          index * 4 + 2,
+          pickColor.r,
+          pickColor.g,
+          pickColor.b
+        );
+        attrPickColor.setXYZ(
+          index * 4 + 3,
+          pickColor.r,
+          pickColor.g,
+          pickColor.b
+        );
+        attrColor.setXYZ(index * 4 + 2, color.r, color.g, color.b);
+        attrColor.setXYZ(index * 4 + 3, color.r, color.g, color.b);
       }
 
-      const geometry = new THREE.BufferGeometry();
+      attrUv.setXY(index * 4, 0, 0);
+      attrUv.setXY(index * 4 + 1, 1, 0);
+      attrUv.setXY(index * 4 + 2, 0, 1);
+      attrUv.setXY(index * 4 + 3, 1, 1);
 
-      geometry.setAttribute("position", attrPosition);
-      geometry.setAttribute("startPosition", attrStartPosition);
-      geometry.setAttribute("endPosition", attrEndPosition);
-      geometry.setAttribute("side", attrSide);
-      geometry.setAttribute("lineLength", attrLength);
-      geometry.setAttribute("uv", attrUv);
-      geometry.setAttribute("pickColor", attrPickColor);
-      geometry.setAttribute("color", attrColor);
-      geometry.index = attrIndex;
-      geometryList.push(geometry);
+      attrIndex.setX(index * 6, index * 4);
+      attrIndex.setX(index * 6 + 1, index * 4 + 1);
+      attrIndex.setX(index * 6 + 2, index * 4 + 3);
+      attrIndex.setX(index * 6 + 3, index * 4);
+      attrIndex.setX(index * 6 + 4, index * 4 + 3);
+      attrIndex.setX(index * 6 + 5, index * 4 + 2);
     }
-    return BufferGeometryUtils.mergeBufferGeometries(geometryList, false);
+
+    const geometry = new THREE.BufferGeometry();
+
+    geometry.setAttribute("position", attrPosition);
+    geometry.setAttribute("startPosition", attrStartPosition);
+    geometry.setAttribute("endPosition", attrEndPosition);
+    geometry.setAttribute("side", attrSide);
+    geometry.setAttribute("lineLength", attrLength);
+    geometry.setAttribute("uv", attrUv);
+    geometry.setAttribute("pickColor", attrPickColor);
+    geometry.setAttribute("color", attrColor);
+    geometry.index = attrIndex;
+    return geometry;
   }
 }
