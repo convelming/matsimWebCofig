@@ -14,7 +14,7 @@ export const many_stop_menu = [
   { label: "Copy Name", cn_label: "复制名称", value: "Copy Name" },
   { label: "Copy Link Id", cn_label: "复制路线编号", value: "Copy Link Id" },
   { label: "Transit Stop Details", cn_label: "中转站详情", value: "Transit Stop Details" },
-  { label: "Stop Load...", cn_label: "站点加载...", value: "Stop Load..." },
+  { label: "Stop Load...", cn_label: "站点上下车客流...", value: "Stop Load..." },
   { label: "Transfers At Stop...", cn_label: "中转站...", value: "Transfers At Stop..." },
 ];
 

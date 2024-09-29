@@ -29,7 +29,7 @@
 <language>
 {
   "Passengers At Stop":{
-    "zh-CN": "停靠站点的乘客",
+    "zh-CN": "上下车详细信息",
     "en-US": "Passengers At Stop"
   },
   "Aggregate":{

@@ -1,5 +1,5 @@
 <template>
-  <Dialog :title="$l('Transit Stop Load')" class="TransitStopLoad" :visible="true" @close="$emit('close')" left="center">
+  <Dialog :title="$l('Transit Stop Load By Time')" class="TransitStopLoad" :visible="true" @close="$emit('close')" left="center">
     <div>
       <el-select v-model="second" @change="getData">
         <el-option label="5 minutes" value="300" />
@@ -15,9 +15,9 @@
 
 <language>
 {
-  "Transit Stop Load":{
-    "zh-CN": "转运站加载",
-    "en-US": "Transit Stop Load"
+  "Transit Stop Load By Time":{
+    "zh-CN": "站点上下车客流",
+    "en-US": "Transit Stop Load By Time"
   },
   "5 minutes":{
     "zh-CN": "5 分钟",
@@ -38,6 +38,14 @@
   "60 minutes":{
     "zh-CN": "60 分钟",
     "en-US": "60 minutes"
+  },
+  "Leave":{
+    "zh-CN": "下车客流",
+    "en-US": "Leave"
+  },
+  "Passengers":{
+    "zh-CN": "上车客流",
+    "en-US": "Passengers"
   },
 }
 </language>
@@ -101,7 +109,8 @@ export default {
     },
     getChartOption() {
       const data = this.data || [];
-      const plist = data.map((v) => v.passengers);
+      const plist1 = data.map((v) => v.leave);
+      const plist2 = data.map((v) => v.passengers);
       const tlist = data.map((v) => formatHour(v.time));
 
       const stop = this.form.list[0];
@@ -112,7 +121,7 @@ export default {
       }
       return {
         title: {
-          text: "Transit Stop Load By Time",
+          text: this.$l("Transit Stop Load By Time"),
           left: "center",
         },
         tooltip: {
@@ -141,10 +150,16 @@ export default {
         },
         series: [
           {
-            name: seriesName,
+            name: this.$l("Leave"),
             type: "bar",
             step: "start",
-            data: plist,
+            data: plist1,
+          },
+          {
+            name: this.$l("Passengers"),
+            type: "bar",
+            step: "start",
+            data: plist2,
           },
         ],
       };

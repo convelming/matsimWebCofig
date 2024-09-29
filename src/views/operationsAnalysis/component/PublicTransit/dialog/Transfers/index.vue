@@ -121,7 +121,7 @@
 <language>
 {
   "Transfers":{
-    "zh-CN": "转站",
+    "zh-CN": "站点换乘客流",
     "en-US": "Transfers"
   },
   "Transit Stop":{
