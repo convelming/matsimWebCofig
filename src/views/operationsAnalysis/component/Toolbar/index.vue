@@ -245,7 +245,7 @@ export default {
         PolgonParkingDetail: "Parking",
         ParkingActivityDetail: "Parking",
       },
-      activeModel: this.isDev ? "GeoJSON" : "PublicTransit",
+      activeModel: this.isDev ? "PublicTransit" : "PublicTransit",
       activeName: "",
       list: [],
     };

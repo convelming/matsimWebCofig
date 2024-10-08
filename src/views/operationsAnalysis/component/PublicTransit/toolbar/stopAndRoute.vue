@@ -296,16 +296,16 @@ export default {
     this._transitStopLoadList = [];
     this._passengersAtStop = [];
     this._SelectStopLayer = new SelectStopLayer({
-      zIndex: 50,
+      zIndex: 150,
       color: this.stopColor,
     });
     this._TransitLinesLayer = new TransitLinesLayer({
-      zIndex: 30,
+      zIndex: 130,
       color: this.transitLinesColor,
       visible: this.showTransitLines,
     });
     this._ReachableStopsLayer = new ReachableStopsLayer({
-      zIndex: 40,
+      zIndex: 140,
       color: this.reachableStopsColor,
       visible: this.showReachableStops,
     });

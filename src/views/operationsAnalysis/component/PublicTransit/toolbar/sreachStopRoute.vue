@@ -62,8 +62,9 @@ export default {
   methods: {
     handleChangeValue(val) {
       if (this.sreachType == "stop") {
-        let item = this.options.find((v) => v.id == val);
-        this.rootVue.handleShowStopDetailByStopData(item);
+        // let item = this.options.find((v) => v.id == val);
+        // this.rootVue.handleShowStopDetailByStopData(item);
+        this.rootVue.handleShowStopAndRoute([val]);
       } else if (this.sreachType == "route") {
         let item = this.options.find((v) => v.routeId == val);
         this.rootVue.handleShowRouteDetail(item.routeId);
