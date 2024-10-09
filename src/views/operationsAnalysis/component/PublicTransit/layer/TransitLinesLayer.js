@@ -112,6 +112,7 @@ export class TransitLinesLayer extends Layer {
 
   setShowLine(idList) {
     this.showLine = idList;
+    console.log(idList);
     if (this.map) {
       for (const data of this.data) {
         if (idList.includes(data.id)) {
@@ -123,6 +124,8 @@ export class TransitLinesLayer extends Layer {
         }
       }
     }
+    console.log(this.scene);
+    
   }
 
   update() {
@@ -210,7 +213,7 @@ export class TransitLinesLayer extends Layer {
         `
             #ifdef USE_MAP
               float lineWidth = ${Number(this.lineWidth).toFixed(2)} * 2.0;
-              float l = mod(vLineLength, 300.0) / lineWidth ;
+              float l = mod(vLineLength, lineWidth * 3.0) / lineWidth ;
               if(0.0 < l && l < 1.0){
                 vec4 sampledDiffuseColor = texture2D(map, vec2(vUv.x,  l));
                 if(sampledDiffuseColor.a > 0.6) {

@@ -29,11 +29,11 @@ export const route_menu = [
 ];
 
 export const group_attribute = [
-  { label: "Transit Line Id", cn_label: "", value: 1 },
-  { label: "Transit Route Id", cn_label: "", value: 2 },
-  { label: "Line and Route Id", cn_label: "", value: 3 },
-  { label: "Route: Route Origin", cn_label: "", value: 4 },
-  { label: "Route: Route Destination", cn_label: "", value: 5 },
+  { label: "Transit Line Id", cn_label: "公交线路Id", value: 1 },
+  { label: "Transit Route Id", cn_label: "公交路线Id", value: 2 },
+  { label: "Line and Route Id", cn_label: "线路和路线Id", value: 3 },
+  { label: "Route: Route Origin", cn_label: "路线：路线起点", value: 4 },
+  { label: "Route: Route Destination", cn_label: "路线：路线目的地", value: 5 },
 ];
 
 export const route_info_analysis = [

@@ -153,6 +153,7 @@ export default {
           this._TransitLinesLayer.setData(this.routeList);
           this._TransitLinesLayer.setShowLine(this.routeList.map((v) => v.routeId));
           this._ReachableStopsLayer.setData(this.routeList);
+          this._ReachableStopsLayer.setShowLine(this.routeList.map((v) => v.routeId));
           this.getRouteList();
         });
       },
@@ -304,7 +305,9 @@ export default {
         }
         this._SelectStopLayer.setData([this.stopDetail].filter((v) => !!v));
         this._TransitLinesLayer.setData(this.routeList);
+        this._TransitLinesLayer.setShowLine(this.routeList.map((v) => v.routeId));
         this._ReachableStopsLayer.setData(this.routeList);
+        this._ReachableStopsLayer.setShowLine(this.routeList.map((v) => v.routeId));
         this.getRouteList();
         this.handleChangeMapCenterAndZoom();
       });
@@ -319,7 +322,9 @@ export default {
         }
 
         this._TransitLinesLayer.setData(this.routeList);
+        this._TransitLinesLayer.setShowLine(this.routeList.map((v) => v.routeId));
         this._ReachableStopsLayer.setData(this.routeList);
+        this._ReachableStopsLayer.setShowLine(this.routeList.map((v) => v.routeId));
       });
     },
     handleEnable() {

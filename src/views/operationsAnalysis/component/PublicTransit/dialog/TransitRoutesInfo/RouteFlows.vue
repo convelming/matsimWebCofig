@@ -1,6 +1,9 @@
 <template>
   <el-tabs v-model="activeName">
     <el-tab-pane :label="$l('Chart')" name="Chart">
+      <div>
+        <el-checkbox v-model="showOnMap" size="small">{{ $l("showOnMap") }}</el-checkbox>
+      </div>
       <div ref="chart" class="chart-container" v-loading="loading">
         <div class="chart" v-html="src"></div>
       </div>
@@ -52,14 +55,20 @@
     "zh-CN": "数据",
     "en-US": "Data"
   },
+  "showOnMap":{
+    "zh-CN": "在地图上显示",
+    "en-US": "Display on map"
+  },
 }
 </language>
 
 <script>
+import { RouteFlowsLayer } from "../../layer/RouteFlowsLayer";
 import { guid } from "@/utils/utils";
 import * as d3 from "d3";
-import { routeFlows } from "@/api/index";
+import { routeFlows, getTwoWayByRouteId } from "@/api/index";
 import { formatHour } from "@/utils/utils";
+import * as Bean from "@/utils/Bean";
 export default {
   props: {
     routeOptions: {
@@ -75,18 +84,47 @@ export default {
       default: () => ({}),
     },
   },
+  inject: ["rootVue"],
   computed: {
     tableList() {
       return [{ type: "name" }, { type: "id" }, ...this.list];
     },
+    _Map() {
+      return this.rootVue._Map;
+    },
   },
   watch: {
+    show: {
+      handler(val) {
+        this.$nextTick(() => {
+          this._interval = setInterval(() => {
+            if (!this._Map) return;
+            clearInterval(this._interval);
+            if (this.showOnMap) {
+              this._Map.addLayer(this._RouteFlowsLayer);
+            } else {
+              this._Map.removeLayer(this._RouteFlowsLayer);
+            }
+          }, 1000);
+        });
+      },
+      immediate: true,
+    },
     form: {
       handler(val) {
         this.getData();
       },
-      immediate: true,
       deep: true,
+    },
+
+    showOnMap: {
+      handler(val) {
+        if (val) {
+          this._Map.addLayer(this._RouteFlowsLayer);
+        } else {
+          this._Map.removeLayer(this._RouteFlowsLayer);
+        }
+      },
     },
   },
   data() {
@@ -97,10 +135,27 @@ export default {
       loading: false,
       src: "",
       maxPassenger: 0,
+
+      showOnMap: false,
     };
   },
-  mounted() {},
+  created() {
+    this._RouteFlowsLayer = new RouteFlowsLayer({ zIndex: 10, color: "#ffd700", maxTube: 100 });
+    this.getData();
+  },
+  beforeDestroy() {
+    this._Map.removeLayer(this._RouteFlowsLayer);
+    this._RouteFlowsLayer.dispose();
+  },
   methods: {
+    handleChangeMapCenterAndZoom() {
+      try {
+        const list = this.routeDetail.stops.map((v) => v.coord.toList());
+        this._Map.setFitZoomAndCenterByPoints(list);
+      } catch (error) {
+        console.log(error);
+      }
+    },
     // table 表头样式
     headerCellStyle({ row, column, rowIndex, columnIndex }) {
       return rowIndex == 3 ? "display:none" : "";
@@ -140,9 +195,22 @@ export default {
           this.linkObj = linkObj;
           this.maxPassenger = Math.max(...[...Object.values(fromOffsetObj), ...Object.values(toOffsetObj)]);
           this.src = this.getChart();
+
+          this.stopMap = new Map(
+            res.data.map((v, i) => {
+              const stop = JSON.parse(JSON.stringify(v.stop));
+              stop.index = i;
+              return [stop.name, stop];
+            })
+          );
+          this._RouteFlowsLayer.setData(this.stopMap, this.linkObj, this.maxPassenger);
+          console.log(this._RouteFlowsLayer);
+
           this.loading = false;
         })
         .catch((err) => {
+          console.log(err);
+
           if (this._requestId != _requestId) return;
           this.list = [];
           this.linkObj = {};

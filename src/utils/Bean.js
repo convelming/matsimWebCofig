@@ -115,6 +115,7 @@ export class TransitRouteParams {
   description = "";
   transportMode = "";
   passenger = 0;
+  takeRate = 0;
 
   route = {
     startLinkId: null,
@@ -173,6 +174,7 @@ export class TransitRoute {
     this.routeId = opt.routeId;
     this.description = opt.description;
     this.transportMode = opt.transportMode;
+    this.takeRate = opt.takeRate;
     this.departures = opt.departures.map((v) => new Departures(v));
     this.departureRules = opt.departureRules.map((v) => new DepartureRule(v));
 

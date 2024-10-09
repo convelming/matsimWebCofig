@@ -10,6 +10,7 @@ export class ReachableStopsLayer extends Layer {
   scale = 3;
   color = new THREE.Color(0xffffff);
 
+  showLine = [];
   data = [];
   center = [0, 0];
   highStopId = -1;
@@ -72,24 +73,24 @@ export class ReachableStopsLayer extends Layer {
     if (type == MAP_EVENT.UPDATE_CENTER) {
       for (const mesh of this.scene.children) {
         const [x, y] = this.map.WebMercatorToCanvasXY(...this.center);
-        mesh.position.set(x, y, mesh.position.z);
+        mesh.position.set(x, y, 0);
       }
       for (const mesh of this.pickLayerScene.children) {
         const [x, y] = this.map.WebMercatorToCanvasXY(...this.center);
-        mesh.position.set(x, y, mesh.position.z);
+        mesh.position.set(x, y, 0);
       }
       for (const mesh of this.pickMeshScene.children) {
         const [x, y] = this.map.WebMercatorToCanvasXY(...this.center);
-        mesh.position.set(x, y, mesh.position.z);
+        mesh.position.set(x, y, 0);
       }
     }
     if (type == MAP_EVENT.UPDATE_CAMERA_HEIGHT) {
       this.setSize(this.map.cameraHeight / 10000);
-      this.update();
+      // this.update();
     }
     if (type == MAP_EVENT.HANDLE_PICK_LEFT && data.layerId == this.id) {
       const pickColor = new THREE.Color(data.pickColor);
-      const item = this.data.find((v2) => v2.pickColor.equals(pickColor));
+      const item = this.getItemByPickColor(pickColor);
       if (item) {
         this.handleEventListener(type, item.data);
       }
@@ -98,7 +99,7 @@ export class ReachableStopsLayer extends Layer {
       let labelData = null;
       if (data.layerId == this.id) {
         const pickColor = new THREE.Color(data.pickColor);
-        const item = this.data.find((v2) => v2.pickColor.equals(pickColor));
+        const item = this.getItemByPickColor(pickColor);
         if (item) {
           if (this.labelData && item.data.stop.name == this.labelData.name) {
             labelData = this.labelData;
@@ -130,52 +131,69 @@ export class ReachableStopsLayer extends Layer {
     this.update();
   }
 
+  getItemByPickColor(pickColor) {
+    for (const [li, line] of this.data.entries()) {
+      for (const [si, stop] of line.stopList.entries()) {
+        if (stop.pickColor.equals(pickColor)) return stop;
+      }
+    }
+    return null
+  }
+
   setSize(size = this.size, scale = this.scale) {
     this.size = size;
     this.scale = scale;
-    const data = this.data;
-    const count = data.length;
-    for (let i = 0; i < count; i++) {
-      const { coord } = data[i];
-      const positionV3 = new THREE.Vector3(coord.x, coord.y, i / count);
-      const _scale = scale * size;
-      const scaleV3 = new THREE.Vector3(_scale, _scale, _scale);
+    const count = this.data.length;
+    for (const [li, line] of this.data.entries()) {
+      for (const [si, stop] of line.stopList.entries()) {
+        const { coord } = stop;
+        const positionV3 = new THREE.Vector3(coord.x, coord.y, li / count);
+        const _scale = scale * size;
+        const scaleV3 = new THREE.Vector3(_scale, _scale, _scale);
 
-      const matrix = new THREE.Matrix4();
-      matrix.compose(positionV3, new THREE.Quaternion(), scaleV3);
+        const matrix = new THREE.Matrix4();
+        matrix.compose(positionV3, new THREE.Quaternion(), scaleV3);
 
-      if (this.mesh) this.mesh.setMatrixAt(i, matrix);
-      if (this.pickLayerMesh) this.pickLayerMesh.setMatrixAt(i, matrix);
-      if (this.pickMesh) this.pickMesh.setMatrixAt(i, matrix);
-    }
+        if (line.mesh) line.mesh.setMatrixAt(si, matrix);
+        if (line.pickLayerMesh) line.pickLayerMesh.setMatrixAt(si, matrix);
+        if (line.pickMesh) line.pickMesh.setMatrixAt(si, matrix);
+      }
 
-    if (this.mesh) this.mesh.instanceMatrix.needsUpdate = true;
-    if (this.pickLayerMesh) this.pickLayerMesh.instanceMatrix.needsUpdate = true;
-    if (this.pickMesh) this.pickMesh.instanceMatrix.needsUpdate = true;
+      if (line.mesh) line.mesh.instanceMatrix.needsUpdate = true;
+      if (line.pickLayerMesh) line.pickLayerMesh.instanceMatrix.needsUpdate = true;
+      if (line.pickMesh) line.pickMesh.instanceMatrix.needsUpdate = true;
 
 
-    if (this.labelData && this.labelMesh) {
-      const scale = this.map.cameraHeight / 2000;
-      this.labelMesh.scale.set(this.labelData.mapWidth * scale, this.labelData.mapHeight * scale, 1);
+      if (this.labelData && this.labelMesh) {
+        const scale = this.map.cameraHeight / 2000;
+        this.labelMesh.scale.set(this.labelData.mapWidth * scale, this.labelData.mapHeight * scale, 1);
+      }
     }
   }
 
   setData(data) {
     try {
       const center = data[0].center;
-      const stopList = [];
+      const lineList = [];
       let pickColorNum = 1;
       for (const route of data) {
+        const line = {
+          id: route.routeId,
+          stopList: []
+        }
         for (const stop of route.stops) {
-          stopList.push({
+          line.stopList.push({
             coord: stop.coord.offset(center),
             pickColor: new THREE.Color(++pickColorNum),
             id: stop.uuid,
             data: stop.toJSON(),
           });
         }
+        lineList.push(line);
       }
-      this.data = stopList;
+      this.data = lineList;
+      console.log(lineList);
+
       this.center = center.toList();
       this.update();
     } catch (error) {
@@ -206,49 +224,68 @@ export class ReachableStopsLayer extends Layer {
     }
   }
 
+  setShowLine(idList) {
+    this.showLine = idList;
+    if (this.map) {
+      const [cx, cy] = this.map.WebMercatorToCanvasXY(...this.center);
+      for (const [li, line] of this.data.entries()) {
+        if (idList.includes(line.id)) {
+          line.mesh.position.set(cx, cy, 0);
+          line.pickLayerMesh.position.set(cx, cy, 0);
+          line.pickMesh.position.set(cx, cy, 0);
+    
+          this.scene.add(line.mesh);
+          this.pickLayerScene.add(line.pickLayerMesh);
+          this.pickMeshScene.add(line.pickMesh);
+        } else {
+          line.mesh.removeFromParent();
+          line.pickLayerMesh.removeFromParent();
+          line.pickMesh.removeFromParent();
+        }
+      }
+    }
+  }
+
   update() {
     this.clearScene();
     if (!this.map) return;
     if (!this.data) return;
 
-    const data = this.data;
-    const count = data.length;
-    const mesh = new THREE.InstancedMesh(this.geometry, this.material, count);
-    const pickLayerMesh = new THREE.InstancedMesh(this.pickGeometry, this.pickLayerMaterial, count);
-    const pickMesh = new THREE.InstancedMesh(this.pickGeometry, this.pickMeshMaterial, count);
+    const [cx, cy] = this.map.WebMercatorToCanvasXY(...this.center);
 
-    for (let i = 0; i < count; i++) {
-      const { coord, pickColor } = data[i];
+    const count = this.data.length;
+    for (const [li, line] of this.data.entries()) {
+      line.mesh = new THREE.InstancedMesh(this.geometry, this.material, line.stopList.length);
+      line.pickLayerMesh = new THREE.InstancedMesh(this.pickGeometry, this.pickLayerMaterial, line.stopList.length);
+      line.pickMesh = new THREE.InstancedMesh(this.pickGeometry, this.pickMeshMaterial, line.stopList.length);
 
-      const positionV3 = new THREE.Vector3(coord.x, coord.y, i / count);
-      const _scale = this.scale * this.size;
-      const scaleV3 = new THREE.Vector3(_scale, _scale, _scale);
+      line.mesh.position.set(cx, cy, 0);
+      line.pickLayerMesh.position.set(cx, cy, 0);
+      line.pickMesh.position.set(cx, cy, 0);
 
-      const matrix = new THREE.Matrix4();
-      matrix.compose(positionV3, new THREE.Quaternion(), scaleV3);
+      this.scene.add(line.mesh);
+      this.pickLayerScene.add(line.pickLayerMesh);
+      this.pickMeshScene.add(line.pickMesh);
 
-      mesh.setMatrixAt(i, matrix);
-      pickLayerMesh.setMatrixAt(i, matrix);
-      pickMesh.setMatrixAt(i, matrix);
+      for (const [si, stop] of line.stopList.entries()) {
+        const { coord, pickColor } = stop;
 
-      // mesh.setColorAt(i, this.color);
-      // pickLayerMesh.setColorAt(i, this.pickLayerColor);
-      pickMesh.setColorAt(i, pickColor);
+        const positionV3 = new THREE.Vector3(coord.x, coord.y, li / count);
+        const _scale = this.scale * this.size;
+        const scaleV3 = new THREE.Vector3(_scale, _scale, _scale);
+
+        const matrix = new THREE.Matrix4();
+        matrix.compose(positionV3, new THREE.Quaternion(), scaleV3);
+
+        line.mesh.setMatrixAt(si, matrix);
+        line.pickLayerMesh.setMatrixAt(si, matrix);
+        line.pickMesh.setMatrixAt(si, matrix);
+
+        line.pickMesh.setColorAt(si, pickColor);
+      }
     }
-
-    let [x, y] = this.map.WebMercatorToCanvasXY(...this.center);
-
-    mesh.position.set(x, y, 0);
-    pickLayerMesh.position.set(x, y, 0);
-    pickMesh.position.set(x, y, 0);
-
-    this.mesh = mesh;
-    this.pickLayerMesh = pickLayerMesh;
-    this.pickMesh = pickMesh;
-
-    this.scene.add(mesh);
-    this.pickLayerScene.add(pickLayerMesh);
-    this.pickMeshScene.add(pickMesh);
+    
+    this.setShowLine(this.showLine || []);
   }
 
   getMaterial({ usePickColor, ...opt }) {

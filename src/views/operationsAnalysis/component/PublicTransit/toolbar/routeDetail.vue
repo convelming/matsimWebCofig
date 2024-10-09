@@ -24,6 +24,7 @@
             <el-descriptions-item :label="$l('站点数量')">{{ routeDetail.stops.length }}</el-descriptions-item>
             <el-descriptions-item :label="$l('平均站距')">{{ routeDetail.averageStopSpacing }} m</el-descriptions-item>
             <el-descriptions-item :label="$l('日均客流')">{{ routeDetail.passenger }}</el-descriptions-item>
+            <el-descriptions-item :label="$l('满载率')">{{ Number(routeDetail.takeRate * 100).toFixed(2) }} %</el-descriptions-item>
           </el-descriptions>
         </div>
         <div class="stops_table">
@@ -87,6 +88,10 @@
   "线路长度":{
     "zh-CN": "线路长度",
     "en-US": "线路长度"
+  },
+  "满载率":{
+    "zh-CN": "满载率",
+    "en-US": "满载率"
   },
   "首班时间":{
     "zh-CN": "首班时间",
@@ -289,6 +294,7 @@ export default {
       this._TransitLinesLayer.setData(list);
       this._TransitLinesLayer.setShowLine(list.map((v) => v.routeId));
       this._ReachableStopsLayer.setData(list);
+      this._ReachableStopsLayer.setShowLine(list.map((v) => v.routeId));
     },
     handleEnable() {
       this._MapEvnetId1 = this._Map.addEventListener(MAP_EVENT.HANDLE_CLICK_RIGHT, this.handleOpenMenu);

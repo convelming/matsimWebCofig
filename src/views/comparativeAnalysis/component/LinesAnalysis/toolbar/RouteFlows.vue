@@ -230,7 +230,7 @@ export default {
       this.s_form.endTime = 24 * 60 * 60;
     }
 
-    this._OldRouteFlowsLayer = new RouteFlowsLayer({ zIndex: 10, color: this.oldLineColor, visible: this.showOldLine });
+    this._OldRouteFlowsLayer = new RouteFlowsLayer({ zIndex: 10, color: this.oldLineColor, visible: this.showOldLine, maxTube: 100 });
     this._OldBusLineLayer = new BusLineLayer({
       zIndex: 29,
       color: this.oldLineColor,
@@ -243,7 +243,7 @@ export default {
       visible: this.showOldLine,
     });
 
-    this._NewRouteFlowsLayer = new RouteFlowsLayer({ zIndex: 10, color: this.newLineColor, visible: this.showNewLine });
+    this._NewRouteFlowsLayer = new RouteFlowsLayer({ zIndex: 10, color: this.newLineColor, visible: this.showNewLine, maxTube: 100 });
     this._NewBusLineLayer = new BusLineLayer({
       zIndex: 26,
       color: this.newLineColor,

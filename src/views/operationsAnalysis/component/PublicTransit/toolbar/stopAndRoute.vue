@@ -45,13 +45,9 @@
         </el-table>
       </div>
       <!-- <div class="stop_title">
-        <el-checkbox v-model="showTransitLines">{{ $l("Show Transit Lines") }}</el-checkbox>
-        <el-color-picker size="mini" :predefine="predefineColors" v-model="transitLinesColor" />
-      </div> -->
-      <div class="stop_title">
         <el-checkbox v-model="showReachableStops">{{ $l("Show Reachable Stops") }}</el-checkbox>
         <el-color-picker size="mini" :predefine="predefineColors" v-model="reachableStopsColor" />
-      </div>
+      </div> -->
     </div>
     <StopMenu :visible.sync="showBusStopMenu" :list="stopList" :style="busStopMenuStyle" @commandOne="handleOneStopMenu({ data: stopList[0], command: $event.command })" @commandMany="handleManyStopMenu({ data: stopList, command: $event.command })" />
   </el-collapse-item>
@@ -186,33 +182,7 @@ export default {
     stopColor: {
       handler(val) {
         this._SelectStopLayer.setColor(val);
-      },
-    },
-    showTransitLines: {
-      handler(val) {
-        if (val) {
-          this._TransitLinesLayer.show();
-        } else {
-          this._TransitLinesLayer.hide();
-        }
-      },
-    },
-    transitLinesColor: {
-      handler(val) {
         this._TransitLinesLayer.setColor(val);
-      },
-    },
-    showReachableStops: {
-      handler(val) {
-        if (val) {
-          this._ReachableStopsLayer.show();
-        } else {
-          this._ReachableStopsLayer.hide();
-        }
-      },
-    },
-    reachableStopsColor: {
-      handler(val) {
         this._ReachableStopsLayer.setColor(val);
       },
     },
@@ -269,12 +239,6 @@ export default {
       showBusStopMenu: false,
       busStopMenuStyle: "top:100px;left:100px;z-index:1000;",
 
-      showTransitLines: true,
-      transitLinesColor: "#ff8c00",
-
-      showReachableStops: false,
-      reachableStopsColor: "#ff8c00",
-
       _transitStopLoadList: [],
       _transitRoutesInfoList: [],
       _transferList: [],
@@ -301,13 +265,11 @@ export default {
     });
     this._TransitLinesLayer = new TransitLinesLayer({
       zIndex: 130,
-      color: this.transitLinesColor,
-      visible: this.showTransitLines,
+      color: this.stopColor,
     });
     this._ReachableStopsLayer = new ReachableStopsLayer({
       zIndex: 140,
-      color: this.reachableStopsColor,
-      visible: this.showReachableStops,
+      color: this.stopColor,
     });
   },
   mounted() {},
@@ -318,6 +280,7 @@ export default {
   methods: {
     handleSelectionChange(val) {
       this._TransitLinesLayer.setShowLine(val.map((v) => v.routeId));
+      this._ReachableStopsLayer.setShowLine(val.map((v) => v.routeId));
       // this.multipleSelection = val;
     },
     getStopList() {
