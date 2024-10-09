@@ -48,6 +48,10 @@
         <el-checkbox v-model="showReachableStops">{{ $l("Show Reachable Stops") }}</el-checkbox>
         <el-color-picker size="mini" :predefine="predefineColors" v-model="reachableStopsColor" />
       </div> -->
+      <div class="stop_title">
+        <div>{{ $l("Show Reachable Stops") }}</div>
+        <div>{{ showStopList.length }}</div>
+      </div>
     </div>
     <StopMenu :visible.sync="showBusStopMenu" :list="stopList" :style="busStopMenuStyle" @commandOne="handleOneStopMenu({ data: stopList[0], command: $event.command })" @commandMany="handleManyStopMenu({ data: stopList, command: $event.command })" />
   </el-collapse-item>
@@ -239,6 +243,8 @@ export default {
       showBusStopMenu: false,
       busStopMenuStyle: "top:100px;left:100px;z-index:1000;",
 
+      showStopList: [],
+
       _transitStopLoadList: [],
       _transitRoutesInfoList: [],
       _transferList: [],
@@ -279,8 +285,11 @@ export default {
   },
   methods: {
     handleSelectionChange(val) {
-      this._TransitLinesLayer.setShowLine(val.map((v) => v.routeId));
-      this._ReachableStopsLayer.setShowLine(val.map((v) => v.routeId));
+      const list = val.map((v) => v.routeId);
+      this._TransitLinesLayer.setShowLine(list);
+      this.showStopList = this._ReachableStopsLayer.setShowLine(list);
+      console.log(this.showStopList);
+
       // this.multipleSelection = val;
     },
     getStopList() {

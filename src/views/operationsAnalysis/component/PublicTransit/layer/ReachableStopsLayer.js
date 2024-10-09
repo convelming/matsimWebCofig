@@ -183,6 +183,7 @@ export class ReachableStopsLayer extends Layer {
         }
         for (const stop of route.stops) {
           line.stopList.push({
+            coordKey: `${Number(stop.coord.x).toFixed(0)}_${Number(stop.coord.y).toFixed(0)}`,
             coord: stop.coord.offset(center),
             pickColor: new THREE.Color(++pickColorNum),
             id: stop.uuid,
@@ -233,7 +234,7 @@ export class ReachableStopsLayer extends Layer {
           line.mesh.position.set(cx, cy, 0);
           line.pickLayerMesh.position.set(cx, cy, 0);
           line.pickMesh.position.set(cx, cy, 0);
-    
+
           this.scene.add(line.mesh);
           this.pickLayerScene.add(line.pickLayerMesh);
           this.pickMeshScene.add(line.pickMesh);
@@ -244,6 +245,15 @@ export class ReachableStopsLayer extends Layer {
         }
       }
     }
+    const obj = {};
+    for (const [li, line] of this.data.entries()) {
+      if (idList.includes(line.id)) {
+        for (const [si, stop] of line.stopList.entries()) {
+          obj[stop.coordKey] = stop.data;
+        }
+      }
+    }
+    return Array.from(Object.values(obj));
   }
 
   update() {
@@ -284,7 +294,7 @@ export class ReachableStopsLayer extends Layer {
         line.pickMesh.setColorAt(si, pickColor);
       }
     }
-    
+
     this.setShowLine(this.showLine || []);
   }
 
