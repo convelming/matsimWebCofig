@@ -39,31 +39,36 @@ const routes = [
     name: "systemEvaluation",
     component: () => import(/* webpackChunkName: "systemEvaluation" */ "../views/systemEvaluation/index.vue"),
   },
+  {
+    path: "/demo/page1",
+    name: "demopage1",
+    component: () => import(/* webpackChunkName: "demo" */ "../views/demo/page1/index.vue"),
+  }
 ];
 
 // if (process.env.NODE_ENV == "development") {
-  routes.push({
-    path: "/test",
-    name: "test",
-    component: () => import(/* webpackChunkName: "test" */ "../views/test/index.vue"),
-    children: [
-      {
-        path: "testpage1",
-        name: "testpage1",
-        component: () => import(/* webpackChunkName: "test" */ "../views/test/testpage1.vue"),
-      },
-      {
-        path: "testpage2",
-        name: "testpage2",
-        component: () => import(/* webpackChunkName: "test" */ "../views/test/testpage2.vue"),
-      },
-      {
-        path: "testpage3",
-        name: "testpage3",
-        component: () => import(/* webpackChunkName: "test" */ "../views/test/testpage3.vue"),
-      },
-    ],
-  });
+routes.push({
+  path: "/test",
+  name: "test",
+  component: () => import(/* webpackChunkName: "test" */ "../views/test/index.vue"),
+  children: [
+    {
+      path: "testpage1",
+      name: "testpage1",
+      component: () => import(/* webpackChunkName: "test" */ "../views/test/testpage1.vue"),
+    },
+    {
+      path: "testpage2",
+      name: "testpage2",
+      component: () => import(/* webpackChunkName: "test" */ "../views/test/testpage2.vue"),
+    },
+    {
+      path: "testpage3",
+      name: "testpage3",
+      component: () => import(/* webpackChunkName: "test" */ "../views/test/testpage3.vue"),
+    },
+  ],
+});
 // }
 
 const router = new VueRouter({

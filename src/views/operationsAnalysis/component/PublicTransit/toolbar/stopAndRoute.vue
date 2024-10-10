@@ -49,7 +49,7 @@
         <el-color-picker size="mini" :predefine="predefineColors" v-model="reachableStopsColor" />
       </div> -->
       <div class="stop_title">
-        <div>{{ $l("Show Reachable Stops") }}</div>
+        <div>{{ $l("可直达站点数量") }}</div>
         <div>{{ showStopList.length }}</div>
       </div>
     </div>
@@ -110,6 +110,10 @@
   "Show Reachable Stops":{
     "zh-CN": "显示可到达的站点",
     "en-US": "Show Reachable Stops"
+  },
+  "可直达站点数量":{
+    "zh-CN": "可直达站点数量",
+    "en-US": "Number of directly accessible stations"
   },
   // 这个不需要修改
   "label":{
