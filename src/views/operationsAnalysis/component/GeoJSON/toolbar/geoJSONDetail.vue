@@ -376,6 +376,7 @@ export default {
       console.log(error);
       worker.terminate();
     });
+    this._worker = worker;
 
     let reader = new FileReader();
     reader.readAsArrayBuffer(this.GeoJSON._file);
@@ -386,6 +387,7 @@ export default {
   },
   beforeDestroy() {
     this.handleDisable();
+    this._worker.terminate()
   },
   methods: {
     handleActivity3DChangeColor(val) {},
