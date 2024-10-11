@@ -1,4 +1,4 @@
-import { MAP_EVENT, Layer } from "../index.js";
+import { MAP_EVENT, Layer } from "../index";
 import * as THREE from "three";
 
 import { OutlinePass } from "three/examples/jsm/postprocessing/OutlinePass";

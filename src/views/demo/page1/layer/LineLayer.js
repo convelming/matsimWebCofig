@@ -12,14 +12,15 @@ export const LINE_STYPE = {
 }
 
 export class LineLayer extends Layer {
-  lineWidth = 3;
+  lineWidth = 1.5;
   constructor(opt) {
     super(opt);
     this.lineWidth = opt.lineWidth || this.lineWidth;
 
-    this.lineMaterial = new LineMaterial({
+    this.material = new LineMaterial({
       transparent: true,
-      map: null,// textureLoader.load("")
+      lineWidth: this.lineWidth,
+      map: textureLoader.load(require("@/assets/image/daolu.png"))
     });
     this.lineMeshList = [];
 
@@ -70,13 +71,9 @@ export class LineLayer extends Layer {
       lineList.push(line);
     }
     const geometry = new LineListGeometry(lineList, [], [], "");
-    const material = new LineMaterial({
-      lineWidth: this.lineWidth,
-      transparent: true,
-    });
 
     this.center = center;
-    this.mesh = new THREE.Mesh(geometry, material);
+    this.mesh = new THREE.Mesh(geometry, this.material);
     const [x, y] = this.map.WebMercatorToCanvasXY(...this.center);
     this.mesh.position.set(x, y, 0);
     this.scene.add(this.mesh);
@@ -101,12 +98,13 @@ export class LineListGeometry extends THREE.BufferGeometry {
     const attrDistance = new Array();
     const attrValue = new Array();
     const attrIndex = new Array();
+    const attrUv = new Array();
     let indexOffset = 0;
 
     for (let i1 = 0, l1 = lineList.length; i1 < l1; i1++) {
       const value = lineList[i1][0];
       const array = lineList[i1].slice(1);
-      addLine(array, value);
+      addLine(array, value, i1 * 0.0001);
     }
     this.setAttribute("position", new THREE.Float32BufferAttribute(attrPosition, 3));
     this.setAttribute("startPosition", new THREE.Float32BufferAttribute(attrStartPosition, 2));
@@ -115,6 +113,9 @@ export class LineListGeometry extends THREE.BufferGeometry {
     this.noValueAttribute = new THREE.Float32BufferAttribute(attrValue, 1)
     this.setAttribute("value", this.noValueAttribute);
     this.setAttribute("distance", new THREE.Float32BufferAttribute(attrDistance, 1));
+    this.setAttribute("uv", new THREE.Float32BufferAttribute(attrUv, 2));
+    console.log(attrUv);
+
     this.setIndex(attrIndex);
     this.computeVertexNormals();
     this.computeBoundingBox();
@@ -124,7 +125,8 @@ export class LineListGeometry extends THREE.BufferGeometry {
     this.setPropertiesList(propertiesList, propertiesLabels);
     this.setValueKey(valueKey);
 
-    function addLine(array, value) {
+    function addLine(array, value, zIndex) {
+      const totalL = array[array.length - 1]
       for (let i2 = 0, l2 = array.length / 3; i2 < l2; i2++) {
         let prevX = array[i2 * 3 - 3];
         let prevY = array[i2 * 3 - 2];
@@ -146,10 +148,10 @@ export class LineListGeometry extends THREE.BufferGeometry {
 
         attrPosition[attrPosition.length] = thatX;
         attrPosition[attrPosition.length] = thatY;
-        attrPosition[attrPosition.length] = 0;
+        attrPosition[attrPosition.length] = zIndex;
         attrPosition[attrPosition.length] = thatX;
         attrPosition[attrPosition.length] = thatY;
-        attrPosition[attrPosition.length] = 0;
+        attrPosition[attrPosition.length] = zIndex;
 
         attrStartPosition[attrStartPosition.length] = prevX;
         attrStartPosition[attrStartPosition.length] = prevY;
@@ -172,6 +174,12 @@ export class LineListGeometry extends THREE.BufferGeometry {
 
         attrSide[attrSide.length] = -1;
         attrSide[attrSide.length] = 1;
+
+        attrUv[attrUv.length] = 0;
+        attrUv[attrUv.length] = thatL / totalL;
+        attrUv[attrUv.length] = 1;
+        attrUv[attrUv.length] = thatL / totalL;
+
 
         if (i2 < l2 - 1) {
           attrIndex[attrIndex.length] = indexOffset + 0;
@@ -234,6 +242,8 @@ export class LineMaterial extends THREE.Material {
       USE_MAP: !!map,
       USE_COLOR_BAR: !!colorBar,
     };
+    console.log(argu);
+
     this.uniforms = {
       diffuse: {
         value: new THREE.Color(color),
@@ -287,7 +297,9 @@ export class LineMaterial extends THREE.Material {
         vDistance = distance;
 
         #ifdef USE_MAP
-          vUv = ( uvTransform * vec3( uv, 1 ) ).xy;
+          float dl = mod(distance / lineWidth , 1.0);
+          // vUv = ( uvTransform * vec3( uv.x, dl, 1.0 ) ).xy;
+          vUv = vec2( uv.x, dl);
         #endif
         
         vec3 transformed = vec3(1.0);
@@ -362,6 +374,12 @@ export class LineMaterial extends THREE.Material {
           vec4 barDiffuseColor = texture2D(colorBar, vec2(p , 0.5));
           diffuseColor = barDiffuseColor;
         #endif
+
+        #ifdef USE_MAP
+          vec4 sampledDiffuseColor = texture2D(map, vUv);
+          diffuseColor = sampledDiffuseColor;
+        #endif
+
 
         if(lineStyle == ${Number(LINE_STYPE.DASHED).toFixed(1)}){
           float dl = mod(vDistance / (lineWidth * 3.0), 1.0);

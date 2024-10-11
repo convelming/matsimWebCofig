@@ -7,10 +7,17 @@ import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
 import { SMAAPass } from "three/examples/jsm/postprocessing/SMAAPass";
 
-import { WGS84ToMercator, EPSG4526ToMercator } from "../utils/LngLatUtils";
+import { WGS84ToMercator, EPSG4526ToMercator, EARTH_RADIUS } from "../utils/LngLatUtils";
 import { EventListener } from "./EventListener";
 import { BloomComposer } from "../composer/BloomComposer";
 
+const distance = (form, to) => {
+  try {
+    return Math.sqrt(Math.pow(form[0] - to[0], 2) + Math.pow(form[1] - to[1], 2)) || 0;
+  } catch (error) {
+    return 0
+  }
+}
 
 export const SCENE_MAP = {
   ENTIRE_SCENE: 0, // 全景图层
@@ -60,9 +67,13 @@ export const MAP_EVENT = {
 };
 
 export const MAP_ZOOM_RANGE = {
+  BASE: 18,
   MIN: 5,
-  MAX: 18,
+  MAX: 22,
 };
+
+// 计算地图zoom和height的一个基数
+const MAP_ZOOM_BASE = 18
 
 // 地图层级缩放高度基数
 const MAP_ZOOM_HEIGHT = 300;
@@ -74,7 +85,7 @@ export class MyMap extends EventListener {
 
   // 获取摄像机到观测点距离
   get cameraHeight() {
-    return this.cameraControls ? Math.round(this.cameraControls.getDistance()) : Math.pow(2, MAP_ZOOM_RANGE.MAX - this.zoom) * MAP_ZOOM_HEIGHT;
+    return this.cameraControls ? Math.round(this.cameraControls.getDistance()) : this.constructor.zoomToHeight(this.zoom);
   }
 
   // 获取一个拾取图层颜色
@@ -114,8 +125,8 @@ export class MyMap extends EventListener {
       this.cameraControls.enablePan = enablePan;
     }
   }
-  get enableRotate() {
-    return this._enableRotate;
+  get enablePan() {
+    return this._enablePan;
   }
 
   // 启用或禁用摄像机的缩放。
@@ -316,6 +327,8 @@ export class MyMap extends EventListener {
     // 设置相机位置
     this.camera.position.y = 1000;
     this.camera.lookAt(0, 0, 0);
+
+    this.scene.add(this.camera);
   }
 
   // 初始化光源
@@ -372,6 +385,7 @@ export class MyMap extends EventListener {
 
     this.rootDoc.addEventListener("mousedown", (event) => {
       this.mouseDowning = false;
+      this.mouseDowned = true;
       this.mousedownEvent = event;
 
       let data = {};
@@ -403,7 +417,7 @@ export class MyMap extends EventListener {
         if (this.mouseDowning) {
           this.mouseDowning = false;
           this.on(MAP_EVENT.HANDLE_MOUSE_LEFT_UP, data);
-        } else {
+        } else if (this.mouseDowned) {
           clearTimeout(this.mousedownTimeout);
           if (this.openGPUPick) {
             const x = data.event.offsetX;
@@ -425,7 +439,7 @@ export class MyMap extends EventListener {
         if (this.mouseDowning) {
           this.mouseDowning = false;
           this.on(MAP_EVENT.HANDLE_MOUSE_RIGHT_UP, data);
-        } else {
+        } else if (this.mouseDowned) {
           clearTimeout(this.mousedownTimeout);
           if (this.openGPUPick) {
             const x = data.event.offsetX;
@@ -444,7 +458,14 @@ export class MyMap extends EventListener {
           }
         }
       }
+
+      this.mouseDowned = false;
     });
+
+    this.rootDoc.addEventListener("mouseout", function () {
+      this.mouseDowning = false;
+      this.mouseDowned = false;
+    })
   }
 
   // 添加地图大小改变事件监听
@@ -523,8 +544,8 @@ export class MyMap extends EventListener {
     // 是否使用屏幕空间旋转。默认值为false。
     this.cameraControls.screenSpacePanning = false;
 
-    this.cameraControls.minDistance = Math.pow(2, MAP_ZOOM_RANGE.MAX - MAP_ZOOM_RANGE.MAX) * MAP_ZOOM_HEIGHT;
-    this.cameraControls.maxDistance = Math.pow(2, MAP_ZOOM_RANGE.MAX - MAP_ZOOM_RANGE.MIN) * MAP_ZOOM_HEIGHT;
+    this.cameraControls.minDistance = this.constructor.zoomToHeight(MAP_ZOOM_RANGE.MAX);
+    this.cameraControls.maxDistance = this.constructor.zoomToHeight(MAP_ZOOM_RANGE.MIN);
     //修改鼠标按键
     // this.cameraControls.mouseButtons = {
     //   LEFT: THREE.MOUSE.PAN,
@@ -534,11 +555,10 @@ export class MyMap extends EventListener {
 
     this.cameraControls.addEventListener("change", (res) => {
       const height = Math.round(this.cameraControls.getDistance());
-      const zoom = MAP_ZOOM_RANGE.MAX - Math.LOG2E * Math.log(height / MAP_ZOOM_HEIGHT);
-      console.log(zoom);
+      const zoom = this.constructor.heightToZoom(height);
       this.scene.fog.near = height * 2;
       this.scene.fog.far = height * 3;
-      this.camera.near = height * 3 / 1000;
+      this.camera.near = height / 1000;
       this.camera.far = height * 3;
       this.camera.updateProjectionMatrix();
       this.setZoom(zoom, true);
@@ -624,13 +644,20 @@ export class MyMap extends EventListener {
     }
   }
 
+
+
   // 添加图层
   addLayer(layer) {
-    const index = this.layers.findIndex((v) => v.id == layer.id);
-    if (index == -1) {
-      layer.onAdd(this);
-      this.layers.push(layer);
-      this.layers.sort((a, b) => a.zIndex - b.zIndex);
+    if (layer.isDisposed) {
+      this.removeLayer(layer);
+      console.error("图层已销毁", layer);
+    } else {
+      const index = this.layers.findIndex((v) => v.id == layer.id);
+      if (index == -1) {
+        layer.onAdd(this);
+        this.layers.push(layer);
+        this.layers.sort((a, b) => a.zIndex - b.zIndex);
+      }
     }
   }
 
@@ -648,7 +675,12 @@ export class MyMap extends EventListener {
     this.handleEventListener(type, data);
     for (const layer of this.layers) {
       try {
-        layer.on(type, data);
+        if (layer.isDisposed) {
+          this.removeLayer(layer);
+          console.error("图层已销毁", layer);
+        } else {
+          layer.on(type, data);
+        }
       } catch (error) {
         console.error(error);
       }
@@ -657,31 +689,51 @@ export class MyMap extends EventListener {
 
   // 渲染前事件
   beforeRender() {
+    this.on(MAP_EVENT.LAYER_BEFORE_RENDER, this);
     for (const layer of this.layers) {
-      // new Promise((resolve) => {
-      layer.beforeRender(this);
-      //   resolve();
-      // });
+      try {
+        if (layer.isDisposed) {
+          this.removeLayer(layer);
+          console.error("图层已销毁", layer);
+        } else {
+          layer.beforeRender(this);
+        }
+      } catch (error) {
+        console.error(error);
+      }
     }
   }
 
   // 渲染后事件
   afterRender() {
     for (const layer of this.layers) {
-      // new Promise((resolve) => {
-      layer.afterRender(this);
-      //   resolve();
-      // });
+      try {
+        if (layer.isDisposed) {
+          this.removeLayer(layer);
+          console.error("图层已销毁", layer);
+        } else {
+          layer.afterRender(this);
+        }
+      } catch (error) {
+        console.error(error);
+      }
     }
+    this.on(MAP_EVENT.LAYER_AFTER_RENDER, this);
   }
 
   // 渲染事件
   render() {
     for (const layer of this.layers) {
-      // new Promise((resolve) => {
-      layer.render(this);
-      //   resolve();
-      // });
+      try {
+        if (layer.isDisposed) {
+          this.removeLayer(layer);
+          console.error("图层已销毁", layer);
+        } else {
+          layer.render(this);
+        }
+      } catch (error) {
+        console.error(error);
+      }
     }
     this.bloomComposer.render();
     this.composer.render();
@@ -690,10 +742,8 @@ export class MyMap extends EventListener {
   // 渲染循环
   animation() {
     this.beforeRender();
-    this.on(MAP_EVENT.LAYER_BEFORE_RENDER, this);
     this.render();
     this.afterRender();
-    this.on(MAP_EVENT.LAYER_AFTER_RENDER, this);
     // this.stats.update();
     window.requestAnimationFrame(this.animation.bind(this));
   }
@@ -714,13 +764,13 @@ export class MyMap extends EventListener {
       this.camera.position.y = height;
       this.scene.fog.near = height * 2;
       this.scene.fog.far = height * 3;
-      this.camera.near = height * 3 / 1000;
+      this.camera.near = height / 1000;
       this.camera.far = height * 3;
       this.camera.updateProjectionMatrix();
       this.on(MAP_EVENT.UPDATE_CAMERA_HEIGHT, height);
 
       if (!noChangeZoom) {
-        let zoom = MAP_ZOOM_RANGE.MAX - Math.LOG2E * Math.log(height / MAP_ZOOM_HEIGHT);
+        let zoom = this.constructor.heightToZoom(height);
         this.setZoom(zoom, true);
       }
     }
@@ -735,7 +785,7 @@ export class MyMap extends EventListener {
       zoom = MAP_ZOOM_RANGE.MAX;
     }
     if (!noChangeHeight && this.camera) {
-      let height2 = Math.pow(2, MAP_ZOOM_RANGE.MAX - zoom) * MAP_ZOOM_HEIGHT;
+      let height2 = this.constructor.zoomToHeight(zoom);
       this.setCameraHeight(height2);
     }
     if (this.zoom != zoom) {
@@ -796,7 +846,7 @@ export class MyMap extends EventListener {
     return {
       height: height,
       center: [(maxX + minX) / 2, (maxY + minY) / 2],
-      zoom: MAP_ZOOM_RANGE.MAX - Math.LOG2E * Math.log(height / MAP_ZOOM_HEIGHT),
+      zoom: this.constructor.heightToZoom(height),
     };
   }
 
@@ -806,29 +856,28 @@ export class MyMap extends EventListener {
     const height = this.rootDoc.clientHeight;
     const center = [...this.center];
     const topLeft = this.WindowXYToWebMercator(0, 0) || center;
-    const buttomLeft = this.WindowXYToWebMercator(0, height) || center;
-    const buttomRight = this.WindowXYToWebMercator(width, height) || center;
+    const bottomLeft = this.WindowXYToWebMercator(0, height) || center;
+    const bottomRight = this.WindowXYToWebMercator(width, height) || center;
     const topRight = this.WindowXYToWebMercator(width, 0) || center;
-    const maxX = Math.max(topLeft[0], buttomLeft[0], buttomRight[0], topRight[0]);
-    const minX = Math.min(topLeft[0], buttomLeft[0], buttomRight[0], topRight[0]);
-    const maxY = Math.max(topLeft[1], buttomLeft[1], buttomRight[1], topRight[1]);
-    const minY = Math.min(topLeft[1], buttomLeft[1], buttomRight[1], topRight[1]);
+    const maxX = Math.max(topLeft[0], bottomLeft[0], bottomRight[0], topRight[0]);
+    const minX = Math.min(topLeft[0], bottomLeft[0], bottomRight[0], topRight[0]);
+    const maxY = Math.max(topLeft[1], bottomLeft[1], bottomRight[1], topRight[1]);
+    const minY = Math.min(topLeft[1], bottomLeft[1], bottomRight[1], topRight[1]);
     return {
       topLeft: topLeft,
-      buttomLeft: buttomLeft,
-      buttomRight: buttomRight,
+      bottomLeft: bottomLeft,
+      bottomRight: bottomRight,
       topRight: topRight,
       maxX: maxX,
       minX: minX,
       maxY: maxY,
       minY: minY,
-      width: Math.abs(maxY - minY),
-      height: Math.abs(maxX - minX),
+      width: distance(topLeft, topRight),
+      height: distance(topLeft, bottomLeft),
     };
   }
 
   getTileRangeByZoom(zoom) {
-    const EARTH_RADIUS = 20037508.3427892;
     const [mapCenterX, mapCenterY] = this.center;
     const { far, fov } = this.camera;
     const width = far / (Math.cos((Math.PI * fov) / 180) * 2);
@@ -914,5 +963,14 @@ export class MyMap extends EventListener {
     const pz = ((origin.z - direction.z) / (origin.y - direction.y)) * (y3 - direction.y) + direction.z;
 
     return [px, -pz];
+  }
+
+  static heightToZoom(height) {
+    let zoom = MAP_ZOOM_BASE - Math.LOG2E * Math.log(height / MAP_ZOOM_HEIGHT);
+    return zoom
+  }
+
+  static zoomToHeight(zoom) {
+    return MAP_ZOOM_HEIGHT * Math.pow(2, MAP_ZOOM_BASE - zoom)
   }
 }

@@ -1,8 +1,8 @@
+import { MAP_EVENT, Layer } from "../index";
 import * as THREE from "three";
-import { MAP_EVENT, Layer } from "../index.js";
+import { EARTH_RADIUS } from "../utils/LngLatUtils";
 
 const Loader = new THREE.TextureLoader();
-const EARTH_RADIUS = 20037508.3427892;
 
 // 地图图层类
 export class MapLayer extends Layer {
@@ -13,6 +13,8 @@ export class MapLayer extends Layer {
    * @type {Function}
    */
   tileClass = MapTile;
+
+  opacity = 1;
 
   /**
    * 获取当前缩放级别
@@ -44,8 +46,21 @@ export class MapLayer extends Layer {
   constructor(opt) {
     super(opt);
     this.setTileClass(opt.tileClass);
+    this.setOpacity(opt.opacity);
   }
 
+  setOpacity(opacity) {
+    if (opacity === undefined) {
+      this.opacity = 1;
+    } else {
+      this.opacity = opacity;
+    }
+    for (const zoom of Object.values(this.zoomMap)) {
+      for (const tile of Object.values(zoom.tileMap)) {
+        tile.opacity = this.opacity;
+      }
+    }
+  }
 
   // 设置瓦片类
   setTileClass(tileClass) {
@@ -137,6 +152,7 @@ export class MapLayer extends Layer {
         let tile = this.zoomMap[zoom].tileMap[key]
         if (!this.zoomMap[zoom].tileMap[key]) {
           tile = new this.tileClass(zoom, i, j, size);
+          tile.opacity = this.opacity;
           this.zoomMap[zoom].tileMap[key] = tile;
           this.zoomMap[zoom].scene.add(tile.mesh);
         }
@@ -225,11 +241,6 @@ export class MapTile {
     return this._z;
   }
 
-  // 瓦片贴图url
-  get url() {
-    return ``;
-  }
-
   // 瓦片的mesh
   get mesh() {
     if (!this._mesh) {
@@ -248,14 +259,25 @@ export class MapTile {
     }
   }
 
+  _opacity = 1;
+
+  get opacity() {
+    return this._opacity;
+  }
+
+  set opacity(v) {
+    this._opacity = v;
+    this.mesh.material.setValues({ opacity: v });
+  }
+
   // 加载瓦片贴图
   async loadMap() {
     try {
       this._loadNum++;
       const texture = await new Promise((resolve, reject) =>
-        Loader.load(this.url, resolve, undefined, reject)
+        Loader.load(this.getUrl(), resolve, undefined, reject)
       );
-      this.mesh.material.setValues({ map: texture, transparent: false });
+      this.mesh.material.setValues({ map: texture, opacity: this._opacity });
       this.mesh.material.needsUpdate = true;
       this._loadStatus = 2;
     } catch (error) {
@@ -268,6 +290,11 @@ export class MapTile {
         this._loadStatus = 3;
       }
     }
+
+  }
+
+  getUrl() {
+    return "";
   }
 
   constructor(zoom, row, col, size) {
@@ -294,22 +321,23 @@ export function MapStyleFactory(params = {}) {
     min_zoom: 0,
     x_offset: 0,
     y_offset: 0,
-    get_url: function (zoom, row, col) {
+    getUrl: function (zoom, row, col) {
       return `http://192.168.60.231:23334/osm/MapTilerBasic/${zoom}/${row}/${col}.png`;
     }
   }
-  const { style_name, background, max_zoom, min_zoom, x_offset, y_offset, get_url } = Object.assign({}, defaultParams, params);
-  return class extends MapTile {
+  const { style_name, background, max_zoom, min_zoom, x_offset, y_offset, ...methods } = Object.assign({}, defaultParams, params);
+  const Tile = class extends MapTile {
     static style_name = style_name;
     static background = background;
     static max_zoom = max_zoom;
     static min_zoom = min_zoom;
     static x_offset = x_offset;
     static y_offset = y_offset;
-    get url() {
-      return get_url(this.zoom, this.row, this.col);
-    }
   }
+  for (const key in methods) {
+    Tile.prototype[key] = methods[key];
+  }
+  return Tile;
 }
 
 export const MAP_LAYER_STYLE = (window.MAP_LAYER_STYLE || []).map(MapStyleFactory);

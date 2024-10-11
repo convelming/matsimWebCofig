@@ -97,7 +97,7 @@ export default {
       this._Map = new MyMap({
         rootId: "mapRoot",
         center: [12623039.8, 2647415.72],
-        zoom: 12,
+        zoom: 16,
         minPitch: -90,
       });
       this._Map.cameraControls.enableRotate = true;

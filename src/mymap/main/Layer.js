@@ -1,6 +1,5 @@
 import * as THREE from "three";
 import { EventListener } from "./EventListener";
-import { send } from "../utils/index";
 
 const RENDER_ORDER_MAX_NUM = 9999999;
 
@@ -22,6 +21,10 @@ export class Layer extends EventListener {
 
   get visible() {
     return this._visible;
+  }
+
+  get isDisposed() {
+    return this._isDisposed;
   }
 
   constructor({ zIndex = 0, visible = true, event } = {}) {
@@ -123,12 +126,13 @@ export class Layer extends EventListener {
     const geometry = new THREE.BoxGeometry(size, size, size);
     //创建一个材质对象Material
     const material = new THREE.MeshBasicMaterial({
+      side: THREE.DoubleSide, //两面可见
       color: color, //0xff0000设置材质颜色为红色
     });
     // 两个参数分别为几何体geometry、材质material
     const mesh = new THREE.Mesh(geometry, material); //网格模型对象Mesh
     //设置网格模型在三维空间中的位置坐标，默认是坐标原点
-    mesh.position.set(0, 10, 0);
+    // mesh.position.set(0, 10, 0);
     return mesh;
   }
 
@@ -159,6 +163,9 @@ export class Layer extends EventListener {
   }
 
   dispose() {
+    this.removeFromParent();
+    this._isDisposed = true;
     // TODO
   }
+
 }
