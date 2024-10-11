@@ -20,9 +20,29 @@ function calculatePosition(path, time) {
     const line_startTime = path[i];
     const line_endTime = path[i + 1];
     if (line_startTime <= time && time < line_endTime) {
-      const line_start = [path[i + 4], path[i + 5]]
-      const line_end = [path[i + 6], path[i + 7]]
-      const percentage = (time - line_startTime) / (line_endTime - line_startTime);
+      const line_start = [path[i + 4], path[i + 5]];
+      const line_end = [path[i + 6], path[i + 7]];
+      let percentage = (time - line_startTime) / (line_endTime - line_startTime);
+
+      let _i = i;
+      while (line_start[0] == line_end[0] && line_start[1] == line_end[1] && _i < path.length) {
+        _i += 8;
+        line_end[0] = path[_i + 6];
+        line_end[1] = path[_i + 7];
+        percentage = 0;
+      }
+      _i = i;
+      while (line_start[0] == line_end[0] && line_start[1] == line_end[1] && _i >= 0) {
+        _i -= 8;
+        line_end[0] = path[_i + 6];
+        line_end[1] = path[_i + 7];
+        percentage = 0;
+      }
+      if (_i < i) {
+        line_end[0] = line_end[0] * 2 - line_start[0];
+        line_end[1] = line_end[1] * 2 - line_start[1];
+      }
+
       return {
         start: pointMove(line_start, line_end, percentage),
         end: line_end,
