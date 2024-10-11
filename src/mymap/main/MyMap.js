@@ -559,7 +559,7 @@ export class MyMap extends EventListener {
       this.scene.fog.near = height * 2;
       this.scene.fog.far = height * 3;
       this.camera.near = height / 1000;
-      this.camera.far = height * 3;
+      this.camera.far = height * 3.5;
       this.camera.updateProjectionMatrix();
       this.setZoom(zoom, true);
 
@@ -765,7 +765,7 @@ export class MyMap extends EventListener {
       this.scene.fog.near = height * 2;
       this.scene.fog.far = height * 3;
       this.camera.near = height / 1000;
-      this.camera.far = height * 3;
+      this.camera.far = height * 3.5;
       this.camera.updateProjectionMatrix();
       this.on(MAP_EVENT.UPDATE_CAMERA_HEIGHT, height);
 

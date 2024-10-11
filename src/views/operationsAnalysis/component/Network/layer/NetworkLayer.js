@@ -21,6 +21,8 @@ export class NetworkLayer extends Layer {
 
   tileMap = {};
 
+  pickColorOffset = 0;
+
   constructor(opt) {
     super(opt);
 
@@ -114,10 +116,19 @@ export class NetworkLayer extends Layer {
     }
     if (type == MAP_EVENT.HANDLE_PICK_LEFT && data.layerId == this.id) {
       const pickColorNum = data.pickColor;
+
       for (const tile of Object.values(this.tileMap)) {
         const lineItem = tile.getLineByPickColor(pickColorNum);
         const nodeItem = tile.getNodeByPickColor(pickColorNum);
-        console.log(lineItem, nodeItem);
+        if (lineItem) {
+          console.log("lineItem", pickColorNum);
+        } else if (nodeItem) {
+          console.log("nodeItem", pickColorNum);
+        }
+      }
+      for (const tile of Object.values(this.tileMap)) {
+        const lineItem = tile.getLineByPickColor(pickColorNum);
+        const nodeItem = tile.getNodeByPickColor(pickColorNum);
         if (lineItem) {
           this.handleEventListener(type, lineItem);
           break;
@@ -138,7 +149,13 @@ export class NetworkLayer extends Layer {
     if (this.loadingNum < 20) {
       this.loadingNum++;
       this.handleEventListener(MAP_EVENT.LAYER_LOADING, this.loadingNum > 0);
-      tile.load(this).then(() => {
+      tile.load(this).then((tile) => {
+        tile.pickColorOffset = this.pickColorOffset;
+        this.pickColorOffset += tile.pickColorNum;
+        tile.update();
+        console.log(this, tile.pickColorNum, tile.pickColorOffset);
+
+
         this.loadingNum--;
         this.handleEventListener(MAP_EVENT.LAYER_LOADING, this.loadingNum > 0);
         if (this._noLoadTileList.length > 0) {
@@ -204,6 +221,9 @@ export class NetworkTile {
 
   // 加载状态 1未加载 2加载成功 3加载失败 4加载中
   _loadStatus = 1;
+
+  pickColorNum = 0;
+  pickColorOffset = 0;
 
   get loadStatus() {
     return this._loadStatus;
@@ -292,16 +312,17 @@ export class NetworkTile {
     this._pickMeshNodeMesh = null;
   }
 
-  async load(layer) {
+  async load() {
     try {
       this._loadStatus = 4;
+      let pickColorNum = 0;
       const { data } = await getTileNetwork({ x: this._row, y: this._col });
       if (data && data.length > 0) {
         this._lineData = {};
         this._nodeData = {};
         const nodeObj = {};
         for (const v of data) {
-          v.pickColorNum = ++layer.pickColorNum;
+          v.pickColorNum = ++pickColorNum;
           v.type = "line";
           v.uuid = guid();
           v.id = v.linkId;
@@ -310,69 +331,72 @@ export class NetworkTile {
           const fromNode = { coord: v.fromCoord, id: v.fromNodeId, type: "node", uuid: guid() };
           const toNode = { coord: v.toCoord, id: v.toNodeId, type: "node", uuid: guid() };
           if (!nodeObj[fromNode.id]) {
-            const pickColorNum = ++layer.pickColorNum;
-            fromNode.pickColorNum = pickColorNum;
-            this._nodeData[pickColorNum] = fromNode;
+            fromNode.pickColorNum = ++pickColorNum;
+            this._nodeData[fromNode.pickColorNum] = fromNode;
             nodeObj[fromNode.id] = true;
           }
           if (!nodeObj[toNode.id]) {
-            const pickColorNum = ++layer.pickColorNum;
-            toNode.pickColorNum = pickColorNum;
-            this._nodeData[pickColorNum] = toNode;
+            toNode.pickColorNum = ++pickColorNum;
+            this._nodeData[toNode.pickColorNum] = toNode;
             nodeObj[toNode.id] = true;
           }
         }
-        this._geometry = new NetworkGeometry(data, this._flowNum);
-
-        // this._baseMaterial.uniforms.flowMax.value = this._geometry.flowMax;
-        // this._baseMaterial.uniforms.flowMin.value = this._geometry.flowMin;
-        // this._baseMaterial.needsUpdate = true;
-        // this._pickLayerMaterial.uniforms.flowMax.value = this._geometry.flowMax;
-        // this._pickLayerMaterial.uniforms.flowMin.value = this._geometry.flowMin;
-        // this._pickLayerMaterial.needsUpdate = true;
-        // this._pickMeshMaterial.uniforms.flowMax.value = this._geometry.flowMax;
-        // this._pickMeshMaterial.uniforms.flowMin.value = this._geometry.flowMin;
-        // this._pickMeshMaterial.needsUpdate = true;
-
-        this._baseMesh = new THREE.Mesh(this._geometry, this._baseMaterial);
-        this._pickLayerMesh = new THREE.Mesh(this._geometry, this._pickLayerMaterial);
-        this._pickBuildMesh = new THREE.Mesh(this._geometry, this._pickMeshMaterial);
-        this._baseScene.add(this._baseMesh);
-        this._pickLayerScene.add(this._pickLayerMesh);
-        this._pickMeshScene.add(this._pickBuildMesh);
-
-        const nodeList = Object.values(this._nodeData);
-        this._baseNodeMesh = new THREE.InstancedMesh(this._nodeGeometry, this._baseNodeMaterial, nodeList.length);
-        this._pickLayerNodeMesh = new THREE.InstancedMesh(this._nodeGeometry, this._pickLayerNodeMaterial, nodeList.length);
-        this._pickMeshNodeMesh = new THREE.InstancedMesh(this._nodeGeometry, this._pickMeshNodeMaterial, nodeList.length);
-
-        const _scale = (this._lineWidth / 100) * 1.1;
-        for (let i = 0, l = nodeList.length; i < l; i++) {
-          const { coord, pickColorNum } = nodeList[i];
-          const matrix = new THREE.Matrix4();
-          const positionV3 = new THREE.Vector3(coord.x, coord.y, 1);
-          const scaleV3 = new THREE.Vector3(_scale, _scale, 1);
-          matrix.compose(positionV3, new THREE.Quaternion(), scaleV3);
-
-          this._baseNodeMesh.setMatrixAt(i, matrix);
-          this._pickLayerNodeMesh.setMatrixAt(i, matrix);
-          this._pickMeshNodeMesh.setMatrixAt(i, matrix);
-          this._pickMeshNodeMesh.setColorAt(i, new THREE.Color(pickColorNum));
-        }
-        this._baseNodeMesh.instanceMatrix.needsUpdate = true;
-        this._pickLayerNodeMesh.instanceMatrix.needsUpdate = true;
-        this._pickMeshNodeMesh.instanceMatrix.needsUpdate = true;
-        if (this._showNode) {
-          this._baseScene.add(this._baseNodeMesh);
-          this._pickLayerScene.add(this._pickLayerNodeMesh);
-          this._pickMeshScene.add(this._pickMeshNodeMesh);
-        }
       }
+      this.pickColorNum = pickColorNum;
       this._loadStatus = 2;
     } catch (error) {
+      console.log(error);
       this._loadStatus = 3;
     }
     return this;
+  }
+
+  update() {
+    this._geometry = new NetworkGeometry(Array.from(Object.values(this._lineData)), this._flowNum, this.pickColorOffset);
+
+    // this._baseMaterial.uniforms.flowMax.value = this._geometry.flowMax;
+    // this._baseMaterial.uniforms.flowMin.value = this._geometry.flowMin;
+    // this._baseMaterial.needsUpdate = true;
+    // this._pickLayerMaterial.uniforms.flowMax.value = this._geometry.flowMax;
+    // this._pickLayerMaterial.uniforms.flowMin.value = this._geometry.flowMin;
+    // this._pickLayerMaterial.needsUpdate = true;
+    // this._pickMeshMaterial.uniforms.flowMax.value = this._geometry.flowMax;
+    // this._pickMeshMaterial.uniforms.flowMin.value = this._geometry.flowMin;
+    // this._pickMeshMaterial.needsUpdate = true;
+
+    this._baseMesh = new THREE.Mesh(this._geometry, this._baseMaterial);
+    this._pickLayerMesh = new THREE.Mesh(this._geometry, this._pickLayerMaterial);
+    this._pickBuildMesh = new THREE.Mesh(this._geometry, this._pickMeshMaterial);
+    this._baseScene.add(this._baseMesh);
+    this._pickLayerScene.add(this._pickLayerMesh);
+    this._pickMeshScene.add(this._pickBuildMesh);
+
+    const nodeList = Object.values(this._nodeData);
+    this._baseNodeMesh = new THREE.InstancedMesh(this._nodeGeometry, this._baseNodeMaterial, nodeList.length);
+    this._pickLayerNodeMesh = new THREE.InstancedMesh(this._nodeGeometry, this._pickLayerNodeMaterial, nodeList.length);
+    this._pickMeshNodeMesh = new THREE.InstancedMesh(this._nodeGeometry, this._pickMeshNodeMaterial, nodeList.length);
+
+    const _scale = (this._lineWidth / 100) * 1.1;
+    for (let i = 0, l = nodeList.length; i < l; i++) {
+      const { coord, pickColorNum } = nodeList[i];
+      const matrix = new THREE.Matrix4();
+      const positionV3 = new THREE.Vector3(coord.x, coord.y, 1);
+      const scaleV3 = new THREE.Vector3(_scale, _scale, 1);
+      matrix.compose(positionV3, new THREE.Quaternion(), scaleV3);
+
+      this._baseNodeMesh.setMatrixAt(i, matrix);
+      this._pickLayerNodeMesh.setMatrixAt(i, matrix);
+      this._pickMeshNodeMesh.setMatrixAt(i, matrix);
+      this._pickMeshNodeMesh.setColorAt(i, new THREE.Color(pickColorNum + this.pickColorOffset));
+    }
+    this._baseNodeMesh.instanceMatrix.needsUpdate = true;
+    this._pickLayerNodeMesh.instanceMatrix.needsUpdate = true;
+    this._pickMeshNodeMesh.instanceMatrix.needsUpdate = true;
+    if (this._showNode) {
+      this._baseScene.add(this._baseNodeMesh);
+      this._pickLayerScene.add(this._pickLayerNodeMesh);
+      this._pickMeshScene.add(this._pickMeshNodeMesh);
+    }
   }
 
   getLineById(lineId) {
@@ -394,11 +418,11 @@ export class NetworkTile {
   }
 
   getLineByPickColor(pickColor) {
-    return this._lineData[pickColor];
+    return this._lineData[pickColor - this.pickColorOffset];
   }
 
   getNodeByPickColor(pickColor) {
-    return this._nodeData[pickColor];
+    return this._nodeData[pickColor - this.pickColorOffset];
   }
 
   setColors(colors) {
@@ -516,8 +540,7 @@ export class NetworkTile {
 export class NetworkGeometry extends THREE.BufferGeometry {
   static nullFlows = new THREE.Float32BufferAttribute([], 2);
 
-  constructor(lineList, flowNum) {
-    console.time("NetworkGeometry:lineList:" + lineList.length);
+  constructor(lineList, flowNum, pickColorOffset) {
     super();
     this.type = "NetworkGeometry";
     this.isNetworkGeometry = true;
@@ -538,7 +561,7 @@ export class NetworkGeometry extends THREE.BufferGeometry {
 
     for (let i = 0, l = lineList.length; i < l; i++) {
       const { pickColorNum, flows, fromCoord, toCoord } = lineList[i];
-      const pickColor = new THREE.Color(pickColorNum).toArray();
+      const pickColor = new THREE.Color(pickColorNum + pickColorOffset).toArray();
       for (let j = 0; j < flows.length; j++) {
         if (!flowsMap.has(String(j))) {
           const list = new THREE.Float32BufferAttribute(new Array(posLen * 4).fill(0), 1);
@@ -598,7 +621,6 @@ export class NetworkGeometry extends THREE.BufferGeometry {
     this.flowMax = flowMax;
     this.flowMin = flowMin;
     this.flowNum = String(flowNum);
-    console.timeEnd("NetworkGeometry:lineList:" + lineList.length);
   }
 
   setFlowNum(flowNum) {

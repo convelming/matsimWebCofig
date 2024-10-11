@@ -12,6 +12,11 @@ const BLOOM_PARAMS = {
   threshold: 0,
 };
 
+export const SCENE_MAP = {
+  ENTIRE_SCENE: 0, // 全景图层
+  BLOOM_SCENE: 1, // 泛光图层
+};
+
 export class BloomComposer {
   constructor(renderer, scene, camera, bloomParams) {
     const _bloomParams = Object.assign({}, BLOOM_PARAMS, bloomParams);
