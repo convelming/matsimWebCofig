@@ -1,7 +1,7 @@
 <template>
   <div class="Bug">
     <a :href="href" target="_blank">
-      <img class="img" src="@/assets/image/bug_icon.png" />
+      <img class="img" src="./images/bug_icon.png" />
     </a>
   </div>
 </template>

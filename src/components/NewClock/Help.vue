@@ -1,6 +1,6 @@
 <template>
   <div class="Help">
-    <img class="icon" src="@/assets/image/question_icon.png" />
+    <img class="icon" src="./images/question_icon.png" />
     <span class="text">{{ $l("帮助") }}</span>
   </div>
 </template>

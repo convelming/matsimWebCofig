@@ -1,7 +1,7 @@
 <template>
   <div class="MapStyle">
     <div id="map-switch" @click="open = !open">
-      <img class="icon" style="margin-right: 4px" src="@/assets/image/map_icon.png" />
+      <img class="icon" style="margin-right: 4px" src="./images/map_icon.png" />
       <span class="text">{{ $l("地图") }}</span>
     </div>
     <div class="map-switch-list" v-show="open">
@@ -51,7 +51,7 @@ export default {
           if (value === this._MapLayer.tileClass) this.active = i;
           const item = {
             title: value.style_name,
-            url: new value(15, 26700, 14218, 200).url,
+            url: new value(15, 26700, 14218, 200).getUrl(),
             c: value,
           };
           itemDocList.push(item);

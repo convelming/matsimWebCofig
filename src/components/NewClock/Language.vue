@@ -1,7 +1,7 @@
 <template>
   <el-dropdown class="Language" @command="changeLanguage" placement="top-start" trigger="click">
     <div class="locale_btn">
-      <img class="icon" src="@/assets/image/locale_icon.png" /> <span class="text">{{ page_language }}</span>
+      <img class="icon" src="./images/locale_icon.png" /> <span class="text">{{ page_language }}</span>
     </div>
     <el-dropdown-menu slot="dropdown">
       <el-dropdown-item command="zh-CN" :disabled="page_language == 'zh-CN'">中文（简体）</el-dropdown-item>

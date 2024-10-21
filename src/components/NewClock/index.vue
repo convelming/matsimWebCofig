@@ -99,6 +99,12 @@ export default {
   },
 };
 </script>
+<style>
+@font-face {
+  font-family: wending;
+  src: url("./images/DigitalNumbers-Regular.ttf");
+}
+</style>
 <style lang="scss" scoped>
 .box {
   user-select: none;
