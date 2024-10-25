@@ -1,5 +1,5 @@
 <template>
-  <div class="ParkingGeoJSONDetail" v-if="rootVue">
+  <div class="RegionalTrafficDetail" v-if="rootVue">
     <div v-if="rootVue.parkingGeoJSON && !reselect">
       <el-button style="display: block; margin-bottom: 10px; width: 100%" size="mini" type="primary" @click="reselect = true">{{ $l("重新选择文件") }}</el-button>
       <div class="collapse" v-for="layer in layerList" :key="layer.name">
@@ -66,6 +66,7 @@
 
               <el-descriptions-item label="showPolygonVisualMap">
                 <el-switch :title="$l('showPolygonVisualMap')" v-model="layer.showPolygonVisualMap" :active-value="true" :inactive-value="false"> </el-switch>
+                {{ layer.showPolygonVisualMap }}
                 <GeoJSONVisualMap v-show="layer.showPolygonVisualMap" :colors="COLOR_LIST[layer.params.polygonColors]" :max="layer.valueLabel.max" :min="layer.valueLabel.min" />
               </el-descriptions-item>
             </template>
@@ -197,7 +198,7 @@ import { uploadGeoJson } from "@/api/index";
 import { guid, COLOR_LIST } from "@/utils/utils";
 
 export default {
-  name: "ParkingGeoJSONDetail",
+  name: "RegionalTrafficDetail",
   inject: ["rootVue"],
   props: {},
   components: { GeoJSONVisualMap },
@@ -591,7 +592,7 @@ export default {
     align-items: center;
   }
 }
-.ParkingGeoJSONDetail {
+.RegionalTrafficDetail {
   position: relative;
   z-index: 20px;
   padding: 10px 20px;

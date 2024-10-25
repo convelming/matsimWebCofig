@@ -10,6 +10,7 @@
         <div class="item" :id="Activity3D.id" :class="{ active: activeModel === Activity3D.id }" @click="handleActiveModel(Activity3D.id)">{{ $l(Activity3D.name) }}</div>
         <div class="item" :id="GeoJSON.id" :class="{ active: activeModel === GeoJSON.id }" @click="handleActiveModel(GeoJSON.id)">{{ $l(GeoJSON.name) }}</div>
         <div class="item" :id="Parking.id" :class="{ active: activeModel === Parking.id }" @click="handleActiveModel(Parking.id)">{{ $l(Parking.name) }}</div>
+        <div class="item" :id="RegionalTraffic.id" :class="{ active: activeModel === RegionalTraffic.id }" @click="handleActiveModel(RegionalTraffic.id)">{{ $l(RegionalTraffic.name) }}</div>
       </div>
       <div class="btn el-icon-caret-right" @click="handleScroll(150)"></div>
     </div>
@@ -52,6 +53,12 @@
         <component v-for="item in Parking.list" :show="item.name == Parking.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" />
       </el-collapse>
     </div>
+    <div class="toolbar-bodyer" v-show="activeModel === RegionalTraffic.id">
+      <RegionalTrafficDetail />
+      <!-- <el-collapse class="toolbar-collapse" v-model="RegionalTraffic.activeName" accordion>
+        <component v-for="item in RegionalTraffic.list" :show="item.name == RegionalTraffic.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" />
+      </el-collapse> -->
+    </div>
   </div>
 </template>
 
@@ -89,6 +96,10 @@
     "zh-CN": "停车供需分析",
     "en-US": "Parking analysis"
   },
+  "区域流量溯源":{
+    "zh-CN": "区域流量溯源",
+    "en-US": "Regional Traffic"
+  },
 }
 </language>
 
@@ -123,6 +134,8 @@ import GeoJSONDetail from "../GeoJSON/toolbar/geoJSONDetail.vue";
 import PolgonParkingDetail from "../Parking/toolbar/PolgonParkingDetail.vue";
 import ParkingActivityDetail from "../Parking/toolbar/ParkingActivityDetail.vue";
 import ParkingGeoJSONDetail from "../Parking/toolbar/ParkingGeoJSONDetail.vue";
+// 区域流量溯源
+import RegionalTrafficDetail from "../RegionalTraffic/toolbar/RegionalTrafficDetail.vue";
 
 export default {
   components: {
@@ -154,6 +167,8 @@ export default {
     PolgonParkingDetail,
     ParkingActivityDetail,
     ParkingGeoJSONDetail,
+
+    RegionalTrafficDetail,
   },
   inject: ["rootVue"],
   data() {
@@ -221,6 +236,15 @@ export default {
         list: [],
         activeName: "",
       },
+      RegionalTraffic: {
+        id: "RegionalTraffic",
+        name: "区域流量溯源",
+        components: ["RegionalTrafficDetail"],
+        sreach: {},
+        params: {},
+        list: [],
+        activeName: "",
+      },
       modelMap: {
         RouteDetail: "PublicTransit",
         StopAndRoute: "PublicTransit",
@@ -244,8 +268,10 @@ export default {
 
         PolgonParkingDetail: "Parking",
         ParkingActivityDetail: "Parking",
+
+        RegionalTrafficDetail: "RegionalTraffic",
       },
-      activeModel: this.isDev ? "PublicTransit" : "PublicTransit",
+      activeModel: this.isDev ? "RegionalTraffic" : "PublicTransit",
       activeName: "",
       list: [],
     };
@@ -287,7 +313,9 @@ export default {
         case "SelectLinkAnalysis":
 
         case "ActivityDetail":
-        case "ParkingActivityDetail": {
+        case "ParkingActivityDetail":
+
+        case "RegionalTrafficDetail": {
           const item = list.find((v) => v.data.uuid == data.uuid);
           if (item && data.uuid) {
             activeName = item.name;

@@ -40,6 +40,10 @@ export default {
       lock2DParking: false,
       parkingGeoJSON: null,
 
+      showLayerRegionalTraffic: false,
+      lock2DRegionalTraffic: false,
+      RegionalTrafficGeoJSON: null,
+
       showStopToolbar: true,
 
       showClock: true,
@@ -125,6 +129,15 @@ export default {
       this.handleToolbarActiveModel("Parking");
     },
     lock2DParking(val) {
+      this.handleChangeTimeSpeed();
+      this.handleChangeMapCameraControls();
+    },
+    showLayerRegionalTraffic(val) {
+      this.handleChangeTimeSpeed();
+      this.handleChangeMapCameraControls();
+      this.handleToolbarActiveModel("RegionalTraffic");
+    },
+    lock2DRegionalTraffic(val) {
       this.handleChangeTimeSpeed();
       this.handleChangeMapCameraControls();
     },

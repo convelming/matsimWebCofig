@@ -261,8 +261,10 @@ export default {
         },
         xAxis: {
           type: "value",
-          min: (Math.floor(min / 3600) - 1) * 3600,
+          min: Math.floor(min / 3600)* 3600,
           max: (Math.floor(max / 3600) + 1) * 3600,
+          // min,
+          // max,
           interval: 3600,
           axisLabel: {
             formatter: function (value, index) {
