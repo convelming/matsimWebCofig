@@ -420,6 +420,9 @@ export default {
         layer._geojsonLayer.dispose();
       }
 
+      this._RegionalTrafficFlowLayer1.setData(null);
+      this._RegionalTrafficFlowLayer2.setData(null);
+
       const layerNameList = [];
       if (!!form.roadId) layerNameList.push("roadId");
 
