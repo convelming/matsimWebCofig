@@ -725,6 +725,16 @@ export function rangeRequireRatio2(data) {
 }
 
 
-
+// 查询区域link的出行
+// POST /pt/link/getElapseAreaLeg
+// 接口ID：226535496
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-226535496
+export function getElapseAreaLeg(data) {
+  return request({
+    url: `/pt/link/getElapseAreaLeg`,
+    data: data,
+    method: "post",
+  });
+}
 
 

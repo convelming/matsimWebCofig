@@ -1,78 +1,95 @@
 <template>
   <div class="RegionalTrafficDetail" v-if="rootVue">
-    <div v-if="rootVue.parkingGeoJSON && !reselect">
-      <el-button style="display: block; margin-bottom: 10px; width: 100%" size="mini" type="primary" @click="reselect = true">{{ $l("重新选择文件") }}</el-button>
-      <div class="collapse" v-for="layer in layerList" :key="layer.name">
-        <div class="collapse_header">
-          <el-checkbox v-model="layer.show" :indeterminate="false" @change="handleChangeLayerParams(layer.name, 'show', $event)">{{ $l(layer.label) + layer.valueKey }}</el-checkbox>
-          <span class="icon el-icon-caret-bottom" :class="layer.showSetting ? 'show' : 'hide'" @click.stop="layer.showSetting = !layer.showSetting"></span>
-        </div>
-        <div class="collapse_bodyer" v-show="layer.showSetting">
-          <el-descriptions :column="1" size="mini">
-            <template v-if="layer.showPointSetting">
-              <el-descriptions-item label="pointSize">
-                <el-slider :title="$l('pointSize')" v-model="layer.params.pointSize" @change="handleChangeLayerParams(layer.name, 'pointSize', $event)" :step="0.1" :min="0" :max="1000" size="mini"> </el-slider>
-              </el-descriptions-item>
-              <el-descriptions-item label="pointColors">
-                <ColorSelect :title="$l('pointColors')" v-model="layer.params.pointColors" @change="handleChangeLayerParams(layer.name, 'pointColors', $event.value)" :colorsList="COLOR_LIST" size="mini" />
-              </el-descriptions-item>
-              <el-descriptions-item label="showPointVisualMap">
-                <el-switch :title="$l('showPointVisualMap')" v-model="layer.showPointVisualMap" :active-value="true" :inactive-value="false"></el-switch>
-                <GeoJSONVisualMap v-show="layer.showPointVisualMap" :colors="COLOR_LIST[layer.params.pointColors]" :max="layer.valueLabel.max" :min="layer.valueLabel.min" />
-              </el-descriptions-item>
-            </template>
-            <template v-if="layer.showLineSetting">
-              <el-descriptions-item label="lineWidth">
-                <el-slider :title="$l('lineWidth')" v-model="layer.params.lineWidth" @change="handleChangeLayerParams(layer.name, 'lineWidth', $event)" :step="0.1" :min="0" :max="1000" size="mini"> </el-slider>
-              </el-descriptions-item>
-              <el-descriptions-item label="lineStyle">
-                <el-select :title="$l('lineStyle')" v-model="layer.params.lineStyle" @change="handleChangeLayerParams(layer.name, 'lineStyle', $event)" size="mini">
-                  <el-option v-for="(v, k) in LINE_STYPE" :key="v" :label="k" :value="v"></el-option>
-                </el-select>
-              </el-descriptions-item>
-              <el-descriptions-item label="lineColors">
-                <ColorSelect :title="$l('lineColors')" style="width: 100%" v-model="layer.params.lineColors" @change="handleChangeLayerParams(layer.name, 'lineColors', $event.value)" :colorsList="COLOR_LIST" size="mini" />
-              </el-descriptions-item>
+    <div v-if="rootVue.regionalTrafficGeoJSON && !reselect">
+      <el-form label-width="auto" size="mini">
+        <el-form-item label-width="0">
+          <el-button style="display: block; margin-bottom: 10px; width: 100%" size="mini" type="primary" @click="reselect = true">{{ $l("重新选择文件") }}</el-button>
+        </el-form-item>
+        <el-form-item :label="$l('类型：')">
+          <div>
+            <el-checkbox v-model="showLayer1">{{ $l("显示全部流量") }}</el-checkbox>
+          </div>
+          <div>
+            <el-checkbox v-model="showLayer2">{{ $l("显示区域内流量") }}</el-checkbox>
+          </div>
+        </el-form-item>
+        <el-form-item :label="$l('颜色：')">
+          <ColorSelect v-model="layerColor" :colorsList="COLOR_LIST" size="mini" />
+        </el-form-item>
+        <el-form-item label-width="0">
+          <div class="collapse" v-for="layer in layerList" :key="layer.name">
+            <div class="collapse_header">
+              <el-checkbox v-model="layer.show" :indeterminate="false" @change="handleChangeLayerParams(layer.name, 'show', $event)">{{ $l(layer.label) + layer.valueKey }}</el-checkbox>
+              <span class="icon el-icon-caret-bottom" :class="layer.showSetting ? 'show' : 'hide'" @click.stop="layer.showSetting = !layer.showSetting"></span>
+            </div>
+            <div class="collapse_bodyer" v-show="layer.showSetting">
+              <el-descriptions :column="1" size="mini">
+                <template v-if="layer.showPointSetting">
+                  <el-descriptions-item label="pointSize">
+                    <el-slider :title="$l('pointSize')" v-model="layer.params.pointSize" @change="handleChangeLayerParams(layer.name, 'pointSize', $event)" :step="0.1" :min="0" :max="1000" size="mini"> </el-slider>
+                  </el-descriptions-item>
+                  <!-- <el-descriptions-item label="pointColors">
+                    <ColorSelect :title="$l('pointColors')" v-model="layer.params.pointColors" @change="handleChangeLayerParams(layer.name, 'pointColors', $event.value)" :colorsList="COLOR_LIST" size="mini" />
+                  </el-descriptions-item> -->
+                  <el-descriptions-item label="showPointVisualMap">
+                    <el-switch :title="$l('showPointVisualMap')" v-model="layer.showPointVisualMap" :active-value="true" :inactive-value="false"></el-switch>
+                    <GeoJSONVisualMap v-show="layer.showPointVisualMap" :colors="COLOR_LIST[layer.params.pointColors]" :max="layer.valueLabel.max" :min="layer.valueLabel.min" />
+                  </el-descriptions-item>
+                </template>
+                <template v-if="layer.showLineSetting">
+                  <el-descriptions-item label="lineWidth">
+                    <el-slider :title="$l('lineWidth')" v-model="layer.params.lineWidth" @change="handleChangeLayerParams(layer.name, 'lineWidth', $event)" :step="0.1" :min="0" :max="1000" size="mini"> </el-slider>
+                  </el-descriptions-item>
+                  <el-descriptions-item label="lineStyle">
+                    <el-select :title="$l('lineStyle')" v-model="layer.params.lineStyle" @change="handleChangeLayerParams(layer.name, 'lineStyle', $event)" size="mini">
+                      <el-option v-for="(v, k) in LINE_STYPE" :key="v" :label="k" :value="v"></el-option>
+                    </el-select>
+                  </el-descriptions-item>
+                  <!-- <el-descriptions-item label="lineColors">
+                    <ColorSelect :title="$l('lineColors')" style="width: 100%" v-model="layer.params.lineColors" @change="handleChangeLayerParams(layer.name, 'lineColors', $event.value)" :colorsList="COLOR_LIST" size="mini" />
+                  </el-descriptions-item> -->
 
-              <el-descriptions-item label="showLineVisualMap">
-                <el-switch :title="$l('showLineVisualMap')" v-model="layer.showLineVisualMap" :active-value="true" :inactive-value="false"> </el-switch>
-                <GeoJSONVisualMap v-show="layer.showLineVisualMap" :colors="COLOR_LIST[layer.params.lineColors]" :max="layer.valueLabel.max" :min="layer.valueLabel.min" />
-              </el-descriptions-item>
-            </template>
-            <template v-if="layer.showPolygonSetting">
-              <el-descriptions-item label="polygonOpacity">
-                <el-slider :title="$l('polygonOpacity')" v-model="layer.params.polygonOpacity" @change="handleChangeLayerParams(layer.name, 'polygonOpacity', $event)" :step="0.01" :min="0" :max="1" size="mini"> </el-slider>
-              </el-descriptions-item>
-              <el-descriptions-item label="polygonColors">
-                <ColorSelect :title="$l('polygonColors')" style="width: 100%" v-model="layer.params.polygonColors" @change="handleChangeLayerParams(layer.name, 'polygonColors', $event.value)" :colorsList="COLOR_LIST" size="mini" />
-              </el-descriptions-item>
-              <el-descriptions-item label="polygon3D">
-                <el-switch :title="$l('polygon3D')" v-model="layer.params.polygon3D" @change="handleChangeLayerParams(layer.name, 'polygon3D', $event)" :active-value="true" :inactive-value="false" size="mini" />
-              </el-descriptions-item>
-              <el-descriptions-item label="polygon3DHeight">
-                <el-slider :title="$l('polygon3DHeight')" v-model="layer.params.polygon3DHeight" @change="handleChangeLayerParams(layer.name, 'polygon3DHeight', $event)" :step="0.1" :min="0" :max="5000" size="mini"> </el-slider>
-              </el-descriptions-item>
-              <el-descriptions-item label="polygonBorderWidth">
-                <el-slider :title="$l('polygonBorderWidth')" v-model="layer.params.polygonBorderWidth" @change="handleChangeLayerParams(layer.name, 'polygonBorderWidth', $event)" :step="0.1" :min="0" :max="300" size="mini"> </el-slider>
-              </el-descriptions-item>
-              <el-descriptions-item label="polygonBorderColor">
-                <el-color-picker :title="$l('polygonBorderColor')" v-model="layer.params.polygonBorderColor" @change="handleChangeLayerParams(layer.name, 'polygonBorderColor', $event)" :predefine="predefineColors" size="mini" />
-              </el-descriptions-item>
-              <el-descriptions-item label="polygonBorderStyle">
-                <el-select :title="$l('polygonBorderStyle')" v-model="layer.params.polygonBorderStyle" @change="handleChangeLayerParams(layer.name, 'polygonBorderStyle', $event)" size="mini">
-                  <el-option v-for="(v, k) in LINE_STYPE" :key="v" :label="k" :value="v"></el-option>
-                </el-select>
-              </el-descriptions-item>
+                  <el-descriptions-item label="showLineVisualMap">
+                    <el-switch :title="$l('showLineVisualMap')" v-model="layer.showLineVisualMap" :active-value="true" :inactive-value="false"> </el-switch>
+                    <GeoJSONVisualMap v-show="layer.showLineVisualMap" :colors="COLOR_LIST[layer.params.lineColors]" :max="layer.valueLabel.max" :min="layer.valueLabel.min" />
+                  </el-descriptions-item>
+                </template>
+                <template v-if="layer.showPolygonSetting">
+                  <el-descriptions-item label="polygonOpacity">
+                    <el-slider :title="$l('polygonOpacity')" v-model="layer.params.polygonOpacity" @change="handleChangeLayerParams(layer.name, 'polygonOpacity', $event)" :step="0.01" :min="0" :max="1" size="mini"> </el-slider>
+                  </el-descriptions-item>
+                  <!-- <el-descriptions-item label="polygonColors">
+                    <ColorSelect :title="$l('polygonColors')" style="width: 100%" v-model="layer.params.polygonColors" @change="handleChangeLayerParams(layer.name, 'polygonColors', $event.value)" :colorsList="COLOR_LIST" size="mini" />
+                  </el-descriptions-item> -->
+                  <el-descriptions-item label="polygon3D">
+                    <el-switch :title="$l('polygon3D')" v-model="layer.params.polygon3D" @change="handleChangeLayerParams(layer.name, 'polygon3D', $event)" :active-value="true" :inactive-value="false" size="mini" />
+                  </el-descriptions-item>
+                  <el-descriptions-item label="polygon3DHeight">
+                    <el-slider :title="$l('polygon3DHeight')" v-model="layer.params.polygon3DHeight" @change="handleChangeLayerParams(layer.name, 'polygon3DHeight', $event)" :step="0.1" :min="0" :max="5000" size="mini"> </el-slider>
+                  </el-descriptions-item>
+                  <el-descriptions-item label="polygonBorderWidth">
+                    <el-slider :title="$l('polygonBorderWidth')" v-model="layer.params.polygonBorderWidth" @change="handleChangeLayerParams(layer.name, 'polygonBorderWidth', $event)" :step="0.1" :min="0" :max="300" size="mini"> </el-slider>
+                  </el-descriptions-item>
+                  <el-descriptions-item label="polygonBorderColor">
+                    <el-color-picker :title="$l('polygonBorderColor')" v-model="layer.params.polygonBorderColor" @change="handleChangeLayerParams(layer.name, 'polygonBorderColor', $event)" :predefine="predefineColors" size="mini" />
+                  </el-descriptions-item>
+                  <el-descriptions-item label="polygonBorderStyle">
+                    <el-select :title="$l('polygonBorderStyle')" v-model="layer.params.polygonBorderStyle" @change="handleChangeLayerParams(layer.name, 'polygonBorderStyle', $event)" size="mini">
+                      <el-option v-for="(v, k) in LINE_STYPE" :key="v" :label="k" :value="v"></el-option>
+                    </el-select>
+                  </el-descriptions-item>
 
-              <el-descriptions-item label="showPolygonVisualMap">
-                <el-switch :title="$l('showPolygonVisualMap')" v-model="layer.showPolygonVisualMap" :active-value="true" :inactive-value="false"> </el-switch>
-                {{ layer.showPolygonVisualMap }}
-                <GeoJSONVisualMap v-show="layer.showPolygonVisualMap" :colors="COLOR_LIST[layer.params.polygonColors]" :max="layer.valueLabel.max" :min="layer.valueLabel.min" />
-              </el-descriptions-item>
-            </template>
-          </el-descriptions>
-        </div>
-      </div>
+                  <el-descriptions-item label="showPolygonVisualMap">
+                    <el-switch :title="$l('showPolygonVisualMap')" v-model="layer.showPolygonVisualMap" :active-value="true" :inactive-value="false"> </el-switch>
+                    {{ layer.showPolygonVisualMap }}
+                    <GeoJSONVisualMap v-show="layer.showPolygonVisualMap" :colors="COLOR_LIST[layer.params.polygonColors]" :max="layer.valueLabel.max" :min="layer.valueLabel.min" />
+                  </el-descriptions-item>
+                </template>
+              </el-descriptions>
+            </div>
+          </div>
+        </el-form-item>
+      </el-form>
     </div>
     <div v-else v-loading="uploading" :element-loading-text="$l('文件上传中...')" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
       <el-select class="select_box" :value="s_value" @change="handleChangeGeoJSON" :placeholder="$l('请选择GeoJSON')" clearable size="mini">
@@ -80,28 +97,8 @@
         <el-option v-for="item in rootVue.GeoJSONList" :key="item.id" :label="item.name" :value="item.id"> </el-option>
       </el-select>
       <el-form class="form_box" v-if="selectGeoJSON && s_value" :model="uploadForm" ref="form" label-width="auto" :inline="false" size="mini">
-        <el-form-item :label="$l('路内停车位字段')" prop="road">
-          <el-select v-model="uploadForm.road" clearable>
-            <el-option v-for="(item, key) in selectGeoJSON.propertiesLabels" :key="key" :label="key" :value="key"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item :label="$l('公共停车场字段')" prop="common">
-          <el-select v-model="uploadForm.common" clearable>
-            <el-option v-for="(item, key) in selectGeoJSON.propertiesLabels" :key="key" :label="key" :value="key"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item :label="$l('专用停车场字段')" prop="special">
-          <el-select v-model="uploadForm.special" clearable>
-            <el-option v-for="(item, key) in selectGeoJSON.propertiesLabels" :key="key" :label="key" :value="key"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item :label="$l('路边停车场字段')" prop="roadside">
-          <el-select v-model="uploadForm.roadside" clearable>
-            <el-option v-for="(item, key) in selectGeoJSON.propertiesLabels" :key="key" :label="key" :value="key"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item :label="$l('总停车场字段')" prop="total">
-          <el-select v-model="uploadForm.total" clearable>
+        <el-form-item :label="$l('线路ID字段')" prop="roadId">
+          <el-select v-model="uploadForm.roadId" clearable>
             <el-option v-for="(item, key) in selectGeoJSON.propertiesLabels" :key="key" :label="key" :value="key"></el-option>
           </el-select>
         </el-form-item>
@@ -133,58 +130,29 @@
     "zh-CN": "请选择GeoJSON",
     "en-US": "请选择GeoJSON"
   },
-  "路内停车位字段":{
-    "zh-CN": "路内停车位字段",
-    "en-US": "On Street Parking Field"
-  },
-  "公共停车场字段":{
-    "zh-CN": "公共停车场字段",
-    "en-US": "Public Parking Field"
-  },
-  "专用停车场字段":{
-    "zh-CN": "专用停车场字段",
-    "en-US": "Dedicated Parking Field"
-  },
-  "路边停车场字段":{
-    "zh-CN": "路外停车场字段",
-    "en-US": "Roadside Parking Field"
-  },
-  "总停车场字段":{
-    "zh-CN": "总停车场字段",
-    "en-US": "Total Parking Field"
-  },
-  "总停车场字段不选择时，将会采用其他4个字段的和作为总停车场数量":{
-    "zh-CN": "总停车场字段不选择时，将会采用其他4个字段的和作为总停车场数量",
-    "en-US": "总停车场字段不选择时，将会采用其他4个字段的和作为总停车场数量"
+  "线路ID字段":{
+    "zh-CN": "线路ID字段",
+    "en-US": "Road ID Field"
   },
   "立即上传":{
     "zh-CN": "立即上传",
     "en-US": "Upload now"
   },
-  
-  "road_label":{
-    "zh-CN": "路内停车位：",
-    "en-US": "On Street Parking:"
+  "类型：":{
+    "zh-CN": "类型：",
+    "en-US": "Type:"
   },
-  "common_label":{
-    "zh-CN": "公共停车场：",
-    "en-US": "Public Parking Lot:"
+  "颜色：":{
+    "zh-CN": "颜色：",
+    "en-US": "Color:"
   },
-  "special_label":{
-    "zh-CN": "专用停车场：",
-    "en-US": "Dedicated Parking Lot:"
+  "显示全部流量":{
+    "zh-CN": "显示全部流量",
+    "en-US": "show all flow"
   },
-  "roadside_label":{
-    "zh-CN": "路外停车场：",
-    "en-US": "Roadside Parking Lot:"
-  },
-  "total_label":{
-    "zh-CN": "总停车场：",
-    "en-US": "Total Parking Lot:"
-  },
-  "total2_label":{
-    "zh-CN": "总停车场：",
-    "en-US": "Total Parking Lot:"
+  "显示区域内流量":{
+    "zh-CN": "显示区域内流量",
+    "en-US": "show part flow"
   },
 }
 </language>
@@ -194,7 +162,9 @@ import { GeoJSONLayer, LINE_STYPE } from "../../GeoJSON/layer/GeoJSONLayer";
 import GeoJSONLayerWorker from "../../GeoJSON/worker/GeoJSONLayer.worker";
 import GeoJSONVisualMap from "../../GeoJSON/component/GeoJSONVisualMap.vue";
 
-import { uploadGeoJson } from "@/api/index";
+import { RegionalTrafficFlowLayer } from "../layer/RegionalTrafficFlowLayer";
+
+import { getElapseAreaLeg } from "@/api/index";
 import { guid, COLOR_LIST } from "@/utils/utils";
 
 export default {
@@ -207,7 +177,27 @@ export default {
       return this.rootVue._Map;
     },
   },
-  watch: {},
+  watch: {
+    showLayer1(val) {
+      if (val) {
+        this._Map.addLayer(this._RegionalTrafficFlowLayer1);
+      } else {
+        this._Map.removeLayer(this._RegionalTrafficFlowLayer1);
+      }
+    },
+    showLayer2(val) {
+      if (val) {
+        this._Map.addLayer(this._RegionalTrafficFlowLayer2);
+      } else {
+        this._Map.removeLayer(this._RegionalTrafficFlowLayer2);
+      }
+    },
+    layerColor(val) {
+      const pointColorBar = this.COLOR_LIST[this.layerColor];
+      this._RegionalTrafficFlowLayer1.setColorBar(pointColorBar);
+      this._RegionalTrafficFlowLayer2.setColorBar(pointColorBar);
+    },
+  },
   data() {
     return {
       COLOR_LIST: COLOR_LIST,
@@ -219,9 +209,16 @@ export default {
       selectGeoJSON: null,
       reselect: false,
       layerList: [],
+
+      showLayer1: true,
+      showLayer2: false,
+      layerColor: 0,
     };
   },
-  created() {},
+  created() {
+    this._RegionalTrafficFlowLayer1 = new RegionalTrafficFlowLayer({ zIndex: 100, color: this.color, height: this.height, colorBar: this.COLOR_LIST[this.layerColor] });
+    this._RegionalTrafficFlowLayer2 = new RegionalTrafficFlowLayer({ zIndex: 100, color: this.color, height: this.height, colorBar: this.COLOR_LIST[this.layerColor] });
+  },
   mounted() {
     this.$nextTick(() => {
       this._interval = setInterval(() => {
@@ -240,11 +237,15 @@ export default {
       for (const layer of this.layerList) {
         this._Map.addLayer(layer._geojsonLayer);
       }
+      if (this.showLayer1) this._Map.addLayer(this._RegionalTrafficFlowLayer1);
+      if (this.showLayer2) this._Map.addLayer(this._RegionalTrafficFlowLayer2);
     },
     handleDisable() {
       for (const layer of this.layerList) {
         this._Map.removeLayer(layer._geojsonLayer);
       }
+      this._Map.removeLayer(this._RegionalTrafficFlowLayer1);
+      this._Map.removeLayer(this._RegionalTrafficFlowLayer2);
     },
     handleChangeLayerParams(layerName, type, value) {
       console.log(type, value);
@@ -341,7 +342,7 @@ export default {
       if (value == "localhost") {
         const input = document.createElement("input");
         input.type = "file";
-        input.accept = ".geojson";
+        input.accept = ".geojson,.json";
         input.style = "position:absolute;width:0;height:0;top: -100px;";
         document.body.appendChild(input);
         input.onchange = (e) => {
@@ -368,42 +369,45 @@ export default {
         this.s_value = value;
         this.selectGeoJSON = this.rootVue.GeoJSONList.find((item) => item.id === value);
         this.uploadForm = {
-          road: null,
-          common: null,
-          special: null,
-          roadside: null,
-          total: null,
-          total2: "total2",
+          roadId: null,
         };
       }
     },
+    // handleUploadFile() {
+    //   this.uploading = true;
+    //   const form = JSON.parse(JSON.stringify(this.uploadForm));
+    //   form.file = this.selectGeoJSON._file;
+    //   uploadGeoJson(form)
+    //     .then((res) => {
+    //       const regionalTrafficGeoJSON = {
+    //         _file: form.file,
+    //         name: form.file.name,
+    //         roadId: form.roadId,
+    //         geoId: res.data,
+    //       };
+    //       this.handleDrowFile(form);
+    //       this.rootVue.regionalTrafficGeoJSON = regionalTrafficGeoJSON;
+    //       // this.rootVue.$emit("Parking_Geojson_Uuid", { geoId: res.data });
+    //       this.uploading = false;
+    //       this.reselect = false;
+    //     })
+    //     .catch((res) => {
+    //       this.uploading = false;
+    //     });
+    // },
     handleUploadFile() {
       this.uploading = true;
       const form = JSON.parse(JSON.stringify(this.uploadForm));
       form.file = this.selectGeoJSON._file;
-      let res = { data: "" };
-      uploadGeoJson(form)
-        .then((res) => {
-          const parkingGeoJSON = {
-            _file: form.file,
-            name: form.file.name,
-            road: form.road,
-            common: form.common,
-            special: form.special,
-            roadside: form.roadside,
-            total: form.total,
-            total2: form.total2,
-            geoId: res.data,
-          };
-          this.handleDrowFile(form);
-          this.rootVue.parkingGeoJSON = parkingGeoJSON;
-          this.rootVue.$emit("Parking_Geojson_Uuid", { geoId: res.data });
-          this.uploading = false;
-          this.reselect = false;
-        })
-        .catch((res) => {
-          this.uploading = false;
-        });
+      const regionalTrafficGeoJSON = {
+        _file: form.file,
+        name: form.file.name,
+        roadId: form.roadId,
+      };
+      this.handleDrowFile(form);
+      this.rootVue.regionalTrafficGeoJSON = regionalTrafficGeoJSON;
+      this.uploading = false;
+      this.reselect = false;
     },
     handleDrowFile(form) {
       for (const layer of this.layerList) {
@@ -412,12 +416,7 @@ export default {
       }
 
       const layerNameList = [];
-      if (!!form.road) layerNameList.push("road");
-      if (!!form.common) layerNameList.push("common");
-      if (!!form.special) layerNameList.push("special");
-      if (!!form.roadside) layerNameList.push("roadside");
-      if (!!form.total) layerNameList.push("total");
-      else if (layerNameList.length > 0) layerNameList.push("total2");
+      if (!!form.roadId) layerNameList.push("roadId");
 
       const layerList = [];
 
@@ -474,14 +473,14 @@ export default {
           pointSize: layer.params.pointSize,
           pointColor: layer.params.pointColor,
           pointIcon: layer.params.pointIcon,
-          pointValue: layer.params.pointValue,
+          pointValue: "", //layer.params.pointValue,
           pointColorBar: this.COLOR_LIST[layer.params.pointColors],
           pointOpacity: layer.params.pointOpacity,
           // ******************** 线 ******************** //
           lineWidth: layer.params.lineWidth,
           lineColor: layer.params.lineColor,
           lineStyle: layer.params.lineStyle,
-          lineValue: layer.params.lineValue,
+          lineValue: "", //layer.params.lineValue,
           lineColorBar: this.COLOR_LIST[layer.params.lineColors],
           lineOpacity: layer.params.lineOpacity,
           // ******************** 面 ******************** //
@@ -490,7 +489,7 @@ export default {
           polygonBorderWidth: layer.params.polygonBorderWidth,
           polygonBorderColor: layer.params.polygonBorderColor,
           polygonBorderStyle: layer.params.polygonBorderStyle,
-          polygonValue: layer.params.polygonValue,
+          polygonValue: "", //layer.params.polygonValue,
           polygonColorBar: this.COLOR_LIST[layer.params.polygonColors],
           polygon3D: layer.params.polygon3D,
           polygon3DHeight: layer.params.polygon3DHeight,
@@ -506,27 +505,8 @@ export default {
       worker.onmessage = (event) => {
         const { center, propertiesLabels, pointArray, lineArray, polygonArray, propertiesListArray } = event.data;
         const propertiesList = JSON.parse(new TextDecoder().decode(propertiesListArray));
-        let total2Min = Number.MAX_SAFE_INTEGER,
-          total2Max = Number.MIN_SAFE_INTEGER;
+        console.log(event.data);
 
-        propertiesList.forEach((item, index) => {
-          if (index == 0) return;
-          let total2 = 0;
-          if (!!form.road) total2 += Number(item[form.road] || 0) || 0;
-          if (!!form.common) total2 += Number(item[form.common] || 0) || 0;
-          if (!!form.special) total2 += Number(item[form.special] || 0) || 0;
-          if (!!form.roadside) total2 += Number(item[form.roadside] || 0) || 0;
-
-          if (total2Min > total2) total2Min = total2;
-          if (total2Max < total2) total2Max = total2;
-          item.total2 = total2;
-        });
-        propertiesLabels.total2 = {
-          max: total2Max,
-          min: total2Min,
-        };
-
-        console.log(propertiesList);
         for (const layer of layerList) {
           console.time("onmessage");
 
@@ -550,6 +530,25 @@ export default {
           }
         }
         worker.terminate();
+
+        // 获取流量数据
+
+        const roadIdList = propertiesList.map((v) => v[form.roadId]).filter((v) => !!v);
+        getElapseAreaLeg({
+          linkIds: roadIdList,
+          selectAll: true,
+        }).then((res) => {
+          this._RegionalTrafficFlowLayer1.setData(res.data);
+          if (this.showLayer1) this._Map.addLayer(this._RegionalTrafficFlowLayer1);
+        });
+        getElapseAreaLeg({
+          linkIds: roadIdList,
+          selectAll: false,
+        }).then((res) => {
+          this._RegionalTrafficFlowLayer2.setData(res.data);
+          if (this.showLayer2) this._Map.addLayer(this._RegionalTrafficFlowLayer2);
+        });
+
         this.drowFileing = false;
       };
       worker.addEventListener("error", (error) => {

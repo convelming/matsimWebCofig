@@ -1,16 +1,22 @@
 import { Layer, MAP_EVENT, OutlineLayer, SCENE_MAP } from "@/mymap";
+import { ColorBar2D } from "@/mymap/utils/ColorBar2D.js";
 import * as THREE from "three";
 
-export class LinkFlowLayer extends Layer {
+const textureLoader = new THREE.TextureLoader();
+
+export class RegionalTrafficFlowLayer extends Layer {
   color = 0x0000ff;
   height = 100;
+  colorBar = [];
   constructor(opt) {
     super(opt);
     this.color = opt.color || this.color;
     this.height = opt.height || this.height;
+    this.colorBar = opt.colorBar || [];
 
     this.material = new THREE.LineBasicMaterial({
-      color: this.color,
+      // color: this.color,
+      vertexColors: true
     });
   }
 
@@ -23,8 +29,12 @@ export class LinkFlowLayer extends Layer {
 
   setColor(color) {
     this.color = color;
-    this.material.setValues({ color: color });
-    this.material.needsUpdate = true;
+    // this.material.setValues({ color: color });
+    // this.material.needsUpdate = true;
+  }
+  setColorBar(colorBar) {
+    this.colorBar = colorBar // ColorBar2D.getDrowColors(colorBar);
+    this.update();
   }
 
   on(type, data) {
@@ -61,39 +71,35 @@ export class LinkFlowLayer extends Layer {
     this.clearScene();
     if (!this.map) return;
     if (!this.data) return;
-    console.time("update");
 
     const { link, legs } = this.data;
+    const speed = 1 / this.colorBar.length;
 
     // const geoList = new Array(legs.length).fill(null);
     const { center, fromCoord, toCoord } = link;
     const linkCenter = [center.x, center.y];
-    // const fV3 = new THREE.Vector3(fromCoord.x, fromCoord.y, 0);
-    // const tV3 = new THREE.Vector3(toCoord.x, toCoord.y, 0);
-    // const cV3 = new THREE.Vector3(center.x, center.y, 0);
-    // const linkDirection = fV3.clone().sub(tV3).normalize();
-    // link的法向量
-    // const linkNormal = new THREE.Vector3(linkDirection.y, linkDirection.x, 0);
     const meshList = [];
     for (let i = 0, l = legs.length; i < l; i++) {
       const { offset, coords } = legs[i];
-
+      
       const points = coords.map((v) => new THREE.Vector3(v[0], v[1], v[2] / 60));
+      const colors = coords.map((v) => new THREE.Color(this.colorBar[Math.floor(v[3] / speed)] || this.colorBar[0]).toArray());
+
       const geometry = new THREE.BufferGeometry().setFromPoints(points);
+      geometry.setAttribute("color", new THREE.Float32BufferAttribute(colors.flat(), 3));
       const mesh = new THREE.Line(geometry, this.material);
 
-      // const legCenterV3 = cV3.clone().add(linkNormal.clone().multiplyScalar(offset));
-      // const legCenter = [legCenterV3.x, legCenterV3.y];
       const [x, y] = this.map.WebMercatorToCanvasXY(...linkCenter);
       mesh.position.set(x, y, 0);
       mesh.scale.set(1, 1, this.height / 100);
       mesh.userData.center = linkCenter;
 
-      mesh.layers.enable(SCENE_MAP.BLOOM_SCENE);
+      // mesh.layers.enable(SCENE_MAP.BLOOM_SCENE);
       meshList.push(mesh);
       this.scene.add(mesh);
     }
     this.meshList = meshList;
     console.timeEnd("update");
   }
+
 }

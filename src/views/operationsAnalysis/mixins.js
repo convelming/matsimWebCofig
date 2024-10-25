@@ -42,7 +42,7 @@ export default {
 
       showLayerRegionalTraffic: false,
       lock2DRegionalTraffic: false,
-      RegionalTrafficGeoJSON: null,
+      regionalTrafficGeoJSON: null,
 
       showStopToolbar: true,
 
@@ -192,8 +192,11 @@ export default {
         rootId: "mapRoot",
         enableRotate: true,
       });
-      if (!this.isDev) this._Map.setFitZoomAndCenterByPoints(this.range);
-      if(this.isDev) this._Map.minPitch = -90;
+      this._Map.setFitZoomAndCenterByPoints(this.range);
+      if (this.isDev) {
+        this._Map.minPitch = -90;
+        this._Map.setCenter([1.2646146070123542e7, 2591625.066256937])
+      }
 
       this._MapLayer = new MapLayer({ tileClass: MAP_LAYER_STYLE[0], zIndex: -1 });
       this._Map.addLayer(this._MapLayer);

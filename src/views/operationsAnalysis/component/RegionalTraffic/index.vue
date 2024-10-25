@@ -83,7 +83,10 @@ export default {
     handleEnable() {},
     // 组件卸载事件
     handleDisable() {},
-    handleChangeShowLayer() {},
+    handleChangeShowLayer(value) {
+      this.s_showLayer = value;
+      this.$emit("update:showLayer", value);
+    },
   },
 };
 </script>

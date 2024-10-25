@@ -121,10 +121,8 @@ export class GeoJSONLayer extends Layer {
   }
   setLineColor(lineColor) {
     this.lineColor = new THREE.Color(lineColor);
-    console.log(this.lineColor)
     this.lineMaterial.uniforms.diffuse.value = this.lineColor;
     this.lineMaterial.needsUpdate = true;
-    console.log(this.lineMaterial)
   }
   setLineStyle(lineStyle) {
     this.lineStyle = lineStyle;
@@ -361,12 +359,8 @@ export class GeoJSONLayer extends Layer {
   on(type, data) {
     if (type == MAP_EVENT.UPDATE_CENTER) {
       for (const mesh of this.scene.children) {
-        console.log(this.center, this.map.center);
-
         const [x, y] = this.map.WebMercatorToCanvasXY(...this.center);
         mesh.position.set(x, y, mesh.position.z);
-        console.log(mesh);
-
       }
     }
   }
