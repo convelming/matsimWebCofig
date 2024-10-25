@@ -1,22 +1,22 @@
 <template>
   <div class="RegionalTrafficDetail" v-if="rootVue">
     <div v-if="rootVue.regionalTrafficGeoJSON && !reselect">
-      <el-form label-width="auto" size="mini">
-        <el-form-item label-width="0">
+      <el-form size="mini">
+        <el-form-item>
           <el-button style="display: block; margin-bottom: 10px; width: 100%" size="mini" type="primary" @click="reselect = true">{{ $l("重新选择文件") }}</el-button>
         </el-form-item>
         <el-form-item :label="$l('类型：')">
-          <div>
-            <el-checkbox v-model="showLayer1">{{ $l("显示全部流量") }}</el-checkbox>
-          </div>
-          <div>
-            <el-checkbox v-model="showLayer2">{{ $l("显示区域内流量") }}</el-checkbox>
-          </div>
+          <el-checkbox v-model="showLayer1">{{ $l("显示全部流量") }}</el-checkbox>
+          <el-checkbox v-model="showLayer2">{{ $l("显示区域内流量") }}</el-checkbox>
         </el-form-item>
         <el-form-item :label="$l('颜色：')">
           <ColorSelect v-model="layerColor" :colorsList="COLOR_LIST" size="mini" />
         </el-form-item>
-        <el-form-item label-width="0">
+        <el-form-item :label="$l('视觉映射组件：')">
+          <el-switch v-model="showLayerVisualMap" :active-value="true" :inactive-value="false"></el-switch>
+          <GeoJSONVisualMap v-show="showLayerVisualMap" :colors="COLOR_LIST[layerColor]" :max="1" :min="0" />
+        </el-form-item>
+        <el-form-item>
           <div class="collapse" v-for="layer in layerList" :key="layer.name">
             <div class="collapse_header">
               <el-checkbox v-model="layer.show" :indeterminate="false" @change="handleChangeLayerParams(layer.name, 'show', $event)">{{ $l(layer.label) + layer.valueKey }}</el-checkbox>
@@ -31,10 +31,10 @@
                   <!-- <el-descriptions-item label="pointColors">
                     <ColorSelect :title="$l('pointColors')" v-model="layer.params.pointColors" @change="handleChangeLayerParams(layer.name, 'pointColors', $event.value)" :colorsList="COLOR_LIST" size="mini" />
                   </el-descriptions-item> -->
-                  <el-descriptions-item label="showPointVisualMap">
+                  <!-- <el-descriptions-item label="showPointVisualMap">
                     <el-switch :title="$l('showPointVisualMap')" v-model="layer.showPointVisualMap" :active-value="true" :inactive-value="false"></el-switch>
                     <GeoJSONVisualMap v-show="layer.showPointVisualMap" :colors="COLOR_LIST[layer.params.pointColors]" :max="layer.valueLabel.max" :min="layer.valueLabel.min" />
-                  </el-descriptions-item>
+                  </el-descriptions-item> -->
                 </template>
                 <template v-if="layer.showLineSetting">
                   <el-descriptions-item label="lineWidth">
@@ -49,10 +49,10 @@
                     <ColorSelect :title="$l('lineColors')" style="width: 100%" v-model="layer.params.lineColors" @change="handleChangeLayerParams(layer.name, 'lineColors', $event.value)" :colorsList="COLOR_LIST" size="mini" />
                   </el-descriptions-item> -->
 
-                  <el-descriptions-item label="showLineVisualMap">
+                  <!-- <el-descriptions-item label="showLineVisualMap">
                     <el-switch :title="$l('showLineVisualMap')" v-model="layer.showLineVisualMap" :active-value="true" :inactive-value="false"> </el-switch>
                     <GeoJSONVisualMap v-show="layer.showLineVisualMap" :colors="COLOR_LIST[layer.params.lineColors]" :max="layer.valueLabel.max" :min="layer.valueLabel.min" />
-                  </el-descriptions-item>
+                  </el-descriptions-item> -->
                 </template>
                 <template v-if="layer.showPolygonSetting">
                   <el-descriptions-item label="polygonOpacity">
@@ -79,11 +79,11 @@
                     </el-select>
                   </el-descriptions-item>
 
-                  <el-descriptions-item label="showPolygonVisualMap">
+                  <!-- <el-descriptions-item label="showPolygonVisualMap">
                     <el-switch :title="$l('showPolygonVisualMap')" v-model="layer.showPolygonVisualMap" :active-value="true" :inactive-value="false"> </el-switch>
                     {{ layer.showPolygonVisualMap }}
                     <GeoJSONVisualMap v-show="layer.showPolygonVisualMap" :colors="COLOR_LIST[layer.params.polygonColors]" :max="layer.valueLabel.max" :min="layer.valueLabel.min" />
-                  </el-descriptions-item>
+                  </el-descriptions-item> -->
                 </template>
               </el-descriptions>
             </div>
@@ -145,6 +145,10 @@
   "颜色：":{
     "zh-CN": "颜色：",
     "en-US": "Color:"
+  },
+  "视觉映射组件：":{
+    "zh-CN": "视觉映射组件：",
+    "en-US": "Visual Map:"
   },
   "显示全部流量":{
     "zh-CN": "显示全部流量",
@@ -213,6 +217,7 @@ export default {
       showLayer1: true,
       showLayer2: false,
       layerColor: 0,
+      showLayerVisualMap: false,
     };
   },
   created() {

@@ -171,6 +171,21 @@ export class ActivityRoutesLayer extends Layer {
     }
   }
 
+  setActScale(actScale) {
+    this.actScale = actScale;
+    this.updateSize()
+  }
+
+  setActScale(actScale) {
+    this.actScale = actScale;
+    this.updateSize()
+  }
+
+  setLegScale(legScale) {
+    this.legScale = legScale;
+    this.updateSize()
+  }
+
   // 根据地图高度更新大小
   updateSize() {
     this.actWidth = this.map.cameraHeight / 400;
@@ -301,7 +316,7 @@ export class ActivityRoutesLayer extends Layer {
       const loader = new THREE.TextureLoader();
       const scale = this.labelScale * this.labelWidth;
       for (const key in timeMap) {
-        const { url, width, height } = getTextImage(formatHour(Number(key)), { colNum: 8 });
+        const { url, width, height } = getTextImage(formatHour(Number(key)), { colNum: 8, family: "wending" });
         const texture = loader.load(url);
         texture.minFilter = THREE.LinearFilter;
         texture.wrapS = THREE.ClampToEdgeWrapping;

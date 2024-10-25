@@ -22,6 +22,7 @@ export function getTextImage(
     color = "black",
     border = 4,
     borderColor = "black",
+    family = "Avenir"
   } = {}
 ) {
   if (!name) name = "";
@@ -29,12 +30,24 @@ export function getTextImage(
   const _rowNum = Math.ceil(name.length / _colNum);
 
   const ctx = document.createElement("canvas").getContext("2d");
-  const font = `${40}px bold`;
+  const font = `bold 40px ${family}`;
   ctx.font = font;
 
-  const textWidth = ctx.measureText("测").width;
-  const width = textWidth * _colNum + padding * 2 + border * 2;
-  const height = textWidth * _rowNum * lineHeight + padding * 2 + border * 2;
+  // const textWidth = ctx.measureText("测").width;
+  // const width = textWidth * _colNum + padding * 2 + border * 2;
+  // const height = textWidth * _rowNum * lineHeight + padding * 2 + border * 2;
+  let textWidth = 0, textHeight = 0;
+  for (let row = 0; row <= _rowNum; row++) {
+    const str = name.substr(row * _colNum, _colNum);
+    const text = ctx.measureText(str);
+
+    textWidth = Math.max(textWidth || 0, text.width || 0);
+    textHeight = Math.max(textHeight || 0, (text.width / str.length) || 0);
+  }
+  const width = textWidth + padding * 2 + border * 2;
+  const height = textHeight * _rowNum * lineHeight + padding * 2 + border * 2;
+
+
 
   ctx.canvas.width = width;
   ctx.canvas.height = height;
@@ -53,7 +66,7 @@ export function getTextImage(
   ctx.fillStyle = color;
   for (let row = 0; row <= _rowNum; row++) {
     const x = width / 2;
-    const y = (row + 0.5) * textWidth * lineHeight + padding + border;
+    const y = (row + 0.5) * textHeight * lineHeight + padding + border;
     const text = name.substr(row * _colNum, _colNum);
     ctx.fillText(text, x, y);
   }

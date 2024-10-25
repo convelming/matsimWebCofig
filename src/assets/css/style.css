@@ -16,3 +16,8 @@ body {
   height: 100vh;
   overflow: hidden;
 }
+
+@font-face {
+  font-family: wending;
+  src: url("./DigitalNumbers-Regular.ttf");
+}

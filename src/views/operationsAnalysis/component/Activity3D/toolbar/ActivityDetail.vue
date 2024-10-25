@@ -52,6 +52,18 @@
               <el-slider style="padding: 0 calc(2em - 10px)" v-model="height" :min="0" :max="500" :step="0.1" :format-tooltip="(v) => `${v}%`" />
             </div>
           </div>
+          <div class="form_item" style="align-items: center">
+            <div class="form_label">{{ $l("actScale") }}</div>
+            <div class="form_value">
+              <el-slider style="padding: 0 calc(2em - 10px)" v-model="actScale" :min="0" :max="10" :step="0.1" :format-tooltip="(v) => `${v}%`" />
+            </div>
+          </div>
+          <div class="form_item" style="align-items: center">
+            <div class="form_label">{{ $l("legScale") }}</div>
+            <div class="form_value">
+              <el-slider style="padding: 0 calc(2em - 10px)" v-model="legScale" :min="0" :max="10" :step="0.1" :format-tooltip="(v) => `${v * 10}%`" />
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -107,6 +119,14 @@
   "height":{
     "zh-CN": "高度：",
     "en-US": "Height: "
+  },
+  "actScale":{
+    "zh-CN": "活动大小：",
+    "en-US": "ActScale: "
+  },
+  "legScale":{
+    "zh-CN": "出现大小：",
+    "en-US": "LegScale: "
   },
 }
 </language>
@@ -181,6 +201,16 @@ export default {
         this._ActivityRoutesLayer.setHeight(val);
       },
     },
+    actScale: {
+      handler(val) {
+        this._ActivityRoutesLayer.setActScale(val);
+      },
+    },
+    legScale: {
+      handler(val) {
+        this._ActivityRoutesLayer.setLegScale(val);
+      },
+    },
   },
   data() {
     return {
@@ -190,6 +220,8 @@ export default {
 
       actColor: "#ffa500",
       legColor: "#EE6666",
+      actScale: 1,
+      legScale: 1,
       height: 30,
 
       loading: true,
