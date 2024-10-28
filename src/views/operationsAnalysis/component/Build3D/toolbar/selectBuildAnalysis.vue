@@ -148,7 +148,7 @@ export default {
   created() {
     this._BuildFlowLayer = new BuildFlowLayer({ zIndex: 100, color: this.color, height: this.height });
     this._SelectBuild3DLayer = new SelectBuild3DLayer({
-      zIndex: 10,
+      zIndex: 130,
       buildColor: 0xff0000,
       buildOpacity: 1,
     });

@@ -236,11 +236,11 @@ export default {
   created() {
     console.log(this.activityDetail);
     this._SelectActivityLayer = new SelectActivityLayer({
-      zIndex: 30,
+      zIndex: 130,
       color: this.color,
     });
     this._ActivityRoutesLayer = new ActivityRoutesLayer({
-      zIndex: 40,
+      zIndex: 140,
       activityColors: this.activityDetail.activityColors,
       legColors: this.activityDetail.legColors,
       height: this.height,
