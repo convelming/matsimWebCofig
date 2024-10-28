@@ -158,7 +158,7 @@ export default {
   },
   created() {
     this._SelectLineLayer = new SelectLineLayer({
-      zIndex: 30,
+      zIndex: 130,
       lineWidth: this.lineDetail.lineWidth,
       lineOffset: this.lineDetail.lineOffset,
     });

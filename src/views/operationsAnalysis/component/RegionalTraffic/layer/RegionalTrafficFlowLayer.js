@@ -94,7 +94,7 @@ export class RegionalTrafficFlowLayer extends Layer {
       mesh.scale.set(1, 1, this.height / 100);
       mesh.userData.center = linkCenter;
 
-      // mesh.layers.enable(SCENE_MAP.BLOOM_SCENE);
+      mesh.layers.enable(SCENE_MAP.BLOOM_SCENE);
       meshList.push(mesh);
       this.scene.add(mesh);
     }

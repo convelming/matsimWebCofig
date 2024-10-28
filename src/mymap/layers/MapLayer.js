@@ -267,7 +267,7 @@ export class MapTile {
 
   set opacity(v) {
     this._opacity = v;
-    this.mesh.material.setValues({ opacity: v });
+    this.mesh.material.setValues({ opacity: v, transparent: v !== 1 });
   }
 
   // 加载瓦片贴图
@@ -277,7 +277,7 @@ export class MapTile {
       const texture = await new Promise((resolve, reject) =>
         Loader.load(this.getUrl(), resolve, undefined, reject)
       );
-      this.mesh.material.setValues({ map: texture, opacity: this._opacity });
+      this.mesh.material.setValues({ map: texture, opacity: this._opacity, transparent: this._opacity !== 1 });
       this.mesh.material.needsUpdate = true;
       this._loadStatus = 2;
     } catch (error) {

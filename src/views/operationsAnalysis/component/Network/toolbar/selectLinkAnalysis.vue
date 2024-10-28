@@ -136,11 +136,11 @@ export default {
   },
   created() {
     this._SelectLineLayer = new SelectLineLayer({
-      zIndex: 30,
+      zIndex: 130,
       lineWidth: this.lineDetail.lineWidth,
       lineOffset: this.lineDetail.lineOffset,
     });
-    this._LinkFlowLayer = new LinkFlowLayer({ zIndex: 100, color: this.color, height: this.height });
+    this._LinkFlowLayer = new LinkFlowLayer({ zIndex: 200, color: this.color, height: this.height });
     this.getDetail();
   },
   beforeDestroy() {

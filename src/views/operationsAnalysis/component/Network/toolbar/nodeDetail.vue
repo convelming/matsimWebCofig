@@ -100,7 +100,7 @@ export default {
   },
   created() {
     this._SelectStopLayer = new SelectStopLayer({
-      zIndex: 100,
+      zIndex: 130,
       color: this.stopColor,
     });
   },

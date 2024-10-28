@@ -168,7 +168,7 @@ export class Activity3DLayer extends Layer {
         const matrix = new THREE.Matrix4();
         if (time - startTime < 20 && startTime > 30) {
           const s = _scale * ((1 - (time - startTime) / 20) * 2 + 1);
-          scaleV3.set(s, s, s);
+          scaleV3.set(s, s, 1);
         }
         matrix.compose(positionV3, new THREE.Quaternion(), scaleV3);
 
