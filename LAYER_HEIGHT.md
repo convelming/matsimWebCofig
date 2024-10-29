@@ -17,8 +17,14 @@ GeoJson模块
   GeoJson图层 zIndex 30（0.3px） 图层本身高度 0.004px 路径 src\views\operationsAnalysis\component\GeoJSON\toolbar\geoJSONDetail.vue
 
 公共交通车辆模块
+  公交车轨迹图层 zIndex 0 （0px） 图层本身高度 未知（3D图层） 路径 src\views\operationsAnalysis\component\MotorizedTravel\index.vue
+  地铁轨迹图层 zIndex 0 （0px） 图层本身高度 未知（3D图层） 路径 src\views\operationsAnalysis\component\MotorizedTravel\index.vue
 
 路网模块
+  路网图层 zIndex 20 （0.2px） 图层本身高度 2px 路径 src\views\operationsAnalysis\component\Network\index.vue
+  被选中路段图层 zIndex 130 （1.3px） 图层本身高度 0px 路径 src\views\operationsAnalysis\component\Network\toolbar\lineDetail.vue
+  被选中节点图层 zIndex 130 （1.4px） 图层本身高度 0px 路径 src\views\operationsAnalysis\component\Network\toolbar\nodeDetail.vue
+  线路流量图层 zIndex 30 （0.3px） 图层本身高度 2px 路径 src\views\operationsAnalysis\component\Network\toolbar\lineFlow.vue
 
 停车需求分析模块
 

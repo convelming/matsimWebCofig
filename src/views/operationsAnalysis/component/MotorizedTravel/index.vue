@@ -229,7 +229,7 @@ export default {
   created() {
     this.s_showLayer = this.showLayer;
     this._BusMotionLayer = new BusMotionLayer({
-      zIndex: 10,
+      zIndex: 0,
       lockSelectBus: this.lockSelectVehicle,
       maxBusNum: this.maxVehicleNum,
       modelSize: this.modelSize,
@@ -244,7 +244,7 @@ export default {
       },
     });
     this._SubwayMotionLayer = new SubwayMotionLayer({
-      zIndex: 10,
+      zIndex: 0,
       lockSelectSubway: this.lockSelectVehicle,
       maxSubwayNum: this.maxVehicleNum,
       modelSize: this.modelSize,

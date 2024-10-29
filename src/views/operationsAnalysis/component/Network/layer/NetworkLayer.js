@@ -380,7 +380,7 @@ export class NetworkTile {
     for (let i = 0, l = nodeList.length; i < l; i++) {
       const { coord, pickColorNum } = nodeList[i];
       const matrix = new THREE.Matrix4();
-      const positionV3 = new THREE.Vector3(coord.x, coord.y, 1);
+      const positionV3 = new THREE.Vector3(coord.x, coord.y, i / l + 1);
       const scaleV3 = new THREE.Vector3(_scale, _scale, 1);
       matrix.compose(positionV3, new THREE.Quaternion(), scaleV3);
 
@@ -448,11 +448,11 @@ export class NetworkTile {
 
     if (this.loadStatus != 2) return;
     const nodeList = Object.values(this._nodeData);
+    const _scale = (this._lineWidth / 100) * 1.1;
     for (let i = 0, l = nodeList.length; i < l; i++) {
       const { coord, pickColorNum } = nodeList[i];
       const matrix = new THREE.Matrix4();
       const positionV3 = new THREE.Vector3(coord.x, coord.y, i / l + 1);
-      const _scale = (this._lineWidth / 100) * 1.1;
       const scaleV3 = new THREE.Vector3(_scale, _scale, 1);
       matrix.compose(positionV3, new THREE.Quaternion(), scaleV3);
 
