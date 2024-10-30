@@ -125,7 +125,7 @@
     "en-US": "ActScale: "
   },
   "legScale":{
-    "zh-CN": "出现大小：",
+    "zh-CN": "出行大小：",
     "en-US": "LegScale: "
   },
 }
