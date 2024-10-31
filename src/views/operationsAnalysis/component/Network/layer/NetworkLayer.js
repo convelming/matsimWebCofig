@@ -32,6 +32,8 @@ export class NetworkLayer extends Layer {
     this.lineWidth = opt.lineWidth || this.lineWidth;
     this.lineOffset = opt.lineOffset || this.lineOffset;
     this.showNode = opt.showNode || this.showNode;
+    this.showVideoIcon = opt.showVideoIcon || this.showVideoIcon;
+    this.videoIconWidth = opt.videoIconWidth || this.videoIconWidth;
     this.selectLine = {
       show: false,
       tile: null,
@@ -69,6 +71,12 @@ export class NetworkLayer extends Layer {
       tile.setShowNode(showNode);
     }
   }
+  setShowVideoIcon(showVideoIcon) {
+    this.showVideoIcon = showVideoIcon;
+    for (const tile of Object.values(this.tileMap)) {
+      tile.setShowVideoIcon(showVideoIcon);
+    }
+  }
 
   setTime(time) {
     this.time = time;
@@ -81,6 +89,13 @@ export class NetworkLayer extends Layer {
     this.colors = colors || ColorBar2DColors;
     for (const tile of Object.values(this.tileMap)) {
       tile.setColors(colors);
+    }
+  }
+
+  setVideoIconWidth(videoIconWidth) {
+    this.videoIconWidth = videoIconWidth;
+    for (const tile of Object.values(this.tileMap)) {
+      tile.setVideoIconWidth(videoIconWidth);
     }
   }
 
@@ -185,6 +200,9 @@ export class NetworkLayer extends Layer {
             lineOffset: this.lineOffset,
             colors: this.colors,
             pickLayerColor: this.pickLayerColor,
+            videoIconWidth: this.videoIconWidth,
+            showNode: this.showNode,
+            showVideoIcon: this.showVideoIcon,
           });
           this.tileMap[key] = tile;
           this.handleLoadTile(tile);
@@ -215,6 +233,7 @@ export class NetworkLayer extends Layer {
 
 export class NetworkTile {
   static noodMap = new THREE.TextureLoader().load(require("@/assets/image/point2.png"));
+  static videoIconMap = new THREE.TextureLoader().load(process.env.VUE_APP_PUBLIC_PATH + "icon_traffic/camera.svg");
   static lineMap = new THREE.TextureLoader().load(require("@/assets/image/up2.png"));
 
   _loadNum = 0;
@@ -253,7 +272,7 @@ export class NetworkTile {
     return this._flowNum;
   }
 
-  constructor({ row, col, flowNum = 0, lineWidth = 10, lineOffset = 0, colors = ColorBar2DColors, pickLayerColor = 0xff0000, showNode = false }) {
+  constructor({ row, col, flowNum = 0, lineWidth = 10, lineOffset = 0, colors = ColorBar2DColors, pickLayerColor = 0xff0000, showNode = false, showVideoIcon = false, videoIconWidth = 10 }) {
     this._row = row;
     this._col = col;
     this._x = ((row + 0.5) * (EARTH_RADIUS * 2)) / Math.pow(2, BUILD_ZOOM) - EARTH_RADIUS;
@@ -263,8 +282,11 @@ export class NetworkTile {
     this._colors = colors;
     this._pickLayerColor = pickLayerColor;
     this._showNode = showNode;
+    this._showVideoIcon = showVideoIcon;
     this._nodeData = {};
     this._lineData = {};
+    this._videoIconData = {};
+    this._videoIconWidth = videoIconWidth;
 
     this._geometry = new THREE.BufferGeometry();
     this._baseMaterial = new NetworkMaterial({
@@ -283,6 +305,14 @@ export class NetworkTile {
       usePickColor: true,
       lineWidth: this._lineWidth,
       lineOffset: this._lineOffset,
+    });
+
+    this._videoIconGeometry = new THREE.PlaneGeometry(100, 100);
+    this._videoIconMaterial = new THREE.MeshBasicMaterial({
+      depthWrite: false,
+      map: NetworkTile.videoIconMap,
+      color: new THREE.Color(0xffffff),
+      transparent: true,
     });
 
     this._nodeGeometry = new THREE.PlaneGeometry(100, 100);
@@ -320,18 +350,22 @@ export class NetworkTile {
       if (data && data.length > 0) {
         this._lineData = {};
         this._nodeData = {};
+        this._videoIconData = {};
         const nodeObj = {};
         for (const v of data) {
           v.pickColorNum = ++pickColorNum;
           v.type = "line";
           v.uuid = guid();
           v.id = v.linkId;
+          v.normal = new THREE.Vector3(v.fromCoord.y - v.toCoord.y, v.toCoord.x - v.fromCoord.x, 0);
           this._lineData[v.pickColorNum] = v;
-          const normal = new THREE.Vector3(v.fromCoord.y - v.toCoord.y, v.toCoord.x - v.fromCoord.x, 0);
-          console.log(normal);
-          
-          const fromNode = { coord: v.fromCoord, id: v.fromNodeId, type: "node", uuid: guid(), normal: normal.clone() };
-          const toNode = { coord: v.toCoord, id: v.toNodeId, type: "node", uuid: guid(), normal: normal.clone() };
+
+          if (v.realStats) {
+            this._videoIconData[v.pickColorNum] = v;
+          }
+
+          const fromNode = { coord: v.fromCoord, id: v.fromNodeId, type: "node", uuid: guid(), normal: v.normal.clone() };
+          const toNode = { coord: v.toCoord, id: v.toNodeId, type: "node", uuid: guid(), normal: v.normal.clone() };
           if (!nodeObj[fromNode.id]) {
             fromNode.pickColorNum = ++pickColorNum;
             this._nodeData[fromNode.pickColorNum] = fromNode;
@@ -373,17 +407,36 @@ export class NetworkTile {
     this._pickLayerScene.add(this._pickLayerMesh);
     this._pickMeshScene.add(this._pickBuildMesh);
 
+
+    const _scale2 = (this._videoIconWidth / 100) * 1.1;
+    const videoIconList = Object.values(this._videoIconData);
+    this._videoIconMesh = new THREE.InstancedMesh(this._videoIconGeometry, this._videoIconMaterial, videoIconList.length);
+
+    for (let i = 0, l = videoIconList.length; i < l; i++) {
+      const { realStats, normal } = videoIconList[i];
+      const matrix = new THREE.Matrix4();
+      const positionV3 = new THREE.Vector3(realStats.x, realStats.y, i / l + 1).sub(normal.clone().setLength(this._lineOffset));
+      const scaleV3 = new THREE.Vector3(_scale2, _scale2, 1);
+      matrix.compose(positionV3, new THREE.Quaternion(), scaleV3);
+
+      this._videoIconMesh.setMatrixAt(i, matrix);
+    }
+    this._videoIconMesh.instanceMatrix.needsUpdate = true;
+    if (this._showVideoIcon) {
+      this._baseScene.add(this._videoIconMesh);
+    }
+
+
+    const _scale = (this._lineWidth / 100) * 1.1;
     const nodeList = Object.values(this._nodeData);
     this._baseNodeMesh = new THREE.InstancedMesh(this._nodeGeometry, this._baseNodeMaterial, nodeList.length);
     this._pickLayerNodeMesh = new THREE.InstancedMesh(this._nodeGeometry, this._pickLayerNodeMaterial, nodeList.length);
     this._pickMeshNodeMesh = new THREE.InstancedMesh(this._nodeGeometry, this._pickMeshNodeMaterial, nodeList.length);
 
-    const _scale = (this._lineWidth / 100) * 1.1;
     for (let i = 0, l = nodeList.length; i < l; i++) {
       const { coord, pickColorNum, normal } = nodeList[i];
       const matrix = new THREE.Matrix4();
       const positionV3 = new THREE.Vector3(coord.x, coord.y, i / l + 1).sub(normal.clone().setLength(this._lineOffset));
-
       const scaleV3 = new THREE.Vector3(_scale, _scale, 1);
       matrix.compose(positionV3, new THREE.Quaternion(), scaleV3);
 
@@ -450,8 +503,9 @@ export class NetworkTile {
     this._pickMeshMaterial.needsUpdate = true;
 
     if (this.loadStatus != 2) return;
-    const nodeList = Object.values(this._nodeData);
     const _scale = (this._lineWidth / 100) * 1.1;
+
+    const nodeList = Object.values(this._nodeData);
     for (let i = 0, l = nodeList.length; i < l; i++) {
       const { coord, pickColorNum, normal } = nodeList[i];
       const matrix = new THREE.Matrix4();
@@ -466,6 +520,27 @@ export class NetworkTile {
     if (this._baseNodeMesh) this._baseNodeMesh.instanceMatrix.needsUpdate = true;
     if (this._pickLayerNodeMesh) this._pickLayerNodeMesh.instanceMatrix.needsUpdate = true;
     if (this._pickMeshNodeMesh) this._pickMeshNodeMesh.instanceMatrix.needsUpdate = true;
+
+  }
+
+  setVideoIconWidth(videoIconWidth) {
+    this._videoIconWidth = videoIconWidth;
+
+    if (this.loadStatus != 2) return;
+    const _scale2 = (this._videoIconWidth / 100) * 1.1;
+
+    const videoIconList = Object.values(this._videoIconData);
+    for (let i = 0, l = videoIconList.length; i < l; i++) {
+      const { realStats, normal } = videoIconList[i];
+      const matrix = new THREE.Matrix4();
+      const positionV3 = new THREE.Vector3(realStats.x, realStats.y, i / l + 1).sub(normal.clone().setLength(this._lineOffset));
+      const scaleV3 = new THREE.Vector3(_scale2, _scale2, 1);
+
+      matrix.compose(positionV3, new THREE.Quaternion(), scaleV3);
+
+      if (this._videoIconMesh) this._videoIconMesh.setMatrixAt(i, matrix);
+    }
+    if (this._videoIconMesh) this._videoIconMesh.instanceMatrix.needsUpdate = true;
   }
 
   setLineOffset(lineOffset) {
@@ -479,8 +554,24 @@ export class NetworkTile {
 
 
     if (this.loadStatus != 2) return;
-    const nodeList = Object.values(this._nodeData);
+
+    const _scale2 = (this._videoIconWidth / 100) * 1.1;
+    const videoIconList = Object.values(this._videoIconData);
+    for (let i = 0, l = videoIconList.length; i < l; i++) {
+      const { realStats, normal } = videoIconList[i];
+      const matrix = new THREE.Matrix4();
+      const positionV3 = new THREE.Vector3(realStats.x, realStats.y, i / l + 1).sub(normal.clone().setLength(this._lineOffset));
+      const scaleV3 = new THREE.Vector3(_scale2, _scale2, 1);
+
+      matrix.compose(positionV3, new THREE.Quaternion(), scaleV3);
+
+      if (this._videoIconMesh) this._videoIconMesh.setMatrixAt(i, matrix);
+    }
+    if (this._videoIconMesh) this._videoIconMesh.instanceMatrix.needsUpdate = true;
+
+
     const _scale = (this._lineWidth / 100) * 1.1;
+    const nodeList = Object.values(this._nodeData);
     for (let i = 0, l = nodeList.length; i < l; i++) {
       const { coord, pickColorNum, normal } = nodeList[i];
       const matrix = new THREE.Matrix4();
@@ -515,6 +606,15 @@ export class NetworkTile {
       if (this._baseNodeMesh) this._baseNodeMesh.removeFromParent();
       if (this._pickLayerNodeMesh) this._pickLayerNodeMesh.removeFromParent();
       if (this._pickMeshNodeMesh) this._pickMeshNodeMesh.removeFromParent();
+    }
+  }
+
+  setShowVideoIcon(showVideoIcon) {
+    this._showVideoIcon = showVideoIcon;
+    if (showVideoIcon) {
+      if (this._videoIconMesh) this._baseScene.add(this._videoIconMesh);
+    } else {
+      if (this._videoIconMesh) this._videoIconMesh.removeFromParent();
     }
   }
 

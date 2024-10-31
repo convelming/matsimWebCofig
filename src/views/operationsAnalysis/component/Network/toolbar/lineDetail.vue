@@ -186,6 +186,11 @@ export default {
           this._SelectLineLayer.setLineWidth(this.lineDetail.lineWidth);
           this._SelectLineLayer.setData(res.data);
           this.loading = false;
+
+          if (this.lineDetail.realStats && this.lineDetail.showVideoIcon) {
+            this.lineDetail.showVideoIcon = false;
+            this.handleMenu({ data: this.resData, command: "linkVolumes" });
+          }
         })
         .finally(() => {
           this.loading = false;

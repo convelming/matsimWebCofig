@@ -39,6 +39,14 @@
           <el-switch :disabled="!s_showLayer" v-model="showNode"></el-switch>
         </div>
       </div>
+      <div class="form_item">
+        <div class="form_label">
+          <div>{{ $l("showVideoIcon") }}</div>
+        </div>
+        <div class="form_value">
+          <el-switch :disabled="!s_showLayer" v-model="showVideoIcon"></el-switch>
+        </div>
+      </div>
     </div>
   </el-collapse-item>
 </template>
@@ -100,6 +108,7 @@ export default {
     width: {
       handler(val) {
         this._NetworkLayer.setLineWidth(val);
+        this._NetworkLayer.setVideoIconWidth(val * 1.5);
         this.rootVue.$emit("Network_setLineWidth", val);
       },
     },
@@ -123,6 +132,11 @@ export default {
         this._NetworkLayer.setShowNode(val);
       },
     },
+    showVideoIcon: {
+      handler(val) {
+        this._NetworkLayer.setShowVideoIcon(val);
+      },
+    },
   },
   data() {
     return {
@@ -137,6 +151,7 @@ export default {
       offset: 0,
       color: "#E9CDAA",
       showNode: false,
+      showVideoIcon: false,
       canSelect: false,
 
       colorsList: COLOR_LIST,
@@ -152,6 +167,8 @@ export default {
       lineOffset: this.offset,
       colors: this.getLayerColors(this.colorsList[this.colors]),
       showNode: this.showNode,
+      showVideoIcon: this.showVideoIcon,
+      videoIconWidth: this.width * 1.5,
       event: {
         [MAP_EVENT.LAYER_LOADING]: ({ data }) => {
           this.loading = data;
@@ -236,6 +253,7 @@ export default {
           _data.lineWidth = this.width;
           _data.lineOffset = this.offset;
           if (_data.type == "line") {
+            _data.showVideoIcon = this.showVideoIcon;
             this.rootVue.handleShowLineDetail({ uuid: "line" + _data.id, lineDetail: _data });
           } else if (_data.type == "node") {
             this.rootVue.handleShowNodeDetail({ uuid: "node" + _data.id, nodeDetail: _data });
