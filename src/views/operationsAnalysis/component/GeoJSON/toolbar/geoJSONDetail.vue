@@ -11,6 +11,12 @@
             <el-switch v-model="GeoJSON.show" :active-value="true" :inactive-value="false" size="mini" />
           </div>
         </div>
+        <div class="file_row">
+          <div class="file_l_col" style="padding: 0 15px">{{ $l("Locate to the center") }}</div>
+          <div class="file_s_col" style="width: 60px">
+            <el-button type="primary" size="mini" circle icon="el-icon-aim" @click="handleChange('center')"></el-button>
+          </div>
+        </div>
       </div>
       <template v-if="showPointSetting">
         <div class="title">{{ $l("point") }}</div>
@@ -22,7 +28,7 @@
             <div class="file_s_col">
               <el-color-picker :title="$l('pointColor')" v-model="pointColor" @change="handleChange('pointColor', $event)" size="mini" :predefine="predefineColors" />
             </div>
-            <div class="file_s_col" style="width: 90px"> 
+            <div class="file_s_col" style="width: 90px">
               <IconSelect :title="$l('pointIcon')" v-model="pointIcon" @change="handleChange('pointIcon', $event.value)" size="mini" />
               <!-- <el-select v-model="pointIcon" @change="handleChange('pointIcon', $event)" size="mini" popper-class="point_icon_popper">
                 <el-option v-for="(v, i) in iconOptions" :key="i" :label="i" :value="v">
@@ -91,8 +97,9 @@
             </div>
           </div>
           <div class="file_row">
-            <div class="file_l_col" style="padding: 0 15px">
-              <el-slider :title="$l('polygonBorderWidth')" v-model="polygonBorderWidth" @change="handleChange('polygonBorderWidth', $event)" :step="0.1" :min="0" :max="300" size="mini"> </el-slider>
+            <div class="file_l_col">
+              <el-input-number :title="$l('polygonBorderWidth')" v-model="polygonBorderWidth" :min="0" :step="0.1" :controls="true" controls-position="both" size="mini" @change="handleChange('polygonBorderWidth', $event)"> </el-input-number>
+              <!-- <el-slider :title="$l('polygonBorderWidth')" v-model="polygonBorderWidth" @change="handleChange('polygonBorderWidth', $event)" :step="0.1" :min="0" :max="300" size="mini"> </el-slider> -->
             </div>
             <div class="file_s_col">
               <el-color-picker :title="$l('polygonBorderColor')" v-model="polygonBorderColor" @change="handleChange('polygonBorderColor', $event)" size="mini" :predefine="predefineColors" />
@@ -140,6 +147,10 @@
   "Show GeoJSON":{
     "zh-CN": "显示GeoJSON",
     "en-US": "Show GeoJSON"
+  },
+  "Locate to the center":{
+    "zh-CN": "定位到中心",
+    "en-US": "Locate to the center"
   },
   "point":{
     "zh-CN": "point",
@@ -229,7 +240,6 @@
 </language>
 
 <script>
-
 import { ICON_LIST } from "@/utils/utils";
 import { GeoJSONLayer, LINE_STYPE } from "../layer/GeoJSONLayer";
 import GeoJSONVisualMap from "../component/GeoJSONVisualMap.vue";
@@ -300,7 +310,7 @@ export default {
 
       polygonOpacity: 1,
       polygonColor: "#ffa500",
-      polygonBorderWidth: 100,
+      polygonBorderWidth: 10,
       polygonBorderColor: "#5470C6",
       polygonBorderStyle: LINE_STYPE.SOLID,
       polygonValue: "",
@@ -356,7 +366,9 @@ export default {
       console.time("onmessage");
       this.isDev && console.log(event.data);
 
+
       this.$set(this.GeoJSON, "propertiesLabels", propertiesLabels);
+      this.$set(this.GeoJSON, "center", center);
       this.propertiesLabels = propertiesLabels;
       this._GeoJSONLayer.setCenter(center);
       this._GeoJSONLayer.setPointArray(pointArray);
@@ -387,7 +399,7 @@ export default {
   },
   beforeDestroy() {
     this.handleDisable();
-    this._worker.terminate()
+    this._worker.terminate();
   },
   methods: {
     handleActivity3DChangeColor(val) {},
@@ -401,6 +413,11 @@ export default {
     handleChange(type, value) {
       this[type] = value;
       switch (type) {
+        case "center":
+          if (this._Map) {
+            this._Map.setCenter(this.GeoJSON.center);
+          }
+          break;
         case "show":
           if (value && this._Map) {
             this._Map.addLayer(this._GeoJSONLayer);

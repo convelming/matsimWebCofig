@@ -9,15 +9,18 @@ export class SelectStopLayer extends Layer {
   name = "SelectStopLayer";
   size = 0.3;
   scale = 6;
+  offset = 0;
   data = [];
   center = [0, 0];
   color = new THREE.Color(0xffa500);
   texture = new THREE.TextureLoader().load(require("@/assets/image/point1.png"));
+  normal = new THREE.Vector3();
 
   constructor(opt) {
     super(opt);
 
     this.scale = opt.scale || this.scale;
+    this.offset = opt.offset || this.offset;
     this.color = new THREE.Color(opt.color || this.color);
 
     this.geometry = new THREE.PlaneGeometry(STOP_SIZE, STOP_SIZE);
@@ -39,7 +42,7 @@ export class SelectStopLayer extends Layer {
   on(type, data) {
     if (type == MAP_EVENT.UPDATE_CENTER) {
       let [x, y] = this.map.WebMercatorToCanvasXY(this.data.x, this.data.y);
-      this.mesh.position.set(x, y, 0);
+      this.mesh.position.set(x, y, 0).sub(this.normal.clone().setLength(this.offset));
     }
     if (type == MAP_EVENT.UPDATE_CAMERA_HEIGHT) {
       this.setSize(this.map.cameraHeight / 10000);
@@ -61,13 +64,19 @@ export class SelectStopLayer extends Layer {
     const _scale = 6 * size;
     this.mesh.scale.set(_scale, _scale, 1)
   }
+  setOffset(offset) {
+    this.offset = offset;
+    this.update();
+  }
 
   setData(data) {
     try {
       this.data = data;
+      this.normal.set(data.normal.x, data.normal.y, data.normal.z);
       this.update();
     } catch (error) {
       this.data = null;
+      this.normal.set(0, 0, 0);
       this.update();
     }
   }
@@ -83,7 +92,7 @@ export class SelectStopLayer extends Layer {
     if (!this.map) return;
     if (!this.data) return;
     let [x, y] = this.map.WebMercatorToCanvasXY(this.data.x, this.data.y);
-    this.mesh.position.set(x, y, 0);
+    this.mesh.position.set(x, y, 0).sub(this.normal.clone().setLength(this.offset));
     this.scene.add(this.mesh);
   }
 }

@@ -182,6 +182,8 @@ export default {
       getLinkById({ linkId: this.lineDetail.id })
         .then((res) => {
           this.resData = res.data;
+          this._SelectLineLayer.setLineOffset(this.lineDetail.lineOffset);
+          this._SelectLineLayer.setLineWidth(this.lineDetail.lineWidth);
           this._SelectLineLayer.setData(res.data);
           this.loading = false;
         })

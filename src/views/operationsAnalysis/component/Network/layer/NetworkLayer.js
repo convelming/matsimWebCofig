@@ -327,9 +327,11 @@ export class NetworkTile {
           v.uuid = guid();
           v.id = v.linkId;
           this._lineData[v.pickColorNum] = v;
-
-          const fromNode = { coord: v.fromCoord, id: v.fromNodeId, type: "node", uuid: guid() };
-          const toNode = { coord: v.toCoord, id: v.toNodeId, type: "node", uuid: guid() };
+          const normal = new THREE.Vector3(v.fromCoord.y - v.toCoord.y, v.toCoord.x - v.fromCoord.x, 0);
+          console.log(normal);
+          
+          const fromNode = { coord: v.fromCoord, id: v.fromNodeId, type: "node", uuid: guid(), normal: normal.clone() };
+          const toNode = { coord: v.toCoord, id: v.toNodeId, type: "node", uuid: guid(), normal: normal.clone() };
           if (!nodeObj[fromNode.id]) {
             fromNode.pickColorNum = ++pickColorNum;
             this._nodeData[fromNode.pickColorNum] = fromNode;
@@ -378,9 +380,10 @@ export class NetworkTile {
 
     const _scale = (this._lineWidth / 100) * 1.1;
     for (let i = 0, l = nodeList.length; i < l; i++) {
-      const { coord, pickColorNum } = nodeList[i];
+      const { coord, pickColorNum, normal } = nodeList[i];
       const matrix = new THREE.Matrix4();
-      const positionV3 = new THREE.Vector3(coord.x, coord.y, i / l + 1);
+      const positionV3 = new THREE.Vector3(coord.x, coord.y, i / l + 1).sub(normal.clone().setLength(this._lineOffset));
+
       const scaleV3 = new THREE.Vector3(_scale, _scale, 1);
       matrix.compose(positionV3, new THREE.Quaternion(), scaleV3);
 
@@ -450,9 +453,9 @@ export class NetworkTile {
     const nodeList = Object.values(this._nodeData);
     const _scale = (this._lineWidth / 100) * 1.1;
     for (let i = 0, l = nodeList.length; i < l; i++) {
-      const { coord, pickColorNum } = nodeList[i];
+      const { coord, pickColorNum, normal } = nodeList[i];
       const matrix = new THREE.Matrix4();
-      const positionV3 = new THREE.Vector3(coord.x, coord.y, i / l + 1);
+      const positionV3 = new THREE.Vector3(coord.x, coord.y, i / l + 1).sub(normal.clone().setLength(this._lineOffset));
       const scaleV3 = new THREE.Vector3(_scale, _scale, 1);
       matrix.compose(positionV3, new THREE.Quaternion(), scaleV3);
 
@@ -473,6 +476,25 @@ export class NetworkTile {
     this._pickLayerMaterial.needsUpdate = true;
     this._pickMeshMaterial.uniforms.lineOffset.value = this._lineOffset;
     this._pickMeshMaterial.needsUpdate = true;
+
+
+    if (this.loadStatus != 2) return;
+    const nodeList = Object.values(this._nodeData);
+    const _scale = (this._lineWidth / 100) * 1.1;
+    for (let i = 0, l = nodeList.length; i < l; i++) {
+      const { coord, pickColorNum, normal } = nodeList[i];
+      const matrix = new THREE.Matrix4();
+      const positionV3 = new THREE.Vector3(coord.x, coord.y, i / l + 1).sub(normal.clone().setLength(this._lineOffset));
+      const scaleV3 = new THREE.Vector3(_scale, _scale, 1);
+      matrix.compose(positionV3, new THREE.Quaternion(), scaleV3);
+
+      if (this._baseNodeMesh) this._baseNodeMesh.setMatrixAt(i, matrix);
+      if (this._pickLayerNodeMesh) this._pickLayerNodeMesh.setMatrixAt(i, matrix);
+      if (this._pickMeshNodeMesh) this._pickMeshNodeMesh.setMatrixAt(i, matrix);
+    }
+    if (this._baseNodeMesh) this._baseNodeMesh.instanceMatrix.needsUpdate = true;
+    if (this._pickLayerNodeMesh) this._pickLayerNodeMesh.instanceMatrix.needsUpdate = true;
+    if (this._pickMeshNodeMesh) this._pickMeshNodeMesh.instanceMatrix.needsUpdate = true;
   }
 
   setTime(time) {

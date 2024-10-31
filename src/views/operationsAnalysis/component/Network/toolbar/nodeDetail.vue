@@ -116,13 +116,16 @@ export default {
       this._SelectStopLayer.setLineWidth(lineWidth);
     },
     handleLineOffsetChange(lineOffset) {
-      this._SelectStopLayer.setLineOffset(lineOffset);
+      this._SelectStopLayer.setOffset(lineOffset);
     },
     getDetail() {
       this.loading = true;
       getNodeById({ nodeId: this.nodeDetail.id })
         .then((res) => {
+          res.data.normal = this.nodeDetail.normal || {};
+          console.log(res.data);
           this.resData = res.data;
+          this._SelectStopLayer.setOffset(this.nodeDetail.lineOffset);
           this._SelectStopLayer.setData(this.resData);
           this.loading = false;
         })
@@ -132,12 +135,15 @@ export default {
     },
     handleEnable() {
       this._MapEvnetId1 = this._Map.addEventListener(MAP_EVENT.HANDLE_CLICK_RIGHT, this.handleOpenMenu);
+
+      this.rootVue.$on("Network_setLineOffset", this.handleLineOffsetChange);
       window.addEventListener("mousedown", this.handleCloseMenu);
 
       this._Map.addLayer(this._SelectStopLayer);
     },
     handleDisable() {
       this._Map.removeEventListener(MAP_EVENT.HANDLE_CLICK_RIGHT, this._MapEvnetId1);
+      this.rootVue.$off("Network_setLineOffset", this.handleLineOffsetChange);
       window.removeEventListener("mousedown", this.handleCloseMenu);
 
       this._Map.removeLayer(this._SelectStopLayer);

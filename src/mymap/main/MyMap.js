@@ -557,7 +557,7 @@ export class MyMap extends EventListener {
       const height = Math.round(this.cameraControls.getDistance());
       const zoom = this.constructor.heightToZoom(height);
       this.scene.fog.near = height * 2;
-      this.scene.fog.far = height * 3;
+      this.scene.fog.far = height * 3.5;
       this.camera.near = height / 1000;
       this.camera.far = height * 3.5;
       this.camera.updateProjectionMatrix();
@@ -763,7 +763,7 @@ export class MyMap extends EventListener {
     if (this.camera) {
       this.camera.position.y = height;
       this.scene.fog.near = height * 2;
-      this.scene.fog.far = height * 3;
+      this.scene.fog.far = height * 3.5;
       this.camera.near = height / 1000;
       this.camera.far = height * 3.5;
       this.camera.updateProjectionMatrix();
