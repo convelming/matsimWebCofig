@@ -187,7 +187,7 @@ export default {
           this._SelectLineLayer.setData(res.data);
           this.loading = false;
 
-          if (this.lineDetail.realStats && this.lineDetail.showVideoIcon) {
+          if (this.lineDetail.showVideoIcon) {
             this.lineDetail.showVideoIcon = false;
             this.handleMenu({ data: this.resData, command: "linkVolumes" });
           }

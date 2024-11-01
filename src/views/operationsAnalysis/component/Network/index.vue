@@ -47,6 +47,14 @@
           <el-switch :disabled="!s_showLayer" v-model="showVideoIcon"></el-switch>
         </div>
       </div>
+      <div class="form_item" v-if="showVideoIcon">
+        <div class="form_label">
+          <div>{{ $l("videoIconWidth") }}</div>
+        </div>
+        <div class="form_value">
+          <el-slider style="padding: 0px calc(2em - 10px)" :disabled="!s_showLayer" v-model="videoIconWidth" :min="0" :max="100" :step="0.1" />
+        </div>
+      </div>
     </div>
   </el-collapse-item>
 </template>
@@ -76,7 +84,15 @@
   "selectLine":{
     "zh-CN": "选择路段",
     "en-US": "Select Link"
-  }
+  },
+  "showVideoIcon":{
+    "zh-CN": "显示实际流量图标：",
+    "en-US": "Show Actual Traffic Icon:"
+  },
+  "videoIconWidth":{
+    "zh-CN": "图标大小：",
+    "en-US": "Icon Size:"
+  },
 }
 </language>
 
@@ -108,8 +124,12 @@ export default {
     width: {
       handler(val) {
         this._NetworkLayer.setLineWidth(val);
-        this._NetworkLayer.setVideoIconWidth(val * 1.5);
         this.rootVue.$emit("Network_setLineWidth", val);
+      },
+    },
+    videoIconWidth: {
+      handler(val) {
+        this._NetworkLayer.setVideoIconWidth(val);
       },
     },
     offset: {
@@ -148,6 +168,7 @@ export default {
 
       colors: 0,
       width: 1,
+      videoIconWidth: 10,
       offset: 0,
       color: "#E9CDAA",
       showNode: false,
@@ -168,7 +189,7 @@ export default {
       colors: this.getLayerColors(this.colorsList[this.colors]),
       showNode: this.showNode,
       showVideoIcon: this.showVideoIcon,
-      videoIconWidth: this.width * 1.5,
+      videoIconWidth: this.videoIconWidth,
       event: {
         [MAP_EVENT.LAYER_LOADING]: ({ data }) => {
           this.loading = data;
@@ -253,7 +274,9 @@ export default {
           _data.lineWidth = this.width;
           _data.lineOffset = this.offset;
           if (_data.type == "line") {
-            _data.showVideoIcon = this.showVideoIcon;
+            this.rootVue.handleShowLineDetail({ uuid: "line" + _data.id, lineDetail: _data });
+          } else if (_data.type == "videoIcon") {
+            _data.showVideoIcon = true;
             this.rootVue.handleShowLineDetail({ uuid: "line" + _data.id, lineDetail: _data });
           } else if (_data.type == "node") {
             this.rootVue.handleShowNodeDetail({ uuid: "node" + _data.id, nodeDetail: _data });

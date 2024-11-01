@@ -131,24 +131,21 @@ export class NetworkLayer extends Layer {
     }
     if (type == MAP_EVENT.HANDLE_PICK_LEFT && data.layerId == this.id) {
       const pickColorNum = data.pickColor;
-
       for (const tile of Object.values(this.tileMap)) {
         const lineItem = tile.getLineByPickColor(pickColorNum);
         const nodeItem = tile.getNodeByPickColor(pickColorNum);
+        const videoIconItem = tile.getVideoIconByPickColor(pickColorNum);
         if (lineItem) {
           console.log("lineItem", pickColorNum);
-        } else if (nodeItem) {
-          console.log("nodeItem", pickColorNum);
-        }
-      }
-      for (const tile of Object.values(this.tileMap)) {
-        const lineItem = tile.getLineByPickColor(pickColorNum);
-        const nodeItem = tile.getNodeByPickColor(pickColorNum);
-        if (lineItem) {
-          this.handleEventListener(type, lineItem);
+          this.handleEventListener(type, JSON.parse(JSON.stringify(lineItem)));
           break;
         } else if (nodeItem) {
-          this.handleEventListener(type, nodeItem);
+          console.log("nodeItem", pickColorNum);
+          this.handleEventListener(type, JSON.parse(JSON.stringify(nodeItem)));
+          break;
+        } else if (videoIconItem) {
+          console.log("videoIconItem", pickColorNum);
+          this.handleEventListener(type, JSON.parse(JSON.stringify(videoIconItem)));
           break;
         }
       }
@@ -233,7 +230,7 @@ export class NetworkLayer extends Layer {
 
 export class NetworkTile {
   static noodMap = new THREE.TextureLoader().load(require("@/assets/image/point2.png"));
-  static videoIconMap = new THREE.TextureLoader().load(process.env.VUE_APP_PUBLIC_PATH + "icon_traffic/camera.svg");
+  static videoIconMap = new THREE.TextureLoader().load(process.env.VUE_APP_PUBLIC_PATH + "icon_traffic/camera-fill.svg");
   static lineMap = new THREE.TextureLoader().load(require("@/assets/image/up2.png"));
 
   _loadNum = 0;
@@ -308,12 +305,15 @@ export class NetworkTile {
     });
 
     this._videoIconGeometry = new THREE.PlaneGeometry(100, 100);
-    this._videoIconMaterial = new THREE.MeshBasicMaterial({
+    this._baseVideoIconMaterial = new THREE.MeshBasicMaterial({
       depthWrite: false,
       map: NetworkTile.videoIconMap,
-      color: new THREE.Color(0xffffff),
+      color: new THREE.Color(0xffb93d),
       transparent: true,
     });
+    this._pickLayerVideoIconMaterial = new THREE.MeshBasicMaterial({ color: this._pickLayerColor });
+    this._pickMeshVideoIconMaterial = new THREE.MeshBasicMaterial();
+
 
     this._nodeGeometry = new THREE.PlaneGeometry(100, 100);
     this._baseNodeMaterial = new THREE.MeshBasicMaterial({
@@ -359,11 +359,10 @@ export class NetworkTile {
           v.id = v.linkId;
           v.normal = new THREE.Vector3(v.fromCoord.y - v.toCoord.y, v.toCoord.x - v.fromCoord.x, 0);
           this._lineData[v.pickColorNum] = v;
-
           if (v.realStats) {
-            this._videoIconData[v.pickColorNum] = v;
+            const videoIcon = { coord: v.realStats, id: v.linkId, pickColorNum: ++pickColorNum, type: "videoIcon", uuid: guid(), normal: v.normal.clone() };
+            this._videoIconData[videoIcon.pickColorNum] = videoIcon;
           }
-
           const fromNode = { coord: v.fromCoord, id: v.fromNodeId, type: "node", uuid: guid(), normal: v.normal.clone() };
           const toNode = { coord: v.toCoord, id: v.toNodeId, type: "node", uuid: guid(), normal: v.normal.clone() };
           if (!nodeObj[fromNode.id]) {
@@ -410,20 +409,27 @@ export class NetworkTile {
 
     const _scale2 = (this._videoIconWidth / 100) * 1.1;
     const videoIconList = Object.values(this._videoIconData);
-    this._videoIconMesh = new THREE.InstancedMesh(this._videoIconGeometry, this._videoIconMaterial, videoIconList.length);
+    this._baseVideoIconMesh = new THREE.InstancedMesh(this._videoIconGeometry, this._baseVideoIconMaterial, videoIconList.length);
+    this._pickLayerVideoIconMesh = new THREE.InstancedMesh(this._nodeGeometry, this._pickLayerVideoIconMaterial, videoIconList.length);
+    this._pickMeshVideoIconMesh = new THREE.InstancedMesh(this._nodeGeometry, this._pickMeshVideoIconMaterial, videoIconList.length);
 
     for (let i = 0, l = videoIconList.length; i < l; i++) {
-      const { realStats, normal } = videoIconList[i];
+      const { coord, pickColorNum, normal } = videoIconList[i];
       const matrix = new THREE.Matrix4();
-      const positionV3 = new THREE.Vector3(realStats.x, realStats.y, i / l + 1).sub(normal.clone().setLength(this._lineOffset));
+      const positionV3 = new THREE.Vector3(coord.x, coord.y, i / l + 1).sub(normal.clone().setLength(this._lineOffset));
       const scaleV3 = new THREE.Vector3(_scale2, _scale2, 1);
       matrix.compose(positionV3, new THREE.Quaternion(), scaleV3);
 
-      this._videoIconMesh.setMatrixAt(i, matrix);
+      this._baseVideoIconMesh.setMatrixAt(i, matrix);
+      this._pickLayerVideoIconMesh.setMatrixAt(i, matrix);
+      this._pickMeshVideoIconMesh.setMatrixAt(i, matrix);
+      this._pickMeshVideoIconMesh.setColorAt(i, new THREE.Color(pickColorNum + this.pickColorOffset));
     }
-    this._videoIconMesh.instanceMatrix.needsUpdate = true;
+    this._baseVideoIconMesh.instanceMatrix.needsUpdate = true;
     if (this._showVideoIcon) {
-      this._baseScene.add(this._videoIconMesh);
+      this._baseScene.add(this._baseVideoIconMesh);
+      this._pickLayerScene.add(this._pickLayerVideoIconMesh);
+      this._pickMeshScene.add(this._pickMeshVideoIconMesh);
     }
 
 
@@ -481,6 +487,10 @@ export class NetworkTile {
     return this._nodeData[pickColor - this.pickColorOffset];
   }
 
+  getVideoIconByPickColor(pickColor) {
+    return this._videoIconData[pickColor - this.pickColorOffset];
+  }
+
   setColors(colors) {
     this._colors = colors || ColorBar2DColors;
     this._baseMaterial.uniforms.colorBar.value = ColorBar2DInstance.drowColorBar(this._colors);
@@ -531,16 +541,20 @@ export class NetworkTile {
 
     const videoIconList = Object.values(this._videoIconData);
     for (let i = 0, l = videoIconList.length; i < l; i++) {
-      const { realStats, normal } = videoIconList[i];
+      const { coord, pickColorNum, normal } = videoIconList[i];
       const matrix = new THREE.Matrix4();
-      const positionV3 = new THREE.Vector3(realStats.x, realStats.y, i / l + 1).sub(normal.clone().setLength(this._lineOffset));
+      const positionV3 = new THREE.Vector3(coord.x, coord.y, i / l + 1).sub(normal.clone().setLength(this._lineOffset));
       const scaleV3 = new THREE.Vector3(_scale2, _scale2, 1);
 
       matrix.compose(positionV3, new THREE.Quaternion(), scaleV3);
 
-      if (this._videoIconMesh) this._videoIconMesh.setMatrixAt(i, matrix);
+      if (this._baseVideoIconMesh) this._baseVideoIconMesh.setMatrixAt(i, matrix);
+      if (this._pickLayerVideoIconMesh) this._pickLayerVideoIconMesh.setMatrixAt(i, matrix);
+      if (this._pickMeshVideoIconMesh) this._pickMeshVideoIconMesh.setMatrixAt(i, matrix);
     }
-    if (this._videoIconMesh) this._videoIconMesh.instanceMatrix.needsUpdate = true;
+    if (this._baseVideoIconMesh) this._baseVideoIconMesh.instanceMatrix.needsUpdate = true;
+    if (this._pickLayerVideoIconMesh) this._pickLayerVideoIconMesh.instanceMatrix.needsUpdate = true;
+    if (this._pickMeshVideoIconMesh) this._pickMeshVideoIconMesh.instanceMatrix.needsUpdate = true;
   }
 
   setLineOffset(lineOffset) {
@@ -555,20 +569,25 @@ export class NetworkTile {
 
     if (this.loadStatus != 2) return;
 
+    if (this.loadStatus != 2) return;
     const _scale2 = (this._videoIconWidth / 100) * 1.1;
+
     const videoIconList = Object.values(this._videoIconData);
     for (let i = 0, l = videoIconList.length; i < l; i++) {
-      const { realStats, normal } = videoIconList[i];
+      const { coord, pickColorNum, normal } = videoIconList[i];
       const matrix = new THREE.Matrix4();
-      const positionV3 = new THREE.Vector3(realStats.x, realStats.y, i / l + 1).sub(normal.clone().setLength(this._lineOffset));
+      const positionV3 = new THREE.Vector3(coord.x, coord.y, i / l + 1).sub(normal.clone().setLength(this._lineOffset));
       const scaleV3 = new THREE.Vector3(_scale2, _scale2, 1);
 
       matrix.compose(positionV3, new THREE.Quaternion(), scaleV3);
 
-      if (this._videoIconMesh) this._videoIconMesh.setMatrixAt(i, matrix);
+      if (this._baseVideoIconMesh) this._baseVideoIconMesh.setMatrixAt(i, matrix);
+      if (this._pickLayerVideoIconMesh) this._pickLayerVideoIconMesh.setMatrixAt(i, matrix);
+      if (this._pickMeshVideoIconMesh) this._pickMeshVideoIconMesh.setMatrixAt(i, matrix);
     }
-    if (this._videoIconMesh) this._videoIconMesh.instanceMatrix.needsUpdate = true;
-
+    if (this._baseVideoIconMesh) this._baseVideoIconMesh.instanceMatrix.needsUpdate = true;
+    if (this._pickLayerVideoIconMesh) this._pickLayerVideoIconMesh.instanceMatrix.needsUpdate = true;
+    if (this._pickMeshVideoIconMesh) this._pickMeshVideoIconMesh.instanceMatrix.needsUpdate = true;
 
     const _scale = (this._lineWidth / 100) * 1.1;
     const nodeList = Object.values(this._nodeData);
@@ -611,10 +630,15 @@ export class NetworkTile {
 
   setShowVideoIcon(showVideoIcon) {
     this._showVideoIcon = showVideoIcon;
+
     if (showVideoIcon) {
-      if (this._videoIconMesh) this._baseScene.add(this._videoIconMesh);
+      if (this._baseVideoIconMesh) this._baseScene.add(this._baseVideoIconMesh);
+      if (this._pickLayerVideoIconMesh) this._pickLayerScene.add(this._pickLayerVideoIconMesh);
+      if (this._pickMeshVideoIconMesh) this._pickMeshScene.add(this._pickMeshVideoIconMesh);
     } else {
-      if (this._videoIconMesh) this._videoIconMesh.removeFromParent();
+      if (this._baseVideoIconMesh) this._baseVideoIconMesh.removeFromParent();
+      if (this._pickLayerVideoIconMesh) this._pickLayerVideoIconMesh.removeFromParent();
+      if (this._pickMeshVideoIconMesh) this._pickMeshVideoIconMesh.removeFromParent();
     }
   }
 
@@ -628,11 +652,14 @@ export class NetworkTile {
       colors: this._colors,
       pickLayerColor: this._pickLayerColor,
       showNode: this._showNode,
+      showVideoIcon: this._showVideoIcon,
+      videoIconWidth: this._videoIconWidth,
       loadStatus: this._loadStatus,
     };
     if (this._loadStatus == 2) {
       data.lineData = JSON.parse(JSON.stringify(this._lineData));
       data.nodeData = JSON.parse(JSON.stringify(this._nodeData));
+      data.videoIconData = JSON.parse(JSON.stringify(this._videoIconData));
       data.geometry = this._geometry.toJSON();
     }
     return data;
@@ -648,11 +675,14 @@ export class NetworkTile {
       colors: json.colors,
       pickLayerColor: json.pickLayerColor,
       showNode: json.showNode,
+      showVideoIcon: json.showVideoIcon,
+      videoIconWidth: json.videoIconWidth,
     });
     if (json.loadStatus == 2) {
       tile._loadStatus = 2;
       tile._lineData = json.lineData;
       tile._nodeData = json.nodeData;
+      tile._videoIconData = json.videoIconData;
       tile._geometry = NetworkGeometry.fromJSON(json.geometry);
     }
     return tile;
