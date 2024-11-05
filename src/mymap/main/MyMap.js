@@ -185,7 +185,7 @@ export class MyMap extends EventListener {
     }
   }
 
-  constructor({ rootId, center = [12614426, 2646623], zoom = 15, pitch = 90, minPitch = 30, rotation = 0, minRotation = 360, openGPUPick = true, noControls = false, enableRotate = false, enablePan = true, enableZoom = true, background = 0xd9ecff, ...opt }) {
+  constructor({ rootId, center = [12614426, 2646623], zoom = 15, pitch = 90, minPitch = 10, rotation = 0, minRotation = 360, openGPUPick = true, noControls = false, enableRotate = false, enablePan = true, enableZoom = true, background = 0xd9ecff, ...opt }) {
     super(opt);
     // 获取根节点dom
     this.rootDoc = document.getElementById(rootId);
