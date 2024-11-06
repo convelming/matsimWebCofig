@@ -16,7 +16,7 @@
 {
   "RegionalTraffic":{
     "zh-CN": "区域流量溯源",
-    "en-US": "RegionalTraffic"
+    "en-US": "Regional Traffic"
   },
 }
 </language>

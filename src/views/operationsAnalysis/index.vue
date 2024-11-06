@@ -14,6 +14,7 @@
               <GeoJSON :showLayer.sync="showLayerGeoJSON" :lock2D.sync="lock2DGeoJSON" name="GeoJSON" />
               <Parking :showLayer.sync="showLayerParking" :lock2D.sync="lock2DParking" name="Parking" />
               <RegionalTraffic :showLayer.sync="showLayerRegionalTraffic" :lock2D.sync="lock2DRegionalTraffic" name="RegionalTraffic" />
+              <TrafficRegionAnalysis :showLayer.sync="showLayerTrafficRegionAnalysis" :lock2D.sync="lock2DTrafficRegionAnalysis" name="TrafficRegionAnalysis" />
               <div style="height: 100px"></div>
             </el-collapse>
           </Drawer>
@@ -49,6 +50,7 @@ import GeoJSON from "./component/GeoJSON/index.vue";
 import CarTravel from "./component/CarTravel/index.vue";
 import Parking from "./component/Parking/index.vue";
 import RegionalTraffic from "./component/RegionalTraffic/index.vue";
+import TrafficRegionAnalysis from "./component/TrafficRegionAnalysis/index.vue";
 
 import NewClock from "@/components/NewClock/index.vue";
 
@@ -66,6 +68,7 @@ export default {
     NewClock,
     Parking,
     RegionalTraffic,
+    TrafficRegionAnalysis,
   },
   mixins: [mixins],
   data() {
@@ -90,6 +93,7 @@ export default {
       if (this.showLayerCarTravel) enableRotate = true;
       if (this.showLayerParking) enableRotate = true;
       if (this.showLayerRegionalTraffic) enableRotate = true;
+      if (this.showLayerTrafficRegionAnalysis) enableRotate = true;
       if (enableRotate) {
         this.speed = this._speed || 10;
       } else {
@@ -107,6 +111,7 @@ export default {
       if (this.showLayerCarTravel && this.lock2DCarTravel) enableRotate = false;
       if (this.showLayerParking && this.lock2DParking) enableRotate = false;
       if (this.showLayerRegionalTraffic && this.lock2DRegionalTraffic) enableRotate = false;
+      if (this.showLayerTrafficRegionAnalysis && this.lock2DTrafficRegionAnalysis) enableRotate = false;
       if (enableRotate) {
         this._Map.enableRotate = true;
       } else {

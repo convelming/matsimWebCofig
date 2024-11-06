@@ -43,6 +43,9 @@ export default {
       showLayerRegionalTraffic: false,
       lock2DRegionalTraffic: false,
       regionalTrafficGeoJSON: null,
+      
+      showLayerTrafficRegionAnalysis: false,
+      lock2DTrafficRegionAnalysis: false,
 
       showStopToolbar: true,
 
@@ -138,6 +141,15 @@ export default {
       this.handleToolbarActiveModel("RegionalTraffic");
     },
     lock2DRegionalTraffic(val) {
+      this.handleChangeTimeSpeed();
+      this.handleChangeMapCameraControls();
+    },
+    showLayerTrafficRegionAnalysis(val) {
+      this.handleChangeTimeSpeed();
+      this.handleChangeMapCameraControls();
+      this.handleToolbarActiveModel("TrafficRegionAnalysis");
+    },
+    lock2DTrafficRegionAnalysis(val) {
       this.handleChangeTimeSpeed();
       this.handleChangeMapCameraControls();
     },
