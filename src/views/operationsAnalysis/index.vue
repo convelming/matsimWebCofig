@@ -40,40 +40,14 @@ import mixins from "./mixins";
 
 import HelpDialog from "./component/HelpDialog/index.vue";
 
-import Toolbar from "./component/Toolbar/index.vue";
-import PublicTransit from "./component/PublicTransit/index.vue";
-import MotorizedTravel from "./component/MotorizedTravel/index.vue";
-import Build3D from "./component/Build3D/index.vue";
-import Network from "./component/Network/index.vue";
-import Activity3D from "./component/Activity3D/index.vue";
-import GeoJSON from "./component/GeoJSON/index.vue";
-import CarTravel from "./component/CarTravel/index.vue";
-import Parking from "./component/Parking/index.vue";
-import RegionalTraffic from "./component/RegionalTraffic/index.vue";
-import TrafficRegionAnalysis from "./component/TrafficRegionAnalysis/index.vue";
-
-import NewClock from "@/components/NewClock/index.vue";
-
 export default {
   components: {
     HelpDialog,
-    PublicTransit,
-    Toolbar,
-    MotorizedTravel,
-    Build3D,
-    Network,
-    Activity3D,
-    GeoJSON,
-    CarTravel,
-    NewClock,
-    Parking,
-    RegionalTraffic,
-    TrafficRegionAnalysis,
   },
   mixins: [mixins],
   data() {
     return {
-      activeNames: ["PublicTransit", "MotorizedTravel", "CarTravel", "Build3D", "Network", "Activity3D", "GeoJSON", "Parking"],
+      activeNames: ["PublicTransit", "MotorizedTravel", "CarTravel", "Build3D", "Network", "Activity3D", "GeoJSON", "Parking", "TrafficRegionAnalysis"],
     };
   },
   methods: {
@@ -81,19 +55,9 @@ export default {
       this._speed = value;
       this.speed = value;
     },
-
     handleChangeTimeSpeed() {
-      let enableRotate = false;
-      if (this.showLayerPublicTransit) enableRotate = true;
-      if (this.showLayerMotorizedTravel) enableRotate = true;
-      if (this.showLayerBuild3D) enableRotate = true;
-      if (this.showLayerNetwork) enableRotate = true;
-      if (this.showLayerActivity3D) enableRotate = true;
-      if (this.showLayerGeoJSON) enableRotate = true;
-      if (this.showLayerCarTravel) enableRotate = true;
-      if (this.showLayerParking) enableRotate = true;
-      if (this.showLayerRegionalTraffic) enableRotate = true;
-      if (this.showLayerTrafficRegionAnalysis) enableRotate = true;
+      let enableRotate = this.canChangeTimeSpeed();
+
       if (enableRotate) {
         this.speed = this._speed || 10;
       } else {
@@ -101,17 +65,8 @@ export default {
       }
     },
     handleChangeMapCameraControls() {
-      let enableRotate = true;
-      if (this.showLayerPublicTransit && this.lock2DPublicTransit) enableRotate = false;
-      if (this.showLayerMotorizedTravel && this.lock2DMotorizedTravel) enableRotate = false;
-      if (this.showLayerBuild3D && this.lock2DBuild3D) enableRotate = false;
-      if (this.showLayerNetwork && this.lock2DNetwork) enableRotate = false;
-      if (this.showLayerActivity3D && this.lock2DActivity3D) enableRotate = false;
-      if (this.showLayerGeoJSON && this.lock2DGeoJSON) enableRotate = false;
-      if (this.showLayerCarTravel && this.lock2DCarTravel) enableRotate = false;
-      if (this.showLayerParking && this.lock2DParking) enableRotate = false;
-      if (this.showLayerRegionalTraffic && this.lock2DRegionalTraffic) enableRotate = false;
-      if (this.showLayerTrafficRegionAnalysis && this.lock2DTrafficRegionAnalysis) enableRotate = false;
+      let enableRotate = this.canChangeMapCameraControls();
+
       if (enableRotate) {
         this._Map.enableRotate = true;
       } else {

@@ -111,11 +111,16 @@
             </div>
           </div>
           <div class="file_row">
-            <div class="file_s_col" style="width: 90px">
-              <el-select :title="$l('polygonValue')" v-model="polygonValue" @change="handleChange('polygonValue', $event)" clearable size="mini">
+            <div class="file_s_col" style="width: calc(100% - 60px)">
+              <el-select :title="$l('polygonValue')" style="width: 100%" v-model="polygonValue" @change="handleChange('polygonValue', $event)" clearable size="mini">
                 <el-option v-for="(item, key) in propertiesLabels" :key="key" :label="key" :value="key"></el-option>
               </el-select>
             </div>
+            <div class="file_s_col" style="width: 60px">
+              <el-switch :title="$l('usePolygonColors')" v-model="usePolygonColors" @change="handleChange('usePolygonColors', $event.value)" :active-value="true" :inactive-value="false" />
+            </div>
+          </div>
+          <div class="file_row">
             <div class="file_l_col">
               <ColorSelect :title="$l('polygonColors')" style="width: 100%" v-model="polygonColors" @change="handleChange('polygonColors', $event.value)" :colorsList="COLOR_LIST" size="mini" />
             </div>
@@ -129,7 +134,8 @@
               <el-switch :title="$l('polygon3D')" v-model="polygon3D" @change="handleChange('polygon3D', $event)" :active-value="true" :inactive-value="false" size="mini" />
             </div>
             <div class="file_l_col" style="padding: 0 15px">
-              <el-slider :title="$l('polygon3DHeight')" v-model="polygon3DHeight" @change="handleChange('polygon3DHeight', $event)" :step="0.1" :min="0" :max="5000" size="mini"> </el-slider>
+              <el-input-number :title="$l('polygon3DHeight')" style="width: 100%;" v-model="polygon3DHeight" :min="0" :max="5000" :step="0.1" @change="handleChange('polygon3DHeight', $event)" size="mini" />
+              <!-- <el-slider :title="$l('polygon3DHeight')" v-model="polygon3DHeight" @change="handleChange('polygon3DHeight', $event)" :step="0.1" :min="0" :max="5000" size="mini"> </el-slider> -->
             </div>
           </div>
         </div>
@@ -228,6 +234,10 @@
     "zh-CN": "polygonColors",
     "en-US": "polygonColors"
   },
+  "usePolygonColors":{
+    "zh-CN": "usePolygonColors",
+    "en-US": "usePolygonColors"
+  },
   "polygon3D":{
     "zh-CN": "polygon3D",
     "en-US": "polygon3D"
@@ -314,6 +324,7 @@ export default {
       polygonBorderColor: "#5470C6",
       polygonBorderStyle: LINE_STYPE.SOLID,
       polygonValue: "",
+      usePolygonColors: true,
       polygonColors: 0,
       polygon3DHeight: 2500,
       polygon3D: false,
@@ -353,7 +364,7 @@ export default {
       polygonBorderColor: this.polygonBorderColor,
       polygonBorderStyle: this.polygonBorderStyle,
       polygonValue: this.polygonValue,
-      polygonColorBar: this.COLOR_LIST[this.polygonColors],
+      polygonColorBar: this.usePolygonColors ? this.COLOR_LIST[this.polygonColors] : [this.pointColor],
       polygon3D: this.polygon3D,
       polygon3DHeight: this.polygon3DHeight,
     });
@@ -364,8 +375,6 @@ export default {
       const { center, propertiesLabels, pointArray, lineArray, polygonArray, propertiesListArray } = event.data;
 
       console.time("onmessage");
-      this.isDev && console.log(event.data);
-
 
       this.$set(this.GeoJSON, "propertiesLabels", propertiesLabels);
       this.$set(this.GeoJSON, "center", center);
@@ -381,6 +390,7 @@ export default {
 
       const propertiesList = JSON.parse(new TextDecoder().decode(propertiesListArray));
       this._GeoJSONLayer.setPropertiesList(propertiesList, propertiesLabels);
+      this.isDev && (console.log(event.data) || console.log(propertiesList) || console.log(propertiesLabels));
       console.timeEnd("onmessage");
       worker.terminate();
     };
@@ -490,8 +500,13 @@ export default {
           this.polygonValueLabel = JSON.parse(JSON.stringify(this.propertiesLabels[value] || { max: 1, min: 0 }));
           break;
         case "polygonColors":
-          const polygonColorBar = this.COLOR_LIST[value];
-          this._GeoJSONLayer.setPolygonColorBar(polygonColorBar);
+        case "usePolygonColors":
+          if (this.usePolygonColors) {
+            const polygonColorBar = this.COLOR_LIST[value];
+            this._GeoJSONLayer.setPolygonColorBar(polygonColorBar);
+          } else {
+            this._GeoJSONLayer.setPointColorBar([this.polygonColor]);
+          }
           break;
         case "polygon3D":
           this._GeoJSONLayer.setPolygon3D(value);

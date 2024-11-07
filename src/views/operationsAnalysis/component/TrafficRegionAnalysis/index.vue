@@ -12,7 +12,7 @@
       <div class="form_item">
         <div class="form_label">{{ $l("Select multi-links:") }}</div>
         <div class="form_value">
-          <el-button v-if="polygonSelectState == POLYGON_SELECT_STATE_KEY.NOT_STARTED" :disabled="!s_showLayer" type="primary" size="mini" @click="handlePlayPolygonSelect('link')">{{ $l("开始圈定") }}</el-button>
+          <el-button v-if="polygonSelectState == POLYGON_SELECT_STATE_KEY.NOT_STARTED || polygonSelectType != 'link'" :disabled="!s_showLayer" type="primary" size="mini" @click="handlePlayPolygonSelect('link')">{{ $l("开始圈定") }}</el-button>
           <template v-if="polygonSelectState != POLYGON_SELECT_STATE_KEY.NOT_STARTED && polygonSelectType == 'link'">
             <el-button type="primary" size="mini" @click="handleReplayPolygonSelect('link')">{{ $l("重新圈定") }}</el-button>
             <el-button type="primary" size="mini" @click="handleStopPolygonSelect('link')">{{ $l("停止圈定") }}</el-button>
@@ -22,7 +22,7 @@
       <div class="form_item">
         <div class="form_label">{{ $l("Select facilities/buildings:") }}</div>
         <div class="form_value">
-          <el-button v-if="polygonSelectState == POLYGON_SELECT_STATE_KEY.NOT_STARTED" :disabled="!s_showLayer" type="primary" size="mini" @click="handlePlayPolygonSelect('build')">{{ $l("开始圈定") }}</el-button>
+          <el-button v-if="polygonSelectState == POLYGON_SELECT_STATE_KEY.NOT_STARTED || polygonSelectType != 'build'" :disabled="!s_showLayer" type="primary" size="mini" @click="handlePlayPolygonSelect('build')">{{ $l("开始圈定") }}</el-button>
           <template v-if="polygonSelectState != POLYGON_SELECT_STATE_KEY.NOT_STARTED && polygonSelectType == 'build'">
             <el-button type="primary" size="mini" @click="handleReplayPolygonSelect('build')">{{ $l("重新圈定") }}</el-button>
             <el-button type="primary" size="mini" @click="handleStopPolygonSelect('build')">{{ $l("停止圈定") }}</el-button>
@@ -63,7 +63,7 @@
 </language>
 
 <script>
-import { MAP_EVENT } from "@/mymap";
+import { guid } from "@/utils/utils";
 import { COLOR_LIST } from "@/utils/utils";
 import { PolygonSelectLayer, POLYGON_SELECT_STATE_KEY, POLYGON_SELECT_EVENT } from "./layer/PolygonSelectLayer";
 
@@ -119,10 +119,29 @@ export default {
           this.polygonSelectState = res.data.state;
           if (this.polygonSelectState === POLYGON_SELECT_STATE_KEY.ENDED) {
             const path = res.data.path;
+            path[path.length] = [...path[0]];
             const type = this.polygonSelectType;
             this.handleStopPolygonSelect(type);
             if (type == "link") {
+              console.log("link", path);
+              this.rootVue.handleShowSinglePathDetail({
+                uuid: guid(),
+                singlePathDetail: {
+                  shape: path,
+                  holes: [],
+                  type: "link",
+                },
+              });
             } else if (type == "build") {
+              console.log("build", path);
+              this.rootVue.handleShowSinglePathDetail({
+                uuid: guid(),
+                singlePathDetail: {
+                  shape: path,
+                  holes: [],
+                  type: "build",
+                },
+              });
             }
           }
         },
@@ -149,6 +168,7 @@ export default {
     },
     // 组件卸载事件
     handleDisable() {
+      this.handleStopPolygonSelect();
       this._Map.removeLayer(this._PolygonSelectLayer);
     },
     handleChangeShowLayer(value) {
@@ -189,14 +209,6 @@ export default {
 ::v-deep {
   .el-slider__marks-text {
     white-space: nowrap;
-  }
-  .checkbox {
-    .el-checkbox__input {
-      display: none;
-    }
-    .el-checkbox__label {
-      padding-left: 35px;
-    }
   }
 }
 

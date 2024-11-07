@@ -737,4 +737,51 @@ export function getElapseAreaLeg(data) {
   });
 }
 
+// 获取全区区域内linkid列表 Copy
+// POST /pt/trafficRegionAnalysis/getLinkList
+// 接口ID：230260757
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-230260757
+export function getLinkListTRG(data) {
+  return request({
+    url: `/pt/trafficRegionAnalysis/getLinkList`,
+    data: data,
+    method: "post",
+  });
+}
+
+// 获取link列表热力图/周边流量
+// POST /pt/trafficRegionAnalysis/getLinkTracks
+// 接口ID：230251998
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-230251998
+export function getLinkTracksTRG(data) {
+  return request({
+    url: `/pt/trafficRegionAnalysis/getLinkTracks`,
+    data: data,
+    method: "post",
+  });
+}
+
+// 起点分布
+// POST /pt/trafficRegionAnalysis/originGrids
+// 接口ID：230450225
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-230450225
+export function getOriginGridsTRG(data) {
+  return request({
+    url: `/pt/trafficRegionAnalysis/originGrids`,
+    data: data,
+    method: "post",
+  });
+}
+
+// 讫点分布
+// POST /pt/trafficRegionAnalysis/destinationsGrids
+// 接口ID：230484531
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-230484531
+export function getDestinationsGridsTRG(data) {
+  return request({
+    url: `/pt/trafficRegionAnalysis/destinationsGrids`,
+    data: data,
+    method: "post",
+  });
+}
 

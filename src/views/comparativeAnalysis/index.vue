@@ -16,6 +16,7 @@
               <Activity3D :showLayer.sync="showLayerActivity3D" :lock2D.sync="lock2DActivity3D" name="Activity3D" />
               <GeoJSON :showLayer.sync="showLayerGeoJSON" :lock2D.sync="lock2DGeoJSON" name="GeoJSON" />
               <Parking :showLayer.sync="showLayerParking" :lock2D.sync="lock2DParking" name="Parking" />
+              <TrafficRegionAnalysis :showLayer.sync="showLayerTrafficRegionAnalysis" :lock2D.sync="lock2DTrafficRegionAnalysis" name="TrafficRegionAnalysis" />
               <div style="height: 100px"></div>
             </el-collapse>
           </Drawer>
@@ -40,46 +41,25 @@
 <script>
 import mixins from "../operationsAnalysis/mixins";
 
-import PublicTransit from "../operationsAnalysis/component/PublicTransit/index.vue";
-import MotorizedTravel from "../operationsAnalysis/component/MotorizedTravel/index.vue";
-import Build3D from "../operationsAnalysis/component/Build3D/index.vue";
-import Network from "../operationsAnalysis/component/Network/index.vue";
-import Activity3D from "../operationsAnalysis/component/Activity3D/index.vue";
-import GeoJSON from "../operationsAnalysis/component/GeoJSON/index.vue";
-import CarTravel from "../operationsAnalysis/component/CarTravel/index.vue";
-import Parking from "../operationsAnalysis/component/Parking/index.vue";
-
 import AnalysisReport from "./component/AnalysisReport/index.vue";
 import LinesAnalysis from "./component/LinesAnalysis/index.vue";
 
 import HelpDialog from "./component/HelpDialog/index.vue";
 import Toolbar from "./component/Toolbar/index.vue";
 
-import NewClock from "@/components/NewClock/index.vue";
-
 export default {
   mixins: [mixins],
   components: {
-    PublicTransit,
-    MotorizedTravel,
-    Build3D,
-    Network,
-    Activity3D,
-    GeoJSON,
-    CarTravel,
-
     AnalysisReport,
     LinesAnalysis,
 
     HelpDialog,
     Toolbar,
-    NewClock,
-    Parking,
   },
 
   data() {
     return {
-      activeNames: ["LinesAnalysis", "AnalysisReport", "PublicTransit", "MotorizedTravel", "Build3D", "Network", "Activity3D", "GeoJSON", "CarTravel", "Parking"],
+      activeNames: ["LinesAnalysis", "AnalysisReport", "PublicTransit", "MotorizedTravel", "Build3D", "Network", "Activity3D", "GeoJSON", "CarTravel", "Parking", "TrafficRegionAnalysis"],
 
       showLayerLinesAnalysis: true,
       lock2DLinesAnalysis: false,
@@ -109,7 +89,7 @@ export default {
       this.handleChangeTimeSpeed();
       this.handleChangeMapCameraControls();
     },
-    
+
     showLayerLinesAnalysis(val) {
       this.handleChangeTimeSpeed();
       this.handleChangeMapCameraControls();
@@ -143,18 +123,10 @@ export default {
     },
     // 切换地图3D控制
     handleChangeMapCameraControls() {
-      let enableRotate = true;
+      let enableRotate = this.canChangeMapCameraControls();
       if (this.showLayerLinesAnalysis && this.lock2DLinesAnalysis) enableRotate = false;
       if (this.showLayerAnalysisReport && this.lock2DAnalysisReport) enableRotate = false;
 
-      if (this.showLayerPublicTransit && this.lock2DPublicTransit) enableRotate = false;
-      if (this.showLayerMotorizedTravel && this.lock2DMotorizedTravel) enableRotate = false;
-      if (this.showLayerBuild3D && this.lock2DBuild3D) enableRotate = false;
-      if (this.showLayerNetwork && this.lock2DNetwork) enableRotate = false;
-      if (this.showLayerActivity3D && this.lock2DActivity3D) enableRotate = false;
-      if (this.showLayerGeoJSON && this.lock2DGeoJSON) enableRotate = false;
-      if (this.showLayerCarTravel && this.lock2DCarTravel) enableRotate = false;
-      if (this.showLayerParking && this.lock2DParking) enableRotate = false;
       if (enableRotate) {
         this._Map.enableRotate = true;
       } else {
@@ -164,18 +136,10 @@ export default {
     },
     // 切换时间默认值
     handleChangeTimeSpeed() {
-      let enableRotate = false;
+      let enableRotate = this.canChangeTimeSpeed();
       if (this.showLayerLinesAnalysis) enableRotate = true;
       if (this.showLayerAnalysisReport) enableRotate = true;
 
-      if (this.showLayerPublicTransit) enableRotate = true;
-      if (this.showLayerMotorizedTravel) enableRotate = true;
-      if (this.showLayerBuild3D) enableRotate = true;
-      if (this.showLayerNetwork) enableRotate = true;
-      if (this.showLayerActivity3D) enableRotate = true;
-      if (this.showLayerGeoJSON) enableRotate = true;
-      if (this.showLayerCarTravel) enableRotate = true;
-      if (this.showLayerParking) enableRotate = true;
       if (enableRotate) {
         this.speed = this._speed || 10;
       } else {

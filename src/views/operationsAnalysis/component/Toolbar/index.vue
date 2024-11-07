@@ -11,6 +11,7 @@
         <div class="item" :id="GeoJSON.id" :class="{ active: activeModel === GeoJSON.id }" @click="handleActiveModel(GeoJSON.id)">{{ $l(GeoJSON.name) }}</div>
         <div class="item" :id="Parking.id" :class="{ active: activeModel === Parking.id }" @click="handleActiveModel(Parking.id)">{{ $l(Parking.name) }}</div>
         <div class="item" :id="RegionalTraffic.id" :class="{ active: activeModel === RegionalTraffic.id }" @click="handleActiveModel(RegionalTraffic.id)">{{ $l(RegionalTraffic.name) }}</div>
+        <div class="item" :id="TrafficRegionAnalysis.id" :class="{ active: activeModel === TrafficRegionAnalysis.id }" @click="handleActiveModel(TrafficRegionAnalysis.id)">{{ $l(TrafficRegionAnalysis.name) }}</div>
       </div>
       <div class="btn el-icon-caret-right" @click="handleScroll(150)"></div>
     </div>
@@ -59,6 +60,12 @@
         <component v-for="item in RegionalTraffic.list" :show="item.name == RegionalTraffic.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" />
       </el-collapse> -->
     </div>
+    <div class="toolbar-bodyer" v-show="activeModel === TrafficRegionAnalysis.id">
+      <TRAGeoJSONHeader />
+      <el-collapse class="toolbar-collapse" v-model="TrafficRegionAnalysis.activeName" accordion>
+        <component v-for="item in TrafficRegionAnalysis.list" :show="item.name == TrafficRegionAnalysis.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" />
+      </el-collapse>
+    </div>
   </div>
 </template>
 
@@ -100,6 +107,10 @@
     "zh-CN": "区域流量溯源",
     "en-US": "Regional Traffic"
   },
+  "区域交通分析":{
+    "zh-CN": "区域交通分析",
+    "en-US": "Traffic Region Analysis"
+  },
 }
 </language>
 
@@ -136,6 +147,10 @@ import ParkingActivityDetail from "../Parking/toolbar/ParkingActivityDetail.vue"
 import ParkingGeoJSONDetail from "../Parking/toolbar/ParkingGeoJSONDetail.vue";
 // 区域流量溯源
 import RegionalTrafficDetail from "../RegionalTraffic/toolbar/RegionalTrafficDetail.vue";
+// 区域交通分析
+import TRAGeoJSONHeader from "../TrafficRegionAnalysis/toolbar/TRAGeoJSONHeader.vue";
+import MultiplePathsDetail from "../TrafficRegionAnalysis/toolbar/MultiplePathsDetail.vue";
+import SinglePathDetail from "../TrafficRegionAnalysis/toolbar/SinglePathDetail.vue";
 
 export default {
   components: {
@@ -169,6 +184,10 @@ export default {
     ParkingGeoJSONDetail,
 
     RegionalTrafficDetail,
+
+    TRAGeoJSONHeader,
+    MultiplePathsDetail,
+    SinglePathDetail,
   },
   inject: ["rootVue"],
   data() {
@@ -245,6 +264,34 @@ export default {
         list: [],
         activeName: "",
       },
+      TrafficRegionAnalysis: {
+        id: "TrafficRegionAnalysis",
+        name: "区域交通分析",
+        components: ["MultiplePathsDetail", "SinglePathDetail"],
+        sreach: {},
+        params: {},
+        list: [
+          {
+            type: "SinglePathDetail",
+            data: {
+              uuid: "c23f6fd4-3b30-4fb2-9e4b-7d589a36282e",
+              singlePathDetail: {
+                shape: [
+                  [12638633.226929696, 2597818.555929641],
+                  [12638596.257597655, 2595013.432312049],
+                  [12641553.882548127, 2594837.823396202],
+                  [12641248.878535379, 2597809.313340747],
+                  [12638633.226929696, 2597818.555929641],
+                ],
+                holes: [],
+                type: "link",
+              },
+            },
+            name: "75e982d7-1076-4193-8b67-0039f35f9df2",
+          },
+        ],
+        activeName: "75e982d7-1076-4193-8b67-0039f35f9df2",
+      },
       modelMap: {
         RouteDetail: "PublicTransit",
         StopAndRoute: "PublicTransit",
@@ -270,8 +317,11 @@ export default {
         ParkingActivityDetail: "Parking",
 
         RegionalTrafficDetail: "RegionalTraffic",
+
+        MultiplePathsDetail: "TrafficRegionAnalysis",
+        SinglePathDetail: "TrafficRegionAnalysis",
       },
-      activeModel: this.isDev ? "RegionalTraffic" : "PublicTransit",
+      activeModel: this.isDev ? "TrafficRegionAnalysis" : "PublicTransit",
       activeName: "",
       list: [],
     };
@@ -315,7 +365,10 @@ export default {
         case "ActivityDetail":
         case "ParkingActivityDetail":
 
-        case "RegionalTrafficDetail": {
+        case "RegionalTrafficDetail":
+
+        case "MultiplePathsDetail":
+        case "SinglePathDetail": {
           const item = list.find((v) => v.data.uuid == data.uuid);
           if (item && data.uuid) {
             activeName = item.name;
@@ -338,7 +391,7 @@ export default {
       if (list.length > 15) {
         list.splice(15);
       }
-
+      console.log(obj);
       this.$set(obj, "list", list);
       this.$set(obj, "activeName", activeName);
       this.handleActiveModel(obj.id);

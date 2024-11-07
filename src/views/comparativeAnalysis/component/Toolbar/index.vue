@@ -1,7 +1,8 @@
 <template>
   <div class="toolbar-container">
-    <div ref="typeScroll" class="toolbar-header">
-      <div class="list">
+    <div class="toolbar-header">
+      <div class="btn el-icon-caret-left" @click="handleScroll(-150)"></div>
+      <div class="list" ref="typeScroll">
         <!-- 比对分析 专属功能 -->
         <div class="item" :id="LinesAnalysis.id" :class="{ active: activeModel === LinesAnalysis.id }" @click="handleActiveModel(LinesAnalysis.id)">{{ $l(LinesAnalysis.name) }}</div>
         <div class="item" :id="AnalysisReport.id" :class="{ active: activeModel === AnalysisReport.id }" @click="handleActiveModel(AnalysisReport.id)">{{ $l(AnalysisReport.name) }}</div>
@@ -13,7 +14,9 @@
         <div class="item" :id="Activity3D.id" :class="{ active: activeModel === Activity3D.id }" @click="handleActiveModel(Activity3D.id)">{{ $l(Activity3D.name) }}</div>
         <div class="item" :id="GeoJSON.id" :class="{ active: activeModel === GeoJSON.id }" @click="handleActiveModel(GeoJSON.id)">{{ $l(GeoJSON.name) }}</div>
         <div class="item" :id="Parking.id" :class="{ active: activeModel === Parking.id }" @click="handleActiveModel(Parking.id)">{{ $l(Parking.name) }}</div>
+        <div class="item" :id="RegionalTraffic.id" :class="{ active: activeModel === RegionalTraffic.id }" @click="handleActiveModel(RegionalTraffic.id)">{{ $l(RegionalTraffic.name) }}</div>
       </div>
+      <div class="btn el-icon-caret-right" @click="handleScroll(150)"></div>
     </div>
     <!-- 比对分析 专属功能 -->
     <div class="toolbar-bodyer" v-show="activeModel === LinesAnalysis.id">
@@ -69,6 +72,12 @@
         <component v-for="item in Parking.list" :show="item.name == Parking.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" />
       </el-collapse>
     </div>
+    <div class="toolbar-bodyer" v-show="activeModel === RegionalTraffic.id">
+      <RegionalTrafficDetail />
+      <!-- <el-collapse class="toolbar-collapse" v-model="RegionalTraffic.activeName" accordion>
+        <component v-for="item in RegionalTraffic.list" :show="item.name == RegionalTraffic.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" />
+      </el-collapse> -->
+    </div>
   </div>
 </template>
 
@@ -114,6 +123,10 @@
     "zh-CN": "停车供需分析",
     "en-US": "Parking analysis"
   },
+  "区域流量溯源":{
+    "zh-CN": "区域流量溯源",
+    "en-US": "Regional Traffic"
+  },
 }
 </language>
 
@@ -155,6 +168,8 @@ import GeoJSONDetail from "../../../operationsAnalysis/component/GeoJSON/toolbar
 import PolgonParkingDetail from "../../../operationsAnalysis/component/Parking/toolbar/PolgonParkingDetail.vue";
 import ParkingActivityDetail from "../../../operationsAnalysis/component/Parking/toolbar/ParkingActivityDetail.vue";
 import ParkingGeoJSONDetail from "../../../operationsAnalysis/component/Parking/toolbar/ParkingGeoJSONDetail.vue";
+// 区域流量溯源
+import RegionalTrafficDetail from "../../../operationsAnalysis/component/RegionalTraffic/toolbar/RegionalTrafficDetail.vue";
 
 export default {
   components: {
@@ -191,6 +206,8 @@ export default {
     PolgonParkingDetail,
     ParkingActivityDetail,
     ParkingGeoJSONDetail,
+
+    RegionalTrafficDetail,
   },
   inject: ["rootVue"],
   data() {
@@ -275,6 +292,15 @@ export default {
         list: [],
         activeName: "",
       },
+      RegionalTraffic: {
+        id: "RegionalTraffic",
+        name: "区域流量溯源",
+        components: ["RegionalTrafficDetail"],
+        sreach: {},
+        params: {},
+        list: [],
+        activeName: "",
+      },
       modelMap: {
         RouteFlows: "LinesAnalysis",
 
@@ -300,11 +326,23 @@ export default {
 
         PolgonParkingDetail: "Parking",
         ParkingActivityDetail: "Parking",
+
+        RegionalTrafficDetail: "RegionalTraffic",
       },
       activeModel: "LinesAnalysis",
       activeName: "",
       list: [],
     };
+  },
+  computed: {
+    GeoJSONIdList() {
+      try {
+        return this.rootVue.GeoJSONList.map((v) => v.id);
+      } catch (error) {
+        console.log("geojsonLength", error);
+        return 0;
+      }
+    },
   },
   created() {},
   mounted() {},
@@ -334,7 +372,9 @@ export default {
         case "SelectLinkAnalysis":
 
         case "ActivityDetail":
-        case "ParkingActivityDetail": {
+        case "ParkingActivityDetail": 
+        
+        case "RegionalTrafficDetail":{
           const item = list.find((v) => v.data.uuid == data.uuid);
           if (item && data.uuid) {
             activeName = item.name;
@@ -370,6 +410,16 @@ export default {
         doc.scrollIntoView({ inline: "center", block: "center", behavior: "smooth" });
       }
     },
+    handleScroll(v) {
+      const scroll = this.$refs.typeScroll;
+      if (scroll) {
+        scroll.scrollTo({
+          top: 0,
+          left: scroll.scrollLeft + v,
+          behavior: "smooth",
+        });
+      }
+    },
   },
 };
 </script>
@@ -380,15 +430,25 @@ export default {
   height: 100vh;
   overflow: hidden;
   .toolbar-header {
-    height: 46px;
+    display: flex;
+    height: 44px;
+    border-bottom: 2px solid #bbc0cf;
+    .btn {
+      width: 24px;
+      height: 44px;
+      text-align: center;
+      line-height: 44px;
+      background: rgba(0, 0, 0, 0.05);
+      cursor: pointer;
+    }
     .list {
-      width: 100%;
-      border-bottom: 2px solid #bbc0cf;
-      overflow-y: scroll;
+      width: calc(100% - 48px);
+      overflow-x: scroll;
+      overflow-y: hidden;
+      text-wrap: nowrap;
       &::-webkit-scrollbar {
         display: none;
       }
-      text-wrap: nowrap;
       .item {
         display: inline-block;
         font-size: 14px;

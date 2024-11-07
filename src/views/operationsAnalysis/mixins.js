@@ -1,12 +1,39 @@
 
+
+import Toolbar from "./component/Toolbar/index.vue";
+import PublicTransit from "./component/PublicTransit/index.vue";
+import MotorizedTravel from "./component/MotorizedTravel/index.vue";
+import Build3D from "./component/Build3D/index.vue";
+import Network from "./component/Network/index.vue";
+import Activity3D from "./component/Activity3D/index.vue";
+import GeoJSON from "./component/GeoJSON/index.vue";
+import CarTravel from "./component/CarTravel/index.vue";
+import Parking from "./component/Parking/index.vue";
+import RegionalTraffic from "./component/RegionalTraffic/index.vue";
+import TrafficRegionAnalysis from "./component/TrafficRegionAnalysis/index.vue";
+
+import NewClock from "@/components/NewClock/index.vue";
+
 import { MyMap, MapLayer, MAP_LAYER_STYLE } from "@/mymap/index.js";
 import { getTimeInterval, getCenterZoom } from "@/api/index.js";
 import { guid } from "@/utils/index.js";
 
 export default {
-  watch: {
-  },
+  components: {
+    PublicTransit,
+    Toolbar,
+    MotorizedTravel,
+    Build3D,
+    Network,
+    Activity3D,
+    GeoJSON,
+    CarTravel,
+    Parking,
+    RegionalTraffic,
+    TrafficRegionAnalysis,
 
+    NewClock,
+  },
   data() {
     return {
       loading: false,
@@ -43,7 +70,7 @@ export default {
       showLayerRegionalTraffic: false,
       lock2DRegionalTraffic: false,
       regionalTrafficGeoJSON: null,
-      
+
       showLayerTrafficRegionAnalysis: false,
       lock2DTrafficRegionAnalysis: false,
 
@@ -181,6 +208,34 @@ export default {
   beforeDestroy() {
   },
   methods: {
+    canChangeTimeSpeed() {
+      let enableRotate = false;
+      if (this.showLayerPublicTransit) enableRotate = true;
+      if (this.showLayerMotorizedTravel) enableRotate = true;
+      if (this.showLayerBuild3D) enableRotate = true;
+      if (this.showLayerNetwork) enableRotate = true;
+      if (this.showLayerActivity3D) enableRotate = true;
+      if (this.showLayerGeoJSON) enableRotate = true;
+      if (this.showLayerCarTravel) enableRotate = true;
+      if (this.showLayerParking) enableRotate = true;
+      if (this.showLayerRegionalTraffic) enableRotate = true;
+      if (this.showLayerTrafficRegionAnalysis) enableRotate = true;
+      return enableRotate;
+    },
+    canChangeMapCameraControls() {
+      let enableRotate = true;
+      if (this.showLayerPublicTransit && this.lock2DPublicTransit) enableRotate = false;
+      if (this.showLayerMotorizedTravel && this.lock2DMotorizedTravel) enableRotate = false;
+      if (this.showLayerBuild3D && this.lock2DBuild3D) enableRotate = false;
+      if (this.showLayerNetwork && this.lock2DNetwork) enableRotate = false;
+      if (this.showLayerActivity3D && this.lock2DActivity3D) enableRotate = false;
+      if (this.showLayerGeoJSON && this.lock2DGeoJSON) enableRotate = false;
+      if (this.showLayerCarTravel && this.lock2DCarTravel) enableRotate = false;
+      if (this.showLayerParking && this.lock2DParking) enableRotate = false;
+      if (this.showLayerRegionalTraffic && this.lock2DRegionalTraffic) enableRotate = false;
+      if (this.showLayerTrafficRegionAnalysis && this.lock2DTrafficRegionAnalysis) enableRotate = false;
+      return enableRotate;
+    },
     handleToolbarActiveModel(id) {
       try {
         this.$refs.Toolbar.handleActiveModel(id);
@@ -207,7 +262,7 @@ export default {
       this._Map.setFitZoomAndCenterByPoints(this.range);
       if (this.isDev) {
         this._Map.minPitch = -90;
-        this._Map.setCenter([1.2646146070123542e7, 2591625.066256937])
+        this._Map.setCenter([12639883.226929696, 2597068.555929641])
         this._Map.setZoom(14)
       }
 
@@ -369,6 +424,24 @@ export default {
         console.log(error);
 
       }
-    }
+    },
+    handleShowSinglePathDetail({ uuid, singlePathDetail }) {
+      if (this.$refs.Toolbar) {
+        this.$refs.Toolbar.add("SinglePathDetail", {
+          uuid: uuid,
+          singlePathDetail: singlePathDetail,
+        });
+        this.showStopToolbar = true;
+      }
+    },
+    handleShowMultiplePathsDetail({ uuid, multiplePathsDetail }) {
+      if (this.$refs.Toolbar) {
+        this.$refs.Toolbar.add("MultiplePathsDetail", {
+          uuid: uuid,
+          multiplePathsDetail: multiplePathsDetail,
+        });
+        this.showStopToolbar = true;
+      }
+    },
   },
 };

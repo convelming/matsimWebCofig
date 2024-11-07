@@ -47,8 +47,6 @@ export function getTextImage(
   const width = textWidth + padding * 2 + border * 2;
   const height = textHeight * _rowNum * lineHeight + padding * 2 + border * 2;
 
-
-
   ctx.canvas.width = width;
   ctx.canvas.height = height;
 
