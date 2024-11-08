@@ -144,7 +144,6 @@ import { polygonOriginGridsTRG, polygonDestinationsGridsTRG, polygonDesireLinesT
 import HeatMapDialog from "../components/HeatMapDialog.vue";
 
 import { GeoJSONLayer, LINE_STYPE } from "../../GeoJSON/layer/GeoJSONLayer";
-import { LinkFlowLayer } from "../layer/LinkFlowLayer";
 import { GridsLayer } from "../layer/GridsLayer";
 
 const GRID_STEP = 100;
@@ -271,8 +270,13 @@ export default {
     this.initData();
     this.initSelectGeoJSONLayer();
 
-    this._OriginGridsLayer = new GridsLayer({ zIndex: 140, colorBar: this.COLOR_LIST[this.originColor], size: this.originSize / GRID_STEP, step: GRID_STEP });
-    this._DestinationsGridsLayer = new GridsLayer({ zIndex: 140, colorBar: this.COLOR_LIST[this.destinationsColor], size: this.destinationsSize / GRID_STEP, step: GRID_STEP });
+    this._OriginGridsLayer = new GeoJSONLayer({ zIndex: 140, polygonColorBar: this.COLOR_LIST[this.originColor] });
+    this._OriginGridsLayer.setCenter(this._center);
+    this._OriginGridsLayer.setPolygonArray(this._polygonArray);
+
+    this._DestinationsGridsLayer = new GeoJSONLayer({ zIndex: 140, polygonColorBar: this.COLOR_LIST[this.destinationsColor] });
+    this._DestinationsGridsLayer.setCenter(this._center);
+    this._DestinationsGridsLayer.setPolygonArray(this._polygonArray);
   },
   mounted() {},
   beforeDestroy() {
@@ -347,7 +351,16 @@ export default {
         const res = await polygonOriginGridsTRG({
           polygons: this.multiplePathsDetail.polygonList,
         });
-        this._OriginGridsLayer.setData(res.data);
+        // const propertiesList = [{}];
+        // const keys = Object.keys(res.data);
+        // for (let i = 0, l = Object.values(res.data)[0].length; i < l; i++) {
+        //   const obj = {};
+        //   for (const key of keys) {
+        //     obj[key] = res.data[key][i];
+        //   }
+        //   propertiesList.push(obj);
+        // }
+        // this._OriginGridsLayer.setPropertiesList(propertiesList, { value: { min: 0, max: 1 } });
         this.showOriginLayer = true;
       } catch (error) {
         console.log(error);
@@ -362,7 +375,6 @@ export default {
         const res = await polygonDestinationsGridsTRG({
           polygons: this.multiplePathsDetail.polygonList,
         });
-        this._DestinationsGridsLayer.setData(res.data);
         this.showDestinationsLayer = true;
       } catch (error) {
         console.log(error);

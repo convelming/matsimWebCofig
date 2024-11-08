@@ -348,9 +348,19 @@ export default {
         this._OriginGridsLayer.setSize(val / GRID_STEP);
       },
     },
+    originColor: {
+      handler(val) {
+        this._OriginGridsLayer.setColorBar(this.COLOR_LIST[this.originColor]);
+      },
+    },
     destinationsSize: {
       handler(val) {
         this._DestinationsGridsLayer.setSize(val / GRID_STEP);
+      },
+    },
+    destinationsColor: {
+      handler(val) {
+        this._DestinationsGridsLayer.setColorBar(this.COLOR_LIST[this.destinationsColor]);
       },
     },
   },
@@ -404,12 +414,18 @@ export default {
     this._LinkFlowLayer2 = new LinkFlowLayer({ zIndex: 130, color: 0xff0000, height: this.linkFlowHeight, colorBar: this.COLOR_LIST[this.linkFlowColor] });
     this._OriginGridsLayer = new GridsLayer({ zIndex: 140, colorBar: this.COLOR_LIST[this.originColor], size: this.originSize / GRID_STEP, step: GRID_STEP });
     this._DestinationsGridsLayer = new GridsLayer({ zIndex: 140, colorBar: this.COLOR_LIST[this.destinationsColor], size: this.destinationsSize / GRID_STEP, step: GRID_STEP });
+    this.handleTimeChange(this.rootVue.time);
   },
   mounted() {},
   beforeDestroy() {
     this.handleDisable();
   },
   methods: {
+    handleTimeChange(time) {
+      const num = Math.floor(time / 3600);
+      if (this._OriginGridsLayer && this._OriginGridsLayer.time !== num) this._OriginGridsLayer.setTime(num);
+      if (this._DestinationsGridsLayer && this._DestinationsGridsLayer.time !== num) this._DestinationsGridsLayer.setTime(num);
+    },
     handleSetCenter() {
       this._Map.setCenter(this.singlePathDetail.shape[0]);
     },
@@ -457,6 +473,7 @@ export default {
       if (this.showOriginLayer) this._Map.addLayer(this._OriginGridsLayer);
       if (this.showDestinationsLayer) this._Map.addLayer(this._DestinationsGridsLayer);
       this._handleShowLinkFlowLayer();
+      this.rootVue.$on("timeChange", this.handleTimeChange);
     },
     handleDisable() {
       this._Map.removeLayer(this._SelectGeoJSONLayer);
@@ -465,6 +482,7 @@ export default {
       this._Map.removeLayer(this._DestinationsGridsLayer);
       this._Map.removeLayer(this._LinkFlowLayer1);
       this._Map.removeLayer(this._LinkFlowLayer2);
+      this.rootVue.$off("timeChange", this.handleTimeChange);
     },
     getLinkList() {
       getLinkListTRG({

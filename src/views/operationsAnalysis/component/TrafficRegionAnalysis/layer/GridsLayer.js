@@ -55,6 +55,11 @@ export class GridsLayer extends Layer {
     this.update();
   }
 
+  setColorBar(colorBar) {
+    this.colorBar = colorBar;
+    this.update();
+  }
+
   on(type, data) {
     if (type == MAP_EVENT.UPDATE_CENTER) {
       for (const mesh of this.scene.children) {
@@ -64,6 +69,18 @@ export class GridsLayer extends Layer {
     }
   }
 
+  clearScene() {
+    super.clearScene();
+    if (this.scene) {
+      this.scene.traverse(child => {
+        if (child.isMesh) {
+          try {
+            child.geometry.dispose();
+          } catch (error) { }
+        }
+      });
+    }
+  }
   async update() {
     this.clearScene()
     if (!this.data) return;
@@ -77,58 +94,71 @@ export class GridsLayer extends Layer {
       const row = Math.floor(v1.x / wh);
       const col = Math.floor(v1.y / wh);
       const key = `${row}_${col}`;
+      const value = v1.num[this.time] || 0
       if (!center) center = [row * wh, col * wh];
+      if (value <= 0) continue;
       if (!gridObj[key]) {
         gridObj[key] = {
           x: row * wh - center[0],
           y: col * wh - center[1],
-          value: [...v1.num]
+          value: 0
         };
-      } else {
-        for (let i2 = 0, l2 = Math.max(gridObj[key].value.length, v1.num.length); i2 < l2; i2++) {
-          gridObj[key].value[i2] = (gridObj[key].value[i2] || 0) + (v1.num[i2] || 0);
-        }
       }
+      gridObj[key].value += value;
     }
 
+
+    const group = new THREE.Group();
+
     const gridList = Object.values(gridObj);
+
+    const min = Math.min(...gridList.map(v1 => v1.value));
+    const max = Math.max(...gridList.map(v1 => v1.value));
+
     const position = [0, 0, 0, wh, 0, 0, 0, -wh, 0, wh, -wh, 0];
     this.geometry.setAttribute("position", new THREE.Float32BufferAttribute(position, 3))
-
-    console.log(THREE);
-    
     const mesh = new THREE.InstancedMesh(this.geometry, this.material, gridList.length);
-    const textMesh = new THREE.BatchedMesh(gridList.length, 5000, 10000, this.textMaterial);
-
-    const time = Math.floor(this.time / 3600)
 
     for (let i = 0, l = gridList.length; i < l; i++) {
       const { value, x, y } = gridList[i];
       const matrix = new THREE.Matrix4().makeTranslation(x, y, i / l);
       mesh.setMatrixAt(i, matrix);
 
-      const color = new THREE.Color("red")
+      const color = new THREE.Color(ColorBar2D.getColor(value, min, max, this.colorBar))
       mesh.setColorAt(i, color);
 
-      const textGeometry = new Text2DGeometry(value[time], {
-        font: this.font,
+      const textGeometry = new Text2DGeometry(String(value), {
+        font: font,
         curveSegments: 12,
       });
+      textGeometry.computeBoundingBox();
+      let textSalce = 1, textX = 0, textY = 0;
 
-      const textId = textMesh.addGeometry(textGeometry)
-      batchedMesh.setMatrixAt(textId, matrix);
+      const box = textGeometry.boundingBox;
+      if (box && box.min && box.min) {
+        const tw = box.max.x - box.min.x;
+        const th = box.max.y - box.min.y;
+        const _w = Math.max(tw, th)
+        textSalce = wh / _w * 0.7;
+        textX = (wh - tw * textSalce) / 2;
+        textY = (wh - th * textSalce) / 2 - wh;
+      }
+      const textMesh = new THREE.Mesh(textGeometry, this.textMaterial);
+      textMesh.position.set(x + textX, y + textY, i / l + 3);
+      textMesh.scale.set(textSalce, textSalce, 1)
+      group.add(textMesh)
     }
-
 
     let [x, y] = this.map.WebMercatorToCanvasXY(...center);
     mesh.position.set(x, y, 0);
     mesh.userData.center = center;
     this.scene.add(mesh);
 
-    textMesh.position.set(x, y, 0);
-    textMesh.userData.center = center;
-    this.scene.add(textMesh);
+    group.position.set(x, y, 0);
+    group.userData.center = center;
+    this.scene.add(group);
 
   }
+
 
 }

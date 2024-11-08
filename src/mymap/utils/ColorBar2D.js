@@ -101,6 +101,33 @@ export class ColorBar2D {
     return list.sort((a, b) => a.key - b.key);
   }
 
+  static getColor(value, min, max, colors) {
+    try {
+      const drowColors = ColorBar2D.getDrowColors(colors);
+      const _value = (Number(value) - min) / (max - min);
+      console.log(value, min, max);
+
+      let prov = null
+      for (const item of drowColors) {
+        if (prov === null) {
+          if (_value == item.key) {
+            return item.color
+          } else {
+            prov = item.key
+          }
+        } else {
+          if (prov < _value && _value <= item.key) {
+            return item.color
+          }
+        }
+      }
+      return "red"
+    } catch (error) {
+      console.log(error);
+      return "red"
+    }
+  }
+
   // 渐变颜色条图
   drow(colors = defaultColors) {
     try {
