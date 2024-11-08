@@ -58,12 +58,6 @@ export default {
       uploadForm: {},
       selectGeoJSON: null,
       reselect: false,
-      layerList: [],
-
-      showLayer1: true,
-      showLayer2: false,
-      layerColor: 0,
-      showLayerVisualMap: false,
     };
   },
   created() {},
@@ -81,16 +75,8 @@ export default {
     });
   },
   methods: {
-    handleEnable() {
-      for (const layer of this.layerList) {
-        this._Map.addLayer(layer._geojsonLayer);
-      }
-    },
-    handleDisable() {
-      for (const layer of this.layerList) {
-        this._Map.removeLayer(layer._geojsonLayer);
-      }
-    },
+    handleEnable() {},
+    handleDisable() {},
     handleCloseSelect() {
       this.s_value = null;
       this.reselect = false;
@@ -163,7 +149,26 @@ export default {
           polygonList[polygonList.length] = {
             shape: shape[0],
             holes: shape.slice(1),
+            id: polygonList.length + 1,
           };
+        }
+
+        if (polygonList.length == 1) {
+          this.rootVue.handleShowSinglePathDetail({
+            uuid: guid(),
+            singlePathDetail: {
+              shape: polygonList[0].shape,
+              holes: polygonList[0].holes,
+              type: "link",
+            },
+          });
+        } else if (polygonList.length > 1) {
+          this.rootVue.handleShowMultiplePathsDetail({
+            uuid: guid(),
+            multiplePathsDetail: {
+              polygonList: polygonList,
+            },
+          });
         }
         worker.terminate();
       };

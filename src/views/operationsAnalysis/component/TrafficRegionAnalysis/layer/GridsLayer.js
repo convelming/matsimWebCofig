@@ -4,8 +4,20 @@ import { ColorBar2D } from "@/mymap/utils/ColorBar2D.js";
 import * as THREE from "three";
 import * as BufferGeometryUtils from "three/addons/utils/BufferGeometryUtils.js";
 
+import { FontLoader } from 'three/addons/loaders/FontLoader.js';
+import { Text2DGeometry } from '@/mymap/geometry/Text2DGeometry.js';
+
+let font = null;
+function getFont() {
+  if (font) return Promise.resolve(font);
+  return new Promise((resolve, reject) => {
+    new FontLoader().load(process.env.VUE_APP_PUBLIC_PATH + "MiSans VF_Regular.json", resolve, undefined, reject);
+  });
+}
+
 export class GridsLayer extends Layer {
   name = "GridsLayer";
+  time = 0;
 
   constructor(opt) {
     super(opt);
@@ -15,6 +27,7 @@ export class GridsLayer extends Layer {
 
     this.geometry = new THREE.PlaneGeometry();
     this.material = new THREE.MeshBasicMaterial({});
+    this.textMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
   }
 
   onAdd(map) {
@@ -22,7 +35,7 @@ export class GridsLayer extends Layer {
     this.update();
   }
 
-  setData(data) {
+  async setData(data) {
     this.data = data;
     this.update();
   }
@@ -51,10 +64,12 @@ export class GridsLayer extends Layer {
     }
   }
 
-  update() {
+  async update() {
     this.clearScene()
     if (!this.data) return;
     if (!this.map) return;
+
+    const font = await getFont();
     let center = null;
     const gridObj = {};
     const wh = this.step * this.size;
@@ -77,23 +92,42 @@ export class GridsLayer extends Layer {
     }
 
     const gridList = Object.values(gridObj);
-    console.log(this.geometry);
     const position = [0, 0, 0, wh, 0, 0, 0, -wh, 0, wh, -wh, 0];
     this.geometry.setAttribute("position", new THREE.Float32BufferAttribute(position, 3))
+
+    console.log(THREE);
+    
     const mesh = new THREE.InstancedMesh(this.geometry, this.material, gridList.length);
+    const textMesh = new THREE.BatchedMesh(gridList.length, 5000, 10000, this.textMaterial);
+
+    const time = Math.floor(this.time / 3600)
+
     for (let i = 0, l = gridList.length; i < l; i++) {
       const { value, x, y } = gridList[i];
       const matrix = new THREE.Matrix4().makeTranslation(x, y, i / l);
       mesh.setMatrixAt(i, matrix);
-      mesh.setColorAt(i, new THREE.Color("red"));
+
+      const color = new THREE.Color("red")
+      mesh.setColorAt(i, color);
+
+      const textGeometry = new Text2DGeometry(value[time], {
+        font: this.font,
+        curveSegments: 12,
+      });
+
+      const textId = textMesh.addGeometry(textGeometry)
+      batchedMesh.setMatrixAt(textId, matrix);
     }
+
 
     let [x, y] = this.map.WebMercatorToCanvasXY(...center);
     mesh.position.set(x, y, 0);
     mesh.userData.center = center;
     this.scene.add(mesh);
 
-    this.mesh = mesh;
+    textMesh.position.set(x, y, 0);
+    textMesh.userData.center = center;
+    this.scene.add(textMesh);
 
   }
 

@@ -8,14 +8,26 @@
       <div class="form">
         <div class="form_item">
           <div class="form_item_header">
+            <el-button v-if="!showSelectGeoJSONLayer" class="show_btn" type="primary" size="small" @click="showSelectGeoJSONLayer = true">{{ $l("显示区域") }}</el-button>
+            <el-button v-else class="show_btn" type="info" size="small" @click="showSelectGeoJSONLayer = false">{{ $l("隐藏区域") }}</el-button>
+            <el-button class="open_btn" icon="el-icon-aim" type="primary" size="small" @click="handleSetCenter"></el-button>
+          </div>
+        </div>
+        <div class="form_item">
+          <div class="form_item_header">
             <el-button v-if="!showLinkLayer" class="show_btn" type="primary" size="small" @click="showLinkLayer = true">{{ $l("显示Link") }}</el-button>
             <el-button v-else class="show_btn" type="info" size="small" @click="showLinkLayer = false">{{ $l("隐藏Link") }}</el-button>
             <el-button class="open_btn" :icon="openLinkList ? 'el-icon-caret-top' : 'el-icon-caret-bottom'" type="info" size="small" @click="openLinkList = !openLinkList"></el-button>
           </div>
-          <div class="link_list" v-if="openLinkList">
-            <el-checkbox-group v-model="selectLinkList" @change="handleSelectLinkList">
-              <el-checkbox v-for="item in linkList" :key="item.id" :label="item.id">{{ item.id }}</el-checkbox>
-            </el-checkbox-group>
+          <div v-if="openLinkList">
+            <div>
+              <el-checkbox v-model="selectAll" @change="handleSelectLinkList">{{ $l("全选") }}</el-checkbox>
+            </div>
+            <div class="link_list">
+              <el-checkbox-group v-model="selectLinkList" @change="handleSelectLinkList">
+                <el-checkbox v-for="item in linkList" :key="item.id" :label="item.id">{{ item.id }}</el-checkbox>
+              </el-checkbox-group>
+            </div>
           </div>
         </div>
         <div class="form_item">
@@ -121,6 +133,14 @@
     "zh-CN": "区域建筑交通分析",
     "en-US": "区域建筑交通分析"
   },
+  "显示区域":{
+    "zh-CN": "显示区域",
+    "en-US": "Show polygon"
+  },
+  "隐藏区域":{
+    "zh-CN": "隐藏区域",
+    "en-US": "Hide polygon"
+  },
   "显示Link":{
     "zh-CN": "显示Link",
     "en-US": "Show link"
@@ -193,6 +213,10 @@
     "zh-CN": "大小",
     "en-US": "Size"
   },
+  "全选":{
+    "zh-CN": "全选",
+    "en-US": "Select all"
+  },
 }
 </language>
 
@@ -231,6 +255,18 @@ export default {
     _Map() {
       return this.rootVue._Map;
     },
+    selectAll: {
+      get() {
+        return this.linkList.length == this.selectLinkList.length;
+      },
+      set(val) {
+        if (val) {
+          this.selectLinkList = this.linkList.map((v) => v.id);
+        } else {
+          this.selectLinkList = [];
+        }
+      },
+    },
   },
   watch: {
     show: {
@@ -248,6 +284,15 @@ export default {
         });
       },
       immediate: true,
+    },
+    showSelectGeoJSONLayer: {
+      handler(val) {
+        if (val) {
+          this._Map.addLayer(this._SelectGeoJSONLayer);
+        } else {
+          this._Map.removeLayer(this._SelectGeoJSONLayer);
+        }
+      },
     },
     showLinkLayer: {
       handler(val) {
@@ -308,13 +353,14 @@ export default {
         this._DestinationsGridsLayer.setSize(val / GRID_STEP);
       },
     },
-
   },
   data() {
     return {
       COLOR_LIST,
       GRID_STEP,
       loading: true,
+
+      showSelectGeoJSONLayer: true,
 
       selectLinkList: [],
       linkList: [],
@@ -364,6 +410,9 @@ export default {
     this.handleDisable();
   },
   methods: {
+    handleSetCenter() {
+      this._Map.setCenter(this.singlePathDetail.shape[0]);
+    },
     initSelectGeoJSONLayer() {
       this._SelectGeoJSONLayer = new GeoJSONLayer({
         zIndex: 110,
@@ -403,7 +452,7 @@ export default {
       });
     },
     handleEnable() {
-      this._Map.addLayer(this._SelectGeoJSONLayer);
+      if (this.showSelectGeoJSONLayer) this._Map.addLayer(this._SelectGeoJSONLayer);
       if (this.showLinkLayer) this._Map.addLayer(this._LinkGeoJSONLayer);
       if (this.showOriginLayer) this._Map.addLayer(this._OriginGridsLayer);
       if (this.showDestinationsLayer) this._Map.addLayer(this._DestinationsGridsLayer);
@@ -433,7 +482,7 @@ export default {
 
         const center = this.singlePathDetail.shape[0];
         const lineArray = [];
-        let i = 0;
+        let i = 1;
         for (const link of this.linkList) {
           lineArray.push(7, ++i, link.fromCoord.x - center[0], link.fromCoord.y - center[1], 0, link.toCoord.x - center[0], link.toCoord.y - center[1], link.length);
         }
@@ -445,7 +494,7 @@ export default {
       });
     },
     handleSelectLinkList() {
-      const propertiesList = [];
+      const propertiesList = [{}];
       for (const link of this.linkList) {
         propertiesList.push({ value: this.selectLinkList.includes(link.id) ? 1 : 0 });
       }

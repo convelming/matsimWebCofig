@@ -140,9 +140,6 @@ export default {
             name: "Punch Card",
             type: "heatmap",
             data: data,
-            label: {
-              show: true,
-            },
             emphasis: {
               itemStyle: {
                 shadowBlur: 10,

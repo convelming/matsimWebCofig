@@ -1360,6 +1360,7 @@ export class GeoJSONPolygonMaterial extends THREE.Material {
           if(p< 0.0) p = 0.0;
           vec4 barDiffuseColor = texture2D(colorBar, vec2(p , 0.5));
           diffuseColor.rgb = barDiffuseColor.rgb;
+          diffuseColor.a *= barDiffuseColor.a;
         #endif
 
         gl_FragColor = diffuseColor;
@@ -1456,7 +1457,7 @@ export class GeoJSONPolygonBorderListGeometry extends THREE.BufferGeometry {
 
         propertiesKeyList[propertiesKeyList.length] = value;
         propertiesKeyList[propertiesKeyList.length] = value;
-        
+
         attrValue[attrValue.length] = 0;
         attrValue[attrValue.length] = 0;
 

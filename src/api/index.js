@@ -785,3 +785,39 @@ export function getDestinationsGridsTRG(data) {
   });
 }
 
+
+// 多polygon起点分布
+// POST /pt/trafficRegionAnalysis/polygonOriginGrids
+// 接口ID：230988110
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-230988110
+export function polygonOriginGridsTRG(data) {
+  return request({
+    url: `/pt/trafficRegionAnalysis/polygonOriginGrids`,
+    data: data,
+    method: "post",
+  });
+}
+
+// 多polygon讫点分布
+// POST /pt/trafficRegionAnalysis/polygonDestinationsGrids
+// 接口ID：231167863
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-231167863
+export function polygonDestinationsGridsTRG(data) {
+  return request({
+    url: `/pt/trafficRegionAnalysis/polygonDestinationsGrids`,
+    data: data,
+    method: "post",
+  });
+}
+
+// 多polygon期望线
+// POST /pt/trafficRegionAnalysis/polygonDesireLines
+// 接口ID：231432500
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-231432500
+export function polygonDesireLinesTRG(data) {
+  return request({
+    url: `/pt/trafficRegionAnalysis/polygonDesireLines`,
+    data: data,
+    method: "post",
+  });
+}
