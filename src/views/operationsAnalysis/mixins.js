@@ -262,7 +262,7 @@ export default {
       this._Map.setFitZoomAndCenterByPoints(this.range);
       if (this.isDev) {
         this._Map.minPitch = -90;
-        this._Map.setCenter([12639883.226929696, 2597068.555929641])
+        this._Map.setCenter([12630006.712387329, 2642851.1972153573])
         this._Map.setZoom(14)
       }
 

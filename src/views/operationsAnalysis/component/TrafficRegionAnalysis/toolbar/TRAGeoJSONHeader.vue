@@ -136,6 +136,7 @@ export default {
         const { center, polygonArray } = event.data;
         const polygonList = [];
         for (let index = 0, l = polygonArray.length, num = 0, dataSize = polygonArray[0]; index < l; index += 1 + dataSize, dataSize = polygonArray[index]) {
+          const id = polygonList.length + 1; // polygonArray[index+1]
           const shapeArray = polygonArray.slice(index + 1 + 1, index + 1 + dataSize);
           let shape = [];
           for (let j = 0, l = shapeArray.length, size = shapeArray[0]; j < l; j += 1 + size, size = shapeArray[j]) {
@@ -147,18 +148,19 @@ export default {
             shape.push(points);
           }
           polygonList[polygonList.length] = {
-            shape: shape[0],
-            holes: shape.slice(1),
-            id: polygonList.length + 1,
+            _shape: shape[0],
+            _holes: shape.slice(1),
+            id: id,
           };
+          polygonArray[index + 1] = id;
         }
 
         if (polygonList.length == 1) {
           this.rootVue.handleShowSinglePathDetail({
             uuid: guid(),
             singlePathDetail: {
-              shape: polygonList[0].shape,
-              holes: polygonList[0].holes,
+              shape: polygonList[0]._shape,
+              holes: polygonList[0]._holes,
               type: "link",
             },
           });
@@ -167,6 +169,8 @@ export default {
             uuid: guid(),
             multiplePathsDetail: {
               polygonList: polygonList,
+              _polygonArray: polygonArray,
+              _center: center,
             },
           });
         }

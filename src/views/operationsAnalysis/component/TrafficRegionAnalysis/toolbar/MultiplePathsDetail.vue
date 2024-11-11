@@ -19,7 +19,7 @@
               </div>
               <div class="link_list">
                 <el-checkbox-group v-model="selectPolygonList" @change="handleSelectPolygonList">
-                  <el-checkbox v-for="(item, index) in multiplePathsDetail.polygonList" :key="index" :label="index">polygon{{ index }}</el-checkbox>
+                  <el-checkbox v-for="(item, index) in polygonList" :key="index" :label="index">polygon - {{ item }}</el-checkbox>
                 </el-checkbox-group>
               </div>
             </div>
@@ -67,8 +67,17 @@
         </div>
         <div class="form_item">
           <div class="form_item_header">
-            <el-button class="show_btn" type="primary" size="small" @click="">{{ $l("显示期望线") }}</el-button>
+            <el-button v-if="!showDesireLineLayer" :loading="desireLineLoading" class="show_btn" type="primary" size="small" @click="handleShowDesireLineLayer">{{ $l("显示期望线") }}</el-button>
+            <el-button v-else class="show_btn" type="info" size="small" @click="showDesireLineLayer = false">{{ $l("隐藏期望线") }}</el-button>
             <el-button class="open_btn" :icon="openDesireLineSetting ? 'el-icon-caret-top' : 'el-icon-caret-bottom'" type="info" size="small" @click="openDesireLineSetting = !openDesireLineSetting"></el-button>
+          </div>
+          <div class="setting_box" v-show="openDesireLineSetting">
+            <div class="setting_item">
+              <div class="setting_item_label">{{ $l("颜色") }}</div>
+              <div class="setting_item_value">
+                <el-color-picker size="mini" :predefine="predefineColors" v-model="desireLineColor" />
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -144,7 +153,8 @@ import { polygonOriginGridsTRG, polygonDestinationsGridsTRG, polygonDesireLinesT
 import HeatMapDialog from "../components/HeatMapDialog.vue";
 
 import { GeoJSONLayer, LINE_STYPE } from "../../GeoJSON/layer/GeoJSONLayer";
-import { GridsLayer } from "../layer/GridsLayer";
+import { PolygonGridLayer } from "../layer/PolygonGridLayer";
+import { DesireLineLayer } from "../layer/DesireLineLayer";
 
 const GRID_STEP = 100;
 
@@ -173,11 +183,11 @@ export default {
     },
     selectAll: {
       get() {
-        return this.multiplePathsDetail.polygonList.length == this.selectPolygonList.length;
+        return this.polygonList.length == this.selectPolygonList.length;
       },
       set(val) {
         if (val) {
-          this.selectPolygonList = new Array(this.multiplePathsDetail.polygonList.length).fill(0).map((v, i) => i);
+          this.selectPolygonList = this.polygonList.map((v, i) => i);
         } else {
           this.selectPolygonList = [];
         }
@@ -219,9 +229,9 @@ export default {
         }
       },
     },
-    originSize: {
+    originColor: {
       handler(val) {
-        this._OriginGridsLayer.setSize(val / GRID_STEP);
+        this._OriginGridsLayer.setColorBar(this.COLOR_LIST[this.originColor]);
       },
     },
     showDestinationsLayer: {
@@ -233,20 +243,36 @@ export default {
         }
       },
     },
-    destinationsSize: {
+    destinationsColor: {
       handler(val) {
-        this._DestinationsGridsLayer.setSize(val / GRID_STEP);
+        this._DestinationsGridsLayer.setColorBar(this.COLOR_LIST[this.destinationsColor]);
+      },
+    },
+    showDesireLineLayer: {
+      handler(val) {
+        if (val) {
+          this._Map.addLayer(this._DesireLineLayer);
+        } else {
+          this._Map.removeLayer(this._DesireLineLayer);
+        }
+      },
+    },
+    desireLineColor: {
+      handler(val) {
+        this._DesireLineLayer.setColor(val);
       },
     },
   },
   data() {
     return {
+      predefineColors: ["#5470c6", "#91cc75", "#fac858", "#ee6666", "#73c0de", "#3ba272", "#fc8452", "#9a60b4", "#ea7ccc"],
       COLOR_LIST,
       GRID_STEP,
       loading: false,
 
       showSelectGeoJSONLayer: true,
       selectPolygonList: [],
+      polygonList: [],
       openPolygonList: false,
 
       openOriginSetting: false,
@@ -262,125 +288,161 @@ export default {
       destinationsSize: GRID_STEP,
 
       openDesireLineSetting: false,
+      showDesireLineLayer: false,
+      desireLineLoading: false,
+      desireLineColor: "#5470c6",
 
       openReachabilitySetting: false,
     };
   },
   created() {
+    this._SelectGeoJSONLayer = new GeoJSONLayer({
+      zIndex: 110,
+      polygonOpacity: 0.5,
+      polygonBorderStyle: LINE_STYPE.NONE,
+
+      polygonColorBar: ["#00000000", "#409eff"],
+      polygonValue: "value",
+    });
+    this._SelectGeoJSONLayer.setCenter(this.multiplePathsDetail._center);
+    this._SelectGeoJSONLayer.setPolygonArray(this.multiplePathsDetail._polygonArray);
+
+    this._OriginGridsLayer = new PolygonGridLayer({ zIndex: 140, colorBar: this.COLOR_LIST[this.originColor] });
+    this._DestinationsGridsLayer = new PolygonGridLayer({ zIndex: 150, colorBar: this.COLOR_LIST[this.destinationsColor] });
+    this._DesireLineLayer = new DesireLineLayer({ zIndex: 460, color: this.desireLineColor });
+
     this.initData();
-    this.initSelectGeoJSONLayer();
-
-    this._OriginGridsLayer = new GeoJSONLayer({ zIndex: 140, polygonColorBar: this.COLOR_LIST[this.originColor] });
-    this._OriginGridsLayer.setCenter(this._center);
-    this._OriginGridsLayer.setPolygonArray(this._polygonArray);
-
-    this._DestinationsGridsLayer = new GeoJSONLayer({ zIndex: 140, polygonColorBar: this.COLOR_LIST[this.destinationsColor] });
-    this._DestinationsGridsLayer.setCenter(this._center);
-    this._DestinationsGridsLayer.setPolygonArray(this._polygonArray);
+    this.handleSelectPolygonList();
+    this.handleTimeChange(this.rootVue.time);
   },
   mounted() {},
   beforeDestroy() {
     this.handleDisable();
   },
   methods: {
+    handleTimeChange(time) {
+      const num = Math.floor(time / 3600);
+      if (this._OriginGridsLayer && this._OriginGridsLayer.time !== num) this._OriginGridsLayer.setTime(num);
+      if (this._DestinationsGridsLayer && this._DestinationsGridsLayer.time !== num) this._DestinationsGridsLayer.setTime(num);
+      if (this._DesireLineLayer && this._DesireLineLayer.time !== num) this._DesireLineLayer.setTime(num);
+    },
     handleSetCenter() {
-      this._Map.setCenter(this._center);
+      this._Map.setCenter(this.multiplePathsDetail._center);
     },
     initData() {
-      let center = null;
-      const polygonList = this.multiplePathsDetail.polygonList;
-      const polygonArray = [];
-      for (let i1 = 0, l1 = polygonList.length; i1 < l1; i1++) {
-        const { shape, holes } = polygonList[i1];
-        if (!center) center = shape[0];
-        const array = [0, i1 + 1];
-        array[array.length] = shape.length * 2;
-        for (const point of shape) {
-          array[array.length] = point[0] - center[0];
-          array[array.length] = point[1] - center[1];
-        }
-        for (const hole of holes) {
-          array[array.length] = hole.length * 2;
-          for (const point of hole) {
-            array[array.length] = point[0] - center[0];
-            array[array.length] = point[1] - center[1];
-          }
-        }
-        array[0] = array.length - 1;
-        polygonArray.push(...array);
-      }
-      this._center = center;
-      this._polygonArray = polygonArray;
-      this.selectPolygonList = new Array(this.multiplePathsDetail.polygonList.length).fill(0).map((v, i) => i);
-    },
-    initSelectGeoJSONLayer() {
-      this._SelectGeoJSONLayer = new GeoJSONLayer({
-        zIndex: 110,
-        polygonColor: 0x409eff,
-        polygonOpacity: 0.5,
-        polygonBorderWidth: 1,
-        polygonBorderColor: 0x409eff,
-        polygonBorderStyle: LINE_STYPE.SOLID,
+      this.polygonList = this.multiplePathsDetail.polygonList.map((v) => v.id);
+      this.selectPolygonList = this.polygonList.map((v, i) => i);
 
-        polygonColorBar: ["#00000000", "#409eff"],
-        polygonValue: "value",
-      });
-      this._SelectGeoJSONLayer.setCenter(this._center);
-      this._SelectGeoJSONLayer.setPolygonArray(this._polygonArray);
-      this.handleSelectPolygonList();
+      const polygons = this.multiplePathsDetail.polygonList.map((v) => ({
+        shape: v._shape,
+        holes: v._holes,
+        id: v.id,
+      }));
+
+      // polygonOriginGridsTRG({ polygons: polygons }).then((res) => {
+      //   polygons.forEach((v) => {
+      //     v.originValue = res.data[v.id] || [];
+      //   });
+      //   this._OriginGridsLayer.setData(polygons, "originValue");
+      // });
+
+      // polygonDestinationsGridsTRG({ polygons: polygons }).then((res) => {
+      //   polygons.forEach((v) => {
+      //     v.destinationsValue = res.data[v.id] || [];
+      //   });
+      //   this._DestinationsGridsLayer.setData(polygons, "destinationsValue");
+      // });
+
+      // polygonDesireLinesTRG({ polygons: polygons }).then((res) => {
+      //   console.log(res);
+      // });
+    },
+    async handleShowOriginLayer() {
+      if (!this._OriginGridsLoaded) {
+        try {
+          this.originLoading = true;
+          const polygons = this.multiplePathsDetail.polygonList.map((v) => ({
+            shape: v._shape,
+            holes: v._holes,
+            id: v.id,
+          }));
+          this._OriginGridsLayer.setData(null);
+          const res = await polygonOriginGridsTRG({ polygons: polygons });
+          polygons.forEach((v) => {
+            v.values = res.data[v.id] || [];
+          });
+          this._OriginGridsLayer.setData(polygons, "values");
+          this._OriginGridsLoaded = true;
+        } catch (error) {}
+        this.originLoading = false;
+      }
+      this.showOriginLayer = true;
+    },
+    async handleShowDestinationsLayer() {
+      if (!this._DestinationsGridsLoaded) {
+        try {
+          this.destinationsLoading = true;
+          const polygons = this.multiplePathsDetail.polygonList.map((v) => ({
+            shape: v._shape,
+            holes: v._holes,
+            id: v.id,
+          }));
+          this._DestinationsGridsLayer.setData(null);
+          const res = await polygonDestinationsGridsTRG({ polygons: polygons });
+          polygons.forEach((v) => {
+            v.values = res.data[v.id] || [];
+          });
+          this._DestinationsGridsLayer.setData(polygons, "values");
+          this._DestinationsGridsLoaded = true;
+        } catch (error) {}
+        this.destinationsLoading = false;
+      }
+      this.showDestinationsLayer = true;
+    },
+    async handleShowDesireLineLayer() {
+      if (!this._DesireLineLoaded) {
+        try {
+          this.desireLineLoading = true;
+          const polygons = this.multiplePathsDetail.polygonList.map((v) => ({
+            shape: v._shape,
+            holes: v._holes,
+            id: v.id,
+          }));
+          this._DesireLineLayer.setData(null);
+          const res = await polygonDesireLinesTRG({ polygons: polygons });
+          this._DesireLineLayer.setData(res.data);
+          this._DesireLineLoaded = true;
+        } catch (error) {}
+        this.desireLineLoading = false;
+      }
+      this.showDesireLineLayer = true;
     },
     handleSelectPolygonList() {
-      const propertiesList = new Array(this.multiplePathsDetail.polygonList.length + 1).fill(0).map((v, i) => (i == 0 ? {} : { value: 0 }));
-      this.selectPolygonList.forEach((v) => (propertiesList[v + 1].value = 1));
+      const propertiesList = new Array(this.polygonList.length + 1).fill(0).map((v, i) => (i == 0 ? {} : { value: 0 }));
+      const showIds = [];
+      this.selectPolygonList.forEach((v) => {
+        propertiesList[v + 1].value = 1;
+        showIds.push(this.polygonList[v]);
+      });
       this._SelectGeoJSONLayer.setPropertiesList(propertiesList, { value: { min: 0, max: 1 } });
+
+      this._OriginGridsLayer.setShowIds(showIds);
+      this._DestinationsGridsLayer.setShowIds(showIds);
+      this._DesireLineLayer.setShowIds(showIds);
     },
     handleEnable() {
       if (this.showSelectGeoJSONLayer) this._Map.addLayer(this._SelectGeoJSONLayer);
       if (this.showOriginLayer) this._Map.addLayer(this._OriginGridsLayer);
       if (this.showDestinationsLayer) this._Map.addLayer(this._DestinationsGridsLayer);
+      if (this.showDesireLineLayer) this._Map.addLayer(this._DesireLineLayer);
+      this.rootVue.$on("timeChange", this.handleTimeChange);
     },
     handleDisable() {
       this._Map.removeLayer(this._SelectGeoJSONLayer);
       this._Map.removeLayer(this._OriginGridsLayer);
       this._Map.removeLayer(this._DestinationsGridsLayer);
-    },
-    async handleShowOriginLayer() {
-      try {
-        this.originLoading = true;
-        this._OriginGridsLayer.setData(null);
-        const res = await polygonOriginGridsTRG({
-          polygons: this.multiplePathsDetail.polygonList,
-        });
-        // const propertiesList = [{}];
-        // const keys = Object.keys(res.data);
-        // for (let i = 0, l = Object.values(res.data)[0].length; i < l; i++) {
-        //   const obj = {};
-        //   for (const key of keys) {
-        //     obj[key] = res.data[key][i];
-        //   }
-        //   propertiesList.push(obj);
-        // }
-        // this._OriginGridsLayer.setPropertiesList(propertiesList, { value: { min: 0, max: 1 } });
-        this.showOriginLayer = true;
-      } catch (error) {
-        console.log(error);
-      } finally {
-        this.originLoading = false;
-      }
-    },
-    async handleShowDestinationsLayer() {
-      try {
-        this.destinationsLoading = true;
-        this._DestinationsGridsLayer.setData(null);
-        const res = await polygonDestinationsGridsTRG({
-          polygons: this.multiplePathsDetail.polygonList,
-        });
-        this.showDestinationsLayer = true;
-      } catch (error) {
-        console.log(error);
-      } finally {
-        this.destinationsLoading = false;
-      }
+      this._Map.removeLayer(this._DesireLineLayer);
+      this.rootVue.$off("timeChange", this.handleTimeChange);
     },
   },
 };

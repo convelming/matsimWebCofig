@@ -503,7 +503,7 @@ export class GeoJSONLayer extends Layer {
 
 
 export class GeoJSONPointListGeometry extends THREE.BufferGeometry {
-  constructor(pointArray = [], propertiesList, propertiesLabels, valueKey) {
+  constructor(pointArray = [], propertiesList = [], propertiesLabels = {}, valueKey = "") {
     super();
     this.type = "GeoJSONPointListGeometry";
     this.isGeoJSONPointListGeometry = true;
@@ -721,7 +721,7 @@ export class GeoJSONPointMaterial extends THREE.Material {
 }
 
 export class GeoJSONLineListGeometry extends THREE.BufferGeometry {
-  constructor(lineList, propertiesList, propertiesLabels, valueKey) {
+  constructor(lineList = [], propertiesList = [], propertiesLabels = {}, valueKey = "") {
     super();
     this.type = "GeoJSONLineListGeometry";
     this.isGeoJSONLineListGeometry = true;
@@ -1013,7 +1013,7 @@ export class GeoJSONLineMaterial extends THREE.Material {
 }
 
 export class GeoJSONPolygonListGeometry extends THREE.BufferGeometry {
-  constructor(polygonList = [], propertiesList, propertiesLabels, valueKey) {
+  constructor(polygonList = [], propertiesList = [], propertiesLabels = {}, valueKey = "") {
     super();
     this.type = "GeoJSONPolygonListGeometry";
     this.isGeoJSONPolygonListGeometry = true;

@@ -105,7 +105,6 @@ export class ColorBar2D {
     try {
       const drowColors = ColorBar2D.getDrowColors(colors);
       const _value = (Number(value) - min) / (max - min);
-      console.log(value, min, max);
 
       let prov = null
       for (const item of drowColors) {
