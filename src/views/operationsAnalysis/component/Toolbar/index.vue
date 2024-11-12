@@ -274,23 +274,23 @@ export default {
           // {
           //   type: "SinglePathDetail",
           //   data: {
-          //     uuid: "c23f6fd4-3b30-4fb2-9e4b-7d589a36282e",
+          //     uuid: "38e4047c-7a67-4c49-9e3b-cb40a22d8bd3",
           //     singlePathDetail: {
           //       shape: [
-          //         [12638633.226929696, 2597818.555929641],
-          //         [12638596.257597655, 2595013.432312049],
-          //         [12641553.882548127, 2594837.823396202],
-          //         [12641248.878535379, 2597809.313340747],
-          //         [12638633.226929696, 2597818.555929641],
+          //         [12634435.302642914, 2645511.8325935453],
+          //         [12633846.75084994, 2642668.8241874496],
+          //         [12637717.231729725, 2642559.094078857],
+          //         [12637846.913390191, 2646010.6062060306],
+          //         [12634435.302642914, 2645511.8325935453],
           //       ],
           //       holes: [],
           //       type: "link",
           //     },
           //   },
-          //   name: "75e982d7-1076-4193-8b67-0039f35f9df2",
+          //   name: "8de6f3a9-0267-4a70-95c6-b148f80a3a68",
           // },
         ],
-        activeName: "75e982d7-1076-4193-8b67-0039f35f9df2",
+        activeName: "8de6f3a9-0267-4a70-95c6-b148f80a3a68",
       },
       modelMap: {
         RouteDetail: "PublicTransit",
@@ -391,7 +391,7 @@ export default {
       if (list.length > 15) {
         list.splice(15);
       }
-      console.log(obj);
+      console.log(list);
       this.$set(obj, "list", list);
       this.$set(obj, "activeName", activeName);
       this.handleActiveModel(obj.id);

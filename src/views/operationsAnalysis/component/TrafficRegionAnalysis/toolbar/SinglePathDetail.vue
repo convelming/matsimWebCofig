@@ -108,8 +108,17 @@
         </div>
         <div class="form_item">
           <div class="form_item_header">
-            <el-button class="show_btn" type="primary" size="small" @click="">{{ $l("显示期望线") }}</el-button>
+            <el-button v-if="!showDesireLineLayer" :loading="desireLineLoading" class="show_btn" type="primary" size="small" @click="handleShowDesireLineLayer">{{ $l("显示期望线") }}</el-button>
+            <el-button v-else class="show_btn" type="info" size="small" @click="showDesireLineLayer = false">{{ $l("隐藏期望线") }}</el-button>
             <el-button class="open_btn" :icon="openDesireLineSetting ? 'el-icon-caret-top' : 'el-icon-caret-bottom'" type="info" size="small" @click="openDesireLineSetting = !openDesireLineSetting"></el-button>
+          </div>
+          <div class="setting_box" v-show="openDesireLineSetting">
+            <div class="setting_item">
+              <div class="setting_item_label">{{ $l("颜色") }}</div>
+              <div class="setting_item_value">
+                <el-color-picker size="mini" :predefine="predefineColors" v-model="desireLineColor" />
+              </div>
+            </div>
           </div>
         </div>
         <div class="form_item">
@@ -222,13 +231,14 @@
 
 <script>
 import { guid, COLOR_LIST } from "@/utils/utils";
-import { getLinkListTRG, getLinkTracksTRG, getOriginGridsTRG, getDestinationsGridsTRG } from "@/api/index";
+import { getLinkListTRG, getLinkTracksTRG, getOriginGridsTRG, getDestinationsGridsTRG, desireLinesTRG } from "@/api/index";
 
 import HeatMapDialog from "../components/HeatMapDialog.vue";
 
 import { GeoJSONLayer, LINE_STYPE } from "../../GeoJSON/layer/GeoJSONLayer";
 import { LinkFlowLayer } from "../layer/LinkFlowLayer";
 import { GridsLayer } from "../layer/GridsLayer";
+import { DesireLineLayer } from "../layer/DesireLineLayer";
 
 const GRID_STEP = 100;
 
@@ -363,9 +373,24 @@ export default {
         this._DestinationsGridsLayer.setColorBar(this.COLOR_LIST[this.destinationsColor]);
       },
     },
+    showDesireLineLayer: {
+      handler(val) {
+        if (val) {
+          this._Map.addLayer(this._DesireLineLayer);
+        } else {
+          this._Map.removeLayer(this._DesireLineLayer);
+        }
+      },
+    },
+    desireLineColor: {
+      handler(val) {
+        this._DesireLineLayer.setColor(val);
+      },
+    },
   },
   data() {
     return {
+      predefineColors: ["#5470c6", "#91cc75", "#fac858", "#ee6666", "#73c0de", "#3ba272", "#fc8452", "#9a60b4", "#ea7ccc"],
       COLOR_LIST,
       GRID_STEP,
       loading: true,
@@ -401,6 +426,9 @@ export default {
       destinationsSize: GRID_STEP,
 
       openDesireLineSetting: false,
+      showDesireLineLayer: false,
+      desireLineLoading: false,
+      desireLineColor: "#5470c6",
 
       openReachabilitySetting: false,
     };
@@ -414,6 +442,8 @@ export default {
     this._LinkFlowLayer2 = new LinkFlowLayer({ zIndex: 130, color: 0xff0000, height: this.linkFlowHeight, colorBar: this.COLOR_LIST[this.linkFlowColor] });
     this._OriginGridsLayer = new GridsLayer({ zIndex: 140, colorBar: this.COLOR_LIST[this.originColor], size: this.originSize / GRID_STEP, step: GRID_STEP });
     this._DestinationsGridsLayer = new GridsLayer({ zIndex: 140, colorBar: this.COLOR_LIST[this.destinationsColor], size: this.destinationsSize / GRID_STEP, step: GRID_STEP });
+    this._DesireLineLayer = new DesireLineLayer({ zIndex: 460, color: this.desireLineColor });
+
     this.handleTimeChange(this.rootVue.time);
   },
   mounted() {},
@@ -425,6 +455,7 @@ export default {
       const num = Math.floor(time / 3600);
       if (this._OriginGridsLayer && this._OriginGridsLayer.time !== num) this._OriginGridsLayer.setTime(num);
       if (this._DestinationsGridsLayer && this._DestinationsGridsLayer.time !== num) this._DestinationsGridsLayer.setTime(num);
+      if (this._DesireLineLayer && this._DesireLineLayer.time !== num) this._DesireLineLayer.setTime(num);
     },
     handleSetCenter() {
       this._Map.setCenter(this.singlePathDetail.shape[0]);
@@ -472,6 +503,8 @@ export default {
       if (this.showLinkLayer) this._Map.addLayer(this._LinkGeoJSONLayer);
       if (this.showOriginLayer) this._Map.addLayer(this._OriginGridsLayer);
       if (this.showDestinationsLayer) this._Map.addLayer(this._DestinationsGridsLayer);
+      if (this.showDesireLineLayer) this._Map.addLayer(this._DesireLineLayer);
+      
       this._handleShowLinkFlowLayer();
       this.rootVue.$on("timeChange", this.handleTimeChange);
     },
@@ -480,6 +513,8 @@ export default {
       this._Map.removeLayer(this._LinkGeoJSONLayer);
       this._Map.removeLayer(this._OriginGridsLayer);
       this._Map.removeLayer(this._DestinationsGridsLayer);
+      this._Map.removeLayer(this._DesireLineLayer);
+
       this._Map.removeLayer(this._LinkFlowLayer1);
       this._Map.removeLayer(this._LinkFlowLayer2);
       this.rootVue.$off("timeChange", this.handleTimeChange);
@@ -596,6 +631,23 @@ export default {
         console.log(error);
       } finally {
         this.destinationsLoading = false;
+      }
+    },
+    async handleShowDesireLineLayer() {
+      try {
+        this.desireLineLoading = true;
+        this._DesireLineLayer.setData(null);
+        const res = await desireLinesTRG({
+          xyarr: this.singlePathDetail.shape,
+          holes: this.singlePathDetail.holes,
+        });
+        this._DesireLineLayer.setShowIds([null]);
+        this._DesireLineLayer.setData(res.data);
+        this.showDesireLineLayer = true;
+      } catch (error) {
+        console.log(error);
+      } finally {
+        this.desireLineLoading = false;
       }
     },
   },

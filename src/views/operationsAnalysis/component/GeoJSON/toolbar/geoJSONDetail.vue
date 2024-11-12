@@ -134,7 +134,7 @@
               <el-switch :title="$l('polygon3D')" v-model="polygon3D" @change="handleChange('polygon3D', $event)" :active-value="true" :inactive-value="false" size="mini" />
             </div>
             <div class="file_l_col" style="padding: 0 15px">
-              <el-input-number :title="$l('polygon3DHeight')" style="width: 100%;" v-model="polygon3DHeight" :min="0" :max="5000" :step="0.1" @change="handleChange('polygon3DHeight', $event)" size="mini" />
+              <el-input-number :title="$l('polygon3DHeight')" style="width: 100%" v-model="polygon3DHeight" :min="0" :max="5000" :step="0.1" @change="handleChange('polygon3DHeight', $event)" size="mini" />
               <!-- <el-slider :title="$l('polygon3DHeight')" v-model="polygon3DHeight" @change="handleChange('polygon3DHeight', $event)" :step="0.1" :min="0" :max="5000" size="mini"> </el-slider> -->
             </div>
           </div>
@@ -250,11 +250,10 @@
 </language>
 
 <script>
-import { ICON_LIST } from "@/utils/utils";
+import { ICON_LIST, COLOR_LIST } from "@/utils/utils";
 import { GeoJSONLayer, LINE_STYPE } from "../layer/GeoJSONLayer";
 import GeoJSONVisualMap from "../component/GeoJSONVisualMap.vue";
 import GeoJSONLayerWorker from "../worker/GeoJSONLayer.worker";
-import { COLOR_LIST } from "@/utils/utils";
 
 export default {
   inject: ["rootVue"],

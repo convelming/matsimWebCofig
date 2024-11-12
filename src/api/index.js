@@ -785,6 +785,18 @@ export function getDestinationsGridsTRG(data) {
   });
 }
 
+// 期望线
+// POST /pt/trafficRegionAnalysis/desireLines
+// 接口ID：231490550
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-231490550
+export function desireLinesTRG(data) {
+  return request({
+    url: `/pt/trafficRegionAnalysis/desireLines`,
+    data: data,
+    method: "post",
+  });
+}
+
 
 // 多polygon起点分布
 // POST /pt/trafficRegionAnalysis/polygonOriginGrids

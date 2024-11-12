@@ -80,7 +80,6 @@ export class DesireLineLayer extends Layer {
       const points = curve.getPoints(9);
       const array = points.map((p) => [p.x, p.y, 0]).flat();
       array.unshift(i);
-      console.log(fv2, tv2, cv2);
 
       const lineGeometry = new GeoJSONLineListGeometry([array]);
       const lineMaterial = new GeoJSONLineMaterial({ color: 0xff0000 });
@@ -108,7 +107,7 @@ export class DesireLineLayer extends Layer {
       arrow.userData = { p1: arrowP1, p2: arrowP2, p3: arrowP3, p4: arrowP4 }
       group.add(arrow);
 
-      group.userData = { center: from, fromId: String(fromId), toId: String(toId), values: num, line: line, arrow: arrow, show: false };
+      group.userData = { center: from, fromId: String(fromId), toId: String(toId), values: num, line: line, arrow: arrow, show: false, length: tv2.length() };
 
       groupList.push(group);
     }
@@ -131,13 +130,14 @@ export class DesireLineLayer extends Layer {
 
 
   updateValue() {
-    let min = Infinity, max = -Infinity;
+    let min = Infinity, max = -Infinity, ml = Infinity;
     for (const group of this.groupList) {
-      const { values, fromId, toId } = group.userData;
+      const { values, fromId, toId, length } = group.userData;
       if (this.showIds.includes(fromId) && this.showIds.includes(toId)) {
         const value = values[this.time] || 0;
         min = Math.min(min, value);
         max = Math.max(max, value);
+        ml = Math.min(ml, length);
         group.userData.show = true;
         if (group.parent !== this.scene) this.scene.add(group);
       } else {
@@ -146,13 +146,13 @@ export class DesireLineLayer extends Layer {
       }
     }
 
-
+    const baseLineWidth = ml * 0.005
     for (const group of this.groupList) {
       const { values, show, line, arrow } = group.userData;
       if (show) {
         const value = values[this.time] || 0;
-        const lineWidth = value / (max - min) * 100 + 10;
-        const lineOffset = lineWidth / 2 + 2;
+        const lineWidth = value / (max - min) * baseLineWidth * 10 + baseLineWidth;
+        const lineOffset = lineWidth / 2 + baseLineWidth;
 
         arrow.scale.set(lineWidth, lineWidth, 1)
         if (line) {

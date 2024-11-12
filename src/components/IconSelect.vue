@@ -49,7 +49,9 @@ export default {
 <style lang="scss">
 .IconSelect {
   position: relative;
-  background-color: #e6e6e6;
+  .el-input__inner {
+    background-color: #dadada;
+  }
   .el-input__prefix {
     position: absolute;
     top: 5px;
@@ -78,6 +80,9 @@ export default {
     .IconSelect_option {
       background-color: #e6e6e6;
     }
+  }
+  .popper__arrow::after {
+    border-bottom-color: #dadada !important;
   }
 }
 .IconSelect_option {
