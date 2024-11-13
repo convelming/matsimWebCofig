@@ -42,7 +42,7 @@
                   </el-descriptions-item>
                   <el-descriptions-item label="lineStyle">
                     <el-select :title="$l('lineStyle')" v-model="layer.params.lineStyle" @change="handleChangeLayerParams(layer.name, 'lineStyle', $event)" size="mini">
-                      <el-option v-for="(v, k) in LINE_STYPE" :key="v" :label="k" :value="v"></el-option>
+                      <el-option v-for="(v, k) in LINE_STYLE" :key="v" :label="k" :value="v"></el-option>
                     </el-select>
                   </el-descriptions-item>
                   <!-- <el-descriptions-item label="lineColors">
@@ -75,7 +75,7 @@
                   </el-descriptions-item>
                   <el-descriptions-item label="polygonBorderStyle">
                     <el-select :title="$l('polygonBorderStyle')" v-model="layer.params.polygonBorderStyle" @change="handleChangeLayerParams(layer.name, 'polygonBorderStyle', $event)" size="mini">
-                      <el-option v-for="(v, k) in LINE_STYPE" :key="v" :label="k" :value="v"></el-option>
+                      <el-option v-for="(v, k) in LINE_STYLE" :key="v" :label="k" :value="v"></el-option>
                     </el-select>
                   </el-descriptions-item>
 
@@ -162,7 +162,7 @@
 </language>
 
 <script>
-import { GeoJSONLayer, LINE_STYPE } from "../../GeoJSON/layer/GeoJSONLayer";
+import { GeoJSONLayer, LINE_STYLE } from "../../GeoJSON/layer/GeoJSONLayer";
 import GeoJSONLayerWorker from "../../GeoJSON/worker/GeoJSONLayer.worker";
 import GeoJSONVisualMap from "../../GeoJSON/component/GeoJSONVisualMap.vue";
 
@@ -205,7 +205,7 @@ export default {
   data() {
     return {
       COLOR_LIST: COLOR_LIST,
-      LINE_STYPE: LINE_STYPE,
+      LINE_STYLE: LINE_STYLE,
       predefineColors: ["#5470c6", "#91cc75", "#fac858", "#ee6666", "#73c0de", "#3ba272", "#fc8452", "#9a60b4", "#ea7ccc"],
       s_value: "",
       uploading: false,
@@ -456,7 +456,7 @@ export default {
 
             lineWidth: 100,
             lineColor: "#ffa500",
-            lineStyle: LINE_STYPE.SOLID,
+            lineStyle: LINE_STYLE.SOLID,
             lineValue: form[layerName],
             lineColors: 0,
             lineOpacity: 1,
@@ -465,7 +465,7 @@ export default {
             polygonColor: "#ffa500",
             polygonBorderWidth: 100,
             polygonBorderColor: "#5470C6",
-            polygonBorderStyle: LINE_STYPE.SOLID,
+            polygonBorderStyle: LINE_STYLE.SOLID,
             polygonValue: form[layerName],
             polygonColors: 0,
             polygon3DHeight: 2500,

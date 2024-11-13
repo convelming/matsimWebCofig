@@ -6,7 +6,7 @@ import { ColorBar2D } from "@/mymap/utils/ColorBar2D.js";
 
 const textureLoader = new THREE.TextureLoader();
 
-export const LINE_STYPE = {
+export const LINE_STYLE = {
   NONE: 0, // 不显示
   SOLID: 1, // 实线
   DASHED: 2 // 虚线
@@ -32,7 +32,7 @@ export class GeoJSONLayer extends Layer {
 
   lineWidth = 100;
   lineColor = new THREE.Color(0xffa500);
-  lineStyle = LINE_STYPE.SOLID;
+  lineStyle = LINE_STYLE.SOLID;
   lineValue = null;
   lineColorBar = null;
   lineMaxValue = 1;
@@ -44,7 +44,7 @@ export class GeoJSONLayer extends Layer {
   polygonOpacity = 1;
   polygonBorderWidth = 1;
   polygonBorderColor = new THREE.Color(0xffa500);
-  polygonBorderStyle = LINE_STYPE.SOLID;
+  polygonBorderStyle = LINE_STYLE.SOLID;
   polygonValue = null;
   polygonColorBar = null;
   polygonMaxValue = 1;
@@ -862,7 +862,7 @@ export class GeoJSONLineMaterial extends THREE.Material {
   constructor(argu) {
     super();
     this.isGeoJSONLineMaterial = true;
-    const { color = 0xff0000, opacity = 1, lineStyle = LINE_STYPE.SOLID, lineWidth = 50, lineOffset = 0, colorBar = null, maxValue = 1, minValue = 0, ...params } = argu || {};
+    const { color = 0xff0000, opacity = 1, lineStyle = LINE_STYLE.SOLID, lineWidth = 50, lineOffset = 0, colorBar = null, maxValue = 1, minValue = 0, ...params } = argu || {};
     // this.alphaTest = 0.1;
     // this.transparent = true;
     // this.depthWrite = false;
@@ -995,12 +995,12 @@ export class GeoJSONLineMaterial extends THREE.Material {
           diffuseColor = barDiffuseColor;
         #endif
 
-        if(lineStyle == ${Number(LINE_STYPE.DASHED).toFixed(1)}){
+        if(lineStyle == ${Number(LINE_STYLE.DASHED).toFixed(1)}){
           float dl = mod(vDistance / (lineWidth * 3.0), 1.0);
           if(0.50 < dl && dl <= 1.0){
             diffuseColor.a = 0.0;
           }
-        } else if(lineStyle == ${Number(LINE_STYPE.NONE).toFixed(1)}){
+        } else if(lineStyle == ${Number(LINE_STYLE.NONE).toFixed(1)}){
           diffuseColor.a = 0.0;
         }
 
@@ -1540,7 +1540,7 @@ export class GeoJSONPolygonBorderMaterial extends THREE.Material {
   constructor(argu) {
     super();
     this.isGeoJSONPolygonBorderMaterial = true;
-    const { color = 0xff0000, opacity = 1, lineStyle = LINE_STYPE.SOLID, lineWidth = 50, lineOffset = 0, maxValue = 1, minValue = 0, use3D = false, height3D = 10000, ...params } = argu || {};
+    const { color = 0xff0000, opacity = 1, lineStyle = LINE_STYLE.SOLID, lineWidth = 50, lineOffset = 0, maxValue = 1, minValue = 0, use3D = false, height3D = 10000, ...params } = argu || {};
     this.defines = {
       USE_3D: !!use3D
     };
@@ -1670,12 +1670,12 @@ export class GeoJSONPolygonBorderMaterial extends THREE.Material {
         
         #include <logdepthbuf_fragment>
 
-        if(lineStyle == ${Number(LINE_STYPE.DASHED).toFixed(1)}){
+        if(lineStyle == ${Number(LINE_STYLE.DASHED).toFixed(1)}){
           float dl = mod(vDistance / (lineWidth * 3.0), 1.0);
           if(0.50 < dl && dl <= 1.0){
             diffuseColor.a = 0.0;
           }
-        } else if(lineStyle == ${Number(LINE_STYPE.NONE).toFixed(1)}){
+        } else if(lineStyle == ${Number(LINE_STYLE.NONE).toFixed(1)}){
           diffuseColor.a = 0.0;
         }
 

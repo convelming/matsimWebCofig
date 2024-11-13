@@ -25,7 +25,7 @@
 
 <script>
 import { ICON_LIST, COLOR_LIST } from "@/utils/utils";
-import { GeoJSONLayer, LINE_STYPE } from "../layer/GeoJSONLayer";
+import { GeoJSONLayer, LINE_STYLE } from "../layer/GeoJSONLayer";
 export default {
   name: "HeatMap",
   props: {
@@ -55,7 +55,7 @@ export default {
             size: 10,
             fillColor: "#ff0000",
             strokeColor: "#ff0000",
-            strokeStyle: LINE_STYPE.SOLID,
+            strokeStyle: LINE_STYLE.SOLID,
             opacity: 1,
             icon: ICON_LIST[0],
             ...(this.form || {}),
@@ -68,7 +68,7 @@ export default {
   },
   data() {
     return {
-      LINE_STYPE: LINE_STYPE,
+      LINE_STYLE: LINE_STYLE,
       predefineColors: ["#5470c6", "#91cc75", "#fac858", "#ee6666", "#73c0de", "#3ba272", "#fc8452", "#9a60b4", "#ea7ccc"],
       s_visible: false,
       s_form: {},

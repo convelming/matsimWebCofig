@@ -235,7 +235,7 @@ import { getLinkListTRG, getLinkTracksTRG, getOriginGridsTRG, getDestinationsGri
 
 import HeatMapDialog from "../components/HeatMapDialog.vue";
 
-import { GeoJSONLayer, LINE_STYPE } from "../../GeoJSON/layer/GeoJSONLayer";
+import { GeoJSONLayer, LINE_STYLE } from "../../GeoJSON/layer/GeoJSONLayer";
 import { LinkFlowLayer } from "../layer/LinkFlowLayer";
 import { GridsLayer } from "../layer/GridsLayer";
 import { DesireLineLayer } from "../layer/DesireLineLayer";
@@ -467,7 +467,7 @@ export default {
         polygonOpacity: 0.5,
         polygonBorderWidth: 1,
         polygonBorderColor: 0x409eff,
-        polygonBorderStyle: LINE_STYPE.SOLID,
+        polygonBorderStyle: LINE_STYLE.SOLID,
       });
       const center = this.singlePathDetail.shape[0];
       const polygonArray = [0, 0];
@@ -491,7 +491,7 @@ export default {
       this._LinkGeoJSONLayer = new GeoJSONLayer({
         zIndex: 120,
         lineWidth: 10,
-        lineStyle: LINE_STYPE.SOLID,
+        lineStyle: LINE_STYLE.SOLID,
         lineColor: 0xf56c6c,
         lineOpacity: 1,
         lineColorBar: ["#00000000", "#f56c6c"],

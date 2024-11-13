@@ -31,7 +31,7 @@
 </language>
 
 <script>
-import { GeoJSONLayer, LINE_STYPE } from "../../GeoJSON/layer/GeoJSONLayer";
+import { GeoJSONLayer, LINE_STYLE } from "../../GeoJSON/layer/GeoJSONLayer";
 import GeoJSONLayerWorker from "../../GeoJSON/worker/GeoJSONLayer.worker";
 import GeoJSONVisualMap from "../../GeoJSON/component/GeoJSONVisualMap.vue";
 
@@ -51,7 +51,7 @@ export default {
   data() {
     return {
       COLOR_LIST: COLOR_LIST,
-      LINE_STYPE: LINE_STYPE,
+      LINE_STYLE: LINE_STYLE,
       predefineColors: ["#5470c6", "#91cc75", "#fac858", "#ee6666", "#73c0de", "#3ba272", "#fc8452", "#9a60b4", "#ea7ccc"],
       s_value: "",
       uploading: false,

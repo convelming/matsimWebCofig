@@ -40,7 +40,7 @@
           <div class="file_row">
             <div class="file_s_col" style="width: 90px">
               <el-select :title="$l('pointValue')" v-model="pointValue" @change="handleChange('pointValue', $event)" clearable size="mini">
-                <el-option v-for="(item, key) in propertiesLabels" :key="key" :label="key" :value="key"></el-option>
+                <el-option v-for="(item, key) in propertiesLabels" :key="key" :label="item.name" :value="key"></el-option>
               </el-select>
             </div>
             <div class="file_l_col">
@@ -65,14 +65,14 @@
             </div>
             <div class="file_s_col" style="width: 90px">
               <el-select :title="$l('lineStyle')" v-model="lineStyle" @change="handleChange('lineStyle', $event)" size="mini">
-                <el-option v-for="(v, k) in LINE_STYPE" :key="v" :label="k" :value="v"></el-option>
+                <el-option v-for="(v, k) in LINE_STYLE" :key="v" :label="k" :value="v"></el-option>
               </el-select>
             </div>
           </div>
           <div class="file_row">
             <div class="file_s_col" style="width: 90px">
               <el-select :title="$l('lineValue')" v-model="lineValue" @change="handleChange('lineValue', $event)" clearable size="mini">
-                <el-option v-for="(item, key) in propertiesLabels" :key="key" :label="key" :value="key"></el-option>
+                <el-option v-for="(item, key) in propertiesLabels" :key="key" :label="item.name" :value="key"></el-option>
               </el-select>
             </div>
             <div class="file_l_col">
@@ -106,14 +106,14 @@
             </div>
             <div class="file_s_col" style="width: 90px">
               <el-select :title="$l('polygonBorderStyle')" v-model="polygonBorderStyle" @change="handleChange('polygonBorderStyle', $event)" size="mini">
-                <el-option v-for="(v, k) in LINE_STYPE" :key="v" :label="k" :value="v"></el-option>
+                <el-option v-for="(v, k) in LINE_STYLE" :key="v" :label="k" :value="v"></el-option>
               </el-select>
             </div>
           </div>
           <div class="file_row">
             <div class="file_s_col" style="width: calc(100% - 60px)">
               <el-select :title="$l('polygonValue')" style="width: 100%" v-model="polygonValue" @change="handleChange('polygonValue', $event)" clearable size="mini">
-                <el-option v-for="(item, key) in propertiesLabels" :key="key" :label="key" :value="key"></el-option>
+                <el-option v-for="(item, key) in propertiesLabels" :key="key" :label="item.name" :value="key"></el-option>
               </el-select>
             </div>
             <div class="file_s_col" style="width: 60px">
@@ -251,7 +251,7 @@
 
 <script>
 import { ICON_LIST, COLOR_LIST } from "@/utils/utils";
-import { GeoJSONLayer, LINE_STYPE } from "../layer/GeoJSONLayer";
+import { GeoJSONLayer, LINE_STYLE } from "../layer/GeoJSONLayer";
 import GeoJSONVisualMap from "../component/GeoJSONVisualMap.vue";
 import GeoJSONLayerWorker from "../worker/GeoJSONLayer.worker";
 
@@ -291,7 +291,7 @@ export default {
   data() {
     return {
       COLOR_LIST: COLOR_LIST,
-      LINE_STYPE: LINE_STYPE,
+      LINE_STYLE: LINE_STYLE,
       show: true,
       predefineColors: ["#5470c6", "#91cc75", "#fac858", "#ee6666", "#73c0de", "#3ba272", "#fc8452", "#9a60b4", "#ea7ccc"],
 
@@ -308,7 +308,7 @@ export default {
 
       lineWidth: 100,
       lineColor: "#ffa500",
-      lineStyle: LINE_STYPE.SOLID,
+      lineStyle: LINE_STYLE.SOLID,
       lineValue: "",
       lineColors: 0,
       lineOpacity: 1,
@@ -321,7 +321,7 @@ export default {
       polygonColor: "#ffa500",
       polygonBorderWidth: 10,
       polygonBorderColor: "#5470C6",
-      polygonBorderStyle: LINE_STYPE.SOLID,
+      polygonBorderStyle: LINE_STYLE.SOLID,
       polygonValue: "",
       usePolygonColors: true,
       polygonColors: 0,

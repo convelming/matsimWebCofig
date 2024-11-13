@@ -36,20 +36,33 @@ class GeoJSONParser {
     const polygonList = [];
     while (list.length > 0) {
       const item = list.pop();
+      // propertiesKey默认为父元素的propertiesKey 如果父元素没有propertiesKey，则默认为0
       let propertiesKey = item.propertiesKey || 0;
+      // 如果有properties，则根据properties的长度生成propertiesKey，propertiesKey=0代表没有属性
       if (item.properties) {
         propertiesKey = propertiesList.length;
-        propertiesList[propertiesKey] = item.properties;
+        const properties = {};
+        propertiesList[propertiesKey] = properties;
         for (const key in item.properties) {
-          const pv = Number(item.properties[key] || 0) || 0;
-          if (!propertiesLabels[key]) {
-            propertiesLabels[key] = {
-              min: pv,
-              max: pv,
-            }
-          } else {
-            propertiesLabels[key].min = Math.min(propertiesLabels[key].min, pv);
-            propertiesLabels[key].max = Math.max(propertiesLabels[key].max, pv);
+          const type = Number.isFinite(Number(item.properties[key])) ? "Number" : "String";
+          // 在属性名里面拼上属性类型，避免同名属性存在不同类型
+          // TODO: 如果有同名属性，但类型不同，应该把属性统一为字符串
+          const label = key + "__" + type;
+          if (type === "Number") {
+            // 如果value是数字类型，则直接使用
+            const value = Number(item.properties[key]);
+            properties[label] = value;
+            if (!propertiesLabels[label]) propertiesLabels[label] = { type, name: key, min: value, max: value };
+            propertiesLabels[label].min = Math.min(propertiesLabels[label].min, value);
+            propertiesLabels[label].max = Math.max(propertiesLabels[label].max, value);
+          } else if (type === "String") {
+            // 如果value是字符串类型，则创建一个map作为映射表，把字符串映射成数字再使用
+            const value = String(item.properties[key]);
+            if (!propertiesLabels[label]) propertiesLabels[label] = { type, name: key, map: new Map(), min: 0, max: 0 };
+            const map = propertiesLabels[label].map;
+            if (!map.has(value)) map.set(value, map.size);
+            properties[label] = map.get(value);
+            propertiesLabels[label].max = map.size - 1;
           }
         }
       }

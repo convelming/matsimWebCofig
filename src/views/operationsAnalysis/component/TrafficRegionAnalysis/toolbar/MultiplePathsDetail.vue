@@ -152,7 +152,7 @@ import { polygonOriginGridsTRG, polygonDestinationsGridsTRG, polygonDesireLinesT
 
 import HeatMapDialog from "../components/HeatMapDialog.vue";
 
-import { GeoJSONLayer, LINE_STYPE } from "../../GeoJSON/layer/GeoJSONLayer";
+import { GeoJSONLayer, LINE_STYLE } from "../../GeoJSON/layer/GeoJSONLayer";
 import { PolygonGridLayer } from "../layer/PolygonGridLayer";
 import { DesireLineLayer } from "../layer/DesireLineLayer";
 
@@ -299,7 +299,7 @@ export default {
     this._SelectGeoJSONLayer = new GeoJSONLayer({
       zIndex: 110,
       polygonOpacity: 0.5,
-      polygonBorderStyle: LINE_STYPE.NONE,
+      polygonBorderStyle: LINE_STYLE.NONE,
 
       polygonColorBar: ["#00000000", "#409eff"],
       polygonValue: "value",

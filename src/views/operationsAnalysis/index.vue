@@ -32,14 +32,12 @@
       </div>
       <HelpDialog :visible.sync="showHelpDialog" />
     </template>
-    <!-- <SingleSymbol :visible="true" /> -->
-    <Graduated :visible="true" />
+    <GeoJSONSetting :visible="true" />
   </div>
 </template>
 
 <script>
-import SingleSymbol from "./component/GeoJSON/component/SingleSymbol.vue";
-import Graduated from "./component/GeoJSON/component/Graduated.vue";
+import GeoJSONSetting from "./component/GeoJSON/component/GeoJSONSetting.vue";
 
 import mixins from "./mixins";
 
@@ -48,8 +46,7 @@ import HelpDialog from "./component/HelpDialog/index.vue";
 export default {
   components: {
     HelpDialog,
-    SingleSymbol,
-    Graduated,
+    GeoJSONSetting,
   },
   mixins: [mixins],
   data() {
