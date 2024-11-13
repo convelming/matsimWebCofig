@@ -833,3 +833,16 @@ export function polygonDesireLinesTRG(data) {
     method: "post",
   });
 }
+
+
+// 可达性分析
+// POST /pt/trafficRegionAnalysis/accessibility
+// 接口ID：232103250
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-232103250
+export function accessibilityTRG(data) {
+  return request({
+    url: `/pt/trafficRegionAnalysis/accessibility`,
+    data: data,
+    method: "post",
+  });
+}

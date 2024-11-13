@@ -93,7 +93,7 @@ export class PolygonGridLayer extends Layer {
       group.position.set(0, 0, i / l);
 
       const shapeT = new THREE.Shape(shape.map(v => new THREE.Vector2(v[0] - center[0], v[1] - center[1])));
-      shapeT.holes = holes.map(hole => hole.map(v => new THREE.Vector2(v[0] - center[0], v[1] - center[1])));
+      shapeT.holes = holes.map(hole => new THREE.Path(hole.map(v => new THREE.Vector2(v[0] - center[0], v[1] - center[1]))));
       const polygonGeometry = new THREE.ShapeGeometry(shapeT);
       const polygonMesh = new THREE.Mesh(polygonGeometry, new THREE.MeshBasicMaterial({}));
       polygonMesh.position.set(0, 0, 0);

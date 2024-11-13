@@ -123,8 +123,25 @@
         </div>
         <div class="form_item">
           <div class="form_item_header">
-            <el-button class="show_btn" type="primary" size="small" @click="">{{ $l("显示可达性分析") }}</el-button>
-            <el-button class="open_btn" :icon="openReachabilitySetting ? 'el-icon-caret-top' : 'el-icon-caret-bottom'" type="info" size="small" @click="openReachabilitySetting = !openReachabilitySetting"></el-button>
+            <el-button v-if="!showAccessibilityLayer" :loading="accessibilityLoading" class="show_btn" type="primary" size="small" @click="handleShowAccessibilityLayer">{{ $l("显示可达性分析") }}</el-button>
+            <el-button v-else class="show_btn" type="info" size="small" @click="showAccessibilityLayer = false">{{ $l("隐藏可达性分析") }}</el-button>
+            <el-button class="open_btn" :icon="openAccessibilitySetting ? 'el-icon-caret-top' : 'el-icon-caret-bottom'" type="info" size="small" @click="openAccessibilitySetting = !openAccessibilitySetting"></el-button>
+          </div>
+          <div class="setting_box" v-show="openAccessibilitySetting">
+            <div class="setting_item" v-for="item in accessibilityColorBar">
+              <div class="setting_item_label">
+                <el-checkbox v-model="item.show" @change="handleSetAccessibilityLayerColorBar">{{ item.label }}</el-checkbox>
+              </div>
+              <div class="setting_item_value">
+                <el-color-picker size="mini" :predefine="predefineColors" v-model="item.color" @change="handleSetAccessibilityLayerColorBar" />
+              </div>
+            </div>
+            <div class="setting_item">
+              <div class="setting_item_label">{{ $l("透明度") }}</div>
+              <div class="setting_item_value" style="width: calc(100% - 80px)">
+                <el-slider v-model="accessibilityOpacity" :min="0" :max="1" :step="0.01" />
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -226,12 +243,16 @@
     "zh-CN": "全选",
     "en-US": "Select all"
   },
+  "透明度":{
+    "zh-CN": "透明度",
+    "en-US": "Opacity"
+  },
 }
 </language>
 
 <script>
 import { guid, COLOR_LIST } from "@/utils/utils";
-import { getLinkListTRG, getLinkTracksTRG, getOriginGridsTRG, getDestinationsGridsTRG, desireLinesTRG } from "@/api/index";
+import { getLinkListTRG, getLinkTracksTRG, getOriginGridsTRG, getDestinationsGridsTRG, desireLinesTRG, accessibilityTRG } from "@/api/index";
 
 import HeatMapDialog from "../components/HeatMapDialog.vue";
 
@@ -239,6 +260,7 @@ import { GeoJSONLayer, LINE_STYLE } from "../../GeoJSON/layer/GeoJSONLayer";
 import { LinkFlowLayer } from "../layer/LinkFlowLayer";
 import { GridsLayer } from "../layer/GridsLayer";
 import { DesireLineLayer } from "../layer/DesireLineLayer";
+import { AccessibilityLayer } from "../layer/AccessibilityLayer";
 
 const GRID_STEP = 100;
 
@@ -387,6 +409,20 @@ export default {
         this._DesireLineLayer.setColor(val);
       },
     },
+    showAccessibilityLayer: {
+      handler(val) {
+        if (val) {
+          this._Map.addLayer(this._AccessibilityLayer);
+        } else {
+          this._Map.removeLayer(this._AccessibilityLayer);
+        }
+      },
+    },
+    accessibilityOpacity: {
+      handler(val) {
+        this._AccessibilityLayer.setOpacity(val);
+      },
+    },
   },
   data() {
     return {
@@ -430,7 +466,18 @@ export default {
       desireLineLoading: false,
       desireLineColor: "#5470c6",
 
-      openReachabilitySetting: false,
+      openAccessibilitySetting: false,
+      showAccessibilityLayer: false,
+      accessibilityLoading: false,
+      accessibilityOpacity: 0.5,
+      accessibilityColorBar: [
+        { label: "5", key: "5", show: true, color: "rgb(153, 0, 13)" },
+        { label: "15", key: "15", show: true, color: "rgb(203, 24, 29)" },
+        { label: "30", key: "30", show: true, color: "rgb(239, 59, 44)" },
+        { label: "60", key: "60", show: true, color: "rgb(252, 146, 114)" },
+        { label: "120", key: "120", show: true, color: "rgb(252, 187, 161)" },
+        { label: ">120", key: ">120", show: true, color: "rgb(254, 224, 210)" },
+      ],
     };
   },
   created() {
@@ -438,11 +485,12 @@ export default {
     this.initLinkGeoJSONLayer();
     this.getLinkList();
 
-    this._LinkFlowLayer1 = new LinkFlowLayer({ zIndex: 130, color: 0xff0000, height: this.linkFlowHeight, colorBar: this.COLOR_LIST[this.linkFlowColor] });
-    this._LinkFlowLayer2 = new LinkFlowLayer({ zIndex: 130, color: 0xff0000, height: this.linkFlowHeight, colorBar: this.COLOR_LIST[this.linkFlowColor] });
-    this._OriginGridsLayer = new GridsLayer({ zIndex: 140, colorBar: this.COLOR_LIST[this.originColor], size: this.originSize / GRID_STEP, step: GRID_STEP });
-    this._DestinationsGridsLayer = new GridsLayer({ zIndex: 140, colorBar: this.COLOR_LIST[this.destinationsColor], size: this.destinationsSize / GRID_STEP, step: GRID_STEP });
-    this._DesireLineLayer = new DesireLineLayer({ zIndex: 460, color: this.desireLineColor });
+    this._LinkFlowLayer1 = new LinkFlowLayer({ zIndex: 230, color: 0xff0000, height: this.linkFlowHeight, colorBar: this.COLOR_LIST[this.linkFlowColor] });
+    this._LinkFlowLayer2 = new LinkFlowLayer({ zIndex: 230, color: 0xff0000, height: this.linkFlowHeight, colorBar: this.COLOR_LIST[this.linkFlowColor] });
+    this._OriginGridsLayer = new GridsLayer({ zIndex: 240, colorBar: this.COLOR_LIST[this.originColor], size: this.originSize / GRID_STEP, step: GRID_STEP });
+    this._DestinationsGridsLayer = new GridsLayer({ zIndex: 240, colorBar: this.COLOR_LIST[this.destinationsColor], size: this.destinationsSize / GRID_STEP, step: GRID_STEP });
+    this._DesireLineLayer = new DesireLineLayer({ zIndex: 560, color: this.desireLineColor });
+    this._AccessibilityLayer = new AccessibilityLayer({ zIndex: 60, color: this.desireLineColor, colorBar: this.accessibilityColorBar, opacity: this.accessibilityOpacity });
 
     this.handleTimeChange(this.rootVue.time);
   },
@@ -462,7 +510,7 @@ export default {
     },
     initSelectGeoJSONLayer() {
       this._SelectGeoJSONLayer = new GeoJSONLayer({
-        zIndex: 110,
+        zIndex: 210,
         polygonColor: 0x409eff,
         polygonOpacity: 0.5,
         polygonBorderWidth: 1,
@@ -504,7 +552,8 @@ export default {
       if (this.showOriginLayer) this._Map.addLayer(this._OriginGridsLayer);
       if (this.showDestinationsLayer) this._Map.addLayer(this._DestinationsGridsLayer);
       if (this.showDesireLineLayer) this._Map.addLayer(this._DesireLineLayer);
-      
+      if (this.showAccessibilityLayer) this._Map.addLayer(this._AccessibilityLayer);
+
       this._handleShowLinkFlowLayer();
       this.rootVue.$on("timeChange", this.handleTimeChange);
     },
@@ -514,6 +563,7 @@ export default {
       this._Map.removeLayer(this._OriginGridsLayer);
       this._Map.removeLayer(this._DestinationsGridsLayer);
       this._Map.removeLayer(this._DesireLineLayer);
+      this._Map.removeLayer(this._AccessibilityLayer);
 
       this._Map.removeLayer(this._LinkFlowLayer1);
       this._Map.removeLayer(this._LinkFlowLayer2);
@@ -650,6 +700,24 @@ export default {
         this.desireLineLoading = false;
       }
     },
+    async handleShowAccessibilityLayer() {
+      try {
+        this.accessibilityLoading = true;
+        const res = await accessibilityTRG({
+          xyarr: this.singlePathDetail.shape,
+          holes: this.singlePathDetail.holes,
+        });
+        this._AccessibilityLayer.setData(res.data);
+        this.showAccessibilityLayer = true;
+      } catch (error) {
+        console.log(error);
+      } finally {
+        this.accessibilityLoading = false;
+      }
+    },
+    handleSetAccessibilityLayerColorBar() {
+      this._AccessibilityLayer.setColorBar(this.accessibilityColorBar);
+    },
   },
 };
 </script>
@@ -669,11 +737,12 @@ export default {
     width: 100%;
 
     .setting_item {
+      display: flex;
+      align-items: center;
       width: 100%;
       & + .setting_item {
         margin-top: 10px;
       }
-      display: flex;
       &_label {
         white-space: nowrap;
         flex: 1;
