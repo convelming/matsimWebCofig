@@ -23,33 +23,31 @@
             <IconSelect v-model="s_form[lItem.name]" v-bind="Object.assign({}, {}, lItem.attrs)" />
           </el-form-item>
           <template v-if="lItem.type == 'colorBar'">
-            <div style="border: 1px solid #c8c8c8; padding: 18px 18px 0 18px; border-radius: 10px">
-              <div style="margin-bottom: 18px">{{ lItem.label }}</div>
-              <el-form-item label="Value key">
-                <el-select v-model="s_form[lItem.name].valueKey" v-bind="Object.assign({}, {}, lItem.attrs)" @change="handleColorBarValueKeyChange(lItem, lIndex, $event)">
-                  <el-option v-for="(v, k) in lItem.options" :key="k" :label="v.name" :value="k"></el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item label="Value type">
-                <el-select v-model="s_form[lItem.name].valueType" v-bind="Object.assign({}, {}, lItem.attrs)">
-                  <el-option label="String" value="String"></el-option>
-                  <el-option label="Number" value="Number"></el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item label="Color ramp">
-                <div style="display: flex">
-                  <el-color-picker v-model="s_form[lItem.name].startColor" :predefine="predefine" />
-                  <el-color-picker v-model="s_form[lItem.name].endColor" :predefine="predefine" />
-                </div>
-              </el-form-item>
-              <el-form-item label-width="0">
-                <el-table class="small" :data="s_form[lItem.name].data" border stripe>
-                  <el-table-column label="symbol" prop="symbol"> </el-table-column>
-                  <el-table-column label="Values" prop="values"> </el-table-column>
-                  <el-table-column label="Legend" prop="legend"> </el-table-column>
-                </el-table>
-              </el-form-item>
-            </div>
+            <el-divider content-position="left">{{ lItem.label }}</el-divider>
+            <el-form-item label="Value key">
+              <el-select v-model="s_form[lItem.name].valueKey" v-bind="Object.assign({}, {}, lItem.attrs)" @change="handleColorBarValueKeyChange(lItem, lIndex, $event)">
+                <el-option v-for="(v, k) in lItem.options" :key="k" :label="v.name" :value="k"></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="Value type">
+              <el-select v-model="s_form[lItem.name].valueType" v-bind="Object.assign({}, {}, lItem.attrs)">
+                <el-option label="String" value="String"></el-option>
+                <el-option label="Number" value="Number"></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="Color ramp">
+              <div style="display: flex">
+                <el-color-picker v-model="s_form[lItem.name].startColor" :predefine="predefine" />
+                <el-color-picker v-model="s_form[lItem.name].endColor" :predefine="predefine" />
+              </div>
+            </el-form-item>
+            <el-form-item label-width="0">
+              <el-table class="small" :data="s_form[lItem.name].data" border stripe>
+                <el-table-column label="symbol" prop="symbol"> </el-table-column>
+                <el-table-column label="Values" prop="values"> </el-table-column>
+                <el-table-column label="Legend" prop="legend"> </el-table-column>
+              </el-table>
+            </el-form-item>
           </template>
         </template>
         <el-form-item>

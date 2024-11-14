@@ -24,11 +24,13 @@ export class DesireLineLayer extends Layer {
   data = [];
   showIds = [];
   groupList = [];
+  lineWidth = 5;
 
 
   constructor(opt) {
     super(opt);
-    this.color = opt.color || 0x000000
+    this.color = opt.color || 0x000000;
+    this.lineWidth = opt.lineWidth || 0x000000;
   }
 
 
@@ -42,6 +44,11 @@ export class DesireLineLayer extends Layer {
     if (type == MAP_EVENT.UPDATE_CENTER) {
       this.updatePosition();
     }
+  }
+
+  setLineWidth(lineWidth) {
+    this.lineWidth = lineWidth;
+    this.updateValue();
   }
 
   setColor(color) {
@@ -146,13 +153,13 @@ export class DesireLineLayer extends Layer {
       }
     }
 
-    const baseLineWidth = ml * 0.005
+    const baseLineWidth = this.lineWidth; // ml * 0.005
     for (const group of this.groupList) {
       const { values, show, line, arrow } = group.userData;
       if (show) {
         const value = values[this.time] || 0;
-        const lineWidth = value / (max - min) * baseLineWidth * 10 + baseLineWidth;
-        const lineOffset = lineWidth / 2 + baseLineWidth;
+        const lineWidth = (value / (max - min) + 0.5) * baseLineWidth; // + 0.5 是保证最小线宽不为0
+        const lineOffset = lineWidth / 2 + baseLineWidth * 0.2;
 
         arrow.scale.set(lineWidth, lineWidth, 1)
         if (line) {

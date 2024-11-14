@@ -167,10 +167,10 @@ export default {
       event: {
         [MAP_EVENT.HANDLE_PICK_LEFT]: ({ data }) => {
           const _data = JSON.parse(JSON.stringify(data));
+          _data._form_type = "mymap";
+          console.log(data);
+          
 
-          _data.legColors = JSON.parse(JSON.stringify(this.legTypeList));
-          _data.activityColors = JSON.parse(JSON.stringify(this.activityTypeList));
-          _data.changeColorEventKey = CHANGE_COLOR_EVENT_KEY;
           this.rootVue.handleShowActivityDetail({
             uuid: data.pickColor,
             activityDetail: _data,
@@ -198,6 +198,12 @@ export default {
     this._Activity3DLayer.dispose();
   },
   methods: {
+    updataColor() {
+      this.rootVue.$emit(CHANGE_COLOR_EVENT_KEY, {
+        activityColors: this.activityTypeList,
+        legColors: this.legTypeList,
+      });
+    },
     // 获取数据
     getData() {
       if (this.loading) return;

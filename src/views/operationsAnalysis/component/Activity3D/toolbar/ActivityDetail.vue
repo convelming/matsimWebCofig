@@ -4,26 +4,26 @@
       <div class="title" style="max-width: 100%">{{ $l("活动详情") }}</div>
     </div>
     <div class="toolbar_item_bodyer" v-loading="loading">
-      <div class="form" v-if="activityDetail">
+      <div class="form" v-if="detail">
         <div class="form_item">
           <div class="form_label">{{ $l("personId") }}</div>
-          <div class="form_value">{{ activityDetail.personId }}</div>
+          <div class="form_value">{{ detail.personId }}</div>
         </div>
         <div class="form_item">
           <div class="form_label">{{ $l("actType") }}</div>
-          <div class="form_value">{{ activityDetail.actType }}</div>
+          <div class="form_value">{{ detail.actType }}</div>
         </div>
         <div class="form_item">
           <div class="form_label">{{ $l("coord") }}</div>
-          <div class="form_value">{{ MercatorToWGS84(activityDetail.coord.x, activityDetail.coord.y).map((v) => Number(v.toFixed(3))) }}</div>
+          <div class="form_value">{{ MercatorToWGS84(detail.coord.x, detail.coord.y).map((v) => Number(v.toFixed(3))) }}</div>
         </div>
         <div class="form_item">
           <div class="form_label">{{ $l("startTime") }}</div>
-          <div class="form_value">{{ formatHour(activityDetail.startTime) }}</div>
+          <div class="form_value">{{ formatHour(detail.startTime) }}</div>
         </div>
         <div class="form_item">
           <div class="form_label">{{ $l("endTime") }}</div>
-          <div class="form_value">{{ formatHour(activityDetail.endTime) }}</div>
+          <div class="form_value">{{ formatHour(detail.endTime) }}</div>
         </div>
         <div class="form_item" v-if="nextActivity">
           <div class="form_label">{{ $l("nextActivity") }}</div>
@@ -138,6 +138,9 @@ import { getPlan } from "@/api/index";
 import { formatHour } from "@/utils/utils";
 import { SelectActivityLayer } from "../layer/SelectActivityLayer";
 import { ActivityRoutesLayer } from "../layer/ActivityRoutesLayer";
+
+const CHANGE_COLOR_EVENT_KEY = "Activity3D_changeColor";
+
 export default {
   inject: ["rootVue"],
   props: {
@@ -216,6 +219,7 @@ export default {
     return {
       predefineColors: ["#5470c6", "#91cc75", "#fac858", "#ee6666", "#73c0de", "#3ba272", "#fc8452", "#9a60b4", "#ea7ccc"],
 
+      detail: null,
       color: "#ffa500",
 
       actColor: "#ffa500",
@@ -234,20 +238,16 @@ export default {
     };
   },
   created() {
-    console.log(this.activityDetail);
     this._SelectActivityLayer = new SelectActivityLayer({
       zIndex: 130,
       color: this.color,
     });
     this._ActivityRoutesLayer = new ActivityRoutesLayer({
       zIndex: 140,
-      activityColors: this.activityDetail.activityColors,
-      legColors: this.activityDetail.legColors,
       height: this.height,
     });
 
-    this._SelectActivityLayer.setData(this.activityDetail);
-    this.rootVue.$on(this.activityDetail.changeColorEventKey, this.handleActivity3DChangeColor);
+    this.rootVue.$on(CHANGE_COLOR_EVENT_KEY, this.handleActivity3DChangeColor);
   },
   mounted() {
     this.getDetail();
@@ -255,7 +255,7 @@ export default {
   beforeDestroy() {
     clearInterval(this._interval);
     this.handleDisable();
-    this.rootVue.$off(this.activityDetail.changeColorEventKey, this.handleActivity3DChangeColor);
+    this.rootVue.$off(CHANGE_COLOR_EVENT_KEY, this.handleActivity3DChangeColor);
   },
   methods: {
     // 活动颜色改变事件
@@ -282,7 +282,14 @@ export default {
         personId: this.activityDetail.personId,
       })
         .then((res) => {
-          let index = res.data.findIndex((v) => Number(v.startTime) == Number(this.activityDetail.startTime));
+          if (this.activityDetail._form_type == "sreach") {
+            this.detail = Object.assign({}, this.activityDetail, res.data.find((v) => v.type == "Activity") || {});
+          } else if (this.activityDetail._form_type == "mymap")  {
+            this.detail = Object.assign({}, this.activityDetail);
+          }
+
+          this._SelectActivityLayer.setData(this.detail);
+          let index = res.data.findIndex((v) => Number(v.startTime) == Number(this.detail.startTime));
           if (index > -1) {
             for (let i = index + 1, l = res.data.length; i < l; i++) {
               let item = res.data[i];
@@ -292,7 +299,9 @@ export default {
               }
             }
           }
-          this._ActivityRoutesLayer.setData(res.data, [this.activityDetail.coord.x, this.activityDetail.coord.y]);
+          this._ActivityRoutesLayer.setData(res.data, [this.detail.coord.x, this.detail.coord.y]);
+
+          if (this.rootVue.$refs.Activity3D) this.rootVue.$refs.Activity3D.updataColor();
         })
         .finally(() => {
           this.loading = false;

@@ -1,7 +1,7 @@
 <template>
   <div class="TimeRangeSlider">
     <div class="slider_box">
-      <el-slider :disabled="disabled" :value="s_value" @input="handleInput" range :step="1" :min="min" :max="max" :format-tooltip="formatHour"> </el-slider>
+      <el-slider :disabled="disabled" :value="s_value" @input="handleInput" range :step="step" :min="min" :max="max" :format-tooltip="formatHour"> </el-slider>
     </div>
     <div class="marks">
       <div class="item">{{ formatHour(min) }}</div>
@@ -25,7 +25,11 @@ export default {
     },
     min: {
       type: Number,
-      default: 0,
+      default: 60,
+    },
+    step: {
+      type: Number,
+      default: 1,
     },
     disabled: {
       type: Boolean,

@@ -78,6 +78,12 @@
                 <el-color-picker size="mini" :predefine="predefineColors" v-model="desireLineColor" />
               </div>
             </div>
+            <div class="setting_item">
+              <div class="setting_item_label">{{ $l("线宽") }}</div>
+              <div class="setting_item_value" style="width: calc(100% - 80px)">
+                <el-input-number v-model="desireLineWidth" :min="1" :step="1" :controls="true" controls-position="both" size="mini" style="width: 100%"> </el-input-number>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -262,6 +268,11 @@ export default {
         this._DesireLineLayer.setColor(val);
       },
     },
+    desireLineWidth: {
+      handler(val) {
+        this._DesireLineLayer.setLineWidth(val);
+      },
+    },
   },
   data() {
     return {
@@ -291,6 +302,7 @@ export default {
       showDesireLineLayer: false,
       desireLineLoading: false,
       desireLineColor: "#5470c6",
+      desireLineWidth: 10,
 
       openReachabilitySetting: false,
     };
@@ -309,7 +321,7 @@ export default {
 
     this._OriginGridsLayer = new PolygonGridLayer({ zIndex: 140, colorBar: this.COLOR_LIST[this.originColor] });
     this._DestinationsGridsLayer = new PolygonGridLayer({ zIndex: 150, colorBar: this.COLOR_LIST[this.destinationsColor] });
-    this._DesireLineLayer = new DesireLineLayer({ zIndex: 460, color: this.desireLineColor });
+    this._DesireLineLayer = new DesireLineLayer({ zIndex: 460, color: this.desireLineColor, lineWidth: this.desireLineWidth });
 
     this.initData();
     this.handleSelectPolygonList();

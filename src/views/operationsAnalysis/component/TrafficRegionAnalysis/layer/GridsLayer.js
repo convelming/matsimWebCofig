@@ -24,6 +24,7 @@ export class GridsLayer extends Layer {
     this.colorBar = opt.colorBar || [];
     this.step = opt.step || 100;
     this.size = opt.size || 1;
+    this.timeRange = opt.timeRange || [0, 24 * 60 * 60];
 
     this.geometry = new THREE.PlaneGeometry();
     this.material = new THREE.MeshBasicMaterial({});
@@ -32,6 +33,11 @@ export class GridsLayer extends Layer {
 
   onAdd(map) {
     super.onAdd(map);
+    this.update();
+  }
+
+  setTimeRange(timeRange) {
+    this.timeRange = timeRange;
     this.update();
   }
 
@@ -73,7 +79,9 @@ export class GridsLayer extends Layer {
     super.clearScene();
     if (this.scene) {
       this.scene.traverse(child => {
-        if (child.isMesh) {
+        if (child.isInstancedMesh) {
+          child.dispose();
+        } else if (child.isMesh) {
           try {
             child.geometry.dispose();
           } catch (error) { }
@@ -81,6 +89,8 @@ export class GridsLayer extends Layer {
       });
     }
   }
+
+
   async update() {
     this.clearScene()
     if (!this.data) return;
@@ -94,7 +104,12 @@ export class GridsLayer extends Layer {
       const row = Math.floor(v1.x / wh);
       const col = Math.floor(v1.y / wh);
       const key = `${row}_${col}`;
-      const value = v1.num[this.time] || 0
+      let value = v1.num[this.time] || 0;
+      if (this.timeRange) {
+        const s = Math.floor(this.timeRange[0] / 3600);
+        const e = Math.ceil(this.timeRange[1] / 3600);
+        value = v1.num.reduce((c, v, i) => s <= i && i <= e ? c + v : c, 0);
+      }
       if (!center) center = [row * wh, col * wh];
       if (value <= 0) continue;
       if (!gridObj[key]) {

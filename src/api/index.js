@@ -558,6 +558,18 @@ export function getAllActivityType(params) {
   });
 }
 
+// 模糊查询person
+// GET /pt/person/getPersonList
+// 接口ID：231992304
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-231992304
+export function getPersonList(params) {
+  return request({
+    url: `/pt/person/getPersonList`,
+    params: params,
+    method: "get",
+  });
+}
+
 // 获取时间区间
 // GET /pt/network/getTimeInterval
 // 接口ID：165949873

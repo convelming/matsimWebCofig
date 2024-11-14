@@ -128,12 +128,19 @@ export default {
           },
         },
         visualMap: {
-          min: 0,
-          max: 1,
-          calculable: true,
+          type: "piecewise",
           orient: "horizontal",
           left: "center",
           bottom: 5,
+          //"rgb(254, 224, 210)", "rgb(252, 187, 161)", "rgb(252, 146, 114)", "rgb(239, 59, 44)", "rgb(203, 24, 29)", "rgb(153, 0, 13)"
+          pieces: [
+            { gte: 0, lt: 0.4, label: "0 到 0.4", color: "rgb(254, 224, 210)" },
+            { gte: 0.4, lt: 0.6, label: "0.4 到 0.6", color: "rgb(252, 187, 161)" },
+            { gte: 0.6, lt: 0.75, label: "0.6 到 0.75", color: "rgb(252, 146, 114)" },
+            { gte: 0.75, lt: 0.85, label: "0.75 到 0.85", color: "rgb(239, 59, 44)" },
+            { gte: 0.85, lt: 0.95, label: "0.85 到 0.95", color: "rgb(153, 0, 13)" },
+            { gte: 0.95, lte: 1.0, label: "0.95 到 1.0", color: "rgb(203, 24, 29)" },
+          ],
         },
         series: [
           {

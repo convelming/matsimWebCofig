@@ -39,6 +39,7 @@
       </el-collapse>
     </div>
     <div class="toolbar-bodyer" v-show="activeModel === Activity3D.id">
+      <SreachActivity />
       <el-collapse class="toolbar-collapse" v-model="Activity3D.activeName" accordion>
         <component v-for="item in Activity3D.list" :show="item.name == Activity3D.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" />
       </el-collapse>
@@ -137,6 +138,7 @@ import NodeDetail from "../Network/toolbar/nodeDetail.vue";
 import SelectLinkAnalysis from "../Network/toolbar/selectLinkAnalysis.vue";
 // 活动
 import ActivityDetail from "../Activity3D/toolbar/ActivityDetail.vue";
+import SreachActivity from "../Activity3D/toolbar/SreachActivity.vue";
 // 私家车出行
 import CarTravelDetail from "../CarTravel/toolbar/carTravelDetail.vue";
 // GeoJson
@@ -174,6 +176,7 @@ export default {
     SelectLinkAnalysis,
 
     ActivityDetail,
+    SreachActivity,
 
     CarTravelDetail,
 
@@ -271,26 +274,26 @@ export default {
         sreach: {},
         params: {},
         list: [
-          {
-            type: "SinglePathDetail",
-            data: {
-              uuid: "38e4047c-7a67-4c49-9e3b-cb40a22d8bd3",
-              singlePathDetail: {
-                shape: [
-                  [12634435.302642914, 2645511.8325935453],
-                  [12633846.75084994, 2642668.8241874496],
-                  [12637717.231729725, 2642559.094078857],
-                  [12637846.913390191, 2646010.6062060306],
-                  [12634435.302642914, 2645511.8325935453],
-                ],
-                holes: [],
-                type: "link",
-              },
-            },
-            name: "8de6f3a9-0267-4a70-95c6-b148f80a3a68",
-          },
+          // {
+          //   type: "SinglePathDetail",
+          //   data: {
+          //     uuid: "38e4047c-7a67-4c49-9e3b-cb40a22d8bd3",
+          //     singlePathDetail: {
+          //       shape: [
+          //         [12634435.302642914, 2645511.8325935453],
+          //         [12633846.75084994, 2642668.8241874496],
+          //         [12637717.231729725, 2642559.094078857],
+          //         [12637846.913390191, 2646010.6062060306],
+          //         [12634435.302642914, 2645511.8325935453],
+          //       ],
+          //       holes: [],
+          //       type: "link",
+          //     },
+          //   },
+          //   name: "8de6f3a9-0267-4a70-95c6-b148f80a3a68",
+          // },
         ],
-        activeName: "8de6f3a9-0267-4a70-95c6-b148f80a3a68",
+        activeName: "",
       },
       modelMap: {
         RouteDetail: "PublicTransit",
@@ -321,7 +324,7 @@ export default {
         MultiplePathsDetail: "TrafficRegionAnalysis",
         SinglePathDetail: "TrafficRegionAnalysis",
       },
-      activeModel: this.isDev ? "TrafficRegionAnalysis" : "PublicTransit",
+      activeModel: this.isDev ? "Activity3D" : "PublicTransit",
       activeName: "",
       list: [],
     };

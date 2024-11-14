@@ -43,11 +43,17 @@
             <el-button v-else class="show_btn" type="info" size="small" @click="showLinkFlowLayer = false">{{ $l("隐藏周边流量") }}</el-button>
             <el-button class="open_btn" :icon="openLinkFlowSetting ? 'el-icon-caret-top' : 'el-icon-caret-bottom'" type="info" size="small" @click="openLinkFlowSetting = !openLinkFlowSetting"></el-button>
           </div>
-          <div class="setting_box" v-show="openLinkFlowSetting">
+          <div class="setting_box" v-show="openLinkFlowSetting" v-loading="linkFlowLoading">
+            <div class="setting_item">
+              <div class="setting_item_label">{{ $l("仅显示区域内居民") }}</div>
+              <div class="setting_item_value">
+                <el-switch v-model="showLinkFlowAllArea" :active-value="true" :inactive-value="false" size="mini" @change="handleGetLinkFlow" />
+              </div>
+            </div>
             <div class="setting_item">
               <div class="setting_item_label">{{ $l("仅显示选中路段") }}</div>
               <div class="setting_item_value">
-                <el-switch v-model="showLinkFlowLayerType" active-value="all" inactive-value="part" size="mini"></el-switch>
+                <el-switch v-model="showLinkFlowAllTracks" :active-value="true" :inactive-value="false" size="mini" @change="handleGetLinkFlow" />
               </div>
             </div>
             <div class="setting_item">
@@ -61,6 +67,15 @@
               <div class="setting_item_value">
                 <el-input-number v-model="linkFlowHeight" :min="0" :step="1" size="mini" />
               </div>
+            </div>
+            <div class="setting_item">
+              <div class="setting_item_label">{{ $l("按时段显示") }}</div>
+              <div class="setting_item_value">
+                <el-switch v-model="linkFlowUseTimeRange" :active-value="true" :inactive-value="false" @change="" />
+              </div>
+            </div>
+            <div class="setting_item" v-if="linkFlowUseTimeRange">
+              <TimeRangeSlider v-model="linkFlowTimeRange" />
             </div>
           </div>
         </div>
@@ -83,6 +98,15 @@
                 <el-input-number v-model="originSize" :min="GRID_STEP" :step="GRID_STEP" step-strictly size="mini" />
               </div>
             </div>
+            <div class="setting_item">
+              <div class="setting_item_label">{{ $l("按时段显示") }}</div>
+              <div class="setting_item_value">
+                <el-switch v-model="originUseTimeRange" :active-value="true" :inactive-value="false" @change="" />
+              </div>
+            </div>
+            <div class="setting_item" v-if="originUseTimeRange">
+              <TimeRangeSlider v-model="originTimeRange" />
+            </div>
           </div>
         </div>
         <div class="form_item">
@@ -104,6 +128,15 @@
                 <el-input-number v-model="destinationsSize" :min="GRID_STEP" :step="GRID_STEP" step-strictly size="mini" />
               </div>
             </div>
+            <div class="setting_item">
+              <div class="setting_item_label">{{ $l("按时段显示") }}</div>
+              <div class="setting_item_value">
+                <el-switch v-model="destinationsUseTimeRange" :active-value="true" :inactive-value="false" @change="" />
+              </div>
+            </div>
+            <div class="setting_item" v-if="destinationsUseTimeRange">
+              <TimeRangeSlider v-model="destinationsTimeRange" />
+            </div>
           </div>
         </div>
         <div class="form_item">
@@ -117,6 +150,12 @@
               <div class="setting_item_label">{{ $l("颜色") }}</div>
               <div class="setting_item_value">
                 <el-color-picker size="mini" :predefine="predefineColors" v-model="desireLineColor" />
+              </div>
+            </div>
+            <div class="setting_item">
+              <div class="setting_item_label">{{ $l("线宽") }}</div>
+              <div class="setting_item_value" style="width: calc(100% - 80px)">
+                <el-input-number v-model="desireLineWidth" :min="1" :step="1" :controls="true" controls-position="both" size="mini" style="width: 100%"> </el-input-number>
               </div>
             </div>
           </div>
@@ -191,10 +230,6 @@
     "zh-CN": "隐藏周边流量",
     "en-US": "Hide link tracks"
   },
-  "仅显示选中路段":{
-    "zh-CN": "仅显示选中路段",
-    "en-US": "Show all tracks"
-  },
   "显示起点分布":{
     "zh-CN": "显示起点分布",
     "en-US": "Show origin grids"
@@ -227,9 +262,25 @@
     "zh-CN": "隐藏可达性分析",
     "en-US": "隐藏可达性分析"
   },
+  "仅显示区域内居民":{
+    "zh-CN": "仅显示区域内居民",
+    "en-US": "Show all area"
+  },
+  "仅显示选中路段":{
+    "zh-CN": "仅显示选中路段",
+    "en-US": "Show all tracks"
+  },
+  "按时段显示":{
+    "zh-CN": "按时段显示",
+    "en-US": "Use time range"
+  },
   "颜色":{
     "zh-CN": "颜色",
     "en-US": "Color"
+  },
+  "线宽":{
+    "zh-CN": "线宽",
+    "en-US": "Line width"
   },
   "高度":{
     "zh-CN": "高度",
@@ -337,24 +388,39 @@ export default {
     },
     showLinkFlowLayer: {
       handler(val) {
-        this._handleShowLinkFlowLayer();
-      },
-    },
-    showLinkFlowLayerType: {
-      handler(val) {
-        this._handleShowLinkFlowLayer();
+        if (val) {
+          this._Map.addLayer(this._LinkFlowLayer);
+        } else {
+          this._Map.removeLayer(this._LinkFlowLayer);
+        }
       },
     },
     linkFlowColor: {
       handler(val) {
-        this._LinkFlowLayer1.setColorBar(this.COLOR_LIST[val]);
-        this._LinkFlowLayer2.setColorBar(this.COLOR_LIST[val]);
+        this._LinkFlowLayer.setColorBar(this.COLOR_LIST[val]);
       },
     },
     linkFlowHeight: {
       handler(val) {
-        this._LinkFlowLayer1.setHeight(val);
-        this._LinkFlowLayer2.setHeight(val);
+        this._LinkFlowLayer.setHeight(val);
+      },
+    },
+    linkFlowUseTimeRange: {
+      handler(val) {
+        if (this.linkFlowUseTimeRange) {
+          this._LinkFlowLayer.setTimeRange(this.linkFlowTimeRange);
+        } else {
+          this._LinkFlowLayer.setTimeRange(null);
+        }
+      },
+    },
+    linkFlowTimeRange: {
+      handler(val) {
+        if (this.linkFlowUseTimeRange) {
+          this._LinkFlowLayer.setTimeRange(this.linkFlowTimeRange);
+        } else {
+          this._LinkFlowLayer.setTimeRange(null);
+        }
       },
     },
     showOriginLayer: {
@@ -363,15 +429,6 @@ export default {
           this._Map.addLayer(this._OriginGridsLayer);
         } else {
           this._Map.removeLayer(this._OriginGridsLayer);
-        }
-      },
-    },
-    showDestinationsLayer: {
-      handler(val) {
-        if (val) {
-          this._Map.addLayer(this._DestinationsGridsLayer);
-        } else {
-          this._Map.removeLayer(this._DestinationsGridsLayer);
         }
       },
     },
@@ -385,6 +442,33 @@ export default {
         this._OriginGridsLayer.setColorBar(this.COLOR_LIST[this.originColor]);
       },
     },
+    originUseTimeRange: {
+      handler(val) {
+        if (this.originUseTimeRange) {
+          this._OriginGridsLayer.setTimeRange(this.originTimeRange);
+        } else {
+          this._OriginGridsLayer.setTimeRange(null);
+        }
+      },
+    },
+    originTimeRange: {
+      handler(val) {
+        if (this.originUseTimeRange) {
+          this._OriginGridsLayer.setTimeRange(this.originTimeRange);
+        } else {
+          this._OriginGridsLayer.setTimeRange(null);
+        }
+      },
+    },
+    showDestinationsLayer: {
+      handler(val) {
+        if (val) {
+          this._Map.addLayer(this._DestinationsGridsLayer);
+        } else {
+          this._Map.removeLayer(this._DestinationsGridsLayer);
+        }
+      },
+    },
     destinationsSize: {
       handler(val) {
         this._DestinationsGridsLayer.setSize(val / GRID_STEP);
@@ -393,6 +477,24 @@ export default {
     destinationsColor: {
       handler(val) {
         this._DestinationsGridsLayer.setColorBar(this.COLOR_LIST[this.destinationsColor]);
+      },
+    },
+    destinationsUseTimeRange: {
+      handler(val) {
+        if (this.destinationsUseTimeRange) {
+          this._DestinationsGridsLayer.setTimeRange(this.destinationsTimeRange);
+        } else {
+          this._DestinationsGridsLayer.setTimeRange(null);
+        }
+      },
+    },
+    destinationsTimeRange: {
+      handler(val) {
+        if (this.destinationsUseTimeRange) {
+          this._DestinationsGridsLayer.setTimeRange(this.destinationsTimeRange);
+        } else {
+          this._DestinationsGridsLayer.setTimeRange(null);
+        }
       },
     },
     showDesireLineLayer: {
@@ -407,6 +509,11 @@ export default {
     desireLineColor: {
       handler(val) {
         this._DesireLineLayer.setColor(val);
+      },
+    },
+    desireLineWidth: {
+      handler(val) {
+        this._DesireLineLayer.setLineWidth(val);
       },
     },
     showAccessibilityLayer: {
@@ -445,26 +552,34 @@ export default {
       openLinkFlowSetting: false,
       linkFlowLoading: false,
       showLinkFlowLayer: false,
-      showLinkFlowLayerType: "all", // part
+      showLinkFlowAllArea: false,
+      showLinkFlowAllTracks: false,
       linkFlowColor: 0,
       linkFlowHeight: 30,
+      linkFlowUseTimeRange: false,
+      linkFlowTimeRange: [0, 24 * 60 * 60],
 
       openOriginSetting: false,
       originLoading: false,
       showOriginLayer: false,
       originColor: 0,
       originSize: GRID_STEP,
+      originUseTimeRange: false,
+      originTimeRange: [0, 24 * 60 * 60],
 
       openDestinationsSetting: false,
       destinationsLoading: false,
       showDestinationsLayer: false,
       destinationsColor: 0,
       destinationsSize: GRID_STEP,
+      destinationsUseTimeRange: false,
+      destinationsTimeRange: [0, 24 * 60 * 60],
 
       openDesireLineSetting: false,
       showDesireLineLayer: false,
       desireLineLoading: false,
       desireLineColor: "#5470c6",
+      desireLineWidth: 10,
 
       openAccessibilitySetting: false,
       showAccessibilityLayer: false,
@@ -485,12 +600,11 @@ export default {
     this.initLinkGeoJSONLayer();
     this.getLinkList();
 
-    this._LinkFlowLayer1 = new LinkFlowLayer({ zIndex: 230, color: 0xff0000, height: this.linkFlowHeight, colorBar: this.COLOR_LIST[this.linkFlowColor] });
-    this._LinkFlowLayer2 = new LinkFlowLayer({ zIndex: 230, color: 0xff0000, height: this.linkFlowHeight, colorBar: this.COLOR_LIST[this.linkFlowColor] });
-    this._OriginGridsLayer = new GridsLayer({ zIndex: 240, colorBar: this.COLOR_LIST[this.originColor], size: this.originSize / GRID_STEP, step: GRID_STEP });
-    this._DestinationsGridsLayer = new GridsLayer({ zIndex: 240, colorBar: this.COLOR_LIST[this.destinationsColor], size: this.destinationsSize / GRID_STEP, step: GRID_STEP });
-    this._DesireLineLayer = new DesireLineLayer({ zIndex: 560, color: this.desireLineColor });
-    this._AccessibilityLayer = new AccessibilityLayer({ zIndex: 60, color: this.desireLineColor, colorBar: this.accessibilityColorBar, opacity: this.accessibilityOpacity });
+    this._LinkFlowLayer = new LinkFlowLayer({ zIndex: 230, color: 0xff0000, height: this.linkFlowHeight, colorBar: this.COLOR_LIST[this.linkFlowColor], timeRange: this.linkFlowUseTimeRange ? this.linkFlowTimeRange : null });
+    this._OriginGridsLayer = new GridsLayer({ zIndex: 240, colorBar: this.COLOR_LIST[this.originColor], size: this.originSize / GRID_STEP, step: GRID_STEP, timeRange: this.originUseTimeRange ? this.originTimeRange : null });
+    this._DestinationsGridsLayer = new GridsLayer({ zIndex: 240, colorBar: this.COLOR_LIST[this.destinationsColor], size: this.destinationsSize / GRID_STEP, step: GRID_STEP, timeRange: this.destinationsUseTimeRange ? this.destinationsTimeRange : null });
+    this._DesireLineLayer = new DesireLineLayer({ zIndex: 560, color: this.desireLineColor, lineWidth: this.desireLineWidth });
+    this._AccessibilityLayer = new AccessibilityLayer({ zIndex: 60, colorBar: this.accessibilityColorBar, opacity: this.accessibilityOpacity });
 
     this.handleTimeChange(this.rootVue.time);
   },
@@ -549,12 +663,12 @@ export default {
     handleEnable() {
       if (this.showSelectGeoJSONLayer) this._Map.addLayer(this._SelectGeoJSONLayer);
       if (this.showLinkLayer) this._Map.addLayer(this._LinkGeoJSONLayer);
+      if (this.showLinkFlowLayer) this._Map.addLayer(this._LinkFlowLayer);
       if (this.showOriginLayer) this._Map.addLayer(this._OriginGridsLayer);
       if (this.showDestinationsLayer) this._Map.addLayer(this._DestinationsGridsLayer);
       if (this.showDesireLineLayer) this._Map.addLayer(this._DesireLineLayer);
       if (this.showAccessibilityLayer) this._Map.addLayer(this._AccessibilityLayer);
 
-      this._handleShowLinkFlowLayer();
       this.rootVue.$on("timeChange", this.handleTimeChange);
     },
     handleDisable() {
@@ -565,8 +679,7 @@ export default {
       this._Map.removeLayer(this._DesireLineLayer);
       this._Map.removeLayer(this._AccessibilityLayer);
 
-      this._Map.removeLayer(this._LinkFlowLayer1);
-      this._Map.removeLayer(this._LinkFlowLayer2);
+      this._Map.removeLayer(this._LinkFlowLayer);
       this.rootVue.$off("timeChange", this.handleTimeChange);
     },
     getLinkList() {
@@ -603,53 +716,35 @@ export default {
       }
       this._LinkGeoJSONLayer.setPropertiesList(propertiesList, { value: { min: 0, max: 1 } });
     },
-    async getLinkTracksTRG() {
+    async handleShowHeatMapDialog() {
       try {
         this.heatMapDataLoading = true;
-        this.linkFlowLoading = true;
-
         this.heatMapData = null;
-        this._LinkFlowLayer1.setData(null);
-        this._LinkFlowLayer2.setData(null);
-
-        await Promise.all([getLinkTracksTRG({ linkIds: this.selectLinkList, allTracks: true }), getLinkTracksTRG({ linkIds: this.selectLinkList, allTracks: false })]).then(([res1, res2]) => {
-          console.log(res1, res2);
-          this.heatMapData = res1.data.vc;
-
-          this._LinkFlowLayer1.setData(res1.data);
-          this._LinkFlowLayer2.setData(res2.data);
-
-          this.heatMapDataLoading = false;
-          this.linkFlowLoading = false;
-        });
+        const res = await getLinkTracksTRG({ linkIds: this.selectLinkList, allTracks: true });
+        this.heatMapData = res.data.vc;
+        this.showHeatMapDialog = true;
       } catch (error) {
       } finally {
         this.heatMapDataLoading = false;
+      }
+    },
+
+    async handleGetLinkFlow() {
+      try {
+        this.linkFlowLoading = true;
+        this._LinkFlowLayer.setData(null);
+        const res = await getLinkTracksTRG({ linkIds: this.selectLinkList, allTracks: this.showLinkFlowAllTracks, startEndOnLink: this.showLinkFlowAllArea });
+        this._LinkFlowLayer.setData(res.data);
+      } catch (error) {
+      } finally {
         this.linkFlowLoading = false;
       }
     },
-    async handleShowHeatMapDialog() {
-      await this.getLinkTracksTRG();
-      this.showHeatMapDialog = true;
-    },
     async handleShowLinkFlowLayer() {
-      await this.getLinkTracksTRG();
-      this.showLinkFlowLayer = true;
-      this._handleShowLinkFlowLayer();
-    },
-    _handleShowLinkFlowLayer() {
-      console.log(this.showLinkFlowLayer, this.showLinkFlowLayerType);
-
-      if (this.showLinkFlowLayer && this.showLinkFlowLayerType == "all") {
-        this._Map.addLayer(this._LinkFlowLayer1);
-        this._Map.removeLayer(this._LinkFlowLayer2);
-      } else if (this.showLinkFlowLayer && this.showLinkFlowLayerType == "part") {
-        this._Map.removeLayer(this._LinkFlowLayer1);
-        this._Map.addLayer(this._LinkFlowLayer2);
-      } else {
-        this._Map.removeLayer(this._LinkFlowLayer1);
-        this._Map.removeLayer(this._LinkFlowLayer2);
-      }
+      try {
+        await this.handleGetLinkFlow();
+        this.showLinkFlowLayer = true;
+      } catch (error) {}
     },
     async handleShowOriginLayer() {
       try {

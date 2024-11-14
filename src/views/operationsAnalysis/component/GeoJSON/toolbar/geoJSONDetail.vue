@@ -23,7 +23,8 @@
         <div class="file_item">
           <div class="file_row">
             <div class="file_l_col" style="padding: 0 15px">
-              <el-slider :title="$l('pointSize')" v-model="pointSize" @change="handleChange('pointSize', $event)" :step="0.1" :min="0" :max="1000"> </el-slider>
+              <el-input-number :title="$l('pointSize')" v-model="pointSize" :min="0" :step="0.1" :controls="true" controls-position="both" size="mini" @change="handleChange('pointSize', $event)"> </el-input-number>
+              <!-- <el-slider :title="$l('pointSize')" v-model="pointSize" @change="handleChange('pointSize', $event)" :step="0.1" :min="0" :max="1000"> </el-slider> -->
             </div>
             <div class="file_s_col">
               <el-color-picker :title="$l('pointColor')" v-model="pointColor" @change="handleChange('pointColor', $event)" size="mini" :predefine="predefineColors" />
@@ -57,8 +58,9 @@
         <div class="title">{{ $l("line") }}</div>
         <div class="file_item">
           <div class="file_row">
-            <div class="file_l_col" style="padding: 0 15px">
-              <el-slider :title="$l('lineWidth')" v-model="lineWidth" @change="handleChange('lineWidth', $event)" :step="0.1" :min="0" :max="1000"> </el-slider>
+            <div class="file_l_col" style="padding: 0 15px"> 
+              <el-input-number :title="$l('lineWidth')" v-model="lineWidth" :min="0" :step="0.1" :controls="true" controls-position="both" size="mini" @change="handleChange('lineWidth', $event)"> </el-input-number>
+              <!-- <el-slider :title="$l('lineWidth')" v-model="lineWidth" @change="handleChange('lineWidth', $event)" :step="0.1" :min="0" :max="1000"> </el-slider> -->
             </div>
             <div class="file_s_col">
               <el-color-picker :title="$l('lineColor')" v-model="lineColor" @change="handleChange('lineColor', $event)" size="mini" :predefine="predefineColors" />

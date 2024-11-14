@@ -10,14 +10,18 @@ export class LinkFlowLayer extends Layer {
   colorBar = [];
   constructor(opt) {
     super(opt);
-    this.color = opt.color || this.color;
     this.height = opt.height || this.height;
     this.colorBar = opt.colorBar || [];
+    this.timeRange = opt.timeRange || [0, 24 * 60 * 60];
 
     this.material = new THREE.LineBasicMaterial({
-      // color: this.color,
       vertexColors: true
     });
+  }
+
+  setTimeRange(timeRange) {
+    this.timeRange = timeRange;
+    this.update();
   }
 
   setHeight(height) {
@@ -27,11 +31,6 @@ export class LinkFlowLayer extends Layer {
     }
   }
 
-  setColor(color) {
-    this.color = color;
-    // this.material.setValues({ color: color });
-    // this.material.needsUpdate = true;
-  }
   setColorBar(colorBar) {
     this.colorBar = colorBar // ColorBar2D.getDrowColors(colorBar);
     this.update();
@@ -56,6 +55,8 @@ export class LinkFlowLayer extends Layer {
   }
 
   setData(data) {
+    console.log(data);
+    
     this.data = data;
     this.update();
   }
@@ -68,6 +69,8 @@ export class LinkFlowLayer extends Layer {
   }
 
   update() {
+    console.log("update");
+    
     this.clearScene();
     if (!this.map) return;
     if (!this.data) return;
@@ -81,7 +84,13 @@ export class LinkFlowLayer extends Layer {
     const meshList = [];
     for (let i = 0, l = legs.length; i < l; i++) {
       const { offset, coords } = legs[i];
-
+      if (this.timeRange) {
+        try {
+          const [start, end] = this.timeRange;
+          const value = coords[0][2];
+          if (value < start || value > end) continue;
+        } catch (error) { }
+      }
       const points = coords.map((v) => new THREE.Vector3(v[0], v[1], v[2] / 60));
       const colors = coords.map((v) => new THREE.Color(this.colorBar[Math.floor(v[3] / speed)] || this.colorBar[0]).toArray());
 
