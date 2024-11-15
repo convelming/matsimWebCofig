@@ -142,26 +142,26 @@ export class GridsLayer extends Layer {
       const color = new THREE.Color(ColorBar2D.getColor(value, min, max, this.colorBar))
       mesh.setColorAt(i, color);
 
-      const textGeometry = new Text2DGeometry(String(value), {
-        font: font,
-        curveSegments: 12,
-      });
-      textGeometry.computeBoundingBox();
-      let textSalce = 1, textX = 0, textY = 0;
+      // const textGeometry = new Text2DGeometry(String(value), {
+      //   font: font,
+      //   curveSegments: 12,
+      // });
+      // textGeometry.computeBoundingBox();
+      // let textSalce = 1, textX = 0, textY = 0;
 
-      const box = textGeometry.boundingBox;
-      if (box && box.min && box.min) {
-        const tw = box.max.x - box.min.x;
-        const th = box.max.y - box.min.y;
-        const _w = Math.max(tw, th)
-        textSalce = wh / _w * 0.7;
-        textX = (wh - tw * textSalce) / 2;
-        textY = (wh - th * textSalce) / 2 - wh;
-      }
-      const textMesh = new THREE.Mesh(textGeometry, this.textMaterial);
-      textMesh.position.set(x + textX, y + textY, i / l + 3);
-      textMesh.scale.set(textSalce, textSalce, 1)
-      group.add(textMesh)
+      // const box = textGeometry.boundingBox;
+      // if (box && box.min && box.min) {
+      //   const tw = box.max.x - box.min.x;
+      //   const th = box.max.y - box.min.y;
+      //   const _w = Math.max(tw, th)
+      //   textSalce = wh / _w * 0.7;
+      //   textX = (wh - tw * textSalce) / 2;
+      //   textY = (wh - th * textSalce) / 2 - wh;
+      // }
+      // const textMesh = new THREE.Mesh(textGeometry, this.textMaterial);
+      // textMesh.position.set(x + textX, y + textY, i / l + 3);
+      // textMesh.scale.set(textSalce, textSalce, 1)
+      // group.add(textMesh)
     }
 
     let [x, y] = this.map.WebMercatorToCanvasXY(...center);
@@ -173,6 +173,11 @@ export class GridsLayer extends Layer {
     group.userData.center = center;
     this.scene.add(group);
 
+    this.handleEventListener("updata:colorBar", {
+      min: min,
+      max: max,
+      colorBar: this.colorBar
+    })
   }
 
 

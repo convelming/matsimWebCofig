@@ -93,6 +93,12 @@
         <el-table-column prop="loadStatus" :label="$l('方案状态')" width="150">
           <template slot-scope="{ row }">{{ $l(row.loadStatus) }} / {{ $l(row.runStatus) }}</template>
         </el-table-column>
+        <el-table-column prop="loadStatus" :label="$l('系数')" width="150">
+          <template slot-scope="{ row }">
+            <span style="margin-right: 10px">{{ row.scale }}</span>
+            <i class="el-icon-edit" @click="handleChangeScale(row)"></i>
+          </template>
+        </el-table-column>
         <el-table-column :label="$l('操作')" width="250">
           <template slot-scope="{ row }">
             <el-button v-if="row.runStatus == '已运行' && row.loadStatus == '已加载'" type="primary" size="mini" @click="handleOperationsAnalysisToDetail(row)">{{ $l("查看") }}</el-button>
@@ -117,12 +123,18 @@
         <el-table-column prop="loadStatus" :label="$l('方案状态')" width="150">
           <template slot-scope="{ row }">{{ $l(row.loadStatus) }} / {{ $l(row.runStatus) }}</template>
         </el-table-column>
+        <el-table-column prop="loadStatus" :label="$l('系数')" width="150">
+          <template slot-scope="{ row }">
+            <span style="margin-right: 10px">{{ row.scale }}</span>
+            <i class="el-icon-edit" @click="handleChangeScale(row)"></i>
+          </template>
+        </el-table-column>
         <el-table-column :label="$l('操作')" width="300">
           <template slot-scope="{ row }">
             <el-button v-if="!row.noRun && row.loadStatus == '已加载'" type="primary" size="mini" @click="handlePlanAdjustmentToDetail(row)">{{ $l("修改") }}</el-button>
             <el-button v-if="!row.noLoad" :loading="row.loadStatus == '加载中'" type="warning" size="mini" @click="handlePlanAdjustmentLoad(row)">{{ $l("加载") }}</el-button>
             <el-button v-if="!row.noRun" type="success" size="mini" :loading="row.runStatus == '运行中'" @click="handleOperationsAnalysisRun(row)">{{ $l("运行") }}</el-button>
-            <el-button v-if="!row.noRun" type="danger" size="mini" @click="handleDelect(row)">{{ $l("删除") }}</el-button>
+            <el-button v-if="!row.noRun" type="danger" size="mini" @click="handleDelete(row)">{{ $l("删除") }}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -150,6 +162,12 @@
         <el-table-column prop="detail" :label="$l('方案简介')" />
         <el-table-column prop="loadStatus" :label="$l('方案状态')" width="150">
           <template slot-scope="{ row }">{{ $l(row.loadStatus) }} / {{ $l(row.runStatus) }}</template>
+        </el-table-column>
+        <el-table-column prop="loadStatus" :label="$l('系数')" width="150">
+          <template slot-scope="{ row }">
+            <span style="margin-right: 10px">{{ row.scale }}</span>
+            <i class="el-icon-edit" @click="handleChangeScale(row)"></i>
+          </template>
         </el-table-column>
         <el-table-column :label="$l('操作')" width="180">
           <template slot-scope="{ row }">
@@ -387,6 +405,30 @@
     "zh-CN":"搜索",
     "en-US":"sreach",
   },
+  "提示":{
+    "zh-CN":"提示",
+    "en-US":"提示",
+  },
+  "系数":{
+    "zh-CN":"系数",
+    "en-US":"系数",
+  },
+  "请输入系数":{
+    "zh-CN":"请输入系数",
+    "en-US":"请输入系数",
+  },
+  "请输入数字作为系数":{
+    "zh-CN":"请输入数字作为系数",
+    "en-US":"请输入数字作为系数",
+  },
+  "修改成功":{
+    "zh-CN":"修改成功",
+    "en-US":"修改成功",
+  },
+  "删除成功":{
+    "zh-CN":"删除成功",
+    "en-US":"删除成功",
+  },
 }
 </language>
 
@@ -395,6 +437,7 @@ import OAHelpDialog from "./operationsAnalysis/component/HelpDialog/index2.vue";
 import PAHelpDialog from "./planAdjustment/component/HelpDialog/index.vue";
 import CAHelpDialog from "./comparativeAnalysis/component/HelpDialog/index2.vue";
 import SEHelpDialog from "./systemEvaluation/component/HelpDialog/index.vue";
+import { updateScale } from "@/api/database";
 
 export default {
   components: {
@@ -534,7 +577,6 @@ export default {
           break;
         case "systemEvaluation":
           window.open("http://192.168.60.231:23334/kepler.gl.html", "_blank");
-          // this.handleShowSystemEvaluationDialog();
           break;
       }
     },
@@ -550,19 +592,11 @@ export default {
         params: { database: database, datasource: datasource },
       }).href;
       window.open(href, "_blank");
-      // this.$router.push({
-      //   name: "operationsAnalysis",
-      //   params: { database: database, datasource: datasource },
-      // });
     },
     handleOperationsAnalysisLoad(row) {
       this.$store.dispatch("loadDataSource", row);
     },
     handleOperationsAnalysisRun(row) {
-      // this.$store.dispatch("runDataSource", {
-      //   ...row,
-      //   xml: "",
-      // });
       const [database, datasource] = row.name.split("/");
       const href = this.$router.resolve({
         name: "operationsAnalysisConfig",
@@ -591,11 +625,6 @@ export default {
         const form = JSON.parse(JSON.stringify(this.addPlanAdjustmentDialog.form));
         console.log(form);
         this.$store
-          // .dispatch("createDataSource", {
-          //   base: form.source,
-          //   key: form.target,
-          //   detail: form.detail,
-          // })
           .dispatch("copyDataSource", {
             source: form.source,
             target: form.base + "/" + form.target,
@@ -656,7 +685,7 @@ export default {
       }).href;
       window.open(href, "_blank");
     },
-    handleDelect(row) {
+    handleDelete(row) {
       console.log(row);
 
       this.$confirm(this.$l("是否删除方案：") + row.name + "?", this.$l("警告"), {
@@ -668,7 +697,7 @@ export default {
           return this.$store.dispatch("deleteDataSource", row);
         })
         .then(() => {
-          this.$message.success("删除成功");
+          this.$message.success(this.$l("删除成功"));
         })
         .catch(() => {});
     },
@@ -696,6 +725,22 @@ export default {
     },
     changeLanguage(lan) {
       this.$setLanguage(lan);
+    },
+    handleChangeScale(row) {
+      this.$prompt(this.$l("请输入系数"), this.$l("提示"), {
+        confirmButtonText: this.$l("确定"),
+        cancelButtonText: this.$l("取消"),
+        inputValue: row.scale,
+        inputValidator: (value) => {
+          if (!Number.isFinite(Number(value))) return this.$l("请输入数字作为系数");
+        },
+      })
+        .then(({ value }) => updateScale({ key: row.name, scale: value }))
+        .then(() => {
+          this.$message.success(this.$l("修改成功"));
+          this.handleGetDateSourceList();
+        })
+        .catch(() => {});
     },
   },
 };

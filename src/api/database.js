@@ -136,3 +136,14 @@ export function copyScheme(params) {
 }
 
 
+// 修改scale
+// GET /pt/main/updateScale
+// 接口ID：233423062
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-233423062
+export function updateScale(params) {
+  return request({
+    url: `/pt/main/updateScale`,
+    method: "get",
+    params: params,
+  });
+}

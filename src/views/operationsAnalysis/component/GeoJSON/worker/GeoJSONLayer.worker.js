@@ -34,6 +34,7 @@ class GeoJSONParser {
     const pointList = [];
     const lineList = [];
     const polygonList = [];
+
     while (list.length > 0) {
       const item = list.pop();
       // propertiesKey默认为父元素的propertiesKey 如果父元素没有propertiesKey，则默认为0
@@ -118,6 +119,7 @@ class GeoJSONParser {
       }
     }
 
+
     {
       const list = [];
       for (const { propertiesKey, geometry } of pointList) {
@@ -161,12 +163,20 @@ class GeoJSONParser {
       const encode = new TextEncoder();
       this.propertiesListArray = encode.encode(JSON.stringify(propertiesList));
     }
-
-    // this.pointList = pointList;
-    // this.lineList = lineList;
-    // this.polygonList = polygonList;
-    // this.propertiesList = propertiesList;
-    this.propertiesLabels = propertiesLabels;
+    {
+      const encode = new TextEncoder();
+      const propertiesLabelsCopy = JSON.parse(JSON.stringify(propertiesLabels));
+      for (const [key, value] of Object.entries(propertiesLabelsCopy)) {
+        value.values = propertiesList.map(v => v[key] || 0);
+        if (value.type === "String") {
+          value.map = Object.fromEntries(propertiesLabels[key].map);
+        }
+      }
+      this.propertiesLabelsArray = encode.encode(JSON.stringify(propertiesLabelsCopy));
+    }
+    {
+      this.propertiesLabels = propertiesLabels;
+    }
   }
 
   getMultiPoint(coordinates) {
@@ -229,7 +239,6 @@ class GeoJSONParser {
     return list;
   }
 
-
 }
 
 onmessage = function (e) {
@@ -240,9 +249,10 @@ onmessage = function (e) {
   this.postMessage({
     center: parser.center,
     propertiesLabels: parser.propertiesLabels,
+    propertiesLabelsArray: parser.propertiesLabelsArray,
     pointArray: parser.pointArray,
     lineArray: parser.lineArray,
     polygonArray: parser.polygonArray,
     propertiesListArray: parser.propertiesListArray
-  }, [parser.pointArray.buffer, parser.lineArray.buffer, parser.polygonArray.buffer, parser.propertiesListArray.buffer]);
+  }, [parser.pointArray.buffer, parser.lineArray.buffer, parser.polygonArray.buffer, parser.propertiesListArray.buffer, parser.propertiesLabelsArray.buffer]);
 };

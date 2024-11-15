@@ -58,7 +58,7 @@
         <div class="title">{{ $l("line") }}</div>
         <div class="file_item">
           <div class="file_row">
-            <div class="file_l_col" style="padding: 0 15px"> 
+            <div class="file_l_col" style="padding: 0 15px">
               <el-input-number :title="$l('lineWidth')" v-model="lineWidth" :min="0" :step="0.1" :controls="true" controls-position="both" size="mini" @change="handleChange('lineWidth', $event)"> </el-input-number>
               <!-- <el-slider :title="$l('lineWidth')" v-model="lineWidth" @change="handleChange('lineWidth', $event)" :step="0.1" :min="0" :max="1000"> </el-slider> -->
             </div>
@@ -373,7 +373,7 @@ export default {
   mounted() {
     const worker = new GeoJSONLayerWorker();
     worker.onmessage = (event) => {
-      const { center, propertiesLabels, pointArray, lineArray, polygonArray, propertiesListArray } = event.data;
+      const { center, pointArray, lineArray, polygonArray, propertiesListArray, propertiesLabels, propertiesLabelsArray } = event.data;
 
       console.time("onmessage");
 
@@ -389,9 +389,10 @@ export default {
       this.showLineSetting = !!lineArray.length;
       this.showPolygonSetting = !!polygonArray.length;
 
-      const propertiesList = JSON.parse(new TextDecoder().decode(propertiesListArray));
+      const textDecoder = new TextDecoder();
+      const propertiesList = JSON.parse(textDecoder.decode(propertiesListArray));
       this._GeoJSONLayer.setPropertiesList(propertiesList, propertiesLabels);
-      this.isDev && (console.log(event.data) || console.log(propertiesList) || console.log(propertiesLabels));
+      this.isDev && (console.log(event.data) || console.log(propertiesList) || console.log(propertiesLabels) || console.log(JSON.parse(textDecoder.decode(propertiesLabelsArray))));
       console.timeEnd("onmessage");
       worker.terminate();
     };

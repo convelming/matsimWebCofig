@@ -53,7 +53,7 @@
             <div class="setting_item">
               <div class="setting_item_label">{{ $l("仅显示选中路段") }}</div>
               <div class="setting_item_value">
-                <el-switch v-model="showLinkFlowAllTracks" :active-value="true" :inactive-value="false" size="mini" @change="handleGetLinkFlow" />
+                <el-switch v-model="showLinkFlowAllTracks" :active-value="false" :inactive-value="true" size="mini" @change="handleGetLinkFlow" />
               </div>
             </div>
             <div class="setting_item">
@@ -93,6 +93,13 @@
               </div>
             </div>
             <div class="setting_item">
+              <div class="setting_item_label">{{ $l("Visual map") }}</div>
+              <div class="setting_item_value">
+                <el-switch v-model="showOriginVisualMap" :active-value="true" />
+                <GeoJSONVisualMap v-show="showOriginVisualMap && showOriginLayer" :colors="COLOR_LIST[originColor]" :max="originMax" :min="originMin" />
+              </div>
+            </div>
+            <div class="setting_item">
               <div class="setting_item_label">{{ $l("大小") }}</div>
               <div class="setting_item_value">
                 <el-input-number v-model="originSize" :min="GRID_STEP" :step="GRID_STEP" step-strictly size="mini" />
@@ -120,6 +127,13 @@
               <div class="setting_item_label">{{ $l("颜色") }}</div>
               <div class="setting_item_value">
                 <ColorSelect v-model="destinationsColor" :colorsList="COLOR_LIST" size="mini" />
+              </div>
+            </div>
+            <div class="setting_item">
+              <div class="setting_item_label">{{ $l("Visual map") }}</div>
+              <div class="setting_item_value">
+                <el-switch v-model="showDestinationsVisualMap" :active-value="true" />
+                <GeoJSONVisualMap v-show="showDestinationsVisualMap && showDestinationsLayer" :colors="COLOR_LIST[destinationsColor]" :max="destinationsMax" :min="destinationsMin" />
               </div>
             </div>
             <div class="setting_item">
@@ -278,6 +292,10 @@
     "zh-CN": "颜色",
     "en-US": "Color"
   },
+  "Visual map":{
+    "zh-CN": "Visual map",
+    "en-US": "Visual map"
+  },
   "线宽":{
     "zh-CN": "线宽",
     "en-US": "Line width"
@@ -303,11 +321,12 @@
 
 <script>
 import { guid, COLOR_LIST } from "@/utils/utils";
-import { getLinkListTRG, getLinkTracksTRG, getOriginGridsTRG, getDestinationsGridsTRG, desireLinesTRG, accessibilityTRG } from "@/api/index";
+import { getLinkListTRG, getLinkTracksTRG, getOriginGridsTRG, getDestinationsGridsTRG, desireLinesTRG, accessibilityTRG, hotMapTRG } from "@/api/index";
 
 import HeatMapDialog from "../components/HeatMapDialog.vue";
 
 import { GeoJSONLayer, LINE_STYLE } from "../../GeoJSON/layer/GeoJSONLayer";
+import GeoJSONVisualMap from "../../GeoJSON/component/GeoJSONVisualMap.vue";
 import { LinkFlowLayer } from "../layer/LinkFlowLayer";
 import { GridsLayer } from "../layer/GridsLayer";
 import { DesireLineLayer } from "../layer/DesireLineLayer";
@@ -320,6 +339,7 @@ export default {
   inject: ["rootVue"],
   components: {
     HeatMapDialog,
+    GeoJSONVisualMap,
   },
   props: {
     name: {
@@ -563,6 +583,9 @@ export default {
       originLoading: false,
       showOriginLayer: false,
       originColor: 0,
+      showOriginVisualMap: true,
+      originMin: 0,
+      originMax: 0,
       originSize: GRID_STEP,
       originUseTimeRange: false,
       originTimeRange: [0, 24 * 60 * 60],
@@ -571,6 +594,9 @@ export default {
       destinationsLoading: false,
       showDestinationsLayer: false,
       destinationsColor: 0,
+      showDestinationsVisualMap: true,
+      destinationsMin: 0,
+      destinationsMax: 0,
       destinationsSize: GRID_STEP,
       destinationsUseTimeRange: false,
       destinationsTimeRange: [0, 24 * 60 * 60],
@@ -601,8 +627,34 @@ export default {
     this.getLinkList();
 
     this._LinkFlowLayer = new LinkFlowLayer({ zIndex: 230, color: 0xff0000, height: this.linkFlowHeight, colorBar: this.COLOR_LIST[this.linkFlowColor], timeRange: this.linkFlowUseTimeRange ? this.linkFlowTimeRange : null });
-    this._OriginGridsLayer = new GridsLayer({ zIndex: 240, colorBar: this.COLOR_LIST[this.originColor], size: this.originSize / GRID_STEP, step: GRID_STEP, timeRange: this.originUseTimeRange ? this.originTimeRange : null });
-    this._DestinationsGridsLayer = new GridsLayer({ zIndex: 240, colorBar: this.COLOR_LIST[this.destinationsColor], size: this.destinationsSize / GRID_STEP, step: GRID_STEP, timeRange: this.destinationsUseTimeRange ? this.destinationsTimeRange : null });
+    this._OriginGridsLayer = new GridsLayer({
+      zIndex: 240,
+      colorBar: this.COLOR_LIST[this.originColor],
+      size: this.originSize / GRID_STEP,
+      step: GRID_STEP,
+      timeRange: this.originUseTimeRange ? this.originTimeRange : null,
+      event: {
+        "updata:colorBar": (data) => {
+          console.log("updata:colorBar", data);
+          this.originMin = data.data.min;
+          this.originMax = data.data.max;
+        },
+      },
+    });
+    this._DestinationsGridsLayer = new GridsLayer({
+      zIndex: 240,
+      colorBar: this.COLOR_LIST[this.destinationsColor],
+      size: this.destinationsSize / GRID_STEP,
+      step: GRID_STEP,
+      timeRange: this.destinationsUseTimeRange ? this.destinationsTimeRange : null,
+      event: {
+        "updata:colorBar": (data) => {
+          console.log("updata:colorBar", data);
+          this.destinationMin = data.data.min;
+          this.destinationMax = data.data.max;
+        },
+      },
+    });
     this._DesireLineLayer = new DesireLineLayer({ zIndex: 560, color: this.desireLineColor, lineWidth: this.desireLineWidth });
     this._AccessibilityLayer = new AccessibilityLayer({ zIndex: 60, colorBar: this.accessibilityColorBar, opacity: this.accessibilityOpacity });
 
@@ -720,7 +772,7 @@ export default {
       try {
         this.heatMapDataLoading = true;
         this.heatMapData = null;
-        const res = await getLinkTracksTRG({ linkIds: this.selectLinkList, allTracks: true });
+        const res = await hotMapTRG({ linkIds: this.selectLinkList, allTracks: true });
         this.heatMapData = res.data.vc;
         this.showHeatMapDialog = true;
       } catch (error) {

@@ -1,5 +1,4 @@
 import { Layer, MAP_EVENT, OutlineLayer, SCENE_MAP } from "@/mymap";
-import { ColorBar2D } from "@/mymap/utils/ColorBar2D.js";
 import * as THREE from "three";
 
 const textureLoader = new THREE.TextureLoader();
@@ -33,7 +32,7 @@ export class RegionalTrafficFlowLayer extends Layer {
     // this.material.needsUpdate = true;
   }
   setColorBar(colorBar) {
-    this.colorBar = colorBar // ColorBar2D.getDrowColors(colorBar);
+    this.colorBar = colorBar;
     this.update();
   }
 
@@ -81,7 +80,7 @@ export class RegionalTrafficFlowLayer extends Layer {
     const meshList = [];
     for (let i = 0, l = legs.length; i < l; i++) {
       const { offset, coords } = legs[i];
-      
+
       const points = coords.map((v) => new THREE.Vector3(v[0], v[1], v[2] / 60));
       const colors = coords.map((v) => new THREE.Color(this.colorBar[Math.floor(v[3] / speed)] || this.colorBar[0]).toArray());
 

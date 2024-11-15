@@ -1,7 +1,7 @@
 <template>
   <div class="GeoJSONVisualMap" @mousedown="startMove" :style="s_style">
     <div class="item" v-for="(item, index) in list" :key="index">
-      <div class="text">{{ Number(Number(item.min).toFixed(4)) }} ~ {{ Number(Number(item.max).toFixed(4)) }}</div>
+      <div class="text">{{ toFixed(item.min, 4) }} ~ {{ toFixed(item.max, 4) }}</div>
       <div class="color" :style="{ backgroundColor: item.color }"></div>
     </div>
   </div>
@@ -89,6 +89,11 @@ export default {
     }
   },
   methods: {
+    toFixed(data, size) {
+      let a = Math.pow(10, size);
+      let res = Math.round(Number(data) * a) / a;
+      return res;
+    },
     startMove(event) {
       this.moveObj = {
         s_top: event.pageY,

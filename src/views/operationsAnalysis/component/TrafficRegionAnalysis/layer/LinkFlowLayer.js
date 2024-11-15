@@ -1,5 +1,4 @@
 import { Layer, MAP_EVENT, OutlineLayer, SCENE_MAP } from "@/mymap";
-import { ColorBar2D } from "@/mymap/utils/ColorBar2D.js";
 import * as THREE from "three";
 
 const textureLoader = new THREE.TextureLoader();
@@ -32,7 +31,7 @@ export class LinkFlowLayer extends Layer {
   }
 
   setColorBar(colorBar) {
-    this.colorBar = colorBar // ColorBar2D.getDrowColors(colorBar);
+    this.colorBar = colorBar;
     this.update();
   }
 

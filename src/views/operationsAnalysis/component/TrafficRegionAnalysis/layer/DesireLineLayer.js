@@ -1,8 +1,6 @@
 import { Layer, MAP_EVENT } from "@/mymap";
 
-import { ColorBar2D } from "@/mymap/utils/ColorBar2D.js";
 import * as THREE from "three";
-import * as BufferGeometryUtils from "three/addons/utils/BufferGeometryUtils.js";
 
 import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 import { Text2DGeometry } from '@/mymap/geometry/Text2DGeometry.js';

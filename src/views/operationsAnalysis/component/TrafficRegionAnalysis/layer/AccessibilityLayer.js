@@ -1,6 +1,5 @@
 import { Layer, MAP_EVENT } from "@/mymap";
 
-import { ColorBar2D } from "@/mymap/utils/ColorBar2D.js";
 import * as THREE from "three";
 
 import { FontLoader } from 'three/addons/loaders/FontLoader.js';

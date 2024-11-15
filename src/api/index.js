@@ -761,13 +761,25 @@ export function getLinkListTRG(data) {
   });
 }
 
-// 获取link列表热力图/周边流量
+// 获取link列表周边流量
 // POST /pt/trafficRegionAnalysis/getLinkTracks
 // 接口ID：230251998
 // 接口地址：https://app.apifox.com/link/project/3709845/apis/api-230251998
 export function getLinkTracksTRG(data) {
   return request({
     url: `/pt/trafficRegionAnalysis/getLinkTracks`,
+    data: data,
+    method: "post",
+  });
+}
+
+// 获取link列表热力图
+// POST /pt/trafficRegionAnalysis/hotMap
+// 接口ID：230251998
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-230251998
+export function hotMapTRG(data) {
+  return request({
+    url: `/pt/trafficRegionAnalysis/hotMap`,
     data: data,
     method: "post",
   });

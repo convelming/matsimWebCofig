@@ -89,7 +89,7 @@ export default {
         const v1 = list[i1];
         for (let i2 = 0, l2 = v1.length; i2 < l2; i2++) {
           const v2 = v1[i2];
-          data[data.length] = [i1, i2, v2 || "-"];
+          data[data.length] = [i2, i1, v2 || "-"];
         }
       }
       return {
@@ -144,7 +144,6 @@ export default {
         },
         series: [
           {
-            name: "Punch Card",
             type: "heatmap",
             data: data,
             emphasis: {

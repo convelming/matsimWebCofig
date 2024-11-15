@@ -1,6 +1,5 @@
 let ColorBar2DInstance = null;
 
-
 /*
 颜色数据支持的两种格式
 ["#313695", "#74add1", "#e0f3f8", "#ffffbf", "#fdae61", "#f46d43", "#a50026"]
