@@ -6,6 +6,9 @@
           <el-form-item v-if="lItem.type === 'number'" :label="lItem.label">
             <el-input-number class="w100" v-model="s_form[lItem.name]" v-bind="Object.assign({}, {}, lItem.attrs)" />
           </el-form-item>
+          <el-form-item v-if="lItem.type === 'slider'" :label="lItem.label">
+            <el-slider class="w100 px-1em" v-model="s_form[lItem.name]" v-bind="Object.assign({}, {}, lItem.attrs)" />
+          </el-form-item>
           <el-form-item v-if="lItem.type === 'color'" :label="lItem.label">
             <el-color-picker class="w100" v-model="s_form[lItem.name]" v-bind="Object.assign({}, { predefine: predefine }, lItem.attrs)" />
           </el-form-item>
@@ -26,7 +29,7 @@
             <el-divider content-position="left">{{ lItem.label }}</el-divider>
             <el-form-item label="Value key">
               <el-select class="w100" v-model="s_form[lItem.name].valueKey" @change="handleColorBarValueKeyChange(lItem, $event)">
-                <el-option v-for="(v, k) in lItem.options" :key="k" :label="v.name" :value="k"></el-option>
+                <el-option v-for="(v, k) in lItem.options" :key="k" :label="`${v.name}(${v.type})`" :value="k"></el-option>
               </el-select>
             </el-form-item>
             <el-form-item label="Color ramp">
@@ -99,6 +102,17 @@
                 </el-table>
               </el-form-item>
             </template>
+          </template>
+          <template v-if="lItem.type == '3d'">
+            <el-divider content-position="left">{{ lItem.label }}</el-divider>
+            <el-form-item label="Value key">
+              <el-select class="w100" v-model="s_form[lItem.name].valueKey">
+                <el-option v-for="(v, k) in lItem.options" :disabled="v.type != 'Number'" :key="k" :label="`${v.name}(${v.type})`" :value="k" />
+              </el-select>
+            </el-form-item>
+            <el-form-item label="Scale">
+              <el-input-number class="w100" v-model="s_form[lItem.name].data" :min="0" :step="0.01" />
+            </el-form-item>
           </template>
         </template>
         <el-form-item>
@@ -252,27 +266,22 @@ export default {
           this.s_visible = val;
         }
         if (val) {
-          const s_form = {};
-          for (const lItem of this.layout) {
-            s_form[lItem.name] = {
-              number: 0,
-              color: "#EE6666",
-              select: "",
-              icon: ICON_LIST[0],
-              lineStyle: LINE_STYLE.SOLID,
-              colorBar: {
-                valueKey: "",
-                valueType: "",
-                startColor: "#FEE0D2",
-                endColor: "#99000D",
-                model: "count", // count interval
-                modelClass: 5,
-                data: [],
-              },
-            }[lItem.type];
-          }
-          this.s_form = Object.assign({}, s_form, this.form);
+          this.handleUpdate();
         }
+      },
+      immediate: true,
+      deep: true,
+    },
+    layout: {
+      handler(val) {
+        this.handleUpdate();
+      },
+      immediate: true,
+      deep: true,
+    },
+    form: {
+      handler(val) {
+        this.handleUpdate();
       },
       immediate: true,
       deep: true,
@@ -289,6 +298,33 @@ export default {
   created() {},
   mounted() {},
   methods: {
+    handleUpdate() {
+      const s_form = {};
+      for (const lItem of this.layout) {
+        s_form[lItem.name] = {
+          number: 0,
+          slider: 0,
+          color: "#EE6666",
+          select: "",
+          icon: ICON_LIST[0],
+          lineStyle: LINE_STYLE.SOLID,
+          colorBar: {
+            valueKey: "",
+            valueType: "",
+            startColor: "#FEE0D2",
+            endColor: "#99000D",
+            model: "count", // count interval
+            modelClass: 5,
+            data: [],
+          },
+          "3d": {
+            valueKey: "",
+            data: 1,
+          },
+        }[lItem.type];
+      }
+      this.s_form = Object.assign({}, s_form, JSON.parse(JSON.stringify(this.form)));
+    },
     handleClose() {
       this.s_visible = false;
       this.$emit("update:visible", this.s_visible);
@@ -378,6 +414,7 @@ export default {
   .el-select,
   .el-color-picker,
   .el-color-picker__trigger {
+    box-sizing: border-box;
     width: 100% !important;
   }
 }
@@ -386,6 +423,9 @@ export default {
     overflow-x: hidden;
     overflow-y: auto;
     max-height: 80vh;
+  }
+  .px-1em {
+    padding: 0 1em;
   }
 }
 </style>

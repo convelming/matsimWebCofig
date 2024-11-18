@@ -20,11 +20,16 @@ export class ColorBar2D {
   list = [];
 
   constructor(list = []) {
-    try {
-      this.list = list.map(v => new ColorBar2DItem(v)).sort((a, b) => a.min - b.min);
-    } catch (error) {
-      console.log(error);
-    }
+    if (!list || !list.length) throw new Error("ColorBar2D: list is empty");
+    this.list = list.map(v => new ColorBar2DItem(v)).sort((a, b) => a.min - b.min);
+  }
+
+  get min() {
+    return this.list[0].min;
+  }
+
+  get max() {
+    return this.list[this.list.length - 1].max;
   }
 
   getColor(value) {
@@ -45,13 +50,12 @@ export class ColorBar2D {
     try {
       // 创建线性渐变色
       const linearGradient = context2D.createLinearGradient(0, 0, canvas2D.width, 0);
-      const MIN = this.list[0].min;
-      const MAX = this.list[this.list.length - 1].max;
-      console.log(this.list);
-
+      const MIN = this.min;
+      const MAX = this.max;
+      // console.log(this.list);
       for (const { min, max, color } of this.list) {
-        console.log(min, max, MIN, MAX);
-        console.log((min - MIN) / (MAX - MIN), (max - MIN) / (MAX - MIN));
+        // console.log(min, max, MIN, MAX);
+        // console.log((min - MIN) / (MAX - MIN), (max - MIN) / (MAX - MIN));
 
         linearGradient.addColorStop((min - MIN) / (MAX - MIN), color);
         linearGradient.addColorStop((max - MIN) / (MAX - MIN), color);

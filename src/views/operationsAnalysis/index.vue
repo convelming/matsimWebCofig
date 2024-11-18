@@ -32,7 +32,7 @@
       </div>
       <HelpDialog :visible.sync="showHelpDialog" />
     </template>
-    <GeoJSONSetting :visible="true" />
+    <!-- <GeoJSONSetting :visible="isDev" /> -->
   </div>
 </template>
 

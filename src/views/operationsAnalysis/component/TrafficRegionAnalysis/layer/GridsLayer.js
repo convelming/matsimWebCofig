@@ -22,18 +22,25 @@ export class GridsLayer extends Layer {
   constructor(opt) {
     super(opt);
     this.colorBar = opt.colorBar || [];
+    this.opacity = opt.opacity || 1;
     this.step = opt.step || 100;
     this.size = opt.size || 1;
     this.timeRange = opt.timeRange || [0, 24 * 60 * 60];
 
     this.geometry = new THREE.PlaneGeometry();
-    this.material = new THREE.MeshBasicMaterial({});
+    this.material = new THREE.MeshBasicMaterial({ opacity: this.opacity, transparent: this.opacity < 1 });
     this.textMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
   }
 
   onAdd(map) {
     super.onAdd(map);
     this.update();
+  }
+
+  setOpacity(opacity) {
+    this.opacity = opacity;
+    this.material.setValues({ opacity: this.opacity, transparent: this.opacity < 1 });
+    this.material.needsUpdate = true;
   }
 
   setTimeRange(timeRange) {

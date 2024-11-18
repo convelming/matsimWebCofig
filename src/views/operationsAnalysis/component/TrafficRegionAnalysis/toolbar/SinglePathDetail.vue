@@ -93,6 +93,13 @@
               </div>
             </div>
             <div class="setting_item">
+              <div class="setting_item_label">{{ $l("透明度") }}</div>
+              <div class="setting_item_value" style="width: calc(100% - 80px)">
+                <el-slider v-model="originOpacity" :min="0" :max="1" :step="0.01" />
+                <!-- <el-input-number v-model="originOpacity" :min="0" :max="1" :step="0.1" size="mini" /> -->
+              </div>
+            </div>
+            <div class="setting_item">
               <div class="setting_item_label">{{ $l("Visual map") }}</div>
               <div class="setting_item_value">
                 <el-switch v-model="showOriginVisualMap" :active-value="true" />
@@ -127,6 +134,13 @@
               <div class="setting_item_label">{{ $l("颜色") }}</div>
               <div class="setting_item_value">
                 <ColorSelect v-model="destinationsColor" :colorsList="COLOR_LIST" size="mini" />
+              </div>
+            </div>
+            <div class="setting_item">
+              <div class="setting_item_label">{{ $l("透明度") }}</div>
+              <div class="setting_item_value" style="width: calc(100% - 80px)">
+                <el-slider v-model="destinationsOpacity" :min="0" :max="1" :step="0.01" />
+                <!-- <el-input-number v-model="destinationsOpacity" :min="0" :max="1" :step="0.1" size="mini" /> -->
               </div>
             </div>
             <div class="setting_item">
@@ -457,6 +471,11 @@ export default {
         this._OriginGridsLayer.setSize(val / GRID_STEP);
       },
     },
+    originOpacity: {
+      handler(val) {
+        this._OriginGridsLayer.setOpacity(val);
+      },
+    },
     originColor: {
       handler(val) {
         this._OriginGridsLayer.setColorBar(this.COLOR_LIST[this.originColor]);
@@ -492,6 +511,11 @@ export default {
     destinationsSize: {
       handler(val) {
         this._DestinationsGridsLayer.setSize(val / GRID_STEP);
+      },
+    },
+    destinationsOpacity: {
+      handler(val) {
+        this._DestinationsGridsLayer.setOpacity(val);
       },
     },
     destinationsColor: {
@@ -582,6 +606,7 @@ export default {
       openOriginSetting: false,
       originLoading: false,
       showOriginLayer: false,
+      originOpacity: 1,
       originColor: 0,
       showOriginVisualMap: true,
       originMin: 0,
@@ -593,6 +618,7 @@ export default {
       openDestinationsSetting: false,
       destinationsLoading: false,
       showDestinationsLayer: false,
+      destinationsOpacity: 1,
       destinationsColor: 0,
       showDestinationsVisualMap: true,
       destinationsMin: 0,
@@ -629,6 +655,7 @@ export default {
     this._LinkFlowLayer = new LinkFlowLayer({ zIndex: 230, color: 0xff0000, height: this.linkFlowHeight, colorBar: this.COLOR_LIST[this.linkFlowColor], timeRange: this.linkFlowUseTimeRange ? this.linkFlowTimeRange : null });
     this._OriginGridsLayer = new GridsLayer({
       zIndex: 240,
+      opacity: this.originOpacity,
       colorBar: this.COLOR_LIST[this.originColor],
       size: this.originSize / GRID_STEP,
       step: GRID_STEP,
@@ -643,6 +670,7 @@ export default {
     });
     this._DestinationsGridsLayer = new GridsLayer({
       zIndex: 240,
+      opacity: this.destinationsOpacity,
       colorBar: this.COLOR_LIST[this.destinationsColor],
       size: this.destinationsSize / GRID_STEP,
       step: GRID_STEP,

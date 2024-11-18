@@ -142,7 +142,7 @@ import SreachActivity from "../Activity3D/toolbar/SreachActivity.vue";
 // 私家车出行
 import CarTravelDetail from "../CarTravel/toolbar/carTravelDetail.vue";
 // GeoJson
-import GeoJSONDetail from "../GeoJSON/toolbar/geoJSONDetail.vue";
+import GeoJSONDetail from "../GeoJSON/toolbar/geoJSONDetail2.vue";
 // 停车供需
 import PolgonParkingDetail from "../Parking/toolbar/PolgonParkingDetail.vue";
 import ParkingActivityDetail from "../Parking/toolbar/ParkingActivityDetail.vue";
@@ -324,7 +324,7 @@ export default {
         MultiplePathsDetail: "TrafficRegionAnalysis",
         SinglePathDetail: "TrafficRegionAnalysis",
       },
-      activeModel: this.isDev ? "Activity3D" : "PublicTransit",
+      activeModel: this.isDev ? "GeoJSON" : "PublicTransit",
       activeName: "",
       list: [],
     };
