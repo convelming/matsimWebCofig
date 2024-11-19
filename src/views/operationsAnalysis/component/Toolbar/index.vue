@@ -152,7 +152,7 @@ import RegionalTrafficDetail from "../RegionalTraffic/toolbar/RegionalTrafficDet
 // 区域交通分析
 import TRAGeoJSONHeader from "../TrafficRegionAnalysis/toolbar/TRAGeoJSONHeader.vue";
 import MultiplePathsDetail from "../TrafficRegionAnalysis/toolbar/MultiplePathsDetail.vue";
-import SinglePathDetail from "../TrafficRegionAnalysis/toolbar/SinglePathDetail.vue";
+import SinglePathDetail from "../TrafficRegionAnalysis/toolbar/SinglePathDetail2.vue";
 
 export default {
   components: {
@@ -274,26 +274,26 @@ export default {
         sreach: {},
         params: {},
         list: [
-          // {
-          //   type: "SinglePathDetail",
-          //   data: {
-          //     uuid: "38e4047c-7a67-4c49-9e3b-cb40a22d8bd3",
-          //     singlePathDetail: {
-          //       shape: [
-          //         [12634435.302642914, 2645511.8325935453],
-          //         [12633846.75084994, 2642668.8241874496],
-          //         [12637717.231729725, 2642559.094078857],
-          //         [12637846.913390191, 2646010.6062060306],
-          //         [12634435.302642914, 2645511.8325935453],
-          //       ],
-          //       holes: [],
-          //       type: "link",
-          //     },
-          //   },
-          //   name: "8de6f3a9-0267-4a70-95c6-b148f80a3a68",
-          // },
+          {
+            type: "SinglePathDetail",
+            data: {
+              uuid: "38e4047c-7a67-4c49-9e3b-cb40a22d8bd3",
+              singlePathDetail: {
+                shape: [
+                  [12634435.302642914, 2645511.8325935453],
+                  [12633846.75084994, 2642668.8241874496],
+                  [12637717.231729725, 2642559.094078857],
+                  [12637846.913390191, 2646010.6062060306],
+                  [12634435.302642914, 2645511.8325935453],
+                ],
+                holes: [],
+                type: "link",
+              },
+            },
+            name: "38e4047c-7a67-4c49-9e3b-cb40a22d8bd3",
+          },
         ],
-        activeName: "",
+        activeName: "38e4047c-7a67-4c49-9e3b-cb40a22d8bd3",
       },
       modelMap: {
         RouteDetail: "PublicTransit",
@@ -324,7 +324,7 @@ export default {
         MultiplePathsDetail: "TrafficRegionAnalysis",
         SinglePathDetail: "TrafficRegionAnalysis",
       },
-      activeModel: this.isDev ? "GeoJSON" : "PublicTransit",
+      activeModel: this.isDev ? "TrafficRegionAnalysis" : "PublicTransit",
       activeName: "",
       list: [],
     };

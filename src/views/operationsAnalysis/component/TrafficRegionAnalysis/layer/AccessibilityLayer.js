@@ -1,4 +1,5 @@
 import { Layer, MAP_EVENT } from "@/mymap";
+import { ColorBar2D } from "@/mymap/utils/ColorBar2D.v2"
 
 import * as THREE from "three";
 
@@ -62,6 +63,14 @@ export class AccessibilityLayer extends Layer {
         group.add(polygonMesh);
         group.userData = {
           id: id,
+          key: {
+            "5": 0,
+            "15": 1,
+            "30": 2,
+            "60": 3,
+            "120": 4,
+            ">120": 5,
+          }[String(id)],
           center: center,
           show: false,
           polygonMesh: polygonMesh
@@ -81,7 +90,7 @@ export class AccessibilityLayer extends Layer {
   }
 
   setColorBar(colorBar) {
-    this.colorBar = colorBar;
+    this.colorBar = colorBar || [];
     this.updateValue();
   }
 
@@ -114,9 +123,10 @@ export class AccessibilityLayer extends Layer {
 
   async updateValue() {
     for (const group of this.groupList) {
-      const { id, polygonMesh, show } = group.userData;
-      const bar = this.colorBar.find(v => String(v.key) == String(id));
-      if (bar && bar.show) this.scene.add(group);
+      const { id, polygonMesh, show, key } = group.userData;
+
+      const bar = this.colorBar.find(v => v.min == key);
+      if (bar && bar.use) this.scene.add(group);
       else this.scene.remove(group);
       polygonMesh.material.setValues({ color: bar ? bar.color : "#fff", transparent: this.opacity < 1, opacity: this.opacity })
       polygonMesh.material.needsUpdate = true;

@@ -1,7 +1,7 @@
 import { Layer, MAP_EVENT, OutlineLayer, SCENE_MAP } from "@/mymap";
 import * as THREE from "three";
+import { ColorBar2D } from "@/mymap/utils/ColorBar2D.v2"
 
-const textureLoader = new THREE.TextureLoader();
 
 export class LinkFlowLayer extends Layer {
   color = 0x0000ff;
@@ -10,8 +10,10 @@ export class LinkFlowLayer extends Layer {
   constructor(opt) {
     super(opt);
     this.height = opt.height || this.height;
-    this.colorBar = opt.colorBar || [];
-    this.timeRange = opt.timeRange || [0, 24 * 60 * 60];
+    this.timeRange = opt.timeRange;
+    console.log(opt.colorBar);
+
+    this.colorBar = new ColorBar2D(opt.colorBar || []);
 
     this.material = new THREE.LineBasicMaterial({
       vertexColors: true
@@ -31,7 +33,7 @@ export class LinkFlowLayer extends Layer {
   }
 
   setColorBar(colorBar) {
-    this.colorBar = colorBar;
+    this.colorBar = new ColorBar2D(colorBar);
     this.update();
   }
 
@@ -55,7 +57,7 @@ export class LinkFlowLayer extends Layer {
 
   setData(data) {
     console.log(data);
-    
+
     this.data = data;
     this.update();
   }
@@ -69,13 +71,12 @@ export class LinkFlowLayer extends Layer {
 
   update() {
     console.log("update");
-    
+
     this.clearScene();
     if (!this.map) return;
     if (!this.data) return;
 
     const { link, legs } = this.data;
-    const speed = 1 / this.colorBar.length;
 
     // const geoList = new Array(legs.length).fill(null);
     const { center, fromCoord, toCoord } = link;
@@ -91,7 +92,7 @@ export class LinkFlowLayer extends Layer {
         } catch (error) { }
       }
       const points = coords.map((v) => new THREE.Vector3(v[0], v[1], v[2] / 60));
-      const colors = coords.map((v) => new THREE.Color(this.colorBar[Math.floor(v[3] / speed)] || this.colorBar[0]).toArray());
+      const colors = coords.map((v) => new THREE.Color(this.colorBar.getColor(v[3])).toArray());
 
       const geometry = new THREE.BufferGeometry().setFromPoints(points);
       geometry.setAttribute("color", new THREE.Float32BufferAttribute(colors.flat(), 3));

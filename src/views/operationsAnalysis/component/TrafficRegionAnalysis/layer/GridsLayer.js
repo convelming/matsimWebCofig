@@ -1,6 +1,6 @@
 import { Layer, MAP_EVENT } from "@/mymap";
 
-import { ColorBar2D } from "@/mymap/utils/ColorBar2D.js";
+import { ColorBar2D } from "@/mymap/utils/ColorBar2D.v2.js";
 import * as THREE from "three";
 import * as BufferGeometryUtils from "three/addons/utils/BufferGeometryUtils.js";
 
@@ -21,11 +21,11 @@ export class GridsLayer extends Layer {
 
   constructor(opt) {
     super(opt);
-    this.colorBar = opt.colorBar || [];
+    this.colorBar = new ColorBar2D(opt.colorBar || []);
     this.opacity = opt.opacity || 1;
     this.step = opt.step || 100;
     this.size = opt.size || 1;
-    this.timeRange = opt.timeRange || [0, 24 * 60 * 60];
+    this.timeRange = opt.timeRange;
 
     this.geometry = new THREE.PlaneGeometry();
     this.material = new THREE.MeshBasicMaterial({ opacity: this.opacity, transparent: this.opacity < 1 });
@@ -69,7 +69,7 @@ export class GridsLayer extends Layer {
   }
 
   setColorBar(colorBar) {
-    this.colorBar = colorBar;
+    this.colorBar = new ColorBar2D(colorBar);
     this.update();
   }
 
@@ -146,7 +146,7 @@ export class GridsLayer extends Layer {
       const matrix = new THREE.Matrix4().makeTranslation(x, y, i / l);
       mesh.setMatrixAt(i, matrix);
 
-      const color = new THREE.Color(ColorBar2D.getColor(value, min, max, this.colorBar))
+      const color = new THREE.Color(this.colorBar.getColor((value - min) / (max - min) * 100))
       mesh.setColorAt(i, color);
 
       // const textGeometry = new Text2DGeometry(String(value), {
@@ -179,12 +179,6 @@ export class GridsLayer extends Layer {
     group.position.set(x, y, 0);
     group.userData.center = center;
     this.scene.add(group);
-
-    this.handleEventListener("updata:colorBar", {
-      min: min,
-      max: max,
-      colorBar: this.colorBar
-    })
   }
 
 

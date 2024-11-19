@@ -78,13 +78,12 @@ export class GeoJSONLayer extends Layer {
     this.pointMaterial.setColorBar(!!this.pointValue ? this.pointColorBar : null);
   }
   setPointColorBar(pointColorBar) {
-    try {
-      this.pointColorBar = new ColorBar2D(pointColorBar);
-      this.pointMaterial.setColorBar(!!this.pointValue ? this.pointColorBar : null);
-    } catch (error) {
+    if (!pointColorBar || pointColorBar.length <= 0) {
       this.pointColorBar = null;
-      this.pointMaterial.setColorBar(null);
+    } else {
+      this.pointColorBar = new ColorBar2D(pointColorBar);
     }
+    this.pointMaterial.setColorBar(!!this.pointValue ? this.pointColorBar : null);
   }
   setPointOpacity(pointOpacity) {
     this.pointOpacity = pointOpacity;
@@ -124,13 +123,12 @@ export class GeoJSONLayer extends Layer {
     this.lineMaterial.setColorBar(!!this.pointValue ? this.pointColorBar : null);
   }
   setLineColorBar(lineColorBar) {
-    try {
-      this.lineColorBar = new ColorBar2D(lineColorBar);
-      this.lineMaterial.setColorBar(!!this.lineValue ? this.lineColorBar : null);
-    } catch (error) {
+    if (!lineColorBar || lineColorBar.length <= 0) {
       this.lineColorBar = null;
-      this.lineMaterial.setColorBar(null);
+    } else {
+      this.lineColorBar = new ColorBar2D(lineColorBar);
     }
+    this.lineMaterial.setColorBar(!!this.lineValue ? this.lineColorBar : null);
   }
   setLineOpacity(lineOpacity) {
     this.lineOpacity = lineOpacity;
@@ -191,15 +189,13 @@ export class GeoJSONLayer extends Layer {
     this.polygonBorderMaterial.setColorBar(!!this.polygonValue ? this.polygonColorBar : null);
   }
   setPolygonColorBar(polygonColorBar) {
-    try {
-      this.polygonColorBar = new ColorBar2D(polygonColorBar);
-      this.polygonMaterial.setColorBar(!!this.polygonValue ? this.polygonColorBar : null);
-      this.polygonBorderMaterial.setColorBar(!!this.polygonValue ? this.polygonColorBar : null);
-    } catch (error) {
+    if (!polygonColorBar || polygonColorBar.length <= 0) {
       this.polygonColorBar = null;
-      this.polygonMaterial.setColorBar(null);
-      this.polygonBorderMaterial.setColorBar(null);
+    } else {
+      this.polygonColorBar = new ColorBar2D(polygonColorBar);
     }
+    this.polygonMaterial.setColorBar(!!this.polygonValue ? this.polygonColorBar : null);
+    this.polygonBorderMaterial.setColorBar(!!this.polygonValue ? this.polygonColorBar : null);
   }
   setPolygon3DValue(polygon3DValue) {
     this.polygon3DValue = polygon3DValue;
@@ -216,8 +212,7 @@ export class GeoJSONLayer extends Layer {
 
     this.polygonBorderMaterial.defines.USE_3D = !!this.polygon3DValue;
     this.polygonBorderMaterial.needsUpdate = true;
-    console.log(this.polygonBorderMaterial.defines.USE_3D);
-    
+
   }
   setPolygon3DScale(polygon3DScale) {
     this.polygon3DScale = polygon3DScale;
@@ -551,9 +546,7 @@ export class GeoJSONPointListGeometry extends THREE.BufferGeometry {
     try {
       this._valuekey = valueKey;
       const attrValue = this.valueMap[valueKey];
-      console.log(attrValue, this.valueMap);
       if (attrValue) {
-
         this.setAttribute("value", attrValue);
       } else {
         // mac系统中不能设置空数组，不然图像不显示

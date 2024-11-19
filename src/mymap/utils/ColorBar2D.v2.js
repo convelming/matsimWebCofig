@@ -20,16 +20,25 @@ export class ColorBar2D {
   list = [];
 
   constructor(list = []) {
-    if (!list || !list.length) throw new Error("ColorBar2D: list is empty");
     this.list = list.map(v => new ColorBar2DItem(v)).sort((a, b) => a.min - b.min);
   }
 
   get min() {
-    return this.list[0].min;
+    let i = this.list.length - 1
+    let v = this.list[i];
+    while (v && !v.use) {
+      v = this.list[++i];
+    }
+    return !!v ? v.min : 0;
   }
 
   get max() {
-    return this.list[this.list.length - 1].max;
+    let i = this.list.length - 1
+    let v = this.list[i];
+    while (v && !v.use) {
+      v = this.list[--i];
+    }
+    return !!v ? v.max : 1;
   }
 
   getColor(value) {
@@ -41,6 +50,7 @@ export class ColorBar2D {
           return color
         }
       }
+      return "#000000";
     } catch (error) {
       return "#000000";
     }
@@ -53,12 +63,13 @@ export class ColorBar2D {
       const MIN = this.min;
       const MAX = this.max;
       // console.log(this.list);
-      for (const { min, max, color } of this.list) {
+      for (const { min, max, color, use } of this.list) {
         // console.log(min, max, MIN, MAX);
         // console.log((min - MIN) / (MAX - MIN), (max - MIN) / (MAX - MIN));
-
-        linearGradient.addColorStop((min - MIN) / (MAX - MIN), color);
-        linearGradient.addColorStop((max - MIN) / (MAX - MIN), color);
+        if (use) {
+          linearGradient.addColorStop((min - MIN) / (MAX - MIN), color);
+          linearGradient.addColorStop((max - MIN) / (MAX - MIN), color);
+        }
       }
       // 绘制渐变色条
       context2D.fillStyle = linearGradient;
@@ -77,10 +88,17 @@ export class ColorBar2D {
 
 
 class ColorBar2DItem {
-  constructor({ min, max, label, color }) {
+  constructor({ min, max, label, color, use }) {
     this.min = min;
+    if (min !== 0 && !min) {
+      this.min = Number.MIN_SAFE_INTEGER;
+    }
     this.max = max;
+    if (max !== 0 && !max) {
+      this.max = Number.MAX_SAFE_INTEGER;
+    }
     this.label = label;
     this.color = color;
+    this.use = use;
   }
 }

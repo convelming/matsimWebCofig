@@ -1,110 +1,125 @@
 <template>
-  <Dialog class="GeoJSONSetting" :title="'GeoJSONSetting'" :visible="s_visible" @close="handleClose" left="center" width="600px">
+  <Dialog class="GeoJSONSetting" :title="title" :visible="s_visible" @close="handleClose" left="center" width="700px">
     <div class="GeoJSONSetting_body">
       <el-form :model="s_form" ref="form" label-width="120px" :inline="false" size="small" label-position="left">
         <template v-for="(lItem, lIndex) in layout">
-          <el-form-item v-if="lItem.type === 'number'" :label="lItem.label">
+          <el-form-item v-if="lItem.type === 'number'" :label="lItem[$l('label')]">
             <el-input-number class="w100" v-model="s_form[lItem.name]" v-bind="Object.assign({}, {}, lItem.attrs)" />
           </el-form-item>
-          <el-form-item v-if="lItem.type === 'slider'" :label="lItem.label">
+          <el-form-item v-if="lItem.type === 'slider'" :label="lItem[$l('label')]">
             <el-slider class="w100 px-1em" v-model="s_form[lItem.name]" v-bind="Object.assign({}, {}, lItem.attrs)" />
           </el-form-item>
-          <el-form-item v-if="lItem.type === 'color'" :label="lItem.label">
+          <el-form-item v-if="lItem.type === 'switch'" :label="lItem[$l('label')]">
+            <el-switch v-model="s_form[lItem.name]" v-bind="Object.assign({}, {}, lItem.attrs)" />
+          </el-form-item>
+          <el-form-item v-if="lItem.type === 'color'" :label="lItem[$l('label')]">
             <el-color-picker class="w100" v-model="s_form[lItem.name]" v-bind="Object.assign({}, { predefine: predefine }, lItem.attrs)" />
           </el-form-item>
-          <el-form-item v-if="lItem.type === 'select'" :label="lItem.label">
+          <el-form-item v-if="lItem.type === 'select'" :label="lItem[$l('label')]">
             <el-select class="w100" v-model="s_form[lItem.name]" v-bind="Object.assign({}, {}, lItem.attrs)">
               <el-option v-for="(v, k) in lItem.options" :key="v.value" :label="v.label" :value="v.value"></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item v-if="lItem.type === 'lineStyle'" :label="lItem.label">
+          <el-form-item v-if="lItem.type === 'lineStyle'" :label="lItem[$l('label')]">
             <el-select class="w100" v-model="s_form[lItem.name]" v-bind="Object.assign({}, {}, lItem.attrs)">
               <el-option v-for="(v, k) in LINE_STYLE" :key="v" :label="k" :value="v"></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item v-if="lItem.type === 'icon'" :label="lItem.label">
+          <el-form-item v-if="lItem.type === 'icon'" :label="lItem[$l('label')]">
             <IconSelect class="w100" v-model="s_form[lItem.name]" v-bind="Object.assign({}, {}, lItem.attrs)" />
           </el-form-item>
           <template v-if="lItem.type == 'colorBar'">
-            <el-divider content-position="left">{{ lItem.label }}</el-divider>
-            <el-form-item label="Value key">
+            <el-divider content-position="left">{{ lItem[$l("label")] }}</el-divider>
+            <el-form-item :label="$l('值')" v-if="!(lItem.attrs && lItem.attrs.hideValueKey)">
               <el-select class="w100" v-model="s_form[lItem.name].valueKey" @change="handleColorBarValueKeyChange(lItem, $event)">
                 <el-option v-for="(v, k) in lItem.options" :key="k" :label="`${v.name}(${v.type})`" :value="k"></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="Color ramp">
+            <el-form-item :label="$l('色道')" v-if="!(lItem.attrs && lItem.attrs.hideColorRamp)">
               <div style="display: flex">
                 <el-color-picker class="w100" v-model="s_form[lItem.name].startColor" :predefine="predefine" />
                 <el-color-picker class="w100" v-model="s_form[lItem.name].endColor" :predefine="predefine" />
               </div>
             </el-form-item>
             <template v-if="s_form[lItem.name].valueType == 'Number'">
-              <el-form-item label="Model">
+              <el-form-item :label="$l('模式')" v-if="!(lItem.attrs && lItem.attrs.hideModel)">
                 <div style="display: flex">
                   <el-select class="w100" v-model="s_form[lItem.name].model" @change="">
                     <el-option label="Equal Count" value="count" />
                     <el-option label="Equal Interval" value="interval" />
                   </el-select>
                   <el-input-number v-model="s_form[lItem.name].modelClass" :min="1" :step="1" step-strictly controls-position="right" />
-                  <el-button type="primary" @click="handleAutogenerate(lItem)">自动生成</el-button>
+                  <el-button type="primary" @click="handleAutogenerate(lItem)">{{ $l("自动生成") }}</el-button>
                 </div>
               </el-form-item>
               <el-form-item label-width="0">
                 <el-table class="small" :data="s_form[lItem.name].data" border stripe>
-                  <el-table-column label="Symbol" prop="symbol" width="80px">
+                  <el-table-column :label="$l('颜色')" width="80px">
                     <div slot-scope="{ row }" style="display: flex; align-items: center">
-                      <el-checkbox v-model="row.show" style="padding-right: 10px" />
+                      <el-checkbox v-model="row.use" style="padding-right: 10px" />
                       <el-color-picker v-model="row.color" size="mini" :predefine="predefine" @change="handleChangeImage(lItem, row, $event)" />
                     </div>
                   </el-table-column>
-                  <el-table-column label="Min" prop="min">
+                  <el-table-column :label="$l('最小值')">
                     <template slot-scope="{ row }">
                       <el-input-number v-model="row.min" size="mini" :step="1" controls-position="right" @change="handleChangeImage(lItem, row, $event)" />
                     </template>
                   </el-table-column>
-                  <el-table-column label="Max" prop="max">
+                  <el-table-column :label="$l('最大值')">
                     <template slot-scope="{ row }">
                       <el-input-number v-model="row.max" size="mini" :step="1" controls-position="right" @change="handleChangeImage(lItem, row, $event)" />
                     </template>
                   </el-table-column>
-                  <el-table-column label="Label" prop="label">
+                  <el-table-column :label="$l('标签')">
                     <template slot-scope="{ row }">
                       <el-input v-model="row.label" size="mini" />
                     </template>
                   </el-table-column>
+                  <el-table-column width="65" align="center" v-if="!(lItem.attrs && lItem.attrs.hideDelete)">
+                    <template slot-scope="{ row }">
+                      <el-button type="danger" size="mini" @click="handleDeleteColorBarItem(lItem, row)" icon="el-icon-delete"></el-button>
+                    </template>
+                  </el-table-column>
+                  <el-button slot="append" v-if="!(lItem.attrs && lItem.attrs.hideAdd)" style="width: 100%; display: block" type="primary" size="mini" icon="el-icon-plus" @click="handleAddColorBarItem(lItem)"></el-button>
                 </el-table>
               </el-form-item>
             </template>
             <template v-if="s_form[lItem.name].valueType == 'String'">
-              <el-form-item label="Model">
-                <el-button type="primary" @click="handleAutogenerate(lItem)">自动生成</el-button>
+              <el-form-item :label="$l('模式')" v-if="!(lItem.attrs && lItem.attrs.hideModel)">
+                <el-button type="primary" @click="handleAutogenerate(lItem)">{{ $l("自动生成") }}</el-button>
               </el-form-item>
               <el-form-item label-width="0">
                 <el-table class="small" :data="s_form[lItem.name].data" border stripe>
-                  <el-table-column label="Symbol" prop="symbol" width="80px">
+                  <el-table-column :label="$l('颜色')" prop="symbol" width="80px">
                     <div slot-scope="{ row }" style="display: flex; align-items: center">
-                      <el-checkbox v-model="row.show" style="padding-right: 10px" />
+                      <el-checkbox v-model="row.use" style="padding-right: 10px" />
                       <el-color-picker v-model="row.color" size="mini" :predefine="predefine" />
                     </div>
                   </el-table-column>
-                  <el-table-column label="Type" prop="min">
+                  <el-table-column :label="$l('类型')" prop="min">
                     <template slot-scope="{ row }">
-                      <el-select v-model="row.min" @change="row.max = $event">
+                      <el-select v-model="row.min" @change="row.max = $event" size="mini">
                         <el-option v-for="(mi, mk) in lItem.options[s_form[lItem.name].valueKey].map" :key="mi" :label="mk" :value="mi" />
                       </el-select>
                     </template>
                   </el-table-column>
-                  <el-table-column label="Label" prop="label">
+                  <el-table-column :label="$l('标签')" prop="label">
                     <template slot-scope="{ row }">
                       <el-input v-model="row.label" size="mini" />
                     </template>
                   </el-table-column>
+                  <el-table-column width="65" align="center" v-if="!(lItem.attrs && lItem.attrs.hideDelete)">
+                    <template slot-scope="{ row }">
+                      <el-button type="danger" size="mini" @click="handleDeleteColorBarItem(lItem, row)" icon="el-icon-delete"></el-button>
+                    </template>
+                  </el-table-column>
+                  <el-button slot="append" v-if="!(lItem.attrs && lItem.attrs.hideAdd)" style="width: 100%; display: block" type="primary" size="mini" icon="el-icon-plus" @click="handleAddColorBarItem(lItem)"></el-button>
                 </el-table>
               </el-form-item>
             </template>
           </template>
           <template v-if="lItem.type == '3d'">
-            <el-divider content-position="left">{{ lItem.label }}</el-divider>
+            <el-divider content-position="left">{{ lItem[$l("label")] }}</el-divider>
             <el-form-item label="Value key">
               <el-select class="w100" v-model="s_form[lItem.name].valueKey">
                 <el-option v-for="(v, k) in lItem.options" :disabled="v.type != 'Number'" :key="k" :label="`${v.name}(${v.type})`" :value="k" />
@@ -124,6 +139,52 @@
   </Dialog>
 </template>
 
+<language>
+{
+  "label":{
+    "zh-CN": "label",
+    "en-US": "en_label"
+  },
+  "值":{
+    "zh-CN": "值",
+    "en-US": "Value"
+  },
+  "色道":{
+    "zh-CN": "色道",
+    "en-US": "Color ramp"
+  },
+  "模式":{
+    "zh-CN": "模式",
+    "en-US": "Model"
+  },
+  "颜色":{
+    "zh-CN": "颜色",
+    "en-US": "Color"
+  },
+  "最小值":{
+    "zh-CN": "最小值",
+    "en-US": "Min"
+  },
+  "最大值":{
+    "zh-CN": "最大值",
+    "en-US": "Max"
+  },
+  "标签":{
+    "zh-CN": "标签",
+    "en-US": "Label"
+  },
+  "类型":{
+    "zh-CN": "类型",
+    "en-US": "Type"
+  },
+  "自动生成":{
+    "zh-CN": "自动生成",
+    "en-US": "Autogenerate"
+  },
+  
+}
+</language>
+
 <script>
 import * as THREE from "three";
 import { ICON_LIST } from "@/utils/utils";
@@ -132,6 +193,10 @@ import { ColorBar2D } from "@/mymap/utils/ColorBar2D.v2";
 export default {
   name: "GeoJSONSetting",
   props: {
+    title: {
+      type: String,
+      default: "",
+    },
     visible: {
       type: Boolean,
       default: false,
@@ -170,61 +235,6 @@ export default {
               max: 1007582,
               values: [0, 1007577, 1007576, 1007575, 1007574, 1007573, 1007572, 1007582, 1007581, 1007580, 100758, 1007579, 1007578, 1007578],
             },
-            srid__Number: {
-              type: "Number",
-              name: "srid",
-              min: 3857,
-              max: 3857,
-              values: [0, 3857, 3857, 3857, 3857, 3857, 3857, 3857, 3857, 3857, 3857, 3857, 3857, 3857],
-            },
-            from_node__Number: {
-              type: "Number",
-              name: "from_node",
-              min: 5073324615,
-              max: 10731151137,
-              values: [0, 6642321256, 6015128180, 6015128181, 7669228366, 6015128182, 5073324615, 5734868113, 5734868112, 5734868112, 10731151137, 9520940349, 6015128179, 6015128179],
-            },
-            to_node__Number: {
-              type: "Number",
-              name: "to_node",
-              min: 2090820228,
-              max: 10731151138,
-              values: [0, 6015128179, 6642321256, 6015128180, 6015128181, 7669228366, 6015128182, 5734868112, 5734868113, 9520940349, 10731151138, 5734868112, 2090820228, 2090820228],
-            },
-            length__Number: {
-              type: "Number",
-              name: "length",
-              min: 23.881369429688938,
-              max: 209.63560476865078,
-              values: [
-                0, 52.280559475329724, 64.6082947294028, 119.91990487575727, 23.881369429688938, 29.106009012720406, 115.08553234233977, 89.04294798091108, 89.04294798091108, 34.635776072489385, 29.138823349782804, 34.635776072489385, 209.63560476865078,
-                209.63560476865078,
-              ],
-            },
-            freespeed__Number: {
-              type: "Number",
-              name: "freespeed",
-              min: 4.166666666666667,
-              max: 8.333333333333334,
-              values: [
-                0, 8.333333333333334, 8.333333333333334, 8.333333333333334, 8.333333333333334, 8.333333333333334, 8.333333333333334, 4.166666666666667, 4.166666666666667, 4.166666666666667, 6.944444444444445, 4.166666666666667, 8.333333333333334,
-                8.333333333333334,
-              ],
-            },
-            capacity__Number: {
-              type: "Number",
-              name: "capacity",
-              min: 600,
-              max: 2000,
-              values: [0, 2000, 2000, 2000, 2000, 2000, 2000, 600, 600, 600, 600, 600, 2000, 2000],
-            },
-            origid__Number: {
-              type: "Number",
-              name: "origid",
-              min: 604372364,
-              max: 1153855502,
-              values: [0, 638189455, 638189455, 638189455, 638189455, 638189455, 638189455, 604372364, 604372364, 604372364, 1153855502, 604372364, 638189455, 638189455],
-            },
             type__String: {
               type: "String",
               name: "type",
@@ -237,22 +247,14 @@ export default {
               max: 2,
               values: [0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 2, 1, 0, 0],
             },
-            name__Number: {
-              type: "Number",
-              name: "name",
-              min: 0,
-              max: 0,
-              values: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            },
-            lane__Number: {
-              type: "Number",
-              name: "lane",
-              min: 1,
-              max: 2,
-              values: [0, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 2, 2],
-            },
           },
-          attrs: {},
+          attrs: {
+            hideAdd: false,
+            hideDelete: false,
+            hideValueKey: false,
+            hideColorRamp: false,
+            hideModel: false,
+          },
         },
       ],
     },
@@ -352,11 +354,14 @@ export default {
         const step = (max - min) / modelClass;
         for (let i = 0; i < modelClass; i++) {
           const color = new THREE.Color().lerpColors(startColor, endColor, i / modelClass);
+          const min2 = Number(Number(min + step * i).toFixed(4));
+          const max2 = Number(Number(min + step * (i + 1)).toFixed(4));
           list.push({
-            min: min + step * i,
-            max: min + step * (i + 1),
+            min: min2,
+            max: max2,
             color: "#" + color.getHexString(),
-            label: `${min + step * i} ~ ${min + step * (i + 1)}`,
+            label: `${min2} ~ ${max2}`,
+            use: true,
           });
         }
       } else if (data.type == "Number" && item.model == "interval") {
@@ -375,6 +380,7 @@ export default {
             max: values[e],
             color: "#" + color.getHexString(),
             label: `${values[s]} ~ ${values[e]}`,
+            use: true,
           });
         }
       } else if (data.type == "String") {
@@ -387,10 +393,28 @@ export default {
             max: mi,
             color: "#" + color.getHexString(),
             label: mk,
+            use: true,
           });
         }
       }
       this.$set(item, "data", list);
+      this.handleChangeImage(lItem);
+    },
+    handleDeleteColorBarItem(lItem, index) {
+      const item = this.s_form[lItem.name];
+      item.data.splice(index, 1);
+      this.handleChangeImage(lItem);
+    },
+    handleAddColorBarItem(lItem, index) {
+      const item = this.s_form[lItem.name];
+      const last = item.data[item.data.length - 1] || {
+        min: 0,
+        max: 1,
+        color: item.endColor,
+        label: `${0} ~ ${1}`,
+        use: true,
+      };
+      item.data.push(JSON.parse(JSON.stringify(last)));
       this.handleChangeImage(lItem);
     },
     handleChangeImage(lItem) {

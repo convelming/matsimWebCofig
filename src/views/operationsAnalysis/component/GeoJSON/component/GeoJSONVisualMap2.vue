@@ -1,14 +1,15 @@
 <template>
   <div class="GeoJSONVisualMap" @mousedown="startMove" :style="s_style">
-    <div class="item" v-for="(item, index) in list" :key="index">
-      <div class="text">{{ item.label }}</div>
-      <div class="color" :style="{ backgroundColor: item.color }"></div>
-    </div>
+    <template v-for="(item, index) in list">
+      <div class="item" :key="index" v-if="item.use">
+        <div class="text">{{ item.label }}</div>
+        <div class="color" :style="{ backgroundColor: item.color }"></div>
+      </div>
+    </template>
   </div>
 </template>
 
 <script>
-import { ColorBar2D } from "@/mymap/utils/ColorBar2D";
 
 export default {
   name: "GeoJSONVisualMap",
