@@ -1086,13 +1086,13 @@ export default {
     async handleShowAccessibilityLayer() {
       try {
         this.accessibilityLoading = true;
-        // const res = await accessibilityTRG({
-        //   xyarr: this.singlePathDetail.shape,
-        //   holes: this.singlePathDetail.holes,
-        // });
-        // this._AccessibilityLayer.setData(res.data);
-        const data = require("./data.json");
-        this._AccessibilityLayer.setData(data);
+        const res = await accessibilityTRG({
+          xyarr: this.singlePathDetail.shape,
+          holes: this.singlePathDetail.holes,
+        });
+        this._AccessibilityLayer.setData(res.data);
+        // const data = require("./data.json");
+        // this._AccessibilityLayer.setData(data);
         this.showAccessibilityLayer = true;
       } catch (error) {
         console.log(error);
