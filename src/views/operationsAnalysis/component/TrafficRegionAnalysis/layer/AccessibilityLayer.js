@@ -20,7 +20,6 @@ export class AccessibilityLayer extends Layer {
   data = [];
   valueKey = "";
   groupList = [];
-  showIds = [];
 
   constructor(opt) {
     super(opt);
@@ -72,7 +71,6 @@ export class AccessibilityLayer extends Layer {
             ">120": 5,
           }[String(id)],
           center: center,
-          show: false,
           polygonMesh: polygonMesh
         }
 
@@ -125,21 +123,20 @@ export class AccessibilityLayer extends Layer {
     let prevBar = null;
     for (let i = this.groupList.length - 1; i >= 0; i--) {
       const group = this.groupList[i];
-      const { id, polygonMesh, show, key } = group.userData;
+      const { polygonMesh, key } = group.userData;
       const bar = this.colorBar.find(v => v.min == key);
       if (bar && bar.use) {
         this.scene.add(group);
-
         polygonMesh.material.setValues({ color: bar.color, transparent: this.opacity < 1, opacity: this.opacity })
         polygonMesh.material.needsUpdate = true;
         prevBar = bar;
       } else if (prevBar) {
+        this.scene.add(group);
         polygonMesh.material.setValues({ color: prevBar.color, transparent: this.opacity < 1, opacity: this.opacity })
         polygonMesh.material.needsUpdate = true;
       } else {
         this.scene.remove(group);
       }
-
     }
     console.log("updateValue", this);
   }
