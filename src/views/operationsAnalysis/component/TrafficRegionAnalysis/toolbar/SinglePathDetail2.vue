@@ -1092,8 +1092,6 @@ export default {
         // });
         // this._AccessibilityLayer.setData(res.data);
         const data = require("./data.json");
-        console.log(data);
-
         this._AccessibilityLayer.setData(data);
         this.showAccessibilityLayer = true;
       } catch (error) {

@@ -54,7 +54,7 @@ export class AccessibilityLayer extends Layer {
         group.position.set(0, 0, (l - i) / l);
 
         const shapeT = new THREE.Shape(points.map(v => new THREE.Vector2(v[0] - center[0], v[1] - center[1])));
-        // shapeT.holes = holes.map(hole => new THREE.Path(hole.map(v => new THREE.Vector2(v[0] - center[0], v[1] - center[1]))));
+        shapeT.holes = holes.map(hole => new THREE.Path(hole.map(v => new THREE.Vector2(v[0] - center[0], v[1] - center[1]))));
 
         const polygonGeometry = new THREE.ShapeGeometry(shapeT);
         const polygonMesh = new THREE.Mesh(polygonGeometry, new THREE.MeshBasicMaterial({}));
@@ -122,19 +122,27 @@ export class AccessibilityLayer extends Layer {
   }
 
   async updateValue() {
-    for (const group of this.groupList) {
+    let prevBar = null;
+    for (let i = this.groupList.length - 1; i >= 0; i--) {
+      const group = this.groupList[i];
       const { id, polygonMesh, show, key } = group.userData;
-
       const bar = this.colorBar.find(v => v.min == key);
-      if (bar && bar.use) this.scene.add(group);
-      else this.scene.remove(group);
-      polygonMesh.material.setValues({ color: bar ? bar.color : "#fff", transparent: this.opacity < 1, opacity: this.opacity })
-      polygonMesh.material.needsUpdate = true;
+      if (bar && bar.use) {
+        this.scene.add(group);
+
+        polygonMesh.material.setValues({ color: bar.color, transparent: this.opacity < 1, opacity: this.opacity })
+        polygonMesh.material.needsUpdate = true;
+        prevBar = bar;
+      } else if (prevBar) {
+        polygonMesh.material.setValues({ color: prevBar.color, transparent: this.opacity < 1, opacity: this.opacity })
+        polygonMesh.material.needsUpdate = true;
+      } else {
+        this.scene.remove(group);
+      }
+
     }
     console.log("updateValue", this);
-
   }
-
 
 }
 
