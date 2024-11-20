@@ -46,7 +46,7 @@ export class ColorBar2D {
       // 创建线性渐变色
       for (let i = this.list.length - 1; i >= 0; i--) {
         const { min, max, color } = this.list[i];
-        if (min < value && value <= max) {
+        if (min <= value && value <= max) {
           return color
         }
       }

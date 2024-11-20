@@ -301,7 +301,7 @@ export default {
           }
           this._ActivityRoutesLayer.setData(res.data, [this.detail.coord.x, this.detail.coord.y]);
 
-          if (this.rootVue.$refs.Activity3D) this.rootVue.$refs.Activity3D.updataColor();
+          if (this.rootVue.$refs.Activity3D) this.rootVue.$refs.Activity3D.updateColor();
         })
         .finally(() => {
           this.loading = false;

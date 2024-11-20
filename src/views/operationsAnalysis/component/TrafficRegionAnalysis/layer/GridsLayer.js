@@ -23,18 +23,19 @@ export class GridsLayer extends Layer {
     super(opt);
     this.colorBar = new ColorBar2D(opt.colorBar || []);
     this.opacity = opt.opacity || 1;
-    this.step = opt.step || 100;
-    this.size = opt.size || 1;
+    this.size = opt.size || 100;
     this.timeRange = opt.timeRange;
 
     this.geometry = new THREE.PlaneGeometry();
     this.material = new THREE.MeshBasicMaterial({ opacity: this.opacity, transparent: this.opacity < 1 });
-    this.textMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
+    // this.textMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
   }
 
   onAdd(map) {
     super.onAdd(map);
-    this.update();
+    this.updateMesh();
+    this.updateColor();
+    if (this.gridList) this.handleEventListener("update:values");
   }
 
   setOpacity(opacity) {
@@ -45,38 +46,39 @@ export class GridsLayer extends Layer {
 
   setTimeRange(timeRange) {
     this.timeRange = timeRange;
-    this.update();
+    this.updateColor();
+    if (this.gridList) this.handleEventListener("update:values");
   }
 
   async setData(data) {
     this.data = data;
-    this.update();
-  }
-
-  setStep(setp) {
-    this.step = setp;
-    this.update();
+    this.updateMesh();
+    this.updateColor();
+    if (this.gridList) this.handleEventListener("update:values");
   }
 
   setSize(size) {
     this.size = parseInt(size);
-    this.update();
+    this.updateMesh();
+    this.updateColor();
+    if (this.gridList) this.handleEventListener("update:values");
   }
 
   setTime(time) {
     this.time = time;
-    this.update();
+    this.updateColor();
   }
 
   setColorBar(colorBar) {
     this.colorBar = new ColorBar2D(colorBar);
-    this.update();
+    this.updateColor();
   }
 
   on(type, data) {
     if (type == MAP_EVENT.UPDATE_CENTER) {
       for (const mesh of this.scene.children) {
-        const [x, y] = this.map.WebMercatorToCanvasXY(...mesh.userData.center);
+        const { center } = mesh.userData;
+        const [x, y] = this.map.WebMercatorToCanvasXY(center[0], center[1]);
         mesh.position.set(x, y, mesh.position.z);
       }
     }
@@ -98,57 +100,76 @@ export class GridsLayer extends Layer {
   }
 
 
-  async update() {
-    this.clearScene()
+  updateMesh() {
+    if (this.mesh) {
+      this.mesh.removeFromParent();
+      this.mesh.dispose();
+      this.mesh = null;
+      this.gridList = null;
+    }
     if (!this.data) return;
-    if (!this.map) return;
 
-    const font = await getFont();
     let center = null;
     const gridObj = {};
-    const wh = this.step * this.size;
+    const wh = this.size;
     for (const v1 of this.data) {
       const row = Math.floor(v1.x / wh);
       const col = Math.floor(v1.y / wh);
       const key = `${row}_${col}`;
-      let value = v1.num[this.time] || 0;
-      if (this.timeRange) {
-        const s = Math.floor(this.timeRange[0] / 3600);
-        const e = Math.ceil(this.timeRange[1] / 3600);
-        value = v1.num.reduce((c, v, i) => s <= i && i <= e ? c + v : c, 0);
-      }
       if (!center) center = [row * wh, col * wh];
-      if (value <= 0) continue;
       if (!gridObj[key]) {
         gridObj[key] = {
           x: row * wh - center[0],
           y: col * wh - center[1],
-          value: 0
+          values: new Array(24).fill(0)
         };
       }
-      gridObj[key].value += value;
+      gridObj[key].values.forEach((v2, i2, l2) => {
+        l2[i2] += v1.num[i2] || 0;
+      });
     }
 
-
-    const group = new THREE.Group();
-
-    const gridList = Object.values(gridObj);
-
-    const min = Math.min(...gridList.map(v1 => v1.value));
-    const max = Math.max(...gridList.map(v1 => v1.value));
+    this.gridList = Object.values(gridObj);
 
     const position = [0, 0, 0, wh, 0, 0, 0, -wh, 0, wh, -wh, 0];
     this.geometry.setAttribute("position", new THREE.Float32BufferAttribute(position, 3))
-    const mesh = new THREE.InstancedMesh(this.geometry, this.material, gridList.length);
+
+    this.mesh = new THREE.InstancedMesh(this.geometry, this.material, this.gridList.length);
+
+    this.mesh.userData.center = center;
+    this.scene.add(this.mesh);
+
+  }
+
+  async updateColor() {
+    if (!this.gridList) return;
+    if (!this.mesh) return;
+    if (!this.map) return;
+
+    // const font = await getFont();
+
+    const { gridList, mesh } = this;
+    const list = [];
 
     for (let i = 0, l = gridList.length; i < l; i++) {
-      const { value, x, y } = gridList[i];
-      const matrix = new THREE.Matrix4().makeTranslation(x, y, i / l);
+      const { values, x, y } = gridList[i];
+      let z = 0;
+      let value = values[this.time] || 0;
+      if (this.timeRange) {
+        const s = Math.floor(this.timeRange[0] / 3600);
+        const e = Math.ceil(this.timeRange[1] / 3600);
+        value = values.reduce((c, v, i) => s <= i && i <= e ? c + v : c, 0);
+      }
+      if (value <= 0) z = -10000;
+
+      if (value > 0) list.push(value);
+      const matrix = new THREE.Matrix4().makeTranslation(x, y, z);
       mesh.setMatrixAt(i, matrix);
 
-      const color = new THREE.Color(this.colorBar.getColor((value - min) / (max - min) * 100))
+      const color = new THREE.Color(this.colorBar.getColor(value))
       mesh.setColorAt(i, color);
 
+      // 添加数值
       // const textGeometry = new Text2DGeometry(String(value), {
       //   font: font,
       //   curveSegments: 12,
@@ -171,14 +192,15 @@ export class GridsLayer extends Layer {
       // group.add(textMesh)
     }
 
-    let [x, y] = this.map.WebMercatorToCanvasXY(...center);
-    mesh.position.set(x, y, 0);
-    mesh.userData.center = center;
-    this.scene.add(mesh);
+    mesh.instanceMatrix.needsUpdate = true;
+    mesh.instanceColor.needsUpdate = true;
 
-    group.position.set(x, y, 0);
-    group.userData.center = center;
-    this.scene.add(group);
+    const { center } = mesh.userData;
+    const [x, y] = this.map.WebMercatorToCanvasXY(center[0], center[1]);
+    mesh.position.set(x, y, 0);
+
+    console.log(mesh.count, list);
+
   }
 
 

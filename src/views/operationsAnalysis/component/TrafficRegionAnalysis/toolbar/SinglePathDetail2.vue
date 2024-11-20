@@ -89,6 +89,12 @@
           </div>
           <div class="setting_box" v-show="openOriginSetting">
             <div class="setting_item">
+              <div class="setting_item_label">{{ $l("大小") }}</div>
+              <div class="setting_item_value">
+                <el-input-number v-model="originSize" :min="GRID_STEP" :step="GRID_STEP" step-strictly size="mini" />
+              </div>
+            </div>
+            <div class="setting_item">
               <div class="setting_item_label">{{ $l("设置") }}</div>
               <div class="setting_item_value">
                 <el-button type="primary" icon="el-icon-setting" @click="showOriginConfig = true" size="mini"></el-button>
@@ -121,10 +127,16 @@
           </div>
           <div class="setting_box" v-show="openDestinationsSetting">
             <div class="setting_item">
+              <div class="setting_item_label">{{ $l("大小") }}</div>
+              <div class="setting_item_value">
+                <el-input-number v-model="destinationsSize" :min="GRID_STEP" :step="GRID_STEP" step-strictly size="mini" />
+              </div>
+            </div>
+            <div class="setting_item">
               <div class="setting_item_label">{{ $l("设置") }}</div>
               <div class="setting_item_value">
                 <el-button type="primary" icon="el-icon-setting" @click="showDestinationsConfig = true" size="mini"></el-button>
-                <GeoJSONSetting ref="originConfig" :visible.sync="showDestinationsConfig" :form="destinationsConfigForm" :layout="destinationsConfigLayout" @confirm="handleDestinationsConfigConfirm" />
+                <GeoJSONSetting ref="destinationsConfig" :visible.sync="showDestinationsConfig" :form="destinationsConfigForm" :layout="destinationsConfigLayout" @confirm="handleDestinationsConfigConfirm" />
               </div>
             </div>
             <div class="setting_item">
@@ -177,7 +189,7 @@
               <div class="setting_item_label">{{ $l("设置") }}</div>
               <div class="setting_item_value">
                 <el-button type="primary" icon="el-icon-setting" @click="showAccessibilityConfig = true" size="mini"></el-button>
-                <GeoJSONSetting ref="originConfig" :visible.sync="showAccessibilityConfig" :form="accessibilityConfigForm" :layout="accessibilityConfigLayout" @confirm="handleAccessibilityConfigConfirm" />
+                <GeoJSONSetting ref="accessibilityConfig" :visible.sync="showAccessibilityConfig" :form="accessibilityConfigForm" :layout="accessibilityConfigLayout" @confirm="handleAccessibilityConfigConfirm" />
               </div>
             </div>
             <div class="setting_item">
@@ -440,6 +452,11 @@ export default {
         }
       },
     },
+    originSize: {
+      handler(val) {
+        this._OriginGridsLayer.setSize(val);
+      },
+    },
     originUseTimeRange: {
       handler(val) {
         if (this.originUseTimeRange) {
@@ -465,6 +482,11 @@ export default {
         } else {
           this._Map.removeLayer(this._DestinationsGridsLayer);
         }
+      },
+    },
+    destinationsSize: {
+      handler(val) {
+        this._DestinationsGridsLayer.setSize(val);
       },
     },
     destinationsUseTimeRange: {
@@ -594,8 +616,8 @@ export default {
       originTimeRange: [0, 24 * 60 * 60],
       showOriginVisualMap: false,
       showOriginConfig: false,
+      originSize: GRID_STEP,
       originConfigForm: {
-        size: GRID_STEP,
         opacity: 1,
         colorBar: {
           valueKey: "value__Number",
@@ -604,23 +626,10 @@ export default {
           endColor: "#99000D",
           model: "count",
           modelClass: 5,
-          data: [
-            { min: 0, max: 20, color: "#fee0d2", label: "0 ~ 20", use: true },
-            { min: 20, max: 40, color: "#e9b3aa", label: "20 ~ 40", use: true },
-            { min: 40, max: 60, color: "#d58683", label: "40 ~ 60", use: true },
-            { min: 60, max: 80, color: "#c1595b", label: "60 ~ 80", use: true },
-            { min: 80, max: 100, color: "#ad2c34", label: "80 ~ 100", use: true },
-          ],
+          data: [],
         },
       },
       originConfigLayout: [
-        {
-          label: "大小",
-          en_label: "Size",
-          name: "size",
-          type: "number",
-          attrs: { min: 0, step: GRID_STEP },
-        },
         {
           label: "透明度",
           en_label: "Opacity",
@@ -655,8 +664,8 @@ export default {
       destinationsTimeRange: [0, 24 * 60 * 60],
       showDestinationsVisualMap: false,
       showDestinationsConfig: false,
+      destinationsSize: GRID_STEP,
       destinationsConfigForm: {
-        size: GRID_STEP,
         opacity: 1,
         colorBar: {
           valueKey: "value__Number",
@@ -665,23 +674,10 @@ export default {
           endColor: "#99000D",
           model: "count",
           modelClass: 5,
-          data: [
-            { min: 0, max: 20, color: "#fee0d2", label: "0 ~ 20", use: true },
-            { min: 20, max: 40, color: "#e9b3aa", label: "20 ~ 40", use: true },
-            { min: 40, max: 60, color: "#d58683", label: "40 ~ 60", use: true },
-            { min: 60, max: 80, color: "#c1595b", label: "60 ~ 80", use: true },
-            { min: 80, max: 100, color: "#ad2c34", label: "80 ~ 100", use: true },
-          ],
+          data: [],
         },
       },
       destinationsConfigLayout: [
-        {
-          label: "大小",
-          en_label: "Size",
-          name: "size",
-          type: "number",
-          attrs: { min: 0, step: GRID_STEP },
-        },
         {
           label: "透明度",
           en_label: "Opacity",
@@ -805,17 +801,63 @@ export default {
       zIndex: 240,
       opacity: this.originConfigForm.opacity,
       colorBar: this.originConfigForm.colorBar.data,
-      size: this.originConfigForm.size / GRID_STEP,
-      step: GRID_STEP,
+      size: this.originSize,
       timeRange: this.originUseTimeRange ? this.originTimeRange : null,
+      event: {
+        ["update:values"]: (data) => {
+          this.$nextTick(() => {
+            const item = this.originConfigLayout.find((item) => item.name === "colorBar");
+            const { gridList } = data.target;
+            if (this.originUseTimeRange) {
+              const values = gridList.map((item) => item.values.reduce((a, b) => a + b, 0));
+              item.options.value__Number.values = values;
+              item.options.value__Number.min = Math.min(...values);
+              item.options.value__Number.max = Math.max(...values);
+            } else {
+              const values = gridList.map((item) => item.values).flat(2);
+              item.options.value__Number.values = values;
+              item.options.value__Number.min = Math.min(...values);
+              item.options.value__Number.max = Math.max(...values);
+            }
+            if (this.originConfigForm.colorBar.data.length <= 0) {
+              this.$refs.originConfig.handleAutogenerate(item);
+              this.$refs.originConfig.handleConfirm();
+            }
+          });
+        },
+      },
     });
     this._DestinationsGridsLayer = new GridsLayer({
       zIndex: 240,
       opacity: this.destinationsConfigForm.opacity,
       colorBar: this.destinationsConfigForm.colorBar.data,
-      size: this.destinationsConfigForm.size / GRID_STEP,
-      step: GRID_STEP,
+      size: this.destinationsSize,
       timeRange: this.destinationsUseTimeRange ? this.destinationsTimeRange : null,
+      event: {
+        ["update:values"]: (data) => {
+          this.$nextTick(() => {
+            this.$nextTick(() => {
+              const item = this.destinationsConfigLayout.find((item) => item.name === "colorBar");
+              const { gridList } = data.target;
+              if (this.destinationsUseTimeRange) {
+                const values = gridList.map((item) => item.values.reduce((a, b) => a + b, 0));
+                item.options.value__Number.values = values;
+                item.options.value__Number.min = 0; // Math.min(...values);
+                item.options.value__Number.max = Math.max(...values);
+              } else {
+                const values = gridList.map((item) => item.values).flat(2);
+                item.options.value__Number.values = values;
+                item.options.value__Number.min = 0; // Math.min(...values);
+                item.options.value__Number.max = Math.max(...values);
+              }
+              if (this.destinationsConfigForm.colorBar.data.length <= 0) {
+                this.$refs.destinationsConfig.handleAutogenerate(item);
+                this.$refs.destinationsConfig.handleConfirm();
+              }
+            });
+          });
+        },
+      },
     });
     this._DesireLineLayer = new DesireLineLayer({ zIndex: 560, color: this.desireLineColor, lineWidth: this.desireLineWidth });
     this._AccessibilityLayer = new AccessibilityLayer({ zIndex: 60, colorBar: this.accessibilityConfigForm.colorBar.data, opacity: this.accessibilityConfigForm.opacity });
@@ -889,12 +931,12 @@ export default {
     handleDisable() {
       this._Map.removeLayer(this._SelectGeoJSONLayer);
       this._Map.removeLayer(this._LinkGeoJSONLayer);
+      this._Map.removeLayer(this._LinkFlowLayer);
       this._Map.removeLayer(this._OriginGridsLayer);
       this._Map.removeLayer(this._DestinationsGridsLayer);
       this._Map.removeLayer(this._DesireLineLayer);
       this._Map.removeLayer(this._AccessibilityLayer);
 
-      this._Map.removeLayer(this._LinkFlowLayer);
       this.rootVue.$off("timeChange", this.handleTimeChange);
     },
     getLinkList() {
@@ -992,8 +1034,7 @@ export default {
     },
     handleOriginConfigConfirm(data) {
       this.originConfigForm = data;
-      const { colorBar, size, opacity } = data;
-      this._OriginGridsLayer.setSize(size / GRID_STEP);
+      const { colorBar, opacity } = data;
       this._OriginGridsLayer.setOpacity(opacity);
       this._OriginGridsLayer.setColorBar(colorBar.data);
       this.showOriginConfig = false;
@@ -1017,8 +1058,7 @@ export default {
     },
     handleDestinationsConfigConfirm(data) {
       this.destinationsConfigForm = data;
-      const { colorBar, size, opacity } = data;
-      this._DestinationsGridsLayer.setSize(size / GRID_STEP);
+      const { colorBar, opacity } = data;
       this._DestinationsGridsLayer.setOpacity(opacity);
       this._DestinationsGridsLayer.setColorBar(colorBar.data);
       this.showDestinationsConfig = false;

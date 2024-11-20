@@ -76,8 +76,8 @@
                     </template>
                   </el-table-column>
                   <el-table-column width="65" align="center" v-if="!(lItem.attrs && lItem.attrs.hideDelete)">
-                    <template slot-scope="{ row }">
-                      <el-button type="danger" size="mini" @click="handleDeleteColorBarItem(lItem, row)" icon="el-icon-delete"></el-button>
+                    <template slot-scope="{ row, $index }">
+                      <el-button type="danger" size="mini" @click="handleDeleteColorBarItem(lItem, $index)" icon="el-icon-delete"></el-button>
                     </template>
                   </el-table-column>
                   <el-button slot="append" v-if="!(lItem.attrs && lItem.attrs.hideAdd)" style="width: 100%; display: block" type="primary" size="mini" icon="el-icon-plus" @click="handleAddColorBarItem(lItem)"></el-button>
@@ -109,8 +109,8 @@
                     </template>
                   </el-table-column>
                   <el-table-column width="65" align="center" v-if="!(lItem.attrs && lItem.attrs.hideDelete)">
-                    <template slot-scope="{ row }">
-                      <el-button type="danger" size="mini" @click="handleDeleteColorBarItem(lItem, row)" icon="el-icon-delete"></el-button>
+                    <template slot-scope="{ row, $index }">
+                      <el-button type="danger" size="mini" @click="handleDeleteColorBarItem(lItem, $index)" icon="el-icon-delete"></el-button>
                     </template>
                   </el-table-column>
                   <el-button slot="append" v-if="!(lItem.attrs && lItem.attrs.hideAdd)" style="width: 100%; display: block" type="primary" size="mini" icon="el-icon-plus" @click="handleAddColorBarItem(lItem)"></el-button>
@@ -342,6 +342,7 @@ export default {
     handleAutogenerate(lItem) {
       const item = this.s_form[lItem.name];
       const data = lItem.options[item.valueKey];
+      console.log(lItem.options, item.valueKey, item);
 
       const startColor = new THREE.Color(item.startColor);
       const endColor = new THREE.Color(item.endColor);
@@ -401,6 +402,8 @@ export default {
       this.handleChangeImage(lItem);
     },
     handleDeleteColorBarItem(lItem, index) {
+      console.log(lItem, index);
+
       const item = this.s_form[lItem.name];
       item.data.splice(index, 1);
       this.handleChangeImage(lItem);

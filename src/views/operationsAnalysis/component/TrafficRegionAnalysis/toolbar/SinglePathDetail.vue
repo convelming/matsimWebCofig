@@ -661,8 +661,8 @@ export default {
       step: GRID_STEP,
       timeRange: this.originUseTimeRange ? this.originTimeRange : null,
       event: {
-        "updata:colorBar": (data) => {
-          console.log("updata:colorBar", data);
+        "update:colorBar": (data) => {
+          console.log("update:colorBar", data);
           this.originMin = data.data.min;
           this.originMax = data.data.max;
         },
@@ -676,8 +676,8 @@ export default {
       step: GRID_STEP,
       timeRange: this.destinationsUseTimeRange ? this.destinationsTimeRange : null,
       event: {
-        "updata:colorBar": (data) => {
-          console.log("updata:colorBar", data);
+        "update:colorBar": (data) => {
+          console.log("update:colorBar", data);
           this.destinationMin = data.data.min;
           this.destinationMax = data.data.max;
         },

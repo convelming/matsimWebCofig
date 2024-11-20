@@ -198,7 +198,7 @@ export default {
     this._Activity3DLayer.dispose();
   },
   methods: {
-    updataColor() {
+    updateColor() {
       this.rootVue.$emit(CHANGE_COLOR_EVENT_KEY, {
         activityColors: this.activityTypeList,
         legColors: this.legTypeList,
