@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { Layer, MAP_EVENT } from "@/mymap/index.js";
 import { BuildGeometry } from "./Build3DLayer"
+import * as BufferGeometryUtils from "three/addons/utils/BufferGeometryUtils.js";
 
 export class SelectBuild3DLayer extends Layer {
   name = "SelectBuild3DLayer";
@@ -84,15 +85,20 @@ export class SelectBuild3DLayer extends Layer {
     if (!this.map) return
     if (!this.data) return
     const { coordinates, coord, height } = this.data
-    const center = [coord.x, coord.y]
-    const _coordinates = coordinates.map(v => v.map(v2 => [v2[0] - center[0], v2[1] - center[1]]));
-    const shapes = [
-      {
-        points: _coordinates[0],
-        holes: _coordinates.slice(1),
-      },
-    ];
-    this.geometry = new BuildGeometry({ shapes, height: height });
+    const center = [coord.x, coord.y];
+    const geometryList = [];
+    for (const _coordinates of coordinates) {
+      const __coordinates = _coordinates.map(v => v.map(v2 => [v2[0] - center[0], v2[1] - center[1]]));
+      const shapes = [
+        {
+          points: __coordinates[0],
+          holes: __coordinates.slice(1),
+        },
+      ];
+      geometryList.push(new BuildGeometry({ shapes, height: height }))
+    }
+
+    this.geometry = BufferGeometryUtils.mergeBufferGeometries(geometryList, false);
     this.mesh.geometry = this.geometry;
     this.mesh.needsUpdate = true;
     this.mesh.userData.center = center;
