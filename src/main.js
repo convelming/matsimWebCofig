@@ -2,10 +2,12 @@ import Vue from "vue";
 import App from "./App.vue";
 import router from "./router";
 import store from "./store";
-import "@/assets/css/style.css";
 import ElementUI from "element-ui";
-import "@/assets/css/element.style.scss";
 import language from "@/language/index";
+
+import 'element-ui/lib/theme-chalk/index.css';
+import "@/assets/css/style.css";
+import "@/assets/css/element.style.scss";
 
 import Pagination from "@/components/Pagination.vue";
 import Dialog from "@/components/Dialog.vue";

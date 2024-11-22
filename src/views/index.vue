@@ -87,7 +87,7 @@
         <el-button type="primary" size="mini" icon="el-icon-refresh-right" @click="handleGetDateSourceList()">{{ $l("刷新列表") }}</el-button>
         <el-input style="margin-left: auto; width: 200px" v-model="operationsAnalysisDialog.sreach" :placeholder="$l('搜索')" size="mini" clearable @change="" />
       </div>
-      <el-table height="400" :data="dataSourceList.filter((v) => v.name.includes(operationsAnalysisDialog.sreach))" border stripe v-loading="dateSourceListLoading">
+      <el-table height="400" :data="dataSourceList.filter((v) => v.name.includes(operationsAnalysisDialog.sreach))" border stripe v-loading="dataSourceListLoading">
         <el-table-column prop="name" :label="$l('方案名称')" width="100" />
         <el-table-column prop="detail" :label="$l('方案简介')" />
         <el-table-column prop="loadStatus" :label="$l('方案状态')" width="150">
@@ -117,7 +117,7 @@
         <el-button type="primary" size="mini" icon="el-icon-add" @click="handleShowAddPlanAdjustmentDialog()">{{ $l("新建方案") }}</el-button>
         <el-input style="margin-left: auto; width: 200px" v-model="planAdjustmentDialog.sreach" :placeholder="$l('搜索')" size="mini" clearable @change="" />
       </div>
-      <el-table height="400" :data="dataSourceList.filter((v) => !v.noRun && v.name.includes(planAdjustmentDialog.sreach))" border stripe v-loading="dateSourceListLoading">
+      <el-table height="400" :data="dataSourceList.filter((v) => !v.noRun && v.name.includes(planAdjustmentDialog.sreach))" border stripe v-loading="dataSourceListLoading">
         <el-table-column prop="name" :label="$l('方案名称')" width="100" />
         <el-table-column prop="detail" :label="$l('方案简介')" />
         <el-table-column prop="loadStatus" :label="$l('方案状态')" width="150">
@@ -147,7 +147,7 @@
         <el-button type="primary" size="mini" icon="el-icon-refresh-right" @click="handleGetDateSourceList()">{{ $l("刷新列表") }}</el-button>
         <el-input style="margin-left: auto; width: 200px" v-model="comparativeAnalysisDialog.sreach" :placeholder="$l('搜索')" size="mini" clearable @change="" />
       </div>
-      <el-table height="400" :data="dataSourceList.filter((v) => v.name.includes(operationsAnalysisDialog.sreach))" border stripe v-loading="dateSourceListLoading">
+      <el-table height="400" :data="dataSourceList.filter((v) => v.name.includes(operationsAnalysisDialog.sreach))" border stripe v-loading="dataSourceListLoading">
         <el-table-column :label="$l('基础方案')" width="90" align="center">
           <template slot-scope="{ row }">
             <el-checkbox v-model="comparativeAnalysisDialog.dataSource1" false-label="" :true-label="row.name" :disabled="row.loadStatus != '已加载' || row.runStatus != '已运行' || comparativeAnalysisDialog.dataSource2 == row.name">{{ "" }}</el-checkbox>
@@ -187,7 +187,7 @@
         <el-button type="primary" size="mini" icon="el-icon-refresh-right" @click="handleGetDateSourceList()">{{ $l("刷新列表") }}</el-button>
         <el-input style="margin-left: auto; width: 200px" v-model="systemEvaluationDialog.sreach" :placeholder="$l('搜索')" size="mini" clearable @change="" />
       </div>
-      <el-table height="400" :data="dataSourceList.filter((v) => v.name.includes(systemEvaluationDialog.sreach))" border stripe v-loading="dateSourceListLoading">
+      <el-table height="400" :data="dataSourceList.filter((v) => v.name.includes(systemEvaluationDialog.sreach))" border stripe v-loading="dataSourceListLoading">
         <el-table-column prop="name" :label="$l('方案名称')" />
         <el-table-column prop="detail" :label="$l('方案简介')" />
         <el-table-column prop="loadStatus" :label="$l('方案状态')" width="150">
@@ -449,8 +449,8 @@ export default {
   data() {
     return {
       module_list: [],
-      dateSourceListLoading: false,
-      dateBaseListLoading: false,
+      // dateSourceListLoading: false,
+      // dateBaseListLoading: false,
       dataBaseDialog: {
         show: false,
         dataBase: "",

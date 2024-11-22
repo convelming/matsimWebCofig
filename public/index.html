@@ -1,19 +1,422 @@
 <!DOCTYPE html>
-<html lang="">
+<html lang="zh">
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-    <link rel="icon" href="<%= BASE_URL %>favicon.ico" />
-    <title><%= htmlWebpackPlugin.options.title %></title>
-    <script type="text/javascript" src="//api.map.baidu.com/api?type=webgl&v=1.0&ak=3kc8Adbc2OX8U6wUDr3DWOfUCMboxWrq"></script>
-    <script src="./config.js"></script>
+    <link rel="icon" href="./static/img/favicon.ico" />
+    <link rel="stylesheet" href="./static/css/element-ui.css" />
+    <link rel="stylesheet" href="./static/css/index.css" />
   </head>
   <body>
-    <noscript>
-      <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
-    </noscript>
-    <div id="app"></div>
-    <!-- built files will be auto injected -->
+    <div id="app">
+      <div class="back">
+        <div class="root">
+          <div class="module">
+            <el-dropdown class="language" @command="changeLanguage" placement="top-start" trigger="click">
+              <div class="module_menu">{{ { "zh-CN": "中文（简体）", "en-US": "English" }[page_language] }}<i class="el-icon-arrow-down el-icon--right"></i></div>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item command="zh-CN" :disabled="page_language == 'zh-CN'">中文（简体）</el-dropdown-item>
+                <!-- <el-dropdown-item command="zh_MO" :disabled="page_language == 'zh-MO'">中文（繁體）</el-dropdown-item> -->
+                <el-dropdown-item command="en-US" :disabled="page_language == 'en-US'">English</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </div>
+          <div class="box">
+            <div class="left">
+              <h2>{{ $l("Yellow Cab Vs. Green Cab Trips in Manhattan") }}</h2>
+              <p>{{ $l("Trips are taken from June 16, 2016 21:00 to 21:30") }}</p>
+              <p>{{ $l("Trip data source: ") }}<a href="#">{{ $l("NYC Taxi & Limousine Commission Trip Records") }}</a></p>
+              <p>{{ $l("Building data source: ") }}<a href="#">{{ $l("OpenStreetMap via Mapzen Vector Tiles API") }}</a></p>
+              <el-row :gutter="20">
+                <el-col :span="12">
+                  <p>{{ $l("No. of Trips") }}</p>
+                  <h1>10.0K</h1>
+                </el-col>
+                <el-col :span="12">
+                  <p>{{ $l("No. of Buildings") }}</p>
+                  <h1>3.9K</h1>
+                </el-col>
+                <el-col :span="12">
+                  <p>{{ $l("Vertices") }}</p>
+                  <h1>897.2K</h1>
+                </el-col>
+              </el-row>
+              <div class="footer">
+                <div class="defaultDataSource" @click="handleClickItem('operationsAnalysis')">
+                  <span>{{ defaultDataSource?defaultDataSource.datasource:'' }}</span>
+                  <span class="dian" style="background-color: #67c23a"></span>
+                </div>
+                <el-button type="primary" size="small" @click="handleOperationsAnalysisToDetail(defaultDataSource.name)">{{ $l("进入页面") }}</el-button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- 请选择基准MATSIM模型 -->
+      <el-dialog class="tabel_dialog" :title="$l('请选择基准MATSIM模型')" :visible.sync="dataBaseDialog.show" width="500px">
+        <div class="tabel_toolbar">
+          <el-button type="primary" size="mini" icon="el-icon-refresh-right" @click="handleGetDataBaseList()">{{ $l("刷新列表") }}</el-button>
+        </div>
+        <el-table height="400" :data="dataBaseList" border stripe @row-click="handleSelectDataBase" v-loading="dataBaseListLoading">
+          <el-table-column width="50" align="center">
+            <el-checkbox slot-scope="{ row }" :value="dataBaseDialog.dataBase == row.name" @click="handleSelectDataBase(row)" />
+          </el-table-column>
+          <el-table-column prop="name" :label="$l('基准名称')"> </el-table-column>
+        </el-table>
+        <span slot="footer">
+          <el-button :disabled="!dataBaseDialog.dataBase" type="primary" size="mini" @click="handleChangeDataBase">{{ $l("确定") }}</el-button>
+          <el-button size="mini" @click="dataBaseDialog.show = false">{{ $l("取消") }}</el-button>
+        </span>
+      </el-dialog>
+
+      <!-- 公交运行分析 -->
+      <el-dialog class="tabel_dialog" :title="$l('公交运行分析')" :visible.sync="operationsAnalysisDialog.show" width="900px">
+        <div class="tabel_toolbar">
+          <el-button type="primary" size="mini" icon="el-icon-arrow-left" @click="handleToSelectDataBase('operationsAnalysis')">{{ $l("返回上一级") }}</el-button>
+          <el-button type="primary" size="mini" icon="el-icon-refresh-right" @click="handleGetDateSourceList(dataBase)">{{ $l("刷新列表") }}</el-button>
+          <el-input style="margin-left: auto; width: 200px" v-model="operationsAnalysisDialog.sreach" :placeholder="$l('搜索')" size="mini" clearable @change="" />
+        </div>
+        <el-table height="400" :data="dataSourceList.filter((v) => v.name.includes(operationsAnalysisDialog.sreach))" border stripe v-loading="dataSourceListLoading">
+          <el-table-column prop="name" :label="$l('方案名称')" width="100"> </el-table-column>
+          <el-table-column prop="detail" :label="$l('方案简介')"> </el-table-column>
+          <el-table-column prop="loadStatus" :label="$l('方案状态')" width="150">
+            <template slot-scope="{ row }">{{ $l(row.loadStatus) }} / {{ $l(row.runStatus) }}</template>
+          </el-table-column>
+          <el-table-column prop="loadStatus" :label="$l('系数')" width="150">
+            <template slot-scope="{ row }">
+              <span style="margin-right: 10px">{{ row.scale }}</span>
+              <i class="el-icon-edit" @click="handleChangeScale(row)"></i>
+            </template>
+          </el-table-column>
+          <el-table-column :label="$l('操作')" width="250">
+            <template slot-scope="{ row }">
+              <el-button v-if="row.runStatus == '已运行' && row.loadStatus == '已加载'" type="primary" size="mini" @click="handleOperationsAnalysisToDetail(row.name)">{{ $l("查看") }}</el-button>
+              <el-button v-if="!row.noLoad" type="warning" size="mini" :loading="row.loadStatus == '加载中'" @click="handleOperationsAnalysisLoad(row.name)">{{ $l("加载") }}</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-dialog>
+    </div>
+
+    <script src="./static/js/vue.min.js"></script>
+    <script src="./static/js/element-ui.js"></script>
+    <script>
+      function internationalize(key, dict = this.base_lanuage_dict, page_language = this.page_language) {
+        try {
+          return dict[key][page_language] || dict[key][this.page_default_language] || "";
+        } catch (error) {
+          return "";
+        }
+      }
+
+      const BASE_API_URL = "";
+
+      const language = {
+        智慧公交线网仿真与在线优化平台: {
+          "zh-CN": "智慧公交线网仿真与在线优化平台",
+          "en-US": "MATSim Viz & PT Optimization with AIGC",
+        },
+        "Yellow Cab Vs. Green Cab Trips in Manhattan": {
+          "zh-CN": "曼哈顿黄色出租车与绿色出租车之旅",
+          "en-US": "Yellow Cab Vs. Green Cab Trips in Manhattan",
+        },
+        "Trips are taken from June 16, 2016 21:00 to 21:30": {
+          "zh-CN": "行程时间为2016年6月16日21:00至21:30",
+          "en-US": "Trips are taken from June 16, 2016 21:00 to 21:30",
+        },
+        "Trip data source: ": {
+          "zh-CN": "行程数据来源：",
+          "en-US": "Trip data source: ",
+        },
+        "NYC Taxi & Limousine Commission Trip Records": {
+          "zh-CN": "纽约市出租车和豪华轿车委员会行程记录",
+          "en-US": "NYC Taxi & Limousine Commission Trip Records",
+        },
+        "Building data source: ": {
+          "zh-CN": "构建数据源：",
+          "en-US": "Building data source: ",
+        },
+        "OpenStreetMap via Mapzen Vector Tiles API": {
+          "zh-CN": "OpenStreetMap via Mapzen Vector Tiles API",
+          "en-US": "OpenStreetMap via Mapzen Vector Tiles API",
+        },
+        "No. of Trips": {
+          "zh-CN": "旅行次数",
+          "en-US": "No. of Trips",
+        },
+        "No. of Buildings": {
+          "zh-CN": "建筑物数量",
+          "en-US": "No. of Buildings",
+        },
+        Vertices: {
+          "zh-CN": "顶点数量",
+          "en-US": "Vertices",
+        },
+        进入页面: {
+          "zh-CN": "进入页面",
+          "en-US": "进入页面",
+        },
+        请选择基准MATSIM模型: {
+          "zh-CN": "请选择基准MATSIM模型",
+          "en-US": "Please select a base MATSim scenario",
+        },
+        刷新列表: {
+          "zh-CN": "刷新列表",
+          "en-US": "Refresh",
+        },
+        基准名称: {
+          "zh-CN": "基准名称",
+          "en-US": "Base Scenario",
+        },
+        公交运行分析: {
+          "zh-CN": "公交运行分析",
+          "en-US": "Public Transit Analysis",
+        },
+        刷新列表: {
+          "zh-CN": "刷新列表",
+          "en-US": "Refresh",
+        },
+        返回上一级: {
+          "zh-CN": "返回上一级",
+          "en-US": "Return",
+        },
+        搜索: {
+          "zh-CN": "搜索",
+          "en-US": "sreach",
+        },
+        方案名称: {
+          "zh-CN": "方案名称",
+          "en-US": "Scheme Name",
+        },
+        方案简介: {
+          "zh-CN": "方案简介",
+          "en-US": "Scheme Introduction",
+        },
+        方案状态: {
+          "zh-CN": "内存/模型",
+          "en-US": "Memory/Model",
+        },
+        未运行: {
+          "zh-CN": "未运行",
+          "en-US": "Pending",
+        },
+        运行中: {
+          "zh-CN": "运行中",
+          "en-US": "Running",
+        },
+        已运行: {
+          "zh-CN": "已运行",
+          "en-US": "Executed",
+        },
+        未加载: {
+          "zh-CN": "未加载",
+          "en-US": "Unload",
+        },
+        加载中: {
+          "zh-CN": "加载中",
+          "en-US": "Loading",
+        },
+        已加载: {
+          "zh-CN": "已加载",
+          "en-US": "Loaded",
+        },
+        "加载中...": {
+          "zh-CN": "加载中...",
+          "en-US": "Loading...",
+        },
+        确定: {
+          "zh-CN": "确定",
+          "en-US": "Confirm",
+        },
+        取消: {
+          "zh-CN": "取消",
+          "en-US": "Cancel",
+        },
+        操作: {
+          "zh-CN": "操作",
+          "en-US": "Operation",
+        },
+        查看: {
+          "zh-CN": "查看",
+          "en-US": "Check",
+        },
+        加载: {
+          "zh-CN": "加载",
+          "en-US": "Load",
+        },
+        系数: {
+          "zh-CN": "系数",
+          "en-US": "系数",
+        },
+        请输入系数: {
+          "zh-CN": "请输入系数",
+          "en-US": "请输入系数",
+        },
+        请输入数字作为系数: {
+          "zh-CN": "请输入数字作为系数",
+          "en-US": "请输入数字作为系数",
+        },
+        提示: {
+          "zh-CN": "提示",
+          "en-US": "Prompt",
+        },
+      };
+
+      new Vue({
+        el: "#app",
+        data: {
+          page_language: "zh-CN",
+          language: language,
+          dataBaseListLoading: false,
+          dataBaseList: [],
+          dataSourceListLoading: false,
+          dataSourceList: [],
+
+          defaultDataSource: "",
+
+          dataBase: "",
+
+          dataBaseDialog: {
+            show: false,
+            dataBase: "",
+            itemKey: "",
+          },
+
+          operationsAnalysisDialog: {
+            show: false,
+            dataSource: "",
+            sreach: "",
+          },
+        },
+        computed: {
+          $l() {
+            return (key) => internationalize(key, this.language, this.page_language);
+          },
+        },
+        created() {
+          this.page_language = sessionStorage.getItem("language") || this.page_language;
+          this.getDefaultDataSource();
+        },
+        mounted() {},
+        methods: {
+          getDefaultDataSource() {
+            fetch(BASE_API_URL + "/pt/main/getDefault", {
+              headers: {
+                uuid: "123",
+              },
+            })
+              .then((res) => res.json())
+              .then((res) => {
+                const [database, datasource] = res.data.name.split("/");
+                res.data.dataBase = database;
+                res.data.datasource = datasource;
+                this.defaultDataSource = res.data;
+                this.dataBase = database;
+                this.handleGetDataBaseList();
+                this.handleGetDateSourceList(database);
+              });
+          },
+          changeLanguage(lang) {
+            this.page_language = lang;
+            sessionStorage.setItem("language", lang);
+          },
+          handleOperationsAnalysisLoad(name) {
+            const item = this.dataSourceList.find((v) => v.name === name);
+            this.$set(item, "loadStatus", "加载中");
+            fetch(BASE_API_URL + "/pt/main/loadScheme?key=" + name)
+              .then((res) => res.json())
+              .then((res) => {
+                this.dataBaseList = res.data.map((v) => ({ name: v }));
+                this.$set(item, "loadStatus", "已加载");
+              });
+          },
+          handleOperationsAnalysisToDetail(name) {
+            const [database, datasource] = name.split("/");
+            const href = `/pt.html#/operationsAnalysis/${database}/${datasource}`;
+            // const href = this.$router.resolve({
+            //   name: "operationsAnalysis",
+            //   params: { database: database, datasource: datasource },
+            // }).href;
+            window.open(href, "_blank");
+          },
+          handleGetDataBaseList() {
+            fetch(BASE_API_URL + "/pt/main/getAllBase")
+              .then((res) => res.json())
+              .then((res) => {
+                this.dataBaseList = res.data.map((v) => ({ name: v }));
+              });
+          },
+          handleGetDateSourceList(dataBase) {
+            fetch(BASE_API_URL + "/pt/main/getAllScheme" + "?base=" + dataBase)
+              .then((res) => res.json())
+              .then((res) => {
+                this.dataSourceList = res.data;
+              });
+          },
+          handleShowDataBase(itemKey = "") {
+            this.dataBaseDialog.show = true;
+            this.dataBaseDialog.dataBase = this.dataBase;
+            this.dataBaseDialog.itemKey = itemKey;
+          },
+          handleSelectDataBase(row, column, event) {
+            this.dataBaseDialog.dataBase = row.name;
+          },
+          handleChangeDataBase() {
+            this.dataBase = this.dataBaseDialog.dataBase;
+            this.handleGetDateSourceList(this.dataBase);
+            const itemKey = this.dataBaseDialog.itemKey;
+            this.dataBaseDialog.dataBase = "";
+            this.dataBaseDialog.itemKey = "";
+            this.dataBaseDialog.show = false;
+            if (itemKey) {
+              this.$nextTick(() => {
+                this.handleClickItem(itemKey);
+              });
+            }
+          },
+          handleClickItem(key) {
+            if (!this.dataBase && key != "systemEvaluation") {
+              this.handleShowDataBase(key);
+              return;
+            }
+            switch (key) {
+              case "operationsAnalysis":
+                this.handleShowOperationsAnalysisDialog();
+                break;
+            }
+          },
+          handleToSelectDataBase(key) {
+            this.handleShowDataBase(key);
+            switch (key) {
+              case "operationsAnalysis":
+                this.operationsAnalysisDialog.show = false;
+                this.operationsAnalysisDialog.dataSource = "";
+                break;
+            }
+          },
+          handleShowOperationsAnalysisDialog() {
+            this.operationsAnalysisDialog.show = true;
+            this.operationsAnalysisDialog.dataSource = "";
+          },
+          handleChangeScale(row) {
+            this.$prompt(this.$l("请输入系数"), this.$l("提示"), {
+              confirmButtonText: this.$l("确定"),
+              cancelButtonText: this.$l("取消"),
+              inputValue: row.scale,
+              inputValidator: (value) => {
+                if (!Number.isFinite(Number(value))) return this.$l("请输入数字作为系数");
+              },
+            })
+              .then(({ value }) => updateScale({ key: row.name, scale: value }))
+              .then(() => {
+                this.$message.success(this.$l("修改成功"));
+                this.handleGetDateSourceList();
+              })
+              .catch(() => {});
+          },
+        },
+      });
+    </script>
   </body>
 </html>

@@ -1,5 +1,6 @@
 const { defineConfig } = require("@vue/cli-service");
 const path = require('path');
+const timestamp = new Date().getTime();
 function resolve(dir) {
   return path.join(__dirname, dir)
 }
@@ -29,13 +30,21 @@ module.exports = defineConfig({
       "/": {
         ws: false,
         target: `http://192.168.60.231:23105`, // 测试服
-        target: `http://192.168.31.103:23105`, // 本地调试
+        // target: `http://192.168.31.103:23105`, // 本地调试
         // target: `http://localhost:23105`, // 测试服
         changeOrigin: true,
         // pathRewrite: {
         //   "/": "/",
         // },
       },
+    },
+  },
+  pages: {
+    pt: {
+      entry: "./src/main.js",
+      template: "./public/pt.html",
+      fliename: "pt.html",
+      name: process.env.VUE_APP_TITLE,
     },
   },
   css: {
@@ -46,12 +55,18 @@ module.exports = defineConfig({
     //   },
     // },
   },
+  // configureWebpack: {
+  //   externals: {
+  //     "vue": "Vue",
+  //     "element-ui": "ELEMENT"
+  //   }
+  // },
   chainWebpack: (config) => {
     // 配置 index.html 中的 htmlWebpackPlugin.options
-    config.plugin("html").tap((args) => {
-      args[0].title = process.env.VUE_APP_TITLE || "";
-      return args;
-    });
+    // config.plugin("html").tap((args) => {
+    //   args[0].title = process.env.VUE_APP_TITLE || "";
+    //   return args;
+    // });
     // 配置可以使用import导入webworker
     config.module
       .rule("worker")
