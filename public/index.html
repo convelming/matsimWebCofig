@@ -24,28 +24,30 @@
           </div>
           <div class="box">
             <div class="left">
-              <h2>{{ $l("Yellow Cab Vs. Green Cab Trips in Manhattan") }}</h2>
-              <p>{{ $l("Trips are taken from June 16, 2016 21:00 to 21:30") }}</p>
-              <p>{{ $l("Trip data source: ") }}<a href="#">{{ $l("NYC Taxi & Limousine Commission Trip Records") }}</a></p>
-              <p>{{ $l("Building data source: ") }}<a href="#">{{ $l("OpenStreetMap via Mapzen Vector Tiles API") }}</a></p>
+              <h2>{{ $l("广州市黄埔区居民出行可视化") }}</h2>
+              <p>{{ $l("行程数据来源：") }}<span href="#">{{ $l("2023年9月-10月广州居民出行街头问卷调查") }}</span></p>
+              <p>{{ $l("路网数据来源：") }}<span href="#">{{ $l("OpenStreetMap") }}</span></p>
+              <p>{{ $l("公交数据来源：") }}<span href="#">{{ $l("高德地图") }}</span></p>
               <el-row :gutter="20">
                 <el-col :span="12">
-                  <p>{{ $l("No. of Trips") }}</p>
-                  <h1>10.0K</h1>
+                  <p>{{ $l("出行次数") }}</p>
+                  <h1>{{ $l("63.3万") }}</h1>
                 </el-col>
                 <el-col :span="12">
-                  <p>{{ $l("No. of Buildings") }}</p>
-                  <h1>3.9K</h1>
+                  <p>{{ $l("建筑物数量") }}</p>
+                  <h1>{{ $l("62.2万") }}</h1>
                 </el-col>
                 <el-col :span="12">
-                  <p>{{ $l("Vertices") }}</p>
-                  <h1>897.2K</h1>
+                  <p>{{ $l("人口数量") }}</p>
+                  <h1>{{ $l("30万") }}</h1>
                 </el-col>
               </el-row>
               <div class="footer">
-                <div class="defaultDataSource" @click="handleClickItem('operationsAnalysis')">
-                  <span>{{ defaultDataSource?defaultDataSource.datasource:'' }}</span>
-                  <span class="dian" style="background-color: #67c23a"></span>
+                <div class="defaultDataSource" @click="handleClickItem('operationsAnalysis')" v-if="defaultDataSource">
+                  <span>{{ defaultDataSource.dataSource }} ({{ $l(defaultDataSource.loadStatus) }})</span>
+                  <span class="dian" style="background-color: #67c23a" v-if="defaultDataSource.loadStatus == '已加载'"></span>
+                  <span class="dian" style="background-color: #e6a23c" v-else-if="defaultDataSource.loadStatus == '加载中'"></span>
+                  <span class="dian" style="background-color: #909399" v-else-if="defaultDataSource.loadStatus == '未加载'"></span>
                 </div>
                 <el-button type="primary" size="small" @click="handleOperationsAnalysisToDetail(defaultDataSource.name)">{{ $l("进入页面") }}</el-button>
               </div>
@@ -104,58 +106,18 @@
     <script>
       function internationalize(key, dict = this.base_lanuage_dict, page_language = this.page_language) {
         try {
-          return dict[key][page_language] || dict[key][this.page_default_language] || "";
+          return dict[key][page_language] || dict[key][this.page_default_language] || key;
         } catch (error) {
-          return "";
+          return key;
         }
       }
 
       const BASE_API_URL = "";
 
       const language = {
-        智慧公交线网仿真与在线优化平台: {
-          "zh-CN": "智慧公交线网仿真与在线优化平台",
-          "en-US": "MATSim Viz & PT Optimization with AIGC",
-        },
-        "Yellow Cab Vs. Green Cab Trips in Manhattan": {
-          "zh-CN": "曼哈顿黄色出租车与绿色出租车之旅",
-          "en-US": "Yellow Cab Vs. Green Cab Trips in Manhattan",
-        },
-        "Trips are taken from June 16, 2016 21:00 to 21:30": {
-          "zh-CN": "行程时间为2016年6月16日21:00至21:30",
-          "en-US": "Trips are taken from June 16, 2016 21:00 to 21:30",
-        },
-        "Trip data source: ": {
-          "zh-CN": "行程数据来源：",
-          "en-US": "Trip data source: ",
-        },
-        "NYC Taxi & Limousine Commission Trip Records": {
-          "zh-CN": "纽约市出租车和豪华轿车委员会行程记录",
-          "en-US": "NYC Taxi & Limousine Commission Trip Records",
-        },
-        "Building data source: ": {
-          "zh-CN": "构建数据源：",
-          "en-US": "Building data source: ",
-        },
-        "OpenStreetMap via Mapzen Vector Tiles API": {
-          "zh-CN": "OpenStreetMap via Mapzen Vector Tiles API",
-          "en-US": "OpenStreetMap via Mapzen Vector Tiles API",
-        },
-        "No. of Trips": {
-          "zh-CN": "旅行次数",
-          "en-US": "No. of Trips",
-        },
-        "No. of Buildings": {
-          "zh-CN": "建筑物数量",
-          "en-US": "No. of Buildings",
-        },
-        Vertices: {
-          "zh-CN": "顶点数量",
-          "en-US": "Vertices",
-        },
         进入页面: {
           "zh-CN": "进入页面",
-          "en-US": "进入页面",
+          "en-US": "Enter page",
         },
         请选择基准MATSIM模型: {
           "zh-CN": "请选择基准MATSIM模型",
@@ -296,12 +258,21 @@
         },
         created() {
           this.page_language = sessionStorage.getItem("language") || this.page_language;
-          this.getDefaultDataSource();
+          this.getDefaultDataSource().then((res) => {
+            this.handleGetDataBaseList();
+            this.handleGetDateSourceList(res.dataBase);
+          });
+          this._interval = setInterval(() => {
+            this.getDefaultDataSource();
+          }, 5000);
         },
         mounted() {},
+        beforeDestroy() {
+          clearInterval(this._interval);
+        },
         methods: {
           getDefaultDataSource() {
-            fetch(BASE_API_URL + "/pt/main/getDefault", {
+            return fetch(BASE_API_URL + "/pt/main/getDefault", {
               headers: {
                 uuid: "123",
               },
@@ -310,11 +281,10 @@
               .then((res) => {
                 const [database, datasource] = res.data.name.split("/");
                 res.data.dataBase = database;
-                res.data.datasource = datasource;
+                res.data.dataSource = datasource;
                 this.defaultDataSource = res.data;
                 this.dataBase = database;
-                this.handleGetDataBaseList();
-                this.handleGetDateSourceList(database);
+                return res.data;
               });
           },
           changeLanguage(lang) {

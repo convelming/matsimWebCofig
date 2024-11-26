@@ -28,14 +28,17 @@ body {
 }
 
 .root {
+  box-sizing: border-box;
   width: 100%;
-  min-width: 1200px;
+  /* min-width: 1200px; */
+  padding: 40px;
 }
 
 .module {
-  width: 1100px;
-  margin: 0 auto;
-  height: 80px;
+  /* width: 1100px;
+  margin: 0 auto; 
+  height: 80px; */
+  margin-bottom: 40px;
   display: flex;
   justify-content: flex-end;
   align-items: center;
@@ -47,8 +50,8 @@ body {
 }
 
 .title {
-  width: 1100px;
-  font-size: 60px;
+  /* width: 1100px;
+  font-size: 60px; */
   line-height: 60px;
   font-weight: bold;
   margin: 0 auto;
@@ -66,8 +69,8 @@ body {
 }
 
 .box {
-  width: 1100px;
-  margin: auto;
+  /* width: 1100px;
+  margin: auto; */
   padding-bottom: 50px;
   /* margin: -10px; */
   display: flex;
@@ -102,8 +105,8 @@ body {
 }
 .dian {
   display: inline-block;
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
 }
 
