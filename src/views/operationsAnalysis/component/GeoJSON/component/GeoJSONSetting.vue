@@ -1,5 +1,5 @@
 <template>
-  <Dialog class="GeoJSONSetting" :title="title" :visible="s_visible" @close="handleClose" left="center" width="700px">
+  <Dialog class="GeoJSONSetting" ref="dialog" :title="title" :visible="s_visible" @close="handleClose" left="center" width="700px">
     <div class="GeoJSONSetting_body">
       <el-form :model="s_form" ref="form" label-width="120px" :inline="false" size="small" label-position="left">
         <template v-for="(lItem, lIndex) in layout">
@@ -317,6 +317,7 @@ export default {
             endColor: "#99000D",
             model: "count", // count interval
             modelClass: 5,
+            labelRule: undefined, // null || undefined 使用`${min} ~ ${max}` en 使用字母顺序
             data: [],
           },
           "3d": {
@@ -330,6 +331,7 @@ export default {
     handleClose() {
       this.s_visible = false;
       this.$emit("update:visible", this.s_visible);
+      this.$emit("close", this.s_visible);
     },
     handleConfirm() {
       this.$emit("confirm", this.s_form);
@@ -348,6 +350,28 @@ export default {
       const endColor = new THREE.Color(item.endColor);
       const list = [];
 
+      function getLabel(labelRule, { min, max, index }) {
+        try {
+          switch (labelRule) {
+            case "EN": {
+              const n1 = Math.floor(index / 26);
+              const n2 = index % 26;
+              const arr = new Array(n1).fill("z");
+              arr.push("ABCDEFGHIJKLMNOPQRSTUVWXYZ"[n2]);
+              return arr.join("");
+            }
+            case "en": {
+              const n1 = Math.floor(index / 26);
+              const n2 = index % 26;
+              const arr = new Array(n1).fill("z");
+              arr.push("abcdefghijklmnopqrstuvwxyz"[n2]);
+              return arr.join("");
+            }
+          }
+        } catch (error) {}
+        return `${min} ~ ${max}`;
+      }
+
       if (data.type == "Number" && item.model == "count") {
         const modelClass = item.modelClass;
         const min = data.min;
@@ -361,7 +385,8 @@ export default {
             min: min2,
             max: max2,
             color: "#" + color.getHexString(),
-            label: `${min2} ~ ${max2}`,
+            // label: `${min2} ~ ${max2}`,
+            label: getLabel(item.labelRule, { min: min2, max: max2, index: i }),
             use: true,
           });
         }
@@ -380,7 +405,8 @@ export default {
             min: values[s],
             max: values[e],
             color: "#" + color.getHexString(),
-            label: `${values[s]} ~ ${values[e]}`,
+            // label: `${values[s]} ~ ${values[e]}`,
+            label: getLabel(item.labelRule, { min: values[s], max: values[e], index: i }),
             use: true,
           });
         }

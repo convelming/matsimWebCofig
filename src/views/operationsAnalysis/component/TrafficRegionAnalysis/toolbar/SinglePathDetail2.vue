@@ -32,15 +32,15 @@
         </div>
         <div class="form_item">
           <div class="form_item_header">
-            <el-button v-if="!showHeatMapDialog" :loading="heatMapDataLoading" class="show_btn" type="primary" size="small" @click="handleShowHeatMapDialog">{{ $l("显示热力图") }}</el-button>
-            <el-button v-else class="show_btn" type="info" size="small" @click="showHeatMapDialog = false">{{ $l("隐藏热力图") }}</el-button>
+            <el-button v-if="!showHeatMapDialog" :loading="heatMapDataLoading" class="show_btn" type="primary" size="small" @click="handleShowHeatMapDialog">{{ $l("显示道路服务水平") }}</el-button>
+            <el-button v-else class="show_btn" type="info" size="small" @click="showHeatMapDialog = false">{{ $l("隐藏道路服务水平") }}</el-button>
             <HeatMapDialog :visible.sync="showHeatMapDialog" :form="heatMapData" :offset="0"></HeatMapDialog>
           </div>
         </div>
         <div class="form_item">
           <div class="form_item_header">
-            <el-button v-if="!showLinkFlowLayer" :loading="linkFlowLoading" class="show_btn" type="primary" size="small" @click="handleShowLinkFlowLayer">{{ $l("显示周边流量") }}</el-button>
-            <el-button v-else class="show_btn" type="info" size="small" @click="showLinkFlowLayer = false">{{ $l("隐藏周边流量") }}</el-button>
+            <el-button v-if="!showLinkFlowLayer" :loading="linkFlowLoading" class="show_btn" type="primary" size="small" @click="handleShowLinkFlowLayer">{{ $l("显示流量溯源分析") }}</el-button>
+            <el-button v-else class="show_btn" type="info" size="small" @click="showLinkFlowLayer = false">{{ $l("隐藏流量溯源分析") }}</el-button>
             <el-button class="open_btn" :icon="openLinkFlowSetting ? 'el-icon-caret-top' : 'el-icon-caret-bottom'" type="info" size="small" @click="openLinkFlowSetting = !openLinkFlowSetting"></el-button>
           </div>
           <div class="setting_box" v-show="openLinkFlowSetting" v-loading="linkFlowLoading">
@@ -232,21 +232,21 @@
     "zh-CN": "隐藏Link",
     "en-US": "Hide link"
   },
-  "显示热力图":{
-    "zh-CN": "显示热力图",
-    "en-US": "Show heatmap"
+  "显示道路服务水平":{
+    "zh-CN": "显示道路服务水平",
+    "en-US": "Show level of service"
   },
-  "隐藏热力图":{
-    "zh-CN": "隐藏热力图",
-    "en-US": "Hide heatmap"
+  "隐藏道路服务水平":{
+    "zh-CN": "隐藏道路服务水平",
+    "en-US": "Hide level of service"
   },
-  "显示周边流量":{
-    "zh-CN": "显示周边流量",
-    "en-US": "Show link tracks"
+  "显示流量溯源分析":{
+    "zh-CN": "显示流量溯源分析",
+    "en-US": "Show traffic traceability analysis"
   },
-  "隐藏周边流量":{
-    "zh-CN": "隐藏周边流量",
-    "en-US": "Hide link tracks"
+  "隐藏流量溯源分析":{
+    "zh-CN": "隐藏流量溯源分析",
+    "en-US": "Hide traffic traceability analysis"
   },
   "显示起点分布":{
     "zh-CN": "显示起点分布",

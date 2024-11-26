@@ -17,9 +17,9 @@
         <el-descriptions-item :label="$l('fromNodeId')">{{ resData.fromNode }}</el-descriptions-item>
         <el-descriptions-item :label="$l('toNodeId')">{{ resData.toNode }}</el-descriptions-item>
         <el-descriptions-item :label="$l('allowedTransportNode')">{{ resData.allowedTransportNode }}</el-descriptions-item>
-        <el-descriptions-item :label="$l('length')">{{ resData.length }}</el-descriptions-item>
+        <el-descriptions-item :label="$l('length')">{{ Number(resData.length).toFixed(2) }} m</el-descriptions-item>
         <el-descriptions-item :label="$l('capacity')">{{ resData.capacity }}</el-descriptions-item>
-        <el-descriptions-item :label="$l('freeSpeed')">{{ resData.freespeed }}</el-descriptions-item>
+        <el-descriptions-item :label="$l('freeSpeed')">{{ Number(resData.freespeed).toFixed(2) }} m/s</el-descriptions-item>
         <el-descriptions-item :label="$l('numberOfLanes')">{{ resData.numberofLanes }}</el-descriptions-item>
         <el-descriptions-item :label="$l('origid')">{{ resData.origid }}</el-descriptions-item>
         <el-descriptions-item :label="$l('type')">{{ resData.type }}</el-descriptions-item>
