@@ -108,11 +108,14 @@ export default {
           }
         };
         input.click();
-      } else {
+      } else if (value) {
         this.s_value = value;
         this.selectGeoJSON = this.rootVue.GeoJSONList.find((item) => item.id === value);
         this.uploadForm = {};
         this.handleUploadFile();
+      } else {
+        this.s_value = value;
+        this.selectGeoJSON = null;
       }
     },
     handleUploadFile() {

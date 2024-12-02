@@ -236,7 +236,10 @@ export default {
   mounted() {
     const worker = new GeoJSONLayerWorker();
     worker.onmessage = (event) => {
-      const { center, pointArray, lineArray, polygonArray, propertiesLabelsArray } = event.data;
+      const { center, pointArray, lineArray, polygonArray, propertiesLabels, propertiesLabelsArray } = event.data;
+
+      // 其他组件需要用到这个数据 不能删除
+      this.$set(this.GeoJSON, "propertiesLabels", propertiesLabels);
       this.$set(this.GeoJSON, "center", center);
       this._GeoJSONLayer.setCenter(center);
       this._GeoJSONLayer.setPointArray(pointArray);

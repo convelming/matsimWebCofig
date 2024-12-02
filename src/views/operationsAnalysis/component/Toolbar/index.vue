@@ -10,7 +10,7 @@
         <div class="item" :id="Activity3D.id" :class="{ active: activeModel === Activity3D.id }" @click="handleActiveModel(Activity3D.id)">{{ $l(Activity3D.name) }}</div>
         <div class="item" :id="GeoJSON.id" :class="{ active: activeModel === GeoJSON.id }" @click="handleActiveModel(GeoJSON.id)">{{ $l(GeoJSON.name) }}</div>
         <div class="item" :id="Parking.id" :class="{ active: activeModel === Parking.id }" @click="handleActiveModel(Parking.id)">{{ $l(Parking.name) }}</div>
-        <div class="item" :id="RegionalTraffic.id" :class="{ active: activeModel === RegionalTraffic.id }" @click="handleActiveModel(RegionalTraffic.id)">{{ $l(RegionalTraffic.name) }}</div>
+        <!-- <div class="item" :id="RegionalTraffic.id" :class="{ active: activeModel === RegionalTraffic.id }" @click="handleActiveModel(RegionalTraffic.id)">{{ $l(RegionalTraffic.name) }}</div> -->
         <div class="item" :id="TrafficRegionAnalysis.id" :class="{ active: activeModel === TrafficRegionAnalysis.id }" @click="handleActiveModel(TrafficRegionAnalysis.id)">{{ $l(TrafficRegionAnalysis.name) }}</div>
       </div>
       <div class="btn el-icon-caret-right" @click="handleScroll(150)"></div>
@@ -273,27 +273,29 @@ export default {
         components: ["MultiplePathsDetail", "SinglePathDetail"],
         sreach: {},
         params: {},
-        list: [
-          // {
-          //   type: "SinglePathDetail",
-          //   data: {
-          //     uuid: "38e4047c-7a67-4c49-9e3b-cb40a22d8bd3",
-          //     singlePathDetail: {
-          //       shape: [
-          //         [12634435.302642914, 2645511.8325935453],
-          //         [12633846.75084994, 2642668.8241874496],
-          //         [12637717.231729725, 2642559.094078857],
-          //         [12637846.913390191, 2646010.6062060306],
-          //         [12634435.302642914, 2645511.8325935453],
-          //       ],
-          //       holes: [],
-          //       type: "link",
-          //     },
-          //   },
-          //   name: "38e4047c-7a67-4c49-9e3b-cb40a22d8bd3",
-          // },
-        ],
+        list: [],
         activeName: "",
+        // list: [
+        //   {
+        //     type: "SinglePathDetail",
+        //     data: {
+        //       uuid: "38e4047c-7a67-4c49-9e3b-cb40a22d8bd3",
+        //       singlePathDetail: {
+        //         shape: [
+        //           [12634435.302642914, 2645511.8325935453],
+        //           [12633846.75084994, 2642668.8241874496],
+        //           [12637717.231729725, 2642559.094078857],
+        //           [12637846.913390191, 2646010.6062060306],
+        //           [12634435.302642914, 2645511.8325935453],
+        //         ],
+        //         holes: [],
+        //         type: "link",
+        //       },
+        //     },
+        //     name: "38e4047c-7a67-4c49-9e3b-cb40a22d8bd3",
+        //   },
+        // ],
+        // activeName: "38e4047c-7a67-4c49-9e3b-cb40a22d8bd3",
       },
       modelMap: {
         RouteDetail: "PublicTransit",

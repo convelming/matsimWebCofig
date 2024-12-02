@@ -24,9 +24,10 @@
               <el-checkbox v-model="selectAll" @change="handleSelectLinkList">{{ $l("全选") }}</el-checkbox>
             </div>
             <div class="link_list">
-              <el-checkbox-group v-model="selectLinkList" @change="handleSelectLinkList">
+              <!-- <el-checkbox-group v-model="selectLinkList" @change="handleSelectLinkList">
                 <el-checkbox v-for="item in linkList" :key="item.id" :label="item.id">{{ item.id }}</el-checkbox>
-              </el-checkbox-group>
+              </el-checkbox-group> -->
+              <el-tree ref="linkTree" :data="linkList" show-checkbox node-key="id" :default-expanded-keys="linkOpenNode" :default-checked-keys="selectLinkList" :props="{ children: 'links', label: 'label' }" @check-change="handleLinkTreeChange"> </el-tree>
             </div>
           </div>
         </div>
@@ -370,14 +371,18 @@ export default {
     },
     selectAll: {
       get() {
-        return this.linkList.length == this.selectLinkList.length;
+        const linkNum = this.linkList.reduce((a, b) => a + b.links.length, 0);
+        return linkNum == this.selectLinkList.length;
       },
       set(val) {
         if (val) {
-          this.selectLinkList = this.linkList.map((v) => v.id);
+          this.selectLinkList = this.linkList.map((v1) => v1.links.map((v2) => v2.id)).flat(2);
         } else {
           this.selectLinkList = [];
         }
+        try {
+          this.$refs.linkTree.setCheckedKeys(this.selectLinkList);
+        } catch (error) {}
       },
     },
   },
@@ -546,6 +551,7 @@ export default {
       showSelectGeoJSONLayer: true,
 
       selectLinkList: [],
+      linkOpenNode: [],
       linkList: [],
       openLinkList: false,
       showLinkLayer: true,
@@ -950,14 +956,23 @@ export default {
       }).then((res) => {
         console.log(res);
         this.loading = false;
-        this.selectLinkList = res.data.map((v) => v.id);
+        res.data.forEach((v1) => {
+          v1.label = `${v1.name || ""} (${v1.id})`;
+          v1.links.forEach((v2) => {
+            v2.label = `${v2.id}`;
+          });
+        });
         this.linkList = res.data;
+        // this.linkOpenNode = this.linkList.map((v1) => v1.id);
+        this.selectLinkList = this.linkList.map((v1) => v1.links.map((v2) => v2.id)).flat(2);
 
         const center = this.singlePathDetail.shape[0];
         const lineArray = [];
         let i = 1;
-        for (const link of this.linkList) {
-          lineArray.push(7, ++i, link.fromCoord.x - center[0], link.fromCoord.y - center[1], 0, link.toCoord.x - center[0], link.toCoord.y - center[1], link.length);
+        for (const sgm of this.linkList) {
+          for (const link of sgm.links) {
+            lineArray.push(7, ++i, link.fromCoord.x - center[0], link.fromCoord.y - center[1], 0, link.toCoord.x - center[0], link.toCoord.y - center[1], link.length);
+          }
         }
 
         this._LinkGeoJSONLayer.setCenter(center);
@@ -966,10 +981,17 @@ export default {
         this.handleSelectLinkList();
       });
     },
+    handleLinkTreeChange() {
+      const nodes = this.$refs.linkTree.getCheckedNodes(true);
+      this.selectLinkList = nodes.map((v) => v.id);
+      this.handleSelectLinkList();
+    },
     handleSelectLinkList() {
       const propertiesList = [{}];
-      for (const link of this.linkList) {
-        propertiesList.push({ value: this.selectLinkList.includes(link.id) ? 1 : 0 });
+      for (const sgm of this.linkList) {
+        for (const link of sgm.links) {
+          propertiesList.push({ value: this.selectLinkList.includes(link.id) ? 1 : 0 });
+        }
       }
       this._LinkGeoJSONLayer.setPropertiesList(propertiesList, { value: { min: 0, max: 1 } });
     },
