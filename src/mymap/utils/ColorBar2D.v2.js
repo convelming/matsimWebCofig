@@ -24,7 +24,7 @@ export class ColorBar2D {
   }
 
   get min() {
-    let i = this.list.length - 1
+    let i = 0
     let v = this.list[i];
     while (v && !v.use) {
       v = this.list[++i];
