@@ -1,7 +1,6 @@
 import proj4 from "@/utils/proj4.util";
 
 class GeoJSONParser {
-
   // static DEFAULT_CRS = { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3857" } };
 
   // urn:ogc:def:crs:EPSG::3857
@@ -61,16 +60,16 @@ class GeoJSONParser {
             const value = String(item.properties[key]);
             if (!propertiesLabels[label]) propertiesLabels[label] = { type, name: key, map: new Map(), min: 0, max: 0 };
             const map = propertiesLabels[label].map;
-            if (!map.has(value)) map.set(value, map.size);
+            if (!map.has(value)) map.set(value, map.size + 0.5);
             properties[label] = map.get(value);
-            propertiesLabels[label].max = map.size - 1;
+            propertiesLabels[label].max = map.size;
           }
         }
       }
       if (item.type === "FeatureCollection") {
         for (const f of item.features) {
           f.propertiesKey = propertiesKey;
-          list.push(f)
+          list.push(f);
         }
       } else if (item.type === "Feature") {
         item.geometry.propertiesKey = propertiesKey;
@@ -84,47 +83,46 @@ class GeoJSONParser {
         const geometry = this.getMultiPoint([item.coordinates]);
         pointList[pointList.length] = {
           propertiesKey: propertiesKey || 0,
-          geometry: geometry
+          geometry: geometry,
         };
       } else if (item.type === "MultiPoint") {
         const geometry = this.getMultiPoint(item.coordinates);
         pointList[pointList.length] = {
           propertiesKey: propertiesKey || 0,
-          geometry: geometry
+          geometry: geometry,
         };
       } else if (item.type === "LineString") {
         const geometry = this.getMultiLineString([item.coordinates]);
         lineList[lineList.length] = {
           propertiesKey: propertiesKey || 0,
-          geometry: geometry
+          geometry: geometry,
         };
       } else if (item.type === "MultiLineString") {
         const geometry = this.getMultiLineString(item.coordinates);
         lineList[lineList.length] = {
           propertiesKey: propertiesKey || 0,
-          geometry: geometry
+          geometry: geometry,
         };
       } else if (item.type === "Polygon") {
         const geometry = this.getMultiPolygon([item.coordinates]);
         polygonList[polygonList.length] = {
           propertiesKey: propertiesKey || 0,
-          geometry: geometry
+          geometry: geometry,
         };
       } else if (item.type === "MultiPolygon") {
         const geometry = this.getMultiPolygon(item.coordinates);
         polygonList[polygonList.length] = {
           propertiesKey: propertiesKey || 0,
-          geometry: geometry
+          geometry: geometry,
         };
       }
     }
-
 
     {
       const list = [];
       for (const { propertiesKey, geometry } of pointList) {
         for (const [x, y] of geometry) {
-          list.push(x, y, propertiesKey)
+          list.push(x, y, propertiesKey);
         }
       }
       this.pointArray = new Float64Array(list);
@@ -140,13 +138,12 @@ class GeoJSONParser {
         }
       }
       this.lineArray = new Float64Array(list);
-
     }
     {
       const list = [];
       for (const { propertiesKey, geometry } of polygonList) {
         for (const polygon of geometry) {
-          const shapeList = []
+          const shapeList = [];
           for (const shape of polygon) {
             const l = shape.flat();
             shapeList.push(l.length);
@@ -167,7 +164,7 @@ class GeoJSONParser {
       const encode = new TextEncoder();
       const propertiesLabelsCopy = JSON.parse(JSON.stringify(propertiesLabels));
       for (const [key, value] of Object.entries(propertiesLabelsCopy)) {
-        value.values = propertiesList.map(v => v[key] || 0);
+        value.values = propertiesList.map((v) => v[key] || 0);
         if (value.type === "String") {
           value.map = Object.fromEntries(propertiesLabels[key].map);
         }
@@ -180,24 +177,24 @@ class GeoJSONParser {
   }
 
   getMultiPoint(coordinates) {
-    const list = []
+    const list = [];
     for (let i = 0; i < coordinates.length; i++) {
       let [x, y] = coordinates[i];
       if (this.coordSys !== "EPSG:3857") [x, y] = proj4(this.coordSys, "EPSG:3857", [x, y]);
       if (!this.center) this.center = [x, y];
       x -= this.center[0];
       y -= this.center[1];
-      list[list.length] = [x, y]
+      list[list.length] = [x, y];
     }
     return list;
   }
 
   getMultiLineString(coordinates) {
-    const list = []
+    const list = [];
     for (let i = 0; i < coordinates.length; i++) {
       const line = [];
       let fromCoord = null;
-      let length = 0
+      let length = 0;
       for (let j = 0; j < coordinates[i].length; j++) {
         let [x, y] = coordinates[i][j];
         if (this.coordSys !== "EPSG:3857") [x, y] = proj4(this.coordSys, "EPSG:3857", [x, y]);
@@ -220,7 +217,7 @@ class GeoJSONParser {
   }
 
   getMultiPolygon(coordinates) {
-    const list = []
+    const list = [];
     for (let i = 0; i < coordinates.length; i++) {
       const coordinate = [];
       for (let j = 0; j < coordinates[i].length; j++) {
@@ -231,14 +228,13 @@ class GeoJSONParser {
           if (!this.center) this.center = [x, y];
           x -= this.center[0];
           y -= this.center[1];
-          coordinate[j][k] = [x, y]
+          coordinate[j][k] = [x, y];
         }
       }
       list[list.length] = coordinate;
     }
     return list;
   }
-
 }
 
 onmessage = function (e) {
@@ -246,13 +242,16 @@ onmessage = function (e) {
   const str = decode.decode(e.data);
   const parser = new GeoJSONParser(JSON.parse(str));
   const time1 = new Date().getTime();
-  this.postMessage({
-    center: parser.center,
-    propertiesLabels: parser.propertiesLabels,
-    propertiesLabelsArray: parser.propertiesLabelsArray,
-    pointArray: parser.pointArray,
-    lineArray: parser.lineArray,
-    polygonArray: parser.polygonArray,
-    propertiesListArray: parser.propertiesListArray
-  }, [parser.pointArray.buffer, parser.lineArray.buffer, parser.polygonArray.buffer, parser.propertiesListArray.buffer, parser.propertiesLabelsArray.buffer]);
+  this.postMessage(
+    {
+      center: parser.center,
+      propertiesLabels: parser.propertiesLabels,
+      propertiesLabelsArray: parser.propertiesLabelsArray,
+      pointArray: parser.pointArray,
+      lineArray: parser.lineArray,
+      polygonArray: parser.polygonArray,
+      propertiesListArray: parser.propertiesListArray,
+    },
+    [parser.pointArray.buffer, parser.lineArray.buffer, parser.polygonArray.buffer, parser.propertiesListArray.buffer, parser.propertiesLabelsArray.buffer]
+  );
 };

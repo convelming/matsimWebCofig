@@ -99,7 +99,7 @@
                   <el-table-column :label="$l('类型')" prop="min">
                     <template slot-scope="{ row }">
                       <el-select v-model="row.min" @change="row.max = $event" size="mini">
-                        <el-option v-for="(mi, mk) in lItem.options[s_form[lItem.name].valueKey].map" :key="mi" :label="mk" :value="mi" />
+                        <el-option v-for="(mi, mk) in lItem.options[s_form[lItem.name].valueKey].map" :key="mi - 0.5" :label="mk" :value="mi - 0.5" />
                       </el-select>
                     </template>
                   </el-table-column>
@@ -384,6 +384,7 @@ export default {
           list.push({
             min: min2,
             max: max2,
+            range: [data.min, data.max],
             color: "#" + color.getHexString(),
             // label: `${min2} ~ ${max2}`,
             label: getLabel(item.labelRule, { min: min2, max: max2, index: i }),
@@ -404,6 +405,7 @@ export default {
           list.push({
             min: values[s],
             max: values[e],
+            range: [data.min, data.max],
             color: "#" + color.getHexString(),
             // label: `${values[s]} ~ ${values[e]}`,
             label: getLabel(item.labelRule, { min: values[s], max: values[e], index: i }),
@@ -416,14 +418,17 @@ export default {
           const [mk, mi] = mapList[i];
           const color = new THREE.Color().lerpColors(startColor, endColor, i / l);
           list.push({
-            min: mi,
-            max: mi,
+            min: mi - 0.5,
+            max: mi + 0.5,
+            range: [data.min, data.max],
             color: "#" + color.getHexString(),
             label: mk,
             use: true,
           });
         }
       }
+      console.log(list);
+      
       this.$set(item, "data", list);
       this.handleChangeImage(lItem);
     },
@@ -436,10 +441,12 @@ export default {
     },
     handleAddColorBarItem(lItem, index) {
       const item = this.s_form[lItem.name];
+      const data = lItem.options[item.valueKey];
       const last = item.data[item.data.length - 1] || {
         min: 0,
         max: 1,
         color: item.endColor,
+        range: [data.min, data.max],
         label: `${0} ~ ${1}`,
         use: true,
       };
