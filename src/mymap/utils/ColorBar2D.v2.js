@@ -4,12 +4,12 @@ const canvas2D = window.__ColorBar2DCanvas || (window.__ColorBar2DCanvas = docum
 canvas2D.width = 1024;
 canvas2D.height = 16;
 canvas2D.style.cssText = `
-  position: absolute;
+  position: fixed;
   left: 0;
-  top: 0;
+  top: -30px;
   width: 1024px;
   height: 16px;
-  z-index: 9999;
+  z-index: -9999;
 `;
 document.body.appendChild(canvas2D);
 const context2D = canvas2D.getContext("2d");
