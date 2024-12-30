@@ -5,7 +5,7 @@ import * as THREE from "three";
 import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 import { Text2DGeometry } from '@/mymap/geometry/Text2DGeometry.js';
 
-import { GeoJSONLineListGeometry, GeoJSONLineMaterial } from "../../GeoJSON/layer/GeoJSONLayer.js"
+import { GeoJSONLineListGeometry, GeoJSONLineMaterial } from "../../GeoJSON/layer/GeoJSONLayer2"
 
 
 let font = null;

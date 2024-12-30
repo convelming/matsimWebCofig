@@ -174,7 +174,7 @@ import ActivityDetail from "../../../operationsAnalysis/component/Activity3D/too
 // 私家车出行
 import CarTravelDetail from "../../../operationsAnalysis/component/CarTravel/toolbar/carTravelDetail.vue";
 // GeoJson
-import GeoJSONDetail from "../../../operationsAnalysis/component/GeoJSON/toolbar/geoJSONDetail.vue";
+import GeoJSONDetail from "../../../operationsAnalysis/component/GeoJSON/toolbar/geoJSONDetail2.vue";
 // 停车供需
 import PolgonParkingDetail from "../../../operationsAnalysis/component/Parking/toolbar/PolgonParkingDetail.vue";
 import ParkingActivityDetail from "../../../operationsAnalysis/component/Parking/toolbar/ParkingActivityDetail.vue";

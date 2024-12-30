@@ -188,7 +188,7 @@
 <script>
 import * as THREE from "three";
 import { ICON_LIST } from "@/utils/utils";
-import { LINE_STYLE } from "../layer/GeoJSONLayer";
+import { LINE_STYLE } from "../layer/GeoJSONLayer2";
 import { ColorBar2D } from "@/mymap/utils/ColorBar2D.v2";
 export default {
   name: "GeoJSONSetting",

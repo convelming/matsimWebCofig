@@ -25,7 +25,7 @@
 
 <script>
 import { ICON_LIST, COLOR_LIST } from "@/utils/utils";
-import { GeoJSONLayer, LINE_STYLE } from "../layer/GeoJSONLayer";
+import { LINE_STYLE } from "../layer/GeoJSONLayer2";
 export default {
   name: "HeatMap",
   props: {
