@@ -31,7 +31,7 @@
 </language>
 
 <script>
-import { GeoJSONLayer, LINE_STYLE } from "../../GeoJSON/layer/GeoJSONLayer";
+import { LINE_STYLE } from "../../GeoJSON/layer/GeoJSONLayer2";
 import GeoJSONLayerWorker from "../../GeoJSON/worker/GeoJSONLayer.worker";
 import GeoJSONVisualMap from "../../GeoJSON/component/GeoJSONVisualMap.vue";
 
