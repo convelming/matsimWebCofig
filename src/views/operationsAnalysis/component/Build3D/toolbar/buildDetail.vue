@@ -185,7 +185,7 @@ export default {
   },
   created() {
     this._SelectBuild3DLayer = new SelectBuild3DLayer({
-      zIndex: 10,
+      zIndex: 100,
       buildColor: 0xff0000,
       buildOpacity: 1,
     });

@@ -54,9 +54,11 @@ export class Build3DLayer extends Layer {
       const pickColorNum = data.pickColor;
       for (const tile of Object.values(this.tileMap)) {
         const item = tile.getBuildByPickColor(pickColorNum);
+
         if (item) {
-          this.handleEventListener(type, item);
+          this.handleEventListener(type, item); 
           break;
+          // console.log(pickColorNum, item);
         }
       }
     }
@@ -81,7 +83,6 @@ export class Build3DLayer extends Layer {
     this.loadMesh();
   }
 
-
   render() {
     super.render();
   }
@@ -102,7 +103,11 @@ export class Build3DLayer extends Layer {
     if (this.loadingNum < 20) {
       this.loadingNum++;
       this.handleEventListener(MAP_EVENT.LAYER_LOADING, this.loadingNum > 0);
-      tile.load(this).then(() => {
+      tile.loadData().then((data) => {
+        const pickColorOffset = this.pickColorNum;
+        this.pickColorNum += data.length;
+        tile.render(pickColorOffset);
+
         this.loadingNum--;
         this.handleEventListener(MAP_EVENT.LAYER_LOADING, this.loadingNum > 0);
         if (this._noLoadTileList.length > 0) {
@@ -169,6 +174,7 @@ export class BuildTile {
   // 加载状态 1未加载 2加载成功 3加载失败 4加载中 5已卸载
   _loadStatus = 1;
 
+  _pickColorOffset = 0;
 
   get loadStatus() {
     return this._loadStatus;
@@ -205,8 +211,7 @@ export class BuildTile {
     this._x = ((row + 0.5) * (EARTH_RADIUS * 2)) / Math.pow(2, BUILD_ZOOM) - EARTH_RADIUS;
     this._y = EARTH_RADIUS - ((col + 0.5) * (EARTH_RADIUS * 2)) / Math.pow(2, BUILD_ZOOM);
 
-    this._data = new Map();
-
+    this.data = [];
     this._geometry = new THREE.BufferGeometry();
 
     this._baseMesh = new THREE.Mesh(this._geometry, baseMaterial);
@@ -214,39 +219,45 @@ export class BuildTile {
     this._pickBuildMesh = new THREE.Mesh(this._geometry, pickBuildMeterial);
   }
 
-  async load(layer) {
+  async loadData() {
     try {
       this._loadStatus = 4;
       if (this._geometry) {
         this._geometry.dispose();
       }
       const { data } = await getTileFacilities({ x: this._row, y: this._col });
-      if (data && data.length > 0) {
-        const geometryList = [];
-        for (let i = 0, l = data.length; i < l; i++) {
-          const v = data[i];
-          if (!v) continue
-          v.pickColorNum = ++layer.pickColorNum;
-          const pickColor = new THREE.Color(v.pickColorNum);
-          const shapes = [
-            {
-              points: v.coordinates[0],
-              holes: v.coordinates.slice(1),
-            },
-          ];
-          geometryList.push(new BuildGeometry({ shapes, height: v.height, color: pickColor }));
-          this._data.set(v.pickColorNum, v);
-        }
-
-        this._geometry = BufferGeometryUtils.mergeBufferGeometries(geometryList, false);
-      } else {
-        this._geometry = new THREE.BufferGeometry();
-      }
+      this.data = data;
       this._loadStatus = 2;
     } catch (error) {
-      this._geometry = new THREE.BufferGeometry();
       this._loadStatus = 3;
-      console.log(this._row, this._col, error);
+    }
+    return this.data;
+  }
+
+  render(pickColorOffset) {
+    if (this._geometry) {
+      this._geometry.dispose();
+    }
+    this._pickColorOffset = pickColorOffset;
+    if (this.data && this.data.length > 0) {
+      const geometryList = [];
+      for (let i = 0, l = this.data.length; i < l; i++) {
+        const v = this.data[i];
+        if (!v) continue;
+        v.pickColorNum = this._pickColorOffset + i + 1;
+        const pickColor = new THREE.Color(v.pickColorNum);
+        const shapes = [
+          {
+            points: v.coordinates[0],
+            holes: v.coordinates.slice(1),
+          },
+        ];
+        geometryList.push(new BuildGeometry({ shapes, height: v.height, color: pickColor }));
+      }
+
+      this._geometry = BufferGeometryUtils.mergeBufferGeometries(geometryList, false);
+    } else {
+      this._geometry = new THREE.BufferGeometry();
     }
 
     this._baseMesh.geometry = this._geometry;
@@ -255,11 +266,54 @@ export class BuildTile {
     this._pickLayerMesh.needsUpdate = true;
     this._pickBuildMesh.geometry = this._geometry;
     this._pickBuildMesh.needsUpdate = true;
-    return this;
   }
 
+  // async load(layer) {
+  //   try {
+  //     this._loadStatus = 4;
+  //     if (this._geometry) {
+  //       this._geometry.dispose();
+  //     }
+  //     const { data } = await getTileFacilities({ x: this._row, y: this._col });
+  //     if (data && data.length > 0) {
+  //       const geometryList = [];
+  //       for (let i = 0, l = data.length; i < l; i++) {
+  //         const v = data[i];
+  //         if (!v) continue;
+  //         v.pickColorNum = ++layer.pickColorNum;
+  //         const pickColor = new THREE.Color(v.pickColorNum);
+  //         const shapes = [
+  //           {
+  //             points: v.coordinates[0],
+  //             holes: v.coordinates.slice(1),
+  //           },
+  //         ];
+  //         geometryList.push(new BuildGeometry({ shapes, height: v.height, color: pickColor }));
+  //         this._data.set(v.pickColorNum, v);
+  //       }
+
+  //       this._geometry = BufferGeometryUtils.mergeBufferGeometries(geometryList, false);
+  //     } else {
+  //       this._geometry = new THREE.BufferGeometry();
+  //     }
+  //     this._loadStatus = 2;
+  //   } catch (error) {
+  //     this._geometry = new THREE.BufferGeometry();
+  //     this._loadStatus = 3;
+  //     console.log(this._row, this._col, error);
+  //   }
+
+  //   this._baseMesh.geometry = this._geometry;
+  //   this._baseMesh.needsUpdate = true;
+  //   this._pickLayerMesh.geometry = this._geometry;
+  //   this._pickLayerMesh.needsUpdate = true;
+  //   this._pickBuildMesh.geometry = this._geometry;
+  //   this._pickBuildMesh.needsUpdate = true;
+  //   return this;
+  // }
+
   getBuildByPickColor(pickColor) {
-    return this._data.get(pickColor);
+    return this.data[pickColor - this._pickColorOffset - 1];
   }
 
   dispose() {
@@ -432,5 +486,4 @@ export class BuildGeometry extends THREE.BufferGeometry {
       }
     }
   }
-
 }

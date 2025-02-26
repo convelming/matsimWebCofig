@@ -91,6 +91,7 @@ export default {
   created() {
     this.s_showLayer = this.showLayer;
     this._Build3DLayer = new Build3DLayer({
+      zIndex: 2,
       buildColor: this.buildColor,
       buildOpacity: this.buildOpacity * 100,
       event: {
