@@ -42,14 +42,19 @@
                   <h1>{{ $l("30万") }}</h1>
                 </el-col>
               </el-row>
-              <div class="footer">
-                <div class="defaultDataSource" @click="handleClickItem('operationsAnalysis')" v-if="defaultDataSource">
+              <div class="footer" v-if="defaultDataSource">
+                <div class="defaultDataSource" @click="handleClickItem('operationsAnalysis')">
                   <span>{{ defaultDataSource.dataSource }} ({{ $l(defaultDataSource.loadStatus) }})</span>
                   <span class="dian" style="background-color: #67c23a" v-if="defaultDataSource.loadStatus == '已加载'"></span>
                   <span class="dian" style="background-color: #e6a23c" v-else-if="defaultDataSource.loadStatus == '加载中'"></span>
                   <span class="dian" style="background-color: #909399" v-else-if="defaultDataSource.loadStatus == '未加载'"></span>
                 </div>
                 <el-button type="primary" size="small" @click="handleOperationsAnalysisToDetail(defaultDataSource.name)">{{ $l("进入页面") }}</el-button>
+              </div>
+              <div class="footer" v-else>
+                <div class="defaultDataSource" @click="handleClickItem('operationsAnalysis')">
+                  <span>未设置默认方案，请点击查看</span>
+                </div>
               </div>
             </div>
           </div>
@@ -258,9 +263,8 @@
         },
         created() {
           this.page_language = sessionStorage.getItem("language") || this.page_language;
-          this.getDefaultDataSource().then((res) => {
-            this.handleGetDataBaseList();
-            this.handleGetDateSourceList(res.dataBase);
+          Promise.all([this.handleGetDataBaseList(), this.getDefaultDataSource()]).then((res) => {
+            this.handleGetDateSourceList(res[1].dataBase);
           });
           this._interval = setInterval(() => {
             this.getDefaultDataSource();
