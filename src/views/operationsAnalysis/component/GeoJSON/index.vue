@@ -102,8 +102,6 @@ export default {
     return {
       predefineColors: ["#5470c6", "#91cc75", "#fac858", "#ee6666", "#73c0de", "#3ba272", "#fc8452", "#9a60b4", "#ea7ccc"],
       s_showLayer: true,
-      color: "#5470c6",
-      GeoJSONMap: [],
 
       loading: false,
     };
@@ -122,9 +120,6 @@ export default {
   },
   beforeDestroy() {
     this.handleDisable();
-    for (const item of this.GeoJSONMap) {
-      item._layer.dispose();
-    }
   },
   methods: {
     handleChangeShowLayer(value) {
@@ -133,15 +128,9 @@ export default {
     },
     // 组件初始化事件
     handleEnable() {
-      for (const item of this.GeoJSONMap) {
-        if (item.show) this._Map.addLayer(item._layer);
-      }
     },
     // 组件卸载事件
     handleDisable() {
-      for (const item of this.GeoJSONMap) {
-        item._layer.removeFromParent();
-      }
     },
     handleSelectFile() {
       const input = document.createElement("input");
@@ -155,14 +144,6 @@ export default {
         if (index > -1) {
           this.$message.error(this.$l("GeoJSON文件已存在！"));
         } else {
-          // const GeoJSON = {
-          //   id: guid(),
-          //   _file: file,
-          //   name: file.name,
-          //   show: true,
-          // };
-          // this.rootVue.GeoJSONList.push(GeoJSON);
-          // this.rootVue.handleToolbarActiveModel("GeoJSON");
           this.rootVue.handleAddGeoJSON(
             {
               id: guid(),

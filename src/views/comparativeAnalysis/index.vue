@@ -107,11 +107,6 @@ export default {
     this.$store.dispatch("setDataSource", database1 + "/" + datasource1);
   },
   methods: {
-    // 速度控制
-    speedCommand(value) {
-      this._speed = value;
-      this.speed = value;
-    },
     // 显示线路流量
     handleShowRouteFlows({ uuid, routeDetail }) {
       if (this.$refs.Toolbar) {

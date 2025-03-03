@@ -55,13 +55,8 @@ export default {
     };
   },
   methods: {
-    speedCommand(value) {
-      this._speed = value;
-      this.speed = value;
-    },
     handleChangeTimeSpeed() {
       let enableRotate = this.canChangeTimeSpeed();
-
       if (enableRotate) {
         this.speed = this._speed || 10;
       } else {

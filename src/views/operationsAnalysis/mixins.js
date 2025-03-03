@@ -208,6 +208,11 @@ export default {
   beforeDestroy() {
   },
   methods: {
+    // 速度控制
+    speedCommand(value) {
+      this._speed = value;
+      this.speed = value;
+    },
     canChangeTimeSpeed() {
       let enableRotate = false;
       if (this.showLayerPublicTransit) enableRotate = true;
