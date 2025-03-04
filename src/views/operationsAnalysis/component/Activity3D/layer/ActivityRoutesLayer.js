@@ -74,6 +74,7 @@ export class ActivityRoutesLayer extends Layer {
 
   // 销毁
   dispose() {
+    super.dispose();
     this.scaleScene.removeFromParent();
     [this.actStartMeshList, this.actEndMeshList, this.actCylMeshList, this.legMeshList].flat().forEach((v) => {
       v.removeFromParent();

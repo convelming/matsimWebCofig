@@ -230,6 +230,7 @@ export class BusStopLayer extends Layer {
   }
 
   dispose() {
+    super.dispose();
     // this.texture.dispose();
     // this.geometry.dispose();
     // this.data.length = 0;

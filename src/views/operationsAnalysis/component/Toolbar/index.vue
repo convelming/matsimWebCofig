@@ -10,7 +10,6 @@
         <div class="item" :id="Activity3D.id" :class="{ active: activeModel === Activity3D.id }" @click="handleActiveModel(Activity3D.id)">{{ $l(Activity3D.name) }}</div>
         <div class="item" :id="GeoJSON.id" :class="{ active: activeModel === GeoJSON.id }" @click="handleActiveModel(GeoJSON.id)">{{ $l(GeoJSON.name) }}</div>
         <div class="item" :id="Parking.id" :class="{ active: activeModel === Parking.id }" @click="handleActiveModel(Parking.id)">{{ $l(Parking.name) }}</div>
-        <!-- <div class="item" :id="RegionalTraffic.id" :class="{ active: activeModel === RegionalTraffic.id }" @click="handleActiveModel(RegionalTraffic.id)">{{ $l(RegionalTraffic.name) }}</div> -->
         <div class="item" :id="TrafficRegionAnalysis.id" :class="{ active: activeModel === TrafficRegionAnalysis.id }" @click="handleActiveModel(TrafficRegionAnalysis.id)">{{ $l(TrafficRegionAnalysis.name) }}</div>
       </div>
       <div class="btn el-icon-caret-right" @click="handleScroll(150)"></div>
@@ -18,30 +17,30 @@
     <div class="toolbar-bodyer" v-show="activeModel === PublicTransit.id">
       <SreachStopRoute />
       <el-collapse class="toolbar-collapse" v-model="PublicTransit.activeName" accordion>
-        <component v-for="item in PublicTransit.list" :show="item.name == PublicTransit.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" />
+        <component v-for="item in PublicTransit.list" :show="item.name == PublicTransit.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" :config="item.config" ref="PublicTransitItem" />
       </el-collapse>
     </div>
     <div class="toolbar-bodyer" v-show="activeModel === MotorizedTravel.id">
       <el-collapse class="toolbar-collapse" v-model="MotorizedTravel.activeName" accordion>
-        <component v-for="item in MotorizedTravel.list" :show="item.name == MotorizedTravel.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" />
+        <component v-for="item in MotorizedTravel.list" :show="item.name == MotorizedTravel.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" :config="item.config" ref="MotorizedTravelItem" />
       </el-collapse>
     </div>
     <div class="toolbar-bodyer" v-show="activeModel === Build3D.id">
       <SreachBuild />
       <el-collapse class="toolbar-collapse" v-model="Build3D.activeName" accordion>
-        <component v-for="item in Build3D.list" :show="item.name == Build3D.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" />
+        <component v-for="item in Build3D.list" :show="item.name == Build3D.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" :config="item.config" ref="Build3DItem" />
       </el-collapse>
     </div>
     <div class="toolbar-bodyer" v-show="activeModel === Network.id">
       <SreachLineNode />
       <el-collapse class="toolbar-collapse" v-model="Network.activeName" accordion>
-        <component v-for="item in Network.list" :show="item.name == Network.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" />
+        <component v-for="item in Network.list" :show="item.name == Network.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" :config="item.config" ref="NetworkItem" />
       </el-collapse>
     </div>
     <div class="toolbar-bodyer" v-show="activeModel === Activity3D.id">
       <SreachActivity />
       <el-collapse class="toolbar-collapse" v-model="Activity3D.activeName" accordion>
-        <component v-for="item in Activity3D.list" :show="item.name == Activity3D.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" />
+        <component v-for="item in Activity3D.list" :show="item.name == Activity3D.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" :config="item.config" ref="Activity3DItem" />
       </el-collapse>
     </div>
     <div class="toolbar-bodyer" v-show="activeModel === GeoJSON.id">
@@ -52,19 +51,13 @@
     <div class="toolbar-bodyer" v-show="activeModel === Parking.id">
       <ParkingGeoJSONDetail />
       <el-collapse class="toolbar-collapse" v-model="Parking.activeName" accordion>
-        <component v-for="item in Parking.list" :show="item.name == Parking.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" />
+        <component v-for="item in Parking.list" :show="item.name == Parking.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" :config="item.config" ref="ParkingItem" />
       </el-collapse>
-    </div>
-    <div class="toolbar-bodyer" v-show="activeModel === RegionalTraffic.id">
-      <RegionalTrafficDetail />
-      <!-- <el-collapse class="toolbar-collapse" v-model="RegionalTraffic.activeName" accordion>
-        <component v-for="item in RegionalTraffic.list" :show="item.name == RegionalTraffic.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" />
-      </el-collapse> -->
     </div>
     <div class="toolbar-bodyer" v-show="activeModel === TrafficRegionAnalysis.id">
       <TRAGeoJSONHeader />
       <el-collapse class="toolbar-collapse" v-model="TrafficRegionAnalysis.activeName" accordion>
-        <component v-for="item in TrafficRegionAnalysis.list" :show="item.name == TrafficRegionAnalysis.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" />
+        <component v-for="item in TrafficRegionAnalysis.list" :show="item.name == TrafficRegionAnalysis.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" :config="item.config" ref="TrafficRegionAnalysisItem" />
       </el-collapse>
     </div>
   </div>
@@ -147,14 +140,13 @@ import GeoJSONDetail from "../GeoJSON/toolbar/geoJSONDetail2.vue";
 import PolgonParkingDetail from "../Parking/toolbar/PolgonParkingDetail.vue";
 import ParkingActivityDetail from "../Parking/toolbar/ParkingActivityDetail.vue";
 import ParkingGeoJSONDetail from "../Parking/toolbar/ParkingGeoJSONDetail.vue";
-// 区域流量溯源
-import RegionalTrafficDetail from "../RegionalTraffic/toolbar/RegionalTrafficDetail.vue";
 // 区域交通分析
 import TRAGeoJSONHeader from "../TrafficRegionAnalysis/toolbar/TRAGeoJSONHeader.vue";
 import MultiplePathsDetail from "../TrafficRegionAnalysis/toolbar/MultiplePathsDetail.vue";
-import SinglePathDetail from "../TrafficRegionAnalysis/toolbar/SinglePathDetail2.vue";
+import SinglePathDetail from "../TrafficRegionAnalysis/toolbar/SinglePathDetail.vue";
 
 export default {
+  name: "Toolbar",
   components: {
     SreachBuild,
     BuildDetail,
@@ -186,8 +178,6 @@ export default {
     ParkingActivityDetail,
     ParkingGeoJSONDetail,
 
-    RegionalTrafficDetail,
-
     TRAGeoJSONHeader,
     MultiplePathsDetail,
     SinglePathDetail,
@@ -195,6 +185,7 @@ export default {
   inject: ["rootVue"],
   data() {
     return {
+      configKey: "ToolbarConfig",
       PublicTransit: {
         id: "PublicTransit",
         name: "公共交通",
@@ -258,15 +249,6 @@ export default {
         list: [],
         activeName: "",
       },
-      RegionalTraffic: {
-        id: "RegionalTraffic",
-        name: "区域流量溯源",
-        components: ["RegionalTrafficDetail"],
-        sreach: {},
-        params: {},
-        list: [],
-        activeName: "",
-      },
       TrafficRegionAnalysis: {
         id: "TrafficRegionAnalysis",
         name: "区域交通分析",
@@ -275,27 +257,27 @@ export default {
         params: {},
         list: [],
         activeName: "",
-        // list: [
-        //   {
-        //     type: "SinglePathDetail",
-        //     data: {
-        //       uuid: "38e4047c-7a67-4c49-9e3b-cb40a22d8bd3",
-        //       singlePathDetail: {
-        //         shape: [
-        //           [12634435.302642914, 2645511.8325935453],
-        //           [12633846.75084994, 2642668.8241874496],
-        //           [12637717.231729725, 2642559.094078857],
-        //           [12637846.913390191, 2646010.6062060306],
-        //           [12634435.302642914, 2645511.8325935453],
-        //         ],
-        //         holes: [],
-        //         type: "link",
-        //       },
-        //     },
-        //     name: "38e4047c-7a67-4c49-9e3b-cb40a22d8bd3",
-        //   },
-        // ],
-        // activeName: "38e4047c-7a67-4c49-9e3b-cb40a22d8bd3",
+        list: [
+          {
+            type: "SinglePathDetail",
+            data: {
+              uuid: "38e4047c-7a67-4c49-9e3b-cb40a22d8bd3",
+              singlePathDetail: {
+                shape: [
+                  [12634435.302642914, 2645511.8325935453],
+                  [12633846.75084994, 2642668.8241874496],
+                  [12637717.231729725, 2642559.094078857],
+                  [12637846.913390191, 2646010.6062060306],
+                  [12634435.302642914, 2645511.8325935453],
+                ],
+                holes: [],
+                type: "link",
+              },
+            },
+            name: "38e4047c-7a67-4c49-9e3b-cb40a22d8bd3",
+          },
+        ],
+        activeName: "38e4047c-7a67-4c49-9e3b-cb40a22d8bd3",
       },
       modelMap: {
         RouteDetail: "PublicTransit",
@@ -321,8 +303,6 @@ export default {
         PolgonParkingDetail: "Parking",
         ParkingActivityDetail: "Parking",
 
-        RegionalTrafficDetail: "RegionalTraffic",
-
         MultiplePathsDetail: "TrafficRegionAnalysis",
         SinglePathDetail: "TrafficRegionAnalysis",
       },
@@ -347,6 +327,41 @@ export default {
   },
   beforeDestroy() {},
   methods: {
+    initByConfig(config) {
+      {
+        const TrafficRegionAnalysisToolbar = config.TrafficRegionAnalysisToolbar || {};
+        this.$set(this.TrafficRegionAnalysis, "sreach", TrafficRegionAnalysisToolbar.sreach || {});
+        this.$set(this.TrafficRegionAnalysis, "params", TrafficRegionAnalysisToolbar.params || {});
+        this.$set(this.TrafficRegionAnalysis, "activeName", TrafficRegionAnalysisToolbar.activeName || "");
+        this.$set(this.TrafficRegionAnalysis, "list", TrafficRegionAnalysisToolbar.list || []);
+      }
+    },
+    async exportConfig() {
+      const config = {};
+
+      {
+        const list = [];
+        const refs = this.$refs["TrafficRegionAnalysisItem"];
+        console.log(refs);
+        for (const item of this.TrafficRegionAnalysis.list) {
+          const ref = refs.find((v) => v.name == item.name);
+          list.push({
+            type: item.type,
+            name: item.name,
+            data: JSON.parse(JSON.stringify(item.data)),
+            config: await ref.exportConfig(),
+          });
+        }
+        config.TrafficRegionAnalysisToolbar = {
+          sreach: this.TrafficRegionAnalysis.sreach,
+          params: this.TrafficRegionAnalysis.params,
+          activeName: this.TrafficRegionAnalysis.activeName,
+          list: list,
+        };
+      }
+
+      return config;
+    },
     add(type, data) {
       const model = this.modelMap[type];
       const obj = this[model];
@@ -369,8 +384,6 @@ export default {
 
         case "ActivityDetail":
         case "ParkingActivityDetail":
-
-        case "RegionalTrafficDetail":
 
         case "MultiplePathsDetail":
         case "SinglePathDetail": {

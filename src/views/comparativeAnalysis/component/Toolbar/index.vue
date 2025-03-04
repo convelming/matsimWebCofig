@@ -14,7 +14,6 @@
         <div class="item" :id="Activity3D.id" :class="{ active: activeModel === Activity3D.id }" @click="handleActiveModel(Activity3D.id)">{{ $l(Activity3D.name) }}</div>
         <div class="item" :id="GeoJSON.id" :class="{ active: activeModel === GeoJSON.id }" @click="handleActiveModel(GeoJSON.id)">{{ $l(GeoJSON.name) }}</div>
         <div class="item" :id="Parking.id" :class="{ active: activeModel === Parking.id }" @click="handleActiveModel(Parking.id)">{{ $l(Parking.name) }}</div>
-        <!-- <div class="item" :id="RegionalTraffic.id" :class="{ active: activeModel === RegionalTraffic.id }" @click="handleActiveModel(RegionalTraffic.id)">{{ $l(RegionalTraffic.name) }}</div> -->
         <div class="item" :id="TrafficRegionAnalysis.id" :class="{ active: activeModel === TrafficRegionAnalysis.id }" @click="handleActiveModel(TrafficRegionAnalysis.id)">{{ $l(TrafficRegionAnalysis.name) }}</div>
       </div>
       <div class="btn el-icon-caret-right" @click="handleScroll(150)"></div>
@@ -72,12 +71,6 @@
       <el-collapse class="toolbar-collapse" v-model="Parking.activeName" accordion>
         <component v-for="item in Parking.list" :show="item.name == Parking.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" />
       </el-collapse>
-    </div>
-    <div class="toolbar-bodyer" v-show="activeModel === RegionalTraffic.id">
-      <RegionalTrafficDetail />
-      <!-- <el-collapse class="toolbar-collapse" v-model="RegionalTraffic.activeName" accordion>
-        <component v-for="item in RegionalTraffic.list" :show="item.name == RegionalTraffic.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" />
-      </el-collapse> -->
     </div>
     <div class="toolbar-bodyer" v-show="activeModel === TrafficRegionAnalysis.id">
       <TRAGeoJSONHeader />
@@ -179,12 +172,10 @@ import GeoJSONDetail from "../../../operationsAnalysis/component/GeoJSON/toolbar
 import PolgonParkingDetail from "../../../operationsAnalysis/component/Parking/toolbar/PolgonParkingDetail.vue";
 import ParkingActivityDetail from "../../../operationsAnalysis/component/Parking/toolbar/ParkingActivityDetail.vue";
 import ParkingGeoJSONDetail from "../../../operationsAnalysis/component/Parking/toolbar/ParkingGeoJSONDetail.vue";
-// 区域流量溯源
-import RegionalTrafficDetail from "../../../operationsAnalysis/component/RegionalTraffic/toolbar/RegionalTrafficDetail.vue";
 // 区域交通分析
 import TRAGeoJSONHeader from "../../../operationsAnalysis/component/TrafficRegionAnalysis/toolbar/TRAGeoJSONHeader.vue";
 import MultiplePathsDetail from "../../../operationsAnalysis/component/TrafficRegionAnalysis/toolbar/MultiplePathsDetail.vue";
-import SinglePathDetail from "../../../operationsAnalysis/component/TrafficRegionAnalysis/toolbar/SinglePathDetail2.vue";
+import SinglePathDetail from "../../../operationsAnalysis/component/TrafficRegionAnalysis/toolbar/SinglePathDetail.vue";
 
 export default {
   components: {
@@ -221,8 +212,6 @@ export default {
     PolgonParkingDetail,
     ParkingActivityDetail,
     ParkingGeoJSONDetail,
-
-    RegionalTrafficDetail,
 
     TRAGeoJSONHeader,
     MultiplePathsDetail,
@@ -311,15 +300,6 @@ export default {
         list: [],
         activeName: "",
       },
-      RegionalTraffic: {
-        id: "RegionalTraffic",
-        name: "区域流量溯源",
-        components: ["RegionalTrafficDetail"],
-        sreach: {},
-        params: {},
-        list: [],
-        activeName: "",
-      },
       TrafficRegionAnalysis: {
         id: "TrafficRegionAnalysis",
         name: "区域交通分析",
@@ -374,8 +354,6 @@ export default {
         PolgonParkingDetail: "Parking",
         ParkingActivityDetail: "Parking",
 
-        RegionalTrafficDetail: "RegionalTraffic",
-
         MultiplePathsDetail: "TrafficRegionAnalysis",
         SinglePathDetail: "TrafficRegionAnalysis",
       },
@@ -422,9 +400,7 @@ export default {
         case "SelectLinkAnalysis":
 
         case "ActivityDetail":
-        case "ParkingActivityDetail":
-
-        case "RegionalTrafficDetail": {
+        case "ParkingActivityDetail": {
           const item = list.find((v) => v.data.uuid == data.uuid);
           if (item && data.uuid) {
             activeName = item.name;

@@ -58,6 +58,7 @@ export class BuildFlowLayer extends Layer {
   }
 
   dispose() {
+    super.dispose();
     if (this.meshList && this.meshList.length) {
       this.meshList.forEach((v) => v.geometry.dispose());
       this.meshList = [];

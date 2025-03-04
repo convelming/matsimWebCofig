@@ -100,6 +100,7 @@ export class NetworkLayer extends Layer {
   }
 
   dispose() {
+    super.dispose();
     this.worker.terminate();
     for (const geometry of this.geometryList) {
       geometry.dispose();

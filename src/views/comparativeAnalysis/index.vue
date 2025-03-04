@@ -16,7 +16,6 @@
               <Activity3D :showLayer.sync="showLayerActivity3D" :lock2D.sync="lock2DActivity3D" name="Activity3D" />
               <GeoJSON :showLayer.sync="showLayerGeoJSON" :lock2D.sync="lock2DGeoJSON" name="GeoJSON" />
               <Parking :showLayer.sync="showLayerParking" :lock2D.sync="lock2DParking" name="Parking" />
-              <!-- <RegionalTraffic :showLayer.sync="showLayerRegionalTraffic" :lock2D.sync="lock2DRegionalTraffic" name="RegionalTraffic" ref="RegionalTraffic" /> -->
               <TrafficRegionAnalysis :showLayer.sync="showLayerTrafficRegionAnalysis" :lock2D.sync="lock2DTrafficRegionAnalysis" name="TrafficRegionAnalysis" ref="TrafficRegionAnalysis" />
               <div style="height: 100px"></div>
             </el-collapse>

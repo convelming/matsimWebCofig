@@ -131,6 +131,7 @@ export class BusLinkLayer extends Layer {
   }
 
   dispose() {
+    super.dispose();
     if (this.geometry) this.geometry.dispose();
     if (this.texture) this.texture.dispose();
   }

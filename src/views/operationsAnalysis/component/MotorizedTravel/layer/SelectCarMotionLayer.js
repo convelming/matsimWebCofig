@@ -125,6 +125,7 @@ export class SelectCarMotionLayer extends Layer {
   }
 
   dispose() {
+    super.dispose();
     this.worker.terminate();
   }
 

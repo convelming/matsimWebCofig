@@ -148,6 +148,7 @@ export class CarMotionLayer extends Layer {
 
 
   dispose() {
+    super.dispose();
     this.worker.terminate();
     const modelName = "SUV";
     this.runCarList.forEach(model => {

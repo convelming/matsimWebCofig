@@ -141,6 +141,7 @@ export default {
   },
   data() {
     return {
+      configKey: "activity3DConfig",
       predefineColors: ["#5470c6", "#91cc75", "#fac858", "#ee6666", "#73c0de", "#3ba272", "#fc8452", "#9a60b4", "#ea7ccc"],
       s_showLayer: true,
       color: "#5470c6",
@@ -169,7 +170,6 @@ export default {
           const _data = JSON.parse(JSON.stringify(data));
           _data._form_type = "mymap";
           console.log(data);
-          
 
           this.rootVue.handleShowActivityDetail({
             uuid: data.pickColor,
@@ -198,6 +198,33 @@ export default {
     this._Activity3DLayer.dispose();
   },
   methods: {
+    initByConfig(config) {
+      config = config || this.rootVue.defaultConfig.activity3DConfig;
+      this.s_showLayer = config.showLayer;
+      this.$emit("update:showLayer", config.showLayer);
+      this.$emit("update:lock2D", config.lock2D);
+
+      this.color = config.color;
+      this.scale = config.scale;
+      this.maxNum = config.maxNum;
+      this.showColorTypeTable = config.showColorTypeTable;
+      this.colorType = config.colorType;
+      if (config.activityTypeList) this.activityTypeList = config.activityTypeList;
+      if (config.legTypeList) this.legTypeList = config.legTypeList;
+    },
+    exportConfig() {
+      return {
+        showLayer: this.s_showLayer,
+        lock2D: this.lock2D,
+        color: this.color,
+        scale: this.scale,
+        maxNum: this.maxNum,
+        showColorTypeTable: this.showColorTypeTable,
+        colorType: this.colorType,
+        activityTypeList: this.activityTypeList,
+        legTypeList: this.legTypeList,
+      };
+    },
     updateColor() {
       this.rootVue.$emit(CHANGE_COLOR_EVENT_KEY, {
         activityColors: this.activityTypeList,

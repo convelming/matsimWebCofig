@@ -90,17 +90,8 @@ export default {
   },
   data() {
     return {
-      predefineColors: ["#5470c6", "#91cc75", "#fac858", "#ee6666", "#73c0de", "#3ba272", "#fc8452", "#9a60b4", "#ea7ccc"],
+      configKey: "trafficRegionAnalysisConfig",
       s_showLayer: true,
-
-      colors: 0,
-      width: 1,
-      offset: 0,
-      color: "#E9CDAA",
-      showNode: false,
-      canSelect: false,
-
-      colorsList: COLOR_LIST,
 
       loading: false,
 
@@ -162,6 +153,19 @@ export default {
     this._PolygonSelectLayer.dispose();
   },
   methods: {
+    initByConfig(config) {
+      config = config || this.rootVue.defaultConfig.trafficRegionAnalysisConfig;
+      this.s_showLayer = config.showLayer;
+      this.$emit("update:showLayer", config.showLayer);
+      this.$emit("update:lock2D", config.lock2D);
+
+    },
+    exportConfig() {
+      return {
+        showLayer: this.s_showLayer,
+        lock2D: this.lock2D,
+      };
+    },
     // 组件初始化事件
     handleEnable() {
       this._Map.addLayer(this._PolygonSelectLayer);

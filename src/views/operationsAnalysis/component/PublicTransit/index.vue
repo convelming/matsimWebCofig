@@ -115,6 +115,7 @@ export default {
   },
   data() {
     return {
+      configKey: "publicTransitConfig",
       icon_sreach: require("@/assets/image/地图 (2).svg"),
 
       s_showLayer: false,
@@ -123,15 +124,7 @@ export default {
       stopColor: "#2656C6",
       stopScale: 2,
 
-      sreachLine: false,
-      frameSelectState: undefined,
-      frameSelectXYarr: undefined,
-      linkState: undefined,
-      linkStartPoint: undefined,
-      linkEndPoint: undefined,
-
       selectStop: false,
-      selectStopByBox: false,
       selectBusStopList: [],
 
       predefineColors: ["#5470c6", "#91cc75", "#fac858", "#ee6666", "#73c0de", "#3ba272", "#fc8452", "#9a60b4", "#ea7ccc"],
@@ -178,6 +171,25 @@ export default {
     this._LinkLayer.dispose();
   },
   methods: {
+    initByConfig(config) {
+      config = config || this.rootVue.defaultConfig.publicTransitConfig;
+      this.s_showLayer = config.showLayer;
+      this.$emit("update:showLayer", config.showLayer);
+      this.$emit("update:lock2D", config.lock2D);
+
+      this.stopColor = config.stopColor;
+      this.stopScale = config.stopScale;
+      this.selectStop = config.selectStop;
+    },
+    exportConfig() {
+      return {
+        showLayer: this.s_showLayer,
+        lock2D: this.lock2D,
+        stopColor: this.stopColor,
+        stopScale: this.stopScale,
+        selectStop: this.selectStop,
+      };
+    },
     handleChangeShowLayer(value) {
       this.s_showLayer = value;
       this.$emit("update:showLayer", value);

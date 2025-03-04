@@ -9,13 +9,16 @@
 // },
 
 export default {
+  key: "PageConfig",
+
   publicTransitConfig: {
     showLayer: false,
+    lock2D: false,
     stopColor: "#2656C6",
     stopScale: 2,
     selectStop: false,
   },
-  publicTransitToolvar: [
+  publicTransitToolbar: [
     {
       type: "RouteDetail",
       data: {
@@ -66,6 +69,7 @@ export default {
 
   motorizedTravelConfig: {
     showLayer: false,
+    lock2D: false,
     lockSelectVehicle: true,
     showBus3DLayer: true,
     showSubway3DLayer: true,
@@ -74,6 +78,7 @@ export default {
   },
   carTravelConfig: {
     showLayer: false,
+    lock2D: false,
     lockSelectVehicle: true,
     showBus3DLayer: true,
     showSubway3DLayer: true,
@@ -81,7 +86,7 @@ export default {
     maxVehicleNum: 20000,
     modelSize: 3,
   },
-  motorizedTravelToolvar: [
+  motorizedTravelToolbar: [
     {
       type: "CarDetail",
       data: {
@@ -122,10 +127,11 @@ export default {
 
   build3DConfig: {
     showLayer: false,
+    lock2D: false,
     buildColor: "#838385",
     buildOpacity: 80,
   },
-  build3DConfig: [
+  build3DToolbar: [
     {
       type: "BuildDetail",
       data: {
@@ -139,6 +145,7 @@ export default {
 
   networkConfig: {
     showLayer: false,
+    lock2D: false,
     colors: 0,
     width: 1,
     videoIconWidth: 10,
@@ -147,7 +154,7 @@ export default {
     showNode: false,
     showVideoIcon: false,
   },
-  networkToolvar: [
+  networkToolbar: [
     {
       type: "LineDetail",
       data: {
@@ -179,15 +186,16 @@ export default {
 
   activity3DConfig: {
     showLayer: false,
+    lock2D: false,
     color: "#5470c6",
     scale: 1,
     maxNum: 10000,
     showColorTypeTable: false,
     colorType: "activity",
-    activityTypeList: [{ name: "", color: "" }],
-    legTypeList: [{ name: "", color: "" }],
+    // activityTypeList: [{ name: "", color: "" }],
+    // legTypeList: [{ name: "", color: "" }],
   },
-  activity3DToolvar: [
+  activity3DToolbar: [
     {
       type: "ActivityDetail",
       data: {
@@ -201,33 +209,35 @@ export default {
 
   geoJSONConfig: {
     showLayer: false,
+    lock2D: false,
+    geoJSONList: [
+      // {
+      //   id: "uuid",
+      //   _file: new File(),
+      //   name: new File().name,
+      //   show: true,
+      // },
+    ],
   },
-  geoJSONList: [
-    {
-      id: "uuid",
-      _file: new File(),
-      name: new File().name,
-      show: true,
-    },
-  ],
 
-  parkingGeoJSON: {
-    id: "uuid",
-    _file: new File(),
-    name: new File().name,
-    show: true,
-  },
   parkingConfig: {
     showLayer: false,
+    lock2D: false,
     color: "#5470c6",
     scale: 1,
     maxNum: 10000,
     showColorTypeTable: false,
     colorType: "activity",
-    activityTypeList: [{ name: "", color: "" }],
-    legTypeList: [{ name: "", color: "" }],
+    // activityTypeList: [{ name: "", color: "" }],
+    // legTypeList: [{ name: "", color: "" }],
+    // geoJSON: {
+    //   id: "uuid",
+    //   _file: new File(),
+    //   name: new File().name,
+    //   show: true,
+    // },
   },
-  parkingToolvar: [
+  parkingToolbar: [
     {
       type: "PolgonParkingDetail",
       data: {
@@ -250,8 +260,9 @@ export default {
 
   trafficRegionAnalysisConfig: {
     showLayer: false,
+    lock2D: false,
   },
-  parkingToolvar: [
+  parkingToolbar: [
     {
       type: "MultiplePathsDetail",
       data: {
@@ -272,7 +283,6 @@ export default {
     },
   ],
 
-  activeNames: [],
   showStopToolbar: true,
   showClock: true,
   showHelpDialog: false,
@@ -283,4 +293,6 @@ export default {
   maxTime: 3600 * 24.5,
   range: [],
   center: [0, 0],
+
+  activeNames: ["PublicTransit", "MotorizedTravel", "CarTravel", "Build3D", "Network", "Activity3D", "GeoJSON", "Parking", "TrafficRegionAnalysis"],
 };

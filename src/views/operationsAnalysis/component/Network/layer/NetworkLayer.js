@@ -815,7 +815,6 @@ export class NetworkGeometry extends THREE.BufferGeometry {
   }
 
   dispose() {
-    this.flowsMap;
     super.dispose();
   }
 }

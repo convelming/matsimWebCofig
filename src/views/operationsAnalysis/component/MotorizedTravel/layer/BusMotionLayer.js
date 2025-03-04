@@ -162,6 +162,7 @@ export class BusMotionLayer extends Layer {
   }
 
   dispose() {
+    super.dispose();
     this.worker.terminate();
     const modelName = "SUV";
     this.runBusList.forEach(model => {

@@ -75,7 +75,7 @@
 </language>
 
 <script>
-import { guid } from "@/utils/utils";
+import { fileToString, guid, stringToFile } from "@/utils/utils";
 
 export default {
   props: ["name", "showLayer", "lock2D"],
@@ -100,6 +100,7 @@ export default {
   },
   data() {
     return {
+      configKey: "geoJSONConfig",
       predefineColors: ["#5470c6", "#91cc75", "#fac858", "#ee6666", "#73c0de", "#3ba272", "#fc8452", "#9a60b4", "#ea7ccc"],
       s_showLayer: true,
 
@@ -122,16 +123,49 @@ export default {
     this.handleDisable();
   },
   methods: {
+    initByConfig(config) {
+      config = config || this.rootVue.defaultConfig.geoJSONConfig;
+      this.s_showLayer = config.showLayer;
+      this.$emit("update:showLayer", config.showLayer);
+      this.$emit("update:lock2D", config.lock2D);
+
+      try {
+        this.rootVue.handleClearGeoJSON();
+        for (const item of config.geoJSONList) {
+          const file = {
+            id: item.id,
+            _file: stringToFile(item._file),
+            name: item.name,
+            show: item.show,
+          };
+          this.rootVue.handleAddGeoJSON(file, false);
+        }
+      } catch (error) {}
+    },
+    async exportConfig() {
+      let geoJSONList = [];
+      for (const item of this.rootVue.GeoJSONList) {
+        geoJSONList.push({
+          id: item.id,
+          _file: await fileToString(item._file),
+          name: item.name,
+          show: item.show,
+        });
+      }
+      return {
+        showLayer: this.s_showLayer,
+        lock2D: this.lock2D,
+        geoJSONList: geoJSONList,
+      };
+    },
     handleChangeShowLayer(value) {
       this.s_showLayer = value;
       this.$emit("update:showLayer", value);
     },
     // 组件初始化事件
-    handleEnable() {
-    },
+    handleEnable() {},
     // 组件卸载事件
-    handleDisable() {
-    },
+    handleDisable() {},
     handleSelectFile() {
       const input = document.createElement("input");
       input.type = "file";
@@ -167,11 +201,11 @@ export default {
   .el-slider__marks-text {
     white-space: nowrap;
   }
-  .checkbox{
-    .el-checkbox__input{
+  .checkbox {
+    .el-checkbox__input {
       display: none;
     }
-    .el-checkbox__label{
+    .el-checkbox__label {
       padding-left: 35px;
     }
   }

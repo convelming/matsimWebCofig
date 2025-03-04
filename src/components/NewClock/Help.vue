@@ -34,19 +34,20 @@ export default {
 
 <style lang="scss" scoped>
 .Help {
+  flex-shrink: 0;
+  width: 60px;
   cursor: pointer;
   height: 32px;
   border: 1px solid #e5e5e5;
   border-radius: 4px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   padding: 0 4px;
 
   .icon {
     width: 24px;
     height: 24px;
-    margin-right: 5px;
   }
 
   .text {

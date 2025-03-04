@@ -131,6 +131,7 @@ export class CarTravelLayer extends Layer {
   }
 
   dispose() {
+    super.dispose();
     this.worker.terminate();
   }
 

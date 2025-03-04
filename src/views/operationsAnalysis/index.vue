@@ -13,7 +13,6 @@
               <Activity3D :showLayer.sync="showLayerActivity3D" :lock2D.sync="lock2DActivity3D" name="Activity3D" ref="Activity3D" />
               <GeoJSON :showLayer.sync="showLayerGeoJSON" :lock2D.sync="lock2DGeoJSON" name="GeoJSON" ref="GeoJSON" />
               <Parking :showLayer.sync="showLayerParking" :lock2D.sync="lock2DParking" name="Parking" ref="Parking" />
-              <!-- <RegionalTraffic :showLayer.sync="showLayerRegionalTraffic" :lock2D.sync="lock2DRegionalTraffic" name="RegionalTraffic" ref="RegionalTraffic" /> -->
               <TrafficRegionAnalysis :showLayer.sync="showLayerTrafficRegionAnalysis" :lock2D.sync="lock2DTrafficRegionAnalysis" name="TrafficRegionAnalysis" ref="TrafficRegionAnalysis" />
               <div style="height: 100px"></div>
             </el-collapse>
@@ -21,7 +20,11 @@
           <div class="Drawer_col">
             <div></div>
             <div class="mapBox">
-              <NewClock class="NewClock" :time="time" :speed="speed" @update:speed="speedCommand" :minTime="minTime" :maxTime="maxTime" @update:time="handleUpdateTime" @showHelp="handleShowHelp"></NewClock>
+              <NewClock class="NewClock" :time="time" :speed="speed" @update:speed="speedCommand" :minTime="minTime" :maxTime="maxTime" @update:time="handleUpdateTime" @showHelp="handleShowHelp">
+                <template slot-scope="{ showFun }">
+                  <PageConfig @import="importConfig" @export="exportConfig"></PageConfig>
+                </template>
+              </NewClock>
               <div id="mapRoot"></div>
             </div>
           </div>
@@ -53,6 +56,18 @@ export default {
     return {
       activeNames: ["PublicTransit", "MotorizedTravel", "CarTravel", "Build3D", "Network", "Activity3D", "GeoJSON", "Parking", "TrafficRegionAnalysis"],
     };
+  },
+  created() {
+    // window.addEventListener("beforeunload", function (event) {
+    //   console.log("beforeunload");
+    //   event = event || window.event;
+    //   // 兼容IE8和Firefox 4之前的版本
+    //   if (event) {
+    //     event.returnValue = "您确定要离开当前页面吗？请确认是否保存数据！";
+    //   }
+    //   // Chrome, Safari, Firefox 4+, Opera 12+ , IE 9+
+    //   return "您确定要离开当前页面吗？请确认是否保存数据！";
+    // });
   },
   methods: {
     handleChangeTimeSpeed() {

@@ -169,6 +169,7 @@ export class BusRouteLinkLayer extends Layer {
   }
 
   dispose() {
+    super.dispose();
     if (this.labelData) this.labelData.map.dispose();
     if (this.linkGeometry) this.linkGeometry.dispose();
     if (this.stopGeometry) this.stopGeometry.dispose();

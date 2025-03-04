@@ -145,6 +145,7 @@ export class SubwayMotionLayer extends Layer {
   }
 
   dispose() {
+    super.dispose();
     this.worker.terminate();
     const modelName = "SUV";
     this.runSubwayList.forEach(model => {

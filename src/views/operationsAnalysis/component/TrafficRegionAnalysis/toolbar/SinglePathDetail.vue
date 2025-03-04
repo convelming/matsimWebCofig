@@ -24,9 +24,10 @@
               <el-checkbox v-model="selectAll" @change="handleSelectLinkList">{{ $l("全选") }}</el-checkbox>
             </div>
             <div class="link_list">
-              <el-checkbox-group v-model="selectLinkList" @change="handleSelectLinkList">
+              <!-- <el-checkbox-group v-model="selectLinkList" @change="handleSelectLinkList">
                 <el-checkbox v-for="item in linkList" :key="item.id" :label="item.id">{{ item.id }}</el-checkbox>
-              </el-checkbox-group>
+              </el-checkbox-group> -->
+              <el-tree ref="linkTree" :data="linkList" show-checkbox node-key="id" :default-expanded-keys="linkOpenNode" :default-checked-keys="selectLinkList" :props="{ children: 'links', label: 'label' }" @check-change="handleLinkTreeChange"> </el-tree>
             </div>
           </div>
         </div>
@@ -45,6 +46,20 @@
           </div>
           <div class="setting_box" v-show="openLinkFlowSetting" v-loading="linkFlowLoading">
             <div class="setting_item">
+              <div class="setting_item_label">{{ $l("设置") }}</div>
+              <div class="setting_item_value">
+                <el-button type="primary" icon="el-icon-setting" @click="showLineFlowConfig = true" size="mini"></el-button>
+                <GeoJSONSetting ref="lineFlowConfig" :visible.sync="showLineFlowConfig" :form="lineFlowConfigForm" :layout="lineFlowConfigLayout" @confirm="handleLineFlowConfigConfirm" />
+              </div>
+            </div>
+            <div class="setting_item">
+              <div class="setting_item_label">{{ $l("Visual map") }}</div>
+              <div class="setting_item_value">
+                <el-switch v-model="showLineFlowVisualMap" :active-value="true" :inactive-value="false" />
+                <GeoJSONVisualMap ref="lineFlowVisualMap" v-show="showLineFlowVisualMap" :list="lineFlowConfigForm.colorBar.data" />
+              </div>
+            </div>
+            <div class="setting_item">
               <div class="setting_item_label">{{ $l("仅显示区域内居民") }}</div>
               <div class="setting_item_value">
                 <el-switch v-model="showLinkFlowAllArea" :active-value="true" :inactive-value="false" size="mini" @change="handleGetLinkFlow" />
@@ -54,18 +69,6 @@
               <div class="setting_item_label">{{ $l("仅显示选中路段") }}</div>
               <div class="setting_item_value">
                 <el-switch v-model="showLinkFlowAllTracks" :active-value="false" :inactive-value="true" size="mini" @change="handleGetLinkFlow" />
-              </div>
-            </div>
-            <div class="setting_item">
-              <div class="setting_item_label">{{ $l("颜色") }}</div>
-              <div class="setting_item_value">
-                <ColorSelect v-model="linkFlowColor" :colorsList="COLOR_LIST" size="mini" />
-              </div>
-            </div>
-            <div class="setting_item">
-              <div class="setting_item_label">{{ $l("高度") }}</div>
-              <div class="setting_item_value">
-                <el-input-number v-model="linkFlowHeight" :min="0" :step="1" size="mini" />
               </div>
             </div>
             <div class="setting_item">
@@ -87,29 +90,23 @@
           </div>
           <div class="setting_box" v-show="openOriginSetting">
             <div class="setting_item">
-              <div class="setting_item_label">{{ $l("颜色") }}</div>
+              <div class="setting_item_label">{{ $l("大小") }}</div>
               <div class="setting_item_value">
-                <ColorSelect v-model="originColor" :colorsList="COLOR_LIST" size="mini" />
+                <el-input-number v-model="originSize" :min="GRID_STEP" :step="GRID_STEP" step-strictly size="mini" />
               </div>
             </div>
             <div class="setting_item">
-              <div class="setting_item_label">{{ $l("透明度") }}</div>
-              <div class="setting_item_value" style="width: calc(100% - 80px)">
-                <el-slider v-model="originOpacity" :min="0" :max="1" :step="0.01" />
-                <!-- <el-input-number v-model="originOpacity" :min="0" :max="1" :step="0.1" size="mini" /> -->
+              <div class="setting_item_label">{{ $l("设置") }}</div>
+              <div class="setting_item_value">
+                <el-button type="primary" icon="el-icon-setting" @click="showOriginConfig = true" size="mini"></el-button>
+                <GeoJSONSetting ref="originConfig" :visible.sync="showOriginConfig" :form="originConfigForm" :layout="originConfigLayout" @confirm="handleOriginConfigConfirm" />
               </div>
             </div>
             <div class="setting_item">
               <div class="setting_item_label">{{ $l("Visual map") }}</div>
               <div class="setting_item_value">
                 <el-switch v-model="showOriginVisualMap" :active-value="true" />
-                <GeoJSONVisualMap v-show="showOriginVisualMap && showOriginLayer" :colors="COLOR_LIST[originColor]" :max="originMax" :min="originMin" />
-              </div>
-            </div>
-            <div class="setting_item">
-              <div class="setting_item_label">{{ $l("大小") }}</div>
-              <div class="setting_item_value">
-                <el-input-number v-model="originSize" :min="GRID_STEP" :step="GRID_STEP" step-strictly size="mini" />
+                <GeoJSONVisualMap v-show="showOriginVisualMap && showOriginLayer" :list="originConfigForm.colorBar.data" />
               </div>
             </div>
             <div class="setting_item">
@@ -131,29 +128,23 @@
           </div>
           <div class="setting_box" v-show="openDestinationsSetting">
             <div class="setting_item">
-              <div class="setting_item_label">{{ $l("颜色") }}</div>
+              <div class="setting_item_label">{{ $l("大小") }}</div>
               <div class="setting_item_value">
-                <ColorSelect v-model="destinationsColor" :colorsList="COLOR_LIST" size="mini" />
+                <el-input-number v-model="destinationsSize" :min="GRID_STEP" :step="GRID_STEP" step-strictly size="mini" />
               </div>
             </div>
             <div class="setting_item">
-              <div class="setting_item_label">{{ $l("透明度") }}</div>
-              <div class="setting_item_value" style="width: calc(100% - 80px)">
-                <el-slider v-model="destinationsOpacity" :min="0" :max="1" :step="0.01" />
-                <!-- <el-input-number v-model="destinationsOpacity" :min="0" :max="1" :step="0.1" size="mini" /> -->
+              <div class="setting_item_label">{{ $l("设置") }}</div>
+              <div class="setting_item_value">
+                <el-button type="primary" icon="el-icon-setting" @click="showDestinationsConfig = true" size="mini"></el-button>
+                <GeoJSONSetting ref="destinationsConfig" :visible.sync="showDestinationsConfig" :form="destinationsConfigForm" :layout="destinationsConfigLayout" @confirm="handleDestinationsConfigConfirm" />
               </div>
             </div>
             <div class="setting_item">
               <div class="setting_item_label">{{ $l("Visual map") }}</div>
               <div class="setting_item_value">
                 <el-switch v-model="showDestinationsVisualMap" :active-value="true" />
-                <GeoJSONVisualMap v-show="showDestinationsVisualMap && showDestinationsLayer" :colors="COLOR_LIST[destinationsColor]" :max="destinationsMax" :min="destinationsMin" />
-              </div>
-            </div>
-            <div class="setting_item">
-              <div class="setting_item_label">{{ $l("大小") }}</div>
-              <div class="setting_item_value">
-                <el-input-number v-model="destinationsSize" :min="GRID_STEP" :step="GRID_STEP" step-strictly size="mini" />
+                <GeoJSONVisualMap v-show="showDestinationsVisualMap && showDestinationsLayer" :list="destinationsConfigForm.colorBar.data" />
               </div>
             </div>
             <div class="setting_item">
@@ -195,18 +186,18 @@
             <el-button class="open_btn" :icon="openAccessibilitySetting ? 'el-icon-caret-top' : 'el-icon-caret-bottom'" type="info" size="small" @click="openAccessibilitySetting = !openAccessibilitySetting"></el-button>
           </div>
           <div class="setting_box" v-show="openAccessibilitySetting">
-            <div class="setting_item" v-for="item in accessibilityColorBar">
-              <div class="setting_item_label">
-                <el-checkbox v-model="item.show" @change="handleSetAccessibilityLayerColorBar">{{ item.label }}</el-checkbox>
-              </div>
+            <div class="setting_item">
+              <div class="setting_item_label">{{ $l("设置") }}</div>
               <div class="setting_item_value">
-                <el-color-picker size="mini" :predefine="predefineColors" v-model="item.color" @change="handleSetAccessibilityLayerColorBar" />
+                <el-button type="primary" icon="el-icon-setting" @click="showAccessibilityConfig = true" size="mini"></el-button>
+                <GeoJSONSetting ref="accessibilityConfig" :visible.sync="showAccessibilityConfig" :form="accessibilityConfigForm" :layout="accessibilityConfigLayout" @confirm="handleAccessibilityConfigConfirm" />
               </div>
             </div>
             <div class="setting_item">
-              <div class="setting_item_label">{{ $l("透明度") }}</div>
-              <div class="setting_item_value" style="width: calc(100% - 80px)">
-                <el-slider v-model="accessibilityOpacity" :min="0" :max="1" :step="0.01" />
+              <div class="setting_item_label">{{ $l("Visual map") }}</div>
+              <div class="setting_item_value">
+                <el-switch v-model="showAccessibilityVisualMap" :active-value="true" />
+                <GeoJSONVisualMap v-show="showAccessibilityVisualMap && showAccessibilityLayer" :list="accessibilityConfigForm.colorBar.data" />
               </div>
             </div>
           </div>
@@ -330,6 +321,10 @@
     "zh-CN": "透明度",
     "en-US": "Opacity"
   },
+  "设置":{
+    "zh-CN": "设置",
+    "en-US": "Config"
+  },
 }
 </language>
 
@@ -340,7 +335,9 @@ import { getLinkListTRG, getLinkTracksTRG, getOriginGridsTRG, getDestinationsGri
 import HeatMapDialog from "../components/HeatMapDialog.vue";
 
 import { GeoJSONLayer, LINE_STYLE } from "../../GeoJSON/layer/GeoJSONLayer";
-import GeoJSONVisualMap from "../../GeoJSON/component/GeoJSONVisualMap.vue";
+import GeoJSONVisualMap from "../../GeoJSON/component/GeoJSONVisualMap2.vue";
+import GeoJSONSetting from "../../GeoJSON/component/GeoJSONSetting.vue";
+
 import { LinkFlowLayer } from "../layer/LinkFlowLayer";
 import { GridsLayer } from "../layer/GridsLayer";
 import { DesireLineLayer } from "../layer/DesireLineLayer";
@@ -354,6 +351,7 @@ export default {
   components: {
     HeatMapDialog,
     GeoJSONVisualMap,
+    GeoJSONSetting,
   },
   props: {
     name: {
@@ -367,6 +365,9 @@ export default {
       type: Object,
       default: () => ({}),
     },
+    config: {
+      type: [Object, undefined],
+    },
   },
   computed: {
     _Map() {
@@ -374,14 +375,18 @@ export default {
     },
     selectAll: {
       get() {
-        return this.linkList.length == this.selectLinkList.length;
+        const linkNum = this.linkList.reduce((a, b) => a + b.links.length, 0);
+        return linkNum == this.selectLinkList.length;
       },
       set(val) {
         if (val) {
-          this.selectLinkList = this.linkList.map((v) => v.id);
+          this.selectLinkList = this.linkList.map((v1) => v1.links.map((v2) => v2.id)).flat(2);
         } else {
           this.selectLinkList = [];
         }
+        try {
+          this.$refs.linkTree.setCheckedKeys(this.selectLinkList);
+        } catch (error) {}
       },
     },
   },
@@ -429,16 +434,6 @@ export default {
         }
       },
     },
-    linkFlowColor: {
-      handler(val) {
-        this._LinkFlowLayer.setColorBar(this.COLOR_LIST[val]);
-      },
-    },
-    linkFlowHeight: {
-      handler(val) {
-        this._LinkFlowLayer.setHeight(val);
-      },
-    },
     linkFlowUseTimeRange: {
       handler(val) {
         if (this.linkFlowUseTimeRange) {
@@ -468,17 +463,7 @@ export default {
     },
     originSize: {
       handler(val) {
-        this._OriginGridsLayer.setSize(val / GRID_STEP);
-      },
-    },
-    originOpacity: {
-      handler(val) {
-        this._OriginGridsLayer.setOpacity(val);
-      },
-    },
-    originColor: {
-      handler(val) {
-        this._OriginGridsLayer.setColorBar(this.COLOR_LIST[this.originColor]);
+        this._OriginGridsLayer.setSize(val);
       },
     },
     originUseTimeRange: {
@@ -510,17 +495,7 @@ export default {
     },
     destinationsSize: {
       handler(val) {
-        this._DestinationsGridsLayer.setSize(val / GRID_STEP);
-      },
-    },
-    destinationsOpacity: {
-      handler(val) {
-        this._DestinationsGridsLayer.setOpacity(val);
-      },
-    },
-    destinationsColor: {
-      handler(val) {
-        this._DestinationsGridsLayer.setColorBar(this.COLOR_LIST[this.destinationsColor]);
+        this._DestinationsGridsLayer.setSize(val);
       },
     },
     destinationsUseTimeRange: {
@@ -569,11 +544,6 @@ export default {
         }
       },
     },
-    accessibilityOpacity: {
-      handler(val) {
-        this._AccessibilityLayer.setOpacity(val);
-      },
-    },
   },
   data() {
     return {
@@ -585,6 +555,7 @@ export default {
       showSelectGeoJSONLayer: true,
 
       selectLinkList: [],
+      linkOpenNode: [],
       linkList: [],
       openLinkList: false,
       showLinkLayer: true,
@@ -598,101 +569,430 @@ export default {
       showLinkFlowLayer: false,
       showLinkFlowAllArea: false,
       showLinkFlowAllTracks: false,
-      linkFlowColor: 0,
-      linkFlowHeight: 30,
       linkFlowUseTimeRange: false,
       linkFlowTimeRange: [0, 24 * 60 * 60],
+      showLineFlowVisualMap: false,
+      showLineFlowConfig: false,
+      lineFlowConfigForm: {
+        height: 30,
+        colorBar: {
+          valueKey: "value__Number",
+          valueType: "Number",
+          startColor: "#FEE0D2",
+          endColor: "#99000D",
+          model: "count",
+          modelClass: 5,
+          data: [
+            { min: 0, max: 0.2, color: "#fee0d2", label: "0 ~ 0.2", use: true },
+            { min: 0.2, max: 0.4, color: "#e9b3aa", label: "0.2 ~ 0.4", use: true },
+            { min: 0.4, max: 0.6, color: "#d58683", label: "0.4 ~ 0.6", use: true },
+            { min: 0.6, max: 0.8, color: "#c1595b", label: "0.6 ~ 0.8", use: true },
+            { min: 0.8, max: 1, color: "#ad2c34", label: "0.8 ~ 1", use: true },
+          ],
+        },
+      },
+      lineFlowConfigLayout: [
+        {
+          label: "高度",
+          en_label: "height",
+          name: "height",
+          type: "number",
+          attrs: { min: 0 },
+        },
+        {
+          label: "颜色",
+          en_label: "color",
+          name: "colorBar",
+          type: "colorBar",
+          options: {
+            value__Number: {
+              type: "Number",
+              name: "value",
+              min: 0,
+              max: 1,
+              values: [],
+            },
+          },
+          attrs: {
+            hideValueKey: true,
+          },
+        },
+      ],
 
       openOriginSetting: false,
       originLoading: false,
       showOriginLayer: false,
-      originOpacity: 1,
-      originColor: 0,
-      showOriginVisualMap: true,
-      originMin: 0,
-      originMax: 0,
-      originSize: GRID_STEP,
       originUseTimeRange: false,
       originTimeRange: [0, 24 * 60 * 60],
+      showOriginVisualMap: false,
+      showOriginConfig: false,
+      originSize: GRID_STEP,
+      originConfigForm: {
+        opacity: 1,
+        colorBar: {
+          valueKey: "value__Number",
+          valueType: "Number",
+          startColor: "#FEE0D2",
+          endColor: "#99000D",
+          model: "count",
+          modelClass: 5,
+          data: [],
+        },
+      },
+      originConfigLayout: [
+        {
+          label: "透明度",
+          en_label: "Opacity",
+          name: "opacity",
+          type: "slider",
+          attrs: { min: 0, max: 1, step: 0.01 },
+        },
+        {
+          label: "颜色",
+          en_label: "color",
+          name: "colorBar",
+          type: "colorBar",
+          options: {
+            value__Number: {
+              type: "Number",
+              name: "value",
+              min: 0,
+              max: 100,
+              values: [],
+            },
+          },
+          attrs: {
+            hideValueKey: true,
+          },
+        },
+      ],
 
       openDestinationsSetting: false,
       destinationsLoading: false,
       showDestinationsLayer: false,
-      destinationsOpacity: 1,
-      destinationsColor: 0,
-      showDestinationsVisualMap: true,
-      destinationsMin: 0,
-      destinationsMax: 0,
-      destinationsSize: GRID_STEP,
       destinationsUseTimeRange: false,
       destinationsTimeRange: [0, 24 * 60 * 60],
+      showDestinationsVisualMap: false,
+      showDestinationsConfig: false,
+      destinationsSize: GRID_STEP,
+      destinationsConfigForm: {
+        opacity: 1,
+        colorBar: {
+          valueKey: "value__Number",
+          valueType: "Number",
+          startColor: "#FEE0D2",
+          endColor: "#99000D",
+          model: "count",
+          modelClass: 5,
+          data: [],
+        },
+      },
+      destinationsConfigLayout: [
+        {
+          label: "透明度",
+          en_label: "Opacity",
+          name: "opacity",
+          type: "slider",
+          attrs: { min: 0, max: 1, step: 0.01 },
+        },
+        {
+          label: "颜色",
+          en_label: "color",
+          name: "colorBar",
+          type: "colorBar",
+          options: {
+            value__Number: {
+              type: "Number",
+              name: "value",
+              min: 0,
+              max: 100,
+              values: [],
+            },
+          },
+          attrs: {
+            hideValueKey: true,
+          },
+        },
+      ],
 
       openDesireLineSetting: false,
-      showDesireLineLayer: false,
       desireLineLoading: false,
+      showDesireLineLayer: false,
       desireLineColor: "#5470c6",
       desireLineWidth: 10,
 
       openAccessibilitySetting: false,
-      showAccessibilityLayer: false,
       accessibilityLoading: false,
-      accessibilityOpacity: 0.5,
-      accessibilityColorBar: [
-        { label: "5", key: "5", show: true, color: "rgb(153, 0, 13)" },
-        { label: "15", key: "15", show: true, color: "rgb(203, 24, 29)" },
-        { label: "30", key: "30", show: true, color: "rgb(239, 59, 44)" },
-        { label: "60", key: "60", show: true, color: "rgb(252, 146, 114)" },
-        { label: "120", key: "120", show: true, color: "rgb(252, 187, 161)" },
-        { label: ">120", key: ">120", show: true, color: "rgb(254, 224, 210)" },
+      showAccessibilityLayer: false,
+      showAccessibilityVisualMap: false,
+      showAccessibilityConfig: false,
+      accessibilityConfigForm: {
+        opacity: 0.5,
+        colorBar: {
+          valueKey: "value__String",
+          valueType: "String",
+          startColor: "#FEE0D2",
+          endColor: "#99000D",
+          model: "count",
+          modelClass: 6,
+          data: [
+            { min: 0, max: 0, color: "rgb(153, 0, 13)", label: "5 minute", use: true },
+            { min: 1, max: 1, color: "rgb(203, 24, 29)", label: "15 minute", use: true },
+            { min: 2, max: 2, color: "rgb(239, 59, 44)", label: "30 minute", use: true },
+            { min: 3, max: 3, color: "rgb(252, 146, 114)", label: "60 minute", use: true },
+            { min: 4, max: 4, color: "rgb(252, 187, 161)", label: "120 minute", use: true },
+            { min: 5, max: 5, color: "rgb(254, 224, 210)", label: ">120 minute", use: true },
+          ],
+        },
+      },
+      accessibilityConfigLayout: [
+        {
+          label: "透明度",
+          en_label: "Opacity",
+          name: "opacity",
+          type: "slider",
+          attrs: { min: 0, max: 1, step: 0.01 },
+        },
+        {
+          label: "颜色",
+          en_label: "color",
+          name: "colorBar",
+          type: "colorBar",
+          options: {
+            value__String: {
+              type: "String",
+              name: "value",
+              map: {
+                "5 minute": 0,
+                "15 minute": 1,
+                "30 minute": 2,
+                "60 minute": 3,
+                "120 minute": 4,
+                ">120 minute": 5,
+              },
+              min: 0,
+              max: 5,
+              values: [],
+            },
+          },
+          attrs: {
+            hideValueKey: true,
+            hideModel: true,
+            hideAdd: true,
+            hideDelete: true,
+            hideColorRamp: true,
+          },
+        },
       ],
     };
   },
   created() {
-    this.initSelectGeoJSONLayer();
-    this.initLinkGeoJSONLayer();
-    this.getLinkList();
+    this._SelectGeoJSONLayer = new GeoJSONLayer({
+      zIndex: 210,
+      polygonColor: 0x409eff,
+      polygonOpacity: 0.5,
+      polygonBorderWidth: 1,
+      polygonBorderColor: 0x409eff,
+      polygonBorderStyle: LINE_STYLE.SOLID,
+    });
+    const center = this.singlePathDetail.shape[0];
+    const polygonArray = [0, 0];
+    polygonArray[polygonArray.length] = this.singlePathDetail.shape.length * 2;
+    for (const point of this.singlePathDetail.shape) {
+      polygonArray[polygonArray.length] = point[0] - center[0];
+      polygonArray[polygonArray.length] = point[1] - center[1];
+    }
+    for (const hole of this.singlePathDetail.holes) {
+      polygonArray[polygonArray.length] = hole.length * 2;
+      for (const point of hole) {
+        polygonArray[polygonArray.length] = point[0] - center[0];
+        polygonArray[polygonArray.length] = point[1] - center[1];
+      }
+    }
+    polygonArray[0] = polygonArray.length - 1;
+    this._SelectGeoJSONLayer.setCenter(center);
+    this._SelectGeoJSONLayer.setPolygonArray(polygonArray);
 
-    this._LinkFlowLayer = new LinkFlowLayer({ zIndex: 230, color: 0xff0000, height: this.linkFlowHeight, colorBar: this.COLOR_LIST[this.linkFlowColor], timeRange: this.linkFlowUseTimeRange ? this.linkFlowTimeRange : null });
+    this._LinkGeoJSONLayer = new GeoJSONLayer({
+      zIndex: 120,
+      lineWidth: 10,
+      lineStyle: LINE_STYLE.SOLID,
+      lineColor: 0xf56c6c,
+      lineOpacity: 1,
+      lineColorBar: ["#00000000", "#f56c6c"],
+      lineValue: "value",
+    });
+
+    this._LinkFlowLayer = new LinkFlowLayer({
+      zIndex: 230,
+      color: 0xff0000,
+      height: this.lineFlowConfigForm.height,
+      colorBar: this.lineFlowConfigForm.colorBar.data,
+      timeRange: this.linkFlowUseTimeRange ? this.linkFlowTimeRange : null,
+    });
     this._OriginGridsLayer = new GridsLayer({
       zIndex: 240,
-      opacity: this.originOpacity,
-      colorBar: this.COLOR_LIST[this.originColor],
-      size: this.originSize / GRID_STEP,
-      step: GRID_STEP,
+      opacity: this.originConfigForm.opacity,
+      colorBar: this.originConfigForm.colorBar.data,
+      size: this.originSize,
       timeRange: this.originUseTimeRange ? this.originTimeRange : null,
       event: {
-        "update:colorBar": (data) => {
-          console.log("update:colorBar", data);
-          this.originMin = data.data.min;
-          this.originMax = data.data.max;
+        ["update:values"]: (data) => {
+          this.$nextTick(() => {
+            const item = this.originConfigLayout.find((item) => item.name === "colorBar");
+            const { gridList } = data.target;
+            if (this.originUseTimeRange) {
+              const values = gridList.map((item) => item.values.reduce((a, b) => a + b, 0));
+              item.options.value__Number.values = values;
+              item.options.value__Number.min = Math.min(...values);
+              item.options.value__Number.max = Math.max(...values);
+            } else {
+              const values = gridList.map((item) => item.values).flat(2);
+              item.options.value__Number.values = values;
+              item.options.value__Number.min = Math.min(...values);
+              item.options.value__Number.max = Math.max(...values);
+            }
+            if (this.originConfigForm.colorBar.data.length <= 0) {
+              this.$refs.originConfig.handleAutogenerate(item);
+              this.$refs.originConfig.handleConfirm();
+            }
+          });
         },
       },
     });
     this._DestinationsGridsLayer = new GridsLayer({
       zIndex: 240,
-      opacity: this.destinationsOpacity,
-      colorBar: this.COLOR_LIST[this.destinationsColor],
-      size: this.destinationsSize / GRID_STEP,
-      step: GRID_STEP,
+      opacity: this.destinationsConfigForm.opacity,
+      colorBar: this.destinationsConfigForm.colorBar.data,
+      size: this.destinationsSize,
       timeRange: this.destinationsUseTimeRange ? this.destinationsTimeRange : null,
       event: {
-        "update:colorBar": (data) => {
-          console.log("update:colorBar", data);
-          this.destinationMin = data.data.min;
-          this.destinationMax = data.data.max;
+        ["update:values"]: (data) => {
+          this.$nextTick(() => {
+            this.$nextTick(() => {
+              const item = this.destinationsConfigLayout.find((item) => item.name === "colorBar");
+              const { gridList } = data.target;
+              if (this.destinationsUseTimeRange) {
+                const values = gridList.map((item) => item.values.reduce((a, b) => a + b, 0));
+                item.options.value__Number.values = values;
+                item.options.value__Number.min = 0; // Math.min(...values);
+                item.options.value__Number.max = Math.max(...values);
+              } else {
+                const values = gridList.map((item) => item.values).flat(2);
+                item.options.value__Number.values = values;
+                item.options.value__Number.min = 0; // Math.min(...values);
+                item.options.value__Number.max = Math.max(...values);
+              }
+              if (this.destinationsConfigForm.colorBar.data.length <= 0) {
+                this.$refs.destinationsConfig.handleAutogenerate(item);
+                this.$refs.destinationsConfig.handleConfirm();
+              }
+            });
+          });
         },
       },
     });
     this._DesireLineLayer = new DesireLineLayer({ zIndex: 560, color: this.desireLineColor, lineWidth: this.desireLineWidth });
-    this._AccessibilityLayer = new AccessibilityLayer({ zIndex: 60, colorBar: this.accessibilityColorBar, opacity: this.accessibilityOpacity });
+    this._AccessibilityLayer = new AccessibilityLayer({ zIndex: 60, colorBar: this.accessibilityConfigForm.colorBar.data, opacity: this.accessibilityConfigForm.opacity });
 
+    this.getLinkList();
     this.handleTimeChange(this.rootVue.time);
   },
   mounted() {},
   beforeDestroy() {
+    console.log("beforeDestroy");
     this.handleDisable();
+    this._SelectGeoJSONLayer.dispose();
+    this._LinkGeoJSONLayer.dispose();
+    this._LinkFlowLayer.dispose();
+    this._OriginGridsLayer.dispose();
+    this._DestinationsGridsLayer.dispose();
+    this._DesireLineLayer.dispose();
+    this._AccessibilityLayer.dispose();
   },
   methods: {
+    initByConfig(config) {
+
+      for (const key in config) {
+        this[key] = config[key];
+      }
+
+      this.selectLinkList = config.selectLinkList || [];
+      this.handleSelectLinkList();
+
+      if (config.showHeatMapDialog) {
+        this.handleShowHeatMapDialog();
+      }
+      if (config.showLinkFlowLayer) {
+        this.handleShowLinkFlowLayer();
+      }
+      if (config.showOriginLayer) {
+        this.handleShowOriginLayer();
+      }
+      if (config.showDestinationsLayer) {
+        this.handleShowDestinationsLayer();
+      }
+      if (config.showDesireLineLayer) {
+        this.handleShowDesireLineLayer();
+      }
+      if (config.showAccessibilityLayer) {
+        this.handleShowAccessibilityLayer();
+      }
+      if (config.showAccessibilityLayer) {
+        this.handleShowAccessibilityLayer();
+      }
+      this.handleLineFlowConfigConfirm(config.lineFlowConfigForm);
+      this.handleOriginConfigConfirm(config.originConfigForm);
+      this.handleDestinationsConfigConfirm(config.destinationsConfigForm);
+      this.handleAccessibilityConfigConfirm(config.accessibilityConfigForm);
+    },
+    exportConfig() {
+      return JSON.parse(
+        JSON.stringify({
+          showSelectGeoJSONLayer: this.showSelectGeoJSONLayer,
+
+          selectLinkList: this.selectLinkList,
+
+          showLinkLayer: this.showLinkLayer,
+          openLinkList: this.openLinkList,
+
+          showHeatMapDialog: this.showHeatMapDialog,
+
+          showLinkFlowLayer: this.showLinkFlowLayer,
+          showLinkFlowAllArea: this.showLinkFlowAllArea,
+          showLinkFlowAllTracks: this.showLinkFlowAllTracks,
+          linkFlowUseTimeRange: this.linkFlowUseTimeRange,
+          linkFlowTimeRange: this.linkFlowTimeRange,
+          showLineFlowVisualMap: this.showLineFlowVisualMap,
+          lineFlowConfigForm: this.lineFlowConfigForm,
+
+          showOriginLayer: this.showOriginLayer,
+          originUseTimeRange: this.originUseTimeRange,
+          originTimeRange: this.originTimeRange,
+          showOriginVisualMap: this.showOriginVisualMap,
+          originSize: this.originSize,
+          originConfigForm: this.originConfigForm,
+
+          showDestinationsLayer: this.showDestinationsLayer,
+          destinationsUseTimeRange: this.destinationsUseTimeRange,
+          destinationsTimeRange: this.destinationsTimeRange,
+          showDestinationsVisualMap: this.showDestinationsVisualMap,
+          destinationsSize: this.destinationsSize,
+          destinationsConfigForm: this.destinationsConfigForm,
+
+          showDesireLineLayer: this.showDesireLineLayer,
+          desireLineColor: this.desireLineColor,
+          desireLineWidth: this.desireLineWidth,
+
+          showAccessibilityLayer: this.showAccessibilityLayer,
+          accessibilityColorBar: this.accessibilityColorBar,
+
+          showAccessibilityVisualMap: this.showAccessibilityVisualMap,
+          accessibilityConfigForm: this.accessibilityConfigForm,
+        })
+      );
+    },
+    // *********************** 其他 *********************** //
     handleTimeChange(time) {
       const num = Math.floor(time / 3600);
       if (this._OriginGridsLayer && this._OriginGridsLayer.time !== num) this._OriginGridsLayer.setTime(num);
@@ -702,44 +1002,8 @@ export default {
     handleSetCenter() {
       this._Map.setCenter(this.singlePathDetail.shape[0]);
     },
-    initSelectGeoJSONLayer() {
-      this._SelectGeoJSONLayer = new GeoJSONLayer({
-        zIndex: 210,
-        polygonColor: 0x409eff,
-        polygonOpacity: 0.5,
-        polygonBorderWidth: 1,
-        polygonBorderColor: 0x409eff,
-        polygonBorderStyle: LINE_STYLE.SOLID,
-      });
-      const center = this.singlePathDetail.shape[0];
-      const polygonArray = [0, 0];
-      polygonArray[polygonArray.length] = this.singlePathDetail.shape.length * 2;
-      for (const point of this.singlePathDetail.shape) {
-        polygonArray[polygonArray.length] = point[0] - center[0];
-        polygonArray[polygonArray.length] = point[1] - center[1];
-      }
-      for (const hole of this.singlePathDetail.holes) {
-        polygonArray[polygonArray.length] = hole.length * 2;
-        for (const point of hole) {
-          polygonArray[polygonArray.length] = point[0] - center[0];
-          polygonArray[polygonArray.length] = point[1] - center[1];
-        }
-      }
-      polygonArray[0] = polygonArray.length - 1;
-      this._SelectGeoJSONLayer.setCenter(center);
-      this._SelectGeoJSONLayer.setPolygonArray(polygonArray);
-    },
-    initLinkGeoJSONLayer() {
-      this._LinkGeoJSONLayer = new GeoJSONLayer({
-        zIndex: 120,
-        lineWidth: 10,
-        lineStyle: LINE_STYLE.SOLID,
-        lineColor: 0xf56c6c,
-        lineOpacity: 1,
-        lineColorBar: ["#00000000", "#f56c6c"],
-        lineValue: "value",
-      });
-    },
+    initSelectGeoJSONLayer() {},
+    initLinkGeoJSONLayer() {},
     handleEnable() {
       if (this.showSelectGeoJSONLayer) this._Map.addLayer(this._SelectGeoJSONLayer);
       if (this.showLinkLayer) this._Map.addLayer(this._LinkGeoJSONLayer);
@@ -752,14 +1016,15 @@ export default {
       this.rootVue.$on("timeChange", this.handleTimeChange);
     },
     handleDisable() {
-      this._Map.removeLayer(this._SelectGeoJSONLayer);
-      this._Map.removeLayer(this._LinkGeoJSONLayer);
-      this._Map.removeLayer(this._OriginGridsLayer);
-      this._Map.removeLayer(this._DestinationsGridsLayer);
-      this._Map.removeLayer(this._DesireLineLayer);
-      this._Map.removeLayer(this._AccessibilityLayer);
+      console.log("handleDisable");
 
-      this._Map.removeLayer(this._LinkFlowLayer);
+      if (this._SelectGeoJSONLayer) this._SelectGeoJSONLayer.removeFromParent();
+      if (this._LinkGeoJSONLayer) this._LinkGeoJSONLayer.removeFromParent();
+      if (this._LinkFlowLayer) this._LinkFlowLayer.removeFromParent();
+      if (this._OriginGridsLayer) this._OriginGridsLayer.removeFromParent();
+      if (this._DestinationsGridsLayer) this._DestinationsGridsLayer.removeFromParent();
+      if (this._DesireLineLayer) this._DesireLineLayer.removeFromParent();
+      if (this._AccessibilityLayer) this._AccessibilityLayer.removeFromParent();
       this.rootVue.$off("timeChange", this.handleTimeChange);
     },
     getLinkList() {
@@ -773,29 +1038,50 @@ export default {
       }).then((res) => {
         console.log(res);
         this.loading = false;
-        this.selectLinkList = res.data.map((v) => v.id);
+        res.data.forEach((v1) => {
+          v1.label = `${v1.name || ""} (${v1.id})`;
+          v1.links.forEach((v2) => {
+            v2.label = `${v2.id}`;
+          });
+        });
         this.linkList = res.data;
 
         const center = this.singlePathDetail.shape[0];
         const lineArray = [];
         let i = 1;
-        for (const link of this.linkList) {
-          lineArray.push(7, ++i, link.fromCoord.x - center[0], link.fromCoord.y - center[1], 0, link.toCoord.x - center[0], link.toCoord.y - center[1], link.length);
+        for (const sgm of this.linkList) {
+          for (const link of sgm.links) {
+            lineArray.push(7, ++i, link.fromCoord.x - center[0], link.fromCoord.y - center[1], 0, link.toCoord.x - center[0], link.toCoord.y - center[1], link.length);
+          }
         }
 
         this._LinkGeoJSONLayer.setCenter(center);
         this._LinkGeoJSONLayer.setLineArray(lineArray);
 
+        this.selectLinkList = this.linkList.map((v1) => v1.links.map((v2) => v2.id)).flat(2);
         this.handleSelectLinkList();
+
+        if (this.config) {
+          this.initByConfig(this.config);
+        }
       });
+    },
+    handleLinkTreeChange() {
+      const nodes = this.$refs.linkTree.getCheckedNodes(true);
+      this.selectLinkList = nodes.map((v) => v.id);
+      this.handleSelectLinkList();
     },
     handleSelectLinkList() {
       const propertiesList = [{}];
-      for (const link of this.linkList) {
-        propertiesList.push({ value: this.selectLinkList.includes(link.id) ? 1 : 0 });
+      for (const sgm of this.linkList) {
+        for (const link of sgm.links) {
+          propertiesList.push({ value: this.selectLinkList.includes(link.id) ? 1 : 0 });
+        }
       }
       this._LinkGeoJSONLayer.setPropertiesList(propertiesList, { value: { min: 0, max: 1 } });
     },
+
+    // *********************** 热力图 *********************** //
     async handleShowHeatMapDialog() {
       try {
         this.heatMapDataLoading = true;
@@ -809,6 +1095,7 @@ export default {
       }
     },
 
+    // *********************** 周边流量 *********************** //
     async handleGetLinkFlow() {
       try {
         this.linkFlowLoading = true;
@@ -826,6 +1113,16 @@ export default {
         this.showLinkFlowLayer = true;
       } catch (error) {}
     },
+
+    handleLineFlowConfigConfirm(data) {
+      this.lineFlowConfigForm = data;
+      const { colorBar, height } = data;
+      this._LinkFlowLayer.setColorBar(colorBar.data);
+      this._LinkFlowLayer.setHeight(height);
+      this.showLineFlowConfig = false;
+    },
+
+    // *********************** 起点分布 *********************** //
     async handleShowOriginLayer() {
       try {
         this.originLoading = true;
@@ -842,6 +1139,14 @@ export default {
         this.originLoading = false;
       }
     },
+    handleOriginConfigConfirm(data) {
+      this.originConfigForm = data;
+      const { colorBar, opacity } = data;
+      this._OriginGridsLayer.setOpacity(opacity);
+      this._OriginGridsLayer.setColorBar(colorBar.data);
+      this.showOriginConfig = false;
+    },
+    // *********************** 讫点分布 *********************** //
     async handleShowDestinationsLayer() {
       try {
         this.destinationsLoading = true;
@@ -858,6 +1163,14 @@ export default {
         this.destinationsLoading = false;
       }
     },
+    handleDestinationsConfigConfirm(data) {
+      this.destinationsConfigForm = data;
+      const { colorBar, opacity } = data;
+      this._DestinationsGridsLayer.setOpacity(opacity);
+      this._DestinationsGridsLayer.setColorBar(colorBar.data);
+      this.showDestinationsConfig = false;
+    },
+    // *********************** 期望线 *********************** //
     async handleShowDesireLineLayer() {
       try {
         this.desireLineLoading = true;
@@ -875,6 +1188,8 @@ export default {
         this.desireLineLoading = false;
       }
     },
+
+    // *********************** 可达性分析 *********************** //
     async handleShowAccessibilityLayer() {
       try {
         this.accessibilityLoading = true;
@@ -883,6 +1198,8 @@ export default {
           holes: this.singlePathDetail.holes,
         });
         this._AccessibilityLayer.setData(res.data);
+        // const data = require("./data.json");
+        // this._AccessibilityLayer.setData(data);
         this.showAccessibilityLayer = true;
       } catch (error) {
         console.log(error);
@@ -890,8 +1207,12 @@ export default {
         this.accessibilityLoading = false;
       }
     },
-    handleSetAccessibilityLayerColorBar() {
-      this._AccessibilityLayer.setColorBar(this.accessibilityColorBar);
+    handleAccessibilityConfigConfirm(data) {
+      this.accessibilityConfigForm = data;
+      const { colorBar, opacity } = data;
+      this._AccessibilityLayer.setOpacity(opacity);
+      this._AccessibilityLayer.setColorBar(colorBar.data);
+      this.showAccessibilityConfig = false;
     },
   },
 };

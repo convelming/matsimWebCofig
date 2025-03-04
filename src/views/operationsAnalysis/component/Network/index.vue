@@ -160,6 +160,7 @@ export default {
   },
   data() {
     return {
+      configKey: "networkConfig",
       predefineColors: ["#5470c6", "#91cc75", "#fac858", "#ee6666", "#73c0de", "#3ba272", "#fc8452", "#9a60b4", "#ea7ccc"],
       s_showLayer: true,
 
@@ -210,6 +211,33 @@ export default {
     this.handleDisable();
   },
   methods: {
+    initByConfig(config) {
+      config = config || this.rootVue.defaultConfig.networkConfig;
+      this.s_showLayer = config.showLayer;
+      this.$emit("update:showLayer", config.showLayer);
+      this.$emit("update:lock2D", config.lock2D);
+
+      this.colors = config.colors;
+      this.width = config.width;
+      this.videoIconWidth = config.videoIconWidth;
+      this.offset = config.offset;
+      this.color = config.color;
+      this.showNode = config.showNode;
+      this.showVideoIcon = config.showVideoIcon;
+    },
+    exportConfig() {
+      return {
+        showLayer: this.s_showLayer,
+        lock2D: this.lock2D,
+        colors: this.colors,
+        width: this.width,
+        videoIconWidth: this.videoIconWidth,
+        offset: this.offset,
+        color: this.color,
+        showNode: this.showNode,
+        showVideoIcon: this.showVideoIcon,
+      };
+    },
     getLayerColors(colors) {
       try {
         return {

@@ -235,3 +235,26 @@ export const ICON_LIST = [
   "walk-line.svg",
   "camera.svg",
 ].map((v) => process.env.VUE_APP_PUBLIC_PATH + "icon_traffic/" + v);
+
+
+
+//string转file
+export function stringToFile(str, filename) {
+  let blob = new Blob([str]);
+  return new File([blob], filename);
+}
+//file转string
+
+export function fileToString(file) {
+  return new Promise((resolve, reject) => {
+    const fileReader = new FileReader();
+    fileReader.onload = (e) => {
+      resolve(e.target.result);
+    };
+    // readAsDataURL
+    fileReader.readAsText(file);
+    fileReader.onerror = () => {
+      reject(new Error("fileToString error"));
+    };
+  });
+}

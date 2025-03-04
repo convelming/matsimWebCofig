@@ -318,6 +318,7 @@ export class GeoJSONLayer extends Layer {
   }
 
   dispose() {
+    super.dispose();
     this.clearScene();
   }
 

@@ -172,6 +172,7 @@ export class BusStopLayer extends Layer {
   }
 
   dispose() {
+    super.dispose();
     if (this.labelData) this.labelData.map.dispose();
     if (this.geometry) this.geometry.dispose();
     if (this.texture) this.texture.dispose();

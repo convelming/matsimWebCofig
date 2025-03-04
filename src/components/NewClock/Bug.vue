@@ -28,6 +28,7 @@ export default {
 
 <style lang="scss" scoped>
 .Bug {
+  flex-shrink: 0;
   cursor: pointer;
   width: 32px;
   height: 32px;

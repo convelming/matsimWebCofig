@@ -6,6 +6,7 @@
       <MapStyle v-show="showFun"></MapStyle>
       <Help v-show="showFun" @click.native="$emit('showHelp')"></Help>
       <Language v-show="showFun"></Language>
+      <slot :showFun="showFun"></slot>
       <div class="time" :style="{ background: showFun ? '#E5E5E5' : '' }" @click="showFun = !showFun">
         {{ formatHour(s_time) }}
       </div>
@@ -112,11 +113,16 @@ export default {
   background: #ffffff;
   box-shadow: 0px 4px 10px 0px rgba(0, 0, 0, 0.3);
   border-radius: 6px;
+  width: auto;
 
   .top {
     display: flex;
     align-items: center;
     gap: 12px;
+
+    * {
+      flex-shrink: 0;
+    }
 
     .time {
       cursor: pointer;

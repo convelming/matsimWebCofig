@@ -258,6 +258,7 @@ export class BusStopListLayer extends Layer {
 
   // 销毁
   dispose() {
+    super.dispose();
     // this.texture.dispose();
     // this.geometry.dispose();
     // this.data.length = 0;

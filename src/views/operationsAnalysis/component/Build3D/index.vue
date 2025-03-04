@@ -79,6 +79,7 @@ export default {
   },
   data() {
     return {
+      configKey: "build3DConfig",
       predefineColors: ["#5470c6", "#91cc75", "#fac858", "#ee6666", "#73c0de", "#3ba272", "#fc8452", "#9a60b4", "#ea7ccc"],
       s_showLayer: true,
       buildColor: "#838385",
@@ -121,6 +122,23 @@ export default {
     this._Build3DLayer.dispose();
   },
   methods: {
+    initByConfig(config) {
+      config = config || this.rootVue.defaultConfig.build3DConfig;
+      this.s_showLayer = config.showLayer;
+      this.$emit("update:showLayer", config.showLayer);
+      this.$emit("update:lock2D", config.lock2D);
+      
+      this.buildColor = config.buildColor;
+      this.buildOpacity = config.buildOpacity;
+    },
+    exportConfig() {
+      return {
+        showLayer: this.s_showLayer,
+        lock2D: this.lock2D,
+        buildColor: this.buildColor,
+        buildOpacity: this.buildOpacity,
+      };
+    },
     handleChangeShowLayer(value) {
       this.s_showLayer = value;
       this.$emit("update:showLayer", value);

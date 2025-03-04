@@ -1,7 +1,7 @@
 <template>
   <div class="MapStyle">
     <div id="map-switch" @click="open = !open">
-      <img class="icon" style="margin-right: 4px" src="./images/map_icon.png" />
+      <img class="icon" src="./images/map_icon.png" />
       <span class="text">{{ $l("地图") }}</span>
     </div>
     <div class="map-switch-list" v-show="open">
@@ -76,6 +76,8 @@ export default {
 
 <style lang="scss" scoped>
 .MapStyle {
+  flex-shrink: 0;
+  width: 60px;
   cursor: pointer;
   position: relative;
   height: 32px;
@@ -87,9 +89,10 @@ export default {
   padding: 0 4px;
 
   #map-switch {
+    width: 100%;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
   }
 
   .icon {

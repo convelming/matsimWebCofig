@@ -69,6 +69,7 @@ export class GuangZhouLayer extends Layer {
   }
 
   dispose() {
+    super.dispose();
     if (this.geometry) this.geometry.dispose();
   }
 

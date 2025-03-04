@@ -101,6 +101,7 @@ export default {
   },
   data() {
     return {
+      configKey: "carTravelConfig",
       s_showLayer: false,
 
       lockSelectVehicle: true,
@@ -167,6 +168,31 @@ export default {
     this._CarTravelLayer.dispose();
   },
   methods: {
+    initByConfig(config) {
+      config = config || this.rootVue.defaultConfig.build3DConfig;
+      this.s_showLayer = config.showLayer;
+      this.$emit("update:showLayer", config.showLayer);
+      this.$emit("update:lock2D", config.lock2D);
+
+      this.lockSelectVehicle = config.lockSelectVehicle;
+      this.showBus3DLayer = config.showBus3DLayer;
+      this.showSubway3DLayer = config.showSubway3DLayer;
+      this.showCar3DLayer = config.showCar3DLayer;
+      this.maxVehicleNum = config.maxVehicleNum;
+      this.modelSize = config.modelSize;
+    },
+    exportConfig() {
+      return {
+        showLayer: this.s_showLayer,
+        lock2D: this.lock2D,
+        lockSelectVehicle: this.lockSelectVehicle,
+        showBus3DLayer: this.showBus3DLayer,
+        showSubway3DLayer: this.showSubway3DLayer,
+        showCar3DLayer: this.showCar3DLayer,
+        maxVehicleNum: this.maxVehicleNum,
+        modelSize: this.modelSize,
+      };
+    },
     handleChangeShowLayer(value) {
       this.s_showLayer = value;
       this.$emit("update:showLayer", value);

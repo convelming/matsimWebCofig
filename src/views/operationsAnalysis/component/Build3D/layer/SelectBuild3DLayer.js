@@ -109,6 +109,7 @@ export class SelectBuild3DLayer extends Layer {
   }
 
   dispose() {
+    super.dispose();
     this.material.dispose();
   }
 

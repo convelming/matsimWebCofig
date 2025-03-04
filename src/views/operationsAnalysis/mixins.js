@@ -1,5 +1,3 @@
-
-
 import Toolbar from "./component/Toolbar/index.vue";
 import PublicTransit from "./component/PublicTransit/index.vue";
 import MotorizedTravel from "./component/MotorizedTravel/index.vue";
@@ -9,14 +7,18 @@ import Activity3D from "./component/Activity3D/index.vue";
 import GeoJSON from "./component/GeoJSON/index.vue";
 import CarTravel from "./component/CarTravel/index.vue";
 import Parking from "./component/Parking/index.vue";
-import RegionalTraffic from "./component/RegionalTraffic/index.vue";
 import TrafficRegionAnalysis from "./component/TrafficRegionAnalysis/index.vue";
+
+import PageConfig from "./component/PageConfig/index.vue";
 
 import NewClock from "@/components/NewClock/index.vue";
 
 import { MyMap, MapLayer, MAP_LAYER_STYLE } from "@/mymap/index.js";
 import { getTimeInterval, getCenterZoom } from "@/api/index.js";
-import { guid } from "@/utils/index.js";
+import { guid, stringToFile, fileToString } from "@/utils/utils.js";
+
+import defaultConfig from "./component/PageConfig/defaultConfig.js";
+import moment from "moment";
 
 export default {
   components: {
@@ -29,13 +31,15 @@ export default {
     GeoJSON,
     CarTravel,
     Parking,
-    RegionalTraffic,
     TrafficRegionAnalysis,
 
     NewClock,
+    PageConfig,
   },
   data() {
     return {
+      defaultConfig,
+
       loading: false,
       _Map: null,
       _MapLayer: null,
@@ -67,10 +71,6 @@ export default {
       lock2DParking: false,
       parkingGeoJSON: null,
 
-      showLayerRegionalTraffic: false,
-      lock2DRegionalTraffic: false,
-      regionalTrafficGeoJSON: null,
-
       showLayerTrafficRegionAnalysis: false,
       lock2DTrafficRegionAnalysis: false,
 
@@ -86,7 +86,7 @@ export default {
       maxTime: 3600 * 24.5,
       range: [],
       center: [0, 0],
-
+      activeNames: [],
     };
   },
   watch: {
@@ -162,15 +162,6 @@ export default {
       this.handleChangeTimeSpeed();
       this.handleChangeMapCameraControls();
     },
-    showLayerRegionalTraffic(val) {
-      this.handleChangeTimeSpeed();
-      this.handleChangeMapCameraControls();
-      this.handleToolbarActiveModel("RegionalTraffic");
-    },
-    lock2DRegionalTraffic(val) {
-      this.handleChangeTimeSpeed();
-      this.handleChangeMapCameraControls();
-    },
     showLayerTrafficRegionAnalysis(val) {
       this.handleChangeTimeSpeed();
       this.handleChangeMapCameraControls();
@@ -192,22 +183,108 @@ export default {
     this.$store.dispatch("setDataSource", database + "/" + datasource);
   },
   mounted() {
-    Promise.all([
-      getTimeInterval(),
-      getCenterZoom()
-    ]).then(([timeRes, rangeRes]) => {
+    Promise.all([getTimeInterval(), getCenterZoom()]).then(([timeRes, rangeRes]) => {
       // this.minTime = timeRes.data.minTime;
       // this.maxTime = timeRes.data.maxTime;
-      this.range = rangeRes.data.range.map(v => [v.x, v.y]);
+      this.range = rangeRes.data.range.map((v) => [v.x, v.y]);
       this.center = [rangeRes.data.center.x, rangeRes.data.center.y];
 
       this.initMap();
       this.handleChangeMapCameraControls();
-    })
+      this.initByConfig();
+    });
   },
-  beforeDestroy() {
-  },
+  beforeDestroy() {},
   methods: {
+    initByConfig(config = defaultConfig) {
+      // try {
+      //   config.geoJSONConfig.GeoJSONList.forEach((item) => {
+      //     item._file = stringToFile(item._file);
+      //   });
+      // } catch (error) {}
+      // this.GeoJSONList = config.geoJSONConfig.GeoJSONList;
+
+      // try {
+      //   config.parkingConfig.parkingGeoJSON._file = stringToFile(config.parkingConfig.parkingGeoJSON._file);
+      // } catch (error) {}
+      // this.parkingGeoJSON = config.parkingConfig.parkingGeoJSON;
+
+      this.showStopToolbar = config.showStopToolbar;
+
+      this.showClock = config.showClock;
+
+      this.showHelpDialog = config.showHelpDialog;
+
+      this.time = config.time;
+      this.speed = config.speed;
+      this.minTime = config.minTime;
+      this.maxTime = config.maxTime;
+      this.range = config.range;
+      this.center = config.center;
+      this.activeNames = config.activeNames;
+      Object.entries(this.$refs).forEach(([k, v]) => {
+        console.log(k, v.name);
+        if (v.configKey == "ToolbarConfig") {
+          v.initByConfig(config);
+        } else if (v.initByConfig && v.configKey) {
+          v.initByConfig(config[v.configKey]);
+        }
+      });
+    },
+    async exportConfig() {
+      const config = {
+        key: "PageConfig",
+
+        showStopToolbar: this.showStopToolbar,
+
+        showClock: this.showClock,
+
+        showHelpDialog: this.showHelpDialog,
+
+        time: this.time,
+        speed: this.speed,
+        minTime: this.minTime,
+        maxTime: this.maxTime,
+        range: this.range,
+        center: this.center,
+        activeNames: this.activeNames,
+      };
+      for (const [k, v] of Object.entries(this.$refs)) {
+        if (v.configKey == "ToolbarConfig") {
+          Object.assign(config, await v.exportConfig());
+        } else if (v.exportConfig && v.configKey) {
+          config[v.configKey] = await v.exportConfig();
+        }
+      }
+      console.log(config);
+
+      const blob = new Blob([JSON.stringify(config)], { type: "application/json" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = `page_config_${moment().format("YYYY_MM_DD_HH_mm_ss")}.json`;
+      link.click();
+      URL.revokeObjectURL(link.href);
+    },
+    importConfig() {
+      const input = document.createElement("input");
+      input.type = "file";
+      // input.accept = ".geojson";
+      input.style = "position:absolute;width:0;height:0;top: -100px;";
+      document.body.appendChild(input);
+      input.onchange = async (e) => {
+        try {
+          const file = e.target.files[0];
+          const configJsonStr = await fileToString(file);
+          const configJson = JSON.parse(configJsonStr);
+          this.initByConfig(configJson);
+          this.$message.success("导入成功");
+          document.body.removeChild(input);
+        } catch (error) {
+          console.error(error);
+        }
+      };
+      input.click();
+    },
     // 速度控制
     speedCommand(value) {
       this._speed = value;
@@ -223,7 +300,6 @@ export default {
       if (this.showLayerGeoJSON) enableRotate = true;
       if (this.showLayerCarTravel) enableRotate = true;
       if (this.showLayerParking) enableRotate = true;
-      if (this.showLayerRegionalTraffic) enableRotate = true;
       if (this.showLayerTrafficRegionAnalysis) enableRotate = true;
       return enableRotate;
     },
@@ -237,16 +313,13 @@ export default {
       if (this.showLayerGeoJSON && this.lock2DGeoJSON) enableRotate = false;
       if (this.showLayerCarTravel && this.lock2DCarTravel) enableRotate = false;
       if (this.showLayerParking && this.lock2DParking) enableRotate = false;
-      if (this.showLayerRegionalTraffic && this.lock2DRegionalTraffic) enableRotate = false;
       if (this.showLayerTrafficRegionAnalysis && this.lock2DTrafficRegionAnalysis) enableRotate = false;
       return enableRotate;
     },
     handleToolbarActiveModel(id) {
       try {
         this.$refs.Toolbar.handleActiveModel(id);
-      } catch (error) {
-
-      }
+      } catch (error) {}
     },
     handleShowHelp() {
       this.showHelpDialog = true;
@@ -255,10 +328,8 @@ export default {
       this.time = value;
       this.$emit("timeChange", this.time);
     },
-    handleChangeTimeSpeed() {
-    },
-    handleChangeMapCameraControls() {
-    },
+    handleChangeTimeSpeed() {},
+    handleChangeMapCameraControls() {},
     initMap() {
       this._Map = new MyMap({
         rootId: "mapRoot",
@@ -267,8 +338,8 @@ export default {
       this._Map.setFitZoomAndCenterByPoints(this.range);
       if (this.isDev) {
         this._Map.minPitch = -90;
-        this._Map.setCenter([12634435.302642914, 2645511.8325935453])
-        this._Map.setZoom(14)
+        this._Map.setCenter([12634435.302642914, 2645511.8325935453]);
+        this._Map.setZoom(14);
       }
 
       this._MapLayer = new MapLayer({ tileClass: MAP_LAYER_STYLE[0], zIndex: -1 });
@@ -418,6 +489,12 @@ export default {
         this.showStopToolbar = true;
       }
     },
+    handleClearGeoJSON() {
+      try {
+        this.GeoJSONList = [];
+        this.$refs.Toolbar.GeoJSON.activeName = [];
+      } catch (error) {}
+    },
     handleAddGeoJSON(GeoJSON, open) {
       try {
         this.GeoJSONList.push(GeoJSON);
@@ -427,7 +504,6 @@ export default {
         }
       } catch (error) {
         console.log(error);
-
       }
     },
     handleShowSinglePathDetail({ uuid, singlePathDetail }) {

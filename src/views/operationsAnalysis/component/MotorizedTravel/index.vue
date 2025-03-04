@@ -203,6 +203,7 @@ export default {
   },
   data() {
     return {
+      configKey: "motorizedTravelConfig",
       s_showLayer: false,
 
       lockSelectVehicle: true,
@@ -290,6 +291,30 @@ export default {
     // this._CarMotionLayer.dispose();
   },
   methods: {
+    initByConfig(config) {
+      config = config || this.rootVue.defaultConfig.motorizedTravelConfig;
+      this.s_showLayer = config.showLayer;
+      this.$emit("update:showLayer", config.showLayer);
+      this.$emit("update:lock2D", config.lock2D);
+
+      this.lockSelectVehicle = config.lockSelectVehicle;
+      this.showBus3DLayer = config.showBus3DLayer;
+      this.showSubway3DLayer = config.showSubway3DLayer;
+      this.maxVehicleNum = config.maxVehicleNum;
+      this.modelSize = config.modelSize;
+    },
+    exportConfig() {
+      return {
+        showLayer: this.s_showLayer,
+        lock2D: this.lock2D,
+        maxVehicleNum: this.maxVehicleNum,
+        modelSize: this.modelSize,
+        showBus3DLayer: this.showBus3DLayer,
+        showSubway3DLayer: this.showSubway3DLayer,
+        // showCar3DLayer: this.showCar3DLayer,
+        lockSelectVehicle: this.lockSelectVehicle,
+      };
+    },
     getData() {
       if (this.loading) return;
       this.loading = true;
