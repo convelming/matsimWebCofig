@@ -172,7 +172,7 @@ export default {
             uuid: guid(),
             multiplePathsDetail: {
               polygonList: polygonList,
-              _polygonArray: polygonArray,
+              _polygonArray: Array.from(polygonArray),
               _center: center,
             },
           });

@@ -291,8 +291,9 @@ export default {
   speed: 0,
   minTime: 0,
   maxTime: 3600 * 24.5,
-  range: [],
-  center: [0, 0],
+  
+  center: [12634435.302642914, 2645511.8325935453],
+  zoom: 14,
 
   activeNames: ["PublicTransit", "MotorizedTravel", "CarTravel", "Build3D", "Network", "Activity3D", "GeoJSON", "Parking", "TrafficRegionAnalysis"],
 };

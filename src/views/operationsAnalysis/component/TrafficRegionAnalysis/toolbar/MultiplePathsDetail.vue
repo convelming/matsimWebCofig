@@ -24,6 +24,8 @@
               </div>
             </div>
           </div>
+        </div>
+        <div class="form_item">
           <div class="form_item_header">
             <el-button v-if="!showOriginLayer" :loading="originLoading" class="show_btn" type="primary" size="small" @click="handleShowOriginLayer">{{ $l("显示起点分布") }}</el-button>
             <el-button v-else class="show_btn" type="info" size="small" @click="showOriginLayer = false">{{ $l("隐藏起点分布") }}</el-button>
@@ -34,12 +36,6 @@
               <div class="setting_item_label">{{ $l("颜色") }}</div>
               <div class="setting_item_value">
                 <ColorSelect v-model="originColor" :colorsList="COLOR_LIST" size="mini" />
-              </div>
-            </div>
-            <div class="setting_item">
-              <div class="setting_item_label">{{ $l("大小") }}</div>
-              <div class="setting_item_value">
-                <el-input-number v-model="originSize" :min="GRID_STEP" :step="GRID_STEP" step-strictly size="mini" />
               </div>
             </div>
           </div>
@@ -55,12 +51,6 @@
               <div class="setting_item_label">{{ $l("颜色") }}</div>
               <div class="setting_item_value">
                 <ColorSelect v-model="destinationsColor" :colorsList="COLOR_LIST" size="mini" />
-              </div>
-            </div>
-            <div class="setting_item">
-              <div class="setting_item_label">{{ $l("大小") }}</div>
-              <div class="setting_item_value">
-                <el-input-number v-model="destinationsSize" :min="GRID_STEP" :step="GRID_STEP" step-strictly size="mini" />
               </div>
             </div>
           </div>
@@ -182,6 +172,9 @@ export default {
       type: Object,
       default: () => ({}),
     },
+    config: {
+      type: [Object, undefined],
+    },
   },
   computed: {
     _Map() {
@@ -290,13 +283,11 @@ export default {
       originLoading: false,
       showOriginLayer: false,
       originColor: 0,
-      originSize: GRID_STEP,
 
       openDestinationsSetting: false,
       destinationsLoading: false,
       showDestinationsLayer: false,
       destinationsColor: 0,
-      destinationsSize: GRID_STEP,
 
       openDesireLineSetting: false,
       showDesireLineLayer: false,
@@ -318,13 +309,14 @@ export default {
     });
     this._SelectGeoJSONLayer.setCenter(this.multiplePathsDetail._center);
     this._SelectGeoJSONLayer.setPolygonArray(this.multiplePathsDetail._polygonArray);
+    console.log(this.multiplePathsDetail._center);
+    console.log(this.multiplePathsDetail._polygonArray);
 
     this._OriginGridsLayer = new PolygonGridLayer({ zIndex: 140, colorBar: this.COLOR_LIST[this.originColor] });
     this._DestinationsGridsLayer = new PolygonGridLayer({ zIndex: 150, colorBar: this.COLOR_LIST[this.destinationsColor] });
     this._DesireLineLayer = new DesireLineLayer({ zIndex: 460, color: this.desireLineColor, lineWidth: this.desireLineWidth });
 
     this.initData();
-    this.handleSelectPolygonList();
     this.handleTimeChange(this.rootVue.time);
   },
   mounted() {},
@@ -332,6 +324,39 @@ export default {
     this.handleDisable();
   },
   methods: {
+    initByConfig(config) {
+      for (const key in config) {
+        this[key] = config[key];
+      }
+      if (config.showOriginLayer) {
+        this.handleShowOriginLayer();
+      }
+      if (config.showDestinationsLayer) {
+        this.handleShowDestinationsLayer();
+      }
+      if (config.showDesireLineLayer) {
+        this.handleShowDesireLineLayer();
+      }
+    },
+    async exportConfig() {
+      return JSON.parse(
+        JSON.stringify({
+          showSelectGeoJSONLayer: this.showSelectGeoJSONLayer,
+          selectPolygonList: this.selectPolygonList,
+          openPolygonList: this.openPolygonList,
+
+          showOriginLayer: this.showOriginLayer,
+          originColor: this.originColor,
+
+          showDestinationsLayer: this.showDestinationsLayer,
+          destinationsColor: this.destinationsColor,
+
+          showDesireLineLayer: this.showDesireLineLayer,
+          desireLineColor: this.desireLineColor,
+          desireLineWidth: this.desireLineWidth,
+        })
+      );
+    },
     handleTimeChange(time) {
       const num = Math.floor(time / 3600);
       if (this._OriginGridsLayer && this._OriginGridsLayer.time !== num) this._OriginGridsLayer.setTime(num);
@@ -344,30 +369,10 @@ export default {
     initData() {
       this.polygonList = this.multiplePathsDetail.polygonList.map((v) => v.id);
       this.selectPolygonList = this.polygonList.map((v, i) => i);
-
-      const polygons = this.multiplePathsDetail.polygonList.map((v) => ({
-        shape: v._shape,
-        holes: v._holes,
-        id: v.id,
-      }));
-
-      // polygonOriginGridsTRG({ polygons: polygons }).then((res) => {
-      //   polygons.forEach((v) => {
-      //     v.originValue = res.data[v.id] || [];
-      //   });
-      //   this._OriginGridsLayer.setData(polygons, "originValue");
-      // });
-
-      // polygonDestinationsGridsTRG({ polygons: polygons }).then((res) => {
-      //   polygons.forEach((v) => {
-      //     v.destinationsValue = res.data[v.id] || [];
-      //   });
-      //   this._DestinationsGridsLayer.setData(polygons, "destinationsValue");
-      // });
-
-      // polygonDesireLinesTRG({ polygons: polygons }).then((res) => {
-      //   console.log(res);
-      // });
+      if (this.config) {
+        this.initByConfig(this.config);
+      }
+      this.handleSelectPolygonList();
     },
     async handleShowOriginLayer() {
       if (!this._OriginGridsLoaded) {
@@ -448,6 +453,7 @@ export default {
       if (this.showDestinationsLayer) this._Map.addLayer(this._DestinationsGridsLayer);
       if (this.showDesireLineLayer) this._Map.addLayer(this._DesireLineLayer);
       this.rootVue.$on("timeChange", this.handleTimeChange);
+      console.log("handleEnable", this._Map, this.selectPolygonList);
     },
     handleDisable() {
       this._Map.removeLayer(this._SelectGeoJSONLayer);

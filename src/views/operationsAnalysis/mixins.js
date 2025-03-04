@@ -196,18 +196,8 @@ export default {
   },
   beforeDestroy() {},
   methods: {
-    initByConfig(config = defaultConfig) {
-      // try {
-      //   config.geoJSONConfig.GeoJSONList.forEach((item) => {
-      //     item._file = stringToFile(item._file);
-      //   });
-      // } catch (error) {}
-      // this.GeoJSONList = config.geoJSONConfig.GeoJSONList;
-
-      // try {
-      //   config.parkingConfig.parkingGeoJSON._file = stringToFile(config.parkingConfig.parkingGeoJSON._file);
-      // } catch (error) {}
-      // this.parkingGeoJSON = config.parkingConfig.parkingGeoJSON;
+    initByConfig(config = {}) {
+      config = Object.assign({}, defaultConfig, config);
 
       this.showStopToolbar = config.showStopToolbar;
 
@@ -219,8 +209,8 @@ export default {
       this.speed = config.speed;
       this.minTime = config.minTime;
       this.maxTime = config.maxTime;
-      this.range = config.range;
-      this.center = config.center;
+      this._Map.setCenter(config.center);
+      this._Map.setZoom(config.zoom);
       this.activeNames = config.activeNames;
       Object.entries(this.$refs).forEach(([k, v]) => {
         console.log(k, v.name);
@@ -245,8 +235,8 @@ export default {
         speed: this.speed,
         minTime: this.minTime,
         maxTime: this.maxTime,
-        range: this.range,
-        center: this.center,
+        center: this._Map.center,
+        zoom: this._Map.zoom,
         activeNames: this.activeNames,
       };
       for (const [k, v] of Object.entries(this.$refs)) {
