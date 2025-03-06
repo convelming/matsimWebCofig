@@ -37,7 +37,7 @@
             <el-switch v-model="showActivityRoutes" />
           </div>
         </div>
-        <div style="margin: 20px 0 0 20px" >
+        <div style="margin: 20px 0 0 20px">
           <div class="form_item" style="align-items: center">
             <div class="form_label">{{ $l("height") }}</div>
             <div class="form_value">
@@ -110,6 +110,8 @@ import { getPlan } from "@/api/index";
 import { formatHour } from "@/utils/utils";
 import { SelectActivityLayer } from "../../Activity3D/layer/SelectActivityLayer";
 import { ActivityRoutesLayer } from "../../Activity3D/layer/ActivityRoutesLayer";
+import { CHANGE_COLOR_EVENT_KEY } from "../index.vue";
+
 export default {
   inject: ["rootVue"],
   props: {
@@ -123,6 +125,9 @@ export default {
     activityDetail: {
       type: Object,
       default: () => ({}),
+    },
+    config: {
+      type: [Object, undefined],
     },
   },
   computed: {
@@ -160,18 +165,6 @@ export default {
         }
       },
     },
-    actColor: {
-      handler(val) {
-        this._ActivityRoutesLayer1.setActColor(val);
-        this._ActivityRoutesLayer2.setActColor(val);
-      },
-    },
-    legColor: {
-      handler(val) {
-        this._ActivityRoutesLayer1.setLegColor(val);
-        this._ActivityRoutesLayer2.setLegColor(val);
-      },
-    },
     height: {
       handler(val) {
         this._ActivityRoutesLayer1.setHeight(val);
@@ -181,12 +174,6 @@ export default {
   },
   data() {
     return {
-      predefineColors: ["#5470c6", "#91cc75", "#fac858", "#ee6666", "#73c0de", "#3ba272", "#fc8452", "#9a60b4", "#ea7ccc"],
-
-      color: "#ffa500",
-
-      actColor: "#ffa500",
-      legColor: "#EE6666",
       height: 30,
 
       loading: true,
@@ -231,7 +218,7 @@ export default {
     });
 
     this._SelectActivityLayer.setData(this.activityDetail);
-    this.rootVue.$on(this.activityDetail.changeColorEventKey, this.handleActivity3DChangeColor);
+    this.rootVue.$on(CHANGE_COLOR_EVENT_KEY, this.handleActivity3DChangeColor);
   },
   mounted() {
     this.getDetail();
@@ -239,9 +226,23 @@ export default {
   beforeDestroy() {
     clearInterval(this._interval);
     this.handleDisable();
-    this.rootVue.$off(this.activityDetail.changeColorEventKey, this.handleActivity3DChangeColor);
+    this.rootVue.$off(CHANGE_COLOR_EVENT_KEY, this.handleActivity3DChangeColor);
+    this._SelectActivityLayer.dispose();
+    this._ActivityRoutesLayer1.dispose();
+    this._ActivityRoutesLayer2.dispose();
   },
   methods: {
+    initByConfig(config) {
+      for (const key in config) {
+        this[key] = config[key];
+      }
+    },
+    exportConfig() {
+      return {
+        showActivityRoutes: this.showActivityRoutes,
+        height: this.height,
+      };
+    },
     handleActivity3DChangeColor(val) {
       this._ActivityRoutesLayer1.setActivityColors(val.activityColors);
       this._ActivityRoutesLayer1.setLegColors(val.legColors);

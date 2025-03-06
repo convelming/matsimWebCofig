@@ -26,6 +26,7 @@ export class BusMotionLayer extends Layer {
   runBusList = new Array();
 
   selectBusIndex = -1;
+  selectBusId = null;
 
   maxBusNum = 2000;
   modelSize = 10;
@@ -45,7 +46,7 @@ export class BusMotionLayer extends Layer {
 
     this.modelPool = new ModelPool({
       Bus: "/models/Bus.gltf",
-    })
+    });
 
     this.busGroup = new THREE.Group();
 
@@ -124,14 +125,14 @@ export class BusMotionLayer extends Layer {
 
     if (type == MAP_EVENT.HANDLE_PICK_LEFT && data.layerId == this.id) {
       const id = this.idList[data.pickColor - 1];
-      this.setSelectBusId(id)
+      this.setSelectBusId(id);
       this.handleEventListener(MAP_EVENT.HANDLE_PICK_LEFT, id);
     }
   }
 
   onAdd(map) {
     super.onAdd(map);
-    this.on(MAP_EVENT.UPDATE_CENTER, {})
+    this.on(MAP_EVENT.UPDATE_CENTER, {});
   }
 
   render() {
@@ -146,7 +147,7 @@ export class BusMotionLayer extends Layer {
       maxY: 0,
       minY: 0,
       width: 0,
-      height: 0
+      height: 0,
     };
     if (this.map) windowRange = this.map.getWindowRangeAndWebMercator();
     const list = [2, new Date().getTime()];
@@ -165,15 +166,14 @@ export class BusMotionLayer extends Layer {
     super.dispose();
     this.worker.terminate();
     const modelName = "SUV";
-    this.runBusList.forEach(model => {
+    this.runBusList.forEach((model) => {
       this.busGroup.remove(model);
-      this.modelPool.still(modelName, model)
-    })
+      this.modelPool.still(modelName, model);
+    });
     this.runBusList.length = 0;
     this.modelPool.dispose();
     this.pickGeometry.dispose();
   }
-
 
   handleRenderCallback(array) {
     this.rendering = false;
@@ -221,7 +221,6 @@ export class BusMotionLayer extends Layer {
 
       runBusList[i] = model;
 
-
       const attrLength = attrPoitions.length;
       const pickColor = new THREE.Color(id + 1);
       attrPoitions[attrLength] = data[1];
@@ -243,13 +242,13 @@ export class BusMotionLayer extends Layer {
 
   setData(data) {
     try {
-      console.time("new Float64Array")
+      console.time("new Float64Array");
       this.idList = data.idList;
       const array = new Float64Array(data.array.length + 2);
       array.set([1], 0);
       array.set([new Date().getTime()], 1);
       array.set(data.array, 2);
-      console.timeEnd("new Float64Array")
+      console.timeEnd("new Float64Array");
       this.worker.postMessage(array, [array.buffer]);
     } catch (error) {
       console.log(error);
@@ -278,7 +277,8 @@ export class BusMotionLayer extends Layer {
   }
 
   setSelectBusId(selectBusId) {
-    this.selectBusIndex = this.idList.findIndex(v => v == selectBusId);
+    this.selectBusId = selectBusId;
+    this.selectBusIndex = this.idList.findIndex((v) => v == selectBusId);
     if (this.canRender) this.callWorkerRender();
   }
 }

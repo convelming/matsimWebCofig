@@ -100,15 +100,20 @@ export default {
       type: Object,
       default: () => ({}),
     },
+    config: {
+      type: [Object, undefined],
+    },
   },
   watch: {
     show: {
       handler(val) {
         if (val) {
-          setTimeout(() => {
-            this.rootVue.$emit("MotorizedTravel_setSelectedCar", this.carDetail);
-            this.rootVue.$on("timeChange", this.updateVisibleSvg);
-          }, 200);
+          this.$nextTick(() => {
+            setTimeout(() => {
+              this.rootVue.$emit("MotorizedTravel_setSelectedCar", this.carDetail);
+              this.rootVue.$on("timeChange", this.updateVisibleSvg);
+            }, 200);
+          });
         } else {
           this.rootVue.$emit("MotorizedTravel_setSelectedCar", {});
           this.rootVue.$off("timeChange", this.updateVisibleSvg);
@@ -132,9 +137,17 @@ export default {
     };
   },
   created() {
+    if (this.config) this.initByConfig(this.config);
     this.getDetail();
   },
+  beforeDestroy() {
+    this.rootVue.$off("timeChange", this.updateVisibleSvg);
+  },
   methods: {
+    initByConfig(config) {},
+    exportConfig() {
+      return {};
+    },
     getDetail() {
       if (!this.carDetail) return;
       getCarInfo({

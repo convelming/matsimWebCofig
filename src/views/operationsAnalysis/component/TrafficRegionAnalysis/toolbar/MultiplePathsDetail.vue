@@ -321,7 +321,12 @@ export default {
   },
   mounted() {},
   beforeDestroy() {
+    clearInterval(this._interval);
     this.handleDisable();
+    this._SelectGeoJSONLayer.dispose();
+    this._OriginGridsLayer.dispose();
+    this._DestinationsGridsLayer.dispose();
+    this._DesireLineLayer.dispose();
   },
   methods: {
     initByConfig(config) {

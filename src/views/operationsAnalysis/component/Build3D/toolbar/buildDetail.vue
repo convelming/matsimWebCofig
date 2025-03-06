@@ -152,6 +152,9 @@ export default {
       type: Object,
       default: () => ({}),
     },
+    config: {
+      type: [Object, undefined],
+    },
   },
   computed: {
     _Map() {
@@ -189,9 +192,18 @@ export default {
       buildColor: 0xff0000,
       buildOpacity: 1,
     });
+    if (this.config) this.initByConfig(this.config);
     this.getDetail();
   },
+  beforeDestroy() {
+    this.handleDisable();
+    this._SelectBuild3DLayer.dispose();
+  },
   methods: {
+    initByConfig(config) {},
+    exportConfig() {
+      return {};
+    },
     handleEnable() {
       this._Map.addLayer(this._SelectBuild3DLayer);
     },

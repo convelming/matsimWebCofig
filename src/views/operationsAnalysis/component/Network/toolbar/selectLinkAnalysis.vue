@@ -71,6 +71,9 @@ export default {
       type: Object,
       default: () => ({}),
     },
+    config: {
+      type: [Object, undefined],
+    },
   },
   inject: ["rootVue"],
   computed: {
@@ -82,9 +85,11 @@ export default {
     show: {
       handler(val) {
         if (val) {
-          setTimeout(() => {
-            this.rootVue.$emit("setSelectLine", this.lineDetail);
-          }, 200);
+          this.$nextTick(() => {
+            setTimeout(() => {
+              this.rootVue.$emit("setSelectLine", this.lineDetail);
+            }, 200);
+          });
         } else {
           this.rootVue.$emit("setSelectLine", {});
         }
@@ -146,8 +151,23 @@ export default {
   beforeDestroy() {
     clearInterval(this._interval);
     this.handleDisable();
+    this._SelectLineLayer.dispose();
+    this._LinkFlowLayer.dispose();
   },
   methods: {
+    initByConfig(config) {
+      for (const key in config) {
+        this[key] = config[key];
+      }
+    },
+    exportConfig() {
+      return {
+        color: this.color,
+        startTime: this.startTime,
+        endTime: this.endTime,
+        height: this.height,
+      };
+    },
     handleLineWidthChange(lineWidth) {
       this._SelectLineLayer.setLineWidth(lineWidth);
     },
@@ -159,11 +179,12 @@ export default {
       try {
         await getElapseLinkLeg({ linkId: this.lineDetail.id, startTime: this.startTime, endTime: this.endTime }).then((res) => {
           this._LinkFlowLayer.setData(res.data);
-          this.loading = false;
         });
         await getLinkById({ linkId: this.lineDetail.id }).then((res) => {
           this._SelectLineLayer.setData(res.data);
         });
+        this.loading = false;
+        if (this.config) this.initByConfig(this.config);
       } catch (error) {}
       this.loading = false;
     },

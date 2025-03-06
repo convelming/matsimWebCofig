@@ -222,8 +222,12 @@ export default {
     handleEnable() {
       this.handleShowLayer();
       this.rootVue.$on("timeChange", this.handleTimeChange);
-      this.rootVue.$on("CarTravel_setSelectedCar", (carDetail) => {
-        this._CarTravelLayer.setSelectCarIndex(carDetail.index);
+      this.rootVue.$on("CarTravel_setSelectedCar", ({ data }) => {
+        if (select) {
+          this._CarTravelLayer.setSelectCarIndex(data.index);
+        } else if (this._CarTravelLayer.selectCarIndex === data.index) {
+          this._CarTravelLayer.setSelectCarIndex(null);
+        }
       });
       this._Map_Event_Id = this._Map.addEventListener(MAP_EVENT.UPDATE_ZOOM, this.handleShowLayer.bind(this));
     },

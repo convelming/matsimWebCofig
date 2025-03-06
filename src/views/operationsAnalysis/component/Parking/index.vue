@@ -126,7 +126,7 @@ import { Activity3DLayer } from "../Activity3D/layer/Activity3DLayer";
 import { allParking, getAllActivityType } from "@/api/index";
 import { guid, stringToFile, fileToString } from "@/utils/utils";
 
-const CHANGE_COLOR_EVENT_KEY = "Parking_changeColor";
+export const CHANGE_COLOR_EVENT_KEY = "Parking_changeColor";
 
 export default {
   props: ["name", "showLayer", "lock2D"],
@@ -230,7 +230,6 @@ export default {
 
           _data.legColors = JSON.parse(JSON.stringify(this.legTypeList));
           _data.activityColors = JSON.parse(JSON.stringify(this.activityTypeList));
-          _data.changeColorEventKey = CHANGE_COLOR_EVENT_KEY;
 
           this.rootVue.handleShowParkingActivityDetail({
             uuid: data.pickColor,
@@ -395,6 +394,12 @@ export default {
       }
     },
     // ******************************* 交通交叉口 -- end
+    updateColor() {
+      this.rootVue.$emit(CHANGE_COLOR_EVENT_KEY, {
+        activityColors: this.activityTypeList,
+        legColors: this.legTypeList,
+      });
+    },
   },
 };
 </script>

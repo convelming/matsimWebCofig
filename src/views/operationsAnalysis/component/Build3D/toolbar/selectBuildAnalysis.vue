@@ -96,6 +96,9 @@ export default {
       type: Object,
       default: () => ({}),
     },
+    config: {
+      type: [Object, undefined],
+    },
   },
   inject: ["rootVue"],
   computed: {
@@ -152,13 +155,30 @@ export default {
       buildColor: 0xff0000,
       buildOpacity: 1,
     });
+    if (this.config) this.initByConfig(this.config);
     this.getDetail();
   },
   beforeDestroy() {
     clearInterval(this._interval);
     this.handleDisable();
+    this._BuildFlowLayer.dispose();
+    this._SelectBuild3DLayer.dispose();
   },
   methods: {
+    initByConfig(config) {
+      for (const key in config) {
+        this[key] = config[key];
+      }
+    },
+    exportConfig() {
+      return {
+        color: this.color,
+        startTime: this.startTime,
+        endTime: this.endTime,
+        height: this.height,
+        type: this.type,
+      };
+    },
     getDetail() {
       this.loading = true;
       const apiFun = { start: getStartInFacilities, end: getEndInFacilities }[this.type];

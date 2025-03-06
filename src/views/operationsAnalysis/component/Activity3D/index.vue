@@ -85,7 +85,7 @@ import { MAP_EVENT } from "@/mymap";
 import { Activity3DLayer } from "./layer/Activity3DLayer";
 import { getAllActivity, getAllActivityType } from "@/api/index";
 
-const CHANGE_COLOR_EVENT_KEY = "Activity3D_changeColor";
+export const CHANGE_COLOR_EVENT_KEY = "Activity3D_changeColor";
 
 export default {
   props: ["name", "showLayer", "lock2D"],

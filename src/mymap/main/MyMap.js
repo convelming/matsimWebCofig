@@ -15,9 +15,9 @@ const distance = (form, to) => {
   try {
     return Math.sqrt(Math.pow(form[0] - to[0], 2) + Math.pow(form[1] - to[1], 2)) || 0;
   } catch (error) {
-    return 0
+    return 0;
   }
-}
+};
 
 export const SCENE_MAP = {
   ENTIRE_SCENE: 0, // 全景图层
@@ -73,7 +73,7 @@ export const MAP_ZOOM_RANGE = {
 };
 
 // 计算地图zoom和height的一个基数
-const MAP_ZOOM_BASE = 18
+const MAP_ZOOM_BASE = 18;
 
 // 地图层级缩放高度基数
 const MAP_ZOOM_HEIGHT = 300;
@@ -168,13 +168,13 @@ export class MyMap extends EventListener {
       } else if (px < 0 && pz >= 0) {
         rotation = Math.PI * 2 + rotation;
       }
-      return { rotation, pitch };
+      return { rotation, pitch, rotationDeg: Math.round(rotation * (180 / Math.PI)), pitchDeg: Math.round(pitch * (180 / Math.PI)) };
     } catch (error) {
-      return { rotation: 0, pitch: 0 };
+      return { rotation: 0, pitch: 0, rotationDeg: 0, pitchDeg: 0 };
     }
   }
 
-  // 比例尺 m:px 
+  // 比例尺 m:px
   get plottingScale() {
     try {
       const [x1, y1] = this.WindowXYToCanvasXY(0, 0);
@@ -185,7 +185,22 @@ export class MyMap extends EventListener {
     }
   }
 
-  constructor({ rootId, center = [12614426, 2646623], zoom = 15, pitch = 90, minPitch = 10, rotation = 0, minRotation = 360, openGPUPick = true, noControls = false, enableRotate = false, enablePan = true, enableZoom = true, background = 0xd9ecff, ...opt }) {
+  constructor({
+    rootId,
+    center = [12614426, 2646623],
+    zoom = 15,
+    pitch = 90,
+    minPitch = 10,
+    rotation = 0,
+    minRotation = 360,
+    openGPUPick = true,
+    noControls = false,
+    enableRotate = false,
+    enablePan = true,
+    enableZoom = true,
+    background = 0xd9ecff,
+    ...opt
+  }) {
     super(opt);
     // 获取根节点dom
     this.rootDoc = document.getElementById(rootId);
@@ -465,7 +480,7 @@ export class MyMap extends EventListener {
     this.rootDoc.addEventListener("mouseout", function () {
       this.mouseDowning = false;
       this.mouseDowned = false;
-    })
+    });
   }
 
   // 添加地图大小改变事件监听
@@ -644,8 +659,6 @@ export class MyMap extends EventListener {
     }
   }
 
-
-
   // 添加图层
   addLayer(layer) {
     if (layer.isDisposed) {
@@ -753,7 +766,7 @@ export class MyMap extends EventListener {
     // TODO
     const layers = [...this.layers];
     for (const layer of layers) {
-      this.removeLayer(layer)
+      this.removeLayer(layer);
       layer.dispose();
     }
   }
@@ -811,7 +824,7 @@ export class MyMap extends EventListener {
       height,
       center,
       zoom,
-    }
+    };
   }
 
   // 获取最佳缩放层级和中心点
@@ -881,14 +894,7 @@ export class MyMap extends EventListener {
     const [mapCenterX, mapCenterY] = this.center;
     const { far, fov } = this.camera;
     const width = far / (Math.cos((Math.PI * fov) / 180) * 2);
-    const [row, col] = [
-      Math.floor(
-        ((EARTH_RADIUS + mapCenterX) * Math.pow(2, zoom)) / (EARTH_RADIUS * 2)
-      ),
-      Math.floor(
-        ((EARTH_RADIUS - mapCenterY) * Math.pow(2, zoom)) / (EARTH_RADIUS * 2)
-      ),
-    ];
+    const [row, col] = [Math.floor(((EARTH_RADIUS + mapCenterX) * Math.pow(2, zoom)) / (EARTH_RADIUS * 2)), Math.floor(((EARTH_RADIUS - mapCenterY) * Math.pow(2, zoom)) / (EARTH_RADIUS * 2))];
     const tileSize = (EARTH_RADIUS * 2) / Math.pow(2, zoom);
     const radius = Math.ceil(width / tileSize);
 
@@ -904,9 +910,8 @@ export class MyMap extends EventListener {
     let colEnd = col + radius;
     if (colEnd > max_row_col) colEnd = max_row_col;
 
-
-    const x1 = ((rowStart) * (EARTH_RADIUS * 2)) / Math.pow(2, zoom) - EARTH_RADIUS;
-    const y1 = EARTH_RADIUS - ((colStart) * (EARTH_RADIUS * 2)) / Math.pow(2, zoom);
+    const x1 = (rowStart * (EARTH_RADIUS * 2)) / Math.pow(2, zoom) - EARTH_RADIUS;
+    const y1 = EARTH_RADIUS - (colStart * (EARTH_RADIUS * 2)) / Math.pow(2, zoom);
     const x2 = ((rowEnd + 1) * (EARTH_RADIUS * 2)) / Math.pow(2, zoom) - EARTH_RADIUS;
     const y2 = EARTH_RADIUS - ((colEnd + 1) * (EARTH_RADIUS * 2)) / Math.pow(2, zoom);
 
@@ -919,7 +924,7 @@ export class MyMap extends EventListener {
       maxY: Math.max(y1, y2),
       center: [mapCenterX, mapCenterY],
       size: tileSize,
-      zoom: zoom
+      zoom: zoom,
     };
   }
 
@@ -967,10 +972,10 @@ export class MyMap extends EventListener {
 
   static heightToZoom(height) {
     let zoom = MAP_ZOOM_BASE - Math.LOG2E * Math.log(height / MAP_ZOOM_HEIGHT);
-    return zoom
+    return zoom;
   }
 
   static zoomToHeight(zoom) {
-    return MAP_ZOOM_HEIGHT * Math.pow(2, MAP_ZOOM_BASE - zoom)
+    return MAP_ZOOM_HEIGHT * Math.pow(2, MAP_ZOOM_BASE - zoom);
   }
 }

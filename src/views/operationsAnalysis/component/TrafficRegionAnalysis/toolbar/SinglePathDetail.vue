@@ -900,7 +900,7 @@ export default {
   },
   mounted() {},
   beforeDestroy() {
-    console.log("beforeDestroy");
+    clearInterval(this._interval);
     this.handleDisable();
     this._SelectGeoJSONLayer.dispose();
     this._LinkGeoJSONLayer.dispose();

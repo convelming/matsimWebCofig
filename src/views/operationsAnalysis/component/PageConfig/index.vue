@@ -1,9 +1,11 @@
 <template>
-  <el-dropdown class="PageConfig" @command="changePageConfig" placement="top-start" trigger="click">
+  <el-dropdown class="PageConfig" @command="$emit($event)" placement="top-start" trigger="click">
     <div class="locale_btn"><img class="icon" src="" /> <span class="text">配置</span></div>
     <el-dropdown-menu slot="dropdown">
-      <el-dropdown-item command="导入">导入</el-dropdown-item>
-      <el-dropdown-item command="导出">导出</el-dropdown-item>
+      <el-dropdown-item command="import">导入</el-dropdown-item>
+      <el-dropdown-item command="export">导出</el-dropdown-item>
+      <el-dropdown-item command="save">保存到云端</el-dropdown-item>
+      <el-dropdown-item command="load">从云端加载</el-dropdown-item>
     </el-dropdown-menu>
   </el-dropdown>
 </template>
@@ -11,24 +13,6 @@
 <script>
 export default {
   name: "PageConfig",
-  props: {},
-  components: {},
-  computed: {},
-  watch: {},
-  data() {
-    return {};
-  },
-  created() {},
-  mounted() {},
-  methods: {
-    changePageConfig(command) {
-      if (command === "导入") {
-        this.$emit("import");
-      } else if (command === "导出") {
-        this.$emit("export");
-      }
-    },
-  },
 };
 </script>
 

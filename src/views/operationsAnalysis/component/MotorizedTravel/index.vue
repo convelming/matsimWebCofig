@@ -354,8 +354,12 @@ export default {
     handleShowBus3DLayer(val) {
       try {
         if (val) {
-          this.rootVue.$on("MotorizedTravel_setSelectedBus", (busDetail) => {
-            this._BusMotionLayer.setSelectBusId(busDetail.id);
+          this.rootVue.$on("MotorizedTravel_setSelectedBus", ({ data, select }) => {
+            if (select) {
+              this._BusMotionLayer.setSelectBusId(data.id);
+            } else if (this._BusMotionLayer.selectBusId === data.id) {
+              this._BusMotionLayer.setSelectBusId(null);
+            }
           });
           this._Map.addLayer(this._BusMotionLayer);
         } else {
@@ -369,8 +373,12 @@ export default {
     handleShowSubway3DLayer(val) {
       try {
         if (val) {
-          this.rootVue.$on("MotorizedTravel_setSelectedSubway", (subwayDetail) => {
-            this._SubwayMotionLayer.setSelectSubwayId(subwayDetail.id);
+          this.rootVue.$on("MotorizedTravel_setSelectedSubway", ({ data, select }) => {
+            if (select) {
+              this._SubwayMotionLayer.setSelectSubwayId(data.id);
+            } else if (this._SubwayMotionLayer.selectSubwayId === data.id) {
+              this._SubwayMotionLayer.setSelectSubwayId(null);
+            }
           });
           this._Map.addLayer(this._SubwayMotionLayer);
         } else {

@@ -328,6 +328,49 @@ export default {
   beforeDestroy() {},
   methods: {
     initByConfig(config) {
+      this.activeName = config.toolbarActiveName || "PublicTransit";
+      {
+        const Activity3DToolbar = config.Activity3DToolbar || {};
+        this.$set(this.Activity3D, "sreach", Activity3DToolbar.sreach || {});
+        this.$set(this.Activity3D, "params", Activity3DToolbar.params || {});
+        this.$set(this.Activity3D, "activeName", Activity3DToolbar.activeName || "");
+        this.$set(this.Activity3D, "list", Activity3DToolbar.list || []);
+      }
+      {
+        const Build3DToolbar = config.Build3DToolbar || {};
+        this.$set(this.Build3D, "sreach", Build3DToolbar.sreach || {});
+        this.$set(this.Build3D, "params", Build3DToolbar.params || {});
+        this.$set(this.Build3D, "activeName", Build3DToolbar.activeName || "");
+        this.$set(this.Build3D, "list", Build3DToolbar.list || []);
+      }
+      {
+        const MotorizedTravelToolbar = config.MotorizedTravelToolbar || {};
+        this.$set(this.MotorizedTravel, "sreach", MotorizedTravelToolbar.sreach || {});
+        this.$set(this.MotorizedTravel, "params", MotorizedTravelToolbar.params || {});
+        this.$set(this.MotorizedTravel, "activeName", MotorizedTravelToolbar.activeName || "");
+        this.$set(this.MotorizedTravel, "list", MotorizedTravelToolbar.list || []);
+      }
+      {
+        const NetworkToolbar = config.NetworkToolbar || {};
+        this.$set(this.Network, "sreach", NetworkToolbar.sreach || {});
+        this.$set(this.Network, "params", NetworkToolbar.params || {});
+        this.$set(this.Network, "activeName", NetworkToolbar.activeName || "");
+        this.$set(this.Network, "list", NetworkToolbar.list || []);
+      }
+      {
+        const ParkingToolbar = config.ParkingToolbar || {};
+        this.$set(this.Parking, "sreach", ParkingToolbar.sreach || {});
+        this.$set(this.Parking, "params", ParkingToolbar.params || {});
+        this.$set(this.Parking, "activeName", ParkingToolbar.activeName || "");
+        this.$set(this.Parking, "list", ParkingToolbar.list || []);
+      }
+      {
+        const PublicTransitToolbar = config.PublicTransitToolbar || {};
+        this.$set(this.PublicTransit, "sreach", PublicTransitToolbar.sreach || {});
+        this.$set(this.PublicTransit, "params", PublicTransitToolbar.params || {});
+        this.$set(this.PublicTransit, "activeName", PublicTransitToolbar.activeName || "");
+        this.$set(this.PublicTransit, "list", PublicTransitToolbar.list || []);
+      }
       {
         const TrafficRegionAnalysisToolbar = config.TrafficRegionAnalysisToolbar || {};
         this.$set(this.TrafficRegionAnalysis, "sreach", TrafficRegionAnalysisToolbar.sreach || {});
@@ -337,7 +380,134 @@ export default {
       }
     },
     async exportConfig() {
-      const config = {};
+      const config = {
+        toolbarActiveName: this.activeName,
+      };
+      {
+        const list = [];
+        const refs = this.$refs["Activity3DItem"];
+        console.log(refs);
+        for (const item of this.Activity3D.list) {
+          const ref = refs.find((v) => v.name == item.name);
+          list.push({
+            type: item.type,
+            name: item.name,
+            data: JSON.parse(JSON.stringify(item.data)),
+            config: await ref.exportConfig(),
+          });
+        }
+        config.Activity3DToolbar = {
+          sreach: this.Activity3D.sreach,
+          params: this.Activity3D.params,
+          activeName: this.Activity3D.activeName,
+          list: list,
+        };
+      }
+
+      {
+        const list = [];
+        const refs = this.$refs["Build3DItem"];
+        console.log(refs);
+        for (const item of this.Build3D.list) {
+          const ref = refs.find((v) => v.name == item.name);
+          list.push({
+            type: item.type,
+            name: item.name,
+            data: JSON.parse(JSON.stringify(item.data)),
+            config: await ref.exportConfig(),
+          });
+        }
+        config.Build3DToolbar = {
+          sreach: this.Build3D.sreach,
+          params: this.Build3D.params,
+          activeName: this.Build3D.activeName,
+          list: list,
+        };
+      }
+
+      {
+        const list = [];
+        const refs = this.$refs["MotorizedTravelItem"];
+        console.log(refs);
+        for (const item of this.MotorizedTravel.list) {
+          const ref = refs.find((v) => v.name == item.name);
+          list.push({
+            type: item.type,
+            name: item.name,
+            data: JSON.parse(JSON.stringify(item.data)),
+            config: await ref.exportConfig(),
+          });
+        }
+        config.MotorizedTravelToolbar = {
+          sreach: this.MotorizedTravel.sreach,
+          params: this.MotorizedTravel.params,
+          activeName: this.MotorizedTravel.activeName,
+          list: list,
+        };
+      }
+
+      {
+        const list = [];
+        const refs = this.$refs["NetworkItem"];
+        console.log(refs);
+        for (const item of this.Network.list) {
+          const ref = refs.find((v) => v.name == item.name);
+          list.push({
+            type: item.type,
+            name: item.name,
+            data: JSON.parse(JSON.stringify(item.data)),
+            config: await ref.exportConfig(),
+          });
+        }
+        config.NetworkToolbar = {
+          sreach: this.Network.sreach,
+          params: this.Network.params,
+          activeName: this.Network.activeName,
+          list: list,
+        };
+      }
+
+      {
+        const list = [];
+        const refs = this.$refs["ParkingItem"];
+        console.log(refs);
+        for (const item of this.Parking.list) {
+          const ref = refs.find((v) => v.name == item.name);
+          list.push({
+            type: item.type,
+            name: item.name,
+            data: JSON.parse(JSON.stringify(item.data)),
+            config: await ref.exportConfig(),
+          });
+        }
+        config.ParkingToolbar = {
+          sreach: this.Parking.sreach,
+          params: this.Parking.params,
+          activeName: this.Parking.activeName,
+          list: list,
+        };
+      }
+
+      {
+        const list = [];
+        const refs = this.$refs["PublicTransitItem"];
+        console.log(refs);
+        for (const item of this.PublicTransit.list) {
+          const ref = refs.find((v) => v.name == item.name);
+          list.push({
+            type: item.type,
+            name: item.name,
+            data: JSON.parse(JSON.stringify(item.data)),
+            config: await ref.exportConfig(),
+          });
+        }
+        config.PublicTransitToolbar = {
+          sreach: this.PublicTransit.sreach,
+          params: this.PublicTransit.params,
+          activeName: this.PublicTransit.activeName,
+          list: list,
+        };
+      }
 
       {
         const list = [];

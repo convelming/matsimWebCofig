@@ -206,11 +206,12 @@ export default {
       this.showHelpDialog = config.showHelpDialog;
 
       this.time = config.time;
-      this.speed = config.speed;
       this.minTime = config.minTime;
       this.maxTime = config.maxTime;
+      this.speedCommand(config.speed);
       this._Map.setCenter(config.center);
       this._Map.setZoom(config.zoom);
+      this._Map.setPitchAndRotation(config.pitch, config.rotation);
       this.activeNames = config.activeNames;
       Object.entries(this.$refs).forEach(([k, v]) => {
         console.log(k, v.name);
@@ -222,6 +223,7 @@ export default {
       });
     },
     async exportConfig() {
+      let { rotationDeg, pitchDeg } = this._Map.cameraRotation;
       const config = {
         key: "PageConfig",
 
@@ -237,6 +239,9 @@ export default {
         maxTime: this.maxTime,
         center: this._Map.center,
         zoom: this._Map.zoom,
+        rotation: rotationDeg,
+        pitch: pitchDeg,
+
         activeNames: this.activeNames,
       };
       for (const [k, v] of Object.entries(this.$refs)) {
@@ -275,6 +280,8 @@ export default {
       };
       input.click();
     },
+    saveConfig() {},
+    loadConfig() {},
     // 速度控制
     speedCommand(value) {
       this._speed = value;

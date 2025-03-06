@@ -160,6 +160,9 @@ export default {
     routeId: {
       type: [Number, String],
     },
+    config: {
+      type: [Object, undefined],
+    },
   },
   inject: ["rootVue"],
   components: {
@@ -269,13 +272,31 @@ export default {
       color: this.reachableStopsColor,
       visible: this.showReachableStops,
     });
+
+if (this.config) this.initByConfig(this.config);
   },
   mounted() {},
   beforeDestroy() {
     clearInterval(this._interval);
     this.handleDisable();
+    this._TransitLinesLayer.dispose();
+    this._ReachableStopsLayer.dispose();
   },
   methods: {
+    initByConfig(config) {
+      for (const key in config) {
+        this[key] = config[key];
+      }
+    },
+    exportConfig() {
+      return {
+        showTransitLines: this.showTransitLines,
+        transitLinesColor: this.transitLinesColor,
+
+        showReachableStops: this.showReachableStops,
+        reachableStopsColor: this.reachableStopsColor,
+      };
+    },
     getRouteList() {
       this.$nextTick(async () => {
         const res = await getTwoWayByRouteId({

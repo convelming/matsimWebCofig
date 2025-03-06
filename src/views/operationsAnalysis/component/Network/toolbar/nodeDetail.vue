@@ -58,6 +58,9 @@ export default {
       type: Object,
       default: () => ({}),
     },
+    config: {
+      type: [Object, undefined],
+    },
   },
   inject: ["rootVue"],
   components: {
@@ -110,12 +113,15 @@ export default {
   beforeDestroy() {
     clearInterval(this._interval);
     this.handleDisable();
+    this._SelectStopLayer.dispose();
   },
   methods: {
-    handleLineWidthChange(lineWidth) {
-      this._SelectStopLayer.setLineWidth(lineWidth);
+    initByConfig(config) {},
+    exportConfig() {
+      return {};
     },
     handleLineOffsetChange(lineOffset) {
+      this.nodeDetail.lineOffset = lineOffset;
       this._SelectStopLayer.setOffset(lineOffset);
     },
     getDetail() {
@@ -125,9 +131,11 @@ export default {
           res.data.normal = this.nodeDetail.normal || {};
           console.log(res.data);
           this.resData = res.data;
-          this._SelectStopLayer.setOffset(this.nodeDetail.lineOffset);
+          this.handleLineOffsetChange(this.nodeDetail.lineOffset);
           this._SelectStopLayer.setData(this.resData);
           this.loading = false;
+
+          if (this.config) this.initByConfig(this.config);
         })
         .finally(() => {
           this.loading = false;

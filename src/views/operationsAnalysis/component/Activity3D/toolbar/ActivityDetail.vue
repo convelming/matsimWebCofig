@@ -38,14 +38,6 @@
           </div>
         </div>
         <div style="margin: 20px 0 0 20px" v-if="showActivityRoutes">
-          <!-- <div class="form_item" style="align-items: center">
-            <div class="form_label">{{ $l("actColor") }}</div>
-            <el-color-picker size="mini" :predefine="predefineColors" v-model="actColor" />
-          </div>
-          <div class="form_item" style="align-items: center">
-            <div class="form_label">{{ $l("legColor") }}</div>
-            <el-color-picker size="mini" :predefine="predefineColors" v-model="legColor" />
-          </div> -->
           <div class="form_item" style="align-items: center">
             <div class="form_label">{{ $l("height") }}</div>
             <div class="form_value">
@@ -104,14 +96,6 @@
     "zh-CN": "下一个活动：",
     "en-US": "Next Activity:"
   },
-  "actColor":{
-    "zh-CN": "活动点颜色：",
-    "en-US": "Activity Color: "
-  },
-  "legColor":{
-    "zh-CN": "出行轨迹颜色：",
-    "en-US": "Leg Color: "
-  },
   "color":{
     "zh-CN": "颜色：",
     "en-US": "Color: "
@@ -138,8 +122,7 @@ import { getPlan } from "@/api/index";
 import { formatHour } from "@/utils/utils";
 import { SelectActivityLayer } from "../layer/SelectActivityLayer";
 import { ActivityRoutesLayer } from "../layer/ActivityRoutesLayer";
-
-const CHANGE_COLOR_EVENT_KEY = "Activity3D_changeColor";
+import { CHANGE_COLOR_EVENT_KEY } from "../index.vue";
 
 export default {
   inject: ["rootVue"],
@@ -154,6 +137,9 @@ export default {
     activityDetail: {
       type: Object,
       default: () => ({}),
+    },
+    config: {
+      type: [Object, undefined],
     },
   },
   computed: {
@@ -189,16 +175,6 @@ export default {
         }
       },
     },
-    actColor: {
-      handler(val) {
-        this._ActivityRoutesLayer.setActColor(val);
-      },
-    },
-    legColor: {
-      handler(val) {
-        this._ActivityRoutesLayer.setLegColor(val);
-      },
-    },
     height: {
       handler(val) {
         this._ActivityRoutesLayer.setHeight(val);
@@ -217,13 +193,9 @@ export default {
   },
   data() {
     return {
-      predefineColors: ["#5470c6", "#91cc75", "#fac858", "#ee6666", "#73c0de", "#3ba272", "#fc8452", "#9a60b4", "#ea7ccc"],
-
       detail: null,
       color: "#ffa500",
 
-      actColor: "#ffa500",
-      legColor: "#EE6666",
       actScale: 1,
       legScale: 1,
       height: 30,
@@ -255,15 +227,28 @@ export default {
   beforeDestroy() {
     clearInterval(this._interval);
     this.handleDisable();
+    this._SelectActivityLayer.dispose();
+    this._ActivityRoutesLayer.dispose();
     this.rootVue.$off(CHANGE_COLOR_EVENT_KEY, this.handleActivity3DChangeColor);
   },
   methods: {
+    initByConfig(config) {
+      for (const key in config) {
+        this[key] = config[key];
+      }
+    },
+    exportConfig() {
+      return {
+        showActivityRoutes: this.showActivityRoutes,
+        height: this.height,
+        actScale: this.actScale,
+        legScale: this.legScale,
+      };
+    },
     // 活动颜色改变事件
     handleActivity3DChangeColor(val) {
       this._ActivityRoutesLayer.setActivityColors(val.activityColors);
       this._ActivityRoutesLayer.setLegColors(val.legColors);
-      // this._ActivityRoutesLayer.setActColor(val.actColor);
-      // this._ActivityRoutesLayer.setLegColor(val.legColor);
     },
     // 启用
     handleEnable() {
@@ -284,7 +269,7 @@ export default {
         .then((res) => {
           if (this.activityDetail._form_type == "sreach") {
             this.detail = Object.assign({}, this.activityDetail, res.data.find((v) => v.type == "Activity") || {});
-          } else if (this.activityDetail._form_type == "mymap")  {
+          } else if (this.activityDetail._form_type == "mymap") {
             this.detail = Object.assign({}, this.activityDetail);
           }
 
@@ -302,6 +287,8 @@ export default {
           this._ActivityRoutesLayer.setData(res.data, [this.detail.coord.x, this.detail.coord.y]);
 
           if (this.rootVue.$refs.Activity3D) this.rootVue.$refs.Activity3D.updateColor();
+
+          if (this.config) this.initByConfig(this.config);
         })
         .finally(() => {
           this.loading = false;

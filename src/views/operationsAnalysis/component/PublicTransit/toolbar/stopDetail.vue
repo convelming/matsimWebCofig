@@ -126,6 +126,9 @@ export default {
       type: Object,
       default: () => ({}),
     },
+    config: {
+      type: [Object, undefined],
+    },
   },
   inject: ["rootVue"],
   components: {
@@ -286,13 +289,32 @@ export default {
       color: this.reachableStopsColor,
       visible: this.showReachableStops,
     });
+
+    if (this.config) this.initByConfig(this.config);
   },
   mounted() {},
   beforeDestroy() {
     clearInterval(this._interval);
     this.handleDisable();
+    this._SelectStopLayer.dispose();
+    this._TransitLinesLayer.dispose();
+    this._ReachableStopsLayer.dispose();
   },
   methods: {
+    initByConfig(config) {
+      for (const key in config) {
+        this[key] = config[key];
+      }
+    },
+    exportConfig() {
+      return {
+        stopColor: this.stopColor,
+        showTransitLines: this.showTransitLines,
+        transitLinesColor: this.transitLinesColor,
+        showReachableStops: this.showReachableStops,
+        reachableStopsColor: this.reachableStopsColor,
+      };
+    },
     getStopDetail() {
       this.$nextTick(async () => {
         if (this.stopId) {

@@ -162,6 +162,9 @@ export default {
       type: Array,
       default: () => [],
     },
+    config: {
+      type: [Object, undefined],
+    },
   },
   inject: ["rootVue"],
   components: {
@@ -281,13 +284,28 @@ export default {
       zIndex: 140,
       color: this.stopColor,
     });
+    if (this.config) this.initByConfig(this.config);
   },
   mounted() {},
   beforeDestroy() {
     clearInterval(this._interval);
     this.handleDisable();
+    
+    this._SelectStopLayer.dispose();
+    this._TransitLinesLayer.dispose();
+    this._ReachableStopsLayer.dispose();
   },
   methods: {
+    initByConfig(config) {
+      for (const key in config) {
+        this[key] = config[key];
+      }
+    },
+    exportConfig() {
+      return {
+        stopColor: this.stopColor,
+      };
+    },
     handleSelectionChange(val) {
       const list = val.map((v) => v.routeId);
       this._TransitLinesLayer.setShowLine(list);

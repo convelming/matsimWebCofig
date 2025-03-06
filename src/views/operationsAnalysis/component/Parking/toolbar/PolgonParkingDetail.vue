@@ -77,6 +77,9 @@ export default {
       type: Object,
       default: () => ({}),
     },
+    config: {
+      type: [Object, undefined],
+    },
   },
   computed: {
     _Map() {
@@ -99,7 +102,6 @@ export default {
         });
       },
       immediate: true,
-      s_polgonParkingDetail: null,
     },
   },
   data() {
@@ -120,7 +122,6 @@ export default {
     };
   },
   created() {
-    this.s_polgonParkingDetail = JSON.parse(JSON.stringify(this.polgonParkingDetail));
     this._PolygonSelectLayer = new PolygonSelectLayer({ zIndex: 50 });
     this.rootVue.$on("Parking_Geojson_Uuid", this.handleChangeGeoId);
   },
@@ -132,7 +133,7 @@ export default {
     this._chart2Big = echarts.init(this.$refs.chart2Big);
     this._chart3Big = echarts.init(this.$refs.chart3Big);
     this.getDetail();
-    this.handleChangeGeoId(this.s_polgonParkingDetail);
+    this.handleChangeGeoId(this.polgonParkingDetail);
     this._resizeObserver = new ResizeObserver((entries) => {
       console.log("resize");
 
@@ -146,6 +147,7 @@ export default {
       }, 1000 / 120);
     });
     this._resizeObserver.observe(this.$refs.body);
+    if (this.config) this.initByConfig(this.config);
   },
   beforeDestroy() {
     this.handleDisable();
@@ -168,17 +170,38 @@ export default {
     this.rootVue.$off("Parking_Geojson_Uuid", this.handleChangeGeoId);
   },
   methods: {
+    initByConfig(config) {
+      for (const key in config) {
+        this[key] = config[key];
+      }
+      this.$nextTick(() => {
+        if (config.openChart1) this.handleOpenChart1();
+        if (config.openChart2) this.handleOpenChart2();
+        if (config.openChart3) this.handleOpenChart3();
+      });
+    },
+    exportConfig() {
+      return {
+        openChart1: this.openChart1,
+        openChart2: this.openChart2,
+        openChart3: this.openChart3,
+
+        showChart1Big: this.showChart1Big,
+        showChart2Big: this.showChart2Big,
+        showChart3Big: this.showChart3Big,
+      };
+    },
     handleEnable() {
       this._Map.addLayer(this._PolygonSelectLayer);
-      this._PolygonSelectLayer.setPath(this.s_polgonParkingDetail.xyarr);
+      this._PolygonSelectLayer.setPath(this.polgonParkingDetail.xyarr);
     },
     handleDisable() {
       this._Map.removeLayer(this._PolygonSelectLayer);
     },
     handleChangeGeoId(data) {
-      this.s_polgonParkingDetail.geoId = data.geoId;
-      if (this.s_polgonParkingDetail.geoId) {
-        rangeRequireRatio2(this.s_polgonParkingDetail).then((res) => {
+      this.polgonParkingDetail.geoId = data.geoId;
+      if (this.polgonParkingDetail.geoId) {
+        rangeRequireRatio2(this.polgonParkingDetail).then((res) => {
           console.log("rangeRequireRatio2", res);
           this.rangeRequireRatioData = res.data.requireRatio;
           this._chart2.setOption(this.getChartOptions2(), true);
@@ -198,9 +221,9 @@ export default {
       }
     },
     getDetail() {
-      if (!this.s_polgonParkingDetail) return;
+      if (!this.polgonParkingDetail) return;
       this.loading = true;
-      rangeParking(this.s_polgonParkingDetail).then((res) => {
+      rangeParking(this.polgonParkingDetail).then((res) => {
         this.rangeParkingData = res.data;
         this._chart1.setOption(this.getChartOptions1(), true);
         this._chart1Big.setOption(this.getChartOptions1(), true);

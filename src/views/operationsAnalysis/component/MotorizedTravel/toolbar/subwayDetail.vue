@@ -135,17 +135,26 @@ export default {
       type: Object,
       default: () => ({}),
     },
+    config: {
+      type: [Object, undefined],
+    },
   },
   watch: {
     show: {
       handler(val) {
         if (val) {
           setTimeout(() => {
-            this.rootVue.$emit("MotorizedTravel_setSelectedSubway", this.subwayDetail);
+            this.rootVue.$emit("MotorizedTravel_setSelectedSubway", {
+              data: this.subwayDetail,
+              select: true,
+            });
             this.rootVue.$on("timeChange", this.handleSubwayDetailTimeChange);
           }, 200);
         } else {
-          this.rootVue.$emit("MotorizedTravel_setSelectedSubway", {});
+          this.rootVue.$emit("MotorizedTravel_setSelectedSubway", {
+            data: this.subwayDetail,
+            select: false,
+          });
           this.rootVue.$off("timeChange", this.handleSubwayDetailTimeChange);
         }
       },
@@ -169,9 +178,17 @@ export default {
     };
   },
   created() {
+    if (this.config) this.initByConfig(this.config);
     this.getDetail();
   },
+  beforeDestroy() {
+    this.rootVue.$off("timeChange", this.updateVisibleSvg);
+  },
   methods: {
+    initByConfig(config) {},
+    exportConfig() {
+      return {};
+    },
     handleSubwayDetailTimeChange(time) {
       if (!this.show) return;
       if (this.loading) return;

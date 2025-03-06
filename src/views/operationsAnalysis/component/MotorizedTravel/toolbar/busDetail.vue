@@ -139,17 +139,28 @@ export default {
       type: Object,
       default: () => ({}),
     },
+    config: {
+      type: [Object, undefined],
+    },
   },
   watch: {
     show: {
       handler(val) {
         if (val) {
-          setTimeout(() => {
-            this.rootVue.$emit("MotorizedTravel_setSelectedBus", this.busDetail);
-            this.rootVue.$on("timeChange", this.handleBusDetailTimeChange);
-          }, 200);
+          this.$nextTick(() => {
+            setTimeout(() => {
+              this.rootVue.$emit("MotorizedTravel_setSelectedBus", {
+                data: this.busDetail,
+                select: true,
+              });
+              this.rootVue.$on("timeChange", this.handleBusDetailTimeChange);
+            }, 200);
+          });
         } else {
-          this.rootVue.$emit("MotorizedTravel_setSelectedBus", {});
+          this.rootVue.$emit("MotorizedTravel_setSelectedBus", {
+            data: this.busDetail,
+            select: false,
+          });
           this.rootVue.$off("timeChange", this.handleBusDetailTimeChange);
         }
       },
@@ -173,9 +184,17 @@ export default {
     };
   },
   created() {
+    if (this.config) this.initByConfig(this.config);
     this.getDetail();
   },
+  beforeDestroy() {
+    this.rootVue.$off("timeChange", this.updateVisibleSvg);
+  },
   methods: {
+    initByConfig(config) {},
+    exportConfig() {
+      return {};
+    },
     handleBusDetailTimeChange(time) {
       if (!this.show) return;
       if (this.loading) return;

@@ -120,6 +120,9 @@ export default {
       type: Object,
       default: () => ({}),
     },
+    config: {
+      type: [Object, undefined],
+    },
   },
   inject: ["rootVue"],
   components: {
@@ -159,9 +162,11 @@ export default {
   created() {
     this._SelectLineLayer = new SelectLineLayer({
       zIndex: 130,
-      lineWidth: this.lineDetail.lineWidth,
-      lineOffset: this.lineDetail.lineOffset,
+      lineWidth: this.lineWidth,
+      lineOffset: this.lineOffset,
     });
+    this.handleLineOffsetChange(this.lineDetail.lineOffset);
+    this.handleLineWidthChange(this.lineDetail.lineWidth);
   },
   mounted() {
     this.getDetail();
@@ -169,12 +174,19 @@ export default {
   beforeDestroy() {
     clearInterval(this._interval);
     this.handleDisable();
+    this._SelectLineLayer.dispose();
   },
   methods: {
+    initByConfig(config) {},
+    exportConfig() {
+      return {};
+    },
     handleLineWidthChange(lineWidth) {
+      this.lineDetail.lineWidth = lineWidth;
       this._SelectLineLayer.setLineWidth(lineWidth);
     },
     handleLineOffsetChange(lineOffset) {
+      this.lineDetail.lineOffset = lineOffset;
       this._SelectLineLayer.setLineOffset(lineOffset);
     },
     getDetail() {
@@ -182,15 +194,17 @@ export default {
       getLinkById({ linkId: this.lineDetail.id })
         .then((res) => {
           this.resData = res.data;
-          this._SelectLineLayer.setLineOffset(this.lineDetail.lineOffset);
-          this._SelectLineLayer.setLineWidth(this.lineDetail.lineWidth);
+          this.handleLineOffsetChange(this.lineDetail.lineOffset);
+          this.handleLineWidthChange(this.lineDetail.lineWidth);
           this._SelectLineLayer.setData(res.data);
           this.loading = false;
 
           if (this.lineDetail.showVideoIcon) {
-            this.lineDetail.showVideoIcon = false;
+            // this.lineDetail.showVideoIcon = false;
             this.handleMenu({ data: this.resData, command: "linkVolumes" });
           }
+          
+          if (this.config) this.initByConfig(this.config);
         })
         .finally(() => {
           this.loading = false;
