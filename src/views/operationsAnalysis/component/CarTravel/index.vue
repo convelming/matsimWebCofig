@@ -222,7 +222,7 @@ export default {
     handleEnable() {
       this.handleShowLayer();
       this.rootVue.$on("timeChange", this.handleTimeChange);
-      this.rootVue.$on("CarTravel_setSelectedCar", ({ data }) => {
+      this.rootVue.$on("CarTravel_setSelectedCar", ({ data, select }) => {
         if (select) {
           this._CarTravelLayer.setSelectCarIndex(data.index);
         } else if (this._CarTravelLayer.selectCarIndex === data.index) {

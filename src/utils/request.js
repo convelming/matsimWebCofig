@@ -1,6 +1,6 @@
 import axios from "axios";
 import { Message, MessageBox } from "element-ui";
-import { tansParams } from "./index";
+import { tansParams } from "./utils";
 import store from "@/store";
 import language from "@/language/index";
 import { guid } from "@/utils/utils";

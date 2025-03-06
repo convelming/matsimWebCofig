@@ -22,7 +22,7 @@
             <div class="mapBox">
               <NewClock class="NewClock" :time="time" :speed="speed" @update:speed="speedCommand" :minTime="minTime" :maxTime="maxTime" @update:time="handleUpdateTime" @showHelp="handleShowHelp">
                 <template slot-scope="{ showFun }">
-                  <PageConfig @import="importConfig" @export="exportConfig" @save="saveConfig" @load="loadConfig"></PageConfig>
+                  <PageConfig></PageConfig>
                 </template>
               </NewClock>
               <div id="mapRoot"></div>

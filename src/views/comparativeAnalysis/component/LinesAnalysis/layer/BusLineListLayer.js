@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { Layer, MAP_EVENT } from "@/mymap/index.js";
 import * as BufferGeometryUtils from "three/addons/utils/BufferGeometryUtils.js";
-import { guid } from "@/utils";
+import { guid } from "@/utils/utils";
 
 const EARTH_RADIUS = 20037508.3427892;
 

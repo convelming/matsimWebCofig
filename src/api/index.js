@@ -77,7 +77,7 @@ export function saveNewScheme(data) {
 export function lineIsRun() {
   return request({
     url: `/pt/transitLine/isRun`,
-    method: "get"
+    method: "get",
   });
 }
 
@@ -666,7 +666,6 @@ export function getFacilitiesByName(params) {
   });
 }
 
-
 // 全部停车位置信息
 // POST /pt/parking/allParking
 // 接口ID：202018855
@@ -706,10 +705,9 @@ export function uploadGeoJson(data) {
     headers: {
       "Content-Type": "multipart/form-data",
     },
-    data: formData
+    data: formData,
   });
 }
-
 
 // 范围查询供需比
 // POST /pt/parking/rangeRequireRatio
@@ -723,7 +721,6 @@ export function rangeRequireRatio(data) {
   });
 }
 
-
 // 范围查询供需比
 // POST /pt/parking/rangeRequireRatio2
 // 接口ID：202536443
@@ -735,7 +732,6 @@ export function rangeRequireRatio2(data) {
     method: "post",
   });
 }
-
 
 // 查询区域link的出行
 // POST /pt/link/getElapseAreaLeg
@@ -821,7 +817,6 @@ export function desireLinesTRG(data) {
   });
 }
 
-
 // 多polygon起点分布
 // POST /pt/trafficRegionAnalysis/polygonOriginGrids
 // 接口ID：230988110
@@ -858,7 +853,6 @@ export function polygonDesireLinesTRG(data) {
   });
 }
 
-
 // 可达性分析
 // POST /pt/trafficRegionAnalysis/accessibility
 // 接口ID：232103250
@@ -868,5 +862,48 @@ export function accessibilityTRG(data) {
     url: `/pt/trafficRegionAnalysis/accessibility`,
     data: data,
     method: "post",
+  });
+}
+
+// 保存配置
+// POST /pt/main/saveUserCfg
+// 接口ID：267966350
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-267966350
+export function saveUserCfg(fileName,file) {
+  let formData = new FormData();
+  formData.append("fileName", fileName);
+  formData.append("file", file);
+  return request({
+    url: `/pt/main/saveUserCfg`,
+    method: "post",
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+    data: formData,
+  });
+}
+
+// 配置列表
+// GET /pt/main/userCfgList
+// 接口ID：267968264
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-267968264
+export function userCfgList(params) {
+  return request({
+    url: `/pt/main/userCfgList`,
+    params: params,
+    method: "get",
+  });
+}
+
+// 获取配置
+// GET /pt/main/getUserCfg
+// 接口ID：267968790
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-267968790
+export function getUserCfg(params) {
+  return request({
+    url: `/pt/main/getUserCfg`,
+    params: params,
+    method: "get",
+    // responseType: "blob",
   });
 }

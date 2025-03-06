@@ -14,11 +14,10 @@ import PageConfig from "./component/PageConfig/index.vue";
 import NewClock from "@/components/NewClock/index.vue";
 
 import { MyMap, MapLayer, MAP_LAYER_STYLE } from "@/mymap/index.js";
-import { getTimeInterval, getCenterZoom } from "@/api/index.js";
-import { guid, stringToFile, fileToString } from "@/utils/utils.js";
+import { getTimeInterval, getCenterZoom, saveUserCfg, getUserCfg, userCfgList } from "@/api/index.js";
+import { guid } from "@/utils/utils.js";
 
 import defaultConfig from "./component/PageConfig/defaultConfig.js";
-import moment from "moment";
 
 export default {
   components: {
@@ -191,12 +190,17 @@ export default {
 
       this.initMap();
       this.handleChangeMapCameraControls();
-      this.initByConfig();
+
+      if (this.$route.query.configName) {
+        getUserCfg({ fileName: this.$route.query.configName }).then((res) => {
+          this.initByConfig(res);
+        });
+      }
     });
   },
   beforeDestroy() {},
   methods: {
-    initByConfig(config = {}) {
+    initByConfig(config) {
       config = Object.assign({}, defaultConfig, config);
 
       this.showStopToolbar = config.showStopToolbar;
@@ -222,7 +226,7 @@ export default {
         }
       });
     },
-    async exportConfig() {
+    async getConfig() {
       let { rotationDeg, pitchDeg } = this._Map.cameraRotation;
       const config = {
         key: "PageConfig",
@@ -251,37 +255,8 @@ export default {
           config[v.configKey] = await v.exportConfig();
         }
       }
-      console.log(config);
-
-      const blob = new Blob([JSON.stringify(config)], { type: "application/json" });
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = `page_config_${moment().format("YYYY_MM_DD_HH_mm_ss")}.json`;
-      link.click();
-      URL.revokeObjectURL(link.href);
+      return config;
     },
-    importConfig() {
-      const input = document.createElement("input");
-      input.type = "file";
-      // input.accept = ".geojson";
-      input.style = "position:absolute;width:0;height:0;top: -100px;";
-      document.body.appendChild(input);
-      input.onchange = async (e) => {
-        try {
-          const file = e.target.files[0];
-          const configJsonStr = await fileToString(file);
-          const configJson = JSON.parse(configJsonStr);
-          this.initByConfig(configJson);
-          this.$message.success("导入成功");
-          document.body.removeChild(input);
-        } catch (error) {
-          console.error(error);
-        }
-      };
-      input.click();
-    },
-    saveConfig() {},
-    loadConfig() {},
     // 速度控制
     speedCommand(value) {
       this._speed = value;

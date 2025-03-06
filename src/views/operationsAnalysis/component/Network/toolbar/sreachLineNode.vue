@@ -36,7 +36,7 @@
 
 <script>
 import { getLinkByName, getNodeByName } from "@/api/index";
-import { guid } from "@/utils/index.js";
+import { guid } from "@/utils/utils";
 export default {
   props: ["value", "label"],
   inject: ["rootVue"],

@@ -1,5 +1,5 @@
 import proj4 from "@/utils/proj4.util";
-import { guid } from "@/utils";
+import { guid } from "@/utils/utils";
 const moment = require("moment");
 
 function ObjectAssign(data, defaultData) {

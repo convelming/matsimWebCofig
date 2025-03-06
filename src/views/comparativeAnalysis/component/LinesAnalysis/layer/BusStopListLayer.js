@@ -1,7 +1,7 @@
 import { Layer, MAP_EVENT } from "@/mymap";
 import * as THREE from "three";
 import { getTextImage } from "@/mymap/utils/index";
-import { guid } from "@/utils";
+import { guid } from "@/utils/utils";
 
 const STOP_SIZE = 100;
 

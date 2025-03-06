@@ -17,7 +17,7 @@
 
 <script>
 import { getPersonList } from "@/api/index";
-import { guid } from "@/utils/index";
+import { guid } from "@/utils/utils";
 
 export default {
   props: ["value", "label"],
