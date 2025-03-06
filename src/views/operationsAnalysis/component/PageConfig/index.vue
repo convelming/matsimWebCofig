@@ -2,7 +2,7 @@
   <div class="PageConfig">
     <el-dropdown @command="handleCommand" placement="top-start" trigger="click">
       <div class="locale_btn">
-        <img class="icon" src="" /> <span class="text">{{ $l("config") }}</span>
+        <img class="icon" src="@/assets/image/配置.svg" /> <span class="text">{{ $l("config") }}</span>
       </div>
       <el-dropdown-menu slot="dropdown">
         <el-dropdown-item command="import">{{ $l("import") }}</el-dropdown-item>
@@ -238,7 +238,7 @@ export default {
   flex-shrink: 0;
   .locale_btn {
     flex-shrink: 0;
-    width: 70px;
+    width: 60px;
     cursor: pointer;
     height: 32px;
     border: 1px solid #e5e5e5;
