@@ -227,7 +227,9 @@ export default {
       });
     },
     async getConfig() {
-      let { rotationDeg, pitchDeg } = this._Map.cameraRotation;
+      let cameraRotation = this._Map.cameraRotation;
+      console.log(cameraRotation);
+
       const config = {
         key: "PageConfig",
 
@@ -243,8 +245,8 @@ export default {
         maxTime: this.maxTime,
         center: this._Map.center,
         zoom: this._Map.zoom,
-        rotation: rotationDeg,
-        pitch: pitchDeg,
+        rotation: cameraRotation.rotationDeg,
+        pitch: cameraRotation.pitchDeg,
 
         activeNames: this.activeNames,
       };

@@ -45,7 +45,7 @@
     </div>
     <div class="toolbar-bodyer" v-show="activeModel === GeoJSON.id">
       <el-collapse class="toolbar-collapse" v-model="GeoJSON.activeName">
-        <GeoJSONDetail v-for="item in GeoJSONIdList" :key="item" :name="item" :id="item" />
+        <GeoJSONDetail v-for="item in GeoJSONIdList" :key="item" :name="item" :id="item" ref="GeoJSONItem" />
       </el-collapse>
     </div>
     <div class="toolbar-bodyer" v-show="activeModel === Parking.id">
@@ -109,7 +109,7 @@
 </language>
 
 <script>
-import { guid } from "@/utils/utils";
+import { fileToString, guid, stringToFile } from "@/utils/utils";
 // 3D建筑
 import SreachBuild from "../Build3D/toolbar/sreachBuild.vue";
 import BuildDetail from "../Build3D/toolbar/buildDetail.vue";
@@ -378,6 +378,21 @@ export default {
         this.$set(this.TrafficRegionAnalysis, "activeName", TrafficRegionAnalysisToolbar.activeName || "");
         this.$set(this.TrafficRegionAnalysis, "list", TrafficRegionAnalysisToolbar.list || []);
       }
+      {
+        try {
+          this.rootVue.handleClearGeoJSON();
+          for (const item of config.GeoJSONList) {
+            const file = {
+              id: item.id,
+              _file: stringToFile(item._file),
+              name: item.name,
+              show: item.show,
+              config: item.config,
+            };
+            this.rootVue.handleAddGeoJSON(file, false);
+          }
+        } catch (error) {}
+      }
     },
     async exportConfig() {
       const config = {
@@ -386,7 +401,6 @@ export default {
       {
         const list = [];
         const refs = this.$refs["Activity3DItem"];
-        console.log(refs);
         for (const item of this.Activity3D.list) {
           const ref = refs.find((v) => v.name == item.name);
           list.push({
@@ -407,7 +421,6 @@ export default {
       {
         const list = [];
         const refs = this.$refs["Build3DItem"];
-        console.log(refs);
         for (const item of this.Build3D.list) {
           const ref = refs.find((v) => v.name == item.name);
           list.push({
@@ -428,7 +441,6 @@ export default {
       {
         const list = [];
         const refs = this.$refs["MotorizedTravelItem"];
-        console.log(refs);
         for (const item of this.MotorizedTravel.list) {
           const ref = refs.find((v) => v.name == item.name);
           list.push({
@@ -449,7 +461,6 @@ export default {
       {
         const list = [];
         const refs = this.$refs["NetworkItem"];
-        console.log(refs);
         for (const item of this.Network.list) {
           const ref = refs.find((v) => v.name == item.name);
           list.push({
@@ -470,7 +481,6 @@ export default {
       {
         const list = [];
         const refs = this.$refs["ParkingItem"];
-        console.log(refs);
         for (const item of this.Parking.list) {
           const ref = refs.find((v) => v.name == item.name);
           list.push({
@@ -491,7 +501,6 @@ export default {
       {
         const list = [];
         const refs = this.$refs["PublicTransitItem"];
-        console.log(refs);
         for (const item of this.PublicTransit.list) {
           const ref = refs.find((v) => v.name == item.name);
           list.push({
@@ -512,7 +521,6 @@ export default {
       {
         const list = [];
         const refs = this.$refs["TrafficRegionAnalysisItem"];
-        console.log(refs);
         for (const item of this.TrafficRegionAnalysis.list) {
           const ref = refs.find((v) => v.name == item.name);
           list.push({
@@ -528,6 +536,23 @@ export default {
           activeName: this.TrafficRegionAnalysis.activeName,
           list: list,
         };
+      }
+
+      {
+        const list = [];
+        const refs = this.$refs["GeoJSONItem"];
+
+        for (const item of this.rootVue.GeoJSONList) {
+          const ref = refs.find((v) => v.name == item.id);
+          list.push({
+            id: item.id,
+            _file: await fileToString(item._file),
+            name: item.name,
+            show: item.show,
+            config: await ref.exportConfig(),
+          });
+        }
+        config.GeoJSONList = list;
       }
 
       return config;

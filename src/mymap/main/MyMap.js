@@ -157,7 +157,7 @@ export class MyMap extends EventListener {
     try {
       const height = Math.round(this.cameraControls.getDistance());
       const [px, py, pz] = new THREE.Vector3().subVectors(this.camera.position, this.cameraControls.target);
-      let pitch = Math.asin(py / height);
+      let pitch = Math.asin(py / height) || (Math.PI / 2);
       let rotation = Math.atan(px / pz);
       if (px >= 0 && pz >= 0) {
         rotation = rotation;
@@ -170,6 +170,7 @@ export class MyMap extends EventListener {
       }
       return { rotation, pitch, rotationDeg: Math.round(rotation * (180 / Math.PI)), pitchDeg: Math.round(pitch * (180 / Math.PI)) };
     } catch (error) {
+      console.log(error);
       return { rotation: 0, pitch: 0, rotationDeg: 0, pitchDeg: 0 };
     }
   }

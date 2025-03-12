@@ -128,34 +128,11 @@ export default {
       this.s_showLayer = config.showLayer;
       this.$emit("update:showLayer", config.showLayer);
       this.$emit("update:lock2D", config.lock2D);
-
-      try {
-        this.rootVue.handleClearGeoJSON();
-        for (const item of config.geoJSONList) {
-          const file = {
-            id: item.id,
-            _file: stringToFile(item._file),
-            name: item.name,
-            show: item.show,
-          };
-          this.rootVue.handleAddGeoJSON(file, false);
-        }
-      } catch (error) {}
     },
     async exportConfig() {
-      let geoJSONList = [];
-      for (const item of this.rootVue.GeoJSONList) {
-        geoJSONList.push({
-          id: item.id,
-          _file: await fileToString(item._file),
-          name: item.name,
-          show: item.show,
-        });
-      }
       return {
         showLayer: this.s_showLayer,
         lock2D: this.lock2D,
-        geoJSONList: geoJSONList,
       };
     },
     handleChangeShowLayer(value) {
