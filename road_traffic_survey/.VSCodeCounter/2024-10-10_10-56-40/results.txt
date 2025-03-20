@@ -1,0 +1,134 @@
+Date : 2024-10-10 10:56:40
+Directory : d:\project\ghj_main\road_traffic_survey
+Total : 75 files,  22925 codes, 746 comments, 921 blanks, all 24592 lines
+
+Languages
++--------------------+------------+------------+------------+------------+------------+
+| language           | files      | code       | comment    | blank      | total      |
++--------------------+------------+------------+------------+------------+------------+
+| JSON               |          6 |     12,492 |          0 |          2 |     12,494 |
+| JavaScript         |         38 |      5,175 |        719 |        708 |      6,602 |
+| vue                |         25 |      4,970 |         19 |        184 |      5,173 |
+| HTML               |          2 |        182 |          7 |         14 |        203 |
+| SCSS               |          1 |         44 |          1 |          7 |         52 |
+| XML                |          1 |         28 |          0 |          0 |         28 |
+| JSON with Comments |          1 |         19 |          0 |          1 |         20 |
+| Markdown           |          1 |         15 |          0 |          5 |         20 |
++--------------------+------------+------------+------------+------------+------------+
+
+Directories
++--------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                             | files      | code       | comment    | blank      | total      |
++--------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                |         75 |     22,925 |        746 |        921 |     24,592 |
+| . (Files)                                                                                        |          6 |     12,542 |         12 |         10 |     12,564 |
+| public                                                                                           |          3 |        234 |         34 |         20 |        288 |
+| src                                                                                              |         66 |     10,149 |        700 |        891 |     11,740 |
+| src (Files)                                                                                      |          2 |         26 |          0 |          6 |         32 |
+| src\api                                                                                          |          1 |        260 |        164 |         44 |        468 |
+| src\assets                                                                                       |          8 |        186 |          1 |         17 |        204 |
+| src\assets\css                                                                                   |          1 |         44 |          1 |          7 |         52 |
+| src\assets\image                                                                                 |          1 |         28 |          0 |          0 |         28 |
+| src\assets\json                                                                                  |          6 |        114 |          0 |         10 |        124 |
+| src\components                                                                                   |          3 |        457 |          0 |         11 |        468 |
+| src\mymap                                                                                        |         13 |      1,655 |        276 |        268 |      2,199 |
+| src\mymap (Files)                                                                                |          1 |          4 |          2 |          2 |          8 |
+| src\mymap\composer                                                                               |          1 |        117 |          0 |         14 |        131 |
+| src\mymap\layers                                                                                 |          3 |        307 |         42 |         49 |        398 |
+| src\mymap\main                                                                                   |          3 |        914 |        182 |        137 |      1,233 |
+| src\mymap\material                                                                               |          1 |        110 |          0 |         25 |        135 |
+| src\mymap\utils                                                                                  |          4 |        203 |         50 |         41 |        294 |
+| src\router                                                                                       |          1 |         15 |          0 |          5 |         20 |
+| src\store                                                                                        |          1 |         15 |          0 |          3 |         18 |
+| src\utils                                                                                        |          7 |        879 |        184 |         78 |      1,141 |
+| src\views                                                                                        |         30 |      6,656 |         75 |        459 |      7,190 |
+| src\views (Files)                                                                                |          1 |        270 |          1 |          7 |        278 |
+| src\views\home                                                                                   |         29 |      6,386 |         74 |        452 |      6,912 |
+| src\views\home (Files)                                                                           |          1 |        761 |          9 |         26 |        796 |
+| src\views\home\components                                                                        |         19 |      3,475 |          9 |        138 |      3,622 |
+| src\views\home\components (Files)                                                                |         13 |      3,231 |          9 |        123 |      3,363 |
+| src\views\home\components\HelpDialog                                                             |          6 |        244 |          0 |         15 |        259 |
+| src\views\home\layer                                                                             |          9 |      2,150 |         56 |        288 |      2,494 |
++--------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++--------------------------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+
+| filename                                                                                         | language           | code       | comment    | blank      | total      |
++--------------------------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+
+| d:\project\ghj_main\road_traffic_survey\README.md                                                | Markdown           |         15 |          0 |          5 |         20 |
+| d:\project\ghj_main\road_traffic_survey\babel.config.js                                          | JavaScript         |          5 |          0 |          1 |          6 |
+| d:\project\ghj_main\road_traffic_survey\jsconfig.json                                            | JSON with Comments |         19 |          0 |          1 |         20 |
+| d:\project\ghj_main\road_traffic_survey\package-lock.json                                        | JSON               |     12,432 |          0 |          1 |     12,433 |
+| d:\project\ghj_main\road_traffic_survey\package.json                                             | JSON               |         36 |          0 |          1 |         37 |
+| d:\project\ghj_main\road_traffic_survey\public\config.js                                         | JavaScript         |         52 |         27 |          6 |         85 |
+| d:\project\ghj_main\road_traffic_survey\public\index.html                                        | HTML               |         17 |          1 |          1 |         19 |
+| d:\project\ghj_main\road_traffic_survey\public\keyPressed.html                                   | HTML               |        165 |          6 |         13 |        184 |
+| d:\project\ghj_main\road_traffic_survey\src\App.vue                                              | vue                |          7 |          0 |          2 |          9 |
+| d:\project\ghj_main\road_traffic_survey\src\api\index.js                                         | JavaScript         |        260 |        164 |         44 |        468 |
+| d:\project\ghj_main\road_traffic_survey\src\assets\css\style.scss                                | SCSS               |         44 |          1 |          7 |         52 |
+| d:\project\ghj_main\road_traffic_survey\src\assets\image\intersection.svg                        | XML                |         28 |          0 |          0 |         28 |
+| d:\project\ghj_main\road_traffic_survey\src\assets\json\guangzhou.js                             | JavaScript         |         45 |          0 |          5 |         50 |
+| d:\project\ghj_main\road_traffic_survey\src\assets\json\guangzhou.json                           | JSON               |         21 |          0 |          0 |         21 |
+| d:\project\ghj_main\road_traffic_survey\src\assets\json\guangzhou2.json                          | JSON               |          1 |          0 |          0 |          1 |
+| d:\project\ghj_main\road_traffic_survey\src\assets\json\huangpu.js                               | JavaScript         |         45 |          0 |          5 |         50 |
+| d:\project\ghj_main\road_traffic_survey\src\assets\json\huangpu.json                             | JSON               |          1 |          0 |          0 |          1 |
+| d:\project\ghj_main\road_traffic_survey\src\assets\json\huangpu2.json                            | JSON               |          1 |          0 |          0 |          1 |
+| d:\project\ghj_main\road_traffic_survey\src\components\Dialog.vue                                | vue                |        247 |          0 |          4 |        251 |
+| d:\project\ghj_main\road_traffic_survey\src\components\UploadVideo.vue                           | vue                |        117 |          0 |          4 |        121 |
+| d:\project\ghj_main\road_traffic_survey\src\components\pagination.vue                            | vue                |         93 |          0 |          3 |         96 |
+| d:\project\ghj_main\road_traffic_survey\src\main.js                                              | JavaScript         |         19 |          0 |          4 |         23 |
+| d:\project\ghj_main\road_traffic_survey\src\mymap\composer\BloomComposer.js                      | JavaScript         |        117 |          0 |         14 |        131 |
+| d:\project\ghj_main\road_traffic_survey\src\mymap\index.js                                       | JavaScript         |          4 |          2 |          2 |          8 |
+| d:\project\ghj_main\road_traffic_survey\src\mymap\layers\MapLayer.js                             | JavaScript         |        264 |         42 |         37 |        343 |
+| d:\project\ghj_main\road_traffic_survey\src\mymap\layers\OutlineLayer.js                         | JavaScript         |         33 |          0 |          8 |         41 |
+| d:\project\ghj_main\road_traffic_survey\src\mymap\layers\WeatherLayer.js                         | JavaScript         |         10 |          0 |          4 |         14 |
+| d:\project\ghj_main\road_traffic_survey\src\mymap\main\EventListener.js                          | JavaScript         |         70 |          5 |          9 |         84 |
+| d:\project\ghj_main\road_traffic_survey\src\mymap\main\Layer.js                                  | JavaScript         |        112 |         33 |         27 |        172 |
+| d:\project\ghj_main\road_traffic_survey\src\mymap\main\MyMap.js                                  | JavaScript         |        732 |        144 |        101 |        977 |
+| d:\project\ghj_main\road_traffic_survey\src\mymap\material\Line2DMaterial.js                     | JavaScript         |        110 |          0 |         25 |        135 |
+| d:\project\ghj_main\road_traffic_survey\src\mymap\utils\ColorBar2D.js                            | JavaScript         |         59 |          4 |         12 |         75 |
+| d:\project\ghj_main\road_traffic_survey\src\mymap\utils\LngLatUtils.js                           | JavaScript         |         21 |         42 |         10 |         73 |
+| d:\project\ghj_main\road_traffic_survey\src\mymap\utils\ModelPool.js                             | JavaScript         |         58 |          3 |          8 |         69 |
+| d:\project\ghj_main\road_traffic_survey\src\mymap\utils\index.js                                 | JavaScript         |         65 |          1 |         11 |         77 |
+| d:\project\ghj_main\road_traffic_survey\src\router\index.js                                      | JavaScript         |         15 |          0 |          5 |         20 |
+| d:\project\ghj_main\road_traffic_survey\src\store\index.js                                       | JavaScript         |         15 |          0 |          3 |         18 |
+| d:\project\ghj_main\road_traffic_survey\src\utils\OSS.js                                         | JavaScript         |         32 |          0 |          1 |         33 |
+| d:\project\ghj_main\road_traffic_survey\src\utils\cache.js                                       | JavaScript         |         70 |          6 |          2 |         78 |
+| d:\project\ghj_main\road_traffic_survey\src\utils\check.js                                       | JavaScript         |         36 |          5 |          3 |         44 |
+| d:\project\ghj_main\road_traffic_survey\src\utils\index.js                                       | JavaScript         |        415 |         96 |         42 |        553 |
+| d:\project\ghj_main\road_traffic_survey\src\utils\request.js                                     | JavaScript         |         93 |         52 |         10 |        155 |
+| d:\project\ghj_main\road_traffic_survey\src\utils\ruoyi.js                                       | JavaScript         |        193 |         25 |         18 |        236 |
+| d:\project\ghj_main\road_traffic_survey\src\utils\userApi.js                                     | JavaScript         |         40 |          0 |          2 |         42 |
+| d:\project\ghj_main\road_traffic_survey\src\views\home\components\AddIntersection.vue            | vue                |        146 |          0 |          4 |        150 |
+| d:\project\ghj_main\road_traffic_survey\src\views\home\components\CenterInput.vue                | vue                |         74 |          0 |          2 |         76 |
+| d:\project\ghj_main\road_traffic_survey\src\views\home\components\CrossroadsDetail.vue           | vue                |        627 |          2 |         38 |        667 |
+| d:\project\ghj_main\road_traffic_survey\src\views\home\components\CrossroadsList.vue             | vue                |        275 |          2 |         11 |        288 |
+| d:\project\ghj_main\road_traffic_survey\src\views\home\components\CrossroadsStatsEdit.vue        | vue                |        327 |          1 |         16 |        344 |
+| d:\project\ghj_main\road_traffic_survey\src\views\home\components\DrawLine.vue                   | vue                |        528 |          3 |         23 |        554 |
+| d:\project\ghj_main\road_traffic_survey\src\views\home\components\FrameLink.vue                  | vue                |        254 |          0 |          8 |        262 |
+| d:\project\ghj_main\road_traffic_survey\src\views\home\components\HelpDialog\index.vue           | vue                |        135 |          0 |          7 |        142 |
+| d:\project\ghj_main\road_traffic_survey\src\views\home\components\HelpDialog\page1.vue           | vue                |         16 |          0 |          2 |         18 |
+| d:\project\ghj_main\road_traffic_survey\src\views\home\components\HelpDialog\page2.vue           | vue                |         16 |          0 |          2 |         18 |
+| d:\project\ghj_main\road_traffic_survey\src\views\home\components\HelpDialog\page3.vue           | vue                |         38 |          0 |          0 |         38 |
+| d:\project\ghj_main\road_traffic_survey\src\views\home\components\HelpDialog\page4.vue           | vue                |         23 |          0 |          2 |         25 |
+| d:\project\ghj_main\road_traffic_survey\src\views\home\components\HelpDialog\page5.vue           | vue                |         16 |          0 |          2 |         18 |
+| d:\project\ghj_main\road_traffic_survey\src\views\home\components\IntersectionList.vue           | vue                |          0 |          0 |          1 |          1 |
+| d:\project\ghj_main\road_traffic_survey\src\views\home\components\LineFlow.vue                   | vue                |        575 |          1 |         10 |        586 |
+| d:\project\ghj_main\road_traffic_survey\src\views\home\components\LinkSelect.vue                 | vue                |         66 |          0 |          1 |         67 |
+| d:\project\ghj_main\road_traffic_survey\src\views\home\components\ManuallyEnteringCrossroads.vue | vue                |        137 |          0 |          4 |        141 |
+| d:\project\ghj_main\road_traffic_survey\src\views\home\components\RouteSelect.vue                | vue                |         66 |          0 |          1 |         67 |
+| d:\project\ghj_main\road_traffic_survey\src\views\home\components\VideoInputCrossroads.vue       | vue                |        156 |          0 |          4 |        160 |
+| d:\project\ghj_main\road_traffic_survey\src\views\home\index.vue                                 | vue                |        761 |          9 |         26 |        796 |
+| d:\project\ghj_main\road_traffic_survey\src\views\home\layer\DrawLineLayer.js                    | JavaScript         |        219 |          0 |         40 |        259 |
+| d:\project\ghj_main\road_traffic_survey\src\views\home\layer\FrameSelectLayer.js                 | JavaScript         |        172 |          1 |         13 |        186 |
+| d:\project\ghj_main\road_traffic_survey\src\views\home\layer\GuangZhouLayer.js                   | JavaScript         |        282 |         12 |         34 |        328 |
+| d:\project\ghj_main\road_traffic_survey\src\views\home\layer\IntersectionListLayer.js            | JavaScript         |        172 |          7 |         28 |        207 |
+| d:\project\ghj_main\road_traffic_survey\src\views\home\layer\LinkLayer.js                        | JavaScript         |        514 |         13 |         59 |        586 |
+| d:\project\ghj_main\road_traffic_survey\src\views\home\layer\LinkStatsLayer.js                   | JavaScript         |        164 |          7 |         29 |        200 |
+| d:\project\ghj_main\road_traffic_survey\src\views\home\layer\NetworkLayer.js                     | JavaScript         |        374 |         10 |         47 |        431 |
+| d:\project\ghj_main\road_traffic_survey\src\views\home\layer\PointSelectLayer.js                 | JavaScript         |         86 |          0 |         16 |        102 |
+| d:\project\ghj_main\road_traffic_survey\src\views\home\layer\PolygonSelectLayer.js               | JavaScript         |        167 |          6 |         22 |        195 |
+| d:\project\ghj_main\road_traffic_survey\src\views\test.vue                                       | vue                |        270 |          1 |          7 |        278 |
+| d:\project\ghj_main\road_traffic_survey\vue.config.js                                            | JavaScript         |         35 |         12 |          1 |         48 |
+| Total                                                                                            |                    |     22,925 |        746 |        921 |     24,592 |
++--------------------------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+

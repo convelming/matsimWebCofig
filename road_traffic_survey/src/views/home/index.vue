@@ -1,0 +1,911 @@
+<template>
+  <div class="root">
+    <div id="mapRoot">
+      <div class="MapLayerMenu">
+        <div class="MapLayer_menu" :class="{ hide: !showStyleMenu }" :style="`width: ${styleList.length * 50 + 30}px`">
+          <div class="open_hide_btn" @click="showStyleMenu = !showStyleMenu"></div>
+          <img class="item" :class="{ active: styleActive == i }" v-for="(v, i) in styleList" :src="v.url" :title="v.style_name" :key="i" @click="handleChangeStyle(i)" />
+        </div>
+      </div>
+    </div>
+    <Dialog :visible="showSetting" hideMinimize hideClose width="400px">
+      <div class="setting_box">
+        <el-collapse style="user-select: none" v-model="activeNames">
+          <el-collapse-item title="定位" name="1">
+            <el-form class="setting_form" label-position="left" label-width="100px" :inline="false" size="small">
+              <el-form-item label="路段搜索">
+                <RouteSelect style="width: 100%" v-model="ruleForm.routeId" size="small" @change="handleMoveToRoute" />
+              </el-form-item>
+              <el-form-item label="LinkId搜索">
+                <LinkSelect style="width: 100%" v-model="ruleForm.linkId" size="small" @change="handleMoveToLink" />
+              </el-form-item>
+              <el-form-item label="中心坐标">
+                <CenterInput style="width: 100%" v-model="ruleForm.center" size="small" @change="handleMoveToCenter" />
+              </el-form-item>
+              <el-form-item>
+                <div slot="label">
+                  <span>zoom level&nbsp;</span>
+                  <el-tooltip placement="top">
+                    <div slot="content">
+                      <div>当zoom level大于{{ SHOW_LINK_ZOOM }}时，显示路网视图</div>
+                    </div>
+                    <i class="el-icon-question"></i>
+                  </el-tooltip>
+                </div>
+                <el-slider :min="MAP_ZOOM_RANGE.MIN" :max="MAP_ZOOM_RANGE.MAX" v-model="ruleForm.zoom" @change="handleChangeZoomLavel" :step="0.01" :marks="{ [ruleForm.zoom]: String(ruleForm.zoom) }"></el-slider>
+              </el-form-item>
+            </el-form>
+          </el-collapse-item>
+          <el-collapse-item title="路段流量" name="2">
+            <el-form class="setting_form" label-position="left" label-width="100px" :inline="false" size="small">
+              <el-form-item label="显示图层">
+                <el-switch v-model="showLinkStatsLayer" />
+              </el-form-item>
+              <el-form-item label="调查时间">
+                <el-date-picker style="width: 100%" v-model="ruleForm.timeList" type="datetimerange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd HH:mm:ss" @change="handleLoadMaker" />
+              </el-form-item>
+              <el-form-item label="调查方式">
+                <el-select style="width: 100%" v-model="ruleForm.type" clearable @change="handleLoadMaker">
+                  <el-option v-for="(v, i) in typeOptions" :key="i" :label="v" :value="String(i)"> </el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item label="区域框选">
+                <div slot="label">
+                  <span>区域框选&nbsp;</span>
+                  <el-tooltip placement="top">
+                    <div slot="content">
+                      <div>1，单击鼠标左键选定开始坐标</div>
+                      <div>2，拖动鼠标划定范围</div>
+                      <div>3，单击鼠标左键选定结束坐标</div>
+                    </div>
+                    <i class="el-icon-question"></i>
+                  </el-tooltip>
+                </div>
+                <div v-if="ruleForm.frameSelectState == FRAME_SELECT_STATE_KEY.NOT_STARTED">
+                  <el-button type="primary" @click="handlePlayFrameSelect">开始框选</el-button>
+                </div>
+                <div>
+                  <el-button v-if="frameLink.xyarr" type="primary" @click.stop="handleShowFrameLink">开始查询</el-button>
+                  <el-button v-if="ruleForm.frameSelectState != FRAME_SELECT_STATE_KEY.NOT_STARTED" type="primary" @click="handleStopFrameSelect">停止框选</el-button>
+                </div>
+              </el-form-item>
+              <el-form-item label="路段偏移">
+                <el-slider :min="0" :max="30" :step="0.2" v-model="ruleForm.twoWayOffset" @change="handleChangeTwoWayOffset"></el-slider>
+              </el-form-item>
+              <el-form-item label="路段宽度">
+                <el-slider :min="1" :max="30" v-model="ruleForm.wayWidth" @change="handleChangeWayWidth"></el-slider>
+              </el-form-item>
+            </el-form>
+          </el-collapse-item>
+          <el-collapse-item title="交叉口" name="3">
+            <el-form class="setting_form" label-position="left" label-width="100px" :inline="false" size="small">
+              <el-form-item label="显示图层">
+                <el-switch v-model="showIntersectionListLayer" />
+              </el-form-item>
+              <el-form-item label="新增">
+                <el-button v-if="ruleForm.pointSelectState == POINT_SELECT_STATE_KEY.DISABLE" type="primary" @click="handlePlayPointSelect">开始点选</el-button>
+                <el-button v-else-if="ruleForm.pointSelectState == POINT_SELECT_STATE_KEY.ENABLE" type="primary" @click="handleStopPointSelect">停止点选</el-button>
+              </el-form-item>
+              <el-form-item label="调查记录">
+                <el-button type="primary" @click="crossroadsList.visible = true">查看全部</el-button>
+              </el-form-item>
+            </el-form>
+          </el-collapse-item>
+          <el-collapse-item title="图片上传" name="4">
+            <el-form class="setting_form" label-position="left" label-width="100px" :inline="false" size="small">
+              <el-form-item label="显示图层">
+                <el-switch v-model="showImageListLayer" />
+              </el-form-item>
+              <el-form-item label="选择文件">
+                <UploadImageZip />
+              </el-form-item>
+              <el-form-item label="文件列表">
+                <el-button type="primary" size="small" @click="imageListDialog.visible = true">显示弹窗</el-button>
+              </el-form-item>
+            </el-form>
+          </el-collapse-item>
+        </el-collapse>
+      </div>
+    </Dialog>
+    <!-- line流量详情 -->
+    <LineFlow :visible.sync="lineFlow.visible" :linkId="lineFlow.linkId" @changeLink="handleChangeLink" @updateData="lineFlowUpdateData" @close="lineFlowClose" />
+    <!-- 区域流量详情 -->
+    <FrameLink :visible.sync="frameLink.visible" :timeList="ruleForm.timeList" :type="ruleForm.type" :xyarr="frameLink.xyarr" />
+    <!-- 视频录入交叉口信息 -->
+    <AddIntersection :visible.sync="addIntersection.visible" :params="addIntersection.params" @submited="handleSubmitAddIntersection" @close="handleStopPointSelect" />
+    <!-- 交叉口列表 -->
+    <CrossroadsList
+      :visible="showCrossroadsList"
+      :params.sync="crossroadsList.params"
+      @update:visible="crossroadsList.visible = $event"
+      @showCrossroadsDetail="handleShowCrossroadsDetail"
+      @showCrossroadsStatsEdit="handleShowCrossroadsStatsEdit"
+      @showDrawLine="handleShowDrawLine"
+      @showManuallyEnteringCrossroads="handleShowManuallyEnteringCrossroads"
+      @showVideoInputCrossroads="handleShowVideoInputCrossroads"
+    />
+    <!-- 视频录入交叉口信息 -->
+    <VideoInputCrossroads :visible.sync="videoInputCrossroads.visible" :params="videoInputCrossroads.params" @submited="handleSubmitVideoInputCrossroads" />
+    <!-- 人工录入交叉口信息 -->
+    <ManuallyEnteringCrossroads :visible.sync="manuallyEnteringCrossroads.visible" :params="manuallyEnteringCrossroads.params" @submited="handleSubmitManuallyEnteringCrossroads" />
+    <!-- 交叉口绘制检测线 -->
+    <DrawLine :visible.sync="drawLine.visible" :params="drawLine.params" @submited="handleDrawLineSuccess" />
+    <!-- 交叉口详情 -->
+    <CrossroadsDetail :visible.sync="crossroadsDetail.visible" :params="crossroadsDetail.params" />
+    <!-- 编辑交叉口流量线 -->
+    <CrossroadsStatsEdit :visible.sync="crossroadsStatsEdit.visible" :params="crossroadsStatsEdit.params" @redraw="handleRedraw" />
+    <HelpDialog />
+
+    <ImageListDialog :visible.sync="imageListDialog.visible" @close="handleSetHMash(null)" />
+    <Dialog class="ImageDialog" title="查看图片" :top="50" :left="100" width="600px" hideMinimize :visible.sync="imageDialog.visible" @close="handleSetHMash(null)">
+      <el-image v-if="imageDialog.data" :src="imageDialog.data.url" :preview-src-list="[imageDialog.data.url]" style="width: 560px; height: auto"></el-image>
+      <div style="display: flex; justify-content: center">
+        <el-button type="danger" @click="handleDeleteImage(imageDialog.data)">删除图片</el-button>
+        <el-button
+          type="primary"
+          @click="
+            imageDialog.visible = false;
+            handleSetHMash(null);
+          "
+          >关闭</el-button
+        >
+      </div>
+    </Dialog>
+  </div>
+</template>
+
+<script>
+import { MyMap, MAP_EVENT, MAP_ZOOM_RANGE, MAP_LAYER_STYLE, MapLayer } from "@/mymap/index.js";
+import { WGS84ToMercator } from "@/mymap/utils/LngLatUtils";
+
+import { FrameSelectLayer, FRAME_SELECT_STATE_KEY, FRAME_SELECT_EVENT } from "./layer/FrameSelectLayer";
+import { PointSelectLayer, POINT_SELECT_STATE_KEY, POINT_SELECT_EVENT } from "./layer/PointSelectLayer";
+import { NetworkLayer } from "./layer/NetworkLayer";
+import { LinkStatsLayer } from "./layer/LinkStatsLayer";
+import { LinkLayer } from "./layer/LinkLayer";
+import { GuangZhouLayer } from "./layer/GuangZhouLayer";
+import { IntersectionListLayer } from "./layer/IntersectionListLayer";
+import { ImageListLayer } from "./layer/ImageListLayer";
+
+import LineFlow from "./components/LineFlow.vue";
+import FrameLink from "./components/FrameLink.vue";
+import RouteSelect from "./components/RouteSelect.vue";
+import LinkSelect from "./components/LinkSelect.vue";
+import CenterInput from "./components/CenterInput.vue";
+import HelpDialog from "./components/HelpDialog/index.vue";
+import VideoInputCrossroads from "./components/VideoInputCrossroads.vue";
+import ManuallyEnteringCrossroads from "./components/ManuallyEnteringCrossroads.vue";
+import DrawLine from "./components/DrawLine.vue";
+import CrossroadsDetail from "./components/CrossroadsDetail.vue";
+import CrossroadsStatsEdit from "./components/CrossroadsStatsEdit.vue";
+import CrossroadsList from "./components/CrossroadsList.vue";
+import AddIntersection from "./components/AddIntersection.vue";
+import UploadImageZip from "./components/UploadImageZip.vue";
+import ImageListDialog from "./components/ImageListDialog.vue";
+
+import { getGeomjson, queryAllMaker, getMatsimLink, intersectionList, mappictureAllMaker, mappictureDelete } from "@/api/index";
+
+export const SHOW_LINK_ZOOM = 14;
+
+export default {
+  provide() {
+    return {
+      rootVue: this,
+    };
+  },
+  data() {
+    return {
+      SHOW_LINK_ZOOM: SHOW_LINK_ZOOM,
+
+      activeNames: ["1", "2", "3", "4"],
+      // activeNames: ["4"],
+      activeNames2: ["2-1", "2-2"],
+
+      selectRouteId: null,
+      selectLinkId: null,
+
+      ruleForm: {
+        zoom: 13,
+        wayWidth: 5,
+        twoWayOffset: 10,
+        frameSelectState: FRAME_SELECT_STATE_KEY.NOT_STARTED,
+        pointSelectState: POINT_SELECT_STATE_KEY.DISABLE,
+        timeList: [],
+        type: null,
+        routeName: null,
+        center: WGS84ToMercator(113.459868, 23.171394),
+        routeId: null,
+        linkId: null,
+      },
+      MAP_ZOOM_RANGE: MAP_ZOOM_RANGE,
+      FRAME_SELECT_STATE_KEY: FRAME_SELECT_STATE_KEY,
+      POINT_SELECT_STATE_KEY: POINT_SELECT_STATE_KEY,
+
+      lineFlow: {
+        visible: false,
+        linkId: null,
+      },
+      frameLink: {
+        visible: false,
+        xyarr: null,
+      },
+      frameCrossroads: {
+        visible: false,
+        xyarr: null,
+      },
+      videoInputCrossroads: {
+        visible: false,
+        params: {},
+      },
+      manuallyEnteringCrossroads: {
+        visible: false,
+        params: {},
+      },
+      drawLine: {
+        visible: false,
+        params: {},
+      },
+      crossroadsStatsEdit: {
+        visible: false,
+        params: {},
+      },
+      crossroadsDetail: {
+        visible: false,
+        params: {},
+      },
+      crossroadsList: {
+        visible: false,
+        params: {},
+      },
+      addIntersection: {
+        visible: false,
+        params: {},
+      },
+
+      imageDialog: {
+        visible: false,
+        data: null,
+      },
+
+      imageListDialog: {
+        visible: false,
+      },
+
+      typeOptions: {
+        0: "其他",
+        1: "人工",
+        2: "视频识别",
+        3: "互联网路况估算",
+      },
+      videoTypeOptions: {
+        0: "未知",
+        1: "俯视航拍",
+        1: "侧面路拍",
+        1: "正斜角拍摄",
+      },
+      videoStateOptions: {
+        0: "等待划线",
+        1: "等待运行",
+        2: "正在运行",
+        3: "运行成功",
+        4: "运行失败",
+        5: "等待录入",
+        6: "录入成功",
+      },
+
+      showStyleMenu: false,
+      styleList: [],
+      styleActive: 0,
+
+      showLinkStatsLayer: true,
+      showIntersectionListLayer: true,
+      showImageListLayer: true,
+    };
+  },
+  components: {
+    LineFlow,
+    FrameLink,
+    HelpDialog,
+    RouteSelect,
+    LinkSelect,
+    CenterInput,
+    VideoInputCrossroads,
+    DrawLine,
+    CrossroadsDetail,
+    CrossroadsStatsEdit,
+    ManuallyEnteringCrossroads,
+    CrossroadsList,
+    AddIntersection,
+    UploadImageZip,
+    ImageListDialog,
+  },
+  computed: {
+    showSetting() {
+      return (
+        !this.addIntersection.visible &&
+        !this.crossroadsList.visible &&
+        !this.videoInputCrossroads.visible &&
+        !this.manuallyEnteringCrossroads.visible &&
+        !this.drawLine.visible &&
+        !this.crossroadsStatsEdit.visible &&
+        !this.crossroadsDetail.visible &&
+        !this.imageDialog.visible &&
+        !this.imageListDialog.visible
+      );
+    },
+    showCrossroadsList() {
+      return this.crossroadsList.visible && !this.videoInputCrossroads.visible && !this.manuallyEnteringCrossroads.visible && !this.drawLine.visible && !this.crossroadsStatsEdit.visible && !this.crossroadsDetail.visible;
+    },
+  },
+  watch: {
+    showLinkStatsLayer(val) {
+      if (val) {
+        this._Map.addLayer(this._LinkStatsLayer);
+      } else {
+        this._Map.removeLayer(this._LinkStatsLayer);
+      }
+    },
+    showIntersectionListLayer(val) {
+      if (val) {
+        this._Map.addLayer(this._IntersectionListLayer);
+      } else {
+        this._Map.removeLayer(this._IntersectionListLayer);
+      }
+    },
+    showImageListLayer(val) {
+      if (val) {
+        this._Map.addLayer(this._ImageListLayer);
+      } else {
+        this._Map.removeLayer(this._ImageListLayer);
+      }
+    },
+  },
+  created() {
+    this.initLayer();
+  },
+  async mounted() {
+    this.initMap();
+    this.handleLoadNetwork();
+    this.handleLoadMaker();
+    this.handleLoadIntersectionList();
+    this.handleLoadImageList();
+
+    import("@/assets/json/guangzhou2.json").then((res) => {
+      this._GuangZhouLayer.setData(res.default);
+    });
+    import("@/assets/json/huangpu2.json").then((res) => {
+      this._HuangPuLayer.setData(res.default);
+    });
+  },
+  methods: {
+    // ****************************** 地图及图层初始化 -- start
+    initLayer() {
+      this._MapLayer = new MapLayer({ tileClass: MAP_LAYER_STYLE[0], zIndex: 0 });
+      {
+        const styleMap = MAP_LAYER_STYLE;
+        const itemDocList = [];
+        const list = Object.values(styleMap);
+        for (let i = 0, l = list.length; i < l; i++) {
+          const value = list[i];
+          if (value === this._MapLayer.tileClass) this.styleActive = i;
+          const item = {
+            title: value.style_name,
+            url: new value(15, 26700, 14218, 200).getUrl(),
+            c: value,
+          };
+          itemDocList.push(item);
+        }
+        this.styleList = itemDocList;
+      }
+      this._NetworkLayer = new NetworkLayer({
+        zIndex: 10,
+        lineWidth: this.ruleForm.wayWidth,
+        event: {
+          [MAP_EVENT.HANDLE_PICK_LEFT]: (res) => {
+            this.lineFlow = {
+              visible: false,
+              linkId: null,
+            };
+            this.selectRouteId = res.data.id;
+            this.getLink();
+          },
+        },
+      });
+      this._LinkLayer = new LinkLayer({
+        zIndex: 30,
+        color: 0x67c23a,
+        lineWidth: this.ruleForm.wayWidth,
+        twoWayOffset: this.ruleForm.twoWayOffset,
+        event: {
+          [MAP_EVENT.HANDLE_PICK_LEFT]: (res) => {
+            this.handleChangeLink(res.data);
+          },
+        },
+      });
+      this._LinkStatsLayer = new LinkStatsLayer({
+        zIndex: 100,
+        event: {
+          [MAP_EVENT.HANDLE_PICK_LEFT]: (res) => {
+            this.handleMoveToLink({
+              value: res.data.linkId,
+              item: {
+                origid: res.data.wayId,
+              },
+            });
+          },
+        },
+      });
+      this._IntersectionListLayer = new IntersectionListLayer({
+        zIndex: 110,
+        event: {
+          [MAP_EVENT.HANDLE_PICK_LEFT]: (res) => {
+            this.handleSubmitAddIntersection(res.data);
+          },
+        },
+      });
+      this._ImageListLayer = new ImageListLayer({
+        zIndex: 110,
+        event: {
+          [MAP_EVENT.HANDLE_PICK_LEFT]: (res) => {
+            this.handleShowImageDialog(res.data);
+          },
+        },
+      });
+      this._FrameSelectLayer = new FrameSelectLayer({
+        zIndex: 50,
+        event: {
+          [FRAME_SELECT_EVENT.STATE_CHANGE]: (res) => {
+            this.ruleForm.frameSelectState = res.data.state;
+            if (this.ruleForm.frameSelectState === FRAME_SELECT_STATE_KEY.ENDED) {
+              this.frameLink.xyarr = [res.data.xy.rightTop, res.data.xy.rightBottom, res.data.xy.leftBottom, res.data.xy.leftTop];
+            } else {
+              this.frameLink.xyarr = null;
+            }
+          },
+        },
+      });
+      this._PointSelectLayer = new PointSelectLayer({
+        zIndex: 120,
+        color: "#ff0000",
+        event: {
+          [POINT_SELECT_EVENT.POINT_CHANGE]: (res) => {
+            this.showAddIntersection(res.data.point);
+          },
+          [POINT_SELECT_EVENT.STATE_CHANGE]: (res) => {
+            this.ruleForm.pointSelectState = res.data.state;
+          },
+        },
+      });
+      this._GuangZhouLayer = new GuangZhouLayer({
+        zIndex: 10,
+        color: "blue",
+      });
+      this._HuangPuLayer = new GuangZhouLayer({
+        zIndex: 10,
+        color: "red",
+      });
+    },
+    initMap() {
+      this._Map = new MyMap({
+        rootId: "mapRoot",
+        zoom: this.ruleForm.zoom,
+        center: this.ruleForm.center,
+        event: {
+          [MAP_EVENT.UPDATE_ZOOM]: (res) => {
+            this.ruleForm.zoom = Number(Number(this._Map.zoom).toFixed(2));
+            if (this.ruleForm.zoom > SHOW_LINK_ZOOM) {
+              this._Map.addLayer(this._NetworkLayer);
+              this._Map.addLayer(this._LinkLayer);
+            } else {
+              this._Map.removeLayer(this._NetworkLayer);
+              this._Map.removeLayer(this._LinkLayer);
+            }
+          },
+          [MAP_EVENT.UPDATE_CENTER]: (res) => {
+            this.ruleForm.center = this._Map.center;
+          },
+        },
+      });
+      this._Map.addLayer(this._MapLayer);
+      if (this.ruleForm.zoom > SHOW_LINK_ZOOM) {
+        this._Map.addLayer(this._NetworkLayer);
+        this._Map.addLayer(this._LinkLayer);
+      } else {
+        this._Map.removeLayer(this._NetworkLayer);
+        this._Map.removeLayer(this._LinkLayer);
+      }
+      if (this.showLinkStatsLayer) this._Map.addLayer(this._LinkStatsLayer);
+      if (this.showIntersectionListLayer) this._Map.addLayer(this._IntersectionListLayer);
+      if (this.showImageListLayer) this._Map.addLayer(this._ImageListLayer);
+      this._Map.addLayer(this._FrameSelectLayer);
+      this._Map.addLayer(this._PointSelectLayer);
+      this._Map.addLayer(this._GuangZhouLayer);
+      this._Map.addLayer(this._HuangPuLayer);
+    },
+    // ****************************** 地图及图层初始化 -- end
+    // ****************************** 加载基础数据 -- start
+    handleLoadNetwork() {
+      getGeomjson({
+        selectAll: true,
+      }).then((res) => {
+        this._NetworkData = res.data;
+        this._NetworkLayer.setData(res.data);
+        this.$emit("loadNetwork");
+      });
+    },
+    handleLoadMaker() {
+      let timeList = this.ruleForm.timeList || [];
+      let params = {
+        beginTime: timeList[0] || "",
+        endTime: timeList[1] || "",
+        type: this.ruleForm.type || "",
+      };
+      queryAllMaker(params).then((res) => {
+        this._LinkStatsLayer.setData(res.data);
+      });
+    },
+    handleLoadIntersectionList() {
+      let params = {
+        pageSize: 999999999,
+        pageNum: 1,
+      };
+      intersectionList(params).then((res) => {
+        this._IntersectionListLayer.setData(res.data.data);
+      });
+    },
+    handleLoadImageList() {
+      mappictureAllMaker().then((res) => {
+        this._ImageListLayer.setData(res.data);
+      });
+    },
+    // ****************************** 加载基础数据 -- start
+    // ****************************** 路段流量录入 -- start
+    handleChangeLink(data) {
+      this.lineFlow = {
+        visible: true,
+        linkId: data.id,
+      };
+
+      const { clientWidth, clientHeight } = this._Map.rootDoc;
+      const [x1, y1] = this._Map.WindowXYToWebMercator(clientWidth / 3, clientHeight / 2);
+      const [x2, y2] = this._Map.center;
+
+      let center = [(data.fromxy[0] + data.toxy[0]) / 2 + x2 - x1, (data.fromxy[1] + data.toxy[1]) / 2];
+      this._Map.setCenter(center);
+      this._LinkLayer.setSelectId(data.id);
+    },
+    lineFlowUpdateData() {
+      this.handleLoadMaker();
+      if (this.selectRouteId) {
+        getMatsimLink(this.selectRouteId).then((res) => {
+          this._LinkLayer.setData(res.data, this._LinkLayer.selectId);
+        });
+      }
+    },
+    lineFlowClose() {
+      if (this.selectRouteId) {
+        getMatsimLink(this.selectRouteId).then((res) => {
+          this._LinkLayer.setData(res.data);
+        });
+      }
+    },
+    getLink() {
+      if (this.selectRouteId) {
+        getMatsimLink(this.selectRouteId).then((res) => {
+          this._LinkLayer.setData(res.data);
+        });
+      }
+    },
+    // ****************************** 路段流量录入 -- end
+    // ****************************** 地图及图层样式更新 -- start
+    handleChangeStyle(i) {
+      this.showStyleMenu = false;
+      this.styleActive = i;
+      this._MapLayer.setTileClass(this.styleList[i].c);
+    },
+    handleChangeZoomLavel() {
+      this._Map.setZoom(this.ruleForm.zoom);
+    },
+    handleChangeTwoWayOffset(value) {
+      if (this._NetworkLayer) {
+        this._NetworkLayer.setValues({ twoWayOffset: value });
+      }
+      if (this._LinkLayer) {
+        this._LinkLayer.setValues({ twoWayOffset: value });
+      }
+    },
+    handleChangeWayWidth(value) {
+      if (this._NetworkLayer) {
+        this._NetworkLayer.setValues({ lineWidth: value });
+      }
+      if (this._LinkLayer) {
+        this._LinkLayer.setValues({ lineWidth: value });
+      }
+    },
+    // ****************************** 图层样式更新 -- start
+    // ****************************** 数据筛选 -- 区域框选 -- start
+    handleShowFrameLink() {
+      this.frameLink.visible = true;
+    },
+    handlePlayFrameSelect() {
+      this.handleStopFrameSelect();
+
+      this.frameLink = {
+        visible: false,
+        xyarr: null,
+      };
+      if (this._FrameSelectLayer) {
+        this._FrameSelectLayer.reset();
+        this._FrameSelectLayer.play();
+        this.ruleForm.frameSelectState = this._FrameSelectLayer.state;
+      }
+    },
+    handleReplayFrameSelect() {
+      this.frameLink = {
+        visible: false,
+        xyarr: null,
+      };
+      if (this._FrameSelectLayer) {
+        this._FrameSelectLayer.reset();
+        this._FrameSelectLayer.play();
+        this.ruleForm.frameSelectState = this._FrameSelectLayer.state;
+      }
+    },
+    handleStopFrameSelect() {
+      this.frameLink = {
+        visible: false,
+        xyarr: null,
+      };
+      if (this._FrameSelectLayer) {
+        this._FrameSelectLayer.reset();
+        this._FrameSelectLayer.stop();
+        this.ruleForm.frameSelectState = this._FrameSelectLayer.state;
+      }
+    },
+    // ****************************** 数据筛选 -- 区域框选 -- end
+    // ******************************* 选择交叉口大概位置 -- start
+    handlePlayPointSelect() {
+      this._PointSelectLayer.state = POINT_SELECT_STATE_KEY.ENABLE;
+    },
+    handleStopPointSelect() {
+      this._PointSelectLayer.state = POINT_SELECT_STATE_KEY.DISABLE;
+      this._PointSelectLayer.point = [0, 0];
+    },
+    showAddIntersection(center) {
+      if (this._PointSelectLayer) this._PointSelectLayer.point = center;
+      this.addIntersection.visible = true;
+    },
+    handleSubmitAddIntersection(res) {
+      this.handleLoadIntersectionList();
+      this.addIntersection.visible = false;
+      this.crossroadsList.params = res || {};
+      this.crossroadsList.visible = true;
+      this.handleStopPointSelect();
+    },
+    // ******************************* 选择交叉口大概位置 -- start
+    // ******************************* 交叉口列表 -- start
+    handleShowCrossroadsDetail(row) {
+      this.crossroadsDetail.params = row;
+      this.crossroadsDetail.visible = true;
+    },
+    handleShowCrossroadsStatsEdit(row) {
+      this.crossroadsStatsEdit.params = row;
+      this.crossroadsStatsEdit.visible = true;
+    },
+    // ******************************* 交叉口列表 -- end
+    // ******************************* 视频录入交叉口 -- start
+    handleShowVideoInputCrossroads(res) {
+      this.videoInputCrossroads.params = res;
+      this.videoInputCrossroads.visible = true;
+    },
+    handleSubmitVideoInputCrossroads(form) {
+      this.videoInputCrossroads.visible = false;
+      this.handleShowDrawLine(form);
+    },
+    // ******************************* 视频录入交叉口 -- end
+
+    // ******************************* 人工录入交叉口 -- start
+    handleShowManuallyEnteringCrossroads(res) {
+      this.manuallyEnteringCrossroads.params = res;
+      this.manuallyEnteringCrossroads.visible = true;
+    },
+    handleSubmitManuallyEnteringCrossroads(form) {
+      this.manuallyEnteringCrossroads.visible = false;
+      this.handleShowDrawLine(form);
+    },
+    // ******************************* 人工录入交叉口 -- end
+    // ******************************* 绘制检测线 -- start
+
+    handleShowDrawLine(form) {
+      this.drawLine.params = form;
+      this.drawLine.visible = true;
+    },
+    handleDrawLineSuccess() {
+      this.drawLine.visible = false;
+      this.handleStopPointSelect();
+      this.handleShowCrossroadsStatsEdit(this.drawLine.params);
+    },
+    handleShowCrossroadsStatsEdit(form) {
+      this.crossroadsStatsEdit.params = form;
+      this.crossroadsStatsEdit.visible = true;
+    },
+    handleRedraw() {
+      this.crossroadsStatsEdit.visible = false;
+      this.handleShowDrawLine(this.crossroadsStatsEdit.params);
+    },
+    // ******************************* 绘制检测线 -- end
+    // ******************************* 定位 -- start
+    handleMoveToRoute({ value }) {
+      this.selectRouteId = value;
+      getMatsimLink(this.selectRouteId).then((res) => {
+        // 计算地图合适的中心点和zoom
+        let { zoom, center } = this._Map.getFitZoomAndCenter(res.data[0].map((v) => v.fromxy));
+        this._Map.setCenter(center);
+        this._Map.setZoom(zoom);
+
+        this._LinkLayer.setData(res.data);
+      });
+    },
+    handleMoveToCenter() {
+      this._Map.setCenter(this.ruleForm.center);
+    },
+    handleMoveToLink({ value, item }) {
+      this.selectRouteId = item.origid;
+      this.selectLinkId = value;
+      getMatsimLink(this.selectRouteId).then((res) => {
+        // 计算地图合适的中心点和zoom
+        let { zoom, center } = this._Map.getFitZoomAndCenter(res.data[0].map((v) => v.fromxy));
+        this._Map.setCenter(center);
+        this._Map.setZoom(zoom);
+        this._LinkLayer.setData(res.data);
+
+        for (const route of res.data) {
+          for (const link of route) {
+            if (link.id == value) {
+              setTimeout(() => {
+                this.handleChangeLink(link);
+              }, 500);
+              return;
+            }
+          }
+        }
+      });
+    },
+    // ******************************* 定位 -- end
+    // ******************************* 图片 -- start
+    handleDeleteImage(row) {
+      this.$confirm(`是否确认删除当前图片?`, "警告", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(function () {
+          return mappictureDelete(row.id);
+        })
+        .then(() => {
+          this.imageDialog = {
+            visible: false,
+            data: null,
+          };
+          this.handleSetHMash(null);
+          this.handleLoadImageList();
+          this.$message.success("删除成功");
+        })
+        .catch(() => {});
+    },
+    handleShowImageDialog(row) {
+      this.imageDialog = {
+        visible: true,
+        data: row,
+      };
+      this.handleSetHMash(row);
+    },
+    handleSetHMash(row) {
+      this._ImageListLayer.setHMesh(row);
+    },
+    // ******************************* 图片 -- end
+  },
+};
+</script>
+
+<style lang="scss" scoped>
+.root {
+  width: 100vw;
+  height: 100vh;
+  user-select: none;
+  #mapRoot {
+    top: 0;
+    left: 0;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    overflow: hidden;
+
+    .MapLayer_menu {
+      position: absolute;
+      z-index: 10000;
+      bottom: 20px;
+      right: 20px;
+      height: 50px;
+      width: 330px;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      background: #00000038;
+      transition: width 0.3s;
+      border-radius: 5px;
+      box-shadow: 0 0px 15px rgba(255, 255, 255, 0.8);
+
+      &.hide {
+        width: 20px !important;
+        .open_hide_btn {
+          transform: rotate(0);
+        }
+      }
+      .open_hide_btn {
+        position: relative;
+        cursor: pointer;
+        display: block;
+        height: 100%;
+        width: 20px;
+        flex-shrink: 0;
+        color: #fff;
+        font-weight: bold;
+        transition: transform 0.3s;
+        transform: rotate(180deg);
+        &::before,
+        &::after {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          content: "";
+          display: block;
+          border-left: 2px solid #fff;
+          border-bottom: 2px solid #fff;
+          width: 8px;
+          height: 8px;
+          transform: translate(0, -50%) rotate(45deg);
+        }
+        &::before {
+          left: 5px;
+        }
+        &::after {
+          left: 10px;
+        }
+      }
+      .item {
+        box-sizing: border-box;
+        cursor: pointer;
+        display: block;
+        height: 40px;
+        width: 40px;
+        margin-left: 10px;
+        border-radius: 5px;
+        border: 2px solid transparent;
+        &.active {
+          border-color: #409eff;
+        }
+      }
+    }
+  }
+  .HelpDialog {
+    bottom: 20px;
+    left: 20px;
+    position: absolute;
+    z-index: 20;
+  }
+}
+
+.setting_box {
+  font-size: 14px;
+  max-height: calc(100vh - 170px);
+  overflow-y: scroll;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  .setting_form {
+    padding: 0 20px;
+  }
+}
+</style>
