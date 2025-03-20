@@ -172,6 +172,8 @@ export default {
 
       this._UAVLayer = new UAVLayer({
         lockSelect: this.lockSelect,
+        linkColor: "#fff",
+        linkOpacity: 0.5,
         event: {
           playing: (res) => {
             this.playDetail = res.data;
