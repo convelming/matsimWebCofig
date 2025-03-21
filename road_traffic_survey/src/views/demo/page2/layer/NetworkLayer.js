@@ -18,7 +18,6 @@ function getTileNetwork(params) {
   })
     .then((response) => response.json())
     .then((res) => {
-      console.log(res);
       return res;
     });
 }
@@ -155,15 +154,12 @@ export class NetworkLayer extends Layer {
         const nodeItem = tile.getNodeByPickColor(pickColorNum);
         const videoIconItem = tile.getVideoIconByPickColor(pickColorNum);
         if (lineItem) {
-          console.log("lineItem", pickColorNum);
           this.handleEventListener(type, JSON.parse(JSON.stringify(lineItem)));
           break;
         } else if (nodeItem) {
-          console.log("nodeItem", pickColorNum);
           this.handleEventListener(type, JSON.parse(JSON.stringify(nodeItem)));
           break;
         } else if (videoIconItem) {
-          console.log("videoIconItem", pickColorNum);
           this.handleEventListener(type, JSON.parse(JSON.stringify(videoIconItem)));
           break;
         }
@@ -184,7 +180,6 @@ export class NetworkLayer extends Layer {
         tile.pickColorOffset = this.pickColorOffset;
         this.pickColorOffset += tile.pickColorNum;
         tile.update();
-        console.log(this, tile.pickColorNum, tile.pickColorOffset);
 
         this.loadingNum--;
         this.handleEventListener(MAP_EVENT.LAYER_LOADING, this.loadingNum > 0);
@@ -199,9 +194,11 @@ export class NetworkLayer extends Layer {
   }
 
   async loadMesh() {
-    this.updateTimeout = null;
     this.clearScene();
-    const { row, col, size } = this.map.getTileRangeByZoom(BUILD_ZOOM);
+    // const { row, col, size } = this.map.getTileRangeByZoom(BUILD_ZOOM);
+    const row = [1667, 1670];
+    const col = [887, 889];
+    console.log(row, col);
     for (let i = row[0]; i <= row[1]; i++) {
       for (let j = col[0]; j <= col[1]; j++) {
         let key = `${i}_${j}`;

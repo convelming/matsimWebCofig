@@ -16,11 +16,11 @@ export class UAVLayer extends Layer {
   constructor(opt) {
     super(opt);
 
-    this.nodesGeometry = new THREE.BoxGeometry(10, 10, 10);
-    this.nodesMaterial = new THREE.MeshBasicMaterial({ color: opt.linkColor, opacity: opt.linkOpacity, transparent: true });
+    this.nodesGeometry = new THREE.BoxGeometry(20, 20, 20);
+    this.nodesMaterial = new THREE.MeshBasicMaterial({ color: "red", opacity: 0.5, transparent: true });
 
     this.linksGeometry = new THREE.BufferGeometry();
-    this.linksMaterial = new THREE.LineBasicMaterial({ color: opt.linkColor, opacity: opt.linkOpacity, transparent: true });
+    this.linksMaterial = new THREE.LineBasicMaterial({ color: "red", opacity: 0.5, transparent: true });
 
     this.UAVMesh = new THREE.Mesh(new THREE.BoxGeometry(50, 50, 50), new THREE.MeshNormalMaterial());
 
@@ -115,7 +115,7 @@ export class UAVLayer extends Layer {
     if (this.nodesMesh.instanceMatrix) this.nodesMesh.instanceMatrix.needsUpdate = true;
     // if (this.nodesMesh.instanceColor) this.nodesMesh.instanceColor.needsUpdate = true;
 
-    this.linksGeometry = new THREE.TubeGeometry(this.path, this.path.nodes.length * 10, 5, 4, false);
+    this.linksGeometry = new THREE.TubeGeometry(this.path, this.path.nodes.length * 10, 5, 8, false);
     this.linksMesh = new THREE.Mesh(this.linksGeometry, this.linksMaterial);
 
     if (this.map) {

@@ -142,8 +142,10 @@ export class Build3DLayer extends Layer {
 
   async loadMesh() {
     this.clearScene();
-    const { row, col, size } = this.map.getTileRangeByZoom(BUILD_ZOOM);
-
+    // const { row, col, size } = this.map.getTileRangeByZoom(BUILD_ZOOM);
+    const row = [1667, 1670];
+    const col = [887, 889];
+    console.log(row, col);
     for (let i = row[0]; i <= row[1]; i++) {
       for (let j = col[0]; j <= col[1]; j++) {
         let key = `${i}_${j}`;

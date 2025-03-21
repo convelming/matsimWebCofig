@@ -12,21 +12,46 @@ export class Network3DLayer extends Layer {
     this.selectPinkNodesGeometry = new THREE.CircleGeometry(110, 32);
 
     const pinkSize = 80;
-    this.pinkNodesGeometry = new THREE.BoxGeometry(80, 80, 80); //new THREE.PlaneGeometry(100, 100);
+    this.pinkNodesGeometry = new THREE.CylinderGeometry(80, 80, 80, 32); //new THREE.BoxGeometry(80, 80, 80); //new THREE.PlaneGeometry(100, 100);
     const m4 = new THREE.Matrix4().makeTranslation(0, 0, -30);
     m4.multiply(new THREE.Matrix4().makeRotationX(-Math.PI / 2));
+    m4.multiply(new THREE.Matrix4().makeRotationY(-Math.PI / 2));
     this.pinkNodesGeometry.applyMatrix4(m4);
     this.pinkNodesMaterial = new THREE.MeshBasicMaterial({ opacity: 1, transparent: true, map: new THREE.TextureLoader().load(require("../data/停机坪.svg")) });
     this.pinkNodesPickLayerMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff });
     this.pinkNodesPickItemMaterial = new THREE.MeshBasicMaterial({});
 
     this.nodesGeometry = new THREE.BoxGeometry(5, 5, 5);
-    this.nodesMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, opacity: 0.8, transparent: true });
+    this.nodesMaterial = new THREE.MeshBasicMaterial({ color: "yellow", opacity: 0.5, transparent: true });
     this.nodesPickLayerMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
     this.nodesPickItemMaterial = new THREE.MeshBasicMaterial({});
 
     this.linksGeometry = new THREE.BufferGeometry();
-    this.linksMaterial = new THREE.LineBasicMaterial({ color: 0x0000ff, opacity: 0.1 });
+    this.linksMaterial = new THREE.LineBasicMaterial({ color: "yellow", opacity: 0.1, transparent: true });
+
+    this.showLink = !!opt.showLink;
+    this.showNode = !!opt.showNode;
+  }
+
+  setShowLink(showLink) {
+    this.showLink = !!showLink;
+    try {
+      if (this.showLink) {
+        this.scene.add(this.linksMesh);
+      } else {
+        this.linksMesh.removeFromParent();
+      }
+    } catch (error) {}
+  }
+  setShowNode(showNode) {
+    this.showNode = !!showNode;
+    try {
+      if (this.showNode) {
+        this.scene.add(this.nodesMesh);
+      } else {
+        this.nodesMesh.removeFromParent();
+      }
+    } catch (error) {}
   }
 
   setPickLayerColor(pickLayerColor) {
@@ -209,10 +234,10 @@ export class Network3DLayer extends Layer {
     this.pickLayerScene.add(this.pinkNodesPickLayerMesh);
     this.pickMeshScene.add(this.pinkNodesPickItemMesh);
 
-    this.scene.add(this.nodesMesh);
+    if (this.showNode) this.scene.add(this.nodesMesh);
     // this.pickLayerScene.add(this.nodesPickLayerMesh);
     // this.pickMeshScene.add(this.nodesPickItemMesh);
 
-    // this.scene.add(this.linksMesh);
+    if (this.showLink) this.scene.add(this.linksMesh);
   }
 }

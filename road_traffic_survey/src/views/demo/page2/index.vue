@@ -5,38 +5,63 @@
         <div></div>
         <div class="mapBox">
           <div id="mapRoot"></div>
-          <div class="box">
+          <div class="box" style="width: 350px">
             <el-form size="small" label-position="left">
-              <el-form-item label="建筑：">
-                <el-switch v-model="showBuild" :active-value="true" :inactive-value="false"></el-switch>
-              </el-form-item>
-              <el-form-item label="地面路网：">
-                <el-switch v-model="showNetwork2D" :active-value="true" :inactive-value="false"></el-switch>
-              </el-form-item>
-              <!-- <el-form-item label="空中路网节点：">
-                <el-switch v-model="showNetwork3D" :active-value="true" :inactive-value="false"></el-switch>
-              </el-form-item> -->
-              <el-form-item label="起点：">
-                <span>{{ startPink && startPink.id }} </span>
-                <el-button v-if="!selectStartPink" plain @click="handleSelectStartPink(true)" size="small">选择</el-button>
-                <el-button v-else plain @click="handleSelectStartPink(false)" size="small">取消</el-button>
-              </el-form-item>
-              <el-form-item label="终点：">
-                <span>{{ endPink && endPink.id }} </span>
-                <el-button v-if="!selectEndPink" plain @click="handleSelectEndPink(true)" size="small">选择</el-button>
-                <el-button v-else plain @click="handleSelectEndPink(false)" size="small">取消</el-button>
-              </el-form-item>
-              <el-form-item label-width="0">
-                <el-button size="small" @click="play">播放</el-button>
-                <el-button size="small" @click="stop">暂停</el-button>
-                <el-button size="small" @click="reset">重置</el-button>
-                <span style="margin-left: 20px">锁定视角：</span><el-switch v-model="lockSelect" :active-value="true" :inactive-value="false"></el-switch>
-              </el-form-item>
-              <template v-if="playDetail">
-                <el-form-item label="时间：">{{ Number(playDetail.time).toFixed(0) }} s</el-form-item>
-                <el-form-item label="速度：">{{ Number(playDetail.speed).toFixed(3) }} m/s</el-form-item>
-                <el-form-item label="位置：">{{ playDetail.x }}, {{ playDetail.y }}, {{ playDetail.z }}</el-form-item>
-              </template>
+              <el-row :gutter="0">
+                <el-col :span="12" :offset="0">
+                  <el-form-item label="建筑：">
+                    <el-switch v-model="showBuild" :active-value="true" :inactive-value="false"></el-switch>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="12" :offset="0">
+                  <el-form-item label="地面路网：">
+                    <el-switch v-model="showNetwork2D" :active-value="true" :inactive-value="false"></el-switch>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="12" :offset="0">
+                  <el-form-item label="空中路网：">
+                    <el-switch v-model="showNetwork3DLink" :active-value="true" :inactive-value="false"></el-switch>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="12" :offset="0">
+                  <el-form-item label="空中路网节点：">
+                    <el-switch v-model="showNetwork3DNode" :active-value="true" :inactive-value="false"></el-switch>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="12" :offset="0">
+                  <el-form-item label="起点：">
+                    <span>{{ startPink && startPink.id }} </span>
+                    <el-button v-if="!selectStartPink" plain @click="handleSelectStartPink(true)" size="small">选择</el-button>
+                    <el-button v-else plain @click="handleSelectStartPink(false)" size="small">取消</el-button>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="12" :offset="0">
+                  <el-form-item label="终点：">
+                    <span>{{ endPink && endPink.id }} </span>
+                    <el-button v-if="!selectEndPink" plain @click="handleSelectEndPink(true)" size="small">选择</el-button>
+                    <el-button v-else plain @click="handleSelectEndPink(false)" size="small">取消</el-button>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="24" :offset="0" v-if="startPink && endPink">
+                  <el-form-item label-width="0">
+                    <el-button size="small" @click="play">播放</el-button>
+                    <el-button size="small" @click="stop">暂停</el-button>
+                    <el-button size="small" @click="reset">重置</el-button>
+                    <span style="margin-left: 20px">锁定视角：</span><el-switch v-model="lockSelect" :active-value="true" :inactive-value="false"></el-switch>
+                  </el-form-item>
+                </el-col>
+                <template v-if="playDetail">
+                  <el-col :span="12" :offset="0">
+                    <el-form-item label="时间：">{{ Number(playDetail.time).toFixed(0) }} s</el-form-item>
+                  </el-col>
+                  <el-col :span="12" :offset="0">
+                    <el-form-item label="速度：">{{ Number(playDetail.speed).toFixed(3) }} m/s</el-form-item>
+                  </el-col>
+                  <el-col :span="24" :offset="0">
+                    <el-form-item label="位置：">{{ playDetail.x }}, {{ playDetail.y }}, {{ playDetail.z }}</el-form-item>
+                  </el-col>
+                </template>
+              </el-row>
             </el-form>
           </div>
         </div>
@@ -121,13 +146,14 @@ export default {
         }
       },
     },
-    showNetwork3D: {
+    showNetwork3DNode: {
       handler(val) {
-        if (val) {
-          this._Map.addLayer(this._Network3DLayer);
-        } else {
-          this._Map.removeLayer(this._Network3DLayer);
-        }
+        this._Network3DLayer.setShowNode(val);
+      },
+    },
+    showNetwork3DLink: {
+      handler(val) {
+        this._Network3DLayer.setShowLink(val);
       },
     },
   },
@@ -143,7 +169,8 @@ export default {
       networkloading: false,
       showBuild: false,
       showNetwork2D: false,
-      showNetwork3D: true,
+      showNetwork3DNode: true,
+      showNetwork3DLink: true,
     };
   },
   created() {},
@@ -172,8 +199,6 @@ export default {
 
       this._UAVLayer = new UAVLayer({
         lockSelect: this.lockSelect,
-        linkColor: "#fff",
-        linkOpacity: 0.5,
         event: {
           playing: (res) => {
             this.playDetail = res.data;
@@ -185,6 +210,8 @@ export default {
       this._Network3DLayer = new Network3DLayer({
         zIndex: 100,
         usePick: true,
+        showLink: this.showNetwork3DLink,
+        showNode: this.showNetwork3DNode,
         event: {
           [MAP_EVENT.HANDLE_PICK_LEFT]: (res) => {
             if (this.selectStartPink) {
@@ -203,7 +230,7 @@ export default {
         },
       });
       this._Network3DLayer.setData(test3dNetworkCleaned);
-      if (this.showNetwork3D) this._Map.addLayer(this._Network3DLayer);
+      this._Map.addLayer(this._Network3DLayer);
 
       this._Build3DLayer = new Build3DLayer({
         zIndex: 2,
