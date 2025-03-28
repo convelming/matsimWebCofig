@@ -1,5 +1,11 @@
-// 地图样式配置
-// 以列表的第一个为默认样式
+
+
+EARTH_RADIUS = 20037508.3427892;
+
+// 地图默认样式序号，如果地图样式列表中没有这个样式，则默认序号为0的样式
+DEFAULT_MAP_LAYER_STYLE_INDEX = 0;
+
+// 地图样式列表
 // {
 //   style_name: "",
 //   background: 0xd9ecff,
@@ -11,11 +17,6 @@
 //     return `http://192.168.60.231:23334/osm/MapTilerBasic/${this.zoom}/${this.row}/${this.col}.png`;
 //   }
 // }
-
-EARTH_RADIUS = 20037508.3427892;
-
-DEFAULT_MAP_LAYER_STYLE_INDEX = 0;
-
 MAP_LAYER_STYLE = [
   {
     style_name: "POSITRON",
