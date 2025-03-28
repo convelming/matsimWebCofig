@@ -268,7 +268,7 @@
 
 <script>
 const moment = require("moment");
-import { MyMap, MAP_EVENT, MapLayer, MAP_LAYER_STYLE } from "@/mymap/index.js";
+import { MyMap, MAP_EVENT, MapLayer, DEFAULT_MAP_LAYER_STYLE, MAP_LAYER_STYLE } from "@/mymap/index.js";
 
 import { getByLineId, saveByLine, deleteTransitLine, changeLines, getCenterZoom, lineIsRun, saveNewScheme } from "@/api/index";
 
@@ -434,7 +434,7 @@ export default {
           },
         },
       });
-      this._MapLayer = new MapLayer({ tileClass: MAP_LAYER_STYLE[0], zIndex: -1 });
+      this._MapLayer = new MapLayer({ tileClass: DEFAULT_MAP_LAYER_STYLE, zIndex: -1 });
       this._map.addLayer(this._MapLayer);
       {
         const styleMap = MAP_LAYER_STYLE;

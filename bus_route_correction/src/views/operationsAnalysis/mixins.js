@@ -13,7 +13,7 @@ import PageConfig from "./component/PageConfig/index.vue";
 
 import NewClock from "@/components/NewClock/index.vue";
 
-import { MyMap, MapLayer, MAP_LAYER_STYLE } from "@/mymap/index.js";
+import { MyMap, MapLayer, DEFAULT_MAP_LAYER_STYLE } from "@/mymap/index.js";
 import { getTimeInterval, getCenterZoom, saveUserCfg, getUserCfg, userCfgList } from "@/api/index.js";
 import { guid } from "@/utils/utils.js";
 
@@ -316,7 +316,7 @@ export default {
         this._Map.setZoom(14);
       }
 
-      this._MapLayer = new MapLayer({ tileClass: MAP_LAYER_STYLE[0], zIndex: -1 });
+      this._MapLayer = new MapLayer({ tileClass: DEFAULT_MAP_LAYER_STYLE, zIndex: -1 });
       this._Map.addLayer(this._MapLayer);
     },
     handleShowStopAndRoute(selectStopIds) {

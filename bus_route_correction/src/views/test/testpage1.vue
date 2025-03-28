@@ -23,7 +23,7 @@
 
 <script>
 import { guid } from "@/utils/utils";
-import { MyMap, MapLayer, MAP_LAYER_STYLE } from "@/mymap/index.js";
+import { MyMap, MapLayer, MAP_LAYER_STYLE, DEFAULT_MAP_LAYER_STYLE } from "@/mymap/index.js";
 import NewClock from "@/components/NewClock/index.vue";
 import GeoJSONDetail from "../operationsAnalysis/component/GeoJSON/toolbar/geoJSONDetail.vue";
 import GeoJSONLayerWorker from "../operationsAnalysis/component/GeoJSON/worker/GeoJSONLayer.worker";
@@ -105,7 +105,7 @@ export default {
         minPitch: -90,
       });
       this._Map.cameraControls.enableRotate = true;
-      this._MapLayer = new MapLayer({ tileClass: MAP_LAYER_STYLE[0], zIndex: -1 });
+      this._MapLayer = new MapLayer({ tileClass: DEFAULT_MAP_LAYER_STYLE, zIndex: -1 });
       this._Map.addLayer(this._MapLayer);
     },
     handleSelectFile() {

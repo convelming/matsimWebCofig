@@ -341,3 +341,6 @@ export function MapStyleFactory(params = {}) {
 }
 
 export const MAP_LAYER_STYLE = (window.MAP_LAYER_STYLE || []).map(MapStyleFactory);
+
+
+export const DEFAULT_MAP_LAYER_STYLE =  MAP_LAYER_STYLE[window.DEFAULT_MAP_LAYER_STYLE] || MAP_LAYER_STYLE[0];

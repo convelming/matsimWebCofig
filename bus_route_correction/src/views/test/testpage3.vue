@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import { MyMap, MapLayer, MAP_LAYER_STYLE, MAP_EVENT } from "@/mymap/index.js";
+import { MyMap, MapLayer, MAP_LAYER_STYLE, DEFAULT_MAP_LAYER_STYLE, MAP_EVENT } from "@/mymap/index.js";
 import NewClock from "@/components/NewClock/index.vue";
 import { CarTravelLayer } from "@/views/operationsAnalysis/component/CarTravel/layer/CarTravelLayer.js";
 import { CarTravelLayer2 } from "@/views/operationsAnalysis/component/CarTravel/layer/CarTravelLayer2.js";
@@ -80,7 +80,7 @@ export default {
         },
       });
       this._Map.cameraControls.enableRotate = true;
-      this._MapLayer = new MapLayer({ tileClass: MAP_LAYER_STYLE[0], zIndex: -1 });
+      this._MapLayer = new MapLayer({ tileClass: DEFAULT_MAP_LAYER_STYLE, zIndex: -1 });
       this._Map.addLayer(this._MapLayer);
       this._CarTravelLayer = new CarTravelLayer({ zIndex: 1, dataSource: "guangzhou/base" });
       this._CarTravelLayer2 = new CarTravelLayer2({ zIndex: 100, dataSource: "guangzhou/base", trailLength: 200, lineWidth: 100, color: "#ff0000" });

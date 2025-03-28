@@ -85,7 +85,7 @@
 </language>
 
 <script>
-import { MyMap, MapLayer, MAP_LAYER_STYLE } from "@/mymap/index.js";
+import { MyMap, MapLayer, MAP_LAYER_STYLE, DEFAULT_MAP_LAYER_STYLE } from "@/mymap/index.js";
 import HelpDialog from "./component/HelpDialog/index.vue";
 import Accessibility from "./component/Accessibility/index.vue";
 
@@ -150,7 +150,7 @@ export default {
       window._Map = this._Map;
     },
     initLayer() {
-      this._MapLayer = new MapLayer({ tileClass: MAP_LAYER_STYLE[0], zIndex: -1 });
+      this._MapLayer = new MapLayer({ tileClass: DEFAULT_MAP_LAYER_STYLE, zIndex: -1 });
     },
   },
 };
