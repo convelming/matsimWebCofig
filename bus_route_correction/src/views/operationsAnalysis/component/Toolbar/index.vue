@@ -317,7 +317,7 @@ export default {
         return this.rootVue.GeoJSONList.map((v) => v.id);
       } catch (error) {
         console.log("geojsonLength", error);
-        return 0;
+        return [];
       }
     },
   },

@@ -36,46 +36,47 @@
     <div class="toolbar-bodyer" v-show="activeModel === PublicTransit.id">
       <SreachStopRoute />
       <el-collapse class="toolbar-collapse" v-model="PublicTransit.activeName" accordion>
-        <component v-for="item in PublicTransit.list" :show="item.name == PublicTransit.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" />
+        <component v-for="item in PublicTransit.list" :show="item.name == PublicTransit.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" :config="item.config" ref="PublicTransitItem" />
       </el-collapse>
     </div>
     <div class="toolbar-bodyer" v-show="activeModel === MotorizedTravel.id">
       <el-collapse class="toolbar-collapse" v-model="MotorizedTravel.activeName" accordion>
-        <component v-for="item in MotorizedTravel.list" :show="item.name == MotorizedTravel.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" />
+        <component v-for="item in MotorizedTravel.list" :show="item.name == MotorizedTravel.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" :config="item.config" ref="MotorizedTravelItem" />
       </el-collapse>
     </div>
     <div class="toolbar-bodyer" v-show="activeModel === Build3D.id">
       <SreachBuild />
       <el-collapse class="toolbar-collapse" v-model="Build3D.activeName" accordion>
-        <component v-for="item in Build3D.list" :show="item.name == Build3D.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" />
+        <component v-for="item in Build3D.list" :show="item.name == Build3D.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" :config="item.config" ref="Build3DItem" />
       </el-collapse>
     </div>
     <div class="toolbar-bodyer" v-show="activeModel === Network.id">
       <SreachLineNode />
       <el-collapse class="toolbar-collapse" v-model="Network.activeName" accordion>
-        <component v-for="item in Network.list" :show="item.name == Network.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" />
+        <component v-for="item in Network.list" :show="item.name == Network.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" :config="item.config" ref="NetworkItem" />
       </el-collapse>
     </div>
     <div class="toolbar-bodyer" v-show="activeModel === Activity3D.id">
+      <SreachActivity />
       <el-collapse class="toolbar-collapse" v-model="Activity3D.activeName" accordion>
-        <component v-for="item in Activity3D.list" :show="item.name == Activity3D.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" />
+        <component v-for="item in Activity3D.list" :show="item.name == Activity3D.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" :config="item.config" ref="Activity3DItem" />
       </el-collapse>
     </div>
     <div class="toolbar-bodyer" v-show="activeModel === GeoJSON.id">
       <el-collapse class="toolbar-collapse" v-model="GeoJSON.activeName">
-        <GeoJSONDetail v-for="item in GeoJSONIdList" :key="item" :name="item" :id="item" />
+        <GeoJSONDetail v-for="item in GeoJSONIdList" :key="item" :name="item" :id="item" ref="GeoJSONItem" />
       </el-collapse>
     </div>
     <div class="toolbar-bodyer" v-show="activeModel === Parking.id">
       <ParkingGeoJSONDetail />
       <el-collapse class="toolbar-collapse" v-model="Parking.activeName" accordion>
-        <component v-for="item in Parking.list" :show="item.name == Parking.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" />
+        <component v-for="item in Parking.list" :show="item.name == Parking.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" :config="item.config" ref="ParkingItem" />
       </el-collapse>
     </div>
     <div class="toolbar-bodyer" v-show="activeModel === TrafficRegionAnalysis.id">
       <TRAGeoJSONHeader />
       <el-collapse class="toolbar-collapse" v-model="TrafficRegionAnalysis.activeName" accordion>
-        <component v-for="item in TrafficRegionAnalysis.list" :show="item.name == TrafficRegionAnalysis.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" />
+        <component v-for="item in TrafficRegionAnalysis.list" :show="item.name == TrafficRegionAnalysis.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" :config="item.config" ref="TrafficRegionAnalysisItem" />
       </el-collapse>
     </div>
   </div>
@@ -163,7 +164,7 @@ import NodeDetail from "../../../operationsAnalysis/component/Network/toolbar/no
 import SelectLinkAnalysis from "../../../operationsAnalysis/component/Network/toolbar/selectLinkAnalysis.vue";
 // 活动
 import ActivityDetail from "../../../operationsAnalysis/component/Activity3D/toolbar/ActivityDetail.vue";
-
+import SreachActivity from "../../../operationsAnalysis/component/Activity3D/toolbar/SreachActivity.vue";
 // 私家车出行
 import CarTravelDetail from "../../../operationsAnalysis/component/CarTravel/toolbar/carTravelDetail.vue";
 // GeoJson
@@ -204,6 +205,7 @@ export default {
     SelectLinkAnalysis,
 
     ActivityDetail,
+    SreachActivity,
 
     CarTravelDetail,
 
@@ -306,27 +308,29 @@ export default {
         components: ["MultiplePathsDetail", "SinglePathDetail"],
         sreach: {},
         params: {},
-        list: [
-          // {
-          //   type: "SinglePathDetail",
-          //   data: {
-          //     uuid: "38e4047c-7a67-4c49-9e3b-cb40a22d8bd3",
-          //     singlePathDetail: {
-          //       shape: [
-          //         [12634435.302642914, 2645511.8325935453],
-          //         [12633846.75084994, 2642668.8241874496],
-          //         [12637717.231729725, 2642559.094078857],
-          //         [12637846.913390191, 2646010.6062060306],
-          //         [12634435.302642914, 2645511.8325935453],
-          //       ],
-          //       holes: [],
-          //       type: "link",
-          //     },
-          //   },
-          //   name: "38e4047c-7a67-4c49-9e3b-cb40a22d8bd3",
-          // },
-        ],
+        list: [],
         activeName: "",
+        // list: [
+        //   {
+        //     type: "SinglePathDetail",
+        //     data: {
+        //       uuid: "38e4047c-7a67-4c49-9e3b-cb40a22d8bd3",
+        //       singlePathDetail: {
+        //         shape: [
+        //           [12634435.302642914, 2645511.8325935453],
+        //           [12633846.75084994, 2642668.8241874496],
+        //           [12637717.231729725, 2642559.094078857],
+        //           [12637846.913390191, 2646010.6062060306],
+        //           [12634435.302642914, 2645511.8325935453],
+        //         ],
+        //         holes: [],
+        //         type: "link",
+        //       },
+        //     },
+        //     name: "38e4047c-7a67-4c49-9e3b-cb40a22d8bd3",
+        //   },
+        // ],
+        // activeName: "38e4047c-7a67-4c49-9e3b-cb40a22d8bd3",
       },
       modelMap: {
         RouteFlows: "LinesAnalysis",
@@ -376,6 +380,236 @@ export default {
   mounted() {},
   beforeDestroy() {},
   methods: {
+    initByConfig(config) {
+      this.activeName = config.toolbarActiveName || "PublicTransit";
+      {
+        const Activity3DToolbar = config.Activity3DToolbar || {};
+        this.$set(this.Activity3D, "sreach", Activity3DToolbar.sreach || {});
+        this.$set(this.Activity3D, "params", Activity3DToolbar.params || {});
+        this.$set(this.Activity3D, "activeName", Activity3DToolbar.activeName || "");
+        this.$set(this.Activity3D, "list", Activity3DToolbar.list || []);
+      }
+      {
+        const Build3DToolbar = config.Build3DToolbar || {};
+        this.$set(this.Build3D, "sreach", Build3DToolbar.sreach || {});
+        this.$set(this.Build3D, "params", Build3DToolbar.params || {});
+        this.$set(this.Build3D, "activeName", Build3DToolbar.activeName || "");
+        this.$set(this.Build3D, "list", Build3DToolbar.list || []);
+      }
+      {
+        const MotorizedTravelToolbar = config.MotorizedTravelToolbar || {};
+        this.$set(this.MotorizedTravel, "sreach", MotorizedTravelToolbar.sreach || {});
+        this.$set(this.MotorizedTravel, "params", MotorizedTravelToolbar.params || {});
+        this.$set(this.MotorizedTravel, "activeName", MotorizedTravelToolbar.activeName || "");
+        this.$set(this.MotorizedTravel, "list", MotorizedTravelToolbar.list || []);
+      }
+      {
+        const NetworkToolbar = config.NetworkToolbar || {};
+        this.$set(this.Network, "sreach", NetworkToolbar.sreach || {});
+        this.$set(this.Network, "params", NetworkToolbar.params || {});
+        this.$set(this.Network, "activeName", NetworkToolbar.activeName || "");
+        this.$set(this.Network, "list", NetworkToolbar.list || []);
+      }
+      {
+        const ParkingToolbar = config.ParkingToolbar || {};
+        this.$set(this.Parking, "sreach", ParkingToolbar.sreach || {});
+        this.$set(this.Parking, "params", ParkingToolbar.params || {});
+        this.$set(this.Parking, "activeName", ParkingToolbar.activeName || "");
+        this.$set(this.Parking, "list", ParkingToolbar.list || []);
+      }
+      {
+        const PublicTransitToolbar = config.PublicTransitToolbar || {};
+        this.$set(this.PublicTransit, "sreach", PublicTransitToolbar.sreach || {});
+        this.$set(this.PublicTransit, "params", PublicTransitToolbar.params || {});
+        this.$set(this.PublicTransit, "activeName", PublicTransitToolbar.activeName || "");
+        this.$set(this.PublicTransit, "list", PublicTransitToolbar.list || []);
+      }
+      {
+        const TrafficRegionAnalysisToolbar = config.TrafficRegionAnalysisToolbar || {};
+        this.$set(this.TrafficRegionAnalysis, "sreach", TrafficRegionAnalysisToolbar.sreach || {});
+        this.$set(this.TrafficRegionAnalysis, "params", TrafficRegionAnalysisToolbar.params || {});
+        this.$set(this.TrafficRegionAnalysis, "activeName", TrafficRegionAnalysisToolbar.activeName || "");
+        this.$set(this.TrafficRegionAnalysis, "list", TrafficRegionAnalysisToolbar.list || []);
+      }
+      {
+        try {
+          this.rootVue.handleClearGeoJSON();
+          for (const item of config.GeoJSONList) {
+            const file = {
+              id: item.id,
+              _file: stringToFile(item._file),
+              name: item.name,
+              show: item.show,
+              config: item.config,
+            };
+            this.rootVue.handleAddGeoJSON(file, false);
+          }
+        } catch (error) {}
+      }
+    },
+    async exportConfig() {
+      const config = {
+        toolbarActiveName: this.activeName,
+      };
+      {
+        const list = [];
+        const refs = this.$refs["Activity3DItem"];
+        for (const item of this.Activity3D.list) {
+          const ref = refs.find((v) => v.name == item.name);
+          list.push({
+            type: item.type,
+            name: item.name,
+            data: JSON.parse(JSON.stringify(item.data)),
+            config: await ref.exportConfig(),
+          });
+        }
+        config.Activity3DToolbar = {
+          sreach: this.Activity3D.sreach,
+          params: this.Activity3D.params,
+          activeName: this.Activity3D.activeName,
+          list: list,
+        };
+      }
+
+      {
+        const list = [];
+        const refs = this.$refs["Build3DItem"];
+        for (const item of this.Build3D.list) {
+          const ref = refs.find((v) => v.name == item.name);
+          list.push({
+            type: item.type,
+            name: item.name,
+            data: JSON.parse(JSON.stringify(item.data)),
+            config: await ref.exportConfig(),
+          });
+        }
+        config.Build3DToolbar = {
+          sreach: this.Build3D.sreach,
+          params: this.Build3D.params,
+          activeName: this.Build3D.activeName,
+          list: list,
+        };
+      }
+
+      {
+        const list = [];
+        const refs = this.$refs["MotorizedTravelItem"];
+        for (const item of this.MotorizedTravel.list) {
+          const ref = refs.find((v) => v.name == item.name);
+          list.push({
+            type: item.type,
+            name: item.name,
+            data: JSON.parse(JSON.stringify(item.data)),
+            config: await ref.exportConfig(),
+          });
+        }
+        config.MotorizedTravelToolbar = {
+          sreach: this.MotorizedTravel.sreach,
+          params: this.MotorizedTravel.params,
+          activeName: this.MotorizedTravel.activeName,
+          list: list,
+        };
+      }
+
+      {
+        const list = [];
+        const refs = this.$refs["NetworkItem"];
+        for (const item of this.Network.list) {
+          const ref = refs.find((v) => v.name == item.name);
+          list.push({
+            type: item.type,
+            name: item.name,
+            data: JSON.parse(JSON.stringify(item.data)),
+            config: await ref.exportConfig(),
+          });
+        }
+        config.NetworkToolbar = {
+          sreach: this.Network.sreach,
+          params: this.Network.params,
+          activeName: this.Network.activeName,
+          list: list,
+        };
+      }
+
+      {
+        const list = [];
+        const refs = this.$refs["ParkingItem"];
+        for (const item of this.Parking.list) {
+          const ref = refs.find((v) => v.name == item.name);
+          list.push({
+            type: item.type,
+            name: item.name,
+            data: JSON.parse(JSON.stringify(item.data)),
+            config: await ref.exportConfig(),
+          });
+        }
+        config.ParkingToolbar = {
+          sreach: this.Parking.sreach,
+          params: this.Parking.params,
+          activeName: this.Parking.activeName,
+          list: list,
+        };
+      }
+
+      {
+        const list = [];
+        const refs = this.$refs["PublicTransitItem"];
+        for (const item of this.PublicTransit.list) {
+          const ref = refs.find((v) => v.name == item.name);
+          list.push({
+            type: item.type,
+            name: item.name,
+            data: JSON.parse(JSON.stringify(item.data)),
+            config: await ref.exportConfig(),
+          });
+        }
+        config.PublicTransitToolbar = {
+          sreach: this.PublicTransit.sreach,
+          params: this.PublicTransit.params,
+          activeName: this.PublicTransit.activeName,
+          list: list,
+        };
+      }
+
+      {
+        const list = [];
+        const refs = this.$refs["TrafficRegionAnalysisItem"];
+        for (const item of this.TrafficRegionAnalysis.list) {
+          const ref = refs.find((v) => v.name == item.name);
+          list.push({
+            type: item.type,
+            name: item.name,
+            data: JSON.parse(JSON.stringify(item.data)),
+            config: await ref.exportConfig(),
+          });
+        }
+        config.TrafficRegionAnalysisToolbar = {
+          sreach: this.TrafficRegionAnalysis.sreach,
+          params: this.TrafficRegionAnalysis.params,
+          activeName: this.TrafficRegionAnalysis.activeName,
+          list: list,
+        };
+      }
+
+      {
+        const list = [];
+        const refs = this.$refs["GeoJSONItem"];
+
+        for (const item of this.rootVue.GeoJSONList) {
+          const ref = refs.find((v) => v.name == item.id);
+          list.push({
+            id: item.id,
+            _file: await fileToString(item._file),
+            name: item.name,
+            show: item.show,
+            config: await ref.exportConfig(),
+          });
+        }
+        config.GeoJSONList = list;
+      }
+
+      return config;
+    },
     // 添加/显示控件
     add(type, data) {
       const model = this.modelMap[type];
@@ -400,7 +634,10 @@ export default {
         case "SelectLinkAnalysis":
 
         case "ActivityDetail":
-        case "ParkingActivityDetail": {
+        case "ParkingActivityDetail":
+
+        case "MultiplePathsDetail":
+        case "SinglePathDetail": {
           const item = list.find((v) => v.data.uuid == data.uuid);
           if (item && data.uuid) {
             activeName = item.name;

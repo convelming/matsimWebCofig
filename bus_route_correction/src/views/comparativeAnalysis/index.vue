@@ -23,12 +23,15 @@
           <div class="Drawer_col">
             <div></div>
             <div class="mapBox">
-              <NewClock class="NewClock" :time="time" :speed="speed" @update:speed="speedCommand" :minTime="minTime" :maxTime="maxTime" @update:time="handleUpdateTime" @showHelp="handleShowHelp"></NewClock>
+              <NewClock class="NewClock" :time="time" :speed="speed" @update:speed="speedCommand" :minTime="minTime" :maxTime="maxTime" @update:time="handleUpdateTime" @showHelp="handleShowHelp">
+                <template slot-scope="{ showFun }">
+                  <PageConfig></PageConfig>
+                </template>
+              </NewClock>
               <div id="mapRoot"></div>
             </div>
           </div>
           <Drawer :show.sync="showStopToolbar" direction="right" :size="300">
-            <!-- <Toolbar ref="Toolbar" /> -->
             <Toolbar ref="Toolbar" :permanent-list="permanentList" />
           </Drawer>
         </div>
@@ -47,16 +50,19 @@ import LinesAnalysis from "./component/LinesAnalysis/index.vue";
 import HelpDialog from "./component/HelpDialog/index.vue";
 import Toolbar from "./component/Toolbar/index.vue";
 
+import PageConfig from "./component/PageConfig/index.vue";
+import configMixins from "./component/PageConfig/configMixins.js";
+
 export default {
-  mixins: [mixins],
   components: {
     AnalysisReport,
     LinesAnalysis,
 
     HelpDialog,
     Toolbar,
+    PageConfig,
   },
-
+  mixins: [mixins, configMixins],
   data() {
     return {
       activeNames: ["LinesAnalysis", "AnalysisReport", "PublicTransit", "MotorizedTravel", "Build3D", "Network", "Activity3D", "GeoJSON", "CarTravel", "Parking", "TrafficRegionAnalysis"],
@@ -106,6 +112,13 @@ export default {
     this.$store.dispatch("setDataSource", database1 + "/" + datasource1);
   },
   methods: {
+    inited() {
+      if (this.$route.query.configName) {
+        getUserCfg({ fileName: this.$route.query.configName }).then((res) => {
+          this.initByConfig(res);
+        });
+      }
+    },
     // 显示线路流量
     handleShowRouteFlows({ uuid, routeDetail }) {
       if (this.$refs.Toolbar) {

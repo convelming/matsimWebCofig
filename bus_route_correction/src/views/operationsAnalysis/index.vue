@@ -35,23 +35,26 @@
       </div>
       <HelpDialog :visible.sync="showHelpDialog" />
     </template>
-    <!-- <GeoJSONSetting :visible="isDev" /> -->
   </div>
 </template>
 
 <script>
-import GeoJSONSetting from "./component/GeoJSON/component/GeoJSONSetting.vue";
 
 import mixins from "./mixins";
 
 import HelpDialog from "./component/HelpDialog/index.vue";
+import Toolbar from "./component/Toolbar/index.vue";
+
+import PageConfig from "./component/PageConfig/index.vue";
+import configMixins from "./component/PageConfig/configMixins.js";
 
 export default {
   components: {
     HelpDialog,
-    GeoJSONSetting,
+    Toolbar,
+    PageConfig,
   },
-  mixins: [mixins],
+  mixins: [mixins, configMixins],
   data() {
     return {
       activeNames: ["PublicTransit", "MotorizedTravel", "CarTravel", "Build3D", "Network", "Activity3D", "GeoJSON", "Parking", "TrafficRegionAnalysis"],
@@ -70,14 +73,14 @@ export default {
     // });
   },
   methods: {
-    handleChangeTimeSpeed() {
-      let enableRotate = this.canChangeTimeSpeed();
-      if (enableRotate) {
-        this.speed = this._speed || 10;
-      } else {
-        this.speed = 0;
+    inited() {
+      if (this.$route.query.configName) {
+        getUserCfg({ fileName: this.$route.query.configName }).then((res) => {
+          this.initByConfig(res);
+        });
       }
     },
+    // 切换地图3D控制
     handleChangeMapCameraControls() {
       let enableRotate = this.canChangeMapCameraControls();
 
@@ -86,6 +89,15 @@ export default {
       } else {
         this._Map.enableRotate = false;
         this._Map.setPitchAndRotation(90, 0);
+      }
+    },
+    // 切换时间默认值
+    handleChangeTimeSpeed() {
+      let enableRotate = this.canChangeTimeSpeed();
+      if (enableRotate) {
+        this.speed = this._speed || 10;
+      } else {
+        this.speed = 0;
       }
     },
   },

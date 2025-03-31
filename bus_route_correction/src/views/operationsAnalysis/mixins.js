@@ -1,4 +1,4 @@
-import Toolbar from "./component/Toolbar/index.vue";
+
 import PublicTransit from "./component/PublicTransit/index.vue";
 import MotorizedTravel from "./component/MotorizedTravel/index.vue";
 import Build3D from "./component/Build3D/index.vue";
@@ -9,20 +9,15 @@ import CarTravel from "./component/CarTravel/index.vue";
 import Parking from "./component/Parking/index.vue";
 import TrafficRegionAnalysis from "./component/TrafficRegionAnalysis/index.vue";
 
-import PageConfig from "./component/PageConfig/index.vue";
-
 import NewClock from "@/components/NewClock/index.vue";
 
 import { MyMap, MapLayer, DEFAULT_MAP_LAYER_STYLE, MAP_LAYER_STYLE } from "@/mymap/index.js";
-import { getTimeInterval, getCenterZoom, saveUserCfg, getUserCfg, userCfgList } from "@/api/index.js";
+import { getTimeInterval, getCenterZoom } from "@/api/index.js";
 import { guid } from "@/utils/utils.js";
-
-import defaultConfig from "./component/PageConfig/defaultConfig.js";
 
 export default {
   components: {
     PublicTransit,
-    Toolbar,
     MotorizedTravel,
     Build3D,
     Network,
@@ -33,11 +28,9 @@ export default {
     TrafficRegionAnalysis,
 
     NewClock,
-    PageConfig,
   },
   data() {
     return {
-      defaultConfig,
 
       loading: false,
       _Map: null,
@@ -190,86 +183,14 @@ export default {
 
       this.initMap();
       this.handleChangeMapCameraControls();
-
-      if (this.$route.query.configName) {
-        getUserCfg({ fileName: this.$route.query.configName }).then((res) => {
-          this.initByConfig(res);
-        });
-      }
+      this.inited();
     });
   },
   beforeDestroy() {},
   methods: {
-    initByConfig(config) {
-      config = Object.assign({}, defaultConfig, config);
-
-      this.showStopToolbar = config.showStopToolbar;
-
-      this.showClock = config.showClock;
-
-      this.showHelpDialog = config.showHelpDialog;
-
-      this.time = config.time;
-      this.minTime = config.minTime;
-      this.maxTime = config.maxTime;
-      this.speedCommand(config.speed);
-      this._Map.setCenter(config.center);
-      this._Map.setZoom(config.zoom);
-      this._Map.setPitchAndRotation(config.pitch, config.rotation);
-      let map_style = MAP_LAYER_STYLE.find((v) => v.style_name == config.map_style_name);
-      if (map_style) {
-        this._MapLayer.setTileClass(map_style);
-      }
-      this.activeNames = config.activeNames;
-      Object.entries(this.$refs).forEach(([k, v]) => {
-        console.log(k, v.name);
-        if (v.configKey == "ToolbarConfig") {
-          v.initByConfig(config);
-        } else if (v.initByConfig && v.configKey) {
-          v.initByConfig(config[v.configKey]);
-        }
-      });
-      this.$setLanguage(config.language);
-    },
-    async getConfig() {
-      let cameraRotation = this._Map.cameraRotation;
-      console.log(cameraRotation);
-      let map_style_name = "";
-      try {
-        map_style_name = this._MapLayer.tileClass.style_name;
-      } catch (error) {}
-      const config = {
-        key: "PageConfig",
-
-        showStopToolbar: this.showStopToolbar,
-
-        showClock: this.showClock,
-
-        showHelpDialog: this.showHelpDialog,
-
-        time: this.time,
-        speed: this.speed,
-        minTime: this.minTime,
-        maxTime: this.maxTime,
-        center: this._Map.center,
-        zoom: this._Map.zoom,
-        rotation: cameraRotation.rotationDeg,
-        pitch: cameraRotation.pitchDeg,
-
-        activeNames: this.activeNames,
-
-        map_style_name: map_style_name,
-        language: this.page_language,
-      };
-      for (const [k, v] of Object.entries(this.$refs)) {
-        if (v.configKey == "ToolbarConfig") {
-          Object.assign(config, await v.exportConfig());
-        } else if (v.exportConfig && v.configKey) {
-          config[v.configKey] = await v.exportConfig();
-        }
-      }
-      return config;
-    },
+    handleChangeTimeSpeed() {},
+    handleChangeMapCameraControls() {},
+    inited() {},
     // 速度控制
     speedCommand(value) {
       this._speed = value;
@@ -313,8 +234,6 @@ export default {
       this.time = value;
       this.$emit("timeChange", this.time);
     },
-    handleChangeTimeSpeed() {},
-    handleChangeMapCameraControls() {},
     initMap() {
       this._Map = new MyMap({
         rootId: "mapRoot",
