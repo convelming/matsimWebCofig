@@ -102,4 +102,10 @@ export default {
 
   trafficRegionAnalysisConfig: { showLayer: false, lock2D: false },
   TrafficRegionAnalysisToolbar: { sreach: {}, params: {}, activeName: "", list: [] },
+
+  linesAnalysisConfig: { showLayer: false, lock2D: false },
+  LinesAnalysisToolbar: { sreach: {}, params: {}, activeName: "", list: [] },
+
+  analysisReportConfig: { showLayer: false, lock2D: false },
+  AnalysisReportToolbar: { sreach: {}, params: {}, activeName: "", list: [] },
 };

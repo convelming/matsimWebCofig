@@ -17,10 +17,11 @@
         <el-table-column :label="$l('configName')"
           ><template slot-scope="{ row }">{{ row }}</template>
         </el-table-column>
-        <el-table-column :label="$l('操作')" width="250">
+        <el-table-column :label="$l('操作')" width="300">
           <template slot-scope="{ row }">
             <el-button type="primary" size="mini" @click="loadConfig(row)">{{ $l("loadConfig") }}</el-button>
             <el-button type="primary" size="mini" @click="copyLink(row)">{{ $l("copyLink") }}</el-button>
+            <el-button type="primary" size="mini" @click="removeConfig(row)">{{ $l("removeConfig") }}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -62,6 +63,10 @@
     "zh-CN": "加载配置",
     "en-US": "Load Config"
   },
+  "removeConfig":{
+    "zh-CN": "删除配置",
+    "en-US": "Remove Config"
+  },
   "copyLink":{
     "zh-CN": "复制链接",
     "en-US": "copy Link"
@@ -82,6 +87,10 @@
     "zh-CN": "加载中...",
     "en-US": "Loading..."
   },
+  "removing":{
+    "zh-CN": "删除中...",
+    "en-US": "removing..."
+  },
   "saveSuccess":{
     "zh-CN": "保存成功",
     "en-US": "Successfully saved"
@@ -94,12 +103,19 @@
     "zh-CN": "加载成功",
     "en-US": "Successfully loaded"
   },
-
+  "removeSuccess":{
+    "zh-CN": "删除成功",
+    "en-US": "Successfully removed"
+  },
+  "isRemoveSuccess":{
+    "zh-CN": "是否删除配置",
+    "en-US": "Do you want to remove the config"
+  },
 }
 </language>
 
 <script>
-import { saveUserCfg, getUserCfg, userCfgList } from "@/api/index.js";
+import { saveUserCfg, getUserCfg, userCfgList, removeUserCfg } from "@/api/index.js";
 import { copyText, stringToFile, fileToString } from "@/utils/utils.js";
 import moment from "moment";
 
@@ -129,16 +145,19 @@ export default {
         case "load":
           this.show = true;
           this.loading = true;
-          userCfgList()
-            .then((res) => {
-              this.configList = res.data;
-              this.loading = false;
-            })
-            .catch(() => {
-              this.loading = false;
-            });
+          this.getConfigList();
           break;
       }
+    },
+    getConfigList() {
+      return userCfgList()
+        .then((res) => {
+          this.configList = res.data;
+          this.loading = false;
+        })
+        .catch(() => {
+          this.loading = false;
+        });
     },
     async exportConfig() {
       const { value: configName } = await this.$prompt(this.$l("inputConfigName"), this.$l("提示"), {
@@ -220,6 +239,29 @@ export default {
         this.rootVue.initByConfig(res);
         this.show = false;
         this.$message.success(this.$l("loadSuccess"));
+      } catch (error) {
+        console.error(error);
+        // this.$message.success(error.msg);
+      }
+      loading.close();
+    },
+    async removeConfig(configName) {
+      await this.$confirm(this.$l("isRemoveSuccess") + " \"" + configName + "\" ?", this.$l("提示"), {
+        confirmButtonText: this.$l("确定"),
+        cancelButtonText: this.$l("取消"),
+        type: "warning",
+      });
+      const loading = this.$loading({
+        lock: true,
+        text: this.$l("removing"),
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)",
+      });
+      try {
+        const res = await removeUserCfg({ fileName: configName });
+        this.rootVue.initByConfig(res);
+        this.$message.success(this.$l("removeSuccess"));
+        this.getConfigList();
       } catch (error) {
         console.error(error);
         // this.$message.success(error.msg);

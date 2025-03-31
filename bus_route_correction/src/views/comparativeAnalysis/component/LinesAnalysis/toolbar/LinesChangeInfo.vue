@@ -26,7 +26,7 @@
       </el-table>
       <div class="title">
         <span>{{ $l("受影响的线路") }}&nbsp;&nbsp;&nbsp;</span>
-        <span class="el-icon-refresh-right" @click="getList1"></span>
+        <span class="el-icon-refresh-right" @click="getList2"></span>
       </div>
       <el-table class="small my_tabel" :data="list2" border stripe height="300px" v-loading="loading2">
         <el-table-column :label="$l('Line')" prop="lineName" show-overflow-tooltip />

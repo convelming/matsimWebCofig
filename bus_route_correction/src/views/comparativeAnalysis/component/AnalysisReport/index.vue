@@ -58,6 +58,8 @@ export default {
   },
   data() {
     return {
+      configKey: "analysisReportConfig",
+
       loading: false,
       loaded: false,
       s_showLayer: true,
@@ -80,6 +82,21 @@ export default {
     this.handleDisable();
   },
   methods: {
+    initByConfig(config) {
+      config = config || this.rootVue.defaultConfig.activity3DConfig;
+      this.s_showLayer = config.showLayer;
+      this.$emit("update:showLayer", config.showLayer);
+      this.$emit("update:lock2D", config.lock2D);
+
+      this.lanModel = config.lanModel;
+    },
+    exportConfig() {
+      return {
+        showLayer: this.s_showLayer,
+        lock2D: this.lock2D,
+        lanModel: this.lanModel,
+      };
+    },
     // 显示隐藏
     handleChangeShowLayer(value) {
       this.s_showLayer = value;

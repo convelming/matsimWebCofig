@@ -22,7 +22,7 @@
     <div class="toolbar-bodyer" v-show="activeModel === LinesAnalysis.id">
       <el-collapse class="toolbar-collapse" v-model="LinesAnalysis.activeName" accordion>
         <LinesChangeInfo name="LinesChangeInfo" />
-        <component v-for="item in LinesAnalysis.list" :show="item.name == LinesAnalysis.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" />
+        <component v-for="item in LinesAnalysis.list" :show="item.name == LinesAnalysis.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" :config="item.config" ref="LinesAnalysisItem" />
       </el-collapse>
     </div>
     <div class="toolbar-bodyer" v-show="activeModel === AnalysisReport.id">
@@ -383,6 +383,20 @@ export default {
     initByConfig(config) {
       this.activeName = config.toolbarActiveName || "PublicTransit";
       {
+        const LinesAnalysisToolbar = config.LinesAnalysisToolbar || {};
+        this.$set(this.LinesAnalysis, "sreach", LinesAnalysisToolbar.sreach || {});
+        this.$set(this.LinesAnalysis, "params", LinesAnalysisToolbar.params || {});
+        this.$set(this.LinesAnalysis, "activeName", LinesAnalysisToolbar.activeName || "");
+        this.$set(this.LinesAnalysis, "list", LinesAnalysisToolbar.list || []);
+      }
+      {
+        const AnalysisReportToolbar = config.AnalysisReportToolbar || {};
+        this.$set(this.AnalysisReport, "sreach", AnalysisReportToolbar.sreach || {});
+        this.$set(this.AnalysisReport, "params", AnalysisReportToolbar.params || {});
+        this.$set(this.AnalysisReport, "activeName", AnalysisReportToolbar.activeName || "");
+        this.$set(this.AnalysisReport, "list", AnalysisReportToolbar.list || []);
+      }
+      {
         const Activity3DToolbar = config.Activity3DToolbar || {};
         this.$set(this.Activity3D, "sreach", Activity3DToolbar.sreach || {});
         this.$set(this.Activity3D, "params", Activity3DToolbar.params || {});
@@ -451,6 +465,44 @@ export default {
       const config = {
         toolbarActiveName: this.activeName,
       };
+      {
+        const list = [];
+        const refs = this.$refs["LinesAnalysisItem"];
+        for (const item of this.LinesAnalysis.list) {
+          const ref = refs.find((v) => v.name == item.name);
+          list.push({
+            type: item.type,
+            name: item.name,
+            data: JSON.parse(JSON.stringify(item.data)),
+            config: await ref.exportConfig(),
+          });
+        }
+        config.LinesAnalysisToolbar = {
+          sreach: this.LinesAnalysis.sreach,
+          params: this.LinesAnalysis.params,
+          activeName: this.LinesAnalysis.activeName,
+          list: list,
+        };
+      }
+      {
+        const list = [];
+        const refs = this.$refs["AnalysisReportItem"];
+        for (const item of this.AnalysisReport.list) {
+          const ref = refs.find((v) => v.name == item.name);
+          list.push({
+            type: item.type,
+            name: item.name,
+            data: JSON.parse(JSON.stringify(item.data)),
+            config: await ref.exportConfig(),
+          });
+        }
+        config.AnalysisReportToolbar = {
+          sreach: this.AnalysisReport.sreach,
+          params: this.AnalysisReport.params,
+          activeName: this.AnalysisReport.activeName,
+          list: list,
+        };
+      }
       {
         const list = [];
         const refs = this.$refs["Activity3DItem"];

@@ -113,6 +113,9 @@ export default {
       type: Boolean,
       default: false,
     },
+    config: {
+      type: [Object, undefined],
+    },
   },
   components: {},
   computed: {
@@ -254,6 +257,7 @@ export default {
       color: this.newLineColor,
       visible: this.showNewLine,
     });
+    if (this.config) this.initByConfig(this.config);
   },
   mounted() {},
   beforeDestroy() {
@@ -266,6 +270,27 @@ export default {
     this._NewBusStopLayer.dispose();
   },
   methods: {
+    initByConfig(config) {
+      for (const key in config) {
+        if (key === "startTime") {
+          this.s_form.startTime = config[key];
+        } else if (key === "endTime") {
+          this.s_form.endTime = config[key];
+        } else {
+          this[key] = config[key];
+        }
+      }
+    },
+    exportConfig() {
+      return {
+        startTime: this.s_form.startTime,
+        endTime: this.s_form.endTime,
+        showOldLine: this.showOldLine,
+        oldLineColor: this.oldLineColor,
+        showNewLine: this.showNewLine,
+        newLineColor: this.newLineColor,
+      };
+    },
     // 组件初始化事件
     getListObj(list) {
       const linkObj = {};

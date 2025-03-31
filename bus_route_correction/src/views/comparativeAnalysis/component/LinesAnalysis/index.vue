@@ -183,6 +183,8 @@ export default {
   },
   data() {
     return {
+      configKey: "linesAnalysisConfig",
+
       loading: false,
       loaded: false,
       predefineColors: ["#5470c6", "#91cc75", "#fac858", "#ee6666", "#73c0de", "#3ba272", "#fc8452", "#9a60b4", "#ea7ccc"],
@@ -238,6 +240,38 @@ export default {
     this._AffectedBusStopListLayer.dispose();
   },
   methods: {
+    initByConfig(config) {
+      config = config || this.rootVue.defaultConfig.activity3DConfig;
+      this.s_showLayer = config.showLayer;
+      this.$emit("update:showLayer", config.showLayer);
+      this.$emit("update:lock2D", config.lock2D);
+
+      this.showChangeOld = config.showChangeOld;
+      this.showChangeNew = config.showChangeNew;
+      this.showAffectedRoutes = config.showAffectedRoutes;
+      this.showAffectedStop = config.showAffectedStop;
+
+      this.oldLinkColor = config.oldLinkColor;
+      this.newLinkColor = config.newLinkColor;
+      this.affectedLinkColor = config.affectedLinkColor;
+      this.affectedStopColor = config.affectedStopColor;
+    },
+    exportConfig() {
+      return {
+        showLayer: this.s_showLayer,
+        lock2D: this.lock2D,
+
+        showChangeOld: this.showChangeOld,
+        showChangeNew: this.showChangeNew,
+        showAffectedRoutes: this.showAffectedRoutes,
+        showAffectedStop: this.showAffectedStop,
+
+        oldLinkColor: this.oldLinkColor,
+        newLinkColor: this.newLinkColor,
+        affectedLinkColor: this.affectedLinkColor,
+        affectedStopColor: this.affectedStopColor,
+      };
+    },
     // 触发showLayer变化事件
     handleChangeShowLayer(value) {
       this.s_showLayer = value;

@@ -907,3 +907,68 @@ export function getUserCfg(params) {
     // responseType: "blob",
   });
 }
+
+// 删除配置
+// DELETE /pt/main/removeUserCfg
+export function removeUserCfg(params) {
+  return request({
+    url: `/pt/main/removeUserCfg`,
+    params: params,
+    method: "delete",
+  });
+}
+
+
+
+// 保存配置
+// POST /pt/main/saveUserCfg2
+// 接口ID：267966350
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-267966350
+export function saveUserCfg2(fileName,file) {
+  let formData = new FormData();
+  formData.append("fileName", fileName);
+  formData.append("file", file);
+  return request({
+    url: `/pt/main/saveUserCfg2`,
+    method: "post",
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+    data: formData,
+  });
+}
+
+// 配置列表
+// GET /pt/main/userCfgList2
+// 接口ID：267968264
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-267968264
+export function userCfgList2(params) {
+  return request({
+    url: `/pt/main/userCfgList2`,
+    params: params,
+    method: "get",
+  });
+}
+
+// 获取配置
+// GET /pt/main/getUserCfg2
+// 接口ID：267968790
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-267968790
+export function getUserCfg2(params) {
+  return request({
+    url: `/pt/main/getUserCfg2`,
+    params: params,
+    method: "get",
+    // responseType: "blob",
+  });
+}
+
+// 删除配置
+// DELETE /pt/main/removeUserCfg2
+export function removeUserCfg2(params) {
+  return request({
+    url: `/pt/main/removeUserCfg2`,
+    params: params,
+    method: "delete",
+  });
+}
