@@ -238,7 +238,7 @@ export default {
   flex-shrink: 0;
   .locale_btn {
     flex-shrink: 0;
-    width: 60px;
+    width: 65px;
     cursor: pointer;
     height: 32px;
     border: 1px solid #e5e5e5;
