@@ -149,7 +149,7 @@ export class MapLayer extends Layer {
     for (let i = row[0]; i <= row[1]; i++) {
       for (let j = col[0]; j <= col[1]; j++) {
         const key = `${i}_${j}`;
-        let tile = this.zoomMap[zoom].tileMap[key]
+        let tile = this.zoomMap[zoom].tileMap[key];
         if (!this.zoomMap[zoom].tileMap[key]) {
           tile = new this.tileClass(zoom, i, j, size);
           tile.opacity = this.opacity;
@@ -183,7 +183,6 @@ export class MapTile {
   static x_offset = 0;
   // y偏移量
   static y_offset = 0;
-
 
   _loadNum = 0;
 
@@ -274,23 +273,18 @@ export class MapTile {
   async loadMap() {
     try {
       this._loadNum++;
-      const texture = await new Promise((resolve, reject) =>
-        Loader.load(this.getUrl(), resolve, undefined, reject)
-      );
+      const texture = await new Promise((resolve, reject) => Loader.load(this.getUrl(), resolve, undefined, reject));
       this.mesh.material.setValues({ map: texture, opacity: this._opacity, transparent: this._opacity !== 1 });
       this.mesh.material.needsUpdate = true;
       this._loadStatus = 2;
     } catch (error) {
       if (this._loadNum <= 1) {
-        await new Promise((resolve) =>
-          setTimeout(resolve, 2000 * Math.random())
-        );
+        await new Promise((resolve) => setTimeout(resolve, 2000 * Math.random()));
         this.loadMap();
       } else {
         this._loadStatus = 3;
       }
     }
-
   }
 
   getUrl() {
@@ -303,10 +297,8 @@ export class MapTile {
     this.col = col;
     this.size = size;
 
-    this._x =
-      ((row + 0.5) * (EARTH_RADIUS * 2)) / Math.pow(2, zoom) - EARTH_RADIUS;
-    this._y =
-      EARTH_RADIUS - ((col + 0.5) * (EARTH_RADIUS * 2)) / Math.pow(2, zoom);
+    this._x = ((row + 0.5) * (EARTH_RADIUS * 2)) / Math.pow(2, zoom) - EARTH_RADIUS;
+    this._y = EARTH_RADIUS - ((col + 0.5) * (EARTH_RADIUS * 2)) / Math.pow(2, zoom);
     // let zd = this.constructor.max_zoom - this.constructor.min_zoom;
     // this._z = (zd - zoom) / zd / 100;
     this._z = 0;
@@ -323,8 +315,8 @@ export function MapStyleFactory(params = {}) {
     y_offset: 0,
     getUrl: function (zoom, row, col) {
       return `http://192.168.60.231:23334/osm/MapTilerBasic/${zoom}/${row}/${col}.png`;
-    }
-  }
+    },
+  };
   const { style_name, background, max_zoom, min_zoom, x_offset, y_offset, ...methods } = Object.assign({}, defaultParams, params);
   const Tile = class extends MapTile {
     static style_name = style_name;
@@ -333,7 +325,7 @@ export function MapStyleFactory(params = {}) {
     static min_zoom = min_zoom;
     static x_offset = x_offset;
     static y_offset = y_offset;
-  }
+  };
   for (const key in methods) {
     Tile.prototype[key] = methods[key];
   }
@@ -342,5 +334,4 @@ export function MapStyleFactory(params = {}) {
 
 export const MAP_LAYER_STYLE = (window.MAP_LAYER_STYLE || []).map(MapStyleFactory);
 
-
-export const DEFAULT_MAP_LAYER_STYLE =  MAP_LAYER_STYLE[window.DEFAULT_MAP_LAYER_STYLE] || MAP_LAYER_STYLE[0];
+export const DEFAULT_MAP_LAYER_STYLE = MAP_LAYER_STYLE[window.DEFAULT_MAP_LAYER_STYLE_INDEX] || MAP_LAYER_STYLE[0];

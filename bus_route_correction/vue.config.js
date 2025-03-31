@@ -30,7 +30,7 @@ module.exports = defineConfig({
       "/": {
         ws: false,
         target: `http://192.168.60.231:23105`, // 测试服
-        target: `http://192.168.31.102:23105`, // 本地调试
+        // target: `http://192.168.31.102:23105`, // 本地调试
         // target: `http://localhost:23105`, // 测试服
         changeOrigin: true,
         // pathRewrite: {
