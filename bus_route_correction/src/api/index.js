@@ -869,7 +869,7 @@ export function accessibilityTRG(data) {
 // POST /pt/main/saveUserCfg
 // 接口ID：267966350
 // 接口地址：https://app.apifox.com/link/project/3709845/apis/api-267966350
-export function saveUserCfg(fileName,file) {
+export function saveUserCfg(fileName, file) {
   let formData = new FormData();
   formData.append("fileName", fileName);
   formData.append("file", file);
@@ -918,13 +918,11 @@ export function removeUserCfg(params) {
   });
 }
 
-
-
 // 保存配置
 // POST /pt/main/saveUserCfg2
 // 接口ID：267966350
 // 接口地址：https://app.apifox.com/link/project/3709845/apis/api-267966350
-export function saveUserCfg2(fileName,file) {
+export function saveUserCfg2(fileName, file) {
   let formData = new FormData();
   formData.append("fileName", fileName);
   formData.append("file", file);
@@ -970,5 +968,54 @@ export function removeUserCfg2(params) {
     url: `/pt/main/removeUserCfg2`,
     params: params,
     method: "delete",
+  });
+}
+
+// 上传gtfs文件
+// POST /pt/transitLine/uploadGTFS
+// 接口ID：279161462
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-279161462
+export function uploadGTFS(file) {
+  let formData = new FormData();
+  formData.append("file", file);
+  return request({
+    url: `/pt/transitLine/uploadGTFS`,
+    method: "post",
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+    data: formData,
+    noMsg: true,
+  });
+}
+
+// 上传schedule文件
+// POST /pt/transitLine/uploadSchedule
+// 接口ID：279214121
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-279214121
+export function uploadSchedule(schedule, vehicle) {
+  let formData = new FormData();
+  formData.append("schedule", schedule);
+  formData.append("vehicle", vehicle);
+  return request({
+    url: `/pt/transitLine/uploadSchedule`,
+    method: "post",
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+    data: formData,
+    noMsg: true,
+  });
+}
+
+// 获取上传线路列表
+// POST /pt/transitLine/getUploadLines
+// 接口ID：279431344
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-279431344
+export function getUploadLines(data) {
+  return request({
+    url: `/pt/transitLine/getUploadLines`,
+    data: data,
+    method: "post",
   });
 }

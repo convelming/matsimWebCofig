@@ -19,7 +19,7 @@
           </el-form-item>
         </el-form>
         <template v-if="tlForm.obj">
-          <div class="tr_list">
+          <div class="tr_list" style="height: calc(100vh - 300px);">
             <el-collapse v-model="activeNames">
               <el-collapse-item v-for="(v, i) in tlForm.obj.transitRoutes" :name="String(i)" :key="i">
                 <div slot="title">
@@ -80,7 +80,8 @@
           </el-row>
         </template>
         <template v-else>
-          <el-table class="small my_tabel" :data="changedList" border stripe height="calc(100vh - 220px)" v-loading="loading1">
+          <ChangeByFile />
+          <el-table class="small my_tabel" :data="changedList" border stripe height="calc(100vh - 300px)" v-loading="loading1">
             <el-table-column :label="$l('路线名称')" prop="lineName" show-overflow-tooltip />
             <el-table-column width="80" :label="$l('操作')">
               <template slot-scope="{ row }">
@@ -278,6 +279,7 @@ import StopsEdit from "./component/StopsEdit.vue";
 import StopsRoutesEdit from "./component/StopsRoutesEdit.vue";
 import StartEdit from "./component/StartEdit.vue";
 import HelpDialog from "./component/HelpDialog/index.vue";
+import ChangeByFile from "./component/ChangeByFile.vue";
 
 import { BusLinkLayer } from "./layer/BusLinkLayer";
 import { BusStopLayer } from "./layer/BusStopLayer";
@@ -293,6 +295,7 @@ export default {
     StopsRoutesEdit,
     StartEdit,
     HelpDialog,
+    ChangeByFile,
   },
   data() {
     return {
@@ -988,7 +991,6 @@ export default {
     background-color: #eef2fd;
     border: 1px solid #ccc;
     border-radius: 8px;
-    height: calc(100vh - 300px);
     user-select: none;
     overflow-y: auto;
     ::v-deep {

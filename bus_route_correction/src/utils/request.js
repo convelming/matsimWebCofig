@@ -113,7 +113,7 @@ service.interceptors.response.use(
       return Promise.reject(new Error(msg));
     } else if (code !== 200) {
       if (!res.config.noMsg) Message.error(msg);
-      return Promise.reject("error");
+      return Promise.reject(new Error(msg));
     } else {
       return res.data;
     }

@@ -111,11 +111,14 @@ export function pxtorem(px) {
   return Number(px / 75).toFixed(6);
 }
 
-export function selectFile() {
+export function selectFile(accept = "*/*") {
   return new Promise((resolve) => {
     const input = document.createElement("input");
     input.type = "file";
-    input.onchange = resolve;
+    input.accept = accept;
+    input.onchange = () => {
+      resolve(input.files[0]);
+    };
     input.click();
   });
 }
