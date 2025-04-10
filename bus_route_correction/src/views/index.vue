@@ -129,11 +129,12 @@
             <i class="el-icon-edit" @click="handleChangeScale(row)"></i>
           </template>
         </el-table-column>
-        <el-table-column :label="$l('操作')" width="300">
+        <el-table-column :label="$l('操作')" width="350">
           <template slot-scope="{ row }">
             <el-button v-if="!row.noRun && row.loadStatus == '已加载'" type="primary" size="mini" @click="handlePlanAdjustmentToDetail(row)">{{ $l("修改") }}</el-button>
             <el-button v-if="!row.noLoad" :loading="row.loadStatus == '加载中'" type="warning" size="mini" @click="handlePlanAdjustmentLoad(row)">{{ $l("加载") }}</el-button>
             <el-button v-if="!row.noRun" type="success" size="mini" :loading="row.runStatus == '运行中'" @click="handleOperationsAnalysisRun(row)">{{ $l("运行") }}</el-button>
+            <el-button v-if="!row.noRun" type="success" size="mini" @click="handleOperationsAnalysisRunLog(row)">{{ $l("运行日志") }}</el-button>
             <el-button v-if="!row.noRun" type="danger" size="mini" @click="handleDelete(row)">{{ $l("删除") }}</el-button>
           </template>
         </el-table-column>
@@ -429,6 +430,10 @@
     "zh-CN":"删除成功",
     "en-US":"删除成功",
   },
+  "运行日志":{
+    "zh-CN":"运行日志",
+    "en-US":"运行日志",
+  },
 }
 </language>
 
@@ -603,6 +608,9 @@ export default {
         params: { database: database, datasource: datasource },
       }).href;
       window.open(href, "_blank");
+    },
+    handleOperationsAnalysisRunLog(row){
+      window.open(`${process.env.VUE_APP_BASE_API}/pt/main/runMatsimLog?key=${row.name}`, "_blank");
     },
     // 线路方案调整
     handleShowPlanAdjustmentDialog() {
