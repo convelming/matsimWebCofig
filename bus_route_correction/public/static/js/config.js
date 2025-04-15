@@ -1,9 +1,7 @@
-console.log("使用默认配置")
-
 EARTH_RADIUS = 20037508.3427892;
 
 // 地图默认样式序号，如果地图样式列表中没有这个样式，则默认序号为0的样式
-DEFAULT_MAP_LAYER_STYLE_INDEX = 2;
+DEFAULT_MAP_LAYER_STYLE_INDEX = 1;
 
 // 地图样式列表
 // {
@@ -90,9 +88,9 @@ MAP_LAYER_STYLE = [
 ];
 
 // geojson地图坐标系转换配置
-proj4Config = function (proj4) {
+try {
   proj4.defs("EPSG:4526", "+proj=tmerc +lat_0=0 +lon_0=114 +k=1 +x_0=38500000 +y_0=0 +ellps=GRS80 +units=m +no_defs");
   proj4.defs("urn:ogc:def:crs:OGC:1.3:CRS84", proj4.defs("EPSG:4326"));
-};
-
-
+} catch (error) {
+  console.error(error);
+}

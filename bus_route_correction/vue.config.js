@@ -39,6 +39,7 @@ module.exports = defineConfig({
       },
     },
   },
+  
   pages: {
     pt: {
       entry: "./src/main.js",
@@ -58,7 +59,8 @@ module.exports = defineConfig({
   // configureWebpack: {
   //   externals: {
   //     "vue": "Vue",
-  //     "element-ui": "ELEMENT"
+  //     "element-ui": "ELEMENT",
+  //     "proj4": "proj4",
   //   }
   // },
   chainWebpack: (config) => {

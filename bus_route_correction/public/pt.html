@@ -7,10 +7,8 @@
     <link rel="icon" href="<%= BASE_URL %>static/img/favicon.ico" />
     <title><%= htmlWebpackPlugin.options.title %></title>
     <script type="text/javascript" src="//api.map.baidu.com/api?type=webgl&v=1.0&ak=3kc8Adbc2OX8U6wUDr3DWOfUCMboxWrq"></script>
-    <!-- <script src="<%= BASE_URL %>static/js/config.js"></script> -->
-    <script src="<%= BASE_URL %>static/js/proj4.config.js"></script>
+    <script src="<%= BASE_URL %>static/js/proj4.js"></script>
     <script>
-
       function loadScript(url, onload, onerror) {
         var script = document.createElement("script");
         script.src = url;
@@ -18,7 +16,6 @@
         script.onerror = onerror;
         document.head.appendChild(script);
       }
-
       loadScript("<%= BASE_URL %>pt/main/getJsConfig/config.js", null, function () {
         loadScript("<%= BASE_URL %>static/js/config.js");
       });

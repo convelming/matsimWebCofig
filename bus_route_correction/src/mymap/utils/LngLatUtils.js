@@ -1,4 +1,4 @@
-import proj4 from 'proj4'
+// import proj4 from 'proj4'
 
 export const EARTH_RADIUS = 20037508.3427892;
 

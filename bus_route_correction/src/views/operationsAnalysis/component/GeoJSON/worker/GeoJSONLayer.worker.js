@@ -1,4 +1,4 @@
-import proj4 from "@/utils/proj4.util";
+importScripts("/static/js/proj4.js","/static/js/config.js","/pt/main/getJsConfig/config.js")
 
 class GeoJSONParser {
   // static DEFAULT_CRS = { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3857" } };

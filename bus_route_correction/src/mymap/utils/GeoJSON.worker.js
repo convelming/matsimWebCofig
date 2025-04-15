@@ -1,4 +1,4 @@
-import proj4 from "@/utils/proj4.util";
+importScripts("/static/js/proj4.js","/static/js/config.js","/pt/main/getJsConfig/config.js")
 
 class GeoJSONParser {
   // static DEFAULT_CRS = { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3857" } };
@@ -154,7 +154,7 @@ class GeoJSONParser {
           for (const [index, properties] of propertiesList.entries()) {
             const value = properties[key];
             if (value !== undefined && !label.map.has(value)) {
-              const v = label.map.size + 1
+              const v = label.map.size + 1;
               label.map.set(value, v);
               label.max = v;
             }
