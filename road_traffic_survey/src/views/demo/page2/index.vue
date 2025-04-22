@@ -94,9 +94,6 @@ export default {
     };
   },
   computed: {
-    GeoJSONIdList() {
-      return this.GeoJSONList.map((item) => item.id);
-    },
   },
   watch: {
     startPink: {
