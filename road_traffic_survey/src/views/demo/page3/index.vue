@@ -5,7 +5,6 @@
         <div></div>
         <div class="mapBox">
           <div id="mapRoot"></div>
-
           <div class="box" style="width: 350px">
             <el-form size="small" label-position="left">
               <el-row :gutter="0">
@@ -29,20 +28,30 @@
                     <el-switch v-model="showNetwork3DNode" :active-value="true" :inactive-value="false"></el-switch>
                   </el-form-item>
                 </el-col>
-                <el-col :span="24" :offset="0">
-                  <el-form-item label="轨迹：">
-                    <el-select v-model="selectPath" clearable @change="handleChangePath">
-                      <el-option v-for="(item, index) in paths" :key="index" :label="index" :value="index" />
-                    </el-select>
+                <el-col :span="12" :offset="0">
+                  <el-form-item label="地形图：">
+                    <el-switch v-model="showTifLayer" :active-value="true" :inactive-value="false"></el-switch>
                   </el-form-item>
                 </el-col>
-                <el-col :span="24" :offset="0" v-if="selectPath">
+                <el-col :span="24" :offset="0">
+                  <div style="display: flex; align-items: center; justify-content: space-between">
+                    <span style="font-size: 14px; color: #2c3e50; width: 110px">地形图透明度：</span>
+                    <el-slider style="margin: 0 15px; flex: 1" v-model="tifOpacity" :min="0" :max="1" :step="0.01"></el-slider>
+                  </div>
+                </el-col>
+                <el-col :span="24" :offset="0">
                   <el-form-item label-width="0">
                     <el-button size="small" @click="play">播放</el-button>
                     <el-button size="small" @click="stop">暂停</el-button>
                     <el-button size="small" @click="reset">重置</el-button>
                     <span style="margin-left: 20px">锁定视角：</span><el-switch v-model="lockSelect" :active-value="true" :inactive-value="false"></el-switch>
                   </el-form-item>
+                </el-col>
+                <el-col :span="24" :offset="0">
+                  <div style="display: flex; align-items: center; justify-content: space-between">
+                    <span style="font-size: 14px; color: #2c3e50; width: 110px">时间：{{ time }}</span>
+                    <el-slider style="margin: 0 15px; flex: 1" :value="time" @input="setTime" :min="minTime" :max="maxTime"></el-slider>
+                  </div>
                 </el-col>
                 <template v-if="playDetail">
                   <el-col :span="12" :offset="0">
@@ -66,17 +75,18 @@
 </template>
 
 <script>
-import { MyMap, MapLayer, MAP_LAYER_STYLE, MAP_EVENT } from "@/mymap/index.js";
+import { MyMap, MAP_LAYER_STYLE, MAP_EVENT } from "@/mymap/index.js";
 import { WGS84ToMercator } from "@/mymap/utils/LngLatUtils";
 import { TifLayer } from "./layer/TifLayer";
 import { Network3DLayer, Network } from "./layer/Network3DLayer";
-import { UAVLayer } from "./layer/UAVLayer";
+import { UAVListLayer } from "./layer/UAVListLayer";
+import { MapLayer } from "@/mymap/index.js";
 
 import NewClock from "@/components/NewClock/index.vue";
 
 import JSZip from "jszip";
 
-import * as GeoTIFF from "geotiff";
+import GeoTIFF from "./GeoTIFF.js";
 
 export default {
   components: {
@@ -113,6 +123,20 @@ export default {
         this._Network3DLayer.setShowLink(val);
       },
     },
+    tifOpacity: {
+      handler(val) {
+        this._TifLayer.setOpacity(val);
+      },
+    },
+    showTifLayer: {
+      handler(val) {
+        if (val) {
+          this._Map.addLayer(this._TifLayer);
+        } else {
+          this._Map.removeLayer(this._TifLayer);
+        }
+      },
+    },
   },
   data() {
     return {
@@ -128,8 +152,13 @@ export default {
       showNetwork2D: false,
       showNetwork3DNode: true,
       showNetwork3DLink: true,
+      showTifLayer: true,
       paths: {},
       selectPath: null,
+      time: 0,
+      minTime: 0,
+      maxTime: 5000,
+      tifOpacity: 1,
     };
   },
   created() {},
@@ -147,15 +176,16 @@ export default {
         center: [12606995.580320276, 2647865.9741280824],
         center: [12707787.79, 2759380.11],
         // center: WGS84ToMercator(113.4848520194447, 23.089866565806066),
-        zoom: 11,
+        zoom: 13,
         minPitch: -90,
       });
       this._Map.cameraControls.enableRotate = true;
+      // this._MapLayer = new MapLayer({ tileClass: MapTile, zIndex: -1 });
       this._MapLayer = new MapLayer({ tileClass: MAP_LAYER_STYLE[MAP_LAYER_STYLE.length - 1], zIndex: -1 });
       this._Map.addLayer(this._MapLayer);
 
-      this._TifLayer = new TifLayer({ zIndex: 100 });
-      this._Map.addLayer(this._TifLayer);
+      this._TifLayer = new TifLayer({ zIndex: 100, opacity: this.tifOpacity });
+      if (this.showTifLayer) this._Map.addLayer(this._TifLayer);
 
       this._Network3DLayer = new Network3DLayer({
         zIndex: 200,
@@ -165,7 +195,8 @@ export default {
       });
       this._Map.addLayer(this._Network3DLayer);
 
-      this._UAVLayer = new UAVLayer({
+      this._UAVListLayer = new UAVListLayer({
+        zIndex: 300,
         lockSelect: this.lockSelect,
         event: {
           playing: (res) => {
@@ -173,7 +204,7 @@ export default {
           },
         },
       });
-      this._Map.addLayer(this._UAVLayer);
+      this._Map.addLayer(this._UAVListLayer);
     },
     async loadNetwork() {
       const response = await fetch(process.env.VUE_APP_BASE_API + "/demo/output_network.zip");
@@ -190,10 +221,20 @@ export default {
       }
     },
     async loadPaths() {
-      const response = await fetch(process.env.VUE_APP_BASE_API + "/demo/leg.json");
+      const response = await fetch(process.env.VUE_APP_BASE_API + "/demo/leg(1).json");
       if (response.ok) {
         const xml = await response.text();
-        this.paths = JSON.parse(xml);
+        const paths = [];
+        const list = Object.entries(JSON.parse(xml));
+        for (const v of list) {
+          for (const v1 of v[1]) {
+            const [x, y] = WGS84ToMercator(v1[0], v1[1]);
+            v1[0] = x;
+            v1[1] = y;
+          }
+          paths.push({ id: v[0], nodes: v[1], center: v[1][0] });
+        }
+        this._UAVListLayer.setPaths(paths);
       } else {
         console.error(`HTTP error! status: ${response.status}`, response);
       }
@@ -207,6 +248,7 @@ export default {
       const bbox = tifImage.getBoundingBox();
       const [x1, y1] = WGS84ToMercator(bbox[0], bbox[1]);
       const [x2, y2] = WGS84ToMercator(bbox[2], bbox[3]);
+      // tifImage.getCanvasTexture();
 
       const image = {
         imgWidth: tifImage.getWidth(),
@@ -219,19 +261,30 @@ export default {
         data: tifImageData,
       };
       this._TifLayer.setTifImage(image);
+      // this._MapLayer.setTiff(tifImage);
     },
-    handleChangePath() {
-      this.reset();
-      this._UAVLayer.setPath(this.paths[this.selectPath]);
+    setTime(time) {
+      if (time > this.maxTime) time = this.maxTime;
+      this.time = Number(Number(time).toFixed(3));
+      this._UAVListLayer.setTime(this.time);
     },
     play() {
-      this._UAVLayer.play();
+      if (this._interval) clearInterval(this._interval);
+      this._interval = setInterval(() => {
+        if (this.time + 1 / 60 > this.maxTime) {
+          this.stop();
+        } else {
+          this.setTime(this.time + 1 / 60);
+        }
+      }, 1000 / 60);
     },
     stop() {
-      this._UAVLayer.stop();
+      clearInterval(this._interval);
+      this._interval = null;
     },
     reset() {
-      this._UAVLayer.reset();
+      this.stop();
+      this.setTime(0);
     },
   },
 };
@@ -275,5 +328,12 @@ export default {
     margin-bottom: 8px;
     // color: orange;
   }
+}
+
+.NewClock {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  z-index: 1000;
 }
 </style>
