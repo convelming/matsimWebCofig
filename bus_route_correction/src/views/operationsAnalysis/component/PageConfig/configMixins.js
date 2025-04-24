@@ -12,6 +12,7 @@ export default {
       config = Object.assign({}, defaultConfig, config);
 
       this.showStopToolbar = config.showStopToolbar;
+      this.showLeftToolbar = config.showLeftToolbar;
 
       this.showClock = config.showClock;
 
@@ -50,6 +51,7 @@ export default {
         key: "PageConfig",
 
         showStopToolbar: this.showStopToolbar,
+        showLeftToolbar: this.showLeftToolbar,
 
         showClock: this.showClock,
 

@@ -3,7 +3,7 @@
     <template v-if="!loading">
       <div class="grid_root">
         <div class="Drawer_row">
-          <Drawer class="left_toolber" show direction="left" :size="300">
+          <Drawer class="left_toolber" :show.sync="showLeftToolbar" direction="left" :size="300">
             <el-collapse v-model="activeNames">
               <LinesAnalysis :showLayer.sync="showLayerLinesAnalysis" :lock2D.sync="lock2DLinesAnalysis" name="LinesAnalysis" ref="LinesAnalysis" />
               <AnalysisReport :showLayer.sync="showLayerAnalysisReport" :lock2D.sync="lock2DAnalysisReport" name="AnalysisReport" ref="AnalysisReport" />

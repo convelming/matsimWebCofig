@@ -10,6 +10,7 @@
 
 export default {
   key: "PageConfig",
+  showLeftToolbar: true,
   showStopToolbar: true,
   showClock: true,
   showHelpDialog: false,

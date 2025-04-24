@@ -67,6 +67,7 @@ export default {
       lock2DTrafficRegionAnalysis: false,
 
       showStopToolbar: true,
+      showLeftToolbar: true,
 
       showClock: true,
 

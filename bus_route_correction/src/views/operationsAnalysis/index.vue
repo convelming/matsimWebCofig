@@ -3,7 +3,7 @@
     <template v-if="!loading">
       <div class="grid_root">
         <div class="Drawer_row">
-          <Drawer class="left_toolber" show direction="left" :size="300">
+          <Drawer class="left_toolber" :show.sync="showLeftToolbar" direction="left" :size="300">
             <el-collapse v-model="activeNames">
               <PublicTransit :showLayer.sync="showLayerPublicTransit" :lock2D.sync="lock2DPublicTransit" name="PublicTransit" ref="PublicTransit" />
               <MotorizedTravel :showLayer.sync="showLayerMotorizedTravel" :lock2D.sync="lock2DMotorizedTravel" name="MotorizedTravel" ref="MotorizedTravel" />
@@ -39,7 +39,6 @@
 </template>
 
 <script>
-
 import mixins from "./mixins";
 
 import HelpDialog from "./component/HelpDialog/index.vue";
@@ -47,7 +46,6 @@ import Toolbar from "./component/Toolbar/index.vue";
 
 import PageConfig from "./component/PageConfig/index.vue";
 import configMixins from "./component/PageConfig/configMixins.js";
-import { saveUserCfg, getUserCfg, userCfgList, removeUserCfg } from "@/api/index.js";
 
 export default {
   components: {
