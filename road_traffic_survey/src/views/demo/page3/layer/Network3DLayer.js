@@ -61,37 +61,7 @@ export class Network3DLayer extends Layer {
     this.pinkNodesPickLayerMaterial.setValues({ color: pickLayerColor });
     this.pinkNodesPickLayerMaterial.needsUpdate = true;
   }
-
-  setStartPink(pink) {
-    this.startPink = pink;
-    for (const index in this.pinkNodes) {
-      const node = this.pinkNodes[index];
-      if (this.startPink && node.id == this.startPink.id) {
-        this.pinkNodesMesh.setColorAt(index, new THREE.Color("#f4ea2a"));
-      } else if (this.endPink && node.id == this.endPink.id) {
-        this.pinkNodesMesh.setColorAt(index, new THREE.Color("#409eff"));
-      } else {
-        this.pinkNodesMesh.setColorAt(index, new THREE.Color("#1afa29"));
-      }
-    }
-    if (this.pinkNodesMesh.instanceColor) this.pinkNodesMesh.instanceColor.needsUpdate = true;
-  }
-
-  setEndPink(pink) {
-    this.endPink = pink;
-    for (const index in this.pinkNodes) {
-      const node = this.pinkNodes[index];
-      if (this.startPink && node.id == this.startPink.id) {
-        this.pinkNodesMesh.setColorAt(index, new THREE.Color("#f4ea2a"));
-      } else if (this.endPink && node.id == this.endPink.id) {
-        this.pinkNodesMesh.setColorAt(index, new THREE.Color("#409eff"));
-      } else {
-        this.pinkNodesMesh.setColorAt(index, new THREE.Color("#1afa29"));
-      }
-    }
-    if (this.pinkNodesMesh.instanceColor) this.pinkNodesMesh.instanceColor.needsUpdate = true;
-  }
-
+  
   setNetwork(network) {
     this.network = network;
     this.pinkNodes = []; // ["n11978", "n12951", "n15905", "n1800", "n22086", "n4782"].map((v) => ({ id: v, ...(nodeMap[v] || {}) }));

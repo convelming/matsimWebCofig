@@ -80,6 +80,8 @@ import { WGS84ToMercator } from "@/mymap/utils/LngLatUtils";
 import { TifLayer } from "./layer/TifLayer";
 import { Network3DLayer, Network } from "./layer/Network3DLayer";
 import { UAVListLayer } from "./layer/UAVListLayer";
+import { Build3DLayer } from "./layer/Build3DLayer";
+import { PinkLayer } from "./layer/PinkLayer";
 import { MapLayer } from "@/mymap/index.js";
 
 import NewClock from "@/components/NewClock/index.vue";
@@ -87,6 +89,30 @@ import NewClock from "@/components/NewClock/index.vue";
 import JSZip from "jszip";
 
 import GeoTIFF from "./GeoTIFF.js";
+import GeoJSONLayerWorker from "./layer/GeoJSONLayer.worker";
+function parserGeoJSON(text) {
+  return new Promise((resolve, reject) => {
+    const worker = new GeoJSONLayerWorker();
+    worker.onmessage = (event) => {
+      const { range, center, pointArray, lineArray, polygonArray, propertiesListArray, propertiesLabelsArray } = event.data;
+
+      const textDecoder = new TextDecoder();
+      const propertiesLabels = JSON.parse(textDecoder.decode(propertiesLabelsArray));
+      const propertiesList = JSON.parse(textDecoder.decode(propertiesListArray));
+
+      resolve({ range, center, pointArray, lineArray, polygonArray, propertiesList, propertiesLabels });
+      worker.terminate();
+    };
+    worker.addEventListener("error", (error) => {
+      reject(error);
+      worker.terminate();
+    });
+
+    let textEncoder = new TextEncoder();
+    const array = new Int8Array(textEncoder.encode(text));
+    worker.postMessage(array, [array.buffer]);
+  });
+}
 
 export default {
   components: {
@@ -165,17 +191,17 @@ export default {
   async mounted() {
     this.initMap();
     this.loadPaths();
-    this.getTif();
+    this.loadTif();
     this.loadNetwork();
+    this.loadBuild();
+    this.loadPink();
   },
   methods: {
     // 初始化地图
     async initMap() {
       this._Map = new MyMap({
         rootId: "mapRoot",
-        center: [12606995.580320276, 2647865.9741280824],
         center: [12707787.79, 2759380.11],
-        // center: WGS84ToMercator(113.4848520194447, 23.089866565806066),
         zoom: 13,
         minPitch: -90,
       });
@@ -205,6 +231,16 @@ export default {
         },
       });
       this._Map.addLayer(this._UAVListLayer);
+
+      this._Build3DLayer = new Build3DLayer({
+        zIndex: 220,
+      });
+      this._Map.addLayer(this._Build3DLayer);
+
+      this._PinkLayer = new PinkLayer({
+        zIndex: 240,
+      });
+      this._Map.addLayer(this._PinkLayer);
     },
     async loadNetwork() {
       const response = await fetch(process.env.VUE_APP_BASE_API + "/demo/output_network.zip");
@@ -239,7 +275,7 @@ export default {
         console.error(`HTTP error! status: ${response.status}`, response);
       }
     },
-    async getTif() {
+    async loadTif() {
       const tif = await GeoTIFF.fromUrl(process.env.VUE_APP_BASE_API + "/demo/新丰县dem.tif");
       const tifImage = await tif.getImage();
       const tifImageData = await tifImage.readRasters({
@@ -262,6 +298,24 @@ export default {
       };
       this._TifLayer.setTifImage(image);
       // this._MapLayer.setTiff(tifImage);
+    },
+    async loadBuild() {
+      const response = await fetch(process.env.VUE_APP_BASE_API + "/demo/新丰县建筑DEM.geojson");
+      if (response.ok) {
+        const geoJsonData = await response.text().then(parserGeoJSON);
+        this._Build3DLayer.setData(geoJsonData);
+      } else {
+        console.error(`HTTP error! status: ${response.status}`, response);
+      }
+    },
+    async loadPink() {
+      const response = await fetch(process.env.VUE_APP_BASE_API + "/demo/新丰县起降点wgs84_dem.json");
+      if (response.ok) {
+        const text = await response.text();
+        this._PinkLayer.setPinkList(JSON.parse(text));
+      } else {
+        console.error(`HTTP error! status: ${response.status}`, response);
+      }
     },
     setTime(time) {
       if (time > this.maxTime) time = this.maxTime;

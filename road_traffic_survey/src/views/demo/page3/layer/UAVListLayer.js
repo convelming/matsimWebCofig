@@ -47,7 +47,6 @@ export class UAVListLayer extends Layer {
 
     this.worker = new UAVListLayerWorker();
     this.worker.onmessage = (e) => {
-      console.log(e.data.key);
       switch (e.data.key) {
         case "addPaths": {
           break;
@@ -97,7 +96,6 @@ export class UAVListLayer extends Layer {
     if (type == MAP_EVENT.HANDLE_PICK_LEFT && data.layerId == this.id) {
       const pickColorNum = data.pickColor;
       this.setSelectPath(pickColorNum - 1);
-      console.log(pickColorNum);
     }
   }
 
