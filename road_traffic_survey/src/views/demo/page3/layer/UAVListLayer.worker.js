@@ -1,4 +1,5 @@
 import { PathCurve } from "./PathCurve";
+import * as THREE from "three";
 
 let pathList = [];
 
@@ -7,7 +8,7 @@ onmessage = function (e) {
   switch (key) {
     case "setPaths": {
       const { paths, center } = e.data;
-      pathList = paths.map((v) => new PathCurve(v.id, v.nodes, center));
+      pathList = paths.map((v) => new PathCurve(v.id, v.nodes, new THREE.Vector3(center[0], center[1], 0)));
       postMessage({
         key: key,
         meg: "success",

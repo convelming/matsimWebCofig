@@ -90,6 +90,8 @@ import JSZip from "jszip";
 
 import GeoTIFF from "./GeoTIFF.js";
 import GeoJSONLayerWorker from "./layer/GeoJSONLayer.worker";
+
+// import "./test.js";
 function parserGeoJSON(text) {
   return new Promise((resolve, reject) => {
     const worker = new GeoJSONLayerWorker();

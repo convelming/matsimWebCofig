@@ -100,12 +100,13 @@ export class UAVListLayer extends Layer {
   }
 
   setPaths(paths) {
-    this.center = [paths[0].center[0], paths[0].center[1]];
-    this.pathList = paths.map((v) => new PathCurve(v.id, v.nodes, this.center));
+    const center = [paths[0].center[0], paths[0].center[1]];
+    this.pathList = paths.map((v) => new PathCurve(v.id, v.nodes, new THREE.Vector3(center[0], center[1], 0)));
+    this.center = center;
     this.worker.postMessage({
       key: "setPaths",
       paths: paths,
-      center: this.center,
+      center: center,
     });
     this.updatePaths();
     this.initUAV();
@@ -208,7 +209,7 @@ export class UAVListLayer extends Layer {
       this.pickLayerScene.add(nodesMesh1);
       this.pickMeshScene.add(nodesMesh2);
 
-      const linkGeometry = new THREE.TubeGeometry(path, path.nodes.length * 10, 5, 8, false);
+      const linkGeometry = new THREE.TubeGeometry(path, path.nodes.length * 4, 5, 8, false);
       const linkMaterial2 = new THREE.MeshBasicMaterial({ color: new THREE.Color(Number(pIndex + 1)) });
       const linkMesh = new THREE.Mesh(linkGeometry, this.linkMaterial);
       const linkMesh1 = new THREE.Mesh(linkGeometry, this.linkMaterial1);
@@ -266,7 +267,7 @@ export class UAVListLayer extends Layer {
   }
 
   updateUAV(data) {
-    console.log(data);
+    // console.log(data);
     if (!this.pathList) return;
     const { time, points } = data;
     for (let pIndex = 0; pIndex < points.length; pIndex++) {
