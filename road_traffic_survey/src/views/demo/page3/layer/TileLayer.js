@@ -204,6 +204,7 @@ export class TileMesh extends THREE.Mesh {
   }
 
   getUrl(row, col, zoom) {
+    // return `http://192.168.60.231:23334/baidu/satellite/${zoom}/${row}/${col}.jpg`
     return `https://api.mapbox.com/styles/v1/dasin/cltigm5bp010s01ptciblgffl/tiles/512/${zoom}/${row}/${col}@2x?access_token=pk.eyJ1IjoiY29udmVsIiwiYSI6ImNtOW50Z2c0NTAyNGMybHB5Y2txcXY0NmgifQ.zM_QAebuyQtVh-A93w5wyA`;
     return `http://192.168.60.231:23334/osm/Positron/${zoom}/${row}/${col}.png`;
   }

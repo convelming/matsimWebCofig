@@ -277,6 +277,13 @@ export class UAVListLayer extends Layer {
       this.UAVMesh1.setMatrixAt(pIndex, matrix4);
       this.UAVMesh2.setMatrixAt(pIndex, matrix4);
     }
+    
+    if (this.lockSelect && points[this.selecIndex]) {
+      const { point, speed, dir } = points[this.selecIndex];
+      this.map.setCenter([point.x + this.center[0], point.y + this.center[1]]);
+      this.map.setCameraHeight(point.z + 500);
+      this.map.setPitchAndRotation((Math.atan((point.z + 500) / 1000) * 180) / Math.PI);
+    }
     if (this.UAVMesh.instanceMatrix) this.UAVMesh.instanceMatrix.needsUpdate = true;
     if (this.UAVMesh1.instanceMatrix) this.UAVMesh1.instanceMatrix.needsUpdate = true;
     if (this.UAVMesh2.instanceMatrix) this.UAVMesh2.instanceMatrix.needsUpdate = true;

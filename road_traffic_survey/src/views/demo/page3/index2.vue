@@ -28,7 +28,7 @@
                     <el-switch v-model="showNetwork3DNode" :active-value="true" :inactive-value="false"></el-switch>
                   </el-form-item>
                 </el-col>
-                <!-- <el-col :span="12" :offset="0">
+                <el-col :span="12" :offset="0">
                   <el-form-item label="地形图：">
                     <el-switch v-model="showTifLayer" :active-value="true" :inactive-value="false"></el-switch>
                   </el-form-item>
@@ -38,7 +38,7 @@
                     <span style="font-size: 14px; color: #2c3e50; width: 110px">地形图透明度：</span>
                     <el-slider style="margin: 0 15px; flex: 1" v-model="tifOpacity" :min="0" :max="1" :step="0.01"></el-slider>
                   </div>
-                </el-col> -->
+                </el-col>
                 <el-col :span="24" :offset="0">
                   <el-form-item label-width="0">
                     <el-button size="small" @click="play">播放</el-button>
@@ -195,7 +195,7 @@ export default {
   async mounted() {
     this.initMap();
     this.loadPaths();
-    // this.loadTif();
+    this.loadTif();
     this.loadNetwork();
     this.loadBuild();
     this.loadPink();
@@ -210,14 +210,14 @@ export default {
         minPitch: -90,
       });
       this._Map.cameraControls.enableRotate = true;
-      // this._MapLayer = new MapLayer({ tileClass: MAP_LAYER_STYLE[MAP_LAYER_STYLE.length - 1], zIndex: -1 });
-      // this._Map.addLayer(this._MapLayer);
+      this._MapLayer = new MapLayer({ tileClass: MAP_LAYER_STYLE[MAP_LAYER_STYLE.length - 1], zIndex: -1 });
+      this._Map.addLayer(this._MapLayer);
 
-      this._TileLayer = new TileLayer({ zIndex: 10 });
-      this._Map.addLayer(this._TileLayer);
+      // this._TileLayer = new TileLayer({ zIndex: 10 });
+      // this._Map.addLayer(this._TileLayer);
 
-      // this._TifLayer = new TifLayer({ zIndex: 100, opacity: this.tifOpacity });
-      // if (this.showTifLayer) this._Map.addLayer(this._TifLayer);
+      this._TifLayer = new TifLayer({ zIndex: 100, opacity: this.tifOpacity });
+      if (this.showTifLayer) this._Map.addLayer(this._TifLayer);
 
       this._Network3DLayer = new Network3DLayer({
         zIndex: 200,

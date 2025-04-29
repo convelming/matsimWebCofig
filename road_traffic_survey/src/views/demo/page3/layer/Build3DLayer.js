@@ -132,7 +132,6 @@ export class BuildListGeometry extends THREE.BufferGeometry {
       const jzgd = jzgdList[value];
 
       const ldgd = jzgd + hbgd;
-      console.log(value, hbgd, jzgd, ldgd);
 
       const points = shape.extractPoints(12);
 
