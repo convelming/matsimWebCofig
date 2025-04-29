@@ -29,7 +29,7 @@ export class TileLayer extends Layer {
     const geometry = new THREE.PlaneGeometry(width, height, width - 1, height - 1);
     const position = geometry.attributes.position;
     for (let i = 0; i < position.count; i++) {
-      position.array[3 * i + 2] = tifImageData[i];
+      position.array[3 * i + 2] = tifImageData[i] * 0.8;
     }
     geometry.computeVertexNormals();
     const normal = geometry.attributes.normal;
@@ -48,7 +48,7 @@ export class TileLayer extends Layer {
 
     const array = new Uint8Array(tifImageData.length * 4);
     for (let i = 0, l = tifImageData.length; i < l; i++) {
-      const hex = tifImageData[i];
+      const hex = tifImageData[i] * 0.8;
       const r = (hex >> 16) & 255;
       const g = (hex >> 8) & 255;
       const b = hex & 255;
@@ -159,7 +159,7 @@ export class TileMesh extends THREE.Mesh {
     this.tifNoTexture = new THREE.CanvasTexture(this.tifNoCanvas);
     // MeshLambertMaterial MeshBasicMaterial
     this.material = new THREE.MeshLambertMaterial({
-      color: 0x000000,
+      // color: 0x000000,
       transparent: true,
       opacity: 1,
       side: THREE.DoubleSide,
