@@ -48,7 +48,7 @@ export class TileLayer extends Layer {
 
     const array = new Uint8Array(tifImageData.length * 4);
     for (let i = 0, l = tifImageData.length; i < l; i++) {
-      const hex = Math.floor(tifImageData[i]);
+      const hex = tifImageData[i];
       const r = (hex >> 16) & 255;
       const g = (hex >> 8) & 255;
       const b = hex & 255;
@@ -159,15 +159,13 @@ export class TileMesh extends THREE.Mesh {
     this.tifNoTexture = new THREE.CanvasTexture(this.tifNoCanvas);
     // MeshLambertMaterial MeshBasicMaterial
     this.material = new THREE.MeshLambertMaterial({
-      color: 0xffffff,
+      color: 0x000000,
       transparent: true,
       opacity: 1,
       side: THREE.DoubleSide,
       map: this.tileTexture,
       displacementMap: this.tifTexture,
       normalMap: this.tifNoTexture,
-      // displacementScale: 2550,
-      // displacementBias: 0,
       // wireframe: true,
     });
 
@@ -176,10 +174,19 @@ export class TileMesh extends THREE.Mesh {
         "#include <displacementmap_vertex>",
         `
           #ifdef USE_DISPLACEMENTMAP
-            vec4 sampledDiffuseColor = texture2D( displacementMap, vUv );
-            float tiff_height = sampledDiffuseColor.r * 256.0 * 256.0 * 256.0 + sampledDiffuseColor.g * 256.0 * 256.0 + sampledDiffuseColor.b * 256.0;
-            transformed.z += tiff_height;
-            // transformed += normalize( objectNormal ) * ( tiff_height );
+            float tiff_height = 0.0;
+            float index = 0.0;
+            for (float i = -0.001; i <= 0.001; i+=0.001) {
+              for (float j = -0.001; j <= 0.001; j+=0.001) {
+                vec2 tiff_uv = vec2(vUv.x + i, vUv.y + j);
+                if(tiff_uv.x < 0.0 || tiff_uv.x > 1.0 || tiff_uv.y < 0.0 || tiff_uv.y > 1.0) break;
+                vec4 sampledDiffuseColor1 = texture2D( displacementMap, tiff_uv );
+                tiff_height += sampledDiffuseColor1.r * 255.0 * 255.0 * 255.0 + sampledDiffuseColor1.g * 255.0 * 255.0 + sampledDiffuseColor1.b * 255.0;
+                index += 1.0;
+              }
+            }
+            tiff_height /= index;
+            transformed += normalize( objectNormal ) * tiff_height;
           #endif
         `
       );
@@ -264,9 +271,12 @@ export class TileMesh extends THREE.Mesh {
       const scale = this.canvasSize / this.geoSize;
 
       const ctx = this.tifCanvas.getContext("2d");
-      ctx.clearRect(0, 0, this.tifCanvas.width, this.tifCanvas.height);
+      ctx.fillStyle = "#000000";
+      ctx.fillRect(0, 0, this.tifCanvas.width, this.tifCanvas.height);
       ctx.drawImage(image, 0, 0, width, height, x1 * scale, y1 * scale, Math.abs(tsx - tex) * scale, Math.abs(tsy - tey) * scale);
       this.tifTexture.needsUpdate = true;
+      // this.tifCanvas.style = `position: fixed;top:0;left:0;width: ${this.tifCanvas.width / 5}px;height: ${this.tifCanvas.width / 5}px;z-index: 9999;`;
+      // document.body.appendChild(this.tifCanvas);
 
       const ctxNo = this.tifNoCanvas.getContext("2d");
       ctxNo.fillStyle = "#808080";
