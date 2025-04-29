@@ -1,0 +1,282 @@
+import { Layer, MAP_EVENT } from "@/mymap/index.js";
+import * as THREE from "three";
+import { EARTH_RADIUS, WGS84ToMercator } from "@/mymap/utils/LngLatUtils";
+
+import * as GeoTIFF from "geotiff";
+
+// 地图图层类
+export class TileLayer extends Layer {
+  name = "TileLayer";
+
+  meshMap = {};
+
+  constructor(opt) {
+    super(opt);
+    for (let zoom = 5; zoom <= 18; zoom++) {
+      this.meshMap[zoom] = new TileMesh(zoom, [0, 0]);
+    }
+    this.getTif();
+  }
+
+  async getTif() {
+    const tif = await GeoTIFF.fromUrl(process.env.VUE_APP_BASE_API + "/demo/新丰县dem.tif");
+    const tifImage = await tif.getImage();
+    const tifImageData = await tifImage.readRasters({
+      interleave: true,
+    });
+    const { width, height } = tifImageData;
+
+    const geometry = new THREE.PlaneGeometry(width, height, width - 1, height - 1);
+    const position = geometry.attributes.position;
+    for (let i = 0; i < position.count; i++) {
+      position.array[3 * i + 2] = tifImageData[i];
+    }
+    geometry.computeVertexNormals();
+    const normal = geometry.attributes.normal;
+    const noArray = new Uint8Array(normal.count * 4);
+    for (let i = 0; i < normal.count; i++) {
+      noArray[i * 4] = Math.floor((normal.getX(i) + 1) * 0.5 * 255);
+      noArray[i * 4 + 1] = Math.floor((normal.getY(i) + 1) * 0.5 * 255);
+      noArray[i * 4 + 2] = Math.floor((normal.getZ(i) + 1) * 0.5 * 255);
+      noArray[i * 4 + 3] = 255;
+    }
+    const noCanvas = document.createElement("canvas");
+    noCanvas.width = width;
+    noCanvas.height = height;
+    const noCtx = noCanvas.getContext("2d");
+    noCtx.putImageData(new ImageData(new Uint8ClampedArray(noArray), width, height), 0, 0);
+
+    const array = new Uint8Array(tifImageData.length * 4);
+    for (let i = 0, l = tifImageData.length; i < l; i++) {
+      const hex = Math.floor(tifImageData[i]);
+      const r = (hex >> 16) & 255;
+      const g = (hex >> 8) & 255;
+      const b = hex & 255;
+      array[i * 4] = r;
+      array[i * 4 + 1] = g;
+      array[i * 4 + 2] = b;
+      array[i * 4 + 3] = 255;
+    }
+
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext("2d");
+    ctx.putImageData(new ImageData(new Uint8ClampedArray(array), width, height), 0, 0);
+
+    const origin = tifImage.getOrigin();
+    const resolution = tifImage.getResolution();
+    const [x1, y1] = WGS84ToMercator(origin[0], origin[1]);
+    const [x2, y2] = WGS84ToMercator(origin[0] + resolution[0] * width, origin[1] + resolution[1] * height);
+    const obj = {
+      bbox: [x1, y1, x2, y2],
+      image: canvas,
+      normal: noCanvas,
+      width: width,
+      height: height,
+    };
+    for (const tileZoom in this.meshMap) {
+      const tile = this.meshMap[tileZoom];
+      tile.tifImage = obj;
+    }
+  }
+
+  // 地图加载完成回调
+  async onAdd(map) {
+    super.onAdd(map);
+    this.update();
+  }
+
+  render() {
+    this.update();
+  }
+
+  update() {
+    const zoom = Math.floor(this.map.zoom);
+    const center = [...this.map.center];
+    for (const tileZoom in this.meshMap) {
+      const tile = this.meshMap[tileZoom];
+      tile.setCenter(center);
+      if (zoom == tileZoom) {
+        tile.update();
+        this.scene.add(tile);
+      } else {
+        tile.removeFromParent();
+      }
+    }
+  }
+}
+
+export class TileMesh extends THREE.Mesh {
+  zoom = 0;
+  resolution = 100;
+
+  imagePool = {};
+
+  tifImage = null;
+
+  get tileColRow() {
+    return Math.min(Math.pow(2, this.zoom), 10);
+  }
+
+  get tileSize() {
+    return Math.floor((EARTH_RADIUS * 2) / Math.pow(2, this.zoom));
+  }
+
+  get geoSize() {
+    return this.tileSize * this.tileColRow;
+  }
+
+  get geoSegments() {
+    return (this.tileColRow - 1) * 128;
+  }
+
+  get imageSize() {
+    return 512;
+  }
+
+  get canvasSize() {
+    return this.imageSize * this.tileColRow;
+  }
+
+  constructor(zoom, center) {
+    super();
+    this.center = center;
+    this.zoom = zoom;
+    this.geometry = new THREE.PlaneGeometry(this.geoSize, this.geoSize, this.geoSegments, this.geoSegments);
+    this.geometry.needsUpdate = true;
+
+    this.tileCanvas = document.createElement("canvas");
+    this.tileCanvas.width = this.tileCanvas.height = this.canvasSize;
+    this.tileTexture = new THREE.CanvasTexture(this.tileCanvas);
+
+    this.tifCanvas = document.createElement("canvas");
+    this.tifCanvas.width = this.tifCanvas.height = this.canvasSize;
+    this.tifTexture = new THREE.CanvasTexture(this.tifCanvas);
+
+    this.tifNoCanvas = document.createElement("canvas");
+    this.tifNoCanvas.width = this.tifNoCanvas.height = this.canvasSize;
+    this.tifNoTexture = new THREE.CanvasTexture(this.tifNoCanvas);
+    // MeshLambertMaterial MeshBasicMaterial
+    this.material = new THREE.MeshLambertMaterial({
+      color: 0xffffff,
+      transparent: true,
+      opacity: 1,
+      side: THREE.DoubleSide,
+      map: this.tileTexture,
+      displacementMap: this.tifTexture,
+      normalMap: this.tifNoTexture,
+      // displacementScale: 2550,
+      // displacementBias: 0,
+      // wireframe: true,
+    });
+
+    this.material.onBeforeCompile = (shader) => {
+      shader.vertexShader = shader.vertexShader.replace(
+        "#include <displacementmap_vertex>",
+        `
+          #ifdef USE_DISPLACEMENTMAP
+            vec4 sampledDiffuseColor = texture2D( displacementMap, vUv );
+            float tiff_height = sampledDiffuseColor.r * 256.0 * 256.0 * 256.0 + sampledDiffuseColor.g * 256.0 * 256.0 + sampledDiffuseColor.b * 256.0;
+            transformed.z += tiff_height;
+            // transformed += normalize( objectNormal ) * ( tiff_height );
+          #endif
+        `
+      );
+    };
+
+    this.material.customProgramCacheKey = () => {
+      return JSON.stringify({
+        uuid: this.material.uuid,
+      });
+    };
+  }
+
+  setCenter(center) {
+    this.center = center;
+  }
+
+  getUrl(row, col, zoom) {
+    return `https://api.mapbox.com/styles/v1/dasin/cltigm5bp010s01ptciblgffl/tiles/512/${zoom}/${row}/${col}@2x?access_token=pk.eyJ1IjoiY29udmVsIiwiYSI6ImNtOW50Z2c0NTAyNGMybHB5Y2txcXY0NmgifQ.zM_QAebuyQtVh-A93w5wyA`;
+    return `http://192.168.60.231:23334/osm/Positron/${zoom}/${row}/${col}.png`;
+  }
+
+  getX(row, zoom) {
+    return (row * (EARTH_RADIUS * 2)) / Math.pow(2, zoom) - EARTH_RADIUS;
+  }
+
+  getY(col, zoom) {
+    return EARTH_RADIUS - (col * (EARTH_RADIUS * 2)) / Math.pow(2, zoom);
+  }
+
+  getRow(x, zoom) {
+    return Math.floor(((EARTH_RADIUS + x) * Math.pow(2, zoom)) / (EARTH_RADIUS * 2));
+  }
+
+  getCol(y, zoom) {
+    return Math.floor(((EARTH_RADIUS - y) * Math.pow(2, zoom)) / (EARTH_RADIUS * 2));
+  }
+
+  update() {
+    const [cx, cy] = this.center;
+    const maxRowCol = Math.pow(2, this.zoom);
+    const crow = this.getRow(cx, this.zoom);
+    const ccol = this.getCol(cy, this.zoom);
+    const srow = Math.floor(crow - this.tileColRow / 2);
+    const scol = Math.floor(ccol - this.tileColRow / 2);
+    {
+      const ctx = this.tileCanvas.getContext("2d");
+      ctx.clearRect(0, 0, this.tileCanvas.width, this.tileCanvas.height);
+      for (let i = 0; i < this.tileColRow; i++) {
+        for (let j = 0; j < this.tileColRow; j++) {
+          let row = srow + i;
+          let col = scol + j;
+          if (row > maxRowCol) row = row % maxRowCol;
+          if (row > maxRowCol) row = row % maxRowCol;
+          const key = `${row}_${col}`;
+          let image = this.imagePool[key];
+          if (!image) {
+            image = new Image();
+            image.crossOrigin = "Anonymous";
+            image.src = this.getUrl(row, col, this.zoom);
+            this.imagePool[key] = image;
+          }
+          if (image.complete) {
+            ctx.drawImage(image, 0, 0, image.width, image.height, parseInt(i * this.imageSize), parseInt(j * this.imageSize), parseInt(this.imageSize), parseInt(this.imageSize));
+          }
+        }
+      }
+      this.tileTexture.needsUpdate = true;
+    }
+
+    if (this.tifImage) {
+      const sx = this.getX(srow, this.zoom);
+      const sy = this.getY(scol, this.zoom);
+      const ex = this.getX(srow + this.tileColRow + 1, this.zoom);
+      const ey = this.getY(scol + this.tileColRow + 1, this.zoom);
+      const { bbox, width, height, image, normal } = this.tifImage;
+      const tsx = bbox[0];
+      const tsy = bbox[1];
+      const tex = bbox[2];
+      const tey = bbox[3];
+      const x1 = tsx - sx;
+      const y1 = sy - tsy;
+      const scale = this.canvasSize / this.geoSize;
+
+      const ctx = this.tifCanvas.getContext("2d");
+      ctx.clearRect(0, 0, this.tifCanvas.width, this.tifCanvas.height);
+      ctx.drawImage(image, 0, 0, width, height, x1 * scale, y1 * scale, Math.abs(tsx - tex) * scale, Math.abs(tsy - tey) * scale);
+      this.tifTexture.needsUpdate = true;
+
+      const ctxNo = this.tifNoCanvas.getContext("2d");
+      ctxNo.fillStyle = "#808080";
+      ctxNo.fillRect(0, 0, this.tifNoCanvas.width, this.tifNoCanvas.height);
+      ctxNo.drawImage(normal, 0, 0, width, height, x1 * scale, y1 * scale, Math.abs(tsx - tex) * scale, Math.abs(tsy - tey) * scale);
+      this.tifNoTexture.needsUpdate = true;
+    }
+
+    const x = (crow * (EARTH_RADIUS * 2)) / Math.pow(2, this.zoom) - EARTH_RADIUS - cx;
+    const y = EARTH_RADIUS - (ccol * (EARTH_RADIUS * 2)) / Math.pow(2, this.zoom) - cy;
+    this.position.set(x, y, 0);
+  }
+}

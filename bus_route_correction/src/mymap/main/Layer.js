@@ -35,7 +35,7 @@ export class Layer extends EventListener {
     this.pickColorNum = 0;
 
     this.scene = new THREE.Group();
-    // this.scene.renderOrder = this.zIndex;
+    this.scene.renderOrder = this.zIndex;
     this.scene.position.z = this.zIndex / 100;
     // send(this.scene, "add", function (oldFunc, object3D) {
     //   oldFunc(object3D);
@@ -43,7 +43,7 @@ export class Layer extends EventListener {
     // });
 
     this.pickLayerScene = new THREE.Group();
-    // this.pickLayerScene.renderOrder = this.zIndex;
+    this.pickLayerScene.renderOrder = this.zIndex;
     this.pickLayerScene.position.z = this.zIndex / 100;
     // send(this.pickLayerScene, "add", function (oldFunc, object3D) {
     //   oldFunc(object3D);
@@ -51,7 +51,7 @@ export class Layer extends EventListener {
     // });
 
     this.pickMeshScene = new THREE.Group();
-    // this.pickLayerScene.renderOrder = this.zIndex;
+    this.pickLayerScene.renderOrder = this.zIndex;
     this.pickMeshScene.position.z = this.zIndex / 100;
     // send(this.pickMeshScene, "add", function (oldFunc, object3D) {
     //   oldFunc(object3D);

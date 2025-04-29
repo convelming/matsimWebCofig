@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { Layer, MAP_EVENT } from "@/mymap/index.js";
+import { EARTH_RADIUS } from "@/mymap/utils/LngLatUtils";
 
 export class TifLayer extends Layer {
   constructor(opt) {
@@ -22,12 +23,12 @@ export class TifLayer extends Layer {
     });
   }
 
-  setOpacity(opacity){
+  setOpacity(opacity) {
     this.opacity = opacity;
     this.material.setValues({ opacity: this.opacity });
     this.material.needsUpdate = true;
   }
-  
+
   on(type, data) {
     if (type == MAP_EVENT.UPDATE_CENTER && this.tifImage) {
       const center = this.tifImage.center;

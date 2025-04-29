@@ -241,6 +241,7 @@ export default {
     padding-left: 10px;
   }
   .bodyer {
+
     box-sizing: border-box;
     height: calc(100% - 45px);
     padding: 20px;

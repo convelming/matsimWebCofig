@@ -88,10 +88,12 @@ import NewClock from "@/components/NewClock/index.vue";
 
 import JSZip from "jszip";
 
-import GeoTIFF from "./GeoTIFF.js";
 import GeoJSONLayerWorker from "./layer/GeoJSONLayer.worker";
 
-// import "./test.js";
+import { TileLayer } from "./layer/TileLayer.js";
+
+import * as GeoTIFF from "geotiff";
+
 function parserGeoJSON(text) {
   return new Promise((resolve, reject) => {
     const worker = new GeoJSONLayerWorker();
@@ -192,11 +194,11 @@ export default {
   created() {},
   async mounted() {
     this.initMap();
-    this.loadPaths();
-    this.loadTif();
-    this.loadNetwork();
-    this.loadBuild();
-    this.loadPink();
+    // this.loadPaths();
+    // this.loadTif();
+    // this.loadNetwork();
+    // this.loadBuild();
+    // this.loadPink();
   },
   methods: {
     // 初始化地图
@@ -208,9 +210,11 @@ export default {
         minPitch: -90,
       });
       this._Map.cameraControls.enableRotate = true;
-      // this._MapLayer = new MapLayer({ tileClass: MapTile, zIndex: -1 });
-      this._MapLayer = new MapLayer({ tileClass: MAP_LAYER_STYLE[MAP_LAYER_STYLE.length - 1], zIndex: -1 });
-      this._Map.addLayer(this._MapLayer);
+      // this._MapLayer = new MapLayer({ tileClass: MAP_LAYER_STYLE[MAP_LAYER_STYLE.length - 1], zIndex: -1 });
+      // this._Map.addLayer(this._MapLayer);
+
+      this._TileLayer = new TileLayer({ zIndex: 10 });
+      this._Map.addLayer(this._TileLayer);
 
       this._TifLayer = new TifLayer({ zIndex: 100, opacity: this.tifOpacity });
       if (this.showTifLayer) this._Map.addLayer(this._TifLayer);
