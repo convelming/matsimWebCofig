@@ -312,7 +312,7 @@ export function MapStyleFactory(params = {}) {
     x_offset: 0,
     y_offset: 0,
     getUrl: function (zoom, row, col) {
-      return `http://online4.map.bdimg.com/tile/?qt=tile&x=${row}&y=${col}&z=${zoom}&;styles=pl&scaler=1&udt=20170406`;
+      // return `http://online4.map.bdimg.com/tile/?qt=tile&x=${row}&y=${col}&z=${zoom}&;styles=pl&scaler=1&udt=20170406`;
       // return `http://192.168.60.231:23334/osm/MapTilerBasic/${zoom}/${row}/${col}.png`;
       return `http://192.168.60.231:23334/baidu/satellite/${zoom}/${row}/${col}.jpg`;
     },

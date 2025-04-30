@@ -90,7 +90,7 @@ import JSZip from "jszip";
 
 import GeoJSONLayerWorker from "./layer/GeoJSONLayer.worker";
 
-import { TileLayer } from "./layer/TileLayer.js";
+import { TileLayer } from "./layer/TileLayer2.js";
 
 import * as GeoTIFF from "geotiff";
 
@@ -194,11 +194,11 @@ export default {
   created() {},
   async mounted() {
     this.initMap();
-    this.loadPaths();
+    // this.loadPaths();
     // this.loadTif();
-    this.loadNetwork();
-    this.loadBuild();
-    this.loadPink();
+    // this.loadNetwork();
+    // this.loadBuild();
+    // this.loadPink();
   },
   methods: {
     // 初始化地图
