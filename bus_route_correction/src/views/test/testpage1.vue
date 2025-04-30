@@ -4,18 +4,9 @@
       <div class="Drawer_row">
         <div></div>
         <div class="mapBox">
-          <div id="mapRoot">
-            <NewClock class="NewClock" :time="time" :speed.sync="speed" :minTime="minTime" :maxTime="maxTime" @update:time="handleUpdateTime" @showHelp="handleShowHelp"></NewClock>
-          </div>
+          <div id="mapRoot"></div>
         </div>
-        <Drawer show direction="right" :size="300">
-          <el-collapse v-model="activeName" accordion>
-            <el-collapse-item class="toolbar_item" name="name">
-              <el-button type="primary" size="default" @click="handleSelectFile">选择文件</el-button>
-            </el-collapse-item>
-            <GeoJSONDetail v-for="item in GeoJSONIdList" :key="item" :name="item" :id="item" />
-          </el-collapse>
-        </Drawer>
+        <div></div>
       </div>
     </div>
   </div>
@@ -23,16 +14,10 @@
 
 <script>
 import { guid } from "@/utils/utils";
-import { MyMap, MapLayer, MAP_LAYER_STYLE, DEFAULT_MAP_LAYER_STYLE } from "@/mymap/index.js";
-import NewClock from "@/components/NewClock/index.vue";
-import GeoJSONDetail from "../operationsAnalysis/component/GeoJSON/toolbar/geoJSONDetail.vue";
-import GeoJSONLayerWorker from "../operationsAnalysis/component/GeoJSON/worker/GeoJSONLayer.worker";
+import { MyMap, MapLayer, DEFAULT_MAP_LAYER_STYLE } from "@/mymap/index.js";
+import { MapLayer as MapLayer2, DEFAULT_MAP_LAYER_STYLE as DEFAULT_MAP_LAYER_STYLE2 } from "@/mymap/layers/MapLayer2.js";
 
 export default {
-  components: {
-    NewClock,
-    GeoJSONDetail,
-  },
   provide() {
     return {
       rootVue: this,
@@ -44,86 +29,28 @@ export default {
     },
   },
   data() {
-    return {
-      time: 3600 * 8,
-      speed: 6,
-      minTime: 0,
-      maxTime: 3600 * 24.5,
-      range: [],
-      GeoJSONList: [],
-      activeName: ["name", "GeoJSONDetail"],
-    };
-  },
-  created() {
-    this.worker = new GeoJSONLayerWorker();
-    this.worker.onmessage = (event) => {
-      const { point, line, polygon } = event.data;
-
-      this.pointData = point;
-      this.lineData = line;
-      this.polygonData = polygon;
-
-      this.update();
-    };
-    this.worker.addEventListener("error", (error) => {
-      console.log(error);
-    });
+    return {};
   },
   async mounted() {
     this.initMap();
   },
   methods: {
-    async readReadableStream(stream) {
-      const reader = stream.getReader();
-      const list = [];
-      let { done, value } = await reader.read();
-      do {
-        let numberOfFloats = value.byteLength / 4;
-        let dataView = new DataView(value.buffer);
-        for (let i = 0; i < numberOfFloats; i++) {
-          list.push(dataView.getFloat32(i * 4, false));
-        }
-        ({ done, value } = await reader.read());
-      } while (!done);
-      return new Float32Array(list);
-    },
-    handleShowHelp() {
-      console.log("handleShowHelp");
-    },
-    handleUpdateTime(value) {
-      this.time = value;
-    },
     // 初始化地图
     async initMap() {
       this._Map = new MyMap({
         rootId: "mapRoot",
-        // center: [12612545.3950225, 2617157.5169194015],
-        center: [12631209.560373351, 2598756.097409454],
-        center: [12600004.608731592, 2632755.69300154],
         center: [12635639.181374598, 2670202.457088065],
-        zoom: 17,
+        center: [12622586.854946846, 2638453.8772939774],
+        zoom: 14,
         minPitch: -90,
       });
       this._Map.cameraControls.enableRotate = true;
       this._MapLayer = new MapLayer({ tileClass: DEFAULT_MAP_LAYER_STYLE, zIndex: -1 });
       this._Map.addLayer(this._MapLayer);
-    },
-    handleSelectFile() {
-      const input = document.createElement("input");
-      input.type = "file";
-      input.accept = ".geojson";
-      input.style = "position:absolute;width:0;height:0;top: -100px;";
-      document.body.appendChild(input);
-      input.onchange = (e) => {
-        const file = e.target.files[0];
-        const GeoJSON = {
-          id: guid(),
-          _file: file,
-          name: file.name,
-        };
-        this.GeoJSONList.push(GeoJSON);
-      };
-      input.click();
+
+      this._MapLayer2 = new MapLayer2({ tileClass: DEFAULT_MAP_LAYER_STYLE2, zIndex: 10, opacity: 0.8 });
+      this._Map.addLayer(this._MapLayer2);
+      console.log(this._Map);
     },
   },
 };
