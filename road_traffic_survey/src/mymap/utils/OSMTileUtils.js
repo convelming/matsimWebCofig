@@ -3,10 +3,9 @@ export const EARTH_RADIUS = 20037508.3427892;
 // 高德地图瓦片坐标与Google Map、Open Street Map相同
 export class OSMTileUtils {
   static getTileSize(zoom) {
-    const width = OSMTileUtils.rowToX(1, zoom) - OSMTileUtils.rowToX(0, zoom);
-    const height = OSMTileUtils.colToY(1, zoom) - OSMTileUtils.colToY(0, zoom);
+    const width = Math.abs(OSMTileUtils.rowToX(1, zoom) - OSMTileUtils.rowToX(0, zoom));
+    const height = Math.abs(OSMTileUtils.colToY(1, zoom) - OSMTileUtils.colToY(0, zoom));
     return [width, height];
-    return (EARTH_RADIUS * 2) / Math.pow(2, zoom);
   }
 
   static xToRow(x, zoom) {

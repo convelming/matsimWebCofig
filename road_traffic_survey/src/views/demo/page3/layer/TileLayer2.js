@@ -6,6 +6,8 @@ import * as GeoTIFF from "geotiff";
 import { BaiduTileUtils } from "@/mymap/utils/BaiduTileUtils.js";
 import { OSMTileUtils } from "@/mymap/utils/OSMTileUtils.js";
 
+const TileUtils = BaiduTileUtils;
+
 // 地图图层类
 export class TileLayer extends Layer {
   name = "TileLayer";
@@ -17,7 +19,7 @@ export class TileLayer extends Layer {
     for (let zoom = 5; zoom <= 18; zoom++) {
       this.meshMap[zoom] = new TileMesh(zoom, [0, 0]);
     }
-    // this.getTif();
+    this.getTif();
   }
 
   async getTif() {
@@ -81,6 +83,13 @@ export class TileLayer extends Layer {
       const tile = this.meshMap[tileZoom];
       tile.tifImage = obj;
     }
+    this.update();
+  }
+
+  on(type, data) {
+    if (type == MAP_EVENT.UPDATE_CENTER || type == MAP_EVENT.UPDATE_ZOOM) {
+      this.update();
+    }
   }
 
   // 地图加载完成回调
@@ -89,9 +98,7 @@ export class TileLayer extends Layer {
     this.update();
   }
 
-  render() {
-    // this.update();
-  }
+  render() {}
 
   update() {
     const zoom = Math.floor(this.map.zoom);
@@ -125,18 +132,23 @@ export class TileMesh extends THREE.Mesh {
 
   tifImage = null;
 
+  imageSize = 256;
+
   constructor(zoom, center) {
     super();
     this.center = center;
 
     this.zoom = zoom;
     this.tileColRow = Math.min(Math.pow(2, zoom), 10);
-    const [tileWidth, tileHeight] = BaiduTileUtils.getTileSize(zoom);
+    const [tileWidth, tileHeight] = TileUtils.getTileSize(zoom);
+    this.tileHeight = tileHeight;
     this.geoWidth = tileWidth * this.tileColRow;
     this.geoHieght = tileHeight * this.tileColRow;
     this.geoSegments = this.tileColRow * 127;
-    this.imageWidth = 512;
-    this.imageHeight = (512 * tileHeight) / tileWidth;
+
+    this.imageScale = this.imageSize / tileWidth;
+    this.imageWidth = this.imageSize;
+    this.imageHeight = tileHeight * this.imageScale;
     this.canvasWidth = this.imageWidth * this.tileColRow;
     this.canvasHeight = this.imageHeight * this.tileColRow;
 
@@ -154,7 +166,8 @@ export class TileMesh extends THREE.Mesh {
     this.tifTexture = new THREE.CanvasTexture(this.tifCanvas);
 
     this.tifNoCanvas = document.createElement("canvas");
-    this.tifNoCanvas.width = this.tifNoCanvas.height = this.canvasSize;
+    this.tifNoCanvas.width = this.canvasWidth;
+    this.tifNoCanvas.height = this.canvasHeight;
     this.tifNoTexture = new THREE.CanvasTexture(this.tifNoCanvas);
     // MeshLambertMaterial MeshBasicMaterial
     this.material = new THREE.MeshLambertMaterial({
@@ -202,139 +215,123 @@ export class TileMesh extends THREE.Mesh {
     this.center = center;
   }
 
-  update() {
-    const [cx, cy] = this.center;
-    // {
-    //   console.time("tileImage");
-    //   function getUrl(row, col, zoom) {
-    //     // return `http://192.168.60.231:23334/baidu/satellite/${zoom}/${row}/${col}.jpg`;
-    //     return `http://online4.map.bdimg.com/tile/?qt=tile&x=${row}&y=${col}&z=${zoom}&;styles=pl&scaler=1&udt=20170406`;
-    //     // return `http://192.168.60.231:23334/baidu/satellite/${zoom}/${row}/${col}.jpg`
-    //     return `https://api.mapbox.com/styles/v1/dasin/cltigm5bp010s01ptciblgffl/tiles/512/${zoom}/${row}/${col}@2x?access_token=pk.eyJ1IjoiY29udmVsIiwiYSI6ImNtOW50Z2c0NTAyNGMybHB5Y2txcXY0NmgifQ.zM_QAebuyQtVh-A93w5wyA`;
-    //     return `http://192.168.60.231:23334/osm/Positron/${zoom}/${row}/${col}.png`;
-    //   }
-    //   const crow = BaiduTileUtils.xToRow(cx, this.zoom);
-    //   const ccol = BaiduTileUtils.yToCol(cy, this.zoom);
-    //   const srow = Math.floor(crow - this.tileColRow / 2);
-    //   const scol = Math.floor(ccol - this.tileColRow / 2);
-    //   const maxRowCol = Math.pow(2, this.zoom);
-    //   const ctx = this.tileCanvas.getContext("2d");
-    //   ctx.clearRect(0, 0, this.tileCanvas.width, this.tileCanvas.height);
-    //   for (let i = 0; i < this.tileColRow; i++) {
-    //     for (let j = 0; j < this.tileColRow; j++) {
-    //       let row = srow + i;
-    //       let col = scol + j;
-    //       if (row > maxRowCol) row = row % maxRowCol;
-    //       if (row > maxRowCol) row = row % maxRowCol;
-    //       const key = `${row}_${col}`;
-    //       let image = this.imagePool[key];
-    //       if (!image) {
-    //         image = new Image();
-    //         image.crossOrigin = "Anonymous";
-    //         image.onload = () => {
-    //           image._loaded = true;
-    //         };
-    //         image.onerror = () => {
-    //           image._loaded = false;
-    //         };
-    //         image.src = getUrl(row, col, this.zoom);
-    //         this.imagePool[key] = image;
-    //       }
-    //       if (image.complete && image._loaded) {
-    //         ctx.drawImage(image, 0, 0, image.width, image.height, parseInt(i * this.imageSize), parseInt(j * this.imageSize), parseInt(this.imageSize), parseInt(this.imageSize));
-    //       }
-    //     }
-    //   }
-    //   this.tileTexture.needsUpdate = true;
-    //   console.timeEnd("tileImage");
-    // }
-    {
-      function getUrl(row, col, zoom) {
-        // return `http://192.168.60.231:23334/baidu/satellite/${zoom}/${row}/${col}.jpg`;
-        return `http://online4.map.bdimg.com/tile/?qt=tile&x=${row}&y=${col}&z=${zoom}&;styles=pl&scaler=1&udt=20170406`;
-        // return `http://192.168.60.231:23334/baidu/satellite/${zoom}/${row}/${col}.jpg`
-        return `https://api.mapbox.com/styles/v1/dasin/cltigm5bp010s01ptciblgffl/tiles/512/${zoom}/${row}/${col}@2x?access_token=pk.eyJ1IjoiY29udmVsIiwiYSI6ImNtOW50Z2c0NTAyNGMybHB5Y2txcXY0NmgifQ.zM_QAebuyQtVh-A93w5wyA`;
-        return `http://192.168.60.231:23334/osm/Positron/${zoom}/${row}/${col}.png`;
-      }
+  updateTile() {
+    function getUrl(row, col, zoom) {
+      // return `http://192.168.60.231:23334/baidu/satellite/${zoom}/${row}/${col}.jpg`;
+      return `https://maponline3.bdimg.com/starpic/?qt=satepc&u=x=${row};y=${col};z=${zoom};v=009;type=sate&fm=46&udt=20250424`;
+      return `http://online4.map.bdimg.com/tile/?qt=tile&x=${row}&y=${col}&z=${zoom}&;styles=pl&scaler=1&udt=20170406`;
+      // return `http://192.168.60.231:23334/baidu/satellite/${zoom}/${row}/${col}.jpg`
+      return `https://api.mapbox.com/styles/v1/dasin/cltigm5bp010s01ptciblgffl/tiles/512/${zoom}/${row}/${col}@2x?access_token=pk.eyJ1IjoiY29udmVsIiwiYSI6ImNtOW50Z2c0NTAyNGMybHB5Y2txcXY0NmgifQ.zM_QAebuyQtVh-A93w5wyA`;
+      return `http://192.168.60.231:23334/osm/Positron/${zoom}/${row}/${col}.png`;
+    }
 
-      const rx = this.geoWidth / 2;
-      const ry = this.geoHieght / 2;
-      const sx = cx + rx;
-      const sy = cy - ry;
-      const ex = cx - rx;
-      const ey = cy + ry;
-      const srow = BaiduTileUtils.xToRow(sx, this.zoom);
-      const scol = BaiduTileUtils.yToCol(sy, this.zoom);
-      const erow = BaiduTileUtils.xToRow(ex, this.zoom);
-      const ecol = BaiduTileUtils.yToCol(ey, this.zoom);
-      const ctx = this.tileCanvas.getContext("2d");
-      ctx.clearRect(0, 0, this.tileCanvas.width, this.tileCanvas.height);
-      for (let i = Math.min(srow, erow); i <= Math.abs(srow - erow); i++) {
-        for (let j = Math.min(scol, ecol); j <= Math.abs(scol - ecol); j++) {
-          const key = `${i}_${j}`;
-          let image = this.imagePool[key];
-          if (!image) {
-            image = {
-              data: new Image(),
-              loaded: false,
-              errored: false,
-              x: BaiduTileUtils.rowToX(i, this.zoom),
-              y: BaiduTileUtils.colToY(j, this.zoom),
-            };
-            image.data.crossOrigin = "Anonymous";
-            image.data.onload = () => {
-              image.loaded = true;
-            };
-            image.data.onerror = () => {
-              image.errored = true;
-            };
-            image.data.src = getUrl(i, j, this.zoom);
-            this.imagePool[key] = image;
-          }
-          if (image.loaded) {
-            ctx.drawImage(image.data, 0, 0, image.data.width, image.data.height, parseInt(i * this.imageSize), parseInt(j * this.imageSize), parseInt(this.imageSize), parseInt(this.imageSize));
-          }
+    const v = this.v;
+    const [cx, cy] = this.center;
+    const rx = this.geoWidth / 2;
+    const ry = this.geoHieght / 2;
+    const sx = cx - rx;
+    const sy = cy + ry;
+    const ex = cx + rx;
+    const ey = cy - ry;
+
+    const srow = TileUtils.xToRow(sx, this.zoom);
+    const scol = TileUtils.yToCol(sy, this.zoom);
+    const erow = TileUtils.xToRow(ex, this.zoom);
+    const ecol = TileUtils.yToCol(ey, this.zoom);
+    const ctx = this.tileCanvas.getContext("2d");
+    ctx.clearRect(0, 0, this.tileCanvas.width, this.tileCanvas.height);
+    for (let i = Math.min(srow, erow), il = Math.max(srow, erow); i <= il; i++) {
+      for (let j = Math.min(scol, ecol), jl = Math.max(scol, ecol); j <= jl; j++) {
+        const key = `${i}_${j}`;
+        let image = this.imagePool[key];
+        if (!image) {
+          image = {
+            data: new Image(),
+            loaded: false,
+            errored: false,
+            x: TileUtils.rowToDrawX(i, this.zoom),
+            y: TileUtils.colToDrawY(j, this.zoom),
+          };
+          image.data.crossOrigin = "Anonymous";
+          image.data.onload = (e) => {
+            if (image.v == this.v) {
+              const dx = (image.x - sx) * this.imageScale;
+              const dy = (sy - image.y) * this.imageScale;
+              const dw = Math.ceil(this.imageWidth + 1); // +1 消除瓦片间的缝隙（缝隙原因猜测是计算误差）
+              const dh = Math.ceil(this.imageHeight + 1); // +1 消除瓦片间的缝隙（缝隙原因猜测是计算误差）
+              ctx.drawImage(image.data, 0, 0, image.data.width, image.data.height, dx, dy, dw, dh);
+              this.tileTexture.needsUpdate = true;
+            }
+            image.loaded = true;
+          };
+          image.data.onerror = () => {
+            image.errored = true;
+          };
+          image.data.src = getUrl(i, j, this.zoom);
+          this.imagePool[key] = image;
+        }
+        image.v = v;
+        if (image.loaded) {
+          const dx = (image.x - sx) * this.imageScale;
+          const dy = (sy - image.y) * this.imageScale;
+          const dw = Math.ceil(this.imageWidth + 1); // +1 消除瓦片间的缝隙（缝隙原因猜测是计算误差）
+          const dh = Math.ceil(this.imageHeight + 1); // +1 消除瓦片间的缝隙（缝隙原因猜测是计算误差）
+          ctx.drawImage(image.data, 0, 0, image.data.width, image.data.height, dx, dy, dw, dh);
         }
       }
     }
+    this.tileTexture.needsUpdate = true;
+  }
 
-    if (this.tifImage) {
-      console.time("tifImage");
-      const crow = OSMTileUtils.xToRow(cx, this.zoom);
-      const ccol = OSMTileUtils.yToCol(cy, this.zoom);
-      const srow = Math.floor(crow - this.tileColRow / 2);
-      const scol = Math.floor(ccol - this.tileColRow / 2);
-      const sx = OSMTileUtils.rowToX(srow, this.zoom);
-      const sy = OSMTileUtils.colToY(scol, this.zoom);
-      const ex = OSMTileUtils.rowToX(srow + this.tileColRow + 1, this.zoom);
-      const ey = OSMTileUtils.colToY(scol + this.tileColRow + 1, this.zoom);
-      const { bbox, width, height, image, normal } = this.tifImage;
-      const tsx = bbox[0];
-      const tsy = bbox[1];
-      const tex = bbox[2];
-      const tey = bbox[3];
-      const x1 = tsx - sx;
-      const y1 = sy - tsy;
-      const scale = this.canvasSize / this.geoSize;
+  updateTiff() {
+    if (!this.tifImage) return;
+    const [cx, cy] = this.center;
+    const rx = this.geoWidth / 2;
+    const ry = this.geoHieght / 2;
+    const sx = cx - rx;
+    const sy = cy + ry;
+    const ex = cx + rx;
+    const ey = cy - ry;
 
-      const ctx = this.tifCanvas.getContext("2d");
-      ctx.fillStyle = "#000000";
-      ctx.fillRect(0, 0, this.tifCanvas.width, this.tifCanvas.height);
-      ctx.drawImage(image, 0, 0, width, height, x1 * scale, y1 * scale, Math.abs(tsx - tex) * scale, Math.abs(tsy - tey) * scale);
-      this.tifTexture.needsUpdate = true;
-      // this.tifCanvas.style = `position: fixed;top:0;left:0;width: ${this.tifCanvas.width / 5}px;height: ${this.tifCanvas.width / 5}px;z-index: 9999;`;
-      // document.body.appendChild(this.tifCanvas);
+    const { bbox, width, height, image, normal } = this.tifImage;
+    const tsx = bbox[0];
+    const tsy = bbox[1];
+    const tex = bbox[2];
+    const tey = bbox[3];
+    const x1 = tsx - sx;
+    const y1 = sy - tsy;
+    const scale = this.imageScale;
 
-      const ctxNo = this.tifNoCanvas.getContext("2d");
-      ctxNo.fillStyle = "#808080";
-      ctxNo.fillRect(0, 0, this.tifNoCanvas.width, this.tifNoCanvas.height);
-      ctxNo.drawImage(normal, 0, 0, width, height, x1 * scale, y1 * scale, Math.abs(tsx - tex) * scale, Math.abs(tsy - tey) * scale);
-      this.tifNoTexture.needsUpdate = true;
-      console.timeEnd("tifImage");
-    }
+    const ctx = this.tifCanvas.getContext("2d");
+    ctx.fillStyle = "#000000";
+    ctx.fillRect(0, 0, this.tifCanvas.width, this.tifCanvas.height);
+    ctx.drawImage(image, 0, 0, width, height, x1 * scale, y1 * scale, Math.abs(tsx - tex) * scale, Math.abs(tsy - tey) * scale);
+    this.tifTexture.needsUpdate = true;
+    // this.tifCanvas.style = `position: fixed;top:0;left:0;width: auto;height: 300px;z-index: 9999;`;
+    // document.body.appendChild(this.tifCanvas);
 
-    // const x = (crow * (EARTH_RADIUS * 2)) / Math.pow(2, this.zoom) - EARTH_RADIUS - cx;
-    // const y = EARTH_RADIUS - (ccol * (EARTH_RADIUS * 2)) / Math.pow(2, this.zoom) - cy;
-    // this.position.set(x, y, 0);
+    const ctxNo = this.tifNoCanvas.getContext("2d");
+    ctxNo.fillStyle = "#7f7fff";
+    ctxNo.fillRect(0, 0, this.tifNoCanvas.width, this.tifNoCanvas.height);
+    ctxNo.drawImage(normal, 0, 0, width, height, x1 * scale, y1 * scale, Math.abs(tsx - tex) * scale, Math.abs(tsy - tey) * scale);
+
+    // this.tifNoCanvas.style = `position: fixed;top:300px;left:0;width: auto;height: 300px;z-index: 9999;`;
+    // document.body.appendChild(this.tifNoCanvas);
+    this.tifNoTexture.needsUpdate = true;
+  }
+
+  update() {
+    this.v = new Date().getTime();
+    this.updateTile();
+    this.updateTiff();
+  }
+
+  dispose() {
+    this.removeFromParent();
+    this.geometry.dispose();
+    this.material.dispose();
+    this.tifTexture.dispose();
+    this.tileTexture.dispose();
+    this.tifNoTexture.dispose();
   }
 }

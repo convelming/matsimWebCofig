@@ -75,14 +75,13 @@
 </template>
 
 <script>
-import { MyMap, MAP_LAYER_STYLE, MAP_EVENT } from "@/mymap/index.js";
+import { MyMap, MapLayer, MAP_LAYER_STYLE, MAP_EVENT } from "@/mymap/index.js";
 import { WGS84ToMercator } from "@/mymap/utils/LngLatUtils";
 import { TifLayer } from "./layer/TifLayer";
 import { Network3DLayer, Network } from "./layer/Network3DLayer";
 import { UAVListLayer } from "./layer/UAVListLayer";
 import { Build3DLayer } from "./layer/Build3DLayer";
 import { PinkLayer } from "./layer/PinkLayer";
-import { MapLayer } from "@/mymap/index.js";
 
 import NewClock from "@/components/NewClock/index.vue";
 
@@ -194,11 +193,11 @@ export default {
   created() {},
   async mounted() {
     this.initMap();
-    // this.loadPaths();
-    // this.loadTif();
-    // this.loadNetwork();
-    // this.loadBuild();
-    // this.loadPink();
+    this.loadPaths();
+    this.loadTif();
+    this.loadNetwork();
+    this.loadBuild();
+    this.loadPink();
   },
   methods: {
     // 初始化地图
@@ -282,27 +281,27 @@ export default {
       }
     },
     async loadTif() {
-      const tif = await GeoTIFF.fromUrl(process.env.VUE_APP_BASE_API + "/demo/新丰县dem.tif");
-      const tifImage = await tif.getImage();
-      const tifImageData = await tifImage.readRasters({
-        interleave: true,
-      });
-      const bbox = tifImage.getBoundingBox();
-      const [x1, y1] = WGS84ToMercator(bbox[0], bbox[1]);
-      const [x2, y2] = WGS84ToMercator(bbox[2], bbox[3]);
-      // tifImage.getCanvasTexture();
+      // const tif = await GeoTIFF.fromUrl(process.env.VUE_APP_BASE_API + "/demo/新丰县dem.tif");
+      // const tifImage = await tif.getImage();
+      // const tifImageData = await tifImage.readRasters({
+      //   interleave: true,
+      // });
+      // const bbox = tifImage.getBoundingBox();
+      // const [x1, y1] = WGS84ToMercator(bbox[0], bbox[1]);
+      // const [x2, y2] = WGS84ToMercator(bbox[2], bbox[3]);
+      // // tifImage.getCanvasTexture();
 
-      const image = {
-        imgWidth: tifImage.getWidth(),
-        imgHeight: tifImage.getHeight(),
-        tl: [x1, y1],
-        br: [x2, y2],
-        center: [(x1 + x2) / 2, (y1 + y2) / 2],
-        width: Math.abs(x2 - x1),
-        height: Math.abs(y2 - y1),
-        data: tifImageData,
-      };
-      this._TifLayer.setTifImage(image);
+      // const image = {
+      //   imgWidth: tifImage.getWidth(),
+      //   imgHeight: tifImage.getHeight(),
+      //   tl: [x1, y1],
+      //   br: [x2, y2],
+      //   center: [(x1 + x2) / 2, (y1 + y2) / 2],
+      //   width: Math.abs(x2 - x1),
+      //   height: Math.abs(y2 - y1),
+      //   data: tifImageData,
+      // };
+      // this._TifLayer.setTifImage(image);
       // this._MapLayer.setTiff(tifImage);
     },
     async loadBuild() {

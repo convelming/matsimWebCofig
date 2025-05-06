@@ -328,6 +328,10 @@ export class BaiduTileUtils {
     return Math.floor(x - 600);
   }
 
+  static rowToDrawX(row = 0, zoom = 1, offset = [0, 0]) {
+    return BaiduTileUtils.rowToX(row + offset[0], zoom);
+  }
+
   static yToCol(y, zoom) {
     const [lng, lat] = MercatorToWGS84(0, y - 350);
     const [lng2, lat2] = wgs84togcj02(lng, lat);
@@ -341,6 +345,10 @@ export class BaiduTileUtils {
     const [lng3, lat3] = gcj02towgs84(lng2, lat2);
     const [x, y] = WGS84ToMercator(0, lat3);
     return Math.floor(y + 350);
+  }
+
+  static colToDrawY(col = 0, zoom = 1, offset = [0, 0]) {
+    return BaiduTileUtils.colToY(col + 1 - offset[1], zoom);
   }
 
   static getTileRangeByZoom(zoom, center, width) {
