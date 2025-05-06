@@ -308,9 +308,8 @@ export function pixelToLnglat(pixelX, pixelY, tileX, tileY, level) {
 
 export class BaiduTileUtils {
   static getTileSize(zoom) {
-    // return Math.pow(2, 18 - zoom) * 256;
-    const width = BaiduTileUtils.rowToX(1, zoom) - BaiduTileUtils.rowToX(0, zoom);
-    const height = BaiduTileUtils.colToY(1, zoom) - BaiduTileUtils.colToY(0, zoom);
+    const width = Math.abs(BaiduTileUtils.rowToX(1, zoom) - BaiduTileUtils.rowToX(0, zoom));
+    const height = Math.abs(BaiduTileUtils.colToY(1, zoom) - BaiduTileUtils.colToY(0, zoom));
     return [width, height];
   }
 
@@ -326,7 +325,7 @@ export class BaiduTileUtils {
     const [lng2, lat2] = bd09togcj02(lng, 0);
     const [lng3, lat3] = gcj02towgs84(lng2, lat2);
     const [x, y] = WGS84ToMercator(lng3, 0);
-    return x - 600;
+    return Math.floor(x - 600);
   }
 
   static yToCol(y, zoom) {
@@ -341,7 +340,7 @@ export class BaiduTileUtils {
     const [lng2, lat2] = bd09togcj02(0, lat);
     const [lng3, lat3] = gcj02towgs84(lng2, lat2);
     const [x, y] = WGS84ToMercator(0, lat3);
-    return y + 350;
+    return Math.floor(y + 350);
   }
 
   static getTileRangeByZoom(zoom, center, width) {

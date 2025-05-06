@@ -3,7 +3,9 @@ export const EARTH_RADIUS = 20037508.3427892;
 // 高德地图瓦片坐标与Google Map、Open Street Map相同
 export class OSMTileUtils {
   static getTileSize(zoom) {
-    return (EARTH_RADIUS * 2) / Math.pow(2, zoom);
+    const width = Math.abs(OSMTileUtils.rowToX(1, zoom) - OSMTileUtils.rowToX(0, zoom));
+    const height = Math.abs(OSMTileUtils.colToY(1, zoom) - OSMTileUtils.colToY(0, zoom));
+    return [width, height];
   }
 
   static xToRow(x, zoom) {
@@ -14,12 +16,20 @@ export class OSMTileUtils {
     return (row * (EARTH_RADIUS * 2)) / Math.pow(2, zoom) - EARTH_RADIUS;
   }
 
+  static rowToDrawX(row = 0, zoom = 1, offset = [0, 0]) {
+    return OSMTileUtils.rowToX(row + offset[0], zoom);
+  }
+
   static yToCol(y, zoom) {
     return Math.floor(((EARTH_RADIUS - y) * Math.pow(2, zoom)) / (EARTH_RADIUS * 2));
   }
 
   static colToY(col, zoom) {
     return EARTH_RADIUS - (col * (EARTH_RADIUS * 2)) / Math.pow(2, zoom);
+  }
+
+  static colToDrawY(col = 0, zoom = 1, offset = [0, 0]) {
+    return OSMTileUtils.colToY(col + offset[0], zoom);
   }
 
   static getTileRangeByZoom(zoom, center, width) {
@@ -30,7 +40,7 @@ export class OSMTileUtils {
     const row = OSMTileUtils.xToRow(mapCenterX, zoom);
     const col = OSMTileUtils.yToCol(mapCenterY, zoom);
     const tileSize = OSMTileUtils.getTileSize(zoom);
-    const radius = Math.ceil(width / tileSize);
+    const radius = Math.ceil(width / tileSize[0]);
 
     const max_row_col = Math.pow(2, zoom);
     const min_row_col = 0;

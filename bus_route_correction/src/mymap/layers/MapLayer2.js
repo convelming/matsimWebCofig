@@ -237,7 +237,7 @@ export class MapTile {
     if (!this._mesh) {
       let material = new THREE.MeshBasicMaterial({
         transparent: true,
-        // side: THREE.DoubleSide, //双面显示
+        side: THREE.DoubleSide, //双面显示
         color: 0xffffff,
         opacity: 0,
         // color: 0x000000,
@@ -245,8 +245,8 @@ export class MapTile {
         // color: 0x000000,
       });
       let geometry = new THREE.PlaneGeometry(this._size[0], this._size[1]);
-      const m4 = new THREE.Matrix4().makeTranslation(this._size[0] / 2, -this._size[1] / 2, 0);
-      geometry.applyMatrix4(m4);
+      // const m4 = new THREE.Matrix4().makeTranslation(this._size[0] / 2, -this._size[1] / 2, 0);
+      // geometry.applyMatrix4(m4);
       this._mesh = new THREE.Mesh(geometry, material);
       // this._mesh.add(new THREE.AxesHelper(1000));
       return this._mesh;
@@ -293,9 +293,9 @@ export class MapTile {
     this.row = row || 0;
     this.col = col || 0;
     this.size = size || [0, 0];
-    
-    this._x = BaiduTileUtils.rowToX(this.row, this.zoom);
-    this._y = BaiduTileUtils.colToY(this.col + 1, this.zoom);
+
+    this._x = BaiduTileUtils.rowToDrawX(this.row, this.zoom, [0.5, 0.5]);
+    this._y = BaiduTileUtils.colToDrawY(this.col, this.zoom, [0.5, 0.5]);
 
     // let zd = this.constructor.max_zoom - this.constructor.min_zoom;
     // this._z = (zd - zoom) / zd / 100;
@@ -312,8 +312,9 @@ export function MapStyleFactory(params = {}) {
     x_offset: 0,
     y_offset: 0,
     getUrl: function (zoom, row, col) {
-      // return `http://online4.map.bdimg.com/tile/?qt=tile&x=${row}&y=${col}&z=${zoom}&;styles=pl&scaler=1&udt=20170406`;
+      // return `http://192.168.60.231:23334/osm/Positron/${zoom}/${row}/${col}.png`
       // return `http://192.168.60.231:23334/osm/MapTilerBasic/${zoom}/${row}/${col}.png`;
+      return `http://online4.map.bdimg.com/tile/?qt=tile&x=${row}&y=${col}&z=${zoom}&;styles=pl&scaler=1&udt=20170406`;
       return `http://192.168.60.231:23334/baidu/satellite/${zoom}/${row}/${col}.jpg`;
     },
   };
