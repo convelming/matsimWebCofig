@@ -89,6 +89,8 @@ export class MyMap extends EventListener {
   name = "map";
   _pickLayerColorNum = 0xffffff;
   openGPUPick = true;
+  mapZoomHeight = MAP_ZOOM_HEIGHT;
+  mapZoomBase = MAP_ZOOM_BASE;
 
   // 获取摄像机到观测点距离
   get cameraHeight() {
@@ -206,9 +208,13 @@ export class MyMap extends EventListener {
     enablePan = true,
     enableZoom = true,
     background = 0xd9ecff,
+    mapZoomHeight = MAP_ZOOM_HEIGHT,
+    mapZoomBase = MAP_ZOOM_BASE,
     ...opt
   }) {
     super(opt);
+    this.mapZoomHeight = mapZoomHeight;
+    this.mapZoomBase = mapZoomBase;
     // 获取根节点dom
     if (rootId instanceof HTMLElement || rootId instanceof Node) {
       this.rootDoc = rootId;
@@ -285,7 +291,7 @@ export class MyMap extends EventListener {
       // 设置对数深度缓冲区
       logarithmicDepthBuffer: true,
       // precision: "highp"
-      preserveDrawingBuffer: true
+      preserveDrawingBuffer: true,
     });
     this.renderer.domElement.style.userSelect = "none";
     this.renderer.domElement.style.position = "absolute";
@@ -585,14 +591,14 @@ export class MyMap extends EventListener {
     // 是否使用屏幕空间旋转。默认值为false。
     this.cameraControls.screenSpacePanning = false;
 
-    this.cameraControls.minDistance = this.constructor.zoomToHeight(MAP_ZOOM_RANGE.MAX);
-    this.cameraControls.maxDistance = this.constructor.zoomToHeight(MAP_ZOOM_RANGE.MIN);
+    this.cameraControls.minDistance = this.zoomToHeight(MAP_ZOOM_RANGE.MAX);
+    this.cameraControls.maxDistance = this.zoomToHeight(MAP_ZOOM_RANGE.MIN);
     //修改鼠标按键
     this.cameraControls.mouseButtons = MOUSE_BUTTONS;
 
     this.cameraControls.addEventListener("change", (res) => {
       const height = Math.round(this.cameraControls.getDistance());
-      const zoom = this.constructor.heightToZoom(height);
+      const zoom = this.heightToZoom(height);
       this.scene.fog.near = height * 2;
       this.scene.fog.far = height * 3.5;
       this.camera.near = height / 1000;
@@ -824,7 +830,7 @@ export class MyMap extends EventListener {
       this.on(MAP_EVENT.UPDATE_CAMERA_HEIGHT, height);
 
       if (!noChangeZoom) {
-        let zoom = this.constructor.heightToZoom(height);
+        let zoom = this.heightToZoom(height);
         this.setZoom(zoom, true);
       }
     }
@@ -839,7 +845,7 @@ export class MyMap extends EventListener {
       zoom = MAP_ZOOM_RANGE.MAX;
     }
     if (!noChangeHeight && this.camera) {
-      let height2 = this.constructor.zoomToHeight(zoom);
+      let height2 = this.zoomToHeight(zoom);
       this.setCameraHeight(height2);
     }
     if (this.zoom != zoom) {
@@ -900,7 +906,7 @@ export class MyMap extends EventListener {
     return {
       height: height,
       center: [(maxX + minX) / 2, (maxY + minY) / 2],
-      zoom: this.constructor.heightToZoom(height),
+      zoom: this.heightToZoom(height),
     };
   }
 
@@ -1011,12 +1017,12 @@ export class MyMap extends EventListener {
     return [px, -pz];
   }
 
-  static heightToZoom(height) {
-    let zoom = MAP_ZOOM_BASE - Math.LOG2E * Math.log(height / MAP_ZOOM_HEIGHT);
+  heightToZoom(height) {
+    let zoom = this.mapZoomBase - Math.LOG2E * Math.log(height / this.mapZoomHeight);
     return zoom;
   }
 
-  static zoomToHeight(zoom) {
-    return MAP_ZOOM_HEIGHT * Math.pow(2, MAP_ZOOM_BASE - zoom);
+  zoomToHeight(zoom) {
+    return this.mapZoomHeight * Math.pow(2, this.mapZoomBase - zoom);
   }
 }

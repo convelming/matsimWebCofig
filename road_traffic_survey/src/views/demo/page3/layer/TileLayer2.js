@@ -6,7 +6,7 @@ import * as GeoTIFF from "geotiff";
 import { BaiduTileUtils } from "@/mymap/utils/BaiduTileUtils.js";
 import { OSMTileUtils } from "@/mymap/utils/OSMTileUtils.js";
 
-const TileUtils = BaiduTileUtils;
+const TileUtils = OSMTileUtils;
 
 // 地图图层类
 export class TileLayer extends Layer {
@@ -109,6 +109,12 @@ export class TileLayer extends Layer {
       if (zoom == tileZoom) {
         tile.update();
         this.scene.add(tile);
+      } else if (zoom > 18 && tileZoom == 18) {
+        tile.update();
+        this.scene.add(tile);
+      } else if (zoom < 5 && tileZoom == 5) {
+        tile.update();
+        this.scene.add(tile);
       } else {
         tile.removeFromParent();
       }
@@ -132,7 +138,7 @@ export class TileMesh extends THREE.Mesh {
 
   tifImage = null;
 
-  imageSize = 256;
+  imageSize = 512;
 
   constructor(zoom, center) {
     super();
@@ -217,12 +223,17 @@ export class TileMesh extends THREE.Mesh {
 
   updateTile() {
     function getUrl(row, col, zoom) {
+      // 百度算法
       // return `http://192.168.60.231:23334/baidu/satellite/${zoom}/${row}/${col}.jpg`;
-      return `https://maponline3.bdimg.com/starpic/?qt=satepc&u=x=${row};y=${col};z=${zoom};v=009;type=sate&fm=46&udt=20250424`;
-      return `http://online4.map.bdimg.com/tile/?qt=tile&x=${row}&y=${col}&z=${zoom}&;styles=pl&scaler=1&udt=20170406`;
+      // return `https://maponline0.bdimg.com/starpic/?qt=satepc&u=x=${row};y=${col};z=${zoom};v=009;type=sate&fm=46&app=webearth2&v=009&udt=20250424`;
+      // return `https://maponline3.bdimg.com/starpic/?qt=satepc&u=x=${row};y=${col};z=${zoom};v=009;type=sate&fm=46&app=webearth2&v=009&udt=20250424`;
+      // return `http://online4.map.bdimg.com/tile/?qt=tile&x=${row}&y=${col}&z=${zoom}&;styles=pl&scaler=1&udt=20170406`;
+      // osm算法
+      // return `https://m.earthol.me/map.jpg?lyrs=y&gl=cn&x=${row}&y=${col}&z=${zoom}` // 403报错
+      return `https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${zoom}/${col}/${row}`;
       // return `http://192.168.60.231:23334/baidu/satellite/${zoom}/${row}/${col}.jpg`
-      return `https://api.mapbox.com/styles/v1/dasin/cltigm5bp010s01ptciblgffl/tiles/512/${zoom}/${row}/${col}@2x?access_token=pk.eyJ1IjoiY29udmVsIiwiYSI6ImNtOW50Z2c0NTAyNGMybHB5Y2txcXY0NmgifQ.zM_QAebuyQtVh-A93w5wyA`;
-      return `http://192.168.60.231:23334/osm/Positron/${zoom}/${row}/${col}.png`;
+      // return `https://api.mapbox.com/styles/v1/dasin/cltigm5bp010s01ptciblgffl/tiles/512/${zoom}/${row}/${col}@2x?access_token=pk.eyJ1IjoiY29udmVsIiwiYSI6ImNtOW50Z2c0NTAyNGMybHB5Y2txcXY0NmgifQ.zM_QAebuyQtVh-A93w5wyA`;
+      // return `http://192.168.60.231:23334/osm/Positron/${zoom}/${row}/${col}.png`;
     }
 
     const v = this.v;

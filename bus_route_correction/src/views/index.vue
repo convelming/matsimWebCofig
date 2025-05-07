@@ -115,6 +115,7 @@
         <el-button type="primary" size="mini" icon="el-icon-arrow-left" @click="handleToSelectDataBase('planAdjustment')">{{ $l("返回上一级") }}</el-button>
         <el-button type="primary" size="mini" icon="el-icon-refresh-right" @click="handleGetDateSourceList()">{{ $l("刷新列表") }}</el-button>
         <el-button type="primary" size="mini" icon="el-icon-add" @click="handleShowAddPlanAdjustmentDialog()">{{ $l("新建方案") }}</el-button>
+        <el-button type="primary" size="mini" icon="el-icon-question" @click="handleShowHelpDialog()">{{ $l("帮助") }}</el-button>
         <el-input style="margin-left: auto; width: 200px" v-model="planAdjustmentDialog.sreach" :placeholder="$l('搜索')" size="mini" clearable @change="" />
       </div>
       <el-table height="400" :data="dataSourceList.filter((v) => !v.noRun && v.name.includes(planAdjustmentDialog.sreach))" border stripe v-loading="dataSourceListLoading">
@@ -129,13 +130,18 @@
             <i class="el-icon-edit" @click="handleChangeScale(row)"></i>
           </template>
         </el-table-column>
-        <el-table-column :label="$l('操作')" width="350">
+        <el-table-column :label="$l('操作')" width="400">
           <template slot-scope="{ row }">
-            <el-button v-if="!row.noRun && row.loadStatus == '已加载'" type="primary" size="mini" @click="handlePlanAdjustmentToDetail(row)">{{ $l("修改") }}</el-button>
+            <!-- <el-button v-if="!row.noRun && row.loadStatus == '已加载'" type="primary" size="mini" @click="handlePlanAdjustmentToDetail(row)">{{ $l("修改") }}</el-button>
             <el-button v-if="!row.noLoad" :loading="row.loadStatus == '加载中'" type="warning" size="mini" @click="handlePlanAdjustmentLoad(row)">{{ $l("加载") }}</el-button>
             <el-button v-if="!row.noRun" type="success" size="mini" :loading="row.runStatus == '运行中'" @click="handleOperationsAnalysisRun(row)">{{ $l("运行") }}</el-button>
             <el-button v-if="!row.noRun" type="success" size="mini" @click="handleOperationsAnalysisRunLog(row)">{{ $l("运行日志") }}</el-button>
-            <el-button v-if="!row.noRun" type="danger" size="mini" @click="handleDelete(row)">{{ $l("删除") }}</el-button>
+            <el-button v-if="!row.noRun" type="danger" size="mini" @click="handleDelete(row)">{{ $l("删除") }}</el-button> -->
+            <el-button :disabled="row.noRun || row.loadStatus != '已加载'" type="primary" size="mini" @click="handlePlanAdjustmentToDetail(row)">{{ $l("修改") }}</el-button>
+            <el-button :disabled="row.noLoad" :loading="row.loadStatus == '加载中'" type="warning" size="mini" @click="handlePlanAdjustmentLoad(row)">{{ $l("加载") }}</el-button>
+            <el-button :disabled="row.noRun" type="success" size="mini" :loading="row.runStatus == '运行中'" @click="handleOperationsAnalysisRun(row)">{{ $l("运行") }}</el-button>
+            <el-button :disabled="row.noRun" type="success" size="mini" @click="handleOperationsAnalysisRunLog(row)">{{ $l("运行日志") }}</el-button>
+            <el-button :disabled="row.noRun" type="danger" size="mini" @click="handleDelete(row)">{{ $l("删除") }}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -408,31 +414,35 @@
   },
   "提示":{
     "zh-CN":"提示",
-    "en-US":"提示",
+    "en-US":"Prompt",
   },
   "系数":{
     "zh-CN":"系数",
-    "en-US":"系数",
+    "en-US":"Scale",
   },
   "请输入系数":{
     "zh-CN":"请输入系数",
-    "en-US":"请输入系数",
+    "en-US":"Please enter the scale",
   },
   "请输入数字作为系数":{
     "zh-CN":"请输入数字作为系数",
-    "en-US":"请输入数字作为系数",
+    "en-US":"Please enter a number as the scale",
   },
   "修改成功":{
     "zh-CN":"修改成功",
-    "en-US":"修改成功",
+    "en-US":"Edit successfully",
   },
   "删除成功":{
     "zh-CN":"删除成功",
-    "en-US":"删除成功",
+    "en-US":"Delete successfully",
   },
   "运行日志":{
     "zh-CN":"运行日志",
-    "en-US":"运行日志",
+    "en-US":"Log",
+  },
+  "帮助":{
+    "zh-CN":"帮助",
+    "en-US":"Help",
   },
 }
 </language>

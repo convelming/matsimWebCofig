@@ -17,6 +17,8 @@ export class Build3DLayer extends Layer {
 
     this.polygonMaterial = new GeoJSONPolygonMaterial({
       transparent: true,
+      color: this.buildColor,
+      opacity: this.buildOpacity,
     });
   }
 
@@ -44,10 +46,14 @@ export class Build3DLayer extends Layer {
 
   setBuildColor(buildColor) {
     this.buildColor = buildColor;
+    this.polygonMaterial.uniforms.diffuse.value = new THREE.Color(buildColor);
+    this.polygonMaterial.needsUpdate = true;
   }
 
   setBuildOpacity(buildOpacity) {
     this.buildOpacity = buildOpacity;
+    this.polygonMaterial.uniforms.opacity.value = buildOpacity;
+    this.polygonMaterial.needsUpdate = true;
   }
 
   setData(data) {
