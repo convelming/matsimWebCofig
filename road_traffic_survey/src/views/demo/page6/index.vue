@@ -46,7 +46,7 @@ export default {
       // this._MapLayer = new MapLayer({ tileClass: MAP_LAYER_STYLE[MAP_LAYER_STYLE.length - 1], zIndex: -1 });
       // this._Map.addLayer(this._MapLayer);
 
-      this._OBJLayer = new OBJLayer({ zIndex: 10 });
+      this._OBJLayer = new OBJLayer({ zIndex: 10, num: this.$route.query.num });
       this._Map.addLayer(this._OBJLayer);
     },
   },
