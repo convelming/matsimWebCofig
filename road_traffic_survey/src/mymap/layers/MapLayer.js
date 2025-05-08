@@ -268,11 +268,11 @@ export class MapTile {
           `
         );
       };
-    material.customProgramCacheKey = () => {
-      return JSON.stringify({
-        uuid: material.uuid,
-      });
-    };
+      material.customProgramCacheKey = () => {
+        return JSON.stringify({
+          uuid: material.uuid,
+        });
+      };
       let geometry = new THREE.PlaneGeometry(this._size, this._size);
       this._mesh = new THREE.Mesh(geometry, material);
       return this._mesh;
@@ -354,3 +354,5 @@ export function MapStyleFactory(params = {}) {
 }
 
 export const MAP_LAYER_STYLE = (window.MAP_LAYER_STYLE || [{}]).map(MapStyleFactory);
+
+export const DEFAULT_MAP_LAYER_STYLE = MAP_LAYER_STYLE[window.DEFAULT_MAP_LAYER_STYLE_INDEX] || MAP_LAYER_STYLE[0];

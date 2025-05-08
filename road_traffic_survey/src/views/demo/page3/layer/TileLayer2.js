@@ -19,7 +19,7 @@ export class TileLayer extends Layer {
     for (let zoom = 5; zoom <= 18; zoom++) {
       this.meshMap[zoom] = new TileMesh(zoom, [0, 0]);
     }
-    this.getTif();
+    if (!opt.noTif) this.getTif();
   }
 
   async getTif() {
@@ -295,7 +295,15 @@ export class TileMesh extends THREE.Mesh {
   }
 
   updateTiff() {
-    if (!this.tifImage) return;
+    if (!this.tifImage){
+      const ctx = this.tifCanvas.getContext("2d");
+      ctx.fillStyle = "#00000000";
+      ctx.fillRect(0, 0, this.tifCanvas.width, this.tifCanvas.height);
+      const ctxNo = this.tifNoCanvas.getContext("2d");
+      ctxNo.fillStyle = "#7f7fff00";
+      ctxNo.fillRect(0, 0, this.tifNoCanvas.width, this.tifNoCanvas.height);
+      return;
+    }
     const [cx, cy] = this.center;
     const rx = this.geoWidth / 2;
     const ry = this.geoHieght / 2;

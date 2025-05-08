@@ -155,7 +155,7 @@
 </template>
 
 <script>
-import { MyMap, MAP_EVENT, MAP_ZOOM_RANGE, MAP_LAYER_STYLE, MapLayer } from "@/mymap/index.js";
+import { MyMap, MAP_EVENT, MAP_ZOOM_RANGE, MAP_LAYER_STYLE,DEFAULT_MAP_LAYER_STYLE, MapLayer } from "@/mymap/index.js";
 import { WGS84ToMercator } from "@/mymap/utils/LngLatUtils";
 
 import { FrameSelectLayer, FRAME_SELECT_STATE_KEY, FRAME_SELECT_EVENT } from "./layer/FrameSelectLayer";
@@ -380,7 +380,7 @@ export default {
   methods: {
     // ****************************** 地图及图层初始化 -- start
     initLayer() {
-      this._MapLayer = new MapLayer({ tileClass: MAP_LAYER_STYLE[0], zIndex: 0 });
+      this._MapLayer = new MapLayer({ tileClass: DEFAULT_MAP_LAYER_STYLE, zIndex: 0 });
       {
         const styleMap = MAP_LAYER_STYLE;
         const itemDocList = [];
