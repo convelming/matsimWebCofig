@@ -85,6 +85,14 @@ MAP_LAYER_STYLE = [
       return `http://192.168.60.232:9195/mserver/arcgis/rest/services/csjt/%E5%B9%BF%E4%B8%9C%E7%9C%81wgs/MapServer/export?dpi=96&transparent=true&format=png8&layers=show:0,1,2,3&bbox=${bbox}&f=image&bboxSR=${bboxSR}&imageSR=${imageSR}`;
     },
   },
+  {
+    style_name: "天地图",
+    background: `#0a4173`,
+    getUrl: function () {
+      // 天地图的瓦片服务需要用vec_w的，不能用img_w
+      return `https://t3.tianditu.gov.cn/vec_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=vec&STYLE=default&TILEMATRIXSET=w&FORMAT=tiles&TileMatrix=${this.zoom}&TileRow=${this.col}&TileCol=${this.row}&tk=fcaaabe9f71c6322310f751c434a8a2b`;
+    },
+  },
 ];
 
 // geojson地图坐标系转换配置
