@@ -75,7 +75,7 @@ export const MAP_EVENT = {
 
 export const MAP_ZOOM_RANGE = {
   BASE: 18,
-  MIN: 5,
+  MIN: 1,
   MAX: 22,
 };
 
