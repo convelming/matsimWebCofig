@@ -35,6 +35,7 @@
 import { MyMap, MapLayer, MAP_LAYER_STYLE, MAP_EVENT } from "@/mymap/index.js";
 import { MapLayer as MapLayer2, MapTile } from "./layer/MapLayer.js";
 import { TileLayer } from "./layer/TileLayer2.js";
+import { SpriteTextLayer } from "./layer/SpriteTextLayer.js";
 
 import { OSMTileUtils as OSMTileUtils1 } from "@/mymap/utils/OSMTileUtils.js";
 import { OSMTileUtils as OSMTileUtils2 } from "./layer/OSMTileUtils.js";
@@ -86,8 +87,11 @@ export default {
         center: [12707787.79, 4759380.11],
         // center: [12716943.337189136, 2761023.0570991505],
         zoom: 5,
-        minPitch: -90,
-        mapZoomHeight: 600,
+        zoom: 13.5,
+        // mapZoomHeight: 600,
+        // pitch: 30,
+        // rotation: -10,
+        enableRotate: true,
       });
       console.log(this._Map);
       this._Map.cameraControls.enableRotate = true;
@@ -95,10 +99,12 @@ export default {
       // this._TileLayer = new TileLayer({ zIndex: 0, noTif: true });
       // this._Map.addLayer(this._TileLayer);
 
-      this._MapLayer = new MapLayer({ tileClass: MAP_LAYER_STYLE[MAP_LAYER_STYLE.length - 1], zIndex: -1, opacity: 1 });
-      this._Map.addLayer(this._MapLayer);
+      // this._MapLayer = new MapLayer({ tileClass: MAP_LAYER_STYLE[MAP_LAYER_STYLE.length - 1], zIndex: -1, opacity: 1 });
+      // this._Map.addLayer(this._MapLayer);
       this._MapLayer2 = new MapLayer2({ tileClass: MapTile, zIndex: 10000, opacity: 0.5 });
       this._Map.addLayer(this._MapLayer2);
+      this._SpriteTextLayer = new SpriteTextLayer({ zIndex: 20000 });
+      this._Map.addLayer(this._SpriteTextLayer);
 
       // const l1 = OSMTileUtils1.getTileList(10, [12707787.79, 2759380.11], 100000);
       // const l2 = OSMTileUtils2.getTileList(10, [12707787.79, 2759380.11], 100000);

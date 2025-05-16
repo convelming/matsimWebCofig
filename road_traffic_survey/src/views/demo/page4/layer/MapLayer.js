@@ -2,9 +2,8 @@ import { MAP_EVENT, Layer } from "@/mymap/index";
 import * as THREE from "three";
 import { BaiduTileUtils } from "./BaiduTileUtils";
 import { OSMTileUtils } from "./OSMTileUtils";
-import { TianDiTiTileUtils } from "./TianDiTiTileUtils";
 
-const TileUtils = TianDiTiTileUtils
+const TileUtils = OSMTileUtils
 
 const Loader = new THREE.TextureLoader();
 
@@ -291,7 +290,7 @@ export class MapTile {
 
   getUrl(zoom, row, col) {
     // 天地图
-    return `http://t0.tianditu.gov.cn/vec_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=img&STYLE=default&TILEMATRIXSET=w&FORMAT=tiles&TILEMATRIX=${zoom}&TILEROW=${col}&TILECOL=${row}&tk=fcaaabe9f71c6322310f751c434a8a2b` 
+    // return `http://t0.tianditu.gov.cn/vec_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=img&STYLE=default&TILEMATRIXSET=w&FORMAT=tiles&TILEMATRIX=${zoom}&TILEROW=${col}&TILECOL=${row}&tk=fcaaabe9f71c6322310f751c434a8a2b` 
     // 百度算法
     // return `http://192.168.60.231:23334/baidu/satellite/${zoom}/${row}/${col}.jpg`;
     // return `https://maponline0.bdimg.com/starpic/?qt=satepc&u=x=${row};y=${col};z=${zoom};v=009;type=sate&fm=46&app=webearth2&v=009&udt=20250424`;
@@ -299,7 +298,7 @@ export class MapTile {
     // return `http://online4.map.bdimg.com/tile/?qt=tile&x=${row}&y=${col}&z=${zoom}&;styles=pl&scaler=1&udt=20170406`;
     // osm算法
     // return `https://m.earthol.me/map.jpg?lyrs=y&gl=cn&x=${row}&y=${col}&z=${zoom}` // 403报错
-    // return `https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${zoom}/${col}/${row}`;
+    return `https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${zoom}/${col}/${row}`;
     // return `http://192.168.60.231:23334/baidu/satellite/${zoom}/${row}/${col}.jpg`
     // return `https://api.mapbox.com/styles/v1/dasin/cltigm5bp010s01ptciblgffl/tiles/512/${zoom}/${row}/${col}@2x?access_token=pk.eyJ1IjoiY29udmVsIiwiYSI6ImNtOW50Z2c0NTAyNGMybHB5Y2txcXY0NmgifQ.zM_QAebuyQtVh-A93w5wyA`;
     // return `http://192.168.60.231:23334/osm/Positron/${zoom}/${row}/${col}.png`;

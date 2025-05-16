@@ -17,7 +17,7 @@ export class UAVListLayer extends Layer {
     this.nodeMeshList = [];
     this.nodeMeshList1 = [];
     this.nodeMeshList2 = [];
-    this.nodeGeometry = new THREE.BoxGeometry(20, 20, 20);
+    this.nodeGeometry = new THREE.BoxGeometry(10, 10, 10);
     this.nodesMaterial = new THREE.MeshBasicMaterial({ color: "#409EFF", opacity: 0.8, transparent: true });
     this.nodesMaterial_s = new THREE.MeshBasicMaterial({ depthFunc: THREE.AlwaysDepth, color: "red", opacity: 0.8, transparent: true });
     this.nodesMaterial1 = new THREE.MeshBasicMaterial({});
@@ -30,7 +30,7 @@ export class UAVListLayer extends Layer {
     this.linkMaterial1 = new THREE.MeshBasicMaterial({});
 
     this.UAVGeometry = new THREE.BoxGeometry(50, 50, 50);
-    this.UAVMaterial = new THREE.MeshNormalMaterial();
+    this.UAVMaterial = new THREE.MeshBasicMaterial({ color: "#275994" });
     this.UAVMaterial1 = new THREE.MeshBasicMaterial({});
     this.UAVMaterial2 = new THREE.MeshBasicMaterial({});
     this.UAVMesh = new THREE.InstancedMesh(this.UAVGeometry, this.UAVMaterial, 1);
@@ -123,6 +123,8 @@ export class UAVListLayer extends Layer {
   setSelectPath(selecIndex) {
     const oldIndex = this.selecIndex;
     this.selecIndex = selecIndex;
+    console.log(this.pathList[this.selecIndex]);
+    
     if (oldIndex > -1) {
       this.nodeMeshList[oldIndex].material = this.nodesMaterial;
       this.nodeMeshList[oldIndex].needsUpdate = true;
@@ -277,7 +279,7 @@ export class UAVListLayer extends Layer {
       this.UAVMesh1.setMatrixAt(pIndex, matrix4);
       this.UAVMesh2.setMatrixAt(pIndex, matrix4);
     }
-    
+
     if (this.lockSelect && points[this.selecIndex]) {
       const { point, speed, dir } = points[this.selecIndex];
       this.map.setCenter([point.x + this.center[0], point.y + this.center[1]]);

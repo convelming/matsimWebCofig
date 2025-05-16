@@ -56,7 +56,7 @@
                   </el-col>
                   <el-col :span="24" :offset="0">
                     <div style="display: flex; align-items: center; justify-content: space-between">
-                      <span class="el-form-item__label">时间：{{ time }}</span>
+                      <span class="el-form-item__label" style="width: 120px">时间：{{ time }}</span>
                       <el-slider style="margin: 0 15px; flex: 1" :value="time" @input="setTime" :min="minTime" :max="maxTime"></el-slider>
                     </div>
                   </el-col>
@@ -83,14 +83,14 @@
 </template>
 
 <script>
-import { MyMap, MAP_LAYER_STYLE, MAP_EVENT } from "@/mymap/index.js";
+import { MyMap, MAP_EVENT } from "@/mymap/index.js";
 import { WGS84ToMercator } from "@/mymap/utils/LngLatUtils";
 import { TifLayer } from "./layer/TifLayer";
 import { Network3DLayer, Network } from "./layer/Network3DLayer";
 import { UAVListLayer } from "./layer/UAVListLayer";
 import { Build3DLayer } from "./layer/Build3DLayer";
 import { PinkLayer } from "./layer/PinkLayer";
-import { MapLayer } from "@/mymap/index.js";
+import { MapLayer, MapTile } from "../page4/layer/MapLayer.js";
 
 import NewClock from "@/components/NewClock/index.vue";
 
@@ -98,7 +98,7 @@ import JSZip from "jszip";
 
 import GeoJSONLayerWorker from "./layer/GeoJSONLayer.worker";
 
-import { TileLayer as TileLayer2 } from "./layer/TileLayer2.js";
+import { TileLayer } from "./layer/TileLayer.js";
 import { OBJLayer } from "./layer/OBJLayer.js";
 
 import * as GeoTIFF from "geotiff";
@@ -167,14 +167,17 @@ export default {
     tifOpacity: {
       handler(val) {
         this._TifLayer.setOpacity(val);
+        this._TileLayer.setOpacity(val);
       },
     },
     showTifLayer: {
       handler(val) {
         if (val) {
           this._Map.addLayer(this._TifLayer);
+          this._Map.addLayer(this._TileLayer);
         } else {
           this._Map.removeLayer(this._TifLayer);
+          this._Map.removeLayer(this._TileLayer);
         }
       },
     },
@@ -203,20 +206,20 @@ export default {
       showNetwork3DNode: false,
       showNetwork3DLink: false,
       showTifLayer: true,
-      showOBJLayer: true,
+      showOBJLayer: false,
       paths: {},
       selectPath: null,
       time: 0,
       minTime: 0,
       maxTime: 5000,
-      tifOpacity: 1,
+      tifOpacity: 0.5,
     };
   },
   created() {},
   async mounted() {
     this.initMap();
     this.loadPaths();
-    this.loadTif();
+    // this.loadTif();
     this.loadBuild();
     this.loadPink();
     // this.loadNetwork();
@@ -231,24 +234,24 @@ export default {
         // center: [12702456.02, 2753085.897],
         // zoom: 15,
         zoom: 13.5,
-        minPitch: -90,
         mapZoomHeight: 600,
-        pitch: 70,
+        pitch: 30,
+        rotation: -10,
         enableRotate: true,
       });
       console.log(this._Map);
 
-      // this._MapLayer = new MapLayer({ tileClass: MAP_LAYER_STYLE[MAP_LAYER_STYLE.length - 1], zIndex: -1 });
-      // this._Map.addLayer(this._MapLayer);
-
-      this._TileLayer2 = new TileLayer2({ zIndex: 10, noTif: true });
-      this._Map.addLayer(this._TileLayer2);
+      this._MapLayer = new MapLayer({ tileClass: MapTile, zIndex: -1 });
+      this._Map.addLayer(this._MapLayer);
 
       this._OBJLayer = new OBJLayer({ zIndex: 30, num: this.$route.query.num });
       if (this.showOBJLayer) this._Map.addLayer(this._OBJLayer);
 
       this._TifLayer = new TifLayer({ zIndex: 100, opacity: this.tifOpacity });
       if (this.showTifLayer) this._Map.addLayer(this._TifLayer);
+
+      this._TileLayer = new TileLayer({ zIndex: 200, opacity: this.tifOpacity });
+      if (this.showTifLayer) this._Map.addLayer(this._TileLayer);
 
       this._Network3DLayer = new Network3DLayer({
         zIndex: 200,
@@ -271,7 +274,8 @@ export default {
 
       this._Build3DLayer = new Build3DLayer({
         zIndex: 220,
-        buildColor: "#838385",
+        // buildColor: "#838385",
+        buildColor: "#bbb",
       });
       this._Map.addLayer(this._Build3DLayer);
 
@@ -311,6 +315,8 @@ export default {
           paths.push({ id: v[0], nodes: v[1], center: v[1][0] });
         }
         this._UAVListLayer.setPaths(paths);
+        this._paths = Object.entries(JSON.parse(xml));
+        this.computedPathsAndPink();
       } else {
         console.error(`HTTP error! status: ${response.status}`, response);
       }
@@ -340,7 +346,8 @@ export default {
       // this._MapLayer.setTiff(tifImage);
     },
     async loadBuild() {
-      const response = await fetch(process.env.VUE_APP_BASE_API + "/demo/新丰县建筑DEM.geojson");
+      // const response = await fetch(process.env.VUE_APP_BASE_API + "/demo/新丰县建筑DEM.geojson");
+      const response = await fetch(process.env.VUE_APP_BASE_API + "/demo/新丰县buildingWithDem.geojson");
       if (response.ok) {
         const geoJsonData = await response.text().then(parserGeoJSON);
         this._Build3DLayer.setData(geoJsonData);
@@ -353,6 +360,9 @@ export default {
       if (response.ok) {
         const text = await response.text();
         this._PinkLayer.setPinkList(JSON.parse(text));
+
+        this._pinks = JSON.parse(text);
+        this.computedPathsAndPink();
       } else {
         console.error(`HTTP error! status: ${response.status}`, response);
       }
@@ -368,7 +378,7 @@ export default {
         if (this.time + 1 / 60 > this.maxTime) {
           this.stop();
         } else {
-          this.setTime(this.time + 1 / 60);
+          this.setTime(this.time + (1 / 60) * 10);
         }
       }, 1000 / 60);
     },
@@ -379,6 +389,31 @@ export default {
     reset() {
       this.stop();
       this.setTime(0);
+    },
+    computedPathsAndPink() {
+      return;
+      if (!this._pinks || !this._paths) return;
+      const list = [];
+      for (const path of this._paths) {
+        const obj = {};
+        obj.id = path[0];
+        obj.nodes = path[1];
+        const [x1, y1] = obj.nodes[0];
+        const [x2, y2] = obj.nodes[obj.nodes.length - 1];
+        for (const pink of this._pinks) {
+          const { wgs_lon: x, wgs_lat: y } = pink;
+          console.log(Math.abs(x1 - x), Math.abs(y1 - y), Math.abs(x2 - x), Math.abs(y2 - y));
+          const offset = 0.001;
+          if (Math.abs(x1 - x) <= offset && Math.abs(y1 - y) <= offset) {
+            obj.start = pink;
+          }
+          if (Math.abs(x2 - x) <= offset && Math.abs(y2 - y) <= offset) {
+            obj.end = pink;
+          }
+        }
+        list.push(obj);
+      }
+      console.log(list);
     },
   },
 };
@@ -410,7 +445,7 @@ export default {
   width: 500px;
   position: absolute;
   right: 0;
-  top: 0;
+  top: 68px;
   z-index: 1500;
   background-color: #275994;
   user-select: none;

@@ -89,7 +89,7 @@ import JSZip from "jszip";
 
 import GeoJSONLayerWorker from "./layer/GeoJSONLayer.worker";
 
-import { TileLayer } from "./layer/TileLayer2.js";
+import { TileLayer } from "./layer/TileLayer.js";
 
 import * as GeoTIFF from "geotiff";
 

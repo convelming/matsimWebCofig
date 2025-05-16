@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { Layer, MAP_EVENT } from "@/mymap/index.js";
 import { WGS84ToMercator } from "@/mymap/utils/LngLatUtils";
+import SpriteText from "./SpriteText.js";
 
 export class PinkLayer extends Layer {
   constructor(opt) {
@@ -39,6 +40,7 @@ export class PinkLayer extends Layer {
     if (this.mesh1) this, this.mesh1.removeFromParent();
     if (this.mesh2) this, this.mesh2.removeFromParent();
     if (this.mesh3) this, this.mesh3.removeFromParent();
+    if (this.mesh4) this, this.mesh4.removeFromParent();
   }
 
   update() {
@@ -51,6 +53,7 @@ export class PinkLayer extends Layer {
     this.mesh1 = new THREE.InstancedMesh(this.geometry, this.material1, this.pinkList.length);
     this.mesh2 = new THREE.InstancedMesh(this.geometry, this.material2, this.pinkList.length);
     this.mesh3 = new THREE.InstancedMesh(this.geometry, this.material3, this.pinkList.length);
+    this.mesh4 = new THREE.Group();
     for (const index in this.pinkList) {
       const pickColor = new THREE.Color(1 + Number(index));
 
@@ -63,6 +66,14 @@ export class PinkLayer extends Layer {
       this.mesh3.setMatrixAt(index, matrix4);
 
       this.mesh3.setColorAt(index, pickColor);
+
+      const mesh = new SpriteText(node.name, 12, "#000");
+      mesh.borderRadius = 2;
+      mesh.backgroundColor = "#fff";
+      mesh.center.set(0.5, 0);
+      mesh.renderOrder = this.zIndex;
+      mesh.position.set(node.x - center.x, node.y - center.y, node.z);
+      this.mesh4.add(mesh);
     }
 
     if (this.mesh1.instanceMatrix) this.mesh1.instanceMatrix.needsUpdate = true;
@@ -72,6 +83,7 @@ export class PinkLayer extends Layer {
     if (this.mesh3.instanceColor) this.mesh3.instanceColor.needsUpdate = true;
 
     this.scene.add(this.mesh1);
+    this.scene.add(this.mesh4);
     this.pickLayerScene.add(this.mesh2);
     this.pickMeshScene.add(this.mesh3);
     if (this.map) {

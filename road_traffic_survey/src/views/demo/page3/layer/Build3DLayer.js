@@ -60,7 +60,8 @@ export class Build3DLayer extends Layer {
     this.center = data.center;
     this.polygonArray = data.polygonArray;
     this.jzgdList = data.propertiesLabels.Height.values; // 建筑高度
-    this.hbgdList = data.propertiesLabels.Sampled_SA.values; // 海拔高度
+    // this.hbgdList = data.propertiesLabels.Sampled_SA.values; // 海拔高度
+    this.hbgdList = data.propertiesLabels.dem.values; // 海拔高度
     this.updatePolygon();
   }
 
