@@ -15,7 +15,19 @@ DEFAULT_MAP_LAYER_STYLE_INDEX = 1;
 //     return `http://192.168.60.231:23334/osm/MapTilerBasic/${this.zoom}/${this.row}/${this.col}.png`;
 //   }
 // }
-MAP_LAYER_STYLE = [
+MAP_LAYER_STYLE = [  
+  {
+    style_name: "tianditu",
+    getUrl: function () {
+      return `http://t0.tianditu.gov.cn/vec_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=img&STYLE=default&TILEMATRIXSET=w&FORMAT=tiles&TILEMATRIX=${this.zoom}&TILEROW=${this.col}&TILECOL=${this.row}&tk=fcaaabe9f71c6322310f751c434a8a2b` 
+    },
+  },
+  {
+    style_name: "argisServer",
+    getUrl: function () {
+    return `https://server.arcgisonline.com/arcgis/rest/services/World_Street_Map/MapServer/tile/${this.zoom}/${this.col}/${this.row}`;
+    },
+  },
   {
     style_name: "POSITRON",
     getUrl: function () {
@@ -81,7 +93,6 @@ MAP_LAYER_STYLE = [
       const bbox = `${x - width},${y - width},${x + width},${y + width}`;
       const bboxSR = "3857";
       const imageSR = "3857";
-
       return `http://192.168.60.232:9195/mserver/arcgis/rest/services/csjt/%E5%B9%BF%E4%B8%9C%E7%9C%81wgs/MapServer/export?dpi=96&transparent=true&format=png8&layers=show:0,1,2,3&bbox=${bbox}&f=image&bboxSR=${bboxSR}&imageSR=${imageSR}`;
     },
   },
@@ -89,8 +100,8 @@ MAP_LAYER_STYLE = [
     style_name: "天地图",
     background: `#0a4173`,
     getUrl: function () {
-      // 天地图的瓦片服务需要用vec_w的，不能用img_w
-      return `https://t3.tianditu.gov.cn/vec_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=vec&STYLE=default&TILEMATRIXSET=w&FORMAT=tiles&TileMatrix=${this.zoom}&TileRow=${this.col}&TileCol=${this.row}&tk=fcaaabe9f71c6322310f751c434a8a2b`;
+      // 天地图的瓦片服务需要用img_w的，不能用img_c
+      return `https://t3.tianditu.gov.cn/img_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=vec&STYLE=default&TILEMATRIXSET=w&FORMAT=tiles&TileMatrix=${this.zoom}&TileRow=${this.col}&TileCol=${this.row}&tk=fcaaabe9f71c6322310f751c434a8a2b`;
     },
   },
 ];

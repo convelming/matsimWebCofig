@@ -116,7 +116,7 @@ export class StopsLayer extends Layer {
       this.update();
     }
     if (type == MAP_EVENT.UPDATE_CAMERA_HEIGHT) {
-      this.setSize(this.map.cameraHeight / 80);
+      this.setSize(this.map.plottingScale * 10);
       this.setPitch(this.pitch);
       this.update();
     }
@@ -189,7 +189,7 @@ export class StopsLayer extends Layer {
 
   onAdd(map) {
     super.onAdd(map);
-    this.setSize(this.map.cameraHeight / 80);
+    this.setSize(this.map.plottingScale * 10);
     this.setPitch(this.map.pitch);
     this.update();
   }
@@ -248,7 +248,7 @@ export class StopsLayer extends Layer {
     }
 
     if (this.labelData && this.labelMesh) {
-      const scale = this.map.cameraHeight / 2000;
+      const scale = this.map.plottingScale * 0.3;
       this.labelMesh.scale.set(this.labelData.mapWidth * scale, this.labelData.mapHeight * scale, 1);
     }
   }
@@ -256,7 +256,7 @@ export class StopsLayer extends Layer {
   show() {
     super.show();
     if (this.map) {
-      this.setSize(this.map.cameraHeight / 80);
+      this.setSize(this.map.plottingScale * 10);
       this.setPitch(this.map.pitch);
       this.update();
     }
@@ -396,7 +396,7 @@ export class StopsLayer extends Layer {
     } else {
       this.labelMesh.material.setValues({ map: this.labelData.map });
       this.labelMesh.material.needsUpdate = true;
-      const scale = this.map.cameraHeight / 2000;
+      const scale = this.map.plottingScale * 0.3;
       this.labelMesh.scale.set(this.labelData.mapWidth * scale, this.labelData.mapHeight * scale, 1);
       const [x, y] = this.map.WebMercatorToCanvasXY(this.labelData.x, this.labelData.y);
       this.labelMesh.position.set(x, y, 10);
@@ -443,7 +443,7 @@ export class StopsLayer extends Layer {
         `
           #if defined( USE_MAP )
             vec4 textColor = texture2D( map, uv );
-            float length = (textColor.r + textColor.g + textColor.b) / 3.0  ;
+            float length = (textColor.r + textColor.g + textColor.b) / 3.0;
             if(length < 0.5){
               outgoingLight = vec3(1.0);
             }else{

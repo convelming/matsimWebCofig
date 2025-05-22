@@ -12,7 +12,7 @@
       <div class="form_item">
         <div class="form_label">{{ $l("图标大小：") }}</div>
         <div class="form_value">
-          <el-slider style="padding: 0 calc(2em - 10px)" :disabled="!s_showLayer" v-model="stopScale" :min="0" :max="20" :step="0.1"></el-slider>
+          <el-slider style="padding: 0 calc(2em - 10px)" :disabled="!s_showLayer" v-model="stopScale" :min="0" :max="20" :step="0.1" @change="autoScale = false"></el-slider>
         </div>
       </div>
       <div class="form_item">
@@ -122,7 +122,8 @@ export default {
 
       showStopName: false,
       stopColor: "#2656C6",
-      stopScale: 2,
+      stopScale: 1,
+      autoScale: true,
 
       selectStop: false,
       selectBusStopList: [],
@@ -196,14 +197,28 @@ export default {
     },
     handleEnable() {
       this.handleSelectStop(this.selectStop);
+      this._MapEvnetId1 = this._Map.addEventListener(MAP_EVENT.UPDATE_CAMERA_HEIGHT, this.handleAutoScale);
       this._Map.addLayer(this._StopsLayer);
       this._Map.addLayer(this._LinkLayer);
       this._StopsLayer.update();
+      this.handleAutoScale();
     },
     handleDisable() {
+      this._Map.removeEventListener(MAP_EVENT.UPDATE_CAMERA_HEIGHT, this._MapEvnetId1);
       this.handleSelectStop(false);
       this._Map.removeLayer(this._StopsLayer);
       this._Map.removeLayer(this._LinkLayer);
+    },
+    handleAutoScale(res) {
+      if (!this.autoScale) return;
+      const zoom = this._Map.zoom;
+      if (zoom < 10) {
+        this.stopScale = 1;
+      } else if (zoom < 13) {
+        this.stopScale = 1.5;
+      } else {
+        this.stopScale = 2;
+      }
     },
     handleSelectStop(value) {
       if (value) {
