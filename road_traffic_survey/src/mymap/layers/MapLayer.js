@@ -255,15 +255,13 @@ export class MapTile {
           "#include <map_fragment>",
           `
             #ifdef USE_MAP
-
               vec4 sampledDiffuseColor = texture2D( map, vUv );
-
               if(sampledDiffuseColor.a > 0.5){
                 diffuseColor = sampledDiffuseColor;
+                diffuseColor.a *= opacity;
               } else {
                 diffuseColor *= sampledDiffuseColor;
               }
-
             #endif
           `
         );
@@ -289,6 +287,8 @@ export class MapTile {
 
   set opacity(v) {
     this._opacity = v;
+    console.log(v);
+    
     this.mesh.material.setValues({ opacity: v, transparent: v !== 1 });
   }
 

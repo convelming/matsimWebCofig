@@ -30,11 +30,11 @@
                       <el-switch v-model="showNetwork3DNode" :active-value="true" :inactive-value="false"></el-switch>
                     </el-form-item>
                   </el-col>
-                  <el-col :span="12" :offset="0">
+                  <!-- <el-col :span="12" :offset="0">
                     <el-form-item label="地形图：">
                       <el-switch v-model="showTifLayer" :active-value="true" :inactive-value="false"></el-switch>
                     </el-form-item>
-                  </el-col>
+                  </el-col> -->
                   <el-col :span="12" :offset="0">
                     <el-form-item label="实体3维：">
                       <el-switch v-model="showOBJLayer" :active-value="true" :inactive-value="false"></el-switch>
@@ -212,7 +212,7 @@ export default {
       time: 0,
       minTime: 0,
       maxTime: 5000,
-      tifOpacity: 0.5,
+      tifOpacity: 1,
     };
   },
   created() {},
@@ -241,8 +241,8 @@ export default {
       });
       console.log(this._Map);
 
-      this._MapLayer = new MapLayer({ tileClass: MapTile, zIndex: -1 });
-      this._Map.addLayer(this._MapLayer);
+      // this._MapLayer = new MapLayer({ tileClass: MapTile, zIndex: -1 });
+      // this._Map.addLayer(this._MapLayer);
 
       this._OBJLayer = new OBJLayer({ zIndex: 30, num: this.$route.query.num });
       if (this.showOBJLayer) this._Map.addLayer(this._OBJLayer);

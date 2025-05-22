@@ -55,7 +55,7 @@ export class TileLayer extends Layer {
 
     const array = new Uint8Array(tifImageData.length * 4);
     for (let i = 0, l = tifImageData.length; i < l; i++) {
-      const hex = tifImageData[i] * 0.8;
+      const hex = tifImageData[i]// * 0.8;
       const r = (hex >> 16) & 255;
       const g = (hex >> 8) & 255;
       const b = hex & 255;
