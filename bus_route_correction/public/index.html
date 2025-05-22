@@ -265,6 +265,7 @@
         created() {
           this.page_language = sessionStorage.getItem("language") || this.page_language;
           Promise.all([this.handleGetDataBaseList(), this.getDefaultDataSource()]).then((res) => {
+            this.dataBase = res[1].dataBase;
             this.handleGetDateSourceList(res[1].dataBase);
           });
           this._interval = setInterval(() => {
@@ -288,7 +289,6 @@
                 res.data.dataBase = database;
                 res.data.dataSource = datasource;
                 this.defaultDataSource = res.data;
-                this.dataBase = database;
                 return res.data;
               });
           },
