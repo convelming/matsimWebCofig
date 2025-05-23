@@ -290,7 +290,7 @@ export default {
         });
         await uploadConfig(file, this.dataSource);
         this.$message.success(this.$l("saveSuccess"));
-        this.handleReload();
+        this.$handleReload();
         this.saveLoading = false;
       } catch (error) {
         console.log("config保存失败", error);

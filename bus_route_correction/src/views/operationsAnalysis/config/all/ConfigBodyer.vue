@@ -163,7 +163,7 @@ export default {
         });
         await uploadConfig(file, this.dataSource);
         this.$message.success(this.$l("saveSuccess"));
-        this.handleReload();
+        this.$handleReload();
         this.saveLoading = false;
       } catch (error) {
         console.log("config保存失败", error);
@@ -182,7 +182,6 @@ export default {
       });
     },
     async $handleRun() {
-      return
       if (this.runLoading) return this.$message.warning(this.$l("waitRunning"));
       this.runLoading = true;
       const xml = this.getXml();
