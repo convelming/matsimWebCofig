@@ -244,7 +244,7 @@ export default {
       str += `\n</config>`;
       return str;
     },
-    handleChangeView() {
+    $handleChangeView() {
       if (this.type == "editor") {
         this.form = this.getForm(this.$refs.Editor.getXml());
         this.type = "item";
@@ -254,12 +254,12 @@ export default {
       }
       sessionStorage.setItem("config_page_type", this.type);
     },
-    handleScrollTop() {
+    $handleScrollTop() {
       if (this.$refs.scrollView) {
         this.$refs.scrollView.scrollTo(0, 0);
       }
     },
-    handleUpload() {
+    $handleUpload() {
       const input = document.createElement("input");
       input.type = "file";
       input.onchange = (event) => {
@@ -279,7 +279,7 @@ export default {
       };
       input.click();
     },
-    async handleSave() {
+    async $handleSave() {
       if (this.saveLoading) return this.$message.warning(this.$l("waitSaving"));
       this.saveLoading = true;
       try {
@@ -298,7 +298,7 @@ export default {
         this.saveLoading = false;
       }
     },
-    handleReload() {
+    $handleReload() {
       this.loading = true;
       getConfig({
         database: this.dataBase,
@@ -310,7 +310,7 @@ export default {
         this.loading = false;
       });
     },
-    async handleRun() {
+    async $handleRun() {
       if (this.runLoading) return this.$message.warning(this.$l("waitRunning"));
       this.runLoading = true;
       const xml = this.getXml(this.form);
@@ -379,7 +379,7 @@ export default {
         this.$store.dispatch("getDataSourceList", this.dataBase);
       }
     },
-    handleDownload() {
+    $handleDownload() {
       const xml = this.getXml(this.form);
       const blob = new Blob([xml], { type: "application/xml" });
       const link = document.createElement("a");

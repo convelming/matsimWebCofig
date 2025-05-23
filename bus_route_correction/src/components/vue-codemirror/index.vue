@@ -182,7 +182,6 @@ export default {
     },
   },
   mounted() {
-    console.log(CodeMirror.modes);
     this.initialize();
   },
   beforeDestroy() {

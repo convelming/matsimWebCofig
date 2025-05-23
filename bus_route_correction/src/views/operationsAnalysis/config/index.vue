@@ -20,7 +20,7 @@
         </div>
       </div>
     </div>
-    <ConfigBodyerV15 ref="bodyer" :xml="xmlStr" />
+    <ConfigBodyer ref="bodyer" :xml="xmlStr" />
     <div class="btn_qhst btn1" @click="handleChangeView()">
       <img class="icon" src="@/assets/image/切换视图.png" alt="" />
       <span>{{ $l("切换视图") }}</span>
@@ -91,10 +91,11 @@
 </language>
 
 <script>
+import ConfigBodyerAll from "./all/ConfigBodyer";
 import ConfigBodyerV15 from "./v15/ConfigBodyer";
 export default {
   components: {
-    ConfigBodyerV15,
+    ConfigBodyer: ConfigBodyerAll,
   },
   data() {
     return {
@@ -115,37 +116,37 @@ export default {
     },
     handleChangeView() {
       if (this.$refs.bodyer) {
-        this.$refs.bodyer.handleChangeView();
+        this.$refs.bodyer.$handleChangeView();
       }
     },
     handleScrollTop() {
       if (this.$refs.bodyer) {
-        this.$refs.bodyer.handleScrollTop();
+        this.$refs.bodyer.$handleScrollTop();
       }
     },
     handleUpload() {
       if (this.$refs.bodyer) {
-        this.$refs.bodyer.handleUpload();
+        this.$refs.bodyer.$handleUpload();
       }
     },
     handleReload() {
       if (this.$refs.bodyer) {
-        this.$refs.bodyer.handleReload();
+        this.$refs.bodyer.$handleReload();
       }
     },
     handleSave() {
       if (this.$refs.bodyer) {
-        this.$refs.bodyer.handleSave();
+        this.$refs.bodyer.$handleSave();
       }
     },
     handleRun() {
       if (this.$refs.bodyer) {
-        this.$refs.bodyer.handleRun();
+        this.$refs.bodyer.$handleRun();
       }
     },
     handleDownload() {
       if (this.$refs.bodyer) {
-        this.$refs.bodyer.handleDownload();
+        this.$refs.bodyer.$handleDownload();
       }
     },
   },
