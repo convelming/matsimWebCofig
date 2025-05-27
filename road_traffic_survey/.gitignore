@@ -3,6 +3,7 @@ node_modules
 /road_traffic_survey_dist
 /src/assets/data
 /public/data
+/public/demo
 
 # local env files
 .env.local
