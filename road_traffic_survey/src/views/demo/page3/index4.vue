@@ -228,11 +228,11 @@ export default {
   created() {},
   async mounted() {
     this.initMap();
-    // this.loadPaths();
-    // this.loadPaths2();
+    this.loadPaths();
+    this.loadPaths2();
     // this.loadTif();
-    // this.loadBuild();
-    // this.loadPink();
+    this.loadBuild();
+    this.loadPink();
     // this.loadNetwork();
     this.loadNetwork3();
   },
@@ -282,7 +282,7 @@ export default {
           },
         },
       });
-      this._Map.addLayer(this._UAVListLayer);
+      // this._Map.addLayer(this._UAVListLayer);
 
       this._UAVListLayer2 = new UAVListLayer({
         zIndex: 300,
@@ -373,7 +373,6 @@ export default {
         }
         this._UAVListLayer.setPaths(paths);
         this._paths = Object.entries(JSON.parse(xml));
-        this.computedPathsAndPink();
       } else {
         console.error(`HTTP error! status: ${response.status}`, response);
       }
@@ -395,19 +394,7 @@ export default {
           paths.push({ id: k, nodes: l2, center: l2[0] });
         }
         this._UAVListLayer2.setPaths(paths);
-        this._paths = Object.entries(JSON.parse(xml));
-        this.computedPathsAndPink();
-        // for (const v of list) {
-        //   for (const v1 of v[1]) {
-        //     const [x, y] = WGS84ToMercator(v1[0], v1[1]);
-        //     v1[0] = x;
-        //     v1[1] = y;
-        //   }
-        //   paths.push({ id: v[0], nodes: v[1], center: v[1][0] });
-        // }
-        // this._UAVListLayer.setPaths(paths);
         // this._paths = Object.entries(JSON.parse(xml));
-        // this.computedPathsAndPink();
       } else {
         console.error(`HTTP error! status: ${response.status}`, response);
       }
@@ -472,10 +459,12 @@ export default {
           this.setTime(this.time + (1 / 60) * 10);
         }
       }, 1000 / 60);
+      this._Map.addLayer(this._UAVListLayer);
     },
     stop() {
       clearInterval(this._interval);
       this._interval = null;
+      this._UAVListLayer.removeFromParent();
     },
     reset() {
       this.stop();

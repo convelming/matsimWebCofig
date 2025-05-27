@@ -485,14 +485,26 @@ export class BusRouteLinkLayer extends Layer {
 
     for (let index = 0; index < data.length; index++) {
       const link = data[index];
-      const prevLink = index == 0 ? link : data[index - 1];
-      const nextLink = index == data.length - 1 ? link : data[index + 1];
       const pickColor = link.pickColor;
+      const color = this.color;
 
-      const prevFromxy = prevLink.fromCoord;
       const linkFromxy = link.fromCoord;
       const linkToxy = link.toCoord;
-      const nextToxy = nextLink.toCoord;
+
+      let prevFromxy = link.fromCoord.multiply(2).subtract(link.toCoord);
+      if (data[index - 1]) {
+        const prevLink = data[index - 1];
+        if (prevLink.toCoord.equals(link.fromCoord)) {
+          prevFromxy = prevLink.fromCoord;
+        }
+      }
+      let nextToxy = link.toCoord.multiply(2).subtract(link.fromCoord);
+      if (data[index + 1]) {
+        const nextLink = data[index + 1];
+        if (nextLink.fromCoord.equals(link.toCoord)) {
+          nextToxy = nextLink.toCoord;
+        }
+      }
 
       // fromNode
       {

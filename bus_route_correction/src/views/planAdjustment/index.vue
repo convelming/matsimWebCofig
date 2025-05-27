@@ -19,7 +19,7 @@
           </el-form-item>
         </el-form>
         <template v-if="tlForm.obj">
-          <div class="tr_list" style="height: calc(100vh - 300px);">
+          <div class="tr_list" style="height: calc(100vh - 300px)">
             <el-collapse v-model="activeNames">
               <el-collapse-item v-for="(v, i) in tlForm.obj.transitRoutes" :name="String(i)" :key="i">
                 <div slot="title">
@@ -497,11 +497,12 @@ export default {
     },
     updateLayer() {
       const routes = this.tlForm.obj ? this.tlForm.obj.transitRoutes || [] : [];
+      console.log("updateLayer", routes);
+
       const layers1 = this._LinkLayerList || [];
       const layers2 = this._StopLayerList || [];
       const l = Math.max(routes.length, layers1.length);
       const showLayer = !this.stopsEditObj.open && !this.stopsRoutesEditObj.open && !this.startEditObj.open;
-      console.log("updateLayer", this.stopsEditObj.open);
       for (let i = 0; i < l; i++) {
         const route = routes[i];
         let layer1 = layers1[i];

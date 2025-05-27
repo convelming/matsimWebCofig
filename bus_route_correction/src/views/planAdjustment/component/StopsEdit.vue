@@ -23,7 +23,7 @@
           </div>
         </div>
         <div class="box3">
-          <el-button type="primary" size="small" @click="$emit('change', _transitRouteCopy)">{{ $l("确定") }}</el-button>
+          <el-button type="primary" size="small" @click="handleEmitChange">{{ $l("确定") }}</el-button>
         </div>
       </div>
     </Dialog>
@@ -483,13 +483,10 @@ export default {
           }
           let formIndex = this.form.index;
           let stop = new Bean.Stops(this.form.toJSON());
-          console.log(stop);
           this.transitRoute.removeStop(this.editIndex);
           this.transitRoute.addStop(stop, formIndex - 1);
-          this._transitRouteCopy = this.transitRoute.toJSON();
-          console.log(this.transitRoute.stops);
-          console.log(this.transitRoute.route);
-
+          const json = this.transitRoute.toJSON();
+          this._transitRouteCopy = json;
           this.handleCancel();
         }
       }
@@ -520,6 +517,9 @@ export default {
       if (this._stopLayer) {
         this._stopLayer.setData(this.transitRoute, this.form ? this.form.uuid : null);
       }
+    },
+    handleEmitChange() {
+      this.$emit("change", this._transitRouteCopy);
     },
   },
 };

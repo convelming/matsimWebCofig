@@ -55,6 +55,35 @@ export class Coord {
     });
   }
 
+  // 加
+  add(coord) {
+    return new Coord({
+      x: this.x + coord.x,
+      y: this.y + coord.y,
+    });
+  }
+  // 乘
+  multiply(num) {
+    return new Coord({
+      x: this.x * num,
+      y: this.y * num,
+    });
+  }
+  // 减
+  subtract(coord) {
+    return new Coord({
+      x: this.x - coord.x,
+      y: this.y - coord.y,
+    });
+  }
+  // 除
+  divide(num) {
+    return new Coord({
+      x: this.x / num,
+      y: this.y / num,
+    });
+  }
+
   clone() {
     return new Coord(this.toJSON());
   }
@@ -82,6 +111,14 @@ export class Coord {
       y: this.y,
     };
   }
+
+  equals(coord) {
+    try {
+      return coord.x === this.x && coord.y === this.y;
+    } catch (error) {
+      return false;
+    }
+  }
 }
 
 export class TransitLineParams {
@@ -90,20 +127,19 @@ export class TransitLineParams {
   transitRoutes = [];
 }
 export class TransitLine {
-
   constructor(opt) {
     if (opt instanceof this.constructor) opt = opt.toJSON();
     opt = ObjectAssign(opt, new TransitLineParams());
     this.lineId = opt.lineId;
     this.name = opt.name;
-    this.transitRoutes = opt.transitRoutes.map(v => new TransitRoute(v))
+    this.transitRoutes = opt.transitRoutes.map((v) => new TransitRoute(v));
   }
 
   toJSON() {
     return {
       lineId: this.lineId,
       name: this.name,
-      transitRoutes: this.transitRoutes.map(v => v.toJSON()),
+      transitRoutes: this.transitRoutes.map((v) => v.toJSON()),
     };
   }
 }
@@ -152,7 +188,7 @@ export class TransitRoute {
         const key = `${prevStop.uuid}-${stop.uuid}`;
         const item = this._routeMap[key];
         if (item) {
-          if (item.route.length == 0) {
+          if (item.route.length <= 1) {
             list.push(item.endStop.linkId);
           } else {
             list.push(...item.route.slice(1).map((v) => v.id));
@@ -185,7 +221,7 @@ export class TransitRoute {
 
     this._routeLink = JSON.parse(JSON.stringify(opt.route.routeLink || {}));
     const _routeMap = {};
-    const _route = opt.route.route;
+    const _route = [...opt.route.route];
     let length = 0;
     for (let i = 0, prevStop = null; i < this.stops.length; i++) {
       let stop = this.stops[i];
@@ -248,7 +284,7 @@ export class TransitRoute {
     return null;
   }
   getStopsRouteKeyByLink(route) {
-    const list = Object.values(this._routeMap)
+    const list = Object.values(this._routeMap);
     const item = list.find((v) => v.routeIds.indexOf(route) > -1);
     if (item) {
       return `${item.startStop.uuid}-${item.endStop.uuid}`;
@@ -290,9 +326,7 @@ export class TransitRoute {
     return this.departureRules.splice(index, 1);
   }
   addOrChangeDepartureRule(departureRule) {
-    let index = this.departureRules.findIndex(
-      (v) => v.uuid == departureRule.uuid
-    );
+    let index = this.departureRules.findIndex((v) => v.uuid == departureRule.uuid);
     if (index == -1) {
       this.departureRules.splice(0, 0, departureRule);
     } else {
@@ -323,7 +357,8 @@ export class TransitRoute {
         route: this.route,
         routeLink: this._routeLink,
       };
-    } catch (error) { }
+      console.log(route);
+    } catch (error) {}
     return {
       line: this.line,
       routeId: this.routeId,

@@ -99,6 +99,11 @@ export class UAVListLayer extends Layer {
     }
   }
 
+  onAdd(map) {
+    super.onAdd(map);
+    this.on(MAP_EVENT.UPDATE_CENTER);
+  }
+
   setPaths(paths) {
     const center = [paths[0].center[0], paths[0].center[1]];
     this.pathList = paths.map((v) => new PathCurve(v.id, v.nodes, new THREE.Vector3(center[0], center[1], 0)));

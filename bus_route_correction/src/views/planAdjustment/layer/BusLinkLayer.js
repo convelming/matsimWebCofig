@@ -7,9 +7,7 @@ export class BusLinkLayer extends Layer {
   color = new THREE.Color("red");
   center = null;
   data = null;
-  texture = new THREE.TextureLoader().load(
-    require("@/assets/image/link_top5.png")
-  );
+  texture = new THREE.TextureLoader().load(require("@/assets/image/link_top5.png"));
 
   constructor(opt) {
     super(opt);
@@ -40,7 +38,7 @@ export class BusLinkLayer extends Layer {
     this.material.needsUpdate = true;
   }
 
-  setPickLayerColor(pickLayerColor){
+  setPickLayerColor(pickLayerColor) {
     this.pickLayerColor = pickLayerColor;
     this.pickLayerMaterial.setValues({ color: this.pickLayerColor });
     this.pickLayerMaterial.needsUpdate = true;
@@ -100,7 +98,6 @@ export class BusLinkLayer extends Layer {
   setData(data) {
     try {
       const routelist = data.getRouteLink(data.route);
-      console.log(routelist);
       const center = data.center;
       let lineLength = 0;
       this.data = routelist.map((v) => {
@@ -126,8 +123,8 @@ export class BusLinkLayer extends Layer {
   }
 
   clearScene() {
-    super.clearScene()
-    if (this.geometry) this.geometry.dispose()
+    super.clearScene();
+    if (this.geometry) this.geometry.dispose();
   }
 
   dispose() {
@@ -152,7 +149,6 @@ export class BusLinkLayer extends Layer {
     this.pickLayerMesh = new THREE.Mesh(this.geometry, this.pickLayerMaterial);
     this.pickLayerMesh.position.set(x, y, this.mesh.position.z);
     this.pickLayerScene.add(this.pickLayerMesh);
-
 
     this.pickMesh = new THREE.Mesh(this.geometry, this.pickMaterial);
     this.pickMesh.position.set(x, y, this.mesh.position.z);
@@ -273,53 +269,37 @@ export class BusLinkLayer extends Layer {
     const data = this.data;
     const length = data.length;
 
-    const attrPosition = new THREE.BufferAttribute(
-      new Float32Array(length * 4 * 3 + 2 * 3),
-      3
-    );
-    const attrStartPosition = new THREE.BufferAttribute(
-      new Float32Array(length * 4 * 2 + 2 * 2),
-      2
-    );
-    const attrEndPosition = new THREE.BufferAttribute(
-      new Float32Array(length * 4 * 2 + 2 * 2),
-      2
-    );
-    const attrSide = new THREE.BufferAttribute(
-      new Float32Array(length * 4 + 2),
-      1
-    );
-    const attrIndex = new THREE.BufferAttribute(
-      new Uint16Array(length * 2 * 3 + 6),
-      1
-    );
-    const attrUv = new THREE.BufferAttribute(
-      new Float32Array(length * 4 * 2 + 2),
-      2
-    );
-    const attrPickColor = new THREE.BufferAttribute(
-      new Float32Array(length * 4 * 3 + 2 * 3),
-      3
-    );
-    const attrColor = new THREE.BufferAttribute(
-      new Float32Array(length * 4 * 3 + 2 * 3),
-      3
-    );
-    const attrLength = new THREE.BufferAttribute(
-      new Float32Array(length * 4 + 2),
-      1
-    );
+    const attrPosition = new THREE.BufferAttribute(new Float32Array(length * 4 * 3 + 2 * 3), 3);
+    const attrStartPosition = new THREE.BufferAttribute(new Float32Array(length * 4 * 2 + 2 * 2), 2);
+    const attrEndPosition = new THREE.BufferAttribute(new Float32Array(length * 4 * 2 + 2 * 2), 2);
+    const attrSide = new THREE.BufferAttribute(new Float32Array(length * 4 + 2), 1);
+    const attrIndex = new THREE.BufferAttribute(new Uint16Array(length * 2 * 3 + 6), 1);
+    const attrUv = new THREE.BufferAttribute(new Float32Array(length * 4 * 2 + 2), 2);
+    const attrPickColor = new THREE.BufferAttribute(new Float32Array(length * 4 * 3 + 2 * 3), 3);
+    const attrColor = new THREE.BufferAttribute(new Float32Array(length * 4 * 3 + 2 * 3), 3);
+    const attrLength = new THREE.BufferAttribute(new Float32Array(length * 4 + 2), 1);
     for (let index = 0; index < data.length; index++) {
       const link = data[index];
-      const prevLink = index == 0 ? link : data[index - 1];
-      const nextLink = index == data.length - 1 ? link : data[index + 1];
       const pickColor = link.pickColor;
       const color = this.color;
 
-      const prevFromxy = prevLink.fromCoord;
       const linkFromxy = link.fromCoord;
       const linkToxy = link.toCoord;
-      const nextToxy = nextLink.toCoord;
+
+      let prevFromxy = link.fromCoord.multiply(2).subtract(link.toCoord);
+      if (data[index - 1]) {
+        const prevLink = data[index - 1];
+        if (prevLink.toCoord.equals(link.fromCoord)) {
+          prevFromxy = prevLink.fromCoord;
+        }
+      }
+      let nextToxy = link.toCoord.multiply(2).subtract(link.fromCoord);
+      if (data[index + 1]) {
+        const nextLink = data[index + 1];
+        if (nextLink.fromCoord.equals(link.toCoord)) {
+          nextToxy = nextLink.toCoord;
+        }
+      }
 
       // fromNode
       {
@@ -335,12 +315,7 @@ export class BusLinkLayer extends Layer {
         attrLength.setX(index * 4 + 1, link.fromLength);
 
         attrPickColor.setXYZ(index * 4, pickColor.r, pickColor.g, pickColor.b);
-        attrPickColor.setXYZ(
-          index * 4 + 1,
-          pickColor.r,
-          pickColor.g,
-          pickColor.b
-        );
+        attrPickColor.setXYZ(index * 4 + 1, pickColor.r, pickColor.g, pickColor.b);
         attrColor.setXYZ(index * 4, color.r, color.g, color.b);
         attrColor.setXYZ(index * 4 + 1, color.r, color.g, color.b);
       }
@@ -357,18 +332,8 @@ export class BusLinkLayer extends Layer {
         attrLength.setX(index * 4 + 2, link.toLength);
         attrLength.setX(index * 4 + 3, link.toLength);
 
-        attrPickColor.setXYZ(
-          index * 4 + 2,
-          pickColor.r,
-          pickColor.g,
-          pickColor.b
-        );
-        attrPickColor.setXYZ(
-          index * 4 + 3,
-          pickColor.r,
-          pickColor.g,
-          pickColor.b
-        );
+        attrPickColor.setXYZ(index * 4 + 2, pickColor.r, pickColor.g, pickColor.b);
+        attrPickColor.setXYZ(index * 4 + 3, pickColor.r, pickColor.g, pickColor.b);
         attrColor.setXYZ(index * 4 + 2, color.r, color.g, color.b);
         attrColor.setXYZ(index * 4 + 3, color.r, color.g, color.b);
       }
