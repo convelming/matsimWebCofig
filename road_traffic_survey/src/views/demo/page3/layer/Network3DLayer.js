@@ -7,17 +7,6 @@ export class Network3DLayer extends Layer {
   constructor(opt) {
     super(opt);
 
-    // this.selectPinkNodesGeometry = new THREE.CircleGeometry(110, 32);
-
-    // this.pinkNodesGeometry = new THREE.CylinderGeometry(80, 80, 80, 32); //new THREE.BoxGeometry(80, 80, 80); //new THREE.PlaneGeometry(100, 100);
-    // const m4 = new THREE.Matrix4().makeTranslation(0, 0, -30);
-    // m4.multiply(new THREE.Matrix4().makeRotationX(-Math.PI / 2));
-    // m4.multiply(new THREE.Matrix4().makeRotationY(-Math.PI / 2));
-    // this.pinkNodesGeometry.applyMatrix4(m4);
-    // this.pinkNodesMaterial = new THREE.MeshBasicMaterial({ opacity: 1, transparent: true, map: new THREE.TextureLoader().load(require("../data/停机坪.svg")) });
-    // this.pinkNodesPickLayerMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff });
-    // this.pinkNodesPickItemMaterial = new THREE.MeshBasicMaterial({});
-
     this.nodesGeometry = new THREE.BoxGeometry(5, 5, 5);
     this.nodesMaterial = new THREE.MeshBasicMaterial({ color: opt.color || "yellow", opacity: 0.5, transparent: true });
     this.nodesPickLayerMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
@@ -25,6 +14,10 @@ export class Network3DLayer extends Layer {
 
     this.linksGeometry = new THREE.BufferGeometry();
     this.linksMaterial = new THREE.LineBasicMaterial({ color: opt.color || "yellow", opacity: 0.1, transparent: true });
+    this.linksPickLayerMaterial = new THREE.LineBasicMaterial({ color: 0xff0000 });
+    this.linksPickItemMaterial = new THREE.LineBasicMaterial({
+      vertexColors: true,
+    });
 
     this.showLink = !!opt.showLink;
     this.showNode = !!opt.showNode;
@@ -35,8 +28,16 @@ export class Network3DLayer extends Layer {
     try {
       if (this.showLink) {
         this.scene.add(this.linksMesh);
+        this.pickLayerScene.add(this.linksPickLayerMesh);
+        this.pickMeshScene.add(this.linksPickItemMesh);
       } else {
         this.linksMesh.removeFromParent();
+        this.linksPickLayerMesh.removeFromParent();
+        this.linksPickItemMesh.removeFromParent();
+      }
+
+      if (this.map) {
+        this.on(MAP_EVENT.UPDATE_CENTER);
       }
     } catch (error) {}
   }
@@ -46,8 +47,16 @@ export class Network3DLayer extends Layer {
     try {
       if (this.showNode) {
         this.scene.add(this.nodesMesh);
+        this.pickLayerScene.add(this.nodesPickLayerMesh);
+        this.pickMeshScene.add(this.nodesPickItemMesh);
       } else {
         this.nodesMesh.removeFromParent();
+        this.nodesPickLayerMesh.removeFromParent();
+        this.nodesPickItemMesh.removeFromParent();
+      }
+
+      if (this.map) {
+        this.on(MAP_EVENT.UPDATE_CENTER);
       }
     } catch (error) {}
   }
@@ -58,13 +67,12 @@ export class Network3DLayer extends Layer {
     this.pickLayerColor = new THREE.Color(pickLayerColor);
     this.nodesPickLayerMaterial.setValues({ color: pickLayerColor });
     this.nodesPickLayerMaterial.needsUpdate = true;
-    // this.pinkNodesPickLayerMaterial.setValues({ color: pickLayerColor });
-    // this.pinkNodesPickLayerMaterial.needsUpdate = true;
+    this.linksPickLayerMaterial.setValues({ color: pickLayerColor });
+    this.linksPickLayerMaterial.needsUpdate = true;
   }
-  
+
   setNetwork(network) {
     this.network = network;
-    // this.pinkNodes = []; // ["n11978", "n12951", "n15905", "n1800", "n22086", "n4782"].map((v) => ({ id: v, ...(nodeMap[v] || {}) }));
     this.update();
   }
 
@@ -74,12 +82,13 @@ export class Network3DLayer extends Layer {
 
   clearScene() {
     super.clearScene();
-    // if (this.pinkNodesMesh) this, this.pinkNodesMesh.removeFromParent();
-    // if (this.pinkNodesPickLayerMesh) this, this.pinkNodesPickLayerMesh.removeFromParent();
-    // if (this.pinkNodesPickItemMesh) this, this.pinkNodesPickItemMesh.removeFromParent();
     if (this.nodesMesh) this, this.nodesMesh.removeFromParent();
     if (this.nodesPickLayerMesh) this, this.nodesPickLayerMesh.removeFromParent();
     if (this.nodesPickItemMesh) this, this.nodesPickItemMesh.removeFromParent();
+
+    if (this.linksMesh) this, this.linksMesh.removeFromParent();
+    if (this.linksPickLayerMesh) this, this.linksPickLayerMesh.removeFromParent();
+    if (this.linksPickItemMesh) this, this.linksPickItemMesh.removeFromParent();
 
     if (this.linksGeometry) {
       this.linksGeometry.dispose();
@@ -92,47 +101,15 @@ export class Network3DLayer extends Layer {
     if (!this.network) return;
     const { center, nodes, links } = this.network;
 
-    // 全部起/降点
-    // this.pinkNodesMesh = new THREE.InstancedMesh(this.pinkNodesGeometry, this.pinkNodesMaterial, this.pinkNodes.length);
-    // this.pinkNodesPickLayerMesh = new THREE.InstancedMesh(this.pinkNodesGeometry, this.pinkNodesPickLayerMaterial, this.pinkNodes.length);
-    // this.pinkNodesPickItemMesh = new THREE.InstancedMesh(this.pinkNodesGeometry, this.pinkNodesPickItemMaterial, this.pinkNodes.length);
-    // for (const index in this.pinkNodes) {
-    //   const pickColor = new THREE.Color(1 + Number(index));
-
-    //   const node = this.pinkNodes[index];
-
-    //   const matrix4 = new THREE.Matrix4().makeTranslation(node.x - center.x, node.y - center.y, node.z);
-
-    //   this.pinkNodesMesh.setMatrixAt(index, matrix4);
-    //   if (this.startPink && node.id == this.startPink.id) {
-    //     this.pinkNodesMesh.setColorAt(index, new THREE.Color("#f4ea2a"));
-    //   } else if (this.endPink && node.id == this.endPink.id) {
-    //     this.pinkNodesMesh.setColorAt(index, new THREE.Color("#409eff"));
-    //   } else {
-    //     this.pinkNodesMesh.setColorAt(index, new THREE.Color("#1afa29"));
-    //   }
-    //   this.pinkNodesPickLayerMesh.setMatrixAt(index, matrix4);
-    //   this.pinkNodesPickItemMesh.setMatrixAt(index, matrix4);
-
-    //   this.pinkNodesPickItemMesh.setColorAt(index, pickColor);
-    // }
-
-    // if (this.pinkNodesMesh.instanceMatrix) this.pinkNodesMesh.instanceMatrix.needsUpdate = true;
-    // if (this.pinkNodesMesh.instanceColor) this.pinkNodesMesh.instanceColor.needsUpdate = true;
-    // if (this.pinkNodesPickLayerMesh.instanceMatrix) this.pinkNodesPickLayerMesh.instanceMatrix.needsUpdate = true;
-    // if (this.pinkNodesPickItemMesh.instanceMatrix) this.pinkNodesPickItemMesh.instanceMatrix.needsUpdate = true;
-
-    // if (this.pinkNodesPickItemMesh.instanceColor) this.pinkNodesPickItemMesh.instanceColor.needsUpdate = true;
-
     //  点
     this.nodesMesh = new THREE.InstancedMesh(this.nodesGeometry, this.nodesMaterial, nodes.size);
     this.nodesPickLayerMesh = new THREE.InstancedMesh(this.nodesGeometry, this.nodesPickLayerMaterial, nodes.size);
     this.nodesPickItemMesh = new THREE.InstancedMesh(this.nodesGeometry, this.nodesPickItemMaterial, nodes.size);
 
-    let nIndex = 0;
+    let nIndex = 1;
     nodes.forEach((node, key) => {
-      nIndex++;
-      const pickColor = new THREE.Color(1 + Number(nIndex));
+      ++nIndex;
+      const pickColor = new THREE.Color(Number(nIndex));
       const matrix4 = new THREE.Matrix4().makeTranslation(node.x - center.x, node.y - center.y, node.z);
 
       this.nodesMesh.setMatrixAt(nIndex, matrix4);
@@ -149,23 +126,31 @@ export class Network3DLayer extends Layer {
 
     //  线
     const points = [];
+    const colors = [];
     links.forEach((link) => {
       points.push(new THREE.Vector3(link.fromCoord.x - center.x, link.fromCoord.y - center.y, link.fromCoord.z));
       points.push(new THREE.Vector3(link.toCoord.x - center.x, link.toCoord.y - center.y, link.toCoord.z));
+      ++nIndex;
+      colors.push(...new THREE.Color(Number(nIndex)).toArray());
     });
     this.linksGeometry = new THREE.BufferGeometry().setFromPoints(points);
+    this.linksGeometry.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
     this.linksMesh = new THREE.LineSegments(this.linksGeometry, this.linksMaterial);
+    this.linksPickLayerMesh = new THREE.LineSegments(this.linksGeometry, this.linksPickLayerMaterial);
+    this.linksPickItemMesh = new THREE.LineSegments(this.linksGeometry, this.linksPickItemMaterial);
 
-    // this.scene.add(this.pinkNodesMesh);
-    // this.pickLayerScene.add(this.pinkNodesPickLayerMesh);
-    // this.pickMeshScene.add(this.pinkNodesPickItemMesh);
+    if (this.showNode) {
+      this.scene.add(this.nodesMesh);
+      this.pickLayerScene.add(this.nodesPickLayerMesh);
+      this.pickMeshScene.add(this.nodesPickItemMesh);
+    }
 
-    if (this.showNode) this.scene.add(this.nodesMesh);
-    // this.pickLayerScene.add(this.nodesPickLayerMesh);
-    // this.pickMeshScene.add(this.nodesPickItemMesh);
+    if (this.showLink) {
+      this.scene.add(this.linksMesh);
+      this.pickLayerScene.add(this.linksPickLayerMesh);
+      this.pickMeshScene.add(this.linksPickItemMesh);
+    }
 
-    if (this.showLink) this.scene.add(this.linksMesh);
-    
     if (this.map) {
       this.on(MAP_EVENT.UPDATE_CENTER);
     }
@@ -178,17 +163,19 @@ export class Network3DLayer extends Layer {
       for (const mesh of this.scene.children) {
         mesh.position.set(x, y, 0);
       }
-      // for (const mesh of this.pickLayerScene.children) {
-      //   mesh.position.set(x, y, 0);
-      // }
-      // for (const mesh of this.pickMeshScene.children) {
-      //   mesh.position.set(x, y, 0);
-      // }
+      for (const mesh of this.pickLayerScene.children) {
+        mesh.position.set(x, y, 0);
+      }
+      for (const mesh of this.pickMeshScene.children) {
+        mesh.position.set(x, y, 0);
+      }
     }
-    // if (type == MAP_EVENT.HANDLE_PICK_LEFT && data.layerId == this.id) {
-    //   const index = data.pickColor - 1;
-    //   this.handleEventListener(type, this.pinkNodes[index] || null);
-    // }
+    if (type == MAP_EVENT.HANDLE_PICK_LEFT && data.layerId == this.id) {
+      const index = data.pickColor - 1;
+      console.log(index);
+      
+      this.handleEventListener(type, index);
+    }
   }
 
   onAdd(map) {
@@ -213,6 +200,31 @@ export class Network {
     if (nodes[0]) {
       center.x = nodes[0].x;
       center.y = nodes[0].y;
+    }
+    return new Network({ nodes: nodeMap, links: linkMap, center: center });
+  }
+
+  static fromArray(nodes, links) {
+    const nodeMap = new Map();
+    let center = null;
+    for (let i = 0; i < nodes.length; i += 3) {
+      const x = nodes[i];
+      const y = nodes[i + 1];
+      const z = nodes[i + 2];
+      const id = i / 3;
+      const node = new NetworkNode({ id, x, y, z });
+      if (center == null) center = { x, y };
+      nodeMap.set(id, node);
+    }
+    const linkMap = new Map();
+    for (let i = 0; i < links.length; i += 2) {
+      const from = links[i];
+      const to = links[i + 1];
+      const fromCoord = nodeMap.get(from);
+      const toCoord = nodeMap.get(to);
+      const id = i / 2;
+      const link = new NetworkLink({ id, from, fromCoord, to, toCoord });
+      linkMap.set(id, link);
     }
     return new Network({ nodes: nodeMap, links: linkMap, center: center });
   }
