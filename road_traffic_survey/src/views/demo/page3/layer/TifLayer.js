@@ -17,7 +17,7 @@ export class TifLayer extends Layer {
     });
     this.mesh = new THREE.Mesh(this.geometry, this.material);
     this.scene.add(this.mesh);
-    new THREE.TextureLoader().load(process.env.VUE_APP_BASE_API + "/demo/微信图片_20250418163804.png", (texture) => {
+    new THREE.TextureLoader().load(process.env.VUE_APP_DEMO_SERVER + "/微信图片_20250418163804.png", (texture) => {
       this.material.setValues({ map: texture });
       this.material.needsUpdate = true;
     });

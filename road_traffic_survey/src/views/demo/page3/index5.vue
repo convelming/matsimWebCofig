@@ -5,7 +5,7 @@
         <div></div>
         <div class="mapBox">
           <div id="mapRoot"></div>
-          <div class="box">
+          <div class="box" v-show="false">
             <!-- <div class="title">控制面板</div> -->
             <div class="card">
               <el-form size="small" label-position="left">
@@ -35,7 +35,7 @@
                       <el-switch v-model="showTifLayer" :active-value="true" :inactive-value="false"></el-switch>
                     </el-form-item>
                   </el-col> -->
-                  <!-- <el-col :span="12" :offset="0">
+                  <el-col :span="12" :offset="0">
                     <el-form-item label="实体3维：">
                       <el-switch v-model="showOBJLayer" :active-value="true" :inactive-value="false"></el-switch>
                     </el-form-item>
@@ -70,7 +70,7 @@
                     <el-col :span="24" :offset="0">
                       <el-form-item label="位置：">{{ Number(playDetail.x).toFixed(2) }}, {{ Number(playDetail.y).toFixed(2) }}, {{ Number(playDetail.z).toFixed(2) }}</el-form-item>
                     </el-col>
-                  </template> -->
+                  </template>
                 </el-row>
               </el-form>
             </div>
@@ -125,6 +125,16 @@ function parserGeoJSON(text) {
     const array = new Int8Array(textEncoder.encode(text));
     worker.postMessage(array, [array.buffer]);
   });
+}
+
+function arrayToFloat64(arraybuffer) {
+  const dataView = new DataView(arraybuffer);
+  const array = [];
+  for (let i = 0; i < dataView.byteLength; i += 8) {
+    const value = dataView.getFloat64(i, false);
+    array.push(value);
+  }
+  return array;
 }
 
 export default {
@@ -217,13 +227,16 @@ export default {
   },
   created() {},
   async mounted() {
+    console.log(process.env);
+    
     this.initMap();
-    // this.loadPaths();
+    this.loadPaths();
+    this.loadPaths2();
     // this.loadTif();
-    // this.loadBuild();
-    // this.loadPink();
+    this.loadBuild();
+    this.loadPink();
     // this.loadNetwork();
-    this.loadNetwork2();
+    this.loadNetwork3();
   },
   methods: {
     // 初始化地图
@@ -236,7 +249,6 @@ export default {
         // zoom: 15,
         zoom: 13.5,
         mapZoomHeight: 600,
-        minPitch: -90,
         pitch: 30,
         rotation: -10,
         enableRotate: true,
@@ -272,7 +284,21 @@ export default {
           },
         },
       });
-      this._Map.addLayer(this._UAVListLayer);
+      // this._Map.addLayer(this._UAVListLayer);
+
+      this._UAVListLayer2 = new UAVListLayer({
+        zIndex: 300,
+        color: "red",
+        linkWidth: 20,
+        nodeSize: 30,
+        lockSelect: this.lockSelect,
+        event: {
+          playing: (res) => {
+            this.playDetail = res.data;
+          },
+        },
+      });
+      this._Map.addLayer(this._UAVListLayer2);
 
       this._Build3DLayer = new Build3DLayer({
         zIndex: 220,
@@ -289,7 +315,7 @@ export default {
     async loadNetwork() {
       if (this._loadNetwork) return;
       this._loadNetwork = true;
-      const response = await fetch(process.env.VUE_APP_BASE_API + "/demo/output_network.zip");
+      const response = await fetch(process.env.VUE_APP_DEMO_SERVER + "/output_network.zip");
       if (response.ok) {
         const blob = await response.blob();
         const zip = await JSZip.loadAsync(blob);
@@ -302,42 +328,41 @@ export default {
         console.error(`HTTP error! status: ${response.status}`, response);
       }
     },
-    async loadNetwork2() {
+    async loadNetwork3() {
       if (this._loadNetwork) return;
       this._loadNetwork = true;
-      this._Network3DLayer.removeEventListener(MAP_EVENT.HANDLE_PICK_LEFT);
-      function readFile(url) {
-        return fetch(url)
-          .then((response) => response.arrayBuffer())
-          .then((response) => {
-            const dataView = new DataView(response);
-            const array = [];
-            for (let i = 0; i < dataView.byteLength; i += 8) {
-              const value = dataView.getFloat64(i, false);
-              array.push(value);
-            }
-            return array;
-          });
-      }
-      try {
+      const response = await fetch(process.env.VUE_APP_DEMO_SERVER + "/network.zip");
+      if (response.ok) {
+        const blob = await response.blob();
+        const zip = await JSZip.loadAsync(blob);
         const [nodes, links, nodesId, linksId] = await Promise.all([
-          readFile(process.env.VUE_APP_BASE_API + "/demo/uamNetwork0523_node"),
-          readFile(process.env.VUE_APP_BASE_API + "/demo/uamNetwork0523_link"),
-          fetch(process.env.VUE_APP_BASE_API + "/demo/uamNetwork0523_node_id").then((response) => response.json()),
-          fetch(process.env.VUE_APP_BASE_API + "/demo/uamNetwork0523_link_id").then((response) => response.json()),
+          zip.file("node").async("arraybuffer").then(arrayToFloat64),
+          zip.file("link").async("arraybuffer").then(arrayToFloat64),
+          zip.file("node_id").async("string").then(JSON.parse),
+          zip.file("link_id").async("string").then(JSON.parse),
+          // zip.file(new RegExp(/[node]$/)).async("arraybuffer").then(arrayToFloat64),
+          // zip.file(new RegExp(/[link]$/)).async("arraybuffer").then(arrayToFloat64),
+          // zip.file(new RegExp(/[node_id]$/)).async("string").then(JSON.parse),
+          // zip.file(new RegExp(/[link_id]$/)).async("string").then(JSON.parse),
         ]);
-        console.log(nodes, links);
         const network = Network.fromArray(nodes, links);
         this._Network3DLayer.setNetwork(network);
         this._nodesId = nodesId;
         this._linksId = linksId;
-        this._Network3DLayer.addEventListener(MAP_EVENT.HANDLE_PICK_LEFT, (e) => {});
-      } catch (error) {
-        console.error(error);
+        this._Network3DLayer.addEventListener(MAP_EVENT.HANDLE_PICK_LEFT, (e) => {
+          console.log(e.data);
+          if (e.data > this._nodesId.length) {
+            alert(`linkId:  ${this._linksId[e.data - this._nodesId.length]}`);
+          } else {
+            alert(`nodeId:  ${this._nodesId[e.data]}`);
+          }
+        });
+      } else {
+        console.error(`HTTP error! status: ${response.status}`, response);
       }
     },
     async loadPaths() {
-      const response = await fetch(process.env.VUE_APP_BASE_API + "/demo/leg(1).json");
+      const response = await fetch(process.env.VUE_APP_DEMO_SERVER + "/leg(1).json");
       if (response.ok) {
         const xml = await response.text();
         const paths = [];
@@ -352,13 +377,34 @@ export default {
         }
         this._UAVListLayer.setPaths(paths);
         this._paths = Object.entries(JSON.parse(xml));
-        this.computedPathsAndPink();
+      } else {
+        console.error(`HTTP error! status: ${response.status}`, response);
+      }
+    },
+    async loadPaths2() {
+      const response = await fetch(process.env.VUE_APP_DEMO_SERVER + "/leg3.json");
+      if (response.ok) {
+        const xml = await response.text();
+        const paths = [];
+        const list = Object.entries(JSON.parse(xml));
+        console.log(list);
+        for (const [k, v] of list) {
+          const l1 = v.split(",");
+          const l2 = l1.map((v2, i) => {
+            const l3 = v2.split(" ");
+            const [x, y] = WGS84ToMercator(l3[0], l3[1]);
+            return [x, y, l3[2], i * 10];
+          });
+          paths.push({ id: k, nodes: l2, center: l2[0] });
+        }
+        this._UAVListLayer2.setPaths(paths);
+        // this._paths = Object.entries(JSON.parse(xml));
       } else {
         console.error(`HTTP error! status: ${response.status}`, response);
       }
     },
     async loadTif() {
-      const tif = await GeoTIFF.fromUrl(process.env.VUE_APP_BASE_API + "/demo/新丰县dem.tif");
+      const tif = await GeoTIFF.fromUrl(process.env.VUE_APP_DEMO_SERVER + "/新丰县dem.tif");
       const tifImage = await tif.getImage();
       const tifImageData = await tifImage.readRasters({
         interleave: true,
@@ -382,8 +428,8 @@ export default {
       // this._MapLayer.setTiff(tifImage);
     },
     async loadBuild() {
-      // const response = await fetch(process.env.VUE_APP_BASE_API + "/demo/新丰县建筑DEM.geojson");
-      const response = await fetch(process.env.VUE_APP_BASE_API + "/demo/新丰县buildingWithDem.geojson");
+      // const response = await fetch(process.env.VUE_APP_DEMO_SERVER + "/新丰县建筑DEM.geojson");
+      const response = await fetch(process.env.VUE_APP_DEMO_SERVER + "/新丰县buildingWithDem.geojson");
       if (response.ok) {
         const geoJsonData = await response.text().then(parserGeoJSON);
         this._Build3DLayer.setData(geoJsonData);
@@ -392,7 +438,7 @@ export default {
       }
     },
     async loadPink() {
-      const response = await fetch(process.env.VUE_APP_BASE_API + "/demo/新丰县起降点wgs84_dem.json");
+      const response = await fetch(process.env.VUE_APP_DEMO_SERVER + "/新丰县起降点wgs84_dem.json");
       if (response.ok) {
         const text = await response.text();
         this._PinkLayer.setPinkList(JSON.parse(text));
@@ -417,10 +463,12 @@ export default {
           this.setTime(this.time + (1 / 60) * 10);
         }
       }, 1000 / 60);
+      this._Map.addLayer(this._UAVListLayer);
     },
     stop() {
       clearInterval(this._interval);
       this._interval = null;
+      this._UAVListLayer.removeFromParent();
     },
     reset() {
       this.stop();

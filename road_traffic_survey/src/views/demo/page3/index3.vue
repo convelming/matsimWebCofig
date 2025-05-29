@@ -262,7 +262,7 @@ export default {
     async loadNetwork() {
       if (this._loadNetwork) return;
       this._loadNetwork = true;
-      const response = await fetch(process.env.VUE_APP_BASE_API + "/demo/output_network.zip");
+      const response = await fetch(process.env.VUE_APP_DEMO_SERVER + "/output_network.zip");
       if (response.ok) {
         const blob = await response.blob();
         const zip = await JSZip.loadAsync(blob);
@@ -276,7 +276,7 @@ export default {
       }
     },
     async loadPaths() {
-      const response = await fetch(process.env.VUE_APP_BASE_API + "/demo/leg(1).json");
+      const response = await fetch(process.env.VUE_APP_DEMO_SERVER + "/leg(1).json");
       if (response.ok) {
         const xml = await response.text();
         const paths = [];
@@ -295,7 +295,7 @@ export default {
       }
     },
     async loadTif() {
-      const tif = await GeoTIFF.fromUrl(process.env.VUE_APP_BASE_API + "/demo/新丰县dem.tif");
+      const tif = await GeoTIFF.fromUrl(process.env.VUE_APP_DEMO_SERVER + "/新丰县dem.tif");
       const tifImage = await tif.getImage();
       const tifImageData = await tifImage.readRasters({
         interleave: true,
@@ -319,7 +319,7 @@ export default {
       // this._MapLayer.setTiff(tifImage);
     },
     async loadBuild() {
-      const response = await fetch(process.env.VUE_APP_BASE_API + "/demo/新丰县建筑DEM.geojson");
+      const response = await fetch(process.env.VUE_APP_DEMO_SERVER + "/新丰县建筑DEM.geojson");
       if (response.ok) {
         const geoJsonData = await response.text().then(parserGeoJSON);
         this._Build3DLayer.setData(geoJsonData);
@@ -328,7 +328,7 @@ export default {
       }
     },
     async loadPink() {
-      const response = await fetch(process.env.VUE_APP_BASE_API + "/demo/新丰县起降点wgs84_dem.json");
+      const response = await fetch(process.env.VUE_APP_DEMO_SERVER + "/新丰县起降点wgs84_dem.json");
       if (response.ok) {
         const text = await response.text();
         this._PinkLayer.setPinkList(JSON.parse(text));

@@ -24,7 +24,7 @@ export class TileLayer extends Layer {
   }
 
   async getTif() {
-    const tif = await GeoTIFF.fromUrl(process.env.VUE_APP_BASE_API + "/demo/新丰县dem.tif");
+    const tif = await GeoTIFF.fromUrl(process.env.VUE_APP_DEMO_SERVER + "/新丰县dem.tif");
     const tifImage = await tif.getImage();
     const tifImageData = await tifImage.readRasters({
       interleave: true,

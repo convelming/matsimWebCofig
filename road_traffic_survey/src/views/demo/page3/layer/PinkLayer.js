@@ -3,6 +3,8 @@ import { Layer, MAP_EVENT } from "@/mymap/index.js";
 import { WGS84ToMercator } from "@/mymap/utils/LngLatUtils";
 import SpriteText from "./SpriteText.js";
 
+import { CSS2DRenderer, CSS2DObject } from "@/mymap/utils/CSS2DRenderer.js";
+
 export class PinkLayer extends Layer {
   constructor(opt) {
     super(opt);
@@ -67,11 +69,12 @@ export class PinkLayer extends Layer {
 
       this.mesh3.setColorAt(index, pickColor);
 
-      const mesh = new SpriteText(node.name, 12, "#000");
-      mesh.borderRadius = 2;
-      mesh.backgroundColor = "#fff";
-      mesh.center.set(0.5, 0);
-      mesh.renderOrder = this.zIndex;
+      // const mesh = new SpriteText(node.name, 12, "#000");
+      // mesh.borderRadius = 2;
+      // mesh.backgroundColor = "#fff";
+      // mesh.center.set(0.5, 0);
+      // mesh.renderOrder = this.zIndex;
+      const mesh = this.getLabel(node.name);
       mesh.position.set(node.x - center.x, node.y - center.y, node.z);
       this.mesh4.add(mesh);
     }
@@ -89,6 +92,15 @@ export class PinkLayer extends Layer {
     if (this.map) {
       this.on(MAP_EVENT.UPDATE_CENTER);
     }
+  }
+
+  getLabel(name) {
+    const el = document.createElement("div");
+    el.style.userSelect = "none";
+    el.innerHTML = `<div style="font-size:16px;color:#fff;">${name}</div>`;
+    const mesh = new CSS2DObject(el);
+    mesh.offset.set(0.5, 0);
+    return mesh;
   }
 
   on(type, data) {

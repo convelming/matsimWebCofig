@@ -183,23 +183,23 @@ export class TransitRoute {
       let stop = this.stops[i];
       if (i == 0) {
         list.push(stop.linkId);
-      }
-      if (i != 0) {
+      } else {
         const key = `${prevStop.uuid}-${stop.uuid}`;
         const item = this._routeMap[key];
         if (item) {
-          if (item.route.length <= 1) {
-            list.push(item.endStop.linkId);
-          } else {
-            list.push(...item.route.slice(1).map((v) => v.id));
-          }
-        } else {
+          const routeIds = item.route.map((v) => v.id);
+          routeIds.shift();
+          routeIds.pop();
+          list.push(routeIds);
+        }
+        // 当出现一条link贯穿几个站点时，不用push
+        if (prevStop.linkId != stop.linkId) {
           list.push(stop.linkId);
         }
       }
       prevStop = stop;
     }
-    return list;
+    return list.flat(2);
   }
 
   constructor(opt) {
@@ -357,7 +357,6 @@ export class TransitRoute {
         route: this.route,
         routeLink: this._routeLink,
       };
-      console.log(route);
     } catch (error) {}
     return {
       line: this.line,

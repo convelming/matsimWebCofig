@@ -13,11 +13,12 @@ export class UAVListLayer extends Layer {
   selecIndex = -1;
   constructor(opt) {
     super(opt);
-
+    this.linkWidth = opt.linkWidth || 5;
+    this.nodeSize = opt.nodeSize || 10;
     this.nodeMeshList = [];
     this.nodeMeshList1 = [];
     this.nodeMeshList2 = [];
-    this.nodeGeometry = new THREE.BoxGeometry(10, 10, 10);
+    this.nodeGeometry = new THREE.BoxGeometry(this.nodeSize, this.nodeSize, this.nodeSize);
     this.nodesMaterial = new THREE.MeshBasicMaterial({ color: opt.color || "#409EFF", opacity: 0.8, transparent: true });
     this.nodesMaterial_s = new THREE.MeshBasicMaterial({ depthFunc: THREE.AlwaysDepth, color: "red", opacity: 0.8, transparent: true });
     this.nodesMaterial1 = new THREE.MeshBasicMaterial({});
@@ -216,7 +217,7 @@ export class UAVListLayer extends Layer {
       this.pickLayerScene.add(nodesMesh1);
       this.pickMeshScene.add(nodesMesh2);
 
-      const linkGeometry = new THREE.TubeGeometry(path, path.nodes.length * 4, 5, 8, false);
+      const linkGeometry = new THREE.TubeGeometry(path, path.nodes.length * 4, this.linkWidth, 8, false);
       const linkMaterial2 = new THREE.MeshBasicMaterial({ color: new THREE.Color(Number(pIndex + 1)) });
       const linkMesh = new THREE.Mesh(linkGeometry, this.linkMaterial);
       const linkMesh1 = new THREE.Mesh(linkGeometry, this.linkMaterial1);
