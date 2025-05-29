@@ -75,20 +75,26 @@ class MyTiffImage {
     }
   }
 
-  draw({ center, geoWidth, geoHeight, canWidth, canHeight, imageScale }) {
-    this.disCanvas.width = canWidth;
-    this.disCanvas.height = canHeight;
+  draw(drawData) {
+    console.log(drawData);
+    
+    const { center, geoWidth, geoHeight, canvasWidth, canvasHeight, imageScale } = drawData;
+
+    this.disCanvas.width = canvasWidth;
+    this.disCanvas.height = canvasHeight;
     const ctxDis = this.disCanvas.getContext("2d");
     ctxDis.fillStyle = "#7f7f7f";
     ctxDis.fillRect(0, 0, this.disCanvas.width, this.disCanvas.height);
 
-    this.noCanvas.width = canWidth;
-    this.noCanvas.height = canHeight;
+    this.noCanvas.width = canvasWidth;
+    this.noCanvas.height = canvasHeight;
     const ctxNo = this.noCanvas.getContext("2d");
     ctxNo.fillStyle = "#7f7fff";
     ctxNo.fillRect(0, 0, this.noCanvas.width, this.noCanvas.height);
 
     if (this.inited) {
+      console.log("updateTiff");
+      
       const [cx, cy] = center;
       const rx = geoWidth / 2;
       const ry = geoHeight / 2;
@@ -115,8 +121,7 @@ class MyTiffImage {
       noImage: this.noCanvas.transferToImageBitmap(),
       disImage: this.disCanvas.transferToImageBitmap(),
       dScale: this.dScale || 1,
-      width: canWidth,
-      height: canHeight,
+      ...drawData,
     };
   }
 }
@@ -132,10 +137,12 @@ onmessage = function (e) {
     }
     case "draw": {
       if (!myTiffImage.inited) {
-        const data = myTiffImage.draw(e.data);
+        const data = myTiffImage.draw(e.data.data);
+        console.log(data);
+        
         postMessage(
           {
-            key: key,
+            key: e.data.key,
             data: data,
             meg: "success",
           },

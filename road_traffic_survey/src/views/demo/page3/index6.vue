@@ -145,6 +145,7 @@ const pageConfig = {
   },
   tif: process.env.VUE_APP_DEMO_SERVER + "/广州中心四区.tif",
   network: process.env.VUE_APP_DEMO_SERVER + "/network.zip",
+  networkXmlUrl: process.env.VUE_APP_DEMO_SERVER + "/coords_100m_gz4_250529.zip",
   paths: process.env.VUE_APP_DEMO_SERVER + "/leg(1).json",
   build: process.env.VUE_APP_DEMO_SERVER + "/buildingCentral4demWgs84.geojson",
   pink: process.env.VUE_APP_DEMO_SERVER + "/新丰县起降点wgs84_dem.json",
@@ -241,10 +242,11 @@ export default {
   created() {},
   async mounted() {
     this.initMap();
-    this.loadPaths();
+    // this.loadPaths();
     this.loadBuild();
-    this.loadPink();
-    this.loadNetwork();
+    // this.loadPink();
+    // this.loadNetwork();
+    // this.loadNetworkXml();
   },
   methods: {
     // 初始化地图
@@ -292,6 +294,22 @@ export default {
         zIndex: 240,
       });
       this._Map.addLayer(this._PinkLayer);
+    },
+    async loadNetworkXml() {
+      if (this._loadNetwork) return;
+      this._loadNetwork = true;
+      const response = await fetch(pageConfig.networkXmlUrl);
+      if (response.ok) {
+        const blob = await response.blob();
+        const zip = await JSZip.loadAsync(blob);
+        const xml = await zip.file("coords_100m_gz4_250529.xml").async("string");
+        console.time("new Network");
+        const network = Network.fromXml(xml);
+        console.timeEnd("new Network");
+        this._Network3DLayer.setNetwork(network);
+      } else {
+        console.error(`HTTP error! status: ${response.status}`, response);
+      }
     },
     async loadNetwork() {
       if (this._loadNetwork) return;
