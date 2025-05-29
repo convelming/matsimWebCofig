@@ -24,9 +24,16 @@ export class TileLayer extends Layer {
   }
 
   async setTif(tifUrl = "") {
-    console.log("getTif");
+    console.log("getTif", tifUrl);
     try {
-      const tif = await GeoTIFF.fromUrl(tifUrl);
+      let tif = null;
+      if (typeof tifUrl === "string") {
+        console.log("fromUrl");
+        tif = await GeoTIFF.fromUrl(tifUrl);
+      } else if (tifUrl instanceof ArrayBuffer) {
+        console.log("fromArrayBuffer");
+        tif = await GeoTIFF.fromArrayBuffer(tifUrl);
+      }
       const tifImage = await tif.getImage();
       console.log(tifImage);
       const nodata = tifImage.getGDALNoData() || 0;
@@ -95,6 +102,7 @@ export class TileLayer extends Layer {
       }
       this.update();
     } catch (error) {
+      console.log(error)
       for (const tileZoom in this.meshMap) {
         const tile = this.meshMap[tileZoom];
         tile.tifImage = null;
@@ -123,6 +131,7 @@ export class TileLayer extends Layer {
   render() {}
 
   update() {
+    if (!this.map) return;
     const zoom = Math.floor(this.map.zoom);
     const center = [...this.map.center];
     const opacity = this.opacity;
@@ -162,7 +171,7 @@ export class TileMesh extends THREE.Mesh {
 
   tifImage = null;
 
-  imageSize = 512;
+  imageSize = 256;
 
   opacity = 1;
   constructor(zoom, center) {
@@ -228,6 +237,9 @@ export class TileMesh extends THREE.Mesh {
 
   updateTile() {
     function getUrl(row, col, zoom) {
+      const key = 'pk.eyJ1Ijoic2t1bjE2IiwiYSI6ImNsNmN6bDAxaDAwbmozam55bjBrZWVybTUifQ.vg3pEDwpnUgxmJMmeB8nGQ'
+      // const key = "pk.eyJ1IjoiY29udmVsIiwiYSI6ImNtOW50Z2c0NTAyNGMybHB5Y2txcXY0NmgifQ.zM_QAebuyQtVh-A93w5wyA"
+      // return `http://wprd0.is.autonavi.com/appmaptile?x=${row}&y=${col}&z=${zoom}&lang=zh_cn&size=1&scl=1&style=7`;
       // 百度算法
       // return `http://192.168.60.231:23334/baidu/satellite/${zoom}/${row}/${col}.jpg`;
       // return `https://maponline0.bdimg.com/starpic/?qt=satepc&u=x=${row};y=${col};z=${zoom};v=009;type=sate&fm=46&app=webearth2&v=009&udt=20250424`;
@@ -240,7 +252,7 @@ export class TileMesh extends THREE.Mesh {
       // return `https://m.earthol.me/map.jpg?lyrs=y&gl=cn&x=${row}&y=${col}&z=${zoom}` // 403报错
       // return `https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${zoom}/${col}/${row}`;
       // return `http://192.168.60.231:23334/baidu/satellite/${zoom}/${row}/${col}.jpg`
-      // return `https://api.mapbox.com/styles/v1/dasin/cltigm5bp010s01ptciblgffl/tiles/512/${zoom}/${row}/${col}@2x?access_token=pk.eyJ1IjoiY29udmVsIiwiYSI6ImNtOW50Z2c0NTAyNGMybHB5Y2txcXY0NmgifQ.zM_QAebuyQtVh-A93w5wyA`;
+      return `https://api.mapbox.com/styles/v1/dasin/cltigm5bp010s01ptciblgffl/tiles/512/${zoom}/${row}/${col}@2x?access_token=${key}`;
       // return `http://192.168.60.231:23334/osm/Positron/${zoom}/${row}/${col}.png`;
       return `http://192.168.60.231:23334/osm/Arcgis/${zoom}/${row}/${col}.png`;
       return `http://192.168.60.231:23334/osm/liberty/${zoom}/${row}/${col}.png`;

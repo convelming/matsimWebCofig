@@ -178,7 +178,7 @@ export class TileMesh extends THREE.Mesh {
       // return `http://online4.map.bdimg.com/tile/?qt=tile&x=${row}&y=${col}&z=${zoom}&;styles=pl&scaler=1&udt=20170406`;
       // 天地图
       // return `http://t0.tianditu.gov.cn/vec_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=img&STYLE=default&TILEMATRIXSET=w&FORMAT=tiles&TILEMATRIX=${zoom}&TILEROW=${col}&TILECOL=${row}&tk=fcaaabe9f71c6322310f751c434a8a2b`;
-      // return `http://t0.tianditu.gov.cn/img_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=img&STYLE=default&TILEMATRIXSET=w&FORMAT=tiles&TILEMATRIX=${zoom}&TILEROW=${col}&TILECOL=${row}&tk=fcaaabe9f71c6322310f751c434a8a2b`;
+      return `http://t0.tianditu.gov.cn/img_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=img&STYLE=default&TILEMATRIXSET=w&FORMAT=tiles&TILEMATRIX=${zoom}&TILEROW=${col}&TILECOL=${row}&tk=fcaaabe9f71c6322310f751c434a8a2b`;
       // osm算法
       // return `https://m.earthol.me/map.jpg?lyrs=y&gl=cn&x=${row}&y=${col}&z=${zoom}` // 403报错
       // return `https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${zoom}/${col}/${row}`;
