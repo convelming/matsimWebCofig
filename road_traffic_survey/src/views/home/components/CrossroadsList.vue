@@ -34,7 +34,7 @@
         <el-table-column prop="操作" label="操作" width="130px">
           <div slot-scope="{ row }" class="operate_btn">
             <!-- 状态（0等待划线，1等待运行，2正在运行，3运行成功，4运行失败，5等待录入，6录入成功 -->
-            <el-button v-if="row.status == 1 || row.type == 3 || row.type == 4" type="text" size="mini" @click="handleRunCrossroad(row)">运行</el-button>
+            <el-button v-if="(row.status == 1 || row.status == 3 || row.status == 4) && row.type == 2" type="text" size="mini" @click="handleRunCrossroad(row)">运行</el-button>
             <el-button type="text" size="mini" @click="handleShowCrossroadsDetail(row)">查看</el-button>
             <el-button type="text" size="mini" @click="handleDeleteCrossroad(row)">移除</el-button>
             <el-button type="text" size="mini" @click="handleShowDrawLine(row)">检测线绘制</el-button>
