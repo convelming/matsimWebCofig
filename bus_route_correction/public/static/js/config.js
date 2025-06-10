@@ -1,7 +1,7 @@
 EARTH_RADIUS = 20037508.3427892;
 
 // 地图默认样式序号，如果地图样式列表中没有这个样式，则默认序号为0的样式
-DEFAULT_MAP_LAYER_STYLE_INDEX = 1;
+DEFAULT_MAP_LAYER_STYLE_INDEX = 2;
 
 // 地图样式列表
 // {
@@ -15,17 +15,39 @@ DEFAULT_MAP_LAYER_STYLE_INDEX = 1;
 //     return `http://192.168.60.231:23334/osm/MapTilerBasic/${this.zoom}/${this.row}/${this.col}.png`;
 //   }
 // }
-MAP_LAYER_STYLE = [  
+MAP_LAYER_STYLE = [
+  {
+    style_name: "Bing地图",
+    background: `#0a4173`,
+    x_offset: -590,
+    y_offset: 335,
+    getUrl: function () {
+      const { zoom, col, row } = this;
+      let quadKey = "";
+      for (let i = zoom; i > 0; i--) {
+        let digit = "0";
+        const mask = 1 << (i - 1);
+        if ((row & mask) !== 0) {
+          digit = String.fromCharCode(digit.charCodeAt(0) + 1);
+        }
+        if ((col & mask) !== 0) {
+          digit = String.fromCharCode(digit.charCodeAt(0) + 2);
+        }
+        quadKey += digit;
+      }
+      return `https://t0.dynamic.tiles.ditu.live.com/comp/ch/${quadKey}?mkt=zh-CN,en-US&ur=cn&it=G,L&jp=0&og=1&sv=9.27&n=t&o=webp,95&cstl=VBD&st=bld|v:0`;
+    },
+  },
   {
     style_name: "tianditu",
     getUrl: function () {
-      return `http://t0.tianditu.gov.cn/vec_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=img&STYLE=default&TILEMATRIXSET=w&FORMAT=tiles&TILEMATRIX=${this.zoom}&TILEROW=${this.col}&TILECOL=${this.row}&tk=fcaaabe9f71c6322310f751c434a8a2b` 
+      return `http://t0.tianditu.gov.cn/img_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=img&STYLE=default&TILEMATRIXSET=w&FORMAT=tiles&TILEMATRIX=${this.zoom}&TILEROW=${this.col}&TILECOL=${this.row}&tk=fcaaabe9f71c6322310f751c434a8a2b`;
     },
   },
   {
     style_name: "argisServer",
     getUrl: function () {
-    return `https://server.arcgisonline.com/arcgis/rest/services/World_Street_Map/MapServer/tile/${this.zoom}/${this.col}/${this.row}`;
+      return `https://server.arcgisonline.com/arcgis/rest/services/World_Street_Map/MapServer/tile/${this.zoom}/${this.col}/${this.row}`;
     },
   },
   {
@@ -65,43 +87,36 @@ MAP_LAYER_STYLE = [
       return `http://192.168.60.231:23334/osm/liberty/${this.zoom}/${this.row}/${this.col}.png`;
     },
   },
-  {
-    style_name: "MAPBOX",
-    getUrl: function () {
-      return `https://api.mapbox.com/styles/v1/convel/ck8frzi262yko1invkvbif5aw/tiles/512/${this.zoom}/${this.row}/${this.col}@2x?access_token=pk.eyJ1IjoiY29udmVsIiwiYSI6ImNtOW50Z2c0NTAyNGMybHB5Y2txcXY0NmgifQ.zM_QAebuyQtVh-A93w5wyA`;
-    },
-  },
-  {
-    style_name: "极夜蓝",
-    background: `#0a4173`,
-    getUrl: function () {
-      return `https://api.mapbox.com/styles/v1/dasin/cltigm5bp010s01ptciblgffl/tiles/512/${this.zoom}/${this.row}/${this.col}@2x?access_token=pk.eyJ1IjoiY29udmVsIiwiYSI6ImNtOW50Z2c0NTAyNGMybHB5Y2txcXY0NmgifQ.zM_QAebuyQtVh-A93w5wyA`;
-    },
-  },
   // {
-  //   style_name: "卫星图",
+  //   style_name: "MAPBOX",
   //   getUrl: function () {
-  //     return `http://192.168.60.231:23334/baidu/satellite/${this.zoom}/${this.row}/${this.col}.jpg`;
+  //     return `https://api.mapbox.com/styles/v1/convel/ck8frzi262yko1invkvbif5aw/tiles/512/${this.zoom}/${this.row}/${this.col}@2x?access_token=pk.eyJ1IjoiY29udmVsIiwiYSI6ImNtOW50Z2c0NTAyNGMybHB5Y2txcXY0NmgifQ.zM_QAebuyQtVh-A93w5wyA`;
   //   },
   // },
-  {
-    style_name: "Arcgis",
-    background: `#0a4173`,
-    getUrl: function () {
-      const { x, y, zoom } = this;
-      const width = EARTH_RADIUS / Math.pow(2, zoom);
-      const bbox = `${x - width},${y - width},${x + width},${y + width}`;
-      const bboxSR = "3857";
-      const imageSR = "3857";
-      return `http://192.168.60.232:9195/mserver/arcgis/rest/services/csjt/%E5%B9%BF%E4%B8%9C%E7%9C%81wgs/MapServer/export?dpi=96&transparent=true&format=png8&layers=show:0,1,2,3&bbox=${bbox}&f=image&bboxSR=${bboxSR}&imageSR=${imageSR}`;
-    },
-  },
+  // {
+  //   style_name: "极夜蓝",
+  //   background: `#0a4173`,
+  //   getUrl: function () {
+  //     return `https://api.mapbox.com/styles/v1/dasin/cltigm5bp010s01ptciblgffl/tiles/512/${this.zoom}/${this.row}/${this.col}@2x?access_token=pk.eyJ1IjoiY29udmVsIiwiYSI6ImNtOW50Z2c0NTAyNGMybHB5Y2txcXY0NmgifQ.zM_QAebuyQtVh-A93w5wyA`;
+  //   },
+  // },
+  // {
+  //   style_name: "Arcgis",
+  //   background: `#0a4173`,
+  //   getUrl: function () {
+  //     const { x, y, zoom } = this;
+  //     const width = EARTH_RADIUS / Math.pow(2, zoom);
+  //     const bbox = `${x - width},${y - width},${x + width},${y + width}`;
+  //     const bboxSR = "3857";
+  //     const imageSR = "3857";
+  //     return `http://192.168.60.232:9195/mserver/arcgis/rest/services/csjt/%E5%B9%BF%E4%B8%9C%E7%9C%81wgs/MapServer/export?dpi=96&transparent=true&format=png8&layers=show:0,1,2,3&bbox=${bbox}&f=image&bboxSR=${bboxSR}&imageSR=${imageSR}`;
+  //   },
+  // },
   {
     style_name: "天地图",
     background: `#0a4173`,
     getUrl: function () {
-      // 天地图的瓦片服务需要用img_w的，不能用img_c
-      return `https://t3.tianditu.gov.cn/img_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=vec&STYLE=default&TILEMATRIXSET=w&FORMAT=tiles&TileMatrix=${this.zoom}&TileRow=${this.col}&TileCol=${this.row}&tk=fcaaabe9f71c6322310f751c434a8a2b`;
+      return `http://t0.tianditu.gov.cn/vec_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=vec&STYLE=default&TILEMATRIXSET=w&FORMAT=tiles&TileMatrix=${this.zoom}&TileRow=${this.col}&TileCol=${this.row}&tk=fcaaabe9f71c6322310f751c434a8a2b`;
     },
   },
 ];

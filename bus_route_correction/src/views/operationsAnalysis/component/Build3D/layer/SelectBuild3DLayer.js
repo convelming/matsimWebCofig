@@ -20,6 +20,7 @@ export class SelectBuild3DLayer extends Layer {
       color: this.buildColor,
       opacity: this.buildOpacity,
       transparent: true,
+      depthTest: false,
       // depthFunc: THREE.AlwaysDepth
       // stencilZFail: THREE.IncrementStencilOp,
     });
@@ -56,7 +57,7 @@ export class SelectBuild3DLayer extends Layer {
     if (this.show3D != show3D) {
       this.show3D = show3D;
       if (this.show3D) {
-        this.mesh.scale.set(1.01, 1.01, 1.01);
+        this.mesh.scale.set(1.0, 1.0, 1.0);
       } else {
         this.mesh.scale.set(1, 1, 0.000001);
       }

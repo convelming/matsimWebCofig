@@ -6,6 +6,7 @@ import Stats from "three/addons/libs/stats.module.js";
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
 import { SMAAPass } from "three/examples/jsm/postprocessing/SMAAPass";
+import { SSAARenderPass } from "three/examples/jsm/postprocessing/SSAARenderPass";
 
 import { WGS84ToMercator, EPSG4526ToMercator, EARTH_RADIUS } from "../utils/LngLatUtils";
 import { EventListener } from "./EventListener";
@@ -301,11 +302,15 @@ export class MyMap extends EventListener {
     });
     this.composer.addPass(this.bloomComposer.pass);
 
-    //获取.setPixelRatio()设置的设备像素比
-    const pixelRatio = this.renderer.getPixelRatio();
+    // 获取.setPixelRatio()设置的设备像素比
+    // const pixelRatio = this.renderer.getPixelRatio();
     // width、height是canva画布的宽高度
-    this.smaaPass = new SMAAPass(this.rootDoc.clientWidth * pixelRatio, this.rootDoc.clientHeight * pixelRatio);
-    this.composer.addPass(this.smaaPass);
+    // this.smaaPass = new SMAAPass(this.rootDoc.clientWidth * pixelRatio, this.rootDoc.clientHeight * pixelRatio);
+    // this.composer.addPass(this.smaaPass);
+    this.ssaaPass = new SSAARenderPass(this.scene, this.camera);
+    this.ssaaPass.sampleLevel = 4;
+    this.ssaaPass.unbiased = true;
+    this.composer.addPass(this.ssaaPass);
   }
 
   // 初始化场景

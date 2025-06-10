@@ -46,6 +46,7 @@ import Toolbar from "./component/Toolbar/index.vue";
 
 import PageConfig from "./component/PageConfig/index.vue";
 import configMixins from "./component/PageConfig/configMixins.js";
+import { saveUserCfg, getUserCfg, userCfgList, removeUserCfg } from "@/api/index.js";
 
 export default {
   components: {
