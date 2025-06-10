@@ -20,10 +20,8 @@ export class TileLayer extends Layer {
     super(opt);
     this.worker = new Worker();
     this.worker.onmessage = (e) => {
-      console.log(e);
       switch (e.data.key) {
         case "draw": {
-          console.log(e.data.data);
           this.meshMap[e.data.data.zoom].updateTiff(e.data.data);
           break;
         }
@@ -253,7 +251,6 @@ export class TileMesh extends THREE.Mesh {
   }
   updateTiff(data) {
     const { noImage, disImage, dScale } = data;
-    console.log(noImage, disImage, dScale);
     this.tifCanvas.getContext("2d").drawImage(disImage, 0, 0);
     this.tifTexture.needsUpdate = true;
     this.tifNoCanvas.getContext("2d").drawImage(noImage, 0, 0);

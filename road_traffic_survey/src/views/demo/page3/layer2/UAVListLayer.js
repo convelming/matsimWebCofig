@@ -129,8 +129,6 @@ export class UAVListLayer extends Layer {
   setSelectPath(selecIndex) {
     const oldIndex = this.selecIndex;
     this.selecIndex = selecIndex;
-    console.log(this.pathList[this.selecIndex]);
-
     if (oldIndex > -1) {
       this.nodeMeshList[oldIndex].material = this.nodesMaterial;
       this.nodeMeshList[oldIndex].needsUpdate = true;
@@ -275,7 +273,6 @@ export class UAVListLayer extends Layer {
   }
 
   updateUAV(data) {
-    // console.log(data);
     if (!this.pathList) return;
     const { time, points } = data;
     for (let pIndex = 0; pIndex < points.length; pIndex++) {

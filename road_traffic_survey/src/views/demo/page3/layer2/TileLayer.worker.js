@@ -10,7 +10,6 @@ class MyTiffImage {
     try {
       const tif = await GeoTIFF.fromUrl(tifUrl);
       const tifImage = await tif.getImage();
-      console.log(tifImage);
       const nodata = tifImage.getGDALNoData() || 0;
       const tifImageData = await tifImage.readRasters({
         interleave: true,
@@ -76,8 +75,6 @@ class MyTiffImage {
   }
 
   draw(drawData) {
-    console.log(drawData);
-    
     const { center, geoWidth, geoHeight, canvasWidth, canvasHeight, imageScale } = drawData;
 
     this.disCanvas.width = canvasWidth;
@@ -93,8 +90,6 @@ class MyTiffImage {
     ctxNo.fillRect(0, 0, this.noCanvas.width, this.noCanvas.height);
 
     if (this.inited) {
-      console.log("updateTiff");
-      
       const [cx, cy] = center;
       const rx = geoWidth / 2;
       const ry = geoHeight / 2;
@@ -138,8 +133,6 @@ onmessage = function (e) {
     case "draw": {
       if (!myTiffImage.inited) {
         const data = myTiffImage.draw(e.data.data);
-        console.log(data);
-        
         postMessage(
           {
             key: e.data.key,

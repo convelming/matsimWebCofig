@@ -24,18 +24,14 @@ export class TileLayer extends Layer {
   }
 
   async setTif(tifUrl = "") {
-    console.log("getTif", tifUrl);
     try {
       let tif = null;
       if (typeof tifUrl === "string") {
-        console.log("fromUrl");
         tif = await GeoTIFF.fromUrl(tifUrl);
       } else if (tifUrl instanceof ArrayBuffer) {
-        console.log("fromArrayBuffer");
         tif = await GeoTIFF.fromArrayBuffer(tifUrl);
       }
       const tifImage = await tif.getImage();
-      console.log(tifImage);
       const nodata = tifImage.getGDALNoData() || 0;
       const tifImageData = await tifImage.readRasters({
         interleave: true,
@@ -102,7 +98,7 @@ export class TileLayer extends Layer {
       }
       this.update();
     } catch (error) {
-      console.log(error)
+      console.log(error);
       for (const tileZoom in this.meshMap) {
         const tile = this.meshMap[tileZoom];
         tile.tifImage = null;
@@ -237,7 +233,22 @@ export class TileMesh extends THREE.Mesh {
 
   updateTile() {
     function getUrl(row, col, zoom) {
-      const key = 'pk.eyJ1Ijoic2t1bjE2IiwiYSI6ImNsNmN6bDAxaDAwbmozam55bjBrZWVybTUifQ.vg3pEDwpnUgxmJMmeB8nGQ'
+      let quadKey = "";
+      for (let i = zoom; i > 0; i--) {
+        let digit = "0";
+        const mask = 1 << (i - 1);
+        if ((row & mask) !== 0) {
+          digit = String.fromCharCode(digit.charCodeAt(0) + 1);
+        }
+        if ((col & mask) !== 0) {
+          digit = String.fromCharCode(digit.charCodeAt(0) + 2);
+        }
+        quadKey += digit;
+      }
+      // return `https://t0.dynamic.tiles.ditu.live.com/comp/ch/${quadKey}?mkt=zh-CN,en-US&ur=cn&it=G,L&jp=0&og=1&sv=9.27&n=t&o=webp,95&cstl=VBD&st=bld|v:0`;
+      return `https://t0.dynamic.tiles.ditu.live.com/comp/ch/${quadKey}?mkt=zh-CN&ur=cn&it=G,RL&n=z&og=942&cstl=vbd`;
+
+      const key = "pk.eyJ1Ijoic2t1bjE2IiwiYSI6ImNsNmN6bDAxaDAwbmozam55bjBrZWVybTUifQ.vg3pEDwpnUgxmJMmeB8nGQ";
       // const key = "pk.eyJ1IjoiY29udmVsIiwiYSI6ImNtOW50Z2c0NTAyNGMybHB5Y2txcXY0NmgifQ.zM_QAebuyQtVh-A93w5wyA"
       // return `http://wprd0.is.autonavi.com/appmaptile?x=${row}&y=${col}&z=${zoom}&lang=zh_cn&size=1&scl=1&style=7`;
       // 百度算法

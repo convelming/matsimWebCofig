@@ -59,10 +59,18 @@ export class Build3DLayer extends Layer {
   setData(data) {
     this.center = data.center;
     this.polygonArray = data.polygonArray;
-    // this.jzgdList = data.propertiesLabels.Height.values; // 建筑高度
-    this.jzgdList = data.propertiesLabels.build_high.values; // 建筑高度
-    // this.hbgdList = data.propertiesLabels.Sampled_SA.values; // 海拔高度
-    this.hbgdList = data.propertiesLabels.dem.values; // 海拔高度
+    try {
+      // this.jzgdList = data.propertiesLabels.Height.values; // 建筑高度
+      this.jzgdList = data.propertiesLabels.build_high.values; // 建筑高度
+    } catch (error) {
+      this.jzgdList = []; // 建筑高度
+    }
+    try {
+      // this.hbgdList = data.propertiesLabels.Sampled_SA.values; // 海拔高度
+      this.hbgdList = data.propertiesLabels.dem.values; // 海拔高度
+    } catch (error) {
+      this.hbgdList = [];
+    }
     this.updatePolygon();
   }
 
@@ -80,7 +88,7 @@ export class Build3DLayer extends Layer {
     let cx = 0,
       cy = 0;
     if (this.map) [cx, cy] = this.map.WebMercatorToCanvasXY(this.center[0], this.center[1]);
-    const maxPolygon = 10000000;
+    const maxPolygon = 5000000;
     const polygonList = [];
 
     const addMesh = (list) => {
@@ -100,6 +108,7 @@ export class Build3DLayer extends Layer {
       polygonList[polygonList.length] = polygon;
       if (index - num > maxPolygon) {
         num = index;
+        console.log("addMesh",index)
         await addMesh(polygonList);
       }
     }

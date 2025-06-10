@@ -62,8 +62,6 @@ export class Network3DLayer extends Layer {
   }
 
   setPickLayerColor(pickLayerColor) {
-    console.log("pickLayerColor", pickLayerColor);
-
     this.pickLayerColor = new THREE.Color(pickLayerColor);
     this.nodesPickLayerMaterial.setValues({ color: pickLayerColor });
     this.nodesPickLayerMaterial.needsUpdate = true;
@@ -172,8 +170,6 @@ export class Network3DLayer extends Layer {
     }
     if (type == MAP_EVENT.HANDLE_PICK_LEFT && data.layerId == this.id) {
       const index = data.pickColor - 1;
-      console.log(index);
-      
       this.handleEventListener(type, index);
     }
   }

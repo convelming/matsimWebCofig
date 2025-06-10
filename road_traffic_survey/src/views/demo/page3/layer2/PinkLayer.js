@@ -18,8 +18,6 @@ export class PinkLayer extends Layer {
     this.material3 = new THREE.MeshBasicMaterial({});
   }
   setPickLayerColor(pickLayerColor) {
-    console.log("pickLayerColor", pickLayerColor);
-
     this.pickLayerColor = new THREE.Color(pickLayerColor);
     this.material2.setValues({ color: pickLayerColor });
     this.material2.needsUpdate = true;

@@ -35,11 +35,11 @@
                       <el-switch v-model="showTiffLayer" :active-value="true" :inactive-value="false"></el-switch>
                     </el-form-item>
                   </el-col> -->
-                  <el-col :span="12" :offset="0">
+                  <!-- <el-col :span="12" :offset="0">
                     <el-form-item label="实体3维：">
                       <el-switch v-model="showOBJLayer" :active-value="true" :inactive-value="false"></el-switch>
                     </el-form-item>
-                  </el-col>
+                  </el-col> -->
                   <el-col :span="24" :offset="0">
                     <div style="display: flex; align-items: center; justify-content: space-between">
                       <span class="el-form-item__label">地形图透明度：</span>
@@ -179,13 +179,11 @@ export default {
     showNetwork3DNode: {
       handler(val) {
         this._Network3DLayer.setShowNode(val);
-        this.loadNetwork();
       },
     },
     showNetwork3DLink: {
       handler(val) {
         this._Network3DLayer.setShowLink(val);
-        this.loadNetwork();
       },
     },
     tifOpacity: {
@@ -202,15 +200,15 @@ export default {
         }
       },
     },
-    showOBJLayer: {
-      handler(val) {
-        if (val) {
-          this._Map.addLayer(this._OBJLayer);
-        } else {
-          this._Map.removeLayer(this._OBJLayer);
-        }
-      },
-    },
+    // showOBJLayer: {
+    //   handler(val) {
+    //     if (val) {
+    //       this._Map.addLayer(this._OBJLayer);
+    //     } else {
+    //       this._Map.removeLayer(this._OBJLayer);
+    //     }
+    //   },
+    // },
   },
   data() {
     return {
@@ -246,7 +244,6 @@ export default {
 
       const blob = await response.blob();
       const zip = await JSZip.loadAsync(blob);
-      console.log(zip);
 
       const config = await zip.file("config.json").async("string");
       const pageConfig = JSON.parse(config);
@@ -284,7 +281,6 @@ export default {
           this._nodesId = nodesId;
           this._linksId = linksId;
           this._Network3DLayer.addEventListener(MAP_EVENT.HANDLE_PICK_LEFT, (e) => {
-            console.log(e.data);
             if (e.data > this._nodesId.length) {
               alert(`linkId:  ${this._linksId[e.data - this._nodesId.length]}`);
             } else {
@@ -349,8 +345,6 @@ export default {
         rootId: "mapRoot",
         ...this.pageConfig.mapConfig,
       });
-      console.log(this._Map);
-
       this._TileLayer = new TileLayer({
         zIndex: 200,
         opacity: this.tifOpacity,
