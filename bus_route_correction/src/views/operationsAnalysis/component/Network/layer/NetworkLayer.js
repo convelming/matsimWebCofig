@@ -167,7 +167,6 @@ export class NetworkLayer extends Layer {
         tile.update();
         console.log(this, tile.pickColorNum, tile.pickColorOffset);
 
-
         this.loadingNum--;
         this.handleEventListener(MAP_EVENT.LAYER_LOADING, this.loadingNum > 0);
         if (this._noLoadTileList.length > 0) {
@@ -224,7 +223,6 @@ export class NetworkLayer extends Layer {
     } else if (this.selectLine.mesh) {
       this.scene.remove(this.selectLine.mesh);
     }
-
   }
 }
 
@@ -287,10 +285,12 @@ export class NetworkTile {
 
     this._geometry = new THREE.BufferGeometry();
     this._baseMaterial = new NetworkMaterial({
+      side: THREE.DoubleSide,
       color: 0xff0000,
       colorBar: ColorBar2DInstance.drowColorBar(this._colors),
       lineWidth: this._lineWidth,
       lineOffset: this._lineOffset,
+
       // map: NetworkTile.lineMap,
     });
     this._pickLayerMaterial = new NetworkMaterial({
@@ -313,7 +313,6 @@ export class NetworkTile {
     });
     this._pickLayerVideoIconMaterial = new THREE.MeshBasicMaterial({ color: this._pickLayerColor });
     this._pickMeshVideoIconMaterial = new THREE.MeshBasicMaterial();
-
 
     this._nodeGeometry = new THREE.PlaneGeometry(100, 100);
     this._baseNodeMaterial = new THREE.MeshBasicMaterial({
@@ -406,7 +405,6 @@ export class NetworkTile {
     this._pickLayerScene.add(this._pickLayerMesh);
     this._pickMeshScene.add(this._pickBuildMesh);
 
-
     const _scale2 = (this._videoIconWidth / 100) * 1.1;
     const videoIconList = Object.values(this._videoIconData);
     this._baseVideoIconMesh = new THREE.InstancedMesh(this._videoIconGeometry, this._baseVideoIconMaterial, videoIconList.length);
@@ -416,7 +414,7 @@ export class NetworkTile {
     for (let i = 0, l = videoIconList.length; i < l; i++) {
       const { coord, pickColorNum, normal } = videoIconList[i];
       const matrix = new THREE.Matrix4();
-      const positionV3 = new THREE.Vector3(coord.x, coord.y, i / l + 1).sub(normal.clone().setLength(this._lineOffset));
+      const positionV3 = new THREE.Vector3(coord.x, coord.y, coord.z + i / l + 0.1).sub(normal.clone().setLength(this._lineOffset));
       const scaleV3 = new THREE.Vector3(_scale2, _scale2, 1);
       matrix.compose(positionV3, new THREE.Quaternion(), scaleV3);
 
@@ -431,7 +429,6 @@ export class NetworkTile {
       this._pickLayerScene.add(this._pickLayerVideoIconMesh);
       this._pickMeshScene.add(this._pickMeshVideoIconMesh);
     }
-
 
     const _scale = (this._lineWidth / 100) * 1.1;
     const nodeList = Object.values(this._nodeData);
@@ -530,7 +527,6 @@ export class NetworkTile {
     if (this._baseNodeMesh) this._baseNodeMesh.instanceMatrix.needsUpdate = true;
     if (this._pickLayerNodeMesh) this._pickLayerNodeMesh.instanceMatrix.needsUpdate = true;
     if (this._pickMeshNodeMesh) this._pickMeshNodeMesh.instanceMatrix.needsUpdate = true;
-
   }
 
   setVideoIconWidth(videoIconWidth) {
@@ -565,7 +561,6 @@ export class NetworkTile {
     this._pickLayerMaterial.needsUpdate = true;
     this._pickMeshMaterial.uniforms.lineOffset.value = this._lineOffset;
     this._pickMeshMaterial.needsUpdate = true;
-
 
     if (this.loadStatus != 2) return;
 
@@ -738,8 +733,8 @@ export class NetworkGeometry extends THREE.BufferGeometry {
       lineLengths.push(lineLength);
       lineNormals.push(normal.x, normal.y, 1);
       lineNormals.push(normal.x, normal.y, -1);
-      positions.push(fromCoord.x, fromCoord.y, 0);
-      positions.push(fromCoord.x, fromCoord.y, 0);
+      positions.push(fromCoord.x, fromCoord.y, fromCoord.z);
+      positions.push(fromCoord.x, fromCoord.y, fromCoord.z);
       pickColors.push(...pickColor);
       pickColors.push(...pickColor);
       uvs.push(0, 0);
@@ -749,8 +744,8 @@ export class NetworkGeometry extends THREE.BufferGeometry {
       lineLengths.push(lineLength);
       lineNormals.push(normal.x, normal.y, -1);
       lineNormals.push(normal.x, normal.y, 1);
-      positions.push(toCoord.x, toCoord.y, 0);
-      positions.push(toCoord.x, toCoord.y, 0);
+      positions.push(toCoord.x, toCoord.y, toCoord.z);
+      positions.push(toCoord.x, toCoord.y, toCoord.z);
       pickColors.push(...pickColor);
       pickColors.push(...pickColor);
       uvs.push(1, 1);
@@ -897,8 +892,7 @@ export class NetworkMaterial extends THREE.Material {
         #ifdef USE_MAP
           vUv = ( uvTransform * vec3( uv, 1 ) ).xy;
         #endif
-        transformed = vec3(position.xy + lineNormal.xy * lineNormal.z * lineWidth / 2.0 - lineNormal.xy * lineOffset, position.z);
-        transformed.z = transformed.z + flow / (flowMax - flowMin);
+        transformed = vec3(position.xy + lineNormal.xy * lineNormal.z * lineWidth / 2.0 - lineNormal.xy * lineOffset, position.z + flow / (flowMax - flowMin));
 
         gl_Position = projectionMatrix * modelViewMatrix * vec4( transformed, 1.0 );
 
@@ -991,7 +985,9 @@ export class ColorBar2D {
   drowColorBar(colors = ColorBar2DColors) {
     try {
       //颜色条的颜色分布
-      const values = Object.keys(colors).map((v) => Number(v)).sort();
+      const values = Object.keys(colors)
+        .map((v) => Number(v))
+        .sort();
       const maxValue = values[values.length - 1];
       const minValue = values[0];
 

@@ -177,7 +177,7 @@ export class BusMotionLayer extends Layer {
 
   handleRenderCallback(array) {
     this.rendering = false;
-    const arraySize = 7;
+    const arraySize = 8;
     const num = Math.max(this.runBusList.length, array.length / arraySize);
     const runBusList = [];
     const attrPoitions = [];
@@ -188,14 +188,14 @@ export class BusMotionLayer extends Layer {
     for (let i = 0; i < num; i++) {
       let model = this.runBusList[i];
       const data = array.slice(i * arraySize, i * arraySize + arraySize);
-      const id = data[0];
-      if (data[0] == this.selectBusIndex && data[0] != undefined) {
-        this.coneMesh.position.set(data[1], data[2], this.modelSize * 7);
+      const [id, x, y, z, qx, qy, qz, qw] = data;
+      if (id == this.selectBusIndex && id != undefined) {
+        this.coneMesh.position.set(x, y, z + this.modelSize * 7);
         const scale = this.modelSize * 0.1;
         this.coneMesh.scale.set(scale, scale, scale);
         this.busGroup.add(this.coneMesh);
-        if (this.lockSelectBus && this.map) this.map.setCenter([data[1] + this.center[0], data[2] + this.center[1]]);
-      } else if (i > this.maxBusNum || data[0] == undefined) {
+        if (this.lockSelectBus && this.map) this.map.setCenter([x + this.center[0], y + this.center[1]]);
+      } else if (i > this.maxBusNum || id == undefined) {
         if (model) {
           this.busGroup.remove(model);
           this.modelPool.still(modelName, model);
@@ -207,24 +207,18 @@ export class BusMotionLayer extends Layer {
         if (!model) continue;
         this.busGroup.add(model);
       }
-
-      // const scale = this.modelSize * 0.005;
-      // model.scale.set(scale, scale, scale);
-      // model.position.set(data[1], data[2], this.modelSize);
-      // const rotationOrderMap = { 1: "XYZ", 2: "YXZ", 3: "ZXY", 4: "ZYX", 5: "YZX", 6: "XZY" };
-      // model.rotation.fromArray([data[3], data[4], data[5], rotationOrderMap[data[6]]]);
-
+      
       const scale = this.modelSize * 0.005;
       model.scale.set(scale, scale, scale);
-      model.position.set(data[1], data[2], this.modelSize);
-      model.quaternion.set(data[3], data[4], data[5], data[6]);
+      model.position.set(x, y, z + this.modelSize);
+      model.quaternion.set(qx, qy, qz, qw);
 
       runBusList[i] = model;
 
       const attrLength = attrPoitions.length;
       const pickColor = new THREE.Color(id + 1);
-      attrPoitions[attrLength] = data[1];
-      attrPoitions[attrLength + 1] = data[2];
+      attrPoitions[attrLength] = x;
+      attrPoitions[attrLength + 1] = y;
       attrPoitions[attrLength + 2] = (this.modelSize * 5) / 4;
       attrPickColors[attrLength] = pickColor.r;
       attrPickColors[attrLength + 1] = pickColor.g;

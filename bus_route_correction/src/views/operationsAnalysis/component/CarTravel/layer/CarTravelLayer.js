@@ -8,8 +8,7 @@ const BUILD_ZOOM = 15;
 const EARTH_RADIUS = 20037508.3427892;
 
 export class CarTravelLayer extends Layer {
-
-  time = 27046 //3600 * 8;
+  time = 27046; //3600 * 8;
   timeSpeed = 60 * 1;
 
   runCarList = new Array();
@@ -22,7 +21,7 @@ export class CarTravelLayer extends Layer {
 
   dataSource = "";
 
-  center = [12628397, 2655338.7]
+  center = [12628397, 2655338.7];
 
   selectCarIndex = -1;
 
@@ -37,7 +36,7 @@ export class CarTravelLayer extends Layer {
 
     this.modelPool = new ModelPool({
       SUV: "/models/SUV.gltf",
-    })
+    });
 
     this.carGroup = new THREE.Group();
 
@@ -74,7 +73,6 @@ export class CarTravelLayer extends Layer {
     });
     this.coneMesh = new THREE.Mesh(geometry, material);
     this.coneMesh.rotateX((Math.PI / 2) * 3);
-
 
     this.worker = new CarTravelLayerWorker();
     this.worker.onmessage = (event) => {
@@ -138,12 +136,12 @@ export class CarTravelLayer extends Layer {
   handleLoadTiles() {
     if (!this.map) return;
     this.loading = true;
-    this.handleEventListener(MAP_EVENT.LAYER_LOADING, this.loading)
+    this.handleEventListener(MAP_EVENT.LAYER_LOADING, this.loading);
     this.worker.postMessage({
       ...this.map.getTileRangeByZoom(BUILD_ZOOM),
       key: 1,
       dataSource: this.dataSource,
-    })
+    });
   }
 
   handleRender() {
@@ -155,7 +153,7 @@ export class CarTravelLayer extends Layer {
       maxY: 0,
       minY: 0,
       width: 0,
-      height: 0
+      height: 0,
     };
     if (this.map) windowRange = this.map.getTileRangeByZoom(this.map.zoom);
     this.worker.postMessage({
@@ -187,11 +185,10 @@ export class CarTravelLayer extends Layer {
     this.handleRender();
   }
 
-
   handleRenderCallback(array) {
     this.rendering = false;
     if (!this.map) return;
-    const arraySize = 7;
+    const arraySize = 8;
     const num = Math.max(this.runCarList.length, array.length / arraySize);
     const runCarList = [];
     const attrPoitions = [];
@@ -203,9 +200,9 @@ export class CarTravelLayer extends Layer {
     for (let i = 0; i < num; i++) {
       let model = this.runCarList[i];
       const data = array.slice(i * arraySize, i * arraySize + arraySize);
-      const [carId, x, y, qx, qy, qz, qw] = data;
+      const [carId, x, y, z, qx, qy, qz, qw] = data;
       if (carId == this.selectCarIndex && carId != undefined) {
-        this.coneMesh.position.set(x, y, this.modelSize * 4.5);
+        this.coneMesh.position.set(x, y, z + this.modelSize * 4.5);
         const scale = this.modelSize * 0.1;
         this.coneMesh.scale.set(scale, scale, scale);
         this.carGroup.add(this.coneMesh);
@@ -224,7 +221,7 @@ export class CarTravelLayer extends Layer {
       }
 
       model.scale.set(scale, scale, scale);
-      model.position.set(x, y, this.modelSize);
+      model.position.set(x, y, z + this.modelSize);
       model.quaternion.set(qx, qy, qz, qw);
 
       runCarList[i] = model;
@@ -233,7 +230,7 @@ export class CarTravelLayer extends Layer {
       const pickColor = new THREE.Color(carId + 1);
       attrPoitions[attrLength] = x;
       attrPoitions[attrLength + 1] = y;
-      attrPoitions[attrLength + 2] = (this.modelSize * 5) / 4;
+      attrPoitions[attrLength + 2] = z + (this.modelSize * 5) / 4;
       attrPickColors[attrLength] = pickColor.r;
       attrPickColors[attrLength + 1] = pickColor.g;
       attrPickColors[attrLength + 2] = pickColor.b;
@@ -246,7 +243,6 @@ export class CarTravelLayer extends Layer {
     this.pickGeometry.setAttribute("color", new THREE.BufferAttribute(new Float32Array(attrPickColors), 3));
     this.pickGeometry.needsUpdate = true;
     this.pickGeometry.computeBoundingSphere();
-
 
     const [x, y] = this.map.WebMercatorToCanvasXY(...this.center);
     this.carGroup.position.set(x, y, 0);

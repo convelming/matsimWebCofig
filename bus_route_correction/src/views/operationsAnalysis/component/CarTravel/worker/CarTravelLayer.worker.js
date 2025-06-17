@@ -6,31 +6,33 @@ const EARTH_RADIUS = 20037508.3427892;
 
 const TIME_SPEED = 60 * 5; // 秒
 
-
 function calculatePosition(path, time) {
-  const route_startTime = path[2];
+  const route_startTime = path[3];
   const route_endTime = path[path.length - 1];
   if (time <= route_startTime) {
     const startX = path[0];
     const startY = path[1];
-    const endX = path[3];
-    const endY = path[4];
-    return { start: [startX, startY], end: [endX, endY], isRunning: false };
+    const startZ = path[2];
+    const endX = path[4];
+    const endY = path[5];
+    const endZ = path[6];
+    return { start: [startX, startY, startZ], end: [endX, endY, endZ], isRunning: false };
   } else if (time >= route_endTime) {
-    const endX = path[path.length - 3];
-    const endY = path[path.length - 2];
-    return { start: [endX, endY], end: [endX, endY], isRunning: false };
+    const endX = path[path.length - 4];
+    const endY = path[path.length - 3];
+    const endZ = path[path.length - 2];
+    return { start: [endX, endY, endZ], end: [endX, endY, endZ], isRunning: false };
   }
   // 使用二分法找到目标点
 
   // 最普通的从头到尾寻找目标点
-  const length = path.length / 3;
+  const length = path.length / 4;
   for (let i = 0; i < length - 1; i++) {
-    const line_startTime = path[i * 3 + 2];
-    const line_endTime = path[i * 3 + 5];
+    const line_startTime = path[i * 4 + 3];
+    const line_endTime = path[i * 4 + 7];
     if (line_startTime <= time && time < line_endTime) {
-      const line_start = [path[i * 3 + 0], path[i * 3 + 1]];
-      const line_end = [path[i * 3 + 3], path[i * 3 + 4]];
+      const line_start = [path[i * 4 + 0], path[i * 4 + 1], path[i * 4 + 2]];
+      const line_end = [path[i * 4 + 4], path[i * 4 + 5], path[i * 4 + 6]];
       const percentage = (time - line_startTime) / (line_endTime - line_startTime);
       return {
         start: pointMove(line_start, line_end, percentage),
@@ -44,7 +46,8 @@ function calculatePosition(path, time) {
 function pointMove(start, end, percentage) {
   let x = start[0] + (end[0] - start[0]) * percentage;
   let y = start[1] + (end[1] - start[1]) * percentage;
-  return [x, y]
+  let z = start[2] + (end[2] - start[2]) * percentage;
+  return [x, y, z];
 }
 
 class Worker {
@@ -101,12 +104,12 @@ class Worker {
             this.tileMap.set(key, tile);
           }
           this.loadMap.delete(key);
-          await new Promise(resolve => setTimeout(resolve, 0));
+          await new Promise((resolve) => setTimeout(resolve, 0));
         } catch (error) {
-          console.error(error)
+          console.error(error);
         }
       } else {
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await new Promise((resolve) => setTimeout(resolve, 100));
       }
     }
   }
@@ -118,7 +121,7 @@ class Worker {
       headers: { uuid: guid(), dataSource: "" },
       method: "get",
       responseType: "arraybuffer",
-    })
+    });
     const array = [];
     const dataView = new DataView(response.data);
     for (let i = 0; i < dataView.byteLength; i += 4) {
@@ -134,13 +137,14 @@ class Worker {
     const y1 = EARTH_RADIUS - ((col + 0) * (EARTH_RADIUS * 2)) / Math.pow(2, zoom);
     const x2 = ((row + 1) * (EARTH_RADIUS * 2)) / Math.pow(2, zoom) - EARTH_RADIUS;
     const y2 = EARTH_RADIUS - ((col + 1) * (EARTH_RADIUS * 2)) / Math.pow(2, zoom);
+    
 
     for (let i = 0, dataLength = array[0]; i < array.length; i += dataLength + 1, dataLength = array[i]) {
       const id = array[i + 1];
       const type = array[i + 2];
       // path = [x, y, time, x, y, time, ...];
       const path = array.slice(i + 3, i + 1 + dataLength);
-      const startTime = path[2];
+      const startTime = path[3];
       const endTime = path[path.length - 1];
       const carId = Symbol(id);
       const car = {
@@ -152,6 +156,8 @@ class Worker {
 
         path: path,
       };
+      
+    console.log(car);
       carMap.set(carId, car);
       for (let j = startTime; j < endTime + timeSpeed; j += timeSpeed) {
         const key = Math.ceil(j / timeSpeed);
@@ -168,7 +174,7 @@ class Worker {
       minY: Math.min(y1, y2),
       maxY: Math.max(y1, y2),
       timeObj: timeObj,
-      carMap: carMap
+      carMap: carMap,
     };
   }
 
@@ -184,19 +190,19 @@ class Worker {
         const carKeys = timeObj.get(timeKey);
         for (const key of carKeys) {
           if (carMap.has(key)) {
-            const v1 = carMap.get(key)
+            const v1 = carMap.get(key);
             if (time >= v1.startTime && time <= v1.endTime) {
               const { path, id } = v1;
               const { start, end } = calculatePosition(path, time);
-              const [x0, y0] = start;
+              const [x0, y0, z0] = start;
               if (minX <= x0 && x0 <= maxX && minY <= y0 && y0 <= maxY) {
-                const [x1, y1] = end;
-                const position = new THREE.Vector3(x0 - cx, y0 - cy, 0);
-                const target = new THREE.Vector3(x1 - cx, y1 - cy, 0); // 你的目标点
+                const [x1, y1, z1] = end;
+                const position = new THREE.Vector3(x0 - cx, y0 - cy, z0);
+                const target = new THREE.Vector3(x1 - cx, y1 - cy, z1); // 你的目标点
                 const m4 = new THREE.Matrix4().lookAt(position, target, new THREE.Vector3(0, 0, 1));
                 m4.multiply(new THREE.Matrix4().makeRotationY(Math.PI));
                 const q = new THREE.Quaternion().setFromRotationMatrix(m4);
-                runCarList.push(id, x0 - cx, y0 - cy, q.x, q.y, q.z, q.w); // length = 7
+                runCarList.push(id, x0 - cx, y0 - cy, z0, q.x, q.y, q.z, q.w); // length = 8
               }
             }
           }
@@ -215,7 +221,7 @@ onmessage = function (e) {
     case 1: {
       //"loadTiles":
       // console.log("car:loadTiles", new Date().getTime() - data.postTime);
-      const workerData = worker.loadTiles(e.data)
+      const workerData = worker.loadTiles(e.data);
       const array = new Float64Array(workerData.length + 1);
       array.set([key], 0);
       array.set(workerData, 1);

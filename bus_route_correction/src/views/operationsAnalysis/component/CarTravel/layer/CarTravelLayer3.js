@@ -1,15 +1,14 @@
 import * as THREE from "three";
 import { Layer, MAP_EVENT } from "@/mymap/index.js";
-import { CarTravelRouteListGeometry, CarTravelRouteGeometry, CarTraveRoutelMaterial } from "../utils"
+import { CarTravelRouteListGeometry, CarTravelRouteGeometry, CarTraveRoutelMaterial } from "../utils";
 
-import { getFloat32Buffer } from "@/api/arraybuffer"
+import { getFloat32Buffer } from "@/api/arraybuffer";
 
 const BUILD_ZOOM = 9;
 const EARTH_RADIUS = 20037508.3427892;
 
 export class CarTravelLayer3 extends Layer {
-
-  time = 66919 //3600 * 8;
+  time = 66919; //3600 * 8;
   timeSpeed = 60 * 1;
 
   inited = false;
@@ -19,7 +18,7 @@ export class CarTravelLayer3 extends Layer {
   lineWidth = 50;
   color = "#ff0000";
 
-  center = [12628397, 2655338.7]
+  center = [12628397, 2655338.7];
 
   constructor(opt) {
     super(opt);
@@ -78,7 +77,7 @@ export class CarTravelLayer3 extends Layer {
         const [x, y] = this.map.WebMercatorToCanvasXY(...mesh.userData.center);
         mesh.position.set(x, y, 0);
         this.scene.add(mesh);
-        await new Promise(resolve => setTimeout(resolve, 0));
+        await new Promise((resolve) => setTimeout(resolve, 0));
       }
     } catch (error) {
       console.log(error);
@@ -108,21 +107,29 @@ export class CarTravelLayer3 extends Layer {
   }
 
   async getMesh(index, material) {
-    const array = await getFloat32Buffer(`/pt/tiles/car/${this.dataSource}/${BUILD_ZOOM}/${index}`)
-    console.time(`new Mesh ${index}`)
+    const array = await getFloat32Buffer(`/pt/tiles/car/${this.dataSource}/${BUILD_ZOOM}/${index}`);
+    console.time(`new Mesh ${index}`);
     const [cx, cy] = array.slice(3, 5);
     const pathList = [];
     for (let i = 0, dataLength = array[0]; i < array.length; i += dataLength + 1, dataLength = array[i]) {
       const id = array[i + 1];
       const type = array[i + 2];
-      const path = array.slice(i + 3, i + 1 + dataLength).map((v, i) => [v - cx, v - cy, v][i % 3]);
+      const path = array.slice(i + 3, i + 1 + dataLength).map((v, i) => {
+        switch (i % 4) {
+          case 0:
+            return v - cx;
+          case 1:
+            return v - cy;
+          default:
+            return v;
+        }
+      });
       pathList[pathList.length] = path;
     }
     const geometry = new CarTravelRouteListGeometry(pathList);
     const mesh = new THREE.Mesh(geometry, material);
     mesh.userData.center = [cx, cy];
-    console.timeEnd(`new Mesh ${index}`)
+    console.timeEnd(`new Mesh ${index}`);
     return mesh;
   }
 }
-
