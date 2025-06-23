@@ -13,8 +13,8 @@ export class PinkLayer extends Layer {
     m4.multiply(new THREE.Matrix4().makeRotationX(-Math.PI / 2));
     m4.multiply(new THREE.Matrix4().makeRotationY(-Math.PI / 2));
     this.geometry.applyMatrix4(m4);
-    this.material1 = new THREE.MeshBasicMaterial({ opacity: 1, transparent: true, map: new THREE.TextureLoader().load(require("../data/停机坪.svg")) });
-    this.material2 = new THREE.MeshBasicMaterial({ color: 0x0000ff });
+    this.material1 = new THREE.MeshBasicMaterial({ opacity: 1, transparent: true, color: "#599848",map: new THREE.TextureLoader().load(require("../data/停机坪.svg")) });
+    this.material2 = new THREE.MeshBasicMaterial({ color: "#599848" });
     this.material3 = new THREE.MeshBasicMaterial({});
   }
   setPickLayerColor(pickLayerColor) {

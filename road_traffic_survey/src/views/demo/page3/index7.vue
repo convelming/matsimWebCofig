@@ -134,6 +134,23 @@ function arrayToFloat64(arraybuffer) {
   return array;
 }
 
+// const pageConfig = {
+//   mapConfig: {
+//     center: [12613317.745000001, 2649719.39],
+//     zoom: 13.5,
+//     mapZoomHeight: 600,
+//     pitch: 30,
+//     rotation: -10,
+//     enableRotate: true,
+//   },
+//   tif: process.env.VUE_APP_DEMO_SERVER + "/广州中心四区.tif",
+//   network: process.env.VUE_APP_DEMO_SERVER + "/network.zip",
+//   networkXmlUrl: process.env.VUE_APP_DEMO_SERVER + "/coords_100m_gz4_250529.zip",
+//   paths: process.env.VUE_APP_DEMO_SERVER + "/leg(1).json",
+//   build: process.env.VUE_APP_DEMO_SERVER + "/buildingCentral4demWgs84.geojson",
+//   pink: process.env.VUE_APP_DEMO_SERVER + "/新丰县起降点wgs84_dem.json",
+// };
+
 export default {
   components: {
     NewClock,
@@ -231,22 +248,7 @@ export default {
       const config = await zip.file("config.json").async("string");
       const pageConfig = JSON.parse(config);
       this.pageConfig = pageConfig;
-    } catch (error) {
-      console.error(error);
-      this.pageConfig = {
-        mapConfig: {
-          center: [12613317.745000001, 2649719.39],
-          zoom: 13.5,
-          mapZoomHeight: 600,
-          pitch: 30,
-          rotation: -10,
-          enableRotate: true,
-        },
-      };
-    }
-    await this.initMap();
-    try {
-      const pageConfig = this.pageConfig;
+      await this.initMap();
       if (pageConfig.tif) {
         await zip
           .file(pageConfig.tif)
@@ -332,7 +334,7 @@ export default {
           });
       }
     } catch (error) {
-      console.error(error);
+      // console.error(`HTTP error! status: ${response.status}`, response);
     }
     this.loading = false;
   },

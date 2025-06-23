@@ -19,19 +19,19 @@ export class UAVListLayer extends Layer {
     this.nodeMeshList1 = [];
     this.nodeMeshList2 = [];
     this.nodeGeometry = new THREE.BoxGeometry(this.nodeSize, this.nodeSize, this.nodeSize);
-    this.nodesMaterial = new THREE.MeshBasicMaterial({ color: opt.color || "#409EFF", opacity: 0.8, transparent: true });
+    this.nodesMaterial = new THREE.MeshBasicMaterial({ color: opt.color || "#76819a", opacity: 0.8, transparent: true });
     this.nodesMaterial_s = new THREE.MeshBasicMaterial({ depthFunc: THREE.AlwaysDepth, color: "red", opacity: 0.8, transparent: true });
     this.nodesMaterial1 = new THREE.MeshBasicMaterial({});
 
     this.linkMeshList = [];
     this.linkMeshList1 = [];
     this.linkMeshList2 = [];
-    this.linkMaterial = new THREE.MeshBasicMaterial({ color: opt.color || "#409EFF", opacity: 0.8, transparent: true });
+    this.linkMaterial = new THREE.MeshBasicMaterial({ color: opt.color || "#e8ce79", opacity: 0.8, transparent: true });
     this.linkMaterial_s = new THREE.MeshBasicMaterial({ depthFunc: THREE.AlwaysDepth, color: "red", opacity: 0.8, transparent: true });
     this.linkMaterial1 = new THREE.MeshBasicMaterial({});
 
     this.UAVGeometry = new THREE.BoxGeometry(50, 50, 50);
-    this.UAVMaterial = new THREE.MeshBasicMaterial({ color: "#275994" });
+    this.UAVMaterial = new THREE.MeshBasicMaterial({ color: "#ea7f7f" });
     this.UAVMaterial1 = new THREE.MeshBasicMaterial({});
     this.UAVMaterial2 = new THREE.MeshBasicMaterial({});
     this.UAVMesh = new THREE.InstancedMesh(this.UAVGeometry, this.UAVMaterial, 1);
@@ -39,7 +39,7 @@ export class UAVListLayer extends Layer {
     this.UAVMesh2 = new THREE.InstancedMesh(this.UAVGeometry, this.UAVMaterial2, 1);
 
     loader.load(process.env.VUE_APP_BASE_API + "/models/无人机.stl", (geometry) => {
-      const m4 = new THREE.Matrix4().makeScale(200, 200, 200);
+      const m4 = new THREE.Matrix4().makeScale(50, 50, 50);
       m4.multiply(new THREE.Matrix4().makeRotationZ(-Math.PI / 2));
       geometry.applyMatrix4(m4);
       this.UAVGeometry = geometry;
