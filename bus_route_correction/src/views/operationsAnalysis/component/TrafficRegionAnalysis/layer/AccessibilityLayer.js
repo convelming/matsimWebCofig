@@ -1,10 +1,10 @@
 import { Layer, MAP_EVENT } from "@/mymap";
-import { ColorBar2D } from "@/mymap/utils/ColorBar2D.v2"
+import { ColorBar2D } from "@/mymap/utils/ColorBar2D.v2";
 
 import * as THREE from "three";
 
-import { FontLoader } from 'three/addons/loaders/FontLoader.js';
-import { Text2DGeometry } from '@/mymap/geometry/Text2DGeometry.js';
+import { FontLoader } from "three/addons/loaders/FontLoader.js";
+import { Text2DGeometry } from "@/mymap/geometry/Text2DGeometry.js";
 
 let font = null;
 function getFont() {
@@ -42,18 +42,19 @@ export class AccessibilityLayer extends Layer {
   setData(data) {
     try {
       this.clearScene();
-      const list = Object.entries(data);
+      const list = ["5", "15", "30", "60", "120", ">120"].map((v, i) => [v, i, data[v]]);
       const groupList = [];
       let holes = [];
       for (let i = 0, l = list.length; i < l; i++) {
-        const [id, points] = list[i];
+        const [id, key, points] = list[i];
+        if (!points || !points.length) continue;
 
         const center = points[0];
         const group = new THREE.Group();
         group.position.set(0, 0, (l - i) / l);
 
-        const shapeT = new THREE.Shape(points.map(v => new THREE.Vector2(v[0] - center[0], v[1] - center[1])));
-        shapeT.holes = holes.map(hole => new THREE.Path(hole.map(v => new THREE.Vector2(v[0] - center[0], v[1] - center[1]))));
+        const shapeT = new THREE.Shape(points.map((v) => new THREE.Vector2(v[0] - center[0], v[1] - center[1])));
+        shapeT.holes = holes.map((hole) => new THREE.Path(hole.map((v) => new THREE.Vector2(v[0] - center[0], v[1] - center[1]))));
 
         const polygonGeometry = new THREE.ShapeGeometry(shapeT);
         const polygonMesh = new THREE.Mesh(polygonGeometry, new THREE.MeshBasicMaterial({}));
@@ -62,19 +63,12 @@ export class AccessibilityLayer extends Layer {
         group.add(polygonMesh);
         group.userData = {
           id: id,
-          key: {
-            "5": 0,
-            "15": 1,
-            "30": 2,
-            "60": 3,
-            "120": 4,
-            ">120": 5,
-          }[String(id)],
+          key: key,
           center: center,
-          polygonMesh: polygonMesh
-        }
+          polygonMesh: polygonMesh,
+        };
 
-        groupList[groupList.length] = group
+        groupList[groupList.length] = group;
 
         holes = [points];
       }
@@ -100,11 +94,11 @@ export class AccessibilityLayer extends Layer {
   clearScene() {
     super.clearScene();
     if (this.scene) {
-      this.scene.traverse(child => {
+      this.scene.traverse((child) => {
         if (child.isMesh) {
           try {
             child.geometry.dispose();
-          } catch (error) { }
+          } catch (error) {}
         }
       });
     }
@@ -124,15 +118,15 @@ export class AccessibilityLayer extends Layer {
     for (let i = this.groupList.length - 1; i >= 0; i--) {
       const group = this.groupList[i];
       const { polygonMesh, key } = group.userData;
-      const bar = this.colorBar.find(v => v.min == key);
+      const bar = this.colorBar.find((v) => v.min == key);
       if (bar && bar.use) {
         this.scene.add(group);
-        polygonMesh.material.setValues({ color: bar.color, transparent: this.opacity < 1, opacity: this.opacity })
+        polygonMesh.material.setValues({ color: bar.color, transparent: this.opacity < 1, opacity: this.opacity });
         polygonMesh.material.needsUpdate = true;
         prevBar = bar;
       } else if (prevBar) {
         this.scene.add(group);
-        polygonMesh.material.setValues({ color: prevBar.color, transparent: this.opacity < 1, opacity: this.opacity })
+        polygonMesh.material.setValues({ color: prevBar.color, transparent: this.opacity < 1, opacity: this.opacity });
         polygonMesh.material.needsUpdate = true;
       } else {
         this.scene.remove(group);
@@ -140,6 +134,4 @@ export class AccessibilityLayer extends Layer {
     }
     console.log("updateValue", this);
   }
-
 }
-

@@ -239,17 +239,22 @@ export default {
   created() {},
   async mounted() {
     this.loading = true;
+    let zip, pageConfig;
     try {
-      // const response = await fetch(process.env.VUE_APP_DEMO_SERVER + "/" + this.$route.query.fileName);
-      const response = await fetch("/data.zip");
+      const url = this.$route.query.fileName ? process.env.VUE_APP_DEMO_SERVER + "/" + this.$route.query.fileName : "/data.zip";
+      const response = await fetch(url);
 
       const blob = await response.blob();
-      const zip = await JSZip.loadAsync(blob);
+      zip = await JSZip.loadAsync(blob);
 
       const config = await zip.file("config.json").async("string");
-      const pageConfig = JSON.parse(config);
-      this.pageConfig = pageConfig;
-      await this.initMap();
+      pageConfig = JSON.parse(config);
+    } catch (error) {
+      console.log(error);
+      pageConfig = {};
+    }
+    await this.initMap(pageConfig.mapConfig);
+    try {
       if (pageConfig.tif) {
         await zip
           .file(pageConfig.tif)
@@ -335,16 +340,27 @@ export default {
           });
       }
     } catch (error) {
-      console.error(error);
+      console.log(error);
     }
     this.loading = false;
   },
   methods: {
     // 初始化地图
-    async initMap() {
+    async initMap(
+      mapConfig = {
+        center: [12613317.745000001, 2649719.39],
+        zoom: 13.5,
+        mapZoomHeight: 300,
+        background: "#000",
+        pitch: 30,
+        rotation: -10,
+        enableRotate: true,
+      }
+    ) {
       this._Map = new MyMap({
         rootId: "mapRoot",
-        ...this.pageConfig.mapConfig,
+        ...mapConfig,
+        mapZoomHeight: 300,
       });
       this._TileLayer = new TileLayer({
         zIndex: 200,

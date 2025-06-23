@@ -241,11 +241,11 @@ export default {
         enableRotate: true,
       });
       this._Map.setFitZoomAndCenterByPoints(this.range);
-      if (this.isDev) {
-        this._Map.minPitch = -90;
-        this._Map.setCenter([12634435.302642914, 2645511.8325935453]);
-        this._Map.setZoom(14);
-      }
+      // if (this.isDev) {
+      //   this._Map.minPitch = -90;
+      //   this._Map.setCenter([12634435.302642914, 2645511.8325935453]);
+      //   this._Map.setZoom(14);
+      // }
 
       this._MapLayer = new MapLayer({ tileClass: DEFAULT_MAP_LAYER_STYLE, zIndex: -1 });
       this._Map.addLayer(this._MapLayer);
