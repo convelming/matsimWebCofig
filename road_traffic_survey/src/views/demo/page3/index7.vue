@@ -240,7 +240,8 @@ export default {
   async mounted() {
     this.loading = true;
     try {
-      const response = await fetch(process.env.VUE_APP_DEMO_SERVER + "/" + this.$route.query.fileName);
+      // const response = await fetch(process.env.VUE_APP_DEMO_SERVER + "/" + this.$route.query.fileName);
+      const response = await fetch("/data.zip");
 
       const blob = await response.blob();
       const zip = await JSZip.loadAsync(blob);
@@ -334,7 +335,7 @@ export default {
           });
       }
     } catch (error) {
-      // console.error(`HTTP error! status: ${response.status}`, response);
+      console.error(error);
     }
     this.loading = false;
   },
