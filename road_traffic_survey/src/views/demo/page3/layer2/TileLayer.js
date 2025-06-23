@@ -175,7 +175,8 @@ export class TileMesh extends THREE.Mesh {
     this.center = center;
 
     this.zoom = zoom;
-    this.tileColRow = Math.min(Math.pow(2, zoom), 10);
+    this.tileColRow = Math.min(Math.pow(2, zoom), 17);
+    console.log("tileColRow", zoom, Math.pow(2, zoom), 17);
     const [tileWidth, tileHeight] = TileUtils.getTileSize(zoom);
     this.tileHeight = tileHeight;
     this.geoWidth = tileWidth * this.tileColRow;
