@@ -47,6 +47,14 @@
                     </div>
                   </el-col>
                   <el-col :span="24" :offset="0">
+                    <el-form-item label="无人机飞行曲线：">
+                      <el-select v-model="UAVPathClassName">
+                        <el-option label="LinePath" value="LinePath"> </el-option>
+                        <el-option label="CubicBezierPath" value="CubicBezierPath"> </el-option>
+                      </el-select>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="24" :offset="0">
                     <el-form-item label-width="0">
                       <el-button size="small" @click="play">播放</el-button>
                       <el-button size="small" @click="stop">暂停</el-button>
@@ -200,6 +208,11 @@ export default {
         }
       },
     },
+    UAVPathClassName: {
+      handler(val) {
+        this._UAVListLayer.setPaths(this._UAVPaths, this.UAVPathClassName);
+      },
+    },
     // showOBJLayer: {
     //   handler(val) {
     //     if (val) {
@@ -234,6 +247,7 @@ export default {
       minTime: 0,
       maxTime: 5000,
       tifOpacity: 1,
+      UAVPathClassName: "LinePath",
     };
   },
   created() {},
@@ -242,6 +256,7 @@ export default {
     let zip, pageConfig;
     try {
       const url = this.$route.query.fileName ? process.env.VUE_APP_DEMO_SERVER + "/" + this.$route.query.fileName : "/data.zip";
+      console.log(url);
       const response = await fetch(url);
 
       const blob = await response.blob();
@@ -255,54 +270,54 @@ export default {
     }
     await this.initMap(pageConfig.mapConfig);
     try {
-      if (pageConfig.tif) {
-        await zip
-          .file(pageConfig.tif)
-          .async("arraybuffer")
-          .then((array) => {
-            return this._TileLayer.setTif(array);
-          });
-      }
-      if (pageConfig.network && zip.file(pageConfig.network)) {
-        await Promise.all([
-          zip
-            .file(pageConfig.network + "/node")
-            .async("arraybuffer")
-            .then(arrayToFloat64),
-          zip
-            .file(pageConfig.network + "/link")
-            .async("arraybuffer")
-            .then(arrayToFloat64),
-          zip
-            .file(pageConfig.network + "/node_id")
-            .async("string")
-            .then(JSON.parse),
-          zip
-            .file(pageConfig.network + "/link_id")
-            .async("string")
-            .then(JSON.parse),
-        ]).then(([nodes, links, nodesId, linksId]) => {
-          const network = Network.fromArray(nodes, links);
-          this._Network3DLayer.setNetwork(network);
-          this._nodesId = nodesId;
-          this._linksId = linksId;
-          this._Network3DLayer.addEventListener(MAP_EVENT.HANDLE_PICK_LEFT, (e) => {
-            if (e.data > this._nodesId.length) {
-              alert(`linkId:  ${this._linksId[e.data - this._nodesId.length]}`);
-            } else {
-              alert(`nodeId:  ${this._nodesId[e.data]}`);
-            }
-          });
-        });
-      } else if (pageConfig.networkXmlUrl && zip.file(pageConfig.networkXmlUrl)) {
-        await zip
-          .file(pageConfig.networkXmlUrl)
-          .async("string")
-          .then((xml) => {
-            const network = Network.fromXml(xml);
-            this._Network3DLayer.setNetwork(network);
-          });
-      }
+      // if (pageConfig.tif) {
+      //   await zip
+      //     .file(pageConfig.tif)
+      //     .async("arraybuffer")
+      //     .then((array) => {
+      //       return this._TileLayer.setTif(array);
+      //     });
+      // }
+      // if (pageConfig.network && zip.file(pageConfig.network)) {
+      //   await Promise.all([
+      //     zip
+      //       .file(pageConfig.network + "/node")
+      //       .async("arraybuffer")
+      //       .then(arrayToFloat64),
+      //     zip
+      //       .file(pageConfig.network + "/link")
+      //       .async("arraybuffer")
+      //       .then(arrayToFloat64),
+      //     zip
+      //       .file(pageConfig.network + "/node_id")
+      //       .async("string")
+      //       .then(JSON.parse),
+      //     zip
+      //       .file(pageConfig.network + "/link_id")
+      //       .async("string")
+      //       .then(JSON.parse),
+      //   ]).then(([nodes, links, nodesId, linksId]) => {
+      //     const network = Network.fromArray(nodes, links);
+      //     this._Network3DLayer.setNetwork(network);
+      //     this._nodesId = nodesId;
+      //     this._linksId = linksId;
+      //     this._Network3DLayer.addEventListener(MAP_EVENT.HANDLE_PICK_LEFT, (e) => {
+      //       if (e.data > this._nodesId.length) {
+      //         alert(`linkId:  ${this._linksId[e.data - this._nodesId.length]}`);
+      //       } else {
+      //         alert(`nodeId:  ${this._nodesId[e.data]}`);
+      //       }
+      //     });
+      //   });
+      // } else if (pageConfig.networkXmlUrl && zip.file(pageConfig.networkXmlUrl)) {
+      //   await zip
+      //     .file(pageConfig.networkXmlUrl)
+      //     .async("string")
+      //     .then((xml) => {
+      //       const network = Network.fromXml(xml);
+      //       this._Network3DLayer.setNetwork(network);
+      //     });
+      // }
       if (pageConfig.paths && zip.file(pageConfig.paths)) {
         await zip
           .file(pageConfig.paths)
@@ -318,27 +333,28 @@ export default {
               }
               paths.push({ id: v[0], nodes: v[1], center: v[1][0] });
             }
-            this._UAVListLayer.setPaths(paths);
+            this._UAVPaths = paths;
+            this._UAVListLayer.setPaths(this._UAVPaths, this.UAVPathClassName);
           });
       }
-      if (pageConfig.build && zip.file(pageConfig.build)) {
-        await zip
-          .file(pageConfig.build)
-          .async("string")
-          .then(parserGeoJSON)
-          .then((json) => {
-            this._Build3DLayer.setData(json);
-          });
-      }
-      if (pageConfig.pink && zip.file(pageConfig.pink)) {
-        await zip
-          .file(pageConfig.pink)
-          .async("string")
-          .then(JSON.parse)
-          .then((json) => {
-            this._PinkLayer.setPinkList(json);
-          });
-      }
+      // if (pageConfig.build && zip.file(pageConfig.build)) {
+      //   await zip
+      //     .file(pageConfig.build)
+      //     .async("string")
+      //     .then(parserGeoJSON)
+      //     .then((json) => {
+      //       this._Build3DLayer.setData(json);
+      //     });
+      // }
+      // if (pageConfig.pink && zip.file(pageConfig.pink)) {
+      //   await zip
+      //     .file(pageConfig.pink)
+      //     .async("string")
+      //     .then(JSON.parse)
+      //     .then((json) => {
+      //       this._PinkLayer.setPinkList(json);
+      //     });
+      // }
     } catch (error) {
       console.log(error);
     }

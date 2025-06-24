@@ -2,9 +2,9 @@ import * as THREE from "three";
 import { Layer, MAP_EVENT } from "@/mymap/index.js";
 import { STLLoader } from "three/addons/loaders/STLLoader.js";
 
-import UAVListLayerWorker from "../layer/UAVListLayer.worker";
+import UAVListLayerWorker from "./UAVListLayer2.worker";
 
-import { PathCurve } from "./PathCurve";
+import * as PathCurve from "./PathCurve";
 
 const loader = new STLLoader();
 
@@ -105,13 +105,16 @@ export class UAVListLayer extends Layer {
     this.on(MAP_EVENT.UPDATE_CENTER);
   }
 
-  setPaths(paths) {
+  setPaths(paths = [], pathClassName = "LinePath") {
     const center = [paths[0].center[0], paths[0].center[1]];
-    this.pathList = paths.map((v) => new PathCurve(v.id, v.nodes, new THREE.Vector3(center[0], center[1], 0)));
+    console.time("setPaths");
+    this.pathList = paths.map((v) => new PathCurve[pathClassName](v.id, v.nodes, new THREE.Vector3(center[0], center[1], 0)));
+    console.timeEnd("setPaths");
     this.center = center;
     this.worker.postMessage({
       key: "setPaths",
       paths: paths,
+      pathClassName: pathClassName,
       center: center,
     });
     this.updatePaths();
@@ -166,17 +169,17 @@ export class UAVListLayer extends Layer {
     for (const mesh of this.linkMeshList) {
       mesh.removeFromParent();
       mesh.geometry.dispose();
-      mesh.dispose();
+      // mesh.dispose();
     }
     for (const mesh of this.linkMeshList1) {
       mesh.removeFromParent();
       mesh.geometry.dispose();
-      mesh.dispose();
+      // mesh.dispose();
     }
     for (const mesh of this.linkMeshList2) {
       mesh.removeFromParent();
       mesh.geometry.dispose();
-      mesh.dispose();
+      // mesh.dispose();
     }
     this.linkMeshList = [];
     this.linkMeshList1 = [];
@@ -276,18 +279,27 @@ export class UAVListLayer extends Layer {
     if (!this.pathList) return;
     const { time, points } = data;
     for (let pIndex = 0; pIndex < points.length; pIndex++) {
-      const { point, speed, dir } = points[pIndex];
-      const matrix4 = new THREE.Matrix4().makeTranslation(point.x, point.y, point.z);
-      this.UAVMesh.setMatrixAt(pIndex, matrix4);
-      this.UAVMesh1.setMatrixAt(pIndex, matrix4);
-      this.UAVMesh2.setMatrixAt(pIndex, matrix4);
+      const { point, speed, dir, isEnd } = points[pIndex];
+      if (!isEnd) {
+        const matrix4 = new THREE.Matrix4().makeTranslation(point.x, point.y, point.z);
+        this.UAVMesh.setMatrixAt(pIndex, matrix4);
+        this.UAVMesh1.setMatrixAt(pIndex, matrix4);
+        this.UAVMesh2.setMatrixAt(pIndex, matrix4);
+      } else {
+        const matrix4 = new THREE.Matrix4().makeTranslation(0, 0, -1000);
+        this.UAVMesh.setMatrixAt(pIndex, matrix4);
+        this.UAVMesh1.setMatrixAt(pIndex, matrix4);
+        this.UAVMesh2.setMatrixAt(pIndex, matrix4);
+      }
     }
 
     if (this.lockSelect && points[this.selecIndex]) {
-      const { point, speed, dir } = points[this.selecIndex];
-      this.map.setCenter([point.x + this.center[0], point.y + this.center[1]]);
-      this.map.setCameraHeight(point.z + 500);
-      this.map.setPitchAndRotation((Math.atan((point.z + 500) / 1000) * 180) / Math.PI);
+      const { point, speed, dir, isEnd } = points[this.selecIndex];
+      if (!isEnd) {
+        this.map.setCenter([point.x + this.center[0], point.y + this.center[1]]);
+        this.map.setCameraHeight(point.z + 500);
+        this.map.setPitchAndRotation((Math.atan((point.z + 500) / 1000) * 180) / Math.PI);
+      }
     }
     if (this.UAVMesh.instanceMatrix) this.UAVMesh.instanceMatrix.needsUpdate = true;
     if (this.UAVMesh1.instanceMatrix) this.UAVMesh1.instanceMatrix.needsUpdate = true;
