@@ -84,7 +84,8 @@ export class LinePath extends THREE.Curve {
           const p = (time - sp.t) / (ep.t - sp.t);
           speed = (ep.d - sp.d) / (ep.t - sp.t);
           poi = new THREE.Vector3().lerpVectors(sp.v, ep.v, p);
-          dir = ep.clone();
+          dir = ep.v.clone();
+          break;
         }
       }
       return {
@@ -189,9 +190,10 @@ export class CubicBezierPath extends THREE.Curve {
     let tmpY = 0;
     let tmpZ = 0;
     for (let j = 0; j < number; j++) {
-      tmpX += Math.pow(1 - t, number - j - 1) * this.nodes[j].v.x * Math.pow(t, j) * this.yangHuiArr[j];
-      tmpY += Math.pow(1 - t, number - j - 1) * this.nodes[j].v.y * Math.pow(t, j) * this.yangHuiArr[j];
-      tmpZ += Math.pow(1 - t, number - j - 1) * this.nodes[j].v.z * Math.pow(t, j) * this.yangHuiArr[j];
+      let p = Math.pow((1 - t), number - j - 1) * Math.pow(t, j) * this.yangHuiArr[j];
+      tmpX += p * this.nodes[j].v.x;
+      tmpY += p * this.nodes[j].v.y;
+      tmpZ += p * this.nodes[j].v.z;
     }
     return optionalTarget.set(tmpX, tmpY, tmpZ);
   }
