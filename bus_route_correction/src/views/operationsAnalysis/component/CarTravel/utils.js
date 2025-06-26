@@ -168,16 +168,21 @@ export class CarTravelRouteListGeometry extends THREE.BufferGeometry {
     let indexOffset = 0;
     for (let i1 = 0, l1 = routeList.length; i1 < l1; i1++) {
       const array = routeList[i1];
-      for (let i2 = 0, l2 = array.length / 3; i2 < l2; i2++) {
-        let prevX = array[i2 * 3 - 3];
-        let prevY = array[i2 * 3 - 2];
-        let prevL = array[i2 * 3 - 1];
-        let thatX = array[i2 * 3 + 0];
-        let thatY = array[i2 * 3 + 1];
-        let thatL = array[i2 * 3 + 2];
-        let nextX = array[i2 * 3 + 3];
-        let nextY = array[i2 * 3 + 4];
-        let nextL = array[i2 * 3 + 5];
+      for (let i2 = 0, l2 = array.length / 4; i2 < l2; i2++) {
+        let prevX = array[i2 * 4 - 4];
+        let prevY = array[i2 * 4 - 3];
+        let prevZ = array[i2 * 4 - 2];
+        let prevL = array[i2 * 4 - 1];
+
+        let thatX = array[i2 * 4 + 0];
+        let thatY = array[i2 * 4 + 1];
+        let thatZ = array[i2 * 4 + 2];
+        let thatL = array[i2 * 4 + 3];
+        
+        let nextX = array[i2 * 4 + 4];
+        let nextY = array[i2 * 4 + 5];
+        let nextZ = array[i2 * 4 + 6];
+        let nextL = array[i2 * 4 + 7];
         if (i2 === 0) {
           prevX = thatX * 2 - nextX;
           prevY = thatY * 2 - nextY;
@@ -189,10 +194,10 @@ export class CarTravelRouteListGeometry extends THREE.BufferGeometry {
 
         attrPosition[attrPosition.length] = thatX;
         attrPosition[attrPosition.length] = thatY;
-        attrPosition[attrPosition.length] = 0;
+        attrPosition[attrPosition.length] = thatZ;
         attrPosition[attrPosition.length] = thatX;
         attrPosition[attrPosition.length] = thatY;
-        attrPosition[attrPosition.length] = 0;
+        attrPosition[attrPosition.length] = thatZ;
 
         attrStartPosition[attrStartPosition.length] = prevX;
         attrStartPosition[attrStartPosition.length] = prevY;

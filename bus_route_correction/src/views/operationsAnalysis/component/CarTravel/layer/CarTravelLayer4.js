@@ -1,16 +1,14 @@
 import * as THREE from "three";
 import { Layer, MAP_EVENT } from "@/mymap/index.js";
-import { CarTravelRouteListGeometry, CarTravelRouteGeometry, CarTraveRoutelMaterial } from "../utils"
+import { CarTravelRouteListGeometry, CarTravelRouteGeometry, CarTraveRoutelMaterial } from "../utils";
 
-import { getFloat32Buffer } from "@/api/arraybuffer"
-
+import { getFloat32Buffer } from "@/api/arraybuffer";
 
 const BUILD_ZOOM = 13;
 const EARTH_RADIUS = 20037508.3427892;
 
 export class CarTravelLayer4 extends Layer {
-
-  time = 66919 //3600 * 8;
+  time = 66919; //3600 * 8;
   timeSpeed = 60 * 1;
 
   inited = false;
@@ -20,7 +18,7 @@ export class CarTravelLayer4 extends Layer {
   lineWidth = 50;
   color = "#ff0000";
 
-  center = [12628397, 2655338.7]
+  center = [12628397, 2655338.7];
 
   constructor(opt) {
     super(opt);
@@ -75,23 +73,29 @@ export class CarTravelLayer4 extends Layer {
       if (this.inited) return;
       this.inited = true;
       this.clearScene();
-      const [array1, array2] = await Promise.all([
-        getFloat32Buffer(`/data/congestion`),
-        getFloat32Buffer(`/data/way`)
-      ])
+      const [array1, array2] = await Promise.all([getFloat32Buffer(`/data/congestion`), getFloat32Buffer(`/data/way`)]);
       console.log(array1, array2);
       const map1 = new Map();
       let maxLength = 0;
       let maxFlow = 0;
-      for (let i = 0, dataLength = array1[0]; i < array1.length; i += dataLength + 1, dataLength = array1[i]) {
-        const data = array1.slice(i + 1, i + 1 + dataLength).map((v, i) => [v, v, v][i % 3]);
-        const key = `${data[0]}_${data[1]}`;
-        const flowList = data.slice(2);
-        const mf = Math.max(...flowList);
-        if (mf > maxFlow) maxFlow = mf;
-        if (data.length > maxLength) maxLength = data.length;
-        map1.set(key, flowList);
-      }
+      // for (let i = 0, dataLength = array1[0]; i < array1.length; i += dataLength + 1, dataLength = array1[i]) {
+      //   const data = array1.slice(i + 1, i + 1 + dataLength).map((v, i) => {
+      //     switch (i % 3) {
+      //       case 0:
+      //         return v - cx;
+      //       case 1:
+      //         return v - cy;
+      //       default:
+      //         return v;
+      //     }
+      //   });
+      //   const key = `${data[0]}_${data[1]}`;
+      //   const flowList = data.slice(2);
+      //   const mf = Math.max(...flowList);
+      //   if (mf > maxFlow) maxFlow = mf;
+      //   if (data.length > maxLength) maxLength = data.length;
+      //   map1.set(key, flowList);
+      // }
       console.log(map1, maxLength, maxFlow);
     } catch (error) {
       console.log(error);
@@ -120,4 +124,3 @@ export class CarTravelLayer4 extends Layer {
     this.worker.terminate();
   }
 }
-
