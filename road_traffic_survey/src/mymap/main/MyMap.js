@@ -186,17 +186,17 @@ export class MyMap extends EventListener {
   // 比例尺 m:px
   get plottingScale() {
     try {
-      const height = this.cameraHeight
-      const { far, fov } = this.camera
-      const width1 = height / (Math.cos((Math.PI * fov) / 180) * 2) * 2
-      const width2 = this.rootDoc.offsetWidth
-      const scale = width1 / width2
+      const height = this.cameraHeight;
+      const { far, fov } = this.camera;
+      const width1 = (height / (Math.cos((Math.PI * fov) / 180) * 2)) * 2;
+      const width2 = this.rootDoc.offsetWidth;
+      const scale = width1 / width2;
       // const [x1, y1] = this.WindowXYToCanvasXY(0, 0)
       // const [x2, y2] = this.WindowXYToCanvasXY(30, 40)
       // const scale = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)) / 50
-      return scale
+      return scale;
     } catch (error) {
-      return 1
+      return 1;
     }
   }
 
@@ -384,11 +384,11 @@ export class MyMap extends EventListener {
   // 初始化光源
   initLight() {
     // 添加环境光线
-    const light = new THREE.AmbientLight(0xaaaaaa);
+    const light = new THREE.AmbientLight(0xffffff, 0.8);
     this.scene.add(light);
 
-    const directionalLight = new THREE.DirectionalLight(0xaaaaaa); // 创建方向光
-    directionalLight.position.set(-1500, 4000, 3500); // 设置方向光源位置
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8); // 创建方向光
+    directionalLight.position.set(1, 1, 0); // 设置方向光源位置
 
     directionalLight.castShadow = true;
     directionalLight.shadow.mapSize.width = 1024;

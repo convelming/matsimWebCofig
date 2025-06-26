@@ -90,7 +90,7 @@ import { Network3DLayer, Network } from "./layer/Network3DLayer";
 import { UAVListLayer } from "./layer/UAVListLayer";
 import { Build3DLayer } from "./layer/Build3DLayer";
 import { PinkLayer } from "./layer/PinkLayer";
-import { MapLayer, MapTile } from "../page4/layer/MapLayer.js";
+import { MapLayer, MapTile } from "./layer3/MapLayer.js";
 
 import NewClock from "@/components/NewClock/index.vue";
 

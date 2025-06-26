@@ -1,6 +1,6 @@
 // import proj4 from "proj4";
 // import { TileLnglatTransformTianDiTu as TileLnglatTrans } from "../tile-lnglat-transform";
-import { TileLnglatTransformOSM as TileLnglatTrans } from "../tile-lnglat-transform";
+import { TileLnglatTransformOSM as TileLnglatTrans } from "./tile-lnglat-transform";
 /**
  * Web墨卡托转WGS84
  * @param {*} lng
