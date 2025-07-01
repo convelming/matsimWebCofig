@@ -1,4 +1,5 @@
 import * as THREE from "three";
+THREE.ColorManagement.enabled = true;
 // 引入轨道控制器扩展库OrbitControls.js
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 //引入性能监视器stats.js
@@ -305,6 +306,8 @@ export class MyMap extends EventListener {
     this.renderer.domElement.style.left = "0";
     this.renderer.domElement.style.zIndex = "0";
     this.renderer.setPixelRatio(window.devicePixelRatio);
+    this.renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
+    this.renderer.useLegacyLights = true;
     this.rootDoc.appendChild(this.renderer.domElement);
 
     // css2d渲染器

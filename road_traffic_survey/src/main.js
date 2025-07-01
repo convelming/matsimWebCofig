@@ -9,6 +9,9 @@ import Dialog from "@/components/Dialog.vue";
 import UploadVideo from "@/components/UploadVideo.vue";
 import Drawer from "@/components/Drawer/index.vue";
 
+import * as THREE from "three";
+THREE.ColorManagement.enabled = true;
+
 Vue.config.productionTip = false;
 
 Vue.component("pagination", pagination);
