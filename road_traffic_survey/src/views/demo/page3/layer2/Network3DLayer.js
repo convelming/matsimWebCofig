@@ -182,6 +182,7 @@ export class Network3DLayer extends Layer {
 
 export class Network {
   static fromXml(xml) {
+    
     const dom = new DOMParser().parseFromString(xml, "application/xml");
     const networkDom = dom.getElementsByTagName("network")[0];
 

@@ -270,14 +270,14 @@ export default {
     }
     await this.initMap(pageConfig.mapConfig);
     try {
-      if (pageConfig.tif) {
-        await zip
-          .file(pageConfig.tif)
-          .async("arraybuffer")
-          .then((array) => {
-            return this._TileLayer.setTif(array);
-          });
-      }
+      // if (pageConfig.tif) {
+      //   await zip
+      //     .file(pageConfig.tif)
+      //     .async("arraybuffer")
+      //     .then((array) => {
+      //       return this._TileLayer.setTif(array);
+      //     });
+      // }
       if (pageConfig.network && zip.file(pageConfig.network)) {
         await Promise.all([
           zip
@@ -318,43 +318,43 @@ export default {
             this._Network3DLayer.setNetwork(network);
           });
       }
-      if (pageConfig.paths && zip.file(pageConfig.paths)) {
-        await zip
-          .file(pageConfig.paths)
-          .async("string")
-          .then((xml) => {
-            const paths = [];
-            const list = Object.entries(JSON.parse(xml));
-            for (const v of list) {
-              for (const v1 of v[1]) {
-                const [x, y] = WGS84ToMercator(v1[0], v1[1]);
-                v1[0] = x;
-                v1[1] = y;
-              }
-              paths.push({ id: v[0], nodes: v[1], center: v[1][0] });
-            }
-            this._UAVPaths = paths;
-            this._UAVListLayer.setPaths(this._UAVPaths, this.UAVPathClassName);
-          });
-      }
-      if (pageConfig.build && zip.file(pageConfig.build)) {
-        await zip
-          .file(pageConfig.build)
-          .async("string")
-          .then(parserGeoJSON)
-          .then((json) => {
-            this._Build3DLayer.setData(json);
-          });
-      }
-      if (pageConfig.pink && zip.file(pageConfig.pink)) {
-        await zip
-          .file(pageConfig.pink)
-          .async("string")
-          .then(JSON.parse)
-          .then((json) => {
-            this._PinkLayer.setPinkList(json);
-          });
-      }
+      // if (pageConfig.paths && zip.file(pageConfig.paths)) {
+      //   await zip
+      //     .file(pageConfig.paths)
+      //     .async("string")
+      //     .then((xml) => {
+      //       const paths = [];
+      //       const list = Object.entries(JSON.parse(xml));
+      //       for (const v of list) {
+      //         for (const v1 of v[1]) {
+      //           const [x, y] = WGS84ToMercator(v1[0], v1[1]);
+      //           v1[0] = x;
+      //           v1[1] = y;
+      //         }
+      //         paths.push({ id: v[0], nodes: v[1], center: v[1][0] });
+      //       }
+      //       this._UAVPaths = paths;
+      //       this._UAVListLayer.setPaths(this._UAVPaths, this.UAVPathClassName);
+      //     });
+      // }
+      // if (pageConfig.build && zip.file(pageConfig.build)) {
+      //   await zip
+      //     .file(pageConfig.build)
+      //     .async("string")
+      //     .then(parserGeoJSON)
+      //     .then((json) => {
+      //       this._Build3DLayer.setData(json);
+      //     });
+      // }
+      // if (pageConfig.pink && zip.file(pageConfig.pink)) {
+      //   await zip
+      //     .file(pageConfig.pink)
+      //     .async("string")
+      //     .then(JSON.parse)
+      //     .then((json) => {
+      //       this._PinkLayer.setPinkList(json);
+      //     });
+      // } 
     } catch (error) {
       console.log(error);
     }
