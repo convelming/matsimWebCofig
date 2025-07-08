@@ -51,7 +51,9 @@ export class UAVListLayer extends Layer {
     this.worker.onmessage = (e) => {
       switch (e.data.key) {
         case "setPaths": {
-          this.setTime(this.time);
+          setTimeout(() => {
+            this.setTime(this.time);
+          }, 500);
           break;
         }
         case "getPointsByTime": {

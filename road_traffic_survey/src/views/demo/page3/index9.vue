@@ -309,7 +309,7 @@
       <div class="p9_play_btn_list">
         <div v-show="playStart == 'stop'" class="p9_play_btn el-icon-video-play" @click="play"></div>
         <div v-show="playStart == 'play'" class="p9_play_btn el-icon-video-pause" @click="stop"></div>
-        <div class="p9_play_btn el-icon-refresh" @click="reset"></div>
+        <!-- <div class="p9_play_btn el-icon-refresh" @click="reset"></div> -->
       </div>
     </template>
   </div>
@@ -482,7 +482,7 @@ export default {
       showOBJLayer: false,
       paths: {},
       selectPath: null,
-      time: 120,
+      time: 0,
       minTime: 0,
       maxTime: 5000,
       tifOpacity: 1,
