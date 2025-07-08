@@ -13,6 +13,7 @@ export class UAVListLayer extends Layer {
   selecIndex = -1;
   constructor(opt) {
     super(opt);
+    this.lockSelect = opt.lockSelect || false;
     this.linkWidth = opt.linkWidth || 5;
     this.nodeSize = opt.nodeSize || 10;
     this.nodeMeshList = [];
@@ -49,14 +50,12 @@ export class UAVListLayer extends Layer {
     this.worker = new UAVListLayerWorker();
     this.worker.onmessage = (e) => {
       switch (e.data.key) {
-        case "addPaths": {
+        case "setPaths": {
+          this.setTime(this.time);
           break;
         }
         case "getPointsByTime": {
           this.updateUAV(e.data.data);
-          break;
-        }
-        case "clearPaths": {
           break;
         }
       }
@@ -292,15 +291,17 @@ export class UAVListLayer extends Layer {
         this.UAVMesh2.setMatrixAt(pIndex, matrix4);
       }
     }
-
+    let playingDetail = null;
     if (this.lockSelect && points[this.selecIndex]) {
       const { point, speed, dir, isEnd } = points[this.selecIndex];
       if (!isEnd) {
         this.map.setCenter([point.x + this.center[0], point.y + this.center[1]]);
-        this.map.setCameraHeight(point.z + 500);
-        this.map.setPitchAndRotation((Math.atan((point.z + 500) / 1000) * 180) / Math.PI);
+        this.map.setCameraHeight(point.z + 200);
+        this.map.setPitchAndRotation((Math.atan((point.z + 200) / 100) * 180) / Math.PI);
+        playingDetail = points[this.selecIndex];
       }
     }
+    this.handleEventListener("playing", { playDetail: points[this.selecIndex] });
     if (this.UAVMesh.instanceMatrix) this.UAVMesh.instanceMatrix.needsUpdate = true;
     if (this.UAVMesh1.instanceMatrix) this.UAVMesh1.instanceMatrix.needsUpdate = true;
     if (this.UAVMesh2.instanceMatrix) this.UAVMesh2.instanceMatrix.needsUpdate = true;

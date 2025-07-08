@@ -51,6 +51,9 @@ export default {
     this.addLine();
     this.addLine2();
   },
+  beforeDestroy() {
+    clearInterval(this.interval1);
+  },
   methods: {
     initThree() {
       const threeBox = this.$refs.threeBox;
@@ -253,7 +256,7 @@ export default {
                 boxGroup.add(line);
               }
 
-              setInterval(() => {
+              this.interval1 = setInterval(() => {
                 let dashSize = lineMaterial.dashSize;
                 let gapSize = lineMaterial.gapSize;
 

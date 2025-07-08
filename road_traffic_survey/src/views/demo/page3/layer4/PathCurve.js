@@ -65,6 +65,8 @@ export class LinePath extends THREE.Curve {
         speedX: 0,
         speedY: 0,
         speedZ: 0,
+        tDis: Math.floor(this.dis),
+        dis: 0,
         dir: poi.clone(),
         isEnd: true,
       };
@@ -76,6 +78,8 @@ export class LinePath extends THREE.Curve {
         speedX: 0,
         speedY: 0,
         speedZ: 0,
+        tDis: Math.floor(this.dis),
+        dis: Math.floor(this.dis),
         dir: poi.clone(),
         isEnd: true,
       };
@@ -86,27 +90,31 @@ export class LinePath extends THREE.Curve {
       let speedX = 0;
       let speedY = 0;
       let speedZ = 0;
+      let dis = 0;
       for (let i = 0; i < this.nodes.length; i++) {
         if (this.nodes[i].t >= time) {
           const sp = this.nodes[i - 1];
           const ep = this.nodes[i];
-          const time = (ep.t - sp.t)
-          const p = (time - sp.t) / time;
-          speed = (ep.d - sp.d) / time;
-          speedX = (ep.v.x - sp.v.x) / time;
-          speedY = (ep.v.y - sp.v.y) / time;
-          speedZ = (ep.v.z - sp.v.z) / time;
+          const dtime = ep.t - sp.t;
+          speed = (ep.d - sp.d) / dtime;
+          speedX = (ep.v.x - sp.v.x) / dtime;
+          speedY = (ep.v.y - sp.v.y) / dtime;
+          speedZ = (ep.v.z - sp.v.z) / dtime;
+          const p = (time - sp.t) / dtime;
           poi = new THREE.Vector3().lerpVectors(sp.v, ep.v, p);
           dir = ep.v.clone();
+          dis = p * (ep.d - sp.d) + sp.d;
           break;
         }
       }
       return {
         point: poi,
-        speed: speed,
-        speedX: speedX,
-        speedY: speedY,
-        speedZ: speedZ,
+        speed: Math.floor(speed),
+        speedX: Math.floor(speedX),
+        speedY: Math.floor(speedY),
+        speedZ: Math.floor(speedZ),
+        tDis: Math.floor(this.dis),
+        dis: Math.floor(dis),
         dir: dir,
         isEnd: false,
       };
@@ -206,7 +214,7 @@ export class CubicBezierPath extends THREE.Curve {
     let tmpY = 0;
     let tmpZ = 0;
     for (let j = 0; j < number; j++) {
-      let p = Math.pow((1 - t), number - j - 1) * Math.pow(t, j) * this.yangHuiArr[j];
+      let p = Math.pow(1 - t, number - j - 1) * Math.pow(t, j) * this.yangHuiArr[j];
       tmpX += p * this.nodes[j].v.x;
       tmpY += p * this.nodes[j].v.y;
       tmpZ += p * this.nodes[j].v.z;
@@ -223,6 +231,8 @@ export class CubicBezierPath extends THREE.Curve {
         speedX: 0,
         speedY: 0,
         speedZ: 0,
+        tDis: Math.floor(this.dis),
+        dis: 0,
         dir: point,
         isEnd: true,
       };
@@ -234,6 +244,8 @@ export class CubicBezierPath extends THREE.Curve {
         speedX: 0,
         speedY: 0,
         speedZ: 0,
+        tDis: Math.floor(this.dis),
+        dis: Math.floor(this.dis),
         dir: point,
         isEnd: true,
       };
@@ -244,27 +256,31 @@ export class CubicBezierPath extends THREE.Curve {
       let speedX = 0;
       let speedY = 0;
       let speedZ = 0;
+      let dis = 0;
       for (let i = 0; i < this.nodes.length; i++) {
         if (this.nodes[i].t >= time) {
           const sp = this.nodes[i - 1];
           const ep = this.nodes[i];
-          const time = (ep.t - sp.t)
-          const p = (time - sp.t) / time;
-          speed = (ep.d - sp.d) / time;
-          speedX = (ep.v.x - sp.v.x) / time;
-          speedY = (ep.v.y - sp.v.y) / time;
-          speedZ = (ep.v.z - sp.v.z) / time;
-          const t = (p * (ep.d - sp.d) + sp.d) / this.dis;
+          const dtime = ep.t - sp.t;
+          const p = (time - sp.t) / dtime;
+          speed = (ep.d - sp.d) / dtime;
+          speedX = (ep.v.x - sp.v.x) / dtime;
+          speedY = (ep.v.y - sp.v.y) / dtime;
+          speedZ = (ep.v.z - sp.v.z) / dtime;
+          dis = p * (ep.d - sp.d) + sp.d;
+          const t = dis / this.dis;
           poi = this.getPoint(t);
           dir = poi.clone();
         }
       }
       return {
         point: poi,
-        speed: speed,
-        speedX: speedX,
-        speedY: speedY,
-        speedZ: speedZ,
+        speed: Math.floor(speed),
+        speedX: Math.floor(speedX),
+        speedY: Math.floor(speedY),
+        speedZ: Math.floor(speedZ),
+        tDis: Math.floor(this.dis),
+        dis: Math.floor(dis),
         dir: dir,
         isEnd: false,
       };

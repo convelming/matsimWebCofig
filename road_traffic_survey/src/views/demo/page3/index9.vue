@@ -1,272 +1,271 @@
 <template>
   <div class="p9_index main" v-loading="loading" style="background-color: #000">
     <div id="mapRoot"></div>
-    <template v-if="pageType === 1">
-      <div class="baseBoxLeft">
-        <div class="boxTitle">茶叶病虫害预警</div>
-        <img src="./layer4/img/left.png" class="first_border" alt="" />
-        <div class="firstBox">
-          <div class="pic">
-            <img src="./layer4/img/demo_pic.png" class="first_top1" alt="" />
-            <img src="./layer4/img/data_pic.png" class="first_top2" alt="" />
+    <div class="baseBoxLeft" v-show="pageType === 1">
+      <div class="boxTitle">茶叶病虫害预警</div>
+      <img src="./layer4/img/left.png" class="first_border" alt="" />
+      <div class="firstBox">
+        <div class="pic">
+          <img src="./layer4/img/demo_pic.png" class="first_top1" alt="" />
+          <img src="./layer4/img/data_pic.png" class="first_top2" alt="" />
+        </div>
+        <div class="picText">
+          <span>样本图片</span>
+          <span class="text_second">茶叶病虫害大数据库</span>
+        </div>
+        <div class="voice_animation">
+          <canvas id="canvas">Your browser can not support canvas</canvas>
+        </div>
+        <div class="progress">
+          <span class="disease">茶饼病</span>
+          <!-- <i class="counter-value">85</i>% -->
+          <span class="similar">相似度:85%</span>
+          <img src="./layer4/img/progress.gif" alt="" />
+        </div>
+        <div class="about_illness">
+          <div class="symptom">
+            <div class="symptom_title">病症症状</div>
+            <div class="symptom_content">本模板收集于网络，无需任何付费操作</div>
           </div>
-          <div class="picText">
-            <span>样本图片</span>
-            <span class="text_second">茶叶病虫害大数据库</span>
-          </div>
-          <div class="voice_animation">
-            <canvas id="canvas">Your browser can not support canvas</canvas>
-          </div>
-          <div class="progress">
-            <span class="disease">茶饼病</span>
-            <!-- <i class="counter-value">85</i>% -->
-            <span class="similar">相似度:85%</span>
-            <img src="./layer4/img/progress.gif" alt="" />
-          </div>
-          <div class="about_illness">
-            <div class="symptom">
-              <div class="symptom_title">病症症状</div>
-              <div class="symptom_content">本模板收集于网络，无需任何付费操作</div>
-            </div>
-            <div class="prevent">
-              <div class="prevent_title">防治方法</div>
-              <div class="prevent_content">本模板收集于网络，无需任何付费操作，Gitee免费下载使用 如需获取更多模板，可关注公众号【DreamCoders】</div>
-            </div>
+          <div class="prevent">
+            <div class="prevent_title">防治方法</div>
+            <div class="prevent_content">本模板收集于网络，无需任何付费操作，Gitee免费下载使用 如需获取更多模板，可关注公众号【DreamCoders】</div>
           </div>
         </div>
       </div>
-      <!-- 左侧下部 -->
-      <div class="baseBox centerMainBox2" style="height: 30%">
-        <img src="./layer4/img/down2.png" class="first_border" alt="" />
-        <div class="boxTitle2" style="width: 26%">统计数据</div>
-        <div class="boxTitle2" style="width: 26%; margin-left: 22vw; margin-top: -1.4vw">生长数据</div>
-        <div class="boxTitle2" style="width: 26%; margin-left: 53vw; margin-top: -1.4vw">气象数据</div>
-        <div class="leftBottom">
-          <div class="land_data">
-            <p>10cm 温度30湿度67</p>
-            <p>20cm 温度30湿度67</p>
-            <p>30cm 温度30湿度67</p>
+    </div>
+    <!-- 左侧下部 -->
+    <div class="baseBox centerMainBox2" style="height: 30%" v-show="pageType === 1">
+      <img src="./layer4/img/down2.png" class="first_border" alt="" />
+      <div class="boxTitle2" style="width: 26%">统计数据</div>
+      <div class="boxTitle2" style="width: 26%; margin-left: 22vw; margin-top: -1.4vw">生长数据</div>
+      <div class="boxTitle2" style="width: 26%; margin-left: 53vw; margin-top: -1.4vw">气象数据</div>
+      <div class="leftBottom">
+        <div class="land_data">
+          <p>10cm 温度30湿度67</p>
+          <p>20cm 温度30湿度67</p>
+          <p>30cm 温度30湿度67</p>
+        </div>
+      </div>
+      <div class="right_box">
+        <div class="grow_data">
+          <img src="./layer4/img/tree_pic.png" alt="" />
+          <p>生长周期：8周</p>
+          <p>黏土</p>
+          <p>10cm茶土：22.88</p>
+          <i></i>
+          <div class="specialistSuggest">
+            <div>专家建议：</div>
+            <div>本模板收集于网络，无需任何付费操作，Gitee免费下载使用</div>
+          </div>
+          <div class="fertilizationSuggest">
+            <div>该生长周期施肥建议：</div>
+            <div>氮肥含量：1.3-1.5kg</div>
+            <div>钾肥含量：1.5-1.7kg</div>
           </div>
         </div>
-        <div class="right_box">
-          <div class="grow_data">
-            <img src="./layer4/img/tree_pic.png" alt="" />
-            <p>生长周期：8周</p>
-            <p>黏土</p>
-            <p>10cm茶土：22.88</p>
-            <i></i>
-            <div class="specialistSuggest">
-              <div>专家建议：</div>
-              <div>本模板收集于网络，无需任何付费操作，Gitee免费下载使用</div>
-            </div>
-            <div class="fertilizationSuggest">
-              <div>该生长周期施肥建议：</div>
-              <div>氮肥含量：1.3-1.5kg</div>
-              <div>钾肥含量：1.5-1.7kg</div>
-            </div>
+        <div class="weather_data">
+          <div class="weather_text text_one">
+            <span>温度：19℃</span>
+            <span>湿度：52%</span>
+            <span>风向：东南风</span>
+            <span>风速：2m/s</span>
           </div>
-          <div class="weather_data">
-            <div class="weather_text text_one">
-              <span>温度：19℃</span>
-              <span>湿度：52%</span>
-              <span>风向：东南风</span>
-              <span>风速：2m/s</span>
-            </div>
-            <div class="weather_text text_two">
-              <span>降雨量：0mm</span>
-              <span>蒸发量：0.326mm/h</span>
-              <span>气压：0.326MPa</span>
-            </div>
+          <div class="weather_text text_two">
+            <span>降雨量：0mm</span>
+            <span>蒸发量：0.326mm/h</span>
+            <span>气压：0.326MPa</span>
           </div>
         </div>
       </div>
+    </div>
 
-      <div class="baseBox baseBox1" style="margin-bottom: 15px; height: 40%">
-        <img src="./layer4/img/right.png" class="hardware" alt="" />
+    <div class="baseBox baseBox1" style="margin-bottom: 15px; height: 40%" v-show="pageType === 1">
+      <img src="./layer4/img/right.png" class="hardware" alt="" />
 
-        <div class="boxTitle">硬件设备展示</div>
-        <div class="csbaseBox1">
-          <div class="boxList">
-            <div class="item" :class="{ item: true, active: tabType == '控制面板' }" @click="tabType = '控制面板'">控制面板</div>
-            <div class="item" :class="{ item: true, active: tabType == '无人机' }" @click="tabType = '无人机'">无人机</div>
+      <div class="boxTitle">硬件设备展示</div>
+      <div class="csbaseBox1">
+        <div class="boxList">
+          <div class="item" :class="{ item: true, active: tabType == '控制面板' }" @click="tabType = '控制面板'">控制面板</div>
+          <div class="item" :class="{ item: true, active: tabType == '无人机' }" @click="tabType = '无人机'">无人机</div>
+        </div>
+        <div class="p9_card" v-show="tabType == '控制面板'">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px">
+            <span class="label">空中路网：</span>
+            <el-switch v-model="showNetwork3DLink" :active-value="true" :inactive-value="false" size="mini"></el-switch>
           </div>
-          <div class="p9_card" v-show="tabType == '控制面板'">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px">
-              <span class="label">空中路网：</span>
-              <el-switch v-model="showNetwork3DLink" :active-value="true" :inactive-value="false" size="mini"></el-switch>
-            </div>
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px">
-              <span class="label">空中路网节点：</span>
-              <el-switch v-model="showNetwork3DNode" :active-value="true" :inactive-value="false" size="mini"></el-switch>
-            </div>
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px">
-              <span class="label">地形图透明度：</span>
-              <el-slider style="margin: 0 15px; flex: 1" v-model="tifOpacity" :min="0" :max="1" :step="0.01" size="mini"></el-slider>
-            </div>
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px">
-              <span class="label">飞行曲线：</span>
-              <el-select v-model="UAVPathClassName" style="width: 0; flex: 1" size="mini">
-                <el-option label="LinePath" value="LinePath"> </el-option>
-                <el-option label="CubicBezierPath" value="CubicBezierPath"> </el-option>
-              </el-select>
-            </div>
-            <div style="display: flex; align-items: center; margin-bottom: 10px">
-              <el-button size="mini" @click="play">播放</el-button>
-              <el-button size="mini" @click="stop">暂停</el-button>
-              <el-button size="mini" @click="reset">重置</el-button>
-            </div>
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px">
-              <span class="label">锁定视角：</span>
-              <el-switch v-model="lockSelect" :active-value="true" :inactive-value="false"></el-switch>
-            </div>
-            <div style="display: flex; align-items: center; justify-content: space-between">
-              <span class="label" style="width: 80px">时间：{{ time }}</span>
-              <el-slider style="margin: 0 15px; flex: 1" :value="time" @input="setTime" :min="minTime" :max="maxTime"></el-slider>
-            </div>
-            <template v-if="playDetail">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px">
+            <span class="label">空中路网节点：</span>
+            <el-switch v-model="showNetwork3DNode" :active-value="true" :inactive-value="false" size="mini"></el-switch>
+          </div>
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px">
+            <span class="label">地形图透明度：</span>
+            <el-slider style="margin: 0 15px; flex: 1" v-model="tifOpacity" :min="0" :max="1" :step="0.01" size="mini"></el-slider>
+          </div>
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px">
+            <span class="label">飞行曲线：</span>
+            <el-select v-model="UAVPathClassName" style="width: 0; flex: 1" size="mini">
+              <el-option label="LinePath" value="LinePath"> </el-option>
+              <el-option label="CubicBezierPath" value="CubicBezierPath"> </el-option>
+            </el-select>
+          </div>
+          <div style="display: flex; align-items: center; margin-bottom: 10px">
+            <el-button v-show="playStart == 'stop'" size="mini" @click="play">播放</el-button>
+            <el-button v-show="playStart == 'play'" size="mini" @click="stop">暂停</el-button>
+            <el-button size="mini" @click="reset">重置</el-button>
+          </div>
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px">
+            <span class="label">锁定视角：</span>
+            <el-switch v-model="lockSelect" :active-value="true" :inactive-value="false"></el-switch>
+          </div>
+          <div style="display: flex; align-items: center; justify-content: space-between">
+            <span class="label" style="width: 80px">时间：{{ time }}</span>
+            <el-slider style="margin: 0 15px; flex: 1" :value="time" @input="setTime" :min="minTime" :max="maxTime"></el-slider>
+          </div>
+          <!-- <template v-show="playDetail">
               <el-form-item label="时间：">{{ Number(playDetail.time).toFixed(0) }} s</el-form-item>
               <el-form-item label="速度：">{{ Number(playDetail.speed).toFixed(3) }} m/s</el-form-item>
               <el-form-item label="位置：">{{ Number(playDetail.x).toFixed(2) }}, {{ Number(playDetail.y).toFixed(2) }}, {{ Number(playDetail.z).toFixed(2) }}</el-form-item>
-            </template>
-          </div>
-          <div class="p9_card" v-show="tabType == '无人机'">
-            <UAVBox class="UAVBox"></UAVBox>
-          </div>
+            </template> -->
+        </div>
+        <div class="p9_card" v-show="tabType == '无人机'">
+          <UAVBox class="UAVBox"></UAVBox>
         </div>
       </div>
-      <div class="baseBox baseBox2" style="margin-bottom: 15px; height: 29.5%">
-        <img src="./layer4/img/right2.png" alt="" />
-        <!-- 四个角描边 end -->
-        <div class="boxTitle2">灌溉数据</div>
-        <div class="irrigate_data">
-          <div class="irrigate_top">
-            <div class="centerList">
-              <div class="centerListFont">累计灌溉水量（m2）</div>
-              <div class="centerListNum">
-                <span class="">23678</span>
-              </div>
-            </div>
-            <div class="centerList">
-              <div class="centerListFont">灌溉压力（MPa）</div>
-              <div class="centerListNum">
-                <span class="">0.29</span>
-              </div>
+    </div>
+    <div class="baseBox baseBox2" style="margin-bottom: 15px; height: 29.5%" v-show="pageType === 1">
+      <img src="./layer4/img/right2.png" alt="" />
+      <!-- 四个角描边 end -->
+      <div class="boxTitle2">灌溉数据</div>
+      <div class="irrigate_data">
+        <div class="irrigate_top">
+          <div class="centerList">
+            <div class="centerListFont">累计灌溉水量（m2）</div>
+            <div class="centerListNum">
+              <span class="">23678</span>
             </div>
           </div>
-          <div class="irrigate_bottom">
-            <div class="every_line">
-              <span>当前灌溉流量（m²/h）</span>
-              <i class="">0.78</i>
+          <div class="centerList">
+            <div class="centerListFont">灌溉压力（MPa）</div>
+            <div class="centerListNum">
+              <span class="">0.29</span>
             </div>
-            <div class="every_line">
-              <span>当前灌溉阀门数量</span>
+          </div>
+        </div>
+        <div class="irrigate_bottom">
+          <div class="every_line">
+            <span>当前灌溉流量（m²/h）</span>
+            <i class="">0.78</i>
+          </div>
+          <div class="every_line">
+            <span>当前灌溉阀门数量</span>
 
-              <i class="counter-value">49</i>
-              <i class="counter-value">2</i>
-            </div>
-            <div class="every_line">
-              <span>茶园水池液位</span>
-              <i>2.30</i>
-            </div>
+            <i class="counter-value">49</i>
+            <i class="counter-value">2</i>
+          </div>
+          <div class="every_line">
+            <span>茶园水池液位</span>
+            <i>2.30</i>
           </div>
         </div>
       </div>
-      <div class="baseBox baseBox3" style="height: 28%">
-        <img src="./layer4/img/right3.png" alt="" />
-        <!-- 四个角描边 end -->
-        <div class="boxTitle2">数据日志</div>
-        <!-- <div class="data_day" id="demo" > -->
-        <div class="data_day" id="demo" style="width: 100%; overflow: hidden; height: 75%">
-          <table style="text-align: left; margin-left: 10%; height: 80%">
-            <tbody id="demo1">
-              <!-- <tr class="head">
+    </div>
+    <div class="baseBox baseBox3" style="height: 28%" v-show="pageType === 1">
+      <img src="./layer4/img/right3.png" alt="" />
+      <!-- 四个角描边 end -->
+      <div class="boxTitle2">数据日志</div>
+      <!-- <div class="data_day" id="demo" > -->
+      <div class="data_day" id="demo" style="width: 100%; overflow: hidden; height: 75%">
+        <table style="text-align: left; margin-left: 10%; height: 80%">
+          <tbody id="demo1">
+            <!-- <tr class="head">
                                     <td>编号</td>
                                     <td>数据类型</td>
                                     <td>数据值</td>
                                     <td>时间</td>
                                 </tr> -->
-              <tr>
-                <td>u78</td>
-                <td>传感器数据</td>
-                <td>163.28</td>
-                <td>2019年10月26日</td>
-              </tr>
+            <tr>
+              <td>u78</td>
+              <td>传感器数据</td>
+              <td>163.28</td>
+              <td>2019年10月26日</td>
+            </tr>
 
-              <tr>
-                <td>006</td>
-                <td>无人机数据</td>
-                <td>130.67</td>
-                <td>2019年10月25日</td>
-              </tr>
+            <tr>
+              <td>006</td>
+              <td>无人机数据</td>
+              <td>130.67</td>
+              <td>2019年10月25日</td>
+            </tr>
 
-              <tr>
-                <td>s07</td>
-                <td>控制器数据</td>
-                <td>163.28</td>
-                <td>2019年10月25日</td>
-              </tr>
-              <tr>
-                <td>872</td>
-                <td>监视器数据</td>
-                <td>130.67</td>
-                <td>2019年10月24日</td>
-              </tr>
-              <tr>
-                <td>d59</td>
-                <td>土壤仪数据</td>
-                <td>163.28</td>
-                <td>2019年10月23日</td>
-              </tr>
+            <tr>
+              <td>s07</td>
+              <td>控制器数据</td>
+              <td>163.28</td>
+              <td>2019年10月25日</td>
+            </tr>
+            <tr>
+              <td>872</td>
+              <td>监视器数据</td>
+              <td>130.67</td>
+              <td>2019年10月24日</td>
+            </tr>
+            <tr>
+              <td>d59</td>
+              <td>土壤仪数据</td>
+              <td>163.28</td>
+              <td>2019年10月23日</td>
+            </tr>
 
-              <tr>
-                <td>299</td>
-                <td>灌溉阀数据</td>
-                <td>130.67</td>
-                <td>2019年10月23日</td>
-              </tr>
-              <tr>
-                <td>256</td>
-                <td>传感器数据</td>
-                <td>163.28</td>
-                <td>2019年10月22日</td>
-              </tr>
-              <tr>
-                <td>026</td>
-                <td>无人机数据</td>
-                <td>130.67</td>
-                <td>2019年10月20日</td>
-              </tr>
-              <tr>
-                <td>037</td>
-                <td>传感器数据</td>
-                <td>163.28</td>
-                <td>2019年10月22日</td>
-              </tr>
-            </tbody>
-            <tbody id="demo2" style="text-align: left; margin-left: 10%"></tbody>
-          </table>
-        </div>
+            <tr>
+              <td>299</td>
+              <td>灌溉阀数据</td>
+              <td>130.67</td>
+              <td>2019年10月23日</td>
+            </tr>
+            <tr>
+              <td>256</td>
+              <td>传感器数据</td>
+              <td>163.28</td>
+              <td>2019年10月22日</td>
+            </tr>
+            <tr>
+              <td>026</td>
+              <td>无人机数据</td>
+              <td>130.67</td>
+              <td>2019年10月20日</td>
+            </tr>
+            <tr>
+              <td>037</td>
+              <td>传感器数据</td>
+              <td>163.28</td>
+              <td>2019年10月22日</td>
+            </tr>
+          </tbody>
+          <tbody id="demo2" style="text-align: left; margin-left: 10%"></tbody>
+        </table>
       </div>
-    </template>
+    </div>
     <template v-if="pageType === 2">
-      <div class="p9_setting_btn el-icon-setting" @click="showSetting = !showSetting"></div>
+      <div class="p9_return_btn el-icon-arrow-left" @click="lockSelect = false"></div>
       <div class="p9_lc">
-        <div class="p9_text">起点</div>
+        <div class="p9_text">路程：{{ playDetail.dis }} / {{ playDetail.tDis }}</div>
         <div class="p9_progress">
-          <div class="p9_value" style="width: 50%"></div>
+          <div class="p9_value" :style="`width: ${(playDetail.dis / playDetail.tDis) * 100}%`"></div>
         </div>
-        <div class="p9_text">终点</div>
+        <!-- <div class="p9_text">终点</div> -->
       </div>
       <div class="p9_gd">
         <div class="p9_progress_list">
           <div class="p9_progress_box">
             <div class="p9_progress">
-              <div class="p9_line">50</div>
-              <div class="p9_line" style="top: 50%">25</div>
+              <div class="p9_line">300</div>
+              <div class="p9_line" style="top: 50%">150</div>
               <div class="p9_line" style="top: 100%">0</div>
-              <div class="p9_value" style="height: 50%"></div>
+              <div class="p9_value" :style="`height: ${(playDetail.point.z / 300) * 100}%;max-height:100%`"></div>
             </div>
-            <div class="p9_progress_name" style="opacity: 0">高度</div>
+            <div class="p9_progress_name" style="opacity: 0">高度:</div>
+            <div class="p9_progress_name">{{ playDetail.point.z }}m</div>
           </div>
         </div>
         <div class="p9_title">高度 m</div>
@@ -278,30 +277,39 @@
               <div class="p9_line">50</div>
               <div class="p9_line" style="top: 50%">25</div>
               <div class="p9_line" style="top: 100%">0</div>
-              <div class="p9_value" style="height: 50%"></div>
+              <div class="p9_value" :style="`height: ${(playDetail.speedX / 50) * 100}%;max-height:100%`"></div>
             </div>
             <div class="p9_progress_name">X轴</div>
+            <div class="p9_progress_name">{{ playDetail.speedX }}m/s</div>
           </div>
           <div class="p9_progress_box">
             <div class="p9_progress">
               <div class="p9_line">50</div>
               <div class="p9_line" style="top: 50%">25</div>
               <div class="p9_line" style="top: 100%">0</div>
-              <div class="p9_value" style="height: 50%"></div>
+              <div class="p9_value" :style="`height: ${(playDetail.speedY / 50) * 100}%;max-height:100%`"></div>
             </div>
             <div class="p9_progress_name">Y轴</div>
+            <div class="p9_progress_name">{{ playDetail.speedY }}m/s</div>
           </div>
           <div class="p9_progress_box">
             <div class="p9_progress">
               <div class="p9_line">50</div>
               <div class="p9_line" style="top: 50%">25</div>
               <div class="p9_line" style="top: 100%">0</div>
-              <div class="p9_value" style="height: 50%"></div>
+              <div class="p9_value" :style="`height: ${(playDetail.speedZ / 50) * 100}%;max-height:100%`"></div>
             </div>
             <div class="p9_progress_name">Z轴</div>
+            <div class="p9_progress_name">{{ playDetail.speedZ }}m/s</div>
           </div>
         </div>
-        <div class="p9_title">速度 km/h</div>
+        <div class="p9_title">速度 m/s</div>
+      </div>
+
+      <div class="p9_play_btn_list">
+        <div v-show="playStart == 'stop'" class="p9_play_btn el-icon-video-play" @click="play"></div>
+        <div v-show="playStart == 'play'" class="p9_play_btn el-icon-video-pause" @click="stop"></div>
+        <div class="p9_play_btn el-icon-refresh" @click="reset"></div>
       </div>
     </template>
   </div>
@@ -388,7 +396,6 @@ export default {
       rootVue: this,
     };
   },
-  computed: {},
   watch: {
     lockSelect: {
       handler(val) {
@@ -445,11 +452,16 @@ export default {
   },
   computed: {
     pageType() {
-      return 1;
+      if (this.lockSelect && this.playDetail) {
+        return 2;
+      } else {
+        return 1;
+      }
     },
   },
   data() {
     return {
+      playStart: "stop",
       tabType: "控制面板",
       loading: false,
       showSetting: false,
@@ -470,7 +482,7 @@ export default {
       showOBJLayer: false,
       paths: {},
       selectPath: null,
-      time: 0,
+      time: 120,
       minTime: 0,
       maxTime: 5000,
       tifOpacity: 1,
@@ -479,7 +491,6 @@ export default {
   },
   created() {},
   async mounted() {
-    // return;
     this.loading = true;
     let zip, pageConfig;
     try {
@@ -498,54 +509,54 @@ export default {
     }
     await this.initMap(pageConfig.mapConfig);
     try {
-      // if (pageConfig.tif) {
-      //   await zip
-      //     .file(pageConfig.tif)
-      //     .async("arraybuffer")
-      //     .then((array) => {
-      //       return this._TileLayer.setTif(array);
-      //     });
-      // }
-      // if (pageConfig.network && zip.file(pageConfig.network)) {
-      //   await Promise.all([
-      //     zip
-      //       .file(pageConfig.network + "/node")
-      //       .async("arraybuffer")
-      //       .then(arrayToFloat64),
-      //     zip
-      //       .file(pageConfig.network + "/link")
-      //       .async("arraybuffer")
-      //       .then(arrayToFloat64),
-      //     zip
-      //       .file(pageConfig.network + "/node_id")
-      //       .async("string")
-      //       .then(JSON.parse),
-      //     zip
-      //       .file(pageConfig.network + "/link_id")
-      //       .async("string")
-      //       .then(JSON.parse),
-      //   ]).then(([nodes, links, nodesId, linksId]) => {
-      //     const network = Network.fromArray(nodes, links);
-      //     this._Network3DLayer.setNetwork(network);
-      //     this._nodesId = nodesId;
-      //     this._linksId = linksId;
-      //     this._Network3DLayer.addEventListener(MAP_EVENT.HANDLE_PICK_LEFT, (e) => {
-      //       if (e.data > this._nodesId.length) {
-      //         alert(`linkId:  ${this._linksId[e.data - this._nodesId.length]}`);
-      //       } else {
-      //         alert(`nodeId:  ${this._nodesId[e.data]}`);
-      //       }
-      //     });
-      //   });
-      // } else if (pageConfig.networkXmlUrl && zip.file(pageConfig.networkXmlUrl)) {
-      //   await zip
-      //     .file(pageConfig.networkXmlUrl)
-      //     .async("string")
-      //     .then((xml) => {
-      //       const network = Network.fromXml(xml);
-      //       this._Network3DLayer.setNetwork(network);
-      //     });
-      // }
+      if (pageConfig.tif) {
+        await zip
+          .file(pageConfig.tif)
+          .async("arraybuffer")
+          .then((array) => {
+            return this._TileLayer.setTif(array);
+          });
+      }
+      if (pageConfig.network && zip.file(pageConfig.network)) {
+        await Promise.all([
+          zip
+            .file(pageConfig.network + "/node")
+            .async("arraybuffer")
+            .then(arrayToFloat64),
+          zip
+            .file(pageConfig.network + "/link")
+            .async("arraybuffer")
+            .then(arrayToFloat64),
+          zip
+            .file(pageConfig.network + "/node_id")
+            .async("string")
+            .then(JSON.parse),
+          zip
+            .file(pageConfig.network + "/link_id")
+            .async("string")
+            .then(JSON.parse),
+        ]).then(([nodes, links, nodesId, linksId]) => {
+          const network = Network.fromArray(nodes, links);
+          this._Network3DLayer.setNetwork(network);
+          this._nodesId = nodesId;
+          this._linksId = linksId;
+          this._Network3DLayer.addEventListener(MAP_EVENT.HANDLE_PICK_LEFT, (e) => {
+            if (e.data > this._nodesId.length) {
+              alert(`linkId:  ${this._linksId[e.data - this._nodesId.length]}`);
+            } else {
+              alert(`nodeId:  ${this._nodesId[e.data]}`);
+            }
+          });
+        });
+      } else if (pageConfig.networkXmlUrl && zip.file(pageConfig.networkXmlUrl)) {
+        await zip
+          .file(pageConfig.networkXmlUrl)
+          .async("string")
+          .then((xml) => {
+            const network = Network.fromXml(xml);
+            this._Network3DLayer.setNetwork(network);
+          });
+      }
       if (pageConfig.paths && zip.file(pageConfig.paths)) {
         await zip
           .file(pageConfig.paths)
@@ -565,29 +576,30 @@ export default {
             this._UAVListLayer.setPaths(this._UAVPaths, this.UAVPathClassName);
           });
       }
-      // if (pageConfig.build && zip.file(pageConfig.build)) {
-      //   await zip
-      //     .file(pageConfig.build)
-      //     .async("string")
-      //     .then(parserGeoJSON)
-      //     .then((json) => {
-      //       this._Build3DLayer.setData(json);
-      //     });
-      // }
-      // if (pageConfig.pink && zip.file(pageConfig.pink)) {
-      //   await zip
-      //     .file(pageConfig.pink)
-      //     .async("string")
-      //     .then(JSON.parse)
-      //     .then((json) => {
-      //       this._PinkLayer.setPinkList(json);
-      //     });
-      // }
+      if (pageConfig.build && zip.file(pageConfig.build)) {
+        await zip
+          .file(pageConfig.build)
+          .async("string")
+          .then(parserGeoJSON)
+          .then((json) => {
+            this._Build3DLayer.setData(json);
+          });
+      }
+      if (pageConfig.pink && zip.file(pageConfig.pink)) {
+        await zip
+          .file(pageConfig.pink)
+          .async("string")
+          .then(JSON.parse)
+          .then((json) => {
+            this._PinkLayer.setPinkList(json);
+          });
+      }
     } catch (error) {
       console.log(error);
     }
     this.loading = false;
   },
+  beforeDestroy() {},
   methods: {
     // 初始化地图
     async initMap(
@@ -625,10 +637,15 @@ export default {
         zIndex: 300,
         linkWidth: 2,
         nodeSize: 30,
+        time: this.time,
         lockSelect: this.lockSelect,
         event: {
           playing: (res) => {
-            this.playDetail = res.data;
+            if (this._playTimeout) return;
+            this.playDetail = res.data.playDetail;
+            this._playTimeout = setTimeout(() => {
+              this._playTimeout = null;
+            }, 200);
           },
         },
       });
@@ -653,6 +670,7 @@ export default {
     },
     play() {
       if (this._interval) clearInterval(this._interval);
+      this.playStart = "play";
       this._interval = setInterval(() => {
         if (this.time + 1 / 60 > this.maxTime) {
           this.stop();
@@ -663,6 +681,7 @@ export default {
       // if (this._Map) this._Map.addLayer(this._UAVListLayer);
     },
     stop() {
+      this.playStart = "stop";
       clearInterval(this._interval);
       this._interval = null;
       // if (this._Map) this._UAVListLayer.removeFromParent();
@@ -696,7 +715,7 @@ export default {
   z-index: 10;
 }
 
-.p9_setting_btn {
+.p9_return_btn {
   z-index: 100;
   position: absolute;
   top: 40px;
@@ -866,6 +885,21 @@ export default {
   }
 }
 
+.p9_play_btn_list {
+  position: absolute;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  display: flex;
+  gap: 20px;
+  font-size: 50px;
+  color: #00d2ff;
+  .p9_play_btn {
+    cursor: pointer;
+  }
+}
+
 .csbaseBox1 {
   // background-color: #275994;
   box-sizing: border-box;
@@ -929,7 +963,7 @@ export default {
     background-size: 100% 100%;
   }
 
-  .UAVBox{
+  .UAVBox {
     width: 100%;
     height: 100%;
   }
