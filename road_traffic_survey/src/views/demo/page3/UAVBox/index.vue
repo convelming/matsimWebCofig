@@ -2,7 +2,9 @@
 <template>
   <div class="UAVBox">
     <div ref="threeBox" class="threeBox"></div>
-    <div class="toolBar">
+    <img v-if="playClipActionKey == 'sh'" @click="playClipAction('zk')" class="btn" src="./fullscreen-expand.svg" alt="" />
+    <img v-if="playClipActionKey == 'zk'" @click="playClipAction('sh')" class="btn" src="./fullscreen-shrink.svg" alt="" />
+    <!-- <div class="toolBar">
       <div class="card">
         <el-form size="small" label-position="left">
           <el-row :gutter="0">
@@ -15,7 +17,7 @@
           </el-row>
         </el-form>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -60,7 +62,9 @@ export default {
         // logarithmicDepthBuffer: true,
         // precision: "highp"
         // preserveDrawingBuffer: true,
+        alpha: true,
       });
+      this._renderer.setClearAlpha(0);
       // this._renderer.sortObjects = false;
       this._renderer.domElement.style.userSelect = "none";
       this._renderer.setPixelRatio(window.devicePixelRatio);
@@ -69,12 +73,13 @@ export default {
       console.log(threeBox.clientWidth);
 
       this._scene = new THREE.Scene();
-      this._scene.background = new THREE.Color(this.background);
+      this._scene.background = null;
+      // this._scene.background = new THREE.Color(this.background);
 
       // 创建相机
       this._camera = new THREE.PerspectiveCamera(60, 1, 0.01, 1000);
       // 设置相机位置
-      this._camera.position.x = -300;
+      this._camera.position.x = -200;
 
       // 设置相机控件轨道控制器OrbitControls
       this._cameraControls = new OrbitControls(this._camera, this._renderer.domElement);
@@ -86,7 +91,7 @@ export default {
       this._world.rotateX(-Math.PI / 2);
       this._world.scale.set(1, 1, 1);
       // 添加一个模拟3个坐标轴的对象
-      this._world.add(new THREE.AxesHelper(1000));
+      // this._world.add(new THREE.AxesHelper(1000));
       this._scene.add(this._world);
 
       // 添加环境光线
@@ -127,16 +132,16 @@ export default {
       this._tweens2 = [];
 
       const size = this.boxSize * 0.9;
-      const particleCount = 100000;
-      const particleRange = 150;
-      const particlesGeometry = new THREE.BufferGeometry();
-      const positions = new Float32Array(particleCount * 3);
+      // const particleCount = 100000;
+      // const particleRange = 150;
+      // const particlesGeometry = new THREE.BufferGeometry();
+      // const positions = new Float32Array(particleCount * 3);
 
-      for (let i = 0; i < particleCount * 3; i++) {
-        positions[i] = (Math.random() - 0.5) * particleRange; // 随机位置，构成 3D 空间中的一个粒子
-      }
+      // for (let i = 0; i < particleCount * 3; i++) {
+      //   positions[i] = (Math.random() - 0.5) * particleRange; // 随机位置，构成 3D 空间中的一个粒子
+      // }
 
-      particlesGeometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+      // particlesGeometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
 
       const lineRange = this.boxSize * 8;
       const lineCurve = new THREE.QuadraticBezierCurve3(new THREE.Vector3(lineRange / 2, 0, lineRange / 2), new THREE.Vector3(0, 0, -lineRange / 2), new THREE.Vector3(-lineRange / 2, 0, -lineRange / 2));
@@ -144,26 +149,26 @@ export default {
       const points = lineCurve.getPoints(10);
       const lineGeo = new THREE.BufferGeometry().setFromPoints(points);
       const lineGeoList = [];
-      for (let i = 0; i < 1000; i++) {
+      for (let i = 0; i < 500; i++) {
         const geo = lineGeo.clone();
         geo.applyMatrix4(new THREE.Matrix4().makeTranslation((Math.random() - 0.5) * this.boxSize * 8 - center.x, (Math.random() - 0.5) * this.boxSize * 3 - center.y, 0 - center.z));
         lineGeoList.push(geo);
       }
 
-      const tubeCurve = new THREE.QuadraticBezierCurve3(new THREE.Vector3(-lineRange / 2, 0, -lineRange / 2), new THREE.Vector3(0, 0, -lineRange / 2), new THREE.Vector3(lineRange / 2, 0, lineRange / 2));
-      const tubeGeo = new THREE.TubeGeometry(lineCurve, 10, 0.3, 3, false);
-      const tubeTexture = new THREE.TextureLoader().load(require("@/assets/image/lg_red.svg"));
-      tubeTexture.wrapS = tubeTexture.wrapT = THREE.RepeatWrapping;
-      tubeTexture.repeat.set(1, 1);
-      // setInterval(() => {
-      //   tubeTexture.offset.x += 0.01;
-      // }, 1000 / 60);
-      const tubeNum = 1000;
-      const tubeTranslation = [];
-      for (let i = 0; i < 1000; i++) {
-        const matrix4 = new THREE.Matrix4().makeTranslation((Math.random() - 0.5) * this.boxSize * 8 - center.x, (Math.random() - 0.5) * this.boxSize * 3 - center.y, 0 - center.z);
-        tubeTranslation.push(matrix4);
-      }
+      // const tubeCurve = new THREE.QuadraticBezierCurve3(new THREE.Vector3(-lineRange / 2, 0, -lineRange / 2), new THREE.Vector3(0, 0, -lineRange / 2), new THREE.Vector3(lineRange / 2, 0, lineRange / 2));
+      // const tubeGeo = new THREE.TubeGeometry(lineCurve, 10, 0.3, 3, false);
+      // const tubeTexture = new THREE.TextureLoader().load(require("@/assets/image/lg_red.svg"));
+      // tubeTexture.wrapS = tubeTexture.wrapT = THREE.RepeatWrapping;
+      // tubeTexture.repeat.set(1, 1);
+      // // setInterval(() => {
+      // //   tubeTexture.offset.x += 0.01;
+      // // }, 1000 / 60);
+      // const tubeNum = 1000;
+      // const tubeTranslation = [];
+      // for (let i = 0; i < 1000; i++) {
+      //   const matrix4 = new THREE.Matrix4().makeTranslation((Math.random() - 0.5) * this.boxSize * 8 - center.x, (Math.random() - 0.5) * this.boxSize * 3 - center.y, 0 - center.z);
+      //   tubeTranslation.push(matrix4);
+      // }
 
       for (let i1 = 0; i1 < 3; i1++) {
         // 层
@@ -301,25 +306,25 @@ export default {
           }
         }
       }
-      const fx = new THREE.Vector3(1, 1, 1).normalize().toArray();
-      setInterval(() => {
-        // 粒子系统运动
-        const positions = particlesGeometry.attributes.position.array;
-        for (let i = 0; i < positions.length; i += 3) {
-          for (let j = 0; j < 3; j++) {
-            positions[i + j] += (fx[j] / 60) * 10; // 随机位移
-            if (positions[i + j] < -particleRange / 2) positions[i + j] = particleRange / 2; // 重置位置
-            if (positions[i + j] > particleRange / 2) positions[i + j] = -particleRange / 2; // 重置位置
-          }
-          // for (let j = 0; j < 3; j++) {
-          //   positions[i + j] += (Math.random() - 0.5) * 0.5; // 随机位移
-          //   if (positions[i + j] < -particleRange / 2) positions[i + j] = particleRange / 2; // 重置位置
-          // }
-          // positions[i + 1] -= 0.1; // 逐渐下降
-          // if (positions[i + 1] < -particleRange / 2) positions[i + 1] = particleRange / 2; // 重置位置
-        }
-        particlesGeometry.attributes.position.needsUpdate = true;
-      }, 1000 / 60);
+      // const fx = new THREE.Vector3(1, 1, 1).normalize().toArray();
+      // setInterval(() => {
+      //   // 粒子系统运动
+      //   const positions = particlesGeometry.attributes.position.array;
+      //   for (let i = 0; i < positions.length; i += 3) {
+      //     for (let j = 0; j < 3; j++) {
+      //       positions[i + j] += (fx[j] / 60) * 10; // 随机位移
+      //       if (positions[i + j] < -particleRange / 2) positions[i + j] = particleRange / 2; // 重置位置
+      //       if (positions[i + j] > particleRange / 2) positions[i + j] = -particleRange / 2; // 重置位置
+      //     }
+      //     // for (let j = 0; j < 3; j++) {
+      //     //   positions[i + j] += (Math.random() - 0.5) * 0.5; // 随机位移
+      //     //   if (positions[i + j] < -particleRange / 2) positions[i + j] = particleRange / 2; // 重置位置
+      //     // }
+      //     // positions[i + 1] -= 0.1; // 逐渐下降
+      //     // if (positions[i + 1] < -particleRange / 2) positions[i + 1] = particleRange / 2; // 重置位置
+      //   }
+      //   particlesGeometry.attributes.position.needsUpdate = true;
+      // }, 1000 / 60);
     },
     addUAV() {
       // new OBJLoader().load("http://127.0.0.1:5500/%E6%97%A0%E4%BA%BA%E6%9C%BA%20(1).obj", (object) => {
@@ -470,12 +475,14 @@ export default {
   overflow: hidden;
   width: 100vw;
   height: 100vh;
+  position: relative;
   .threeBox {
     width: 100%;
     height: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
+    // position: absolute;
+    // top: 0;
+    // left: 0;
+    z-index: 10;
   }
   .toolBar {
     width: 500px;
@@ -523,6 +530,16 @@ export default {
       background-image: url("../data/title.svg");
       background-size: 100% 100%;
     }
+  }
+
+  .btn {
+    position: absolute;
+    z-index: 20;
+    bottom: 2px;
+    right: 2px;
+    width: 30px;
+    height: 30px;
+    fill: #fff;
   }
 }
 </style>

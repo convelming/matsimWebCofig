@@ -831,10 +831,10 @@ export class MyMap extends EventListener {
   setCameraHeight(height, noChangeZoom) {
     if (this.camera) {
       this.camera.position.y = height;
-      this.scene.fog.near = height * 2;
-      this.scene.fog.far = height * 3.5;
+      this.scene.fog.near = Math.floor(height * 2);
+      this.scene.fog.far = Math.floor(height * 3.5);
       this.camera.near = height / 1000;
-      this.camera.far = height * 3.5;
+      this.camera.far = Math.floor(height * 3.5);
       this.camera.updateProjectionMatrix();
       this.on(MAP_EVENT.UPDATE_CAMERA_HEIGHT, height);
 
