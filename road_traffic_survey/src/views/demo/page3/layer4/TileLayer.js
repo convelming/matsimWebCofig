@@ -233,21 +233,21 @@ export class TileMesh extends THREE.Mesh {
 
   updateTile() {
     function getUrl(row, col, zoom) {
-      let quadKey = "";
-      for (let i = zoom; i > 0; i--) {
-        let digit = "0";
-        const mask = 1 << (i - 1);
-        if ((row & mask) !== 0) {
-          digit = String.fromCharCode(digit.charCodeAt(0) + 1);
-        }
-        if ((col & mask) !== 0) {
-          digit = String.fromCharCode(digit.charCodeAt(0) + 2);
-        }
-        quadKey += digit;
-      }
+      // let quadKey = "";
+      // for (let i = zoom; i > 0; i--) {
+      //   let digit = "0";
+      //   const mask = 1 << (i - 1);
+      //   if ((row & mask) !== 0) {
+      //     digit = String.fromCharCode(digit.charCodeAt(0) + 1);
+      //   }
+      //   if ((col & mask) !== 0) {
+      //     digit = String.fromCharCode(digit.charCodeAt(0) + 2);
+      //   }
+      //   quadKey += digit;
+      // }
       // return `https://t0.dynamic.tiles.ditu.live.com/comp/ch/${quadKey}?mkt=zh-CN,en-US&ur=cn&it=G,L&jp=0&og=1&sv=9.27&n=t&o=webp,95&cstl=VBD&st=bld|v:0`;
-      return `https://t0.dynamic.tiles.ditu.live.com/comp/ch/${quadKey}?mkt=zh-CN&ur=cn&it=G,RL&n=z&og=942&cstl=vbd`;
-
+      // return `https://t0.dynamic.tiles.ditu.live.com/comp/ch/${quadKey}?mkt=zh-CN&ur=cn&it=G,RL&n=z&og=942&cstl=vbd`;
+      return `https://api.mapbox.com/styles/v1/skun16/clix4r1fv017o01pgghkn5vpw/tiles/256/${zoom}/${row}/${col}?access_token=pk.eyJ1Ijoic2t1bjE2IiwiYSI6ImNpZWw1OXZjYzAwNnFzbGtuaTB5NjNzZ2IifQ.EuNYO3AhIbffFIfH5J_PCQ`
       const key = "pk.eyJ1Ijoic2t1bjE2IiwiYSI6ImNsNmN6bDAxaDAwbmozam55bjBrZWVybTUifQ.vg3pEDwpnUgxmJMmeB8nGQ";
       // const key = "pk.eyJ1IjoiY29udmVsIiwiYSI6ImNtOW50Z2c0NTAyNGMybHB5Y2txcXY0NmgifQ.zM_QAebuyQtVh-A93w5wyA"
       // return `http://wprd0.is.autonavi.com/appmaptile?x=${row}&y=${col}&z=${zoom}&lang=zh_cn&size=1&scl=1&style=7`;

@@ -145,8 +145,8 @@ export class BuildListGeometry extends THREE.BufferGeometry {
     function addShape(shape, value) {
       const pickColor = new THREE.Color(value);
 
-      const hbgd = hbgdList[value];
-      const jzgd = jzgdList[value];
+      const hbgd = hbgdList[value] || 0;
+      const jzgd = jzgdList[value] || 3;
 
       const ldgd = jzgd + hbgd;
 

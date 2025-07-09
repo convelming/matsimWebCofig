@@ -13,7 +13,8 @@ export class Network3DLayer extends Layer {
     this.nodesPickItemMaterial = new THREE.MeshBasicMaterial({});
 
     this.linksGeometry = new THREE.BufferGeometry();
-    this.linksMaterial = new THREE.LineBasicMaterial({ color: opt.color || "yellow", opacity: 0.1, transparent: true });
+    // this.linksMaterial = new THREE.LineBasicMaterial({ color: opt.color || "yellow", opacity: 0.1, transparent: true, vertexColors: true });
+    this.linksMaterial = new THREE.LineBasicMaterial({ opacity: 0.5, transparent: true, vertexColors: true });
     this.linksPickLayerMaterial = new THREE.LineBasicMaterial({ color: 0xff0000 });
     this.linksPickItemMaterial = new THREE.LineBasicMaterial({
       vertexColors: true,
@@ -21,6 +22,12 @@ export class Network3DLayer extends Layer {
 
     this.showLink = !!opt.showLink;
     this.showNode = !!opt.showNode;
+    this.valueName = opt.valueName || "flow";
+    this.colorsFunc =
+      opt.colorsFunc ||
+      function () {
+        return opt.color || "yellow";
+      };
   }
 
   setShowLink(showLink) {
@@ -69,6 +76,11 @@ export class Network3DLayer extends Layer {
     this.linksPickLayerMaterial.needsUpdate = true;
   }
 
+  setColotsFunc(colorsFunc) {
+    this.colorsFunc = colorsFunc;
+    this.update();
+  }
+
   setNetwork(network) {
     this.network = network;
     this.update();
@@ -98,6 +110,7 @@ export class Network3DLayer extends Layer {
     this.clearScene();
     if (!this.network) return;
     const { center, nodes, links } = this.network;
+    console.log(center);
 
     //  点
     this.nodesMesh = new THREE.InstancedMesh(this.nodesGeometry, this.nodesMaterial, nodes.size);
@@ -125,17 +138,42 @@ export class Network3DLayer extends Layer {
     //  线
     const points = [];
     const colors = [];
+    let maxValue = 1;
+    let minValue = 0;
+    let values = [];
+    links.forEach((link) => {
+      const value = Number(link.attrs[this.valueName] || 0);
+      minValue = Math.min(minValue, value);
+      maxValue = Math.max(maxValue, value);
+      values.push(value);
+    });
+    console.log(values, maxValue, minValue);
+    values = values.map((v) => (v - minValue) / (maxValue - minValue));
+
+    const pickColors = [];
+    let iLink = -1;
     links.forEach((link) => {
       points.push(new THREE.Vector3(link.fromCoord.x - center.x, link.fromCoord.y - center.y, link.fromCoord.z));
       points.push(new THREE.Vector3(link.toCoord.x - center.x, link.toCoord.y - center.y, link.toCoord.z));
       ++nIndex;
-      colors.push(...new THREE.Color(Number(nIndex)).toArray());
+      ++iLink;
+      if (this.colorsFunc) {
+        const colorStr = this.colorsFunc(values[iLink]);
+        const colorArray = new THREE.Color(this.colorsFunc(values[iLink])).toArray();
+        colors.push(...colorArray);
+      } else {
+        colors.push(0, 0, 0);
+      }
+      pickColors.push(...new THREE.Color(Number(nIndex)).toArray());
     });
+
     this.linksGeometry = new THREE.BufferGeometry().setFromPoints(points);
     this.linksGeometry.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
     this.linksMesh = new THREE.LineSegments(this.linksGeometry, this.linksMaterial);
     this.linksPickLayerMesh = new THREE.LineSegments(this.linksGeometry, this.linksPickLayerMaterial);
-    this.linksPickItemMesh = new THREE.LineSegments(this.linksGeometry, this.linksPickItemMaterial);
+    this.linksGeometry2 = new THREE.BufferGeometry().setFromPoints(points);
+    this.linksGeometry2.setAttribute("color", new THREE.Float32BufferAttribute(pickColors, 3));
+    this.linksPickItemMesh = new THREE.LineSegments(this.linksGeometry2, this.linksPickItemMaterial);
 
     if (this.showNode) {
       this.scene.add(this.nodesMesh);
@@ -182,7 +220,6 @@ export class Network3DLayer extends Layer {
 
 export class Network {
   static fromXml(xml) {
-    
     const dom = new DOMParser().parseFromString(xml, "application/xml");
     const networkDom = dom.getElementsByTagName("network")[0];
 
@@ -201,7 +238,7 @@ export class Network {
     return new Network({ nodes: nodeMap, links: linkMap, center: center });
   }
 
-  static fromArray(nodes, links) {
+  static fromArray(nodes, links, flows = []) {
     const nodeMap = new Map();
     let center = null;
     for (let i = 0; i < nodes.length; i += 3) {
@@ -215,12 +252,13 @@ export class Network {
     }
     const linkMap = new Map();
     for (let i = 0; i < links.length; i += 2) {
+      const flow = flows[i] || 0;
       const from = links[i];
       const to = links[i + 1];
       const fromCoord = nodeMap.get(from);
       const toCoord = nodeMap.get(to);
       const id = i / 2;
-      const link = new NetworkLink({ id, from, fromCoord, to, toCoord });
+      const link = new NetworkLink({ id, from, fromCoord, to, toCoord, attrs: { flow: flow } });
       linkMap.set(id, link);
     }
     return new Network({ nodes: nodeMap, links: linkMap, center: center });
@@ -275,6 +313,15 @@ export class NetworkLink {
       const value = node.attributes[i].value;
       nodeObj[name] = value;
     }
+    const attrs = {};
+    const chlidren = node.getElementsByTagName("attribute");
+    for (const chlidNode of chlidren) {
+      const name = chlidNode.getAttribute("from");
+      const clazz = chlidNode.getAttribute("class");
+      const text = chlidNode.textContent;
+      attrs[name] = text;
+    }
+    nodeObj.attrs = attrs;
     nodeObj.fromCoord = nodeMap.get(nodeObj.from);
     nodeObj.toCoord = nodeMap.get(nodeObj.to);
     return new NetworkLink(nodeObj);
@@ -292,5 +339,6 @@ export class NetworkLink {
     this.permlanes = Number(opt.permlanes || 0);
     this.oneway = Number(opt.oneway || 0);
     this.modes = String(opt.modes || 0);
+    this.attrs = opt.attrs;
   }
 }
