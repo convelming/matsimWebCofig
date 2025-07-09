@@ -162,7 +162,7 @@ export class Network3DLayer extends Layer {
         const colorArray = new THREE.Color(this.colorsFunc(values[iLink])).toArray();
         colors.push(...colorArray);
       } else {
-        colors.push(0, 0, 0);
+        colors.push(1, 1, 0);
       }
       pickColors.push(...new THREE.Color(Number(nIndex)).toArray());
     });

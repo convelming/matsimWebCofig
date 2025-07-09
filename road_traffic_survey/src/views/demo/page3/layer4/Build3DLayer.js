@@ -56,18 +56,16 @@ export class Build3DLayer extends Layer {
     this.polygonMaterial.needsUpdate = true;
   }
 
-  setData(data) {
+  setData(data, jzgdKey = "Height", hbgdKey = "dem") {
     this.center = data.center;
     this.polygonArray = data.polygonArray;
     try {
-      // this.jzgdList = data.propertiesLabels.Height.values; // 建筑高度
-      this.jzgdList = data.propertiesLabels.build_high.values; // 建筑高度
+      this.jzgdList = data.propertiesLabels[jzgdKey].values; // 建筑高度
     } catch (error) {
       this.jzgdList = []; // 建筑高度
     }
     try {
-      // this.hbgdList = data.propertiesLabels.Sampled_SA.values; // 海拔高度
-      this.hbgdList = data.propertiesLabels.dem.values; // 海拔高度
+      this.hbgdList = data.propertiesLabels[hbgdKey].values; // 海拔高度
     } catch (error) {
       this.hbgdList = [];
     }
@@ -108,7 +106,7 @@ export class Build3DLayer extends Layer {
       polygonList[polygonList.length] = polygon;
       if (index - num > maxPolygon) {
         num = index;
-        console.log("addMesh",index)
+        console.log("addMesh", index);
         await addMesh(polygonList);
       }
     }

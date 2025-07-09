@@ -20,19 +20,19 @@ export class UAVListLayer extends Layer {
     this.nodeMeshList1 = [];
     this.nodeMeshList2 = [];
     this.nodeGeometry = new THREE.BoxGeometry(this.nodeSize, this.nodeSize, this.nodeSize);
-    this.nodesMaterial = new THREE.MeshBasicMaterial({ color: opt.color || "#76819a", opacity: 0.8, transparent: true });
+    this.nodesMaterial = new THREE.MeshBasicMaterial({ color: opt.nodeColor || "#76819a", opacity: 0.8, transparent: true });
     this.nodesMaterial_s = new THREE.MeshBasicMaterial({ depthFunc: THREE.AlwaysDepth, color: "red", opacity: 0.8, transparent: true });
     this.nodesMaterial1 = new THREE.MeshBasicMaterial({});
 
     this.linkMeshList = [];
     this.linkMeshList1 = [];
     this.linkMeshList2 = [];
-    this.linkMaterial = new THREE.MeshBasicMaterial({ color: opt.color || "#e8ce79", opacity: 0.8, transparent: true });
+    this.linkMaterial = new THREE.MeshBasicMaterial({ color: opt.linkColor || "#e8ce79", opacity: 0.8, transparent: true });
     this.linkMaterial_s = new THREE.MeshBasicMaterial({ depthFunc: THREE.AlwaysDepth, color: "red", opacity: 0.8, transparent: true });
     this.linkMaterial1 = new THREE.MeshBasicMaterial({});
 
     this.UAVGeometry = new THREE.BoxGeometry(50, 50, 50);
-    this.UAVMaterial = new THREE.MeshBasicMaterial({ color: "#ea7f7f" });
+    this.UAVMaterial = new THREE.MeshBasicMaterial({ color: opt.uavColor || "#ea7f7f" });
     this.UAVMaterial1 = new THREE.MeshBasicMaterial({});
     this.UAVMaterial2 = new THREE.MeshBasicMaterial({});
     this.UAVMesh = new THREE.InstancedMesh(this.UAVGeometry, this.UAVMaterial, 1);

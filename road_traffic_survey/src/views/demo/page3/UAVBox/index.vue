@@ -188,6 +188,10 @@ export default {
               //   side: THREE.DoubleSide, //两面可见
               //   color: color, //0xff0000设置材质颜色为红色
               // });
+              let color = 0xffffff;
+              if (i2 == 3) {
+                color = "green";
+              }
               const material = new THREE.MeshPhongMaterial({
                 color: 0xffe66d,
                 transparent: true,

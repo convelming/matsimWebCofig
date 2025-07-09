@@ -30,32 +30,32 @@
         </div>
         <div class="chart progress_list" style="padding-bottom: 2vh">
           <div class="item">
-            <el-progress type="dashboard" color="#67C23A" :percentage="80" :show-text="false" :stroke-width="15"></el-progress>
+            <el-progress type="dashboard" color="#85a9a2" :percentage="80" :show-text="false" :stroke-width="15"></el-progress>
             <div class="text2">1673</div>
             <div class="text">物流配送</div>
           </div>
           <div class="item">
-            <el-progress type="dashboard" color="#E6A23C" :percentage="50" :show-text="false" :stroke-width="15"></el-progress>
+            <el-progress type="dashboard" color="#aed9d8" :percentage="50" :show-text="false" :stroke-width="15"></el-progress>
             <div class="text2">203</div>
             <div class="text">低空文旅</div>
           </div>
           <div class="item">
-            <el-progress type="dashboard" color="#F56C6C" :percentage="30" :show-text="false" :stroke-width="15"></el-progress>
+            <el-progress type="dashboard" color="#6bb3c0" :percentage="30" :show-text="false" :stroke-width="15"></el-progress>
             <div class="text2">87</div>
             <div class="text">交通出行</div>
           </div>
           <div class="item">
-            <el-progress type="dashboard" color="#67C23A" :percentage="75" :show-text="false" :stroke-width="15"></el-progress>
+            <el-progress type="dashboard" color="#f2c494" :percentage="75" :show-text="false" :stroke-width="15"></el-progress>
             <div class="text2">2632</div>
             <div class="text">生产作业</div>
           </div>
           <div class="item">
-            <el-progress type="dashboard" color="#E6A23C" :percentage="10" :show-text="false" :stroke-width="15"></el-progress>
+            <el-progress type="dashboard" color="#99bcdd" :percentage="10" :show-text="false" :stroke-width="15"></el-progress>
             <div class="text2">27</div>
             <div class="text">应急救援</div>
           </div>
           <div class="item">
-            <el-progress type="dashboard" color="#F56C6C" :percentage="50" :show-text="false" :stroke-width="15"></el-progress>
+            <el-progress type="dashboard" color="#99bcdd" :percentage="50" :show-text="false" :stroke-width="15"></el-progress>
             <div class="text2">109</div>
             <div class="text">政务巡检</div>
           </div>
@@ -113,9 +113,9 @@
               <el-form-item label="位置：">{{ Number(playDetail.x).toFixed(2) }}, {{ Number(playDetail.y).toFixed(2) }}, {{ Number(playDetail.z).toFixed(2) }}</el-form-item>
             </template> -->
         </div>
-        <!-- <div class="p9_card" v-show="tabType == '无人机'">
+        <div class="p9_card" v-show="tabType == '无人机'">
           <UAVBox class="UAVBox"></UAVBox>
-        </div> -->
+        </div>
       </div>
     </div>
     <div class="box4" v-show="pageType === 1">
@@ -480,7 +480,7 @@ export default {
             .async("string")
             .then(parserGeoJSON)
             .then((json) => {
-              this._Build3DLayer.setData(json);
+              this._Build3DLayer.setData(json, pageConfig.buildJzgdKey, pageConfig.buildHbgdKey);
             });
         }
         if (pageConfig.pink && zip.file(pageConfig.pink)) {
@@ -529,17 +529,18 @@ export default {
         showNode: this.showNetwork3DNode,
         valueName: "flow",
         colorsFunc: function (value) {
-          if (value <= 0.2) {
+          const _value = Number(value || 0)
+          if (_value <= 0.2) {
             return "#2c83ba";
-          } else if (0.2 < value && value <= 0.4) {
+          } else if (0.2 < _value && _value <= 0.4) {
             return "#92cba8";
-          } else if (0.4 < value && value <= 0.6) {
+          } else if (0.4 < _value && _value <= 0.6) {
             return "#f6fbbc";
-          } else if (0.6 < value && value <= 0.8) {
+          } else if (0.6 < _value && _value <= 0.8) {
             return "#f99d58";
-          } else if (0.8 < value) {
+          } else if (0.8 < _value) {
             return "#d7191b";
-          }
+          } 
         },
       });
       this._Map.addLayer(this._Network3DLayer);
@@ -550,6 +551,9 @@ export default {
         nodeSize: 5,
         time: this.time,
         lockSelect: this.lockSelect,
+        linkColor: "#f2c494",
+        nodeColor: "#bbabdO",
+        uavColor: "#f3fafa",
         event: {
           playing: (res) => {
             if (this._playTimeout) return;
@@ -565,7 +569,7 @@ export default {
       this._Build3DLayer = new Build3DLayer({
         zIndex: 220,
         // buildColor: "#838385",
-        buildColor: "#bbb",
+        buildColor: "#4198b9",
       });
       this._Map.addLayer(this._Build3DLayer);
 
@@ -659,19 +663,10 @@ export default {
             showBackground: false,
             itemStyle: {
               color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                { offset: 0, color: "#83bff6" },
-                { offset: 0.5, color: "#188df0" },
-                { offset: 1, color: "#188df0" },
+                { offset: 0, color: "#4198b9" },
+                { offset: 0.5, color: "#6bb3c0" },
+                { offset: 1, color: "#91cfc9" },
               ]),
-            },
-            emphasis: {
-              itemStyle: {
-                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                  { offset: 0, color: "#2378f7" },
-                  { offset: 0.7, color: "#2378f7" },
-                  { offset: 1, color: "#83bff6" },
-                ]),
-              },
             },
             data: data,
           },
@@ -821,19 +816,10 @@ export default {
             showBackground: false,
             itemStyle: {
               color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                { offset: 0, color: "#83bff6" },
-                { offset: 0.5, color: "#188df0" },
-                { offset: 1, color: "#188df0" },
+                { offset: 0, color: "#2d4e76" },
+                { offset: 0.5, color: "#99bcdd" },
+                { offset: 1, color: "#c4e5ef" },
               ]),
-            },
-            emphasis: {
-              itemStyle: {
-                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                  { offset: 0, color: "#2378f7" },
-                  { offset: 0.7, color: "#2378f7" },
-                  { offset: 1, color: "#83bff6" },
-                ]),
-              },
             },
             data: data,
           },
@@ -893,19 +879,9 @@ export default {
             showBackground: false,
             itemStyle: {
               color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                { offset: 0, color: "#83bff6" },
-                { offset: 0.5, color: "#188df0" },
-                { offset: 1, color: "#188df0" },
+                { offset: 0, color: "#bbabd0" },
+                { offset: 1, color: "#bbabd0" },
               ]),
-            },
-            emphasis: {
-              itemStyle: {
-                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                  { offset: 0, color: "#2378f7" },
-                  { offset: 0.7, color: "#2378f7" },
-                  { offset: 1, color: "#83bff6" },
-                ]),
-              },
             },
             data: data,
           },
@@ -1140,7 +1116,7 @@ export default {
   height: 58vh;
   top: 6vh;
   left: 2vw;
-  background-image: url("./layer4/img/left.png");
+  background-image: url("./layer4/img/left7.png");
   background-size: 100% 100%;
   .boxTitle {
     font-size: 1.6vh;
@@ -1169,6 +1145,7 @@ export default {
     }
     .el-progress-circle__track {
       stroke-linecap: round;
+      stroke: #414f67;
     }
   }
   .item {
@@ -1200,7 +1177,7 @@ export default {
   height: 26.8vh;
   top: 68vh;
   left: 2vw;
-  background-image: url("./layer4/img/微信图片_20250709111547.png");
+  background-image: url("./layer4/img/微信图片_202507091115477.png");
   background-size: 100% 100%;
   .titleList {
     display: flex;
@@ -1299,7 +1276,7 @@ export default {
   height: 32vh;
   top: 6vh;
   right: 2vw;
-  background-image: url("./layer4/img/right.png");
+  background-image: url("./layer4/img/right7.png");
   background-size: 100% 100%;
   .boxTitle {
     font-size: 1.6vh;
@@ -1385,7 +1362,7 @@ export default {
   height: 25vh;
   top: 42vh;
   right: 2vw;
-  background-image: url("./layer4/img/right2.png");
+  background-image: url("./layer4/img/right27.png");
   background-size: 100% 100%;
   .boxTitle {
     font-size: 1.6vh;
@@ -1410,7 +1387,7 @@ export default {
   height: 25vh;
   top: 70vh;
   right: 2vw;
-  background-image: url("./layer4/img/right3.png");
+  background-image: url("./layer4/img/right27.png");
   background-size: 100% 100%;
   .boxTitle {
     font-size: 1.6vh;
