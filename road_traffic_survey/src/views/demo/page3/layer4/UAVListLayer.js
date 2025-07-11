@@ -1,6 +1,8 @@
 import * as THREE from "three";
 import { Layer, MAP_EVENT } from "@/mymap/index.js";
 import { STLLoader } from "three/addons/loaders/STLLoader.js";
+// 引入轨道控制器扩展库OrbitControls.js
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
 import UAVListLayerWorker from "./UAVListLayer4.worker";
 
@@ -13,6 +15,7 @@ export class UAVListLayer extends Layer {
   selecIndex = -1;
   constructor(opt) {
     super(opt);
+    this.rootDoc = opt.rootDoc;
     this.lockSelect = opt.lockSelect || false;
     this.linkWidth = opt.linkWidth || 5;
     this.nodeSize = opt.nodeSize || 10;
@@ -65,6 +68,29 @@ export class UAVListLayer extends Layer {
     this.worker.addEventListener("error", (error) => {
       console.log(error);
     });
+
+    // 创建相机
+    this.camera = new THREE.PerspectiveCamera(60, 1, 1, 30000);
+    this.renderer = new THREE.WebGLRenderer({
+      // 设置抗锯齿
+      antialias: true,
+      // 设置对数深度缓冲区
+      logarithmicDepthBuffer: true,
+      // precision: "highp"
+      preserveDrawingBuffer: true,
+    });
+    this.renderer.domElement.style.userSelect = "none";
+    this.renderer.domElement.style.position = "absolute";
+    this.renderer.domElement.style.top = "0";
+    this.renderer.domElement.style.left = "0";
+    this.renderer.domElement.style.zIndex = "0";
+    this.rootDoc.appendChild(this.renderer.domElement);
+  }
+
+  render(map) {
+    if (this.lockSelect) {
+      this.renderer.render(map.scene, this.camera);
+    }
   }
 
   setPickLayerColor(color) {
@@ -99,11 +125,18 @@ export class UAVListLayer extends Layer {
       const pickColorNum = data.pickColor;
       this.setSelectPath(pickColorNum - 1);
     }
+    if (type == MAP_EVENT.UPDATE_RENDERER_SIZE) {
+      const { width, height } = data;
+      this.camera.aspect = width / height;
+      this.camera.updateProjectionMatrix();
+      this.renderer.setSize(width, height);
+    }
   }
 
   onAdd(map) {
     super.onAdd(map);
     this.on(MAP_EVENT.UPDATE_CENTER);
+    map.scene.add(this.camera);
   }
 
   setPaths(paths = [], pathClassName = "LinePath") {
@@ -299,7 +332,9 @@ export class UAVListLayer extends Layer {
       if (!isEnd) {
         this.map.setCenter([point.x + this.center[0], point.y + this.center[1]]);
         this.map.setCameraHeight(point.z + 200);
-        this.map.setPitchAndRotation((Math.atan((point.z + 200) / 100) * 180) / Math.PI);
+        this.camera.position.set(0, point.z + 50, 0).sub(new THREE.Vector3(dir.x, dir.z, -dir.y).setLength(100));
+        this.camera.lookAt(0, point.z, 0);
+
         playingDetail = points[this.selecIndex];
       }
     }
@@ -307,5 +342,13 @@ export class UAVListLayer extends Layer {
     if (this.UAVMesh.instanceMatrix) this.UAVMesh.instanceMatrix.needsUpdate = true;
     if (this.UAVMesh1.instanceMatrix) this.UAVMesh1.instanceMatrix.needsUpdate = true;
     if (this.UAVMesh2.instanceMatrix) this.UAVMesh2.instanceMatrix.needsUpdate = true;
+  }
+
+  dispose() {
+    super.dispose();
+    this.rootDoc.removeChild(this.renderer.domElement);
+    this.renderer.domElement = null;
+    this.renderer.forceContextLoss();
+    this.renderer.dispose();
   }
 }

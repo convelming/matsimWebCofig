@@ -1,6 +1,7 @@
 <template>
   <div class="p9_index main" v-loading="loading" style="background-color: #000">
     <div id="mapRoot"></div>
+    <div id="mapRoot2" ref="mapRoot2" v-show="pageType === 2"></div>
     <div class="box1" v-show="pageType === 1">
       <!-- <img src="./layer4/img/left.png" class="first_border" alt="" /> -->
       <div class="boxTitle">航路数量</div>
@@ -28,7 +29,7 @@
             <span>气压：0.326MPa</span>
           </div>
         </div>
-        <div class="chart progress_list" style="padding-bottom: 2vh">
+        <div class="chart progress_list">
           <div class="item">
             <el-progress type="dashboard" color="#85a9a2" :percentage="80" :show-text="false" :stroke-width="15"></el-progress>
             <div class="text2">1673</div>
@@ -68,7 +69,7 @@
     </div> -->
 
     <div class="box3" v-show="pageType === 1">
-      <div class="boxTitle">硬件设备展示</div>
+      <div class="boxTitle">低空地图控制</div>
       <div class="csbaseBox1">
         <div class="boxList">
           <div class="item" :class="{ item: true, active: tabType == '控制面板' }" @click="tabType = '控制面板'">控制面板</div>
@@ -114,7 +115,7 @@
             </template> -->
         </div>
         <div class="p9_card" v-show="tabType == '无人机'">
-          <UAVBox class="UAVBox"></UAVBox>
+          <!-- <UAVBox class="UAVBox"></UAVBox> -->
         </div>
       </div>
     </div>
@@ -145,7 +146,7 @@
               <div class="p9_value" :style="`height: ${(playDetail.point.z / 300) * 100}%;max-height:100%`"></div>
             </div>
             <div class="p9_progress_name" style="opacity: 0">高度:</div>
-            <div class="p9_progress_name">{{ playDetail.point.z }}m</div>
+            <div class="p9_progress_name">{{ Number(playDetail.point.z).toFixed(2) }}m</div>
           </div>
         </div>
         <div class="p9_title">高度 m</div>
@@ -198,7 +199,7 @@
 <script>
 import * as echarts from "echarts";
 
-import { MyMap, MAP_EVENT } from "@/mymap/index.js";
+import { MyMap, MAP_EVENT, MOUSE_BUTTONS } from "@/mymap/index.js";
 import { WGS84ToMercator } from "@/mymap/utils/LngLatUtils";
 
 import { Build3DLayer } from "./layer4/Build3DLayer";
@@ -381,7 +382,7 @@ export default {
     this.initChart4();
     this.initChart5();
     this.loadMapData();
-    // this.initMap()
+    // this.initMap();
   },
   beforeDestroy() {
     window.removeEventListener("resize", this.resizeChart.bind(this));
@@ -414,7 +415,6 @@ export default {
               return this._TileLayer.setTif(array);
             });
         }
-
         if (pageConfig.network && zip.file(pageConfig.network)) {
           await Promise.all([
             zip
@@ -514,6 +514,7 @@ export default {
         ...mapConfig,
         background: "#1b1b1b",
         mapZoomHeight: 300,
+        mouseButtons: MOUSE_BUTTONS.RIGHT,
         // center: [12598360.73, 2640607.15],
       });
       this._TileLayer = new TileLayer({
@@ -529,7 +530,7 @@ export default {
         showNode: this.showNetwork3DNode,
         valueName: "flow",
         colorsFunc: function (value) {
-          const _value = Number(value || 0)
+          const _value = Number(value || 0);
           if (_value <= 0.2) {
             return "#2c83ba";
           } else if (0.2 < _value && _value <= 0.4) {
@@ -540,7 +541,7 @@ export default {
             return "#f99d58";
           } else if (0.8 < _value) {
             return "#d7191b";
-          } 
+          }
         },
       });
       this._Map.addLayer(this._Network3DLayer);
@@ -554,6 +555,7 @@ export default {
         linkColor: "#f2c494",
         nodeColor: "#bbabdO",
         uavColor: "#f3fafa",
+        rootDoc: this.$refs.mapRoot2,
         event: {
           playing: (res) => {
             if (this._playTimeout) return;
@@ -590,7 +592,7 @@ export default {
         if (this.time + 1 / 60 > this.maxTime) {
           this.stop();
         } else {
-          this.setTime(this.time + (1 / 60) * 10);
+          this.setTime(this.time + (1 / 60));
         }
       }, 1000 / 60);
       // if (this._Map) this._Map.addLayer(this._UAVListLayer);
@@ -830,7 +832,7 @@ export default {
     },
     initChart5() {
       const chart = echarts.init(this.$refs.chart5);
-      const dataAxis = Array.from({ length: 12 }, (v, i) => `${i + 1}月`);
+      const dataAxis = Array.from({ length: 12 }, (v, i) => `${i + 1}h`);
       const data = [66, 99, 30, 45, 50, 120, 50, 60, 110, 90, 80, 80];
       const option = {
         tooltip: {
@@ -911,17 +913,27 @@ export default {
   height: 100vh;
   overflow: hidden;
   position: relative;
-  background: url(./layer4/img/bg.jpg) no-repeat;
+  background: url("./layer4/img/bg.jpg") no-repeat;
   background-size: cover;
 }
 
 #mapRoot {
   position: absolute;
+  top: 0;
   left: 0;
-  right: 0;
   width: 100%;
   height: 100%;
   z-index: 10;
+}
+
+#mapRoot2 {
+  position: absolute;
+  top: 0;
+  // top: 50vh;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 20;
 }
 
 .p9_return_btn {
@@ -1116,7 +1128,7 @@ export default {
   height: 58vh;
   top: 6vh;
   left: 2vw;
-  background-image: url("./layer4/img/left7.png");
+  background-image: url("./layer4/img/left.png");
   background-size: 100% 100%;
   .boxTitle {
     font-size: 1.6vh;
@@ -1177,7 +1189,7 @@ export default {
   height: 26.8vh;
   top: 68vh;
   left: 2vw;
-  background-image: url("./layer4/img/微信图片_202507091115477.png");
+  background-image: url("./layer4/img/微信图片_20250709111547.png");
   background-size: 100% 100%;
   .titleList {
     display: flex;
@@ -1204,17 +1216,18 @@ export default {
   flex-direction: column;
   .value {
     display: flex;
+    height: 100%;
   }
   .weather_data {
     margin-top: 5vh;
     margin-left: 3vw;
-    position: relative;
+    position: absolute;
     width: 18vw;
     padding-bottom: 12vw;
     height: 0;
     font-size: 1.2vh;
     /* background-color: yellow; */
-    background-image: url(./layer4/img/bottom_icons.png);
+    background-image: url("./layer4/img/bottom_icons.png");
     background-size: 100%;
     background-repeat: no-repeat;
 
@@ -1262,6 +1275,7 @@ export default {
     }
   }
   .chart {
+    padding-left: 22vw;
     flex-grow: 1;
     height: 100%;
     width: 0%;
@@ -1276,13 +1290,13 @@ export default {
   height: 32vh;
   top: 6vh;
   right: 2vw;
-  background-image: url("./layer4/img/right7.png");
+  background-image: url("./layer4/img/right2.png");
   background-size: 100% 100%;
   .boxTitle {
     font-size: 1.6vh;
-    margin-top: 0.8vh;
-    margin-left: 2vw;
+    margin: 1.1vh 2vw 0 2vw;
     color: #0efcff;
+    text-align: center;
   }
 
   .csbaseBox1 {
@@ -1290,10 +1304,10 @@ export default {
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    padding: 1vh 3vw 3vh 3vw;
+    padding: 1.5vh 2vw 2vh 2vw;
     user-select: none;
     color: #fff;
-    height: 85%;
+    height: 28vh;
     font-size: 12px;
     .boxList {
       display: flex;
@@ -1362,7 +1376,7 @@ export default {
   height: 25vh;
   top: 42vh;
   right: 2vw;
-  background-image: url("./layer4/img/right27.png");
+  background-image: url("./layer4/img/right2.png");
   background-size: 100% 100%;
   .boxTitle {
     font-size: 1.6vh;
@@ -1387,7 +1401,7 @@ export default {
   height: 25vh;
   top: 70vh;
   right: 2vw;
-  background-image: url("./layer4/img/right27.png");
+  background-image: url("./layer4/img/right2.png");
   background-size: 100% 100%;
   .boxTitle {
     font-size: 1.6vh;
@@ -1412,7 +1426,7 @@ export default {
   height: 25vh;
   top: 70vh;
   left: 2vw;
-  background-image: url("./layer4/img/right3.png");
+  background-image: url("./layer4/img/right2.png");
   background-size: 100% 100%;
   .boxTitle {
     font-size: 1.6vh;

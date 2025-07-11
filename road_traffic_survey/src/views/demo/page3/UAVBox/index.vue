@@ -47,9 +47,10 @@ export default {
     this.initThree();
     this.addBoxs();
     this.addUAV();
-    this.addf();
-    this.addLine();
-    this.addLine2();
+
+    // this.addf();
+    // this.addLine();
+    // this.addLine2();
   },
   beforeDestroy() {
     clearInterval(this.interval1);
@@ -77,7 +78,7 @@ export default {
 
       this._scene = new THREE.Scene();
       this._scene.background = null;
-      // this._scene.background = new THREE.Color(this.background);
+      this._scene.background = new THREE.Color(this.background);
 
       // 创建相机
       this._camera = new THREE.PerspectiveCamera(60, 1, 0.01, 1000);
@@ -130,6 +131,57 @@ export default {
       };
       animation();
     },
+    getJTMesh(size) {
+      const shape = new THREE.Shape();
+      shape.moveTo(1 * size, 0);
+      shape.lineTo(0, -1 * size);
+      shape.lineTo(0, -0.5 * size);
+      shape.lineTo(-1 * size, -0.5 * size);
+      shape.lineTo(-1 * size, 0.5 * size);
+      shape.lineTo(0, 0.5 * size);
+      shape.lineTo(0, 1 * size);
+
+      const extrudeSettings = {
+        steps: 1,
+        depth: size,
+        bevelEnabled: false,
+        bevelThickness: 0.2,
+        bevelSize: 0.1,
+        bevelOffset: 0,
+        bevelSegments: 1,
+      };
+
+      const jtGeo = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+      const m4 = new THREE.Matrix4().makeTranslation(0, 0, -extrudeSettings.depth / 2);
+      jtGeo.applyMatrix4(m4);
+      const jtMaterial = new THREE.MeshBasicMaterial({
+        color: 0xffffff,
+      });
+      const jtMesh = new THREE.Mesh(jtGeo, jtMaterial);
+      return jtMesh;
+    },
+    getBoxMesh(color, size) {
+      //创建一个长方体几何对象Geometry
+      const geometry = new THREE.BoxGeometry(size, size, size);
+      //创建一个材质对象Material
+      // const material = new THREE.MeshBasicMaterial({
+      //   side: THREE.DoubleSide, //两面可见
+      //   color: color, //0xff0000设置材质颜色为红色
+      // });
+      const material = new THREE.MeshPhongMaterial({
+        // color: 0xffe66d,
+        color: color,
+        transparent: true,
+        opacity: 0.3,
+        shininess: 90,
+        side: THREE.DoubleSide,
+      });
+      // material.clippingPlanes = clipPlanes.map((p) => p.clone().translate(translateP));
+      // material.needUpdate = true;
+      const box = new THREE.Mesh(geometry, material);
+      box.renderOrder = 10;
+      return box;
+    },
     addBoxs() {
       this._tweens1 = [];
       this._tweens2 = [];
@@ -173,39 +225,28 @@ export default {
       //   tubeTranslation.push(matrix4);
       // }
 
+      // 行
       for (let i1 = 0; i1 < 3; i1++) {
-        // 层
+        // 列
         for (let i2 = 0; i2 < 3; i2++) {
-          // 行
+          // 层
           for (let i3 = 0; i3 < 3; i3++) {
-            // 列
             if (i1 === 1 && i2 === 1 && i3 === 1) {
             } else {
-              //创建一个长方体几何对象Geometry
-              const geometry = new THREE.BoxGeometry(size, size, size);
-              //创建一个材质对象Material
-              // const material = new THREE.MeshBasicMaterial({
-              //   side: THREE.DoubleSide, //两面可见
-              //   color: color, //0xff0000设置材质颜色为红色
-              // });
               let color = 0xffffff;
-              if (i2 == 3) {
+              if (i1 == 2) {
                 color = "green";
+              } else if (i3 == 2) {
+                color = "orange";
+              } else if (i3 == 0) {
+                color = "blue";
               }
-              const material = new THREE.MeshPhongMaterial({
-                color: 0xffe66d,
-                transparent: true,
-                opacity: 0.3,
-                shininess: 90,
-                side: THREE.DoubleSide,
-              });
-              // material.clippingPlanes = clipPlanes.map((p) => p.clone().translate(translateP));
-              // material.needUpdate = true;
-              const box = new THREE.Mesh(geometry, material);
-              box.renderOrder = 10;
+              const box = this.getBoxMesh(color, size);
+              const jt = this.getJTMesh(size / 4);
 
               const boxGroup = new THREE.Group();
               boxGroup.add(box);
+              // boxGroup.add(jt);
               const x = (i1 - 1) * this.boxSize;
               const y = (i2 - 1) * this.boxSize;
               const z = (i3 - 1) * this.boxSize;

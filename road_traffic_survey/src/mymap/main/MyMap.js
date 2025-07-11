@@ -13,10 +13,17 @@ import { WGS84ToMercator, EPSG4526ToMercator, EARTH_RADIUS } from "../utils/LngL
 import { EventListener } from "./EventListener";
 import { BloomComposer } from "../composer/BloomComposer";
 
-const MOUSE_BUTTONS = {
-  LEFT: THREE.MOUSE.LEFT,
-  MIDDLE: THREE.MOUSE.MIDDLE,
-  RIGHT: THREE.MOUSE.RIGHT,
+export const MOUSE_BUTTONS = {
+  LEFT: {
+    LEFT: THREE.MOUSE.LEFT,
+    MIDDLE: THREE.MOUSE.MIDDLE,
+    RIGHT: THREE.MOUSE.RIGHT,
+  },
+  RIGHT: {
+    LEFT: THREE.MOUSE.RIGHT,
+    MIDDLE: THREE.MOUSE.MIDDLE,
+    RIGHT: THREE.MOUSE.LEFT,
+  },
 };
 
 const distance = (form, to) => {
@@ -92,10 +99,16 @@ export class MyMap extends EventListener {
   openGPUPick = true;
   mapZoomHeight = MAP_ZOOM_HEIGHT;
   mapZoomBase = MAP_ZOOM_BASE;
+  lookAtPosition = new THREE.Vector3();
 
   // 获取摄像机到观测点距离
   get cameraHeight() {
-    return this.cameraControls ? Math.round(this.cameraControls.getDistance()) : this.constructor.zoomToHeight(this.zoom);
+    if (this.camera) {
+      const position = this.camera.position;
+      return new THREE.Vector3().copy(position).length();
+    } else {
+      return this.constructor.zoomToHeight(this.zoom);
+    }
   }
 
   // 获取一个拾取图层颜色
@@ -217,6 +230,7 @@ export class MyMap extends EventListener {
     background = 0xd9ecff,
     mapZoomHeight = MAP_ZOOM_HEIGHT,
     mapZoomBase = MAP_ZOOM_BASE,
+    mouseButtons = MOUSE_BUTTONS.LEFT,
     ...opt
   }) {
     super(opt);
@@ -258,6 +272,7 @@ export class MyMap extends EventListener {
     // 地图背景色
     this.background = background;
 
+    this.mouseButtons = mouseButtons;
     // 初始化渲染器
     this.initRenderer();
     // 初始化场景
@@ -450,9 +465,9 @@ export class MyMap extends EventListener {
 
       this.mousedownTimeout = setTimeout(() => {
         this.mouseDowning = true;
-        if (event.button == MOUSE_BUTTONS.LEFT) {
+        if (event.button == THREE.MOUSE.LEFT) {
           this.on(MAP_EVENT.HANDLE_MOUSE_LEFT_DOWN, data);
-        } else if (event.button == MOUSE_BUTTONS.RIGHT) {
+        } else if (event.button == THREE.MOUSE.RIGHT) {
           this.on(MAP_EVENT.HANDLE_MOUSE_RIGHT_DOWN, data);
         }
       }, 200);
@@ -466,7 +481,7 @@ export class MyMap extends EventListener {
       data.canvasXY = this.WindowXYToCanvasXY(event.offsetX, event.offsetY);
       data.webMercatorXY = this.CanvasXYToWebMercator(...data.canvasXY);
 
-      if (event.button == MOUSE_BUTTONS.LEFT) {
+      if (event.button == THREE.MOUSE.LEFT) {
         if (this.mouseDowning) {
           this.mouseDowning = false;
           this.on(MAP_EVENT.HANDLE_MOUSE_LEFT_UP, data);
@@ -488,7 +503,7 @@ export class MyMap extends EventListener {
             this.on(MAP_EVENT.HANDLE_CLICK_LEFT, data);
           }
         }
-      } else if (event.button == MOUSE_BUTTONS.RIGHT) {
+      } else if (event.button == THREE.MOUSE.RIGHT) {
         if (this.mouseDowning) {
           this.mouseDowning = false;
           this.on(MAP_EVENT.HANDLE_MOUSE_RIGHT_UP, data);
@@ -603,7 +618,7 @@ export class MyMap extends EventListener {
     this.cameraControls.minDistance = this.zoomToHeight(MAP_ZOOM_RANGE.MAX);
     this.cameraControls.maxDistance = this.zoomToHeight(MAP_ZOOM_RANGE.MIN);
     //修改鼠标按键
-    this.cameraControls.mouseButtons = MOUSE_BUTTONS;
+    this.cameraControls.mouseButtons = this.mouseButtons;
 
     this.cameraControls.addEventListener("change", (res) => {
       const height = Math.round(this.cameraControls.getDistance());

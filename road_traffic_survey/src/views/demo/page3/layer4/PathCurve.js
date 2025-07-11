@@ -59,6 +59,10 @@ export class LinePath extends THREE.Curve {
   getPointByTime(time) {
     if (time <= this.minTime) {
       const poi = this.nodes[0].v;
+      let dir = poi.clone().normalize();
+      if (this.nodes[1]) {
+        dir = this.nodes[1].v.clone().sub(poi).normalize();
+      }
       return {
         point: poi.clone(),
         speed: 0,
@@ -67,11 +71,18 @@ export class LinePath extends THREE.Curve {
         speedZ: 0,
         tDis: Math.abs(Math.floor(this.dis)),
         dis: 0,
-        dir: poi.clone(),
+        dir: dir,
         isEnd: true,
       };
     } else if (time >= this.maxTime) {
       const poi = this.nodes[this.nodes.length - 1].v;
+      let dir = poi.clone().normalize();
+      if (this.nodes[this.nodes.length - 2]) {
+        dir = poi
+          .clone()
+          .sub(this.nodes[this.nodes.length - 2].v)
+          .normalize();
+      }
       return {
         point: poi.clone(),
         speed: 0,
@@ -80,7 +91,7 @@ export class LinePath extends THREE.Curve {
         speedZ: 0,
         tDis: Math.abs(Math.floor(this.dis)),
         dis: Math.abs(Math.floor(this.dis)),
-        dir: poi.clone(),
+        dir: dir,
         isEnd: true,
       };
     } else {
@@ -102,7 +113,7 @@ export class LinePath extends THREE.Curve {
           speedZ = (ep.v.z - sp.v.z) / dtime;
           const p = (time - sp.t) / dtime;
           poi = new THREE.Vector3().lerpVectors(sp.v, ep.v, p);
-          dir = ep.v.clone();
+          dir = ep.v.clone().sub(sp.v).normalize();
           dis = p * (ep.d - sp.d) + sp.d;
           break;
         }
