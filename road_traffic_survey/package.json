@@ -20,6 +20,7 @@
     "konva": "^9.3.14",
     "meshline": "^3.1.6",
     "moment": "^2.29.3",
+    "netcdfjs": "^3.0.0",
     "polyline-normals": "^2.0.2",
     "proj4": "^2.9.0",
     "three": "^0.149.0",
