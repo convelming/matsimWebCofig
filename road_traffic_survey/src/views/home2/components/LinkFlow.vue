@@ -1,7 +1,7 @@
 <template>
   <div>
-    <Dialog class="LineFlowDialog" title="Link流量详情" :top="20" :left="20" width="800px" hideMinimize :visible="visible && !open" @close="handleClose">
-      <div class="LineFlow">
+    <Dialog class="LinkFlowDialog" title="Link流量详情" :top="20" :left="20" width="800px" hideMinimize :visible="visible && !open" @close="handleClose">
+      <div class="LinkFlow">
         <div class="_search">
           <el-form ref="form" label-width="auto" :inline="true" size="mini">
             <el-form-item label="路段搜索">
@@ -572,7 +572,7 @@ export default {
     }
   }
 }
-.LineFlow {
+.LinkFlow {
   background-color: #fff;
   ._bodyer {
     box-sizing: border-box;

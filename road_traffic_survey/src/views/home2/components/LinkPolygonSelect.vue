@@ -1,31 +1,39 @@
 <template>
-  <Dialog :top="50" :left="100" width="calc(100vw - 200px)" hideMinimize :visible="visible" @close="handleClose">
+  <Dialog :top="20" :left="20" width="900px" title="区域调查记录" hideMinimize :visible="visible && selectState == POLYGON_SELECT_STATE_KEY.NOT_STARTED" @close="handleClose">
     <div class="FrameLinkDialog">
-      <el-form :model="queryParams" ref="queryForm" :inline="true" label-width="68px" size="small">
-        <el-form-item label="时间" prop="timeList">
-          <el-date-picker v-model="dateRange" type="datetimerange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd HH:mm:ss" />
-        </el-form-item>
-        <el-form-item label="调查方式" prop="type">
-          <el-select v-model="queryParams.type" placeholder="请选择" clearable>
-            <el-option v-for="(v, i) in typeOptions" :key="String(i)" :label="v" :value="String(i)"> </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" icon="el-icon-search" @click="handleQuery">搜索</el-button>
-          <el-button icon="el-icon-refresh" @click="resetQuery">重置</el-button>
-        </el-form-item>
+      <el-form :model="queryParams" ref="queryForm" :inline="true" label-width="auto" size="mini" style="margin-bottom: 20px">
+        <el-row :gutter="20">
+          <el-col :span="24" :offset="0">
+            <el-form-item label="调查区域">
+              <el-button v-if="selectState == POLYGON_SELECT_STATE_KEY.NOT_STARTED" type="primary" size="mini" @click="handlePlayPolygonSelect()">开始圈定</el-button>
+              <template v-if="selectState != POLYGON_SELECT_STATE_KEY.NOT_STARTED">
+                <el-button type="primary" size="mini" @click="handleReplayPolygonSelect()">重新圈定</el-button>
+                <el-button type="primary" size="mini" @click="handleStopPolygonSelect()">结束圈定</el-button>
+              </template>
+            </el-form-item>
+          </el-col>
+          <el-col :span="24" :offset="0">
+            <el-form-item label="时间" prop="timeList">
+              <el-date-picker v-model="dateRange" type="datetimerange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd HH:mm:ss" />
+            </el-form-item>
+            <el-form-item label="调查方式" prop="type">
+              <el-select v-model="queryParams.type" placeholder="请选择" clearable>
+                <el-option v-for="(v, i) in typeOptions" :key="String(i)" :label="v" :value="String(i)"> </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item> </el-form-item>
+          </el-col>
+          <el-col :span="24" :offset="0">
+            <div style="display: flex">
+              <el-button type="primary" icon="el-icon-search" @click="handleQuery" size="mini">搜索</el-button>
+              <el-button icon="el-icon-refresh" @click="resetQuery" size="mini">重置</el-button>
+              <el-button style="margin-left: auto" type="warning" plain icon="el-icon-download" :loading="exportLoading" @click="handleExport" :disabled="multiple" size="mini">导出</el-button>
+              <el-button type="warning" plain icon="el-icon-download" :loading="exportAllLoading" @click="handleExportAll" size="mini">导出全部</el-button>
+            </div>
+          </el-col>
+        </el-row>
       </el-form>
-
-      <el-row :gutter="10" class="mb8">
-        <el-col :span="1.5">
-          <el-button type="warning" plain icon="el-icon-download" :loading="exportLoading" @click="handleExport" :disabled="multiple" size="small">导出</el-button>
-        </el-col>
-        <el-col :span="1.5">
-          <el-button type="warning" plain icon="el-icon-download" :loading="exportAllLoading" @click="handleExportAll" size="small">导出全部</el-button>
-        </el-col>
-      </el-row>
-
-      <el-table class="small" v-loading="loading" :data="dataList" @selection-change="handleSelectionChange" height="calc(100vh - 300px)">
+      <el-table class="small" v-loading="loading" :data="dataList" @selection-change="handleSelectionChange" height="calc(100vh - 400px)">
         <el-table-column type="selection" width="55" align="center" />
         <el-table-column label="记录编号" align="center" prop="id" />
         <el-table-column label="路段编号" align="center" prop="linkId" />
@@ -37,19 +45,24 @@
         <el-table-column label="pcu/h" align="center" prop="pcuH" />
         <el-table-column label="备注" align="center" prop="remark" :show-overflow-tooltip="true" />
       </el-table>
-
       <pagination style="line-height: 1; padding-top: 20px" v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
     </div>
   </Dialog>
 </template>
 
 <script>
+import { FrameSelectLayer, FRAME_SELECT_STATE_KEY, FRAME_SELECT_EVENT } from "../layer/FrameSelectLayer";
+import { PolygonSelectLayer, POLYGON_SELECT_STATE_KEY, POLYGON_SELECT_EVENT } from "../layer/PolygonSelectLayer";
 import { statsQueryByArea, statsExport } from "@/api/index";
 
 export default {
+  inject: ["rootVue"],
   props: {
     visible: {
       type: Boolean,
+    },
+    selectState: {
+      type: Number,
     },
     xyarr: {
       type: Array,
@@ -79,8 +92,12 @@ export default {
   },
   data() {
     return {
+      FRAME_SELECT_STATE_KEY,
+      FRAME_SELECT_EVENT,
+      POLYGON_SELECT_STATE_KEY,
+      POLYGON_SELECT_EVENT,
       // 遮罩层
-      loading: true,
+      loading: false,
       // 导出遮罩层
       exportLoading: false,
       exportAllLoading: false,
@@ -250,6 +267,21 @@ export default {
         .catch((error) => {
           this.exportAllLoading = false;
         });
+    },
+    handlePlayPolygonSelect() {
+      if (this.rootVue) {
+        this.rootVue.handlePlayPolygonSelect();
+      }
+    },
+    handleReplayPolygonSelect() {
+      if (this.rootVue) {
+        this.rootVue.handleReplayPolygonSelect();
+      }
+    },
+    handleStopPolygonSelect() {
+      if (this.rootVue) {
+        this.rootVue.handleStopPolygonSelect();
+      }
     },
   },
 };

@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { Layer, MAP_EVENT } from "@/mymap/index.js";
-import { isDoubleClick } from "@/mymap/utils/index"
+import { isDoubleClick } from "@/mymap/utils/index";
 export const POLYGON_SELECT_STATE_KEY = {
   NOT_STARTED: 0, // 未开始框选
   CAN_START: 1, // 可以开始框选
@@ -46,7 +46,10 @@ export class PolygonSelectLayer extends Layer {
       // depthWrite: false
     });
     this.geometry2 = new THREE.BufferGeometry();
-    this.mesh2 = new THREE.LineLoop(this.geometry2, this.material2)
+    this.mesh2 = new THREE.LineLoop(this.geometry2, this.material2);
+
+    this.scene.add(this.mesh1);
+    this.scene.add(this.mesh2);
   }
 
   on(type, data) {
@@ -56,7 +59,7 @@ export class PolygonSelectLayer extends Layer {
       this.mesh2.position.set(x, y, 0);
     }
     if (type == MAP_EVENT.HANDLE_CLICK_LEFT) {
-      isDoubleClick(this.id, 250, res => {
+      isDoubleClick(this.id, 250, (res) => {
         if (!res) {
           if (this.state == POLYGON_SELECT_STATE_KEY.CAN_START) {
             this.state = POLYGON_SELECT_STATE_KEY.IN_PROGREES;
@@ -82,7 +85,7 @@ export class PolygonSelectLayer extends Layer {
             this.handleStateChange();
           }
         }
-      })
+      });
     }
 
     if (type == MAP_EVENT.HANDLE_MOUSE_MOVE) {
@@ -103,26 +106,20 @@ export class PolygonSelectLayer extends Layer {
   }
 
   stop() {
-    this.clearScene();
     this.state = POLYGON_SELECT_STATE_KEY.NOT_STARTED;
-    this.scene.remove(this.mesh1);
-    this.scene.remove(this.mesh2);
     this.handleStateChange();
   }
 
   play() {
     this.state = POLYGON_SELECT_STATE_KEY.CAN_START;
-    this.scene.add(this.mesh1);
-    this.scene.add(this.mesh2);
     this.handleStateChange();
   }
 
   reset() {
-    this.clearScene();
     this.state = POLYGON_SELECT_STATE_KEY.NOT_STARTED;
     this.path = [[0, 0]];
     this.center = [0, 0];
-    this.movePoint = [0, 0]
+    this.movePoint = [0, 0];
     this.update();
     this.handleStateChange();
   }
@@ -175,15 +172,14 @@ export class PolygonSelectLayer extends Layer {
       indices.push(a, b, c);
     }
 
-
     this.geometry1.setIndex(indices);
-    this.geometry1.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
-    this.geometry1.setAttribute('normal', new THREE.Float32BufferAttribute(normals, 3));
-    this.geometry1.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
+    this.geometry1.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
+    this.geometry1.setAttribute("normal", new THREE.Float32BufferAttribute(normals, 3));
+    this.geometry1.setAttribute("uv", new THREE.Float32BufferAttribute(uvs, 2));
     this.geometry1.needsUpdate = true;
     this.geometry1.computeBoundingSphere();
 
-    this.geometry2.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+    this.geometry2.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
     this.geometry2.needsUpdate = true;
     this.geometry2.computeBoundingSphere();
 

@@ -77,12 +77,12 @@
                 <el-slider :min="1" :max="30" v-model="ruleForm.wayWidth" @change="handleChangeWayWidth"></el-slider>
               </el-form-item> -->
               <el-form-item label="数据录入">
-                <el-button type="primary" size="mini" @click="lineFlow.visible = true">开始录入</el-button>
+                <el-button type="primary" size="mini" @click="linkFlow.visible = true">开始录入</el-button>
               </el-form-item>
               <el-form-item label="数据查询">
-                <el-button type="primary" size="mini" @click="">开始录入</el-button>
+                <el-button type="primary" size="mini" @click="linkFlowQuery.visible = true">开始查询</el-button>
               </el-form-item>
-              <el-collapse style="user-select: none" :value="['1']">
+              <el-collapse style="user-select: none" :value="[]">
                 <el-collapse-item title="显示设置" name="1">
                   <el-form-item label="图标颜色">
                     <div style="display: flex; align-items: center; gap: 10px 20px; flex-wrap: wrap">
@@ -135,9 +135,20 @@
       </div>
     </Dialog>
     <!-- line流量详情 -->
-    <LineFlow :visible.sync="lineFlow.visible" :linkId="lineFlow.linkId" @changeLink="handleChangeLink" @updateData="lineFlowUpdateData" @close="lineFlowClose" />
+    <LinkFlow :visible.sync="linkFlow.visible" :linkId="linkFlow.linkId" @changeLink="handleChangeLink" @updateData="linkFlowUpdateData" @close="linkFlowClose" />
+    <LinkFlowQuery
+      :visible.sync="linkFlowQuery.visible"
+      @clickSelect="
+        linkFlowQuery.visible = false;
+        linkFlow.visible = true;
+      "
+      @FrameSelect="
+        linkFlowQuery.visible = false;
+        linkPolygonSelect.visible = true;
+      "
+    />
     <!-- 区域流量详情 -->
-    <FrameLink :visible.sync="frameLink.visible" :timeList="ruleForm.timeList" :type="ruleForm.type" :xyarr="frameLink.xyarr" />
+    <LinkPolygonSelect :visible.sync="linkPolygonSelect.visible" :xyarr="linkPolygonSelect.xyarr" :selectState="linkPolygonSelect.state" />
     <!-- 视频录入交叉口信息 -->
     <AddIntersection :visible.sync="addIntersection.visible" :params="addIntersection.params" @submited="handleSubmitAddIntersection" @close="handleStopPointSelect" />
     <!-- 交叉口列表 -->
@@ -186,6 +197,7 @@ import { MyMap, MAP_EVENT, MAP_ZOOM_RANGE, MAP_LAYER_STYLE, DEFAULT_MAP_LAYER_ST
 import { WGS84ToMercator } from "@/mymap/utils/LngLatUtils";
 
 import { FrameSelectLayer, FRAME_SELECT_STATE_KEY, FRAME_SELECT_EVENT } from "./layer/FrameSelectLayer";
+import { PolygonSelectLayer, POLYGON_SELECT_STATE_KEY, POLYGON_SELECT_EVENT } from "./layer/PolygonSelectLayer";
 import { PointSelectLayer, POINT_SELECT_STATE_KEY, POINT_SELECT_EVENT } from "./layer/PointSelectLayer";
 import { NetworkLayer } from "./layer/NetworkLayer";
 import { LinkStatsLayer } from "./layer/LinkStatsLayer";
@@ -194,8 +206,9 @@ import { GuangZhouLayer } from "./layer/GuangZhouLayer";
 import { IntersectionListLayer } from "./layer/IntersectionListLayer";
 import { ImageListLayer } from "./layer/ImageListLayer";
 
-import LineFlow from "./components/LineFlow.vue";
-import FrameLink from "./components/FrameLink.vue";
+import LinkFlow from "./components/LinkFlow.vue";
+import LinkFlowQuery from "./components/LinkFlowQuery.vue";
+import LinkPolygonSelect from "./components/LinkPolygonSelect.vue";
 import RouteSelect from "./components/RouteSelect.vue";
 import LinkSelect from "./components/LinkSelect.vue";
 import CenterInput from "./components/CenterInput.vue";
@@ -222,7 +235,12 @@ export default {
   },
   data() {
     return {
-      SHOW_LINK_ZOOM: SHOW_LINK_ZOOM,
+      POLYGON_SELECT_STATE_KEY,
+      POLYGON_SELECT_EVENT,
+      SHOW_LINK_ZOOM,
+      MAP_ZOOM_RANGE,
+      FRAME_SELECT_STATE_KEY,
+      POINT_SELECT_STATE_KEY,
 
       activeNames: ["1", "2", "3", "4"],
       // activeNames: ["4"],
@@ -244,17 +262,23 @@ export default {
         routeId: null,
         linkId: null,
       },
-      MAP_ZOOM_RANGE: MAP_ZOOM_RANGE,
-      FRAME_SELECT_STATE_KEY: FRAME_SELECT_STATE_KEY,
-      POINT_SELECT_STATE_KEY: POINT_SELECT_STATE_KEY,
 
-      lineFlow: {
+      linkFlow: {
+        visible: false,
+        linkId: null,
+      },
+      linkFlowQuery: {
         visible: false,
         linkId: null,
       },
       frameLink: {
         visible: false,
         xyarr: null,
+      },
+      linkPolygonSelect: {
+        visible: true,
+        xyarr: null,
+        state: POLYGON_SELECT_STATE_KEY.NOT_STARTED,
       },
       frameCrossroads: {
         visible: false,
@@ -325,14 +349,15 @@ export default {
       styleList: [],
       styleActive: 0,
 
-      showLinkStatsLayer: true,
-      showIntersectionListLayer: true,
-      showImageListLayer: true,
+      showLinkStatsLayer: false,
+      showIntersectionListLayer: false,
+      showImageListLayer: false,
     };
   },
   components: {
-    LineFlow,
-    FrameLink,
+    LinkFlow,
+    LinkFlowQuery,
+    LinkPolygonSelect,
     HelpDialog,
     RouteSelect,
     LinkSelect,
@@ -359,7 +384,9 @@ export default {
         !this.crossroadsDetail.visible &&
         !this.imageDialog.visible &&
         !this.imageListDialog.visible &&
-        !this.lineFlow.visible
+        !this.linkFlow.visible &&
+        !this.linkPolygonSelect.visible &&
+        !this.linkFlowQuery.visible
       );
     },
     showCrossroadsList() {
@@ -399,6 +426,15 @@ export default {
         }
       },
       deep: true,
+    },
+    "linkPolygonSelect.visible": {
+      handler(val) {
+        if (val) {
+          this._Map.addLayer(this._PolygonSelectLayer);
+        } else {
+          this._Map.removeLayer(this._PolygonSelectLayer);
+        }
+      },
     },
   },
   created() {
@@ -443,7 +479,7 @@ export default {
         lineWidth: this.ruleForm.wayWidth,
         event: {
           [MAP_EVENT.HANDLE_PICK_LEFT]: (res) => {
-            this.lineFlow = {
+            this.linkFlow = {
               visible: false,
               linkId: null,
             };
@@ -506,6 +542,22 @@ export default {
           },
         },
       });
+
+      this._PolygonSelectLayer = new PolygonSelectLayer({
+        zIndex: 200,
+        event: {
+          [POLYGON_SELECT_EVENT.STATE_CHANGE]: (res) => {
+            this.linkPolygonSelect.state = res.data.state;
+            if (this.linkPolygonSelect.state === POLYGON_SELECT_STATE_KEY.ENDED) {
+              const path = res.data.path;
+              path[path.length] = [...path[0]];
+              this.handleStopPolygonSelect();
+              this.linkPolygonSelect.xyarr = path;
+            }
+          },
+        },
+      });
+
       this._PointSelectLayer = new PointSelectLayer({
         zIndex: 120,
         color: "#ff0000",
@@ -560,6 +612,7 @@ export default {
       if (this.showIntersectionListLayer) this._Map.addLayer(this._IntersectionListLayer);
       if (this.showImageListLayer) this._Map.addLayer(this._ImageListLayer);
       this._Map.addLayer(this._FrameSelectLayer);
+      if (this.linkPolygonSelect.visible) this._Map.addLayer(this._PolygonSelectLayer);
       this._Map.addLayer(this._PointSelectLayer);
       this._Map.addLayer(this._GuangZhouLayer);
       this._Map.addLayer(this._HuangPuLayer);
@@ -603,7 +656,7 @@ export default {
     // ****************************** 加载基础数据 -- start
     // ****************************** 路段流量录入 -- start
     handleChangeLink(data) {
-      this.lineFlow = {
+      this.linkFlow = {
         visible: true,
         linkId: data.id,
       };
@@ -616,7 +669,7 @@ export default {
       this._Map.setCenter(center);
       this._LinkLayer.setSelectId(data.id);
     },
-    lineFlowUpdateData() {
+    linkFlowUpdateData() {
       this.handleLoadMaker();
       if (this.selectRouteId) {
         getMatsimLink(this.selectRouteId).then((res) => {
@@ -624,7 +677,7 @@ export default {
         });
       }
     },
-    lineFlowClose() {
+    linkFlowClose() {
       if (this.selectRouteId) {
         getMatsimLink(this.selectRouteId).then((res) => {
           this._LinkLayer.setData(res.data);
@@ -846,6 +899,29 @@ export default {
       this._ImageListLayer.setHMesh(row);
     },
     // ******************************* 图片 -- end
+
+    handlePlayPolygonSelect() {
+      if (this._PolygonSelectLayer) {
+        this._PolygonSelectLayer.reset();
+        this._PolygonSelectLayer.play();
+        this.linkPolygonSelect.state = this._PolygonSelectLayer.state;
+      }
+    },
+    handleReplayPolygonSelect() {
+      if (this._PolygonSelectLayer) {
+        this._PolygonSelectLayer.reset();
+        this._PolygonSelectLayer.play();
+        this.linkPolygonSelect.state = this._PolygonSelectLayer.state;
+      }
+    },
+    handleStopPolygonSelect() {
+      if (this._PolygonSelectLayer) {
+        // this._PolygonSelectLayer.reset();
+        this._PolygonSelectLayer.stop();
+        this.linkPolygonSelect.state = this._PolygonSelectLayer.state;
+        this.$emit("update:lock2D", false);
+      }
+    },
   },
 };
 </script>
