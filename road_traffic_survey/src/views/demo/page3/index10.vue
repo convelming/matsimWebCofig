@@ -22,6 +22,9 @@ export default {
   async mounted() {
     this.initMap();
   },
+  beforeDestroy() {
+    if (this._Map) this._Map.dispose();
+  },
   methods: {
     initMap() {
       this._Map = new MyMap({

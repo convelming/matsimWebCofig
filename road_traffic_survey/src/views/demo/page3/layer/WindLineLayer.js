@@ -84,4 +84,9 @@ export class WindLineLayer extends Layer {
       }
     }, 1000 / 60);
   }
+
+  dispose() {
+    super.dispose();
+    clearInterval(this._interval);
+  }
 }

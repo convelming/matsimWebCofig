@@ -386,6 +386,7 @@ export default {
   },
   beforeDestroy() {
     window.removeEventListener("resize", this.resizeChart.bind(this));
+    if(this._Map) this._Map.dispose();
   },
   methods: {
     async loadMapData() {
