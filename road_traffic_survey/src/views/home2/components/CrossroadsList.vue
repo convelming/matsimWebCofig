@@ -89,7 +89,7 @@ export default {
 
         name: "",
         pageNum: 1,
-        pageSize: 99999999,
+        pageSize: 100,
         total: 0,
       },
 

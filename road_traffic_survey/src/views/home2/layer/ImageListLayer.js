@@ -13,8 +13,8 @@ export class ImageListLayer extends Layer {
     super(opt);
     this.size = opt.size || 100;
     this.data = opt.data;
-    this.color = opt.color || new THREE.Color("orange");
-    this.hColor = opt.hColor || new THREE.Color("#67C23A");
+    this.color = new THREE.Color(opt.color || "orange");
+    this.hColor = new THREE.Color(opt.hColor || "#67C23A");
 
     this.texture = new THREE.TextureLoader().load(opt.texture || require("@/assets/image/image.svg"));
 
@@ -122,10 +122,20 @@ export class ImageListLayer extends Layer {
     this.data = data;
     this.update();
   }
+  setColor(color) {
+    this.color = color;
+    this.material.setValues({ color: color });
+    this.material.needsUpdate = true;
+  }
+  setHColor(hColor) {
+    this.hColor = hColor;
+    this.hMaterial.setValues({ color: hColor });
+    this.hMaterial.needsUpdate = true;
+  }
 
   setHMesh(data) {
     console.log(data);
-    
+
     if (!!data) {
       const center = [data.x, data.y];
       this.hMesh.userData.center = center;

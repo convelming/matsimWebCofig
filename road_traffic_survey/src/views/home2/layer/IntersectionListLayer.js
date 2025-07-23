@@ -2,13 +2,21 @@ import * as THREE from "three";
 import { Layer, MAP_EVENT } from "@/mymap/index.js";
 
 export const COLOR_LIST = {
-  0: new THREE.Color(0x909399), // 等待划线 灰色
-  1: new THREE.Color(0x409eff), // 等待运行 蓝色
-  2: new THREE.Color(0xe6a23c), // 正在运行 黄色
-  3: new THREE.Color(0x67c23a), // 运行成功 绿色
-  4: new THREE.Color(0xf56c6c), // 运行失败 红色
+  1: "#409eff", // 有数据 蓝色
+  0: "#909399", // 无数据 灰色
 };
 export const DEFAULT_COLOR = COLOR_LIST[0];
+
+export function getColor(types, colors) {
+  try {
+    const typeList = String(types).split(",");
+    const colorList = typeList.map((type) => new THREE.Color(colors[type] || COLOR_LIST[0]).getHex());
+    const sum = colorList.reduce((acc, num) => acc + num, 0);
+    return new THREE.Color(sum / colorList.length);
+  } catch (error) {
+    return DEFAULT_COLOR;
+  }
+}
 
 export class IntersectionListLayer extends Layer {
   name = "IntersectionListLayer";
@@ -20,7 +28,7 @@ export class IntersectionListLayer extends Layer {
     super(opt);
     this.size = opt.size || 100;
     this.data = opt.data;
-    this.color = opt.color || DEFAULT_COLOR;
+    this.colors = opt.colors || COLOR_LIST;
 
     this.texture = new THREE.TextureLoader().load(opt.texture || require("@/assets/image/intersection.svg"));
 
@@ -114,6 +122,11 @@ export class IntersectionListLayer extends Layer {
     this.update();
   }
 
+  setColors(colors) {
+    this.colors = colors || COLOR_LIST;
+    this.update();
+  }
+
   update() {
     if (!this.map) return;
     if (!this.data) return;
@@ -129,7 +142,8 @@ export class IntersectionListLayer extends Layer {
       positions.setXYZ(i, v.x - center[0], v.y - center[1], 0);
       const pickColor = new THREE.Color(i + 1);
       pickColors.setXYZ(i, pickColor.r, pickColor.g, pickColor.b);
-      const color = COLOR_LIST[v.status] || COLOR_LIST[1];
+      const color = getColor(v.status, this.colors) || DEFAULT_COLOR;
+
       colors.setXYZ(i, color.r, color.g, color.b);
     }
 

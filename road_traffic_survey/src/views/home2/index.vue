@@ -39,50 +39,13 @@
           <el-collapse-item name="2">
             <el-checkbox slot="title" v-model="showLinkStatsLayer" label="路段流量"></el-checkbox>
             <el-form class="setting_form" label-position="left" label-width="100px" :inline="false" size="small">
-              <!-- <el-form-item label="显示图层">
-                <el-switch v-model="showLinkStatsLayer" />
-              </el-form-item>
-              <el-form-item label="调查时间">
-                <el-date-picker style="width: 100%" v-model="ruleForm.timeList" type="datetimerange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd HH:mm:ss" @change="handleLoadMaker" />
-              </el-form-item>
-              <el-form-item label="调查方式">
-                <el-select style="width: 100%" v-model="ruleForm.type" clearable @change="handleLoadMaker">
-                  <el-option v-for="(v, i) in typeOptions" :key="i" :label="v" :value="String(i)"> </el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item label="区域框选">
-                <div slot="label">
-                  <span>区域框选&nbsp;</span>
-                  <el-tooltip placement="top">
-                    <div slot="content">
-                      <div>1，单击鼠标左键选定开始坐标</div>
-                      <div>2，拖动鼠标划定范围</div>
-                      <div>3，单击鼠标左键选定结束坐标</div>
-                    </div>
-                    <i class="el-icon-question"></i>
-                  </el-tooltip>
-                </div>
-                <div v-if="ruleForm.frameSelectState == FRAME_SELECT_STATE_KEY.NOT_STARTED">
-                  <el-button type="primary" @click="handlePlayFrameSelect">开始框选</el-button>
-                </div>
-                <div>
-                  <el-button v-if="frameLink.xyarr" type="primary" @click.stop="handleShowFrameLink">开始查询</el-button>
-                  <el-button v-if="ruleForm.frameSelectState != FRAME_SELECT_STATE_KEY.NOT_STARTED" type="primary" @click="handleStopFrameSelect">停止框选</el-button>
-                </div>
-              </el-form-item>
-              <el-form-item label="路段偏移">
-                <el-slider :min="0" :max="30" :step="0.2" v-model="ruleForm.twoWayOffset" @change="handleChangeTwoWayOffset"></el-slider>
-              </el-form-item>
-              <el-form-item label="路段宽度">
-                <el-slider :min="1" :max="30" v-model="ruleForm.wayWidth" @change="handleChangeWayWidth"></el-slider>
-              </el-form-item> -->
               <el-form-item label="数据录入">
                 <el-button type="primary" size="mini" @click="linkFlow.visible = true">开始录入</el-button>
               </el-form-item>
               <el-form-item label="数据查询">
                 <el-button type="primary" size="mini" @click="linkFlowQuery.visible = true">开始查询</el-button>
               </el-form-item>
-              <el-collapse style="user-select: none" :value="[]">
+              <el-collapse style="user-select: none" v-model="activeNames1">
                 <el-collapse-item title="显示设置" name="1">
                   <el-form-item label="图标颜色">
                     <div style="display: flex; align-items: center; gap: 10px 20px; flex-wrap: wrap">
@@ -105,30 +68,52 @@
           <el-collapse-item name="3">
             <el-checkbox slot="title" v-model="showIntersectionListLayer" label="交叉口"></el-checkbox>
             <el-form class="setting_form" label-position="left" label-width="100px" :inline="false" size="small">
-              <!-- <el-form-item label="显示图层">
-                <el-switch v-model="showIntersectionListLayer" />
-              </el-form-item> -->
-              <el-form-item label="新增">
-                <el-button v-if="ruleForm.pointSelectState == POINT_SELECT_STATE_KEY.DISABLE" type="primary" @click="handlePlayPointSelect">开始点选</el-button>
-                <el-button v-else-if="ruleForm.pointSelectState == POINT_SELECT_STATE_KEY.ENABLE" type="primary" @click="handleStopPointSelect">停止点选</el-button>
+              <el-form-item label="数据录入">
+                <el-button type="primary" @click="crossroadsInstall.visible = true">开始录入</el-button>
               </el-form-item>
-              <el-form-item label="调查记录">
-                <el-button type="primary" @click="crossroadsList.visible = true">查看全部</el-button>
+              <el-form-item label="数据调查">
+                <el-button type="primary" @click="crossroadsList.visible = true">开始查询</el-button>
               </el-form-item>
+              <el-collapse style="user-select: none" v-model="activeNames2">
+                <el-collapse-item title="显示设置" name="1">
+                  <el-form-item label="图标颜色">
+                    <div style="display: flex; align-items: center; gap: 10px 20px; flex-wrap: wrap">
+                      <div style="display: flex; align-items: center; gap: 5px" v-for="(v, i) in intersectionStateOptions" :key="i">
+                        <div>{{ v }}</div>
+                        <el-color-picker v-model="intersectionStateColorOptions[i]"></el-color-picker>
+                      </div>
+                    </div>
+                  </el-form-item>
+                </el-collapse-item>
+              </el-collapse>
             </el-form>
           </el-collapse-item>
           <el-collapse-item name="4">
             <el-checkbox slot="title" v-model="showImageListLayer" label="图片上传"></el-checkbox>
+
             <el-form class="setting_form" label-position="left" label-width="100px" :inline="false" size="small">
-              <!-- <el-form-item label="显示图层">
-                <el-switch v-model="showImageListLayer" />
-              </el-form-item> -->
-              <el-form-item label="选择文件">
+              <el-form-item label="数据录入">
                 <UploadImageZip />
               </el-form-item>
-              <el-form-item label="文件列表">
-                <el-button type="primary" size="small" @click="imageListDialog.visible = true">显示弹窗</el-button>
+              <el-form-item label="数据调查">
+                <el-button type="primary" size="small" @click="imageListDialog.visible = true">开始查询</el-button>
               </el-form-item>
+              <el-collapse style="user-select: none" v-model="activeNames3">
+                <el-collapse-item title="显示设置" name="1">
+                  <el-form-item label="图标颜色">
+                    <div style="display: flex; align-items: center; gap: 10px 20px; flex-wrap: wrap">
+                      <div style="display: flex; align-items: center; gap: 5px">
+                        <div>图标颜色</div>
+                        <el-color-picker v-model="imageListColor"></el-color-picker>
+                      </div>
+                      <div style="display: flex; align-items: center; gap: 5px">
+                        <div>选中颜色</div>
+                        <el-color-picker v-model="imageListHColor"></el-color-picker>
+                      </div>
+                    </div>
+                  </el-form-item>
+                </el-collapse-item>
+              </el-collapse>
             </el-form>
           </el-collapse-item>
         </el-collapse>
@@ -136,6 +121,7 @@
     </Dialog>
     <!-- line流量详情 -->
     <LinkFlow :visible.sync="linkFlow.visible" :linkId="linkFlow.linkId" @changeLink="handleChangeLink" @updateData="linkFlowUpdateData" @close="linkFlowClose" />
+    <!-- line流量查询 -->
     <LinkFlowQuery
       :visible.sync="linkFlowQuery.visible"
       @clickSelect="
@@ -168,6 +154,8 @@
     <ManuallyEnteringCrossroads :visible.sync="manuallyEnteringCrossroads.visible" :params="manuallyEnteringCrossroads.params" @submited="handleSubmitManuallyEnteringCrossroads" />
     <!-- 交叉口绘制检测线 -->
     <DrawLine :visible.sync="drawLine.visible" :params="drawLine.params" @submited="handleDrawLineSuccess" />
+    <!-- 交叉口信息录入 -->
+    <CrossroadsInstall :visible.sync="crossroadsInstall.visible" :state="crossroadsInstall.state" @add="handlePlayPointSelect" @stop="handleStopPointSelect" @search="handleSubmitAddIntersection" />
     <!-- 交叉口详情 -->
     <CrossroadsDetail :visible.sync="crossroadsDetail.visible" :params="crossroadsDetail.params" />
     <!-- 编辑交叉口流量线 -->
@@ -201,9 +189,9 @@ import { PolygonSelectLayer, POLYGON_SELECT_STATE_KEY, POLYGON_SELECT_EVENT } fr
 import { PointSelectLayer, POINT_SELECT_STATE_KEY, POINT_SELECT_EVENT } from "./layer/PointSelectLayer";
 import { NetworkLayer } from "./layer/NetworkLayer";
 import { LinkStatsLayer } from "./layer/LinkStatsLayer";
-import { LinkLayer, COLOR_LIST } from "./layer/LinkLayer";
+import { LinkLayer, COLOR_LIST as LinkColorList } from "./layer/LinkLayer";
 import { GuangZhouLayer } from "./layer/GuangZhouLayer";
-import { IntersectionListLayer } from "./layer/IntersectionListLayer";
+import { IntersectionListLayer, COLOR_LIST as IntersectionColorList } from "./layer/IntersectionListLayer";
 import { ImageListLayer } from "./layer/ImageListLayer";
 
 import LinkFlow from "./components/LinkFlow.vue";
@@ -216,6 +204,7 @@ import HelpDialog from "./components/HelpDialog/index.vue";
 import VideoInputCrossroads from "./components/VideoInputCrossroads.vue";
 import ManuallyEnteringCrossroads from "./components/ManuallyEnteringCrossroads.vue";
 import DrawLine from "./components/DrawLine.vue";
+import CrossroadsInstall from "./components/CrossroadsInstall.vue";
 import CrossroadsDetail from "./components/CrossroadsDetail.vue";
 import CrossroadsStatsEdit from "./components/CrossroadsStatsEdit.vue";
 import CrossroadsList from "./components/CrossroadsList.vue";
@@ -253,8 +242,6 @@ export default {
         zoom: 13,
         wayWidth: 5,
         twoWayOffset: 10,
-        frameSelectState: FRAME_SELECT_STATE_KEY.NOT_STARTED,
-        pointSelectState: POINT_SELECT_STATE_KEY.DISABLE,
         timeList: [],
         type: null,
         routeName: null,
@@ -276,7 +263,7 @@ export default {
         xyarr: null,
       },
       linkPolygonSelect: {
-        visible: true,
+        visible: false,
         xyarr: null,
         state: POLYGON_SELECT_STATE_KEY.NOT_STARTED,
       },
@@ -295,6 +282,10 @@ export default {
       drawLine: {
         visible: false,
         params: {},
+      },
+      crossroadsInstall: {
+        visible: false,
+        state: POINT_SELECT_STATE_KEY.DISABLE,
       },
       crossroadsStatsEdit: {
         visible: false,
@@ -328,7 +319,16 @@ export default {
         2: "视频识别",
         3: "互联网路况估算",
       },
-      typeColorOptions: JSON.parse(JSON.stringify(COLOR_LIST)),
+      typeColorOptions: JSON.parse(JSON.stringify(LinkColorList)),
+
+      intersectionOptions: {
+        0: "其他",
+        1: "其他",
+        2: "其他",
+        3: "其他",
+        4: "其他",
+        5: "其他",
+      },
       videoTypeOptions: {
         0: "未知",
         1: "俯视航拍",
@@ -344,10 +344,21 @@ export default {
         5: "等待录入",
         6: "录入成功",
       },
+      intersectionStateOptions: {
+        1: "有数据",
+        0: "无数据",
+      },
+      intersectionStateColorOptions: JSON.parse(JSON.stringify(IntersectionColorList)),
 
       showStyleMenu: false,
       styleList: [],
       styleActive: 0,
+      intersectionListData: [],
+      imageListColor: "#ffa500",
+      imageListHColor: "#67C23A",
+      activeNames1: [],
+      activeNames2: [],
+      activeNames3: [],
 
       showLinkStatsLayer: false,
       showIntersectionListLayer: false,
@@ -364,6 +375,7 @@ export default {
     CenterInput,
     VideoInputCrossroads,
     DrawLine,
+    CrossroadsInstall,
     CrossroadsDetail,
     CrossroadsStatsEdit,
     ManuallyEnteringCrossroads,
@@ -381,6 +393,7 @@ export default {
         !this.manuallyEnteringCrossroads.visible &&
         !this.drawLine.visible &&
         !this.crossroadsStatsEdit.visible &&
+        !this.crossroadsInstall.visible &&
         !this.crossroadsDetail.visible &&
         !this.imageDialog.visible &&
         !this.imageListDialog.visible &&
@@ -417,12 +430,35 @@ export default {
     },
     typeColorOptions: {
       handler(val) {
-        console.log("typeColorOptions");
         if (this._LinkStatsLayer) {
           this._LinkStatsLayer.setColors(val);
         }
         if (this._LinkLayer) {
           this._LinkLayer.setColors(val);
+        }
+      },
+      deep: true,
+    },
+    intersectionStateColorOptions: {
+      handler(val) {
+        if (this._IntersectionListLayer) {
+          this._IntersectionListLayer.setColors(val);
+        }
+      },
+      deep: true,
+    },
+    imageListColor: {
+      handler(val) {
+        if (this._ImageListLayer) {
+          this._ImageListLayer.setColor(val);
+        }
+      },
+      deep: true,
+    },
+    imageListHColor: {
+      handler(val) {
+        if (this._ImageListLayer) {
+          this._ImageListLayer.setHColor(val);
         }
       },
       deep: true,
@@ -515,6 +551,7 @@ export default {
       });
       this._IntersectionListLayer = new IntersectionListLayer({
         zIndex: 110,
+        colors: this.intersectionStateColorOptions,
         event: {
           [MAP_EVENT.HANDLE_PICK_LEFT]: (res) => {
             this.handleSubmitAddIntersection(res.data);
@@ -523,22 +560,11 @@ export default {
       });
       this._ImageListLayer = new ImageListLayer({
         zIndex: 110,
+        color: this.imageListColor,
+        hColor: this.imageListHColor,
         event: {
           [MAP_EVENT.HANDLE_PICK_LEFT]: (res) => {
             this.handleShowImageDialog(res.data);
-          },
-        },
-      });
-      this._FrameSelectLayer = new FrameSelectLayer({
-        zIndex: 50,
-        event: {
-          [FRAME_SELECT_EVENT.STATE_CHANGE]: (res) => {
-            this.ruleForm.frameSelectState = res.data.state;
-            if (this.ruleForm.frameSelectState === FRAME_SELECT_STATE_KEY.ENDED) {
-              this.frameLink.xyarr = [res.data.xy.rightTop, res.data.xy.rightBottom, res.data.xy.leftBottom, res.data.xy.leftTop];
-            } else {
-              this.frameLink.xyarr = null;
-            }
           },
         },
       });
@@ -557,16 +583,16 @@ export default {
           },
         },
       });
-
       this._PointSelectLayer = new PointSelectLayer({
         zIndex: 120,
         color: "#ff0000",
         event: {
           [POINT_SELECT_EVENT.POINT_CHANGE]: (res) => {
+            this.crossroadsInstall.visible = false;
             this.showAddIntersection(res.data.point);
           },
           [POINT_SELECT_EVENT.STATE_CHANGE]: (res) => {
-            this.ruleForm.pointSelectState = res.data.state;
+            this.crossroadsInstall.state = res.data.state;
           },
         },
       });
@@ -611,7 +637,6 @@ export default {
       if (this.showLinkStatsLayer) this._Map.addLayer(this._LinkStatsLayer);
       if (this.showIntersectionListLayer) this._Map.addLayer(this._IntersectionListLayer);
       if (this.showImageListLayer) this._Map.addLayer(this._ImageListLayer);
-      this._Map.addLayer(this._FrameSelectLayer);
       if (this.linkPolygonSelect.visible) this._Map.addLayer(this._PolygonSelectLayer);
       this._Map.addLayer(this._PointSelectLayer);
       this._Map.addLayer(this._GuangZhouLayer);
@@ -645,6 +670,7 @@ export default {
         pageNum: 1,
       };
       intersectionList(params).then((res) => {
+        this.intersectionListData = res.data.data;
         this._IntersectionListLayer.setData(res.data.data);
       });
     },
@@ -718,46 +744,6 @@ export default {
       }
     },
     // ****************************** 图层样式更新 -- start
-    // ****************************** 数据筛选 -- 区域框选 -- start
-    handleShowFrameLink() {
-      this.frameLink.visible = true;
-    },
-    handlePlayFrameSelect() {
-      this.handleStopFrameSelect();
-
-      this.frameLink = {
-        visible: false,
-        xyarr: null,
-      };
-      if (this._FrameSelectLayer) {
-        this._FrameSelectLayer.reset();
-        this._FrameSelectLayer.play();
-        this.ruleForm.frameSelectState = this._FrameSelectLayer.state;
-      }
-    },
-    handleReplayFrameSelect() {
-      this.frameLink = {
-        visible: false,
-        xyarr: null,
-      };
-      if (this._FrameSelectLayer) {
-        this._FrameSelectLayer.reset();
-        this._FrameSelectLayer.play();
-        this.ruleForm.frameSelectState = this._FrameSelectLayer.state;
-      }
-    },
-    handleStopFrameSelect() {
-      this.frameLink = {
-        visible: false,
-        xyarr: null,
-      };
-      if (this._FrameSelectLayer) {
-        this._FrameSelectLayer.reset();
-        this._FrameSelectLayer.stop();
-        this.ruleForm.frameSelectState = this._FrameSelectLayer.state;
-      }
-    },
-    // ****************************** 数据筛选 -- 区域框选 -- end
     // ******************************* 选择交叉口大概位置 -- start
     handlePlayPointSelect() {
       this._PointSelectLayer.state = POINT_SELECT_STATE_KEY.ENABLE;
@@ -771,6 +757,7 @@ export default {
       this.addIntersection.visible = true;
     },
     handleSubmitAddIntersection(res) {
+      this.crossroadsInstall.visible = false;
       this.handleLoadIntersectionList();
       this.addIntersection.visible = false;
       this.crossroadsList.params = res || {};
@@ -900,6 +887,7 @@ export default {
     },
     // ******************************* 图片 -- end
 
+    // ****************************** 数据筛选 -- 区域框选 -- start
     handlePlayPolygonSelect() {
       if (this._PolygonSelectLayer) {
         this._PolygonSelectLayer.reset();
@@ -922,6 +910,7 @@ export default {
         this.$emit("update:lock2D", false);
       }
     },
+    // ****************************** 数据筛选 -- 区域框选 -- end
   },
 };
 </script>
