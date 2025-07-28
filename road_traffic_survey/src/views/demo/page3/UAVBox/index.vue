@@ -398,7 +398,7 @@ export default {
 
         setInterval(() => {
           for (const mesh of lxjs) {
-            mesh.rotation.z += Math.PI / 10;
+            mesh.rotation.z += (Math.PI * 2) / 60;
             if (mesh.rotation.z >= 2 * Math.PI) mesh.rotation.z = 0;
           }
         }, 1000 / 60);

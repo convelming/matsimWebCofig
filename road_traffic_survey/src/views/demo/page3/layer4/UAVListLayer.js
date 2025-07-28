@@ -63,7 +63,7 @@ export class UAVListLayer extends Layer {
       });
       gltf.interval = setInterval(() => {
         for (const mesh of gltf.lxjs) {
-          mesh.rotation.z += Math.PI / 30;
+          mesh.rotation.z += (Math.PI * 2) / 60;
           if (mesh.rotation.z >= 2 * Math.PI) mesh.rotation.z = 0;
         }
       }, 1000 / 60);
