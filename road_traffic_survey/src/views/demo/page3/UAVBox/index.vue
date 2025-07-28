@@ -23,6 +23,7 @@
 
 <script>
 import * as THREE from "three";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { STLLoader } from "three/addons/loaders/STLLoader.js";
 import { OBJLoader } from "three/addons/loaders/OBJLoader.js";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
@@ -375,15 +376,8 @@ export default {
       // }, 1000 / 60);
     },
     addUAV() {
-      // new OBJLoader().load("http://127.0.0.1:5500/%E6%97%A0%E4%BA%BA%E6%9C%BA%20(1).obj", (object) => {
-      //   console.log(object);
-      //   this._world.add(object);
-      // });
-      new STLLoader().load(process.env.VUE_APP_BASE_API + "/models/无人机.stl", (geometry) => {
-        const m4 = new THREE.Matrix4().makeScale(this.boxSize, this.boxSize, this.boxSize);
-        m4.multiply(new THREE.Matrix4().makeRotationZ(-Math.PI / 2));
-        geometry.applyMatrix4(m4);
-        // const material = new THREE.MeshLambertMaterial({ color: 0xff0000 })
+      new GLTFLoader().load(process.env.VUE_APP_BASE_API + "/models/无人机.glb", (gltf) => {
+        let lxjs = [];
         const material = new THREE.MeshPhongMaterial({
           color: 0xff0000,
           transparent: true,
@@ -391,12 +385,28 @@ export default {
           shininess: 90,
           side: THREE.DoubleSide,
         });
-        const mesh = new THREE.Mesh(geometry, material);
-        // mesh.position.set(0, this.boxSize * 0.5, 0);
-        // this.addClipingBox(material, mesh.position, this.boxSize * 0.5);
+        gltf.scene.rotation.z = -Math.PI / 2;
+        gltf.scene.traverse((child) => {
+          console.log(child.isMesh);
+          if (child.isMesh) {
+            child.material = material;
+          }
+          if (child.isMesh && String(child.name || "").includes("螺旋桨")) {
+            lxjs.push(child);
+          }
+        });
+
+        setInterval(() => {
+          for (const mesh of lxjs) {
+            mesh.rotation.z += Math.PI / 10;
+            if (mesh.rotation.z >= 2 * Math.PI) mesh.rotation.z = 0;
+          }
+        }, 1000 / 60);
+
+        const mesh = new THREE.Group();
+        mesh.add(gltf.scene);
         this._world.add(mesh);
 
-        // new TWEEN.Tween(mesh.rotation).to({ x: 0.1, y: 0, z: 0 }, 1000).to({ x: 0.1, y: 0.1, z: 0 }, 1000).to({ x: 0, y: 0.1, z: 0 }, 1000).to({ x: 0, y: 0.1, z: 0.1 }, 1000).to({ x: 0, y: 0, z: 0.1 }, 1000).to({ x: 0, y: 0, z: 0 }, 1000).start();
         const animationTime = 2.5;
         // 创建动画混合器
         const mixer = new THREE.AnimationMixer(mesh);
@@ -408,7 +418,6 @@ export default {
         // 创建旋转关键帧
         const Qvalues = [0, 0, 0, 1, 0.1, 0, 0, 1, 0, 0, 0, 1, -0.1, 0, 0, 1, 0, 0, 0, 1];
         const Qtimes = Array.from({ length: Qvalues.length / 4 }).map((v, i) => (animationTime * i) / (Qvalues.length / 4 - 1));
-        console.log(Qtimes);
 
         const QmoveKeyFrame = new THREE.QuaternionKeyframeTrack(".quaternion", Qtimes, Qvalues);
         const clip = new THREE.AnimationClip("Action", animationTime, [PmoveKeyFrame, QmoveKeyFrame]);
@@ -421,6 +430,49 @@ export default {
           mixer.update(delta);
         });
       });
+
+      // new STLLoader().load(process.env.VUE_APP_BASE_API + "/models/无人机.stl", (geometry) => {
+      //   const m4 = new THREE.Matrix4().makeScale(this.boxSize / 200, this.boxSize / 200, this.boxSize / 200);
+      //   m4.multiply(new THREE.Matrix4().makeRotationZ(-Math.PI / 2));
+      //   geometry.applyMatrix4(m4);
+      //   // const material = new THREE.MeshLambertMaterial({ color: 0xff0000 })
+      //   const material = new THREE.MeshPhongMaterial({
+      //     color: 0xff0000,
+      //     transparent: true,
+      //     opacity: 1,
+      //     shininess: 90,
+      //     side: THREE.DoubleSide,
+      //   });
+      //   const mesh = new THREE.Mesh(geometry, material);
+      //   // mesh.position.set(0, this.boxSize * 0.5, 0);
+      //   // this.addClipingBox(material, mesh.position, this.boxSize * 0.5);
+      //   this._world.add(mesh);
+
+      //   // new TWEEN.Tween(mesh.rotation).to({ x: 0.1, y: 0, z: 0 }, 1000).to({ x: 0.1, y: 0.1, z: 0 }, 1000).to({ x: 0, y: 0.1, z: 0 }, 1000).to({ x: 0, y: 0.1, z: 0.1 }, 1000).to({ x: 0, y: 0, z: 0.1 }, 1000).to({ x: 0, y: 0, z: 0 }, 1000).start();
+      //   const animationTime = 2.5;
+      //   // 创建动画混合器
+      //   const mixer = new THREE.AnimationMixer(mesh);
+      //   // 创建关键帧轨道
+      //   const Pvalues = [0, 0, 0, 3, 0, 0, 0, 3, 3, 0, 0, 3, 0, 0, 0];
+      //   const Ptimes = Array.from({ length: Pvalues.length / 3 }).map((v, i) => (animationTime * i) / (Pvalues.length / 3 - 1));
+      //   const PmoveKeyFrame = new THREE.VectorKeyframeTrack(".position", Ptimes, Pvalues);
+
+      //   // 创建旋转关键帧
+      //   const Qvalues = [0, 0, 0, 1, 0.1, 0, 0, 1, 0, 0, 0, 1, -0.1, 0, 0, 1, 0, 0, 0, 1];
+      //   const Qtimes = Array.from({ length: Qvalues.length / 4 }).map((v, i) => (animationTime * i) / (Qvalues.length / 4 - 1));
+      //   console.log(Qtimes);
+
+      //   const QmoveKeyFrame = new THREE.QuaternionKeyframeTrack(".quaternion", Qtimes, Qvalues);
+      //   const clip = new THREE.AnimationClip("Action", animationTime, [PmoveKeyFrame, QmoveKeyFrame]);
+      //   // 创建动画动作并播放
+      //   const clipAction = mixer.clipAction(clip);
+      //   clipAction.play();
+
+      //   this.$on("animation", ({ time, clock }) => {
+      //     const delta = clock.getDelta();
+      //     mixer.update(delta);
+      //   });
+      // });
     },
     addf() {
       // const particleCount = 50000;

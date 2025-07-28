@@ -163,9 +163,6 @@ export class UAVListLayer extends Layer {
   }
 
   setPaths(paths = [], pathClassName = "LinePath") {
-    paths = paths.slice(0, 1);
-    console.log(paths);
-
     const center = [paths[0].center[0], paths[0].center[1]];
     console.time("setPaths");
     this.pathList = paths.map((v) => new PathCurve[pathClassName](v.id, v.nodes, new THREE.Vector3(center[0], center[1], 0)));
