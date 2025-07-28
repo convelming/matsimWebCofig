@@ -408,54 +408,54 @@ export default {
       }
       await this.initMap(pageConfig.mapConfig);
       try {
-        if (pageConfig.tif) {
-          await zip
-            .file(pageConfig.tif)
-            .async("arraybuffer")
-            .then((array) => {
-              return this._TileLayer.setTif(array);
-            });
-        }
-        if (pageConfig.network && zip.file(pageConfig.network)) {
-          await Promise.all([
-            zip
-              .file(pageConfig.network + "/node")
-              .async("arraybuffer")
-              .then(arrayToFloat64),
-            zip
-              .file(pageConfig.network + "/link")
-              .async("arraybuffer")
-              .then(arrayToFloat64),
-            zip
-              .file(pageConfig.network + "/node_id")
-              .async("string")
-              .then(JSON.parse),
-            zip
-              .file(pageConfig.network + "/link_id")
-              .async("string")
-              .then(JSON.parse),
-          ]).then(([nodes, links, nodesId, linksId]) => {
-            const network = Network.fromArray(nodes, links);
-            this._Network3DLayer.setNetwork(network);
-            this._nodesId = nodesId;
-            this._linksId = linksId;
-            this._Network3DLayer.addEventListener(MAP_EVENT.HANDLE_PICK_LEFT, (e) => {
-              if (e.data > this._nodesId.length) {
-                alert(`linkId:  ${this._linksId[e.data - this._nodesId.length]}`);
-              } else {
-                alert(`nodeId:  ${this._nodesId[e.data]}`);
-              }
-            });
-          });
-        } else if (pageConfig.networkXmlUrl && zip.file(pageConfig.networkXmlUrl)) {
-          await zip
-            .file(pageConfig.networkXmlUrl)
-            .async("string")
-            .then((xml) => {
-              const network = Network.fromXml(xml);
-              this._Network3DLayer.setNetwork(network);
-            });
-        }
+        // if (pageConfig.tif) {
+        //   await zip
+        //     .file(pageConfig.tif)
+        //     .async("arraybuffer")
+        //     .then((array) => {
+        //       return this._TileLayer.setTif(array);
+        //     });
+        // }
+        // if (pageConfig.network && zip.file(pageConfig.network)) {
+        //   await Promise.all([
+        //     zip
+        //       .file(pageConfig.network + "/node")
+        //       .async("arraybuffer")
+        //       .then(arrayToFloat64),
+        //     zip
+        //       .file(pageConfig.network + "/link")
+        //       .async("arraybuffer")
+        //       .then(arrayToFloat64),
+        //     zip
+        //       .file(pageConfig.network + "/node_id")
+        //       .async("string")
+        //       .then(JSON.parse),
+        //     zip
+        //       .file(pageConfig.network + "/link_id")
+        //       .async("string")
+        //       .then(JSON.parse),
+        //   ]).then(([nodes, links, nodesId, linksId]) => {
+        //     const network = Network.fromArray(nodes, links);
+        //     this._Network3DLayer.setNetwork(network);
+        //     this._nodesId = nodesId;
+        //     this._linksId = linksId;
+        //     this._Network3DLayer.addEventListener(MAP_EVENT.HANDLE_PICK_LEFT, (e) => {
+        //       if (e.data > this._nodesId.length) {
+        //         alert(`linkId:  ${this._linksId[e.data - this._nodesId.length]}`);
+        //       } else {
+        //         alert(`nodeId:  ${this._nodesId[e.data]}`);
+        //       }
+        //     });
+        //   });
+        // } else if (pageConfig.networkXmlUrl && zip.file(pageConfig.networkXmlUrl)) {
+        //   await zip
+        //     .file(pageConfig.networkXmlUrl)
+        //     .async("string")
+        //     .then((xml) => {
+        //       const network = Network.fromXml(xml);
+        //       this._Network3DLayer.setNetwork(network);
+        //     });
+        // }
         if (pageConfig.paths && zip.file(pageConfig.paths)) {
           await zip
             .file(pageConfig.paths)
@@ -475,24 +475,24 @@ export default {
               this._UAVListLayer.setPaths(this._UAVPaths, this.UAVPathClassName);
             });
         }
-        if (pageConfig.build && zip.file(pageConfig.build)) {
-          await zip
-            .file(pageConfig.build)
-            .async("string")
-            .then(parserGeoJSON)
-            .then((json) => {
-              this._Build3DLayer.setData(json, pageConfig.buildJzgdKey, pageConfig.buildHbgdKey);
-            });
-        }
-        if (pageConfig.pink && zip.file(pageConfig.pink)) {
-          await zip
-            .file(pageConfig.pink)
-            .async("string")
-            .then(JSON.parse)
-            .then((json) => {
-              this._PinkLayer.setPinkList(json);
-            });
-        }
+        // if (pageConfig.build && zip.file(pageConfig.build)) {
+        //   await zip
+        //     .file(pageConfig.build)
+        //     .async("string")
+        //     .then(parserGeoJSON)
+        //     .then((json) => {
+        //       this._Build3DLayer.setData(json, pageConfig.buildJzgdKey, pageConfig.buildHbgdKey);
+        //     });
+        // }
+        // if (pageConfig.pink && zip.file(pageConfig.pink)) {
+        //   await zip
+        //     .file(pageConfig.pink)
+        //     .async("string")
+        //     .then(JSON.parse)
+        //     .then((json) => {
+        //       this._PinkLayer.setPinkList(json);
+        //     });
+        // }
       } catch (error) {
         console.log(error);
       }

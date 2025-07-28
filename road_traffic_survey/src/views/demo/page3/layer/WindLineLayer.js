@@ -51,7 +51,7 @@ export class WindLineLayer extends Layer {
         const colorArr = new THREE.Color(value, 0.5, 0.5).toArray();
         const no = new THREE.Vector2(nx, ny).normalize();
         const sp = new THREE.Vector2(sx, sy).add(no.setLength(len * i));
-        const ep = new THREE.Vector2(sx, sy).add(no.setLength(len * (i + 2)));
+        const ep = new THREE.Vector2(sx, sy).add(no.setLength(len * (i + 1)));
         points.push(sp);
         points.push(ep);
         colors.push(colorArr);
@@ -74,15 +74,15 @@ export class WindLineLayer extends Layer {
       this.scene.add(line);
     }
 
-    this._interval = setInterval(() => {
-      for (const i in this.lineList) {
-        const material = this.lineList[i].material;
-        let opacity = material.opacity - 1 / 60;
-        if (opacity < 0) opacity = 1;
-        this.lineList[i].material.setValues({ opacity: opacity });
-        this.lineList[i].material.needUpdate = true;
-      }
-    }, 1000 / 60);
+    // this._interval = setInterval(() => {
+    //   for (const i in this.lineList) {
+    //     const material = this.lineList[i].material;
+    //     let opacity = material.opacity - 1 / 60;
+    //     if (opacity < 0) opacity = 1;
+    //     this.lineList[i].material.setValues({ opacity: opacity });
+    //     this.lineList[i].material.needUpdate = true;
+    //   }
+    // }, 1000 / 60);
   }
 
   dispose() {

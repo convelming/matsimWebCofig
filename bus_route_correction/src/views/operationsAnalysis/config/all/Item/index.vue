@@ -15,7 +15,8 @@
           </el-dropdown>
           <span v-for="item in data.attrs" style="margin-left: 10px">
             <span class="text2">{{ item[0] }}:&nbsp;</span>
-            <span class="text3">{{ item[1] }}</span>
+            <input :id="item[2]" type="text" v-if="item[3]" v-model="item[1]" @blur="handleBlurAttrs(item)" />
+            <span class="text3" v-else @dblclick="handleChickAttrs(item)">{{ item[1] }}</span>
           </span>
           <span style="margin-left: 10px" v-if="data.helps.length">
             <span class="text2">help:&nbsp;</span>
@@ -62,7 +63,7 @@
 
 <script>
 export function guid() {
-  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+  return "xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
     var r = (Math.random() * 16) | 0,
       v = c == "x" ? r : (r & 0x3) | 0x8;
     return v.toString(16);
@@ -113,7 +114,7 @@ export default {
         const attrs = [];
         const nodes = [];
         for (const attr of xmlNode.attributes || []) {
-          attrs.push([attr.nodeName, attr.nodeValue]);
+          attrs.push([attr.nodeName, attr.nodeValue, guid(), false]);
         }
         if (xmlNode.hasChildNodes()) {
           let helpNodes = [];
@@ -161,7 +162,8 @@ export default {
       const serializer = new XMLSerializer();
       return serializer.serializeToString(xmlDom);
     },
-    filterNode(value, data) {
+    filterNode(value, data, node) {
+      if (node.parent.visible) return true;
       if (!value) return true;
       for (const [v1, v2] of data.attrs) {
         let index = v2.indexOf(value);
@@ -194,8 +196,8 @@ export default {
             id: guid(),
             name: "",
             attrs: [
-              ["name", ""],
-              ["value", ""],
+              ["name", "", guid(), false],
+              ["value", "", guid(), false],
             ],
             helps: [""],
           };
@@ -276,6 +278,16 @@ export default {
       if (item && index > -1) {
         item.nodes.splice(index, 1);
       }
+    },
+    handleChickAttrs(item) {
+      this.$set(item, 3, true);
+      this.$nextTick(() => {
+        const input = document.getElementById(item[2]);
+        input.focus();
+      });
+    },
+    handleBlurAttrs(item) {
+      this.$set(item, 3, false);
     },
   },
 };

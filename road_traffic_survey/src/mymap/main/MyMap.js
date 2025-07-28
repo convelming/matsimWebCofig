@@ -839,7 +839,7 @@ export class MyMap extends EventListener {
     // 清空渲染器和其DOM元素
     this.rootDoc.removeChild(this.css2dRenderer.domElement);
     this.css2dRenderer.domElement = null;
-    this.css2dRenderer.dispose();
+    // this.css2dRenderer.dispose();
   }
 
   // 设置相机到观察点的距离

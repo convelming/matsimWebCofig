@@ -223,7 +223,7 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        type: null,
+        type: ["1"],
         beginTime: null,
         endTime: null,
       },
@@ -310,6 +310,8 @@ export default {
         },
         legend: {
           data: ["pcu/h", "小型客车", "小型货车", "中型客车", "中型货车", "大型客车", "大型货车"],
+          left: 10,
+          right: 0,
         },
         grid: {
           left: "3%",
@@ -444,7 +446,7 @@ export default {
     handleQuery() {
       this.queryParams.pageNum = 1;
       this.getList();
-      this.updateEcharts();
+      this.updateEcharts(); 
     },
     /** 重置按钮操作 */
     resetQuery() {

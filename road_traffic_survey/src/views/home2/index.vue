@@ -127,6 +127,7 @@
       @clickSelect="
         linkFlowQuery.visible = false;
         linkFlow.visible = true;
+        linkFlow.linkId = null;
       "
       @FrameSelect="
         linkFlowQuery.visible = false;
@@ -135,6 +136,8 @@
     />
     <!-- 区域流量详情 -->
     <LinkPolygonSelect :visible.sync="linkPolygonSelect.visible" :xyarr="linkPolygonSelect.xyarr" :selectState="linkPolygonSelect.state" />
+    <!-- 交叉口信息录入 -->
+    <CrossroadsInstall :visible.sync="crossroadsInstall.visible" :state="crossroadsInstall.state" @add="handlePlayPointSelect" @stop="handleStopPointSelect" @search="handleSubmitAddIntersection" @close="handleStopPointSelect" />
     <!-- 视频录入交叉口信息 -->
     <AddIntersection :visible.sync="addIntersection.visible" :params="addIntersection.params" @submited="handleSubmitAddIntersection" @close="handleStopPointSelect" />
     <!-- 交叉口列表 -->
@@ -154,8 +157,6 @@
     <ManuallyEnteringCrossroads :visible.sync="manuallyEnteringCrossroads.visible" :params="manuallyEnteringCrossroads.params" @submited="handleSubmitManuallyEnteringCrossroads" />
     <!-- 交叉口绘制检测线 -->
     <DrawLine :visible.sync="drawLine.visible" :params="drawLine.params" @submited="handleDrawLineSuccess" />
-    <!-- 交叉口信息录入 -->
-    <CrossroadsInstall :visible.sync="crossroadsInstall.visible" :state="crossroadsInstall.state" @add="handlePlayPointSelect" @stop="handleStopPointSelect" @search="handleSubmitAddIntersection" />
     <!-- 交叉口详情 -->
     <CrossroadsDetail :visible.sync="crossroadsDetail.visible" :params="crossroadsDetail.params" />
     <!-- 编辑交叉口流量线 -->
@@ -181,7 +182,7 @@
 </template>
 
 <script>
-import { MyMap, MAP_EVENT, MAP_ZOOM_RANGE, MAP_LAYER_STYLE, DEFAULT_MAP_LAYER_STYLE, MapLayer } from "@/mymap/index.js";
+import { MyMap, MAP_EVENT, MAP_ZOOM_RANGE, MAP_LAYER_STYLE, DEFAULT_MAP_LAYER_STYLE, MOUSE_BUTTONS, MapLayer } from "@/mymap/index.js";
 import { WGS84ToMercator } from "@/mymap/utils/LngLatUtils";
 
 import { FrameSelectLayer, FRAME_SELECT_STATE_KEY, FRAME_SELECT_EVENT } from "./layer/FrameSelectLayer";
@@ -231,8 +232,8 @@ export default {
       FRAME_SELECT_STATE_KEY,
       POINT_SELECT_STATE_KEY,
 
-      activeNames: ["1", "2", "3", "4"],
-      // activeNames: ["4"],
+      activeNames: [],
+      // activeNames: ["1", "2", "3", "4"],
       activeNames2: ["2-1", "2-2"],
 
       selectRouteId: null,
@@ -472,6 +473,20 @@ export default {
         }
       },
     },
+    "linkFlow.visible": {
+      handler(val) {
+        if (val) {
+          this._Map.addLayer(this._NetworkLayer);
+          this._Map.addLayer(this._LinkLayer);
+        } else {
+          this.linkFlow.linkId = null;
+          if (this.ruleForm.zoom <= SHOW_LINK_ZOOM) {
+            this._Map.removeLayer(this._NetworkLayer);
+            this._Map.removeLayer(this._LinkLayer);
+          }
+        }
+      },
+    },
   },
   created() {
     this.initLayer();
@@ -516,7 +531,7 @@ export default {
         event: {
           [MAP_EVENT.HANDLE_PICK_LEFT]: (res) => {
             this.linkFlow = {
-              visible: false,
+              visible: true,
               linkId: null,
             };
             this.selectRouteId = res.data.id;
@@ -610,10 +625,11 @@ export default {
         rootId: "mapRoot",
         zoom: this.ruleForm.zoom,
         center: this.ruleForm.center,
+        mouseButtons: MOUSE_BUTTONS.RIGHT,
         event: {
           [MAP_EVENT.UPDATE_ZOOM]: (res) => {
             this.ruleForm.zoom = Number(Number(this._Map.zoom).toFixed(2));
-            if (this.ruleForm.zoom > SHOW_LINK_ZOOM) {
+            if (this.ruleForm.zoom > SHOW_LINK_ZOOM || this.linkFlow.visible) {
               this._Map.addLayer(this._NetworkLayer);
               this._Map.addLayer(this._LinkLayer);
             } else {
@@ -704,17 +720,17 @@ export default {
       }
     },
     linkFlowClose() {
-      if (this.selectRouteId) {
-        getMatsimLink(this.selectRouteId).then((res) => {
-          this._LinkLayer.setData(res.data);
-        });
-      }
+      this.selectRouteId = null;
+      this.linkFlow.linkId = null;
+      this._LinkLayer.setData(null);
     },
     getLink() {
       if (this.selectRouteId) {
         getMatsimLink(this.selectRouteId).then((res) => {
           this._LinkLayer.setData(res.data);
         });
+      } else {
+        this._LinkLayer.setData(null);
       }
     },
     // ****************************** 路段流量录入 -- end
@@ -749,6 +765,8 @@ export default {
       this._PointSelectLayer.state = POINT_SELECT_STATE_KEY.ENABLE;
     },
     handleStopPointSelect() {
+      console.log("handleStopPointSelect");
+
       this._PointSelectLayer.state = POINT_SELECT_STATE_KEY.DISABLE;
       this._PointSelectLayer.point = [0, 0];
     },
