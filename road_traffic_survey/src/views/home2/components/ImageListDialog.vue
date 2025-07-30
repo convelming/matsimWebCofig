@@ -128,11 +128,10 @@ export default {
   },
   methods: {
     handleCheckChange() {
-      if (this.$refs.tree) {
+      if (this.$refs.tree && this.visible) {
         const pathList = this.$refs.tree.getCheckedNodes();
         const imageList = pathList.map((item) => item.pictures).flat(2);
         this.rootVue._ImageListLayer.setData(imageList);
-        this.rootVue.showImageListLayer = true;
       }
     },
     handleSelectAllImageList(value) {
@@ -146,7 +145,6 @@ export default {
     handleImageListCheckChange() {
       const imageList = this.imageList.filter((item) => item.check);
       this.rootVue._ImageListLayer.setData(imageList);
-      this.rootVue.showImageListLayer = true;
     },
     handleSetCenter(row) {
       if (row) {

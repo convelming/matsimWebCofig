@@ -87,7 +87,6 @@
           </el-collapse-item>
           <el-collapse-item name="4">
             <el-checkbox slot="title" v-model="showImageListLayer" label="图片上传"></el-checkbox>
-
             <el-form class="setting_form" label-position="left" label-width="100px" :inline="false" size="small">
               <el-form-item label="数据录入">
                 <UploadImageZip />
@@ -420,7 +419,7 @@ export default {
     },
     showImageListLayer(val) {
       if (val) {
-        this._ImageListLayer.setData(this.allImageMaker);
+        this._ImageListLayer.setData(this.allImageMaker || []);
       } else {
         this._ImageListLayer.setData([]);
       }
@@ -428,7 +427,7 @@ export default {
     "imageListDialog.visible": {
       handler(val) {
         if (!val && this.showImageListLayer) {
-          this._ImageListLayer.setData(this.allImageMaker);
+          this._ImageListLayer.setData(this.allImageMaker || []);
         } else {
           this._ImageListLayer.setData([]);
         }
