@@ -475,7 +475,6 @@ export function mappictureAllMaker(data) {
   });
 }
 
-
 // 删除
 // DELETE /mappicture/delete/{ids}
 // 接口ID：247201714
@@ -484,6 +483,29 @@ export function mappictureDelete(ids) {
   return request({
     url: `/mappicture/delete/${ids}`,
     method: "delete",
+  });
+}
+
+// 重命名项目
+// POST /mappicture/rename
+// 接口ID：328438082
+// 接口地址：https://app.apifox.com/link/project/3532778/apis/api-328438082
+export function mappictureRename(data) {
+  return request({
+    url: `/mappicture/rename`,
+    method: "post",
+    data: data,
+  });
+}
+// 上传图片
+// POST /mappicture/uploadimg
+// 接口ID：328288375
+// 接口地址：https://app.apifox.com/link/project/3532778/apis/api-328288375
+export function mappictureUploadimg(data) {
+  return request({
+    url: `/mappicture/uploadimg`,
+    method: "post",
+    data: data,
   });
 }
 
@@ -499,7 +521,6 @@ export function mappictureTreeList(data) {
   });
 }
 
-
 // 根据地址删除
 // POST /mappicture/deleteByPath
 // 接口ID：247659593
@@ -511,5 +532,3 @@ export function mappictureDeleteByPath(data) {
     data: data,
   });
 }
-
-
