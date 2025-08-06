@@ -36,6 +36,7 @@ export class UAVListLayer extends Layer {
 
     this.UAVGeometry = new THREE.BoxGeometry(50, 50, 50);
     this.UAVMaterial = new THREE.MeshStandardMaterial({ color: opt.uavColor || "#ea7f7f" });
+    this.UAVMaterial_s = new THREE.MeshStandardMaterial({ color: opt.uavColor || "#ea7f7f", depthFunc: THREE.AlwaysDepth });
     this.UAVMaterial1 = new THREE.MeshBasicMaterial({});
     this.UAVMaterial2 = new THREE.MeshBasicMaterial({});
     this.UAVMesh = new THREE.InstancedMesh(this.UAVGeometry, this.UAVMaterial, 1);
@@ -55,7 +56,7 @@ export class UAVListLayer extends Layer {
 
       gltf.scene.traverse((child) => {
         if (child.isMesh) {
-          child.material = this.UAVMaterial;
+          child.material = this.UAVMaterial_s;
         }
         if (child.isMesh && String(child.name || "").includes("螺旋桨")) {
           gltf.lxjs.push(child);
