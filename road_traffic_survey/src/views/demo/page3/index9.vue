@@ -1,106 +1,199 @@
 <template>
-  <div class="p9_index main" v-loading="loading" style="background-color: #000">
-    <div id="mapRoot"></div>
-    <div id="mapRoot2" ref="mapRoot2" v-show="pageType === 2"></div>
-    <div class="box1" v-show="pageType === 1">
-      <!-- <img src="./layer4/img/left.png" class="first_border" alt="" /> -->
-      <div class="boxTitle">航路数量</div>
-      <div class="chart" ref="chart1"></div>
-      <div class="boxTitle">适飞空域</div>
-      <div class="chart" ref="chart1_2" style="height: 20vh; flex-grow: 0"></div>
+  <div class="p9_index main" :style="mainStyle" v-loading="loading" style="background-color: #000">
+    <div class="title_box">
+      <img class="back1" src="./images/top_left@2x.png" alt="" />
+      <img class="back2" src="./images/top_center@2x.png" alt="" />
+      <img class="back3" src="./images/top_right@2x.png" alt="" />
+      <div class="text">广州市低空无人机航路规划</div>
     </div>
-    <!-- 左侧下部 -->
-    <div class="box2" v-show="pageType === 1">
-      <div class="titleList">
-        <div class="boxTitle">气象条件</div>
-        <div class="boxTitle">低空场景监测</div>
-      </div>
-      <div class="value">
-        <div class="weather_data">
-          <div class="weather_text text_one">
-            <span>温度：19℃</span>
-            <span>湿度：52%</span>
-            <span>风向：东南风</span>
-            <span>风速：2m/s</span>
-          </div>
-          <div class="weather_text text_two">
-            <span>降雨量：0mm</span>
-            <span>蒸发量：0.326mm/h</span>
-            <span>气压：0.326MPa</span>
-          </div>
-        </div>
-        <div class="chart progress_list">
+    <div class="page1" v-show="pageType === 1">
+      <div id="mapRoot"></div>
+      <div class="box1">
+        <div class="title1">航路数量</div>
+        <div class="chart1" ref="chart1"></div>
+        <div class="title2">适飞空域</div>
+        <div class="chart1_2_box">
           <div class="item">
-            <el-progress type="dashboard" color="#85a9a2" :percentage="80" :show-text="false" :stroke-width="15"></el-progress>
-            <div class="text2">1673</div>
-            <div class="text">物流配送</div>
+            <div class="chart">
+              <Sector :size="53" :number="0.27" color="url(#linearGradient1)">
+                <template v-slot:defs>
+                  <!-- background: linear-gradient( 152deg, #8A38F5 0%, #FDC9E6 100%); -->
+                  <linearGradient id="linearGradient1" x1="100%" y1="0%" x2="0%" y2="50%">
+                    <stop offset="0%" style="stop-color: #8a38f5; stop-opacity: 1" />
+                    <stop offset="100%" style="stop-color: #fdc9e6; stop-opacity: 1" />
+                  </linearGradient>
+                </template>
+              </Sector>
+            </div>
+            <div class="text">0-120</div>
           </div>
           <div class="item">
-            <el-progress type="dashboard" color="#aed9d8" :percentage="50" :show-text="false" :stroke-width="15"></el-progress>
-            <div class="text2">203</div>
-            <div class="text">低空文旅</div>
+            <div class="chart">
+              <Sector :size="53" :number="0.36" color="url(#linearGradient2)">
+                <template v-slot:defs>
+                  <!-- background: linear-gradient( 174deg, #0084FF 0%, #07B9B9 100%); -->
+                  <linearGradient id="linearGradient2" x1="100%" y1="0%" x2="0%" y2="50%">
+                    <stop offset="0%" style="stop-color: #0084ff; stop-opacity: 1" />
+                    <stop offset="100%" style="stop-color: #07b9b9; stop-opacity: 1" />
+                  </linearGradient>
+                </template>
+              </Sector>
+            </div>
+            <div class="text">120-300</div>
           </div>
           <div class="item">
-            <el-progress type="dashboard" color="#6bb3c0" :percentage="30" :show-text="false" :stroke-width="15"></el-progress>
-            <div class="text2">87</div>
-            <div class="text">交通出行</div>
-          </div>
-          <div class="item">
-            <el-progress type="dashboard" color="#f2c494" :percentage="75" :show-text="false" :stroke-width="15"></el-progress>
-            <div class="text2">2632</div>
-            <div class="text">生产作业</div>
-          </div>
-          <div class="item">
-            <el-progress type="dashboard" color="#99bcdd" :percentage="10" :show-text="false" :stroke-width="15"></el-progress>
-            <div class="text2">27</div>
-            <div class="text">应急救援</div>
-          </div>
-          <div class="item">
-            <el-progress type="dashboard" color="#99bcdd" :percentage="50" :show-text="false" :stroke-width="15"></el-progress>
-            <div class="text2">109</div>
-            <div class="text">政务巡检</div>
+            <div class="chart">
+              <Sector :size="53" :number="0.43" color="url(#linearGradient3)">
+                <template v-slot:defs>
+                  <!-- background: linear-gradient( 168deg, #F2994A 0%, #FFD400 100%); -->
+                  <linearGradient id="linearGradient3" x1="100%" y1="0%" x2="0%" y2="50%">
+                    <stop offset="0%" style="stop-color: #f2994a; stop-opacity: 1" />
+                    <stop offset="100%" style="stop-color: #ffd400; stop-opacity: 1" />
+                  </linearGradient>
+                </template>
+              </Sector>
+            </div>
+            <div class="text">300-600</div>
           </div>
         </div>
       </div>
-    </div>
+      <div class="box2">
+        <div class="left">
+          <div class="title">
+            <img src="./images/icon_gaofeng@2x.png" alt="" class="icon" />
+            <span>高峰时段航路监测</span>
+          </div>
 
-    <!-- <div class="box6" v-show="pageType === 1">
-      <div class="boxTitle">试飞空域</div>
-    </div> -->
-
-    <div class="box3" v-show="pageType === 1">
-      <div class="boxTitle">低空地图控制</div>
-      <div class="csbaseBox1">
+          <div class="row1">
+            <div class="item">
+              <img src="./images/icon_wendu@2x.png" alt="" class="img" />
+              <div>
+                <span class="text1">温度:</span>
+                <span class="text2">19℃</span>
+              </div>
+            </div>
+            <div class="item">
+              <img src="./images/icon_shidu@2x.png" alt="" class="img" />
+              <div>
+                <span class="text1">湿度:</span>
+                <span class="text2">52%</span>
+              </div>
+            </div>
+            <div class="item">
+              <img src="./images/icon_fengxiang@2x.png" alt="" class="img" />
+              <div>
+                <span class="text1">风向:</span>
+                <span class="text2">东南风</span>
+              </div>
+            </div>
+            <div class="item">
+              <img src="./images/icon_fengsu@2x.png" alt="" class="img" />
+              <div>
+                <span class="text1">风速:</span>
+                <span class="text2">2m/s</span>
+              </div>
+            </div>
+          </div>
+          <div class="row2">
+            <div class="item">
+              <img src="./images/icon_jyl@2x.png" alt="" class="img" />
+              <div>
+                <span class="text1">降雨量:</span>
+                <span class="text2">0mm</span>
+              </div>
+            </div>
+            <div class="item">
+              <img src="./images/icon_zfl@2x.png" alt="" class="img" />
+              <div>
+                <span class="text1">蒸发量:</span>
+                <span class="text2">0.326mm/h</span>
+              </div>
+            </div>
+            <div class="item">
+              <img src="./images/icon_qiya@2x.png" alt="" class="img" />
+              <div>
+                <span class="text1">气压:</span>
+                <span class="text2">0.326MPa</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="line"></div>
+        <div class="right">
+          <div class="title">
+            <img src="./images/icon_qixiang@2x.png" alt="" class="icon" />
+            <span>气象条件</span>
+          </div>
+          <div class="progress_list">
+            <div class="item">
+              <el-progress type="dashboard" color="#59FFBE" :percentage="80" :show-text="false" :stroke-width="15"></el-progress>
+              <div class="text2">1673</div>
+              <div class="text">物流配送</div>
+            </div>
+            <div class="item">
+              <el-progress type="dashboard" color="#FF861B" :percentage="50" :show-text="false" :stroke-width="15"></el-progress>
+              <div class="text2">203</div>
+              <div class="text">低空文旅</div>
+            </div>
+            <div class="item">
+              <el-progress type="dashboard" color="#7068FF" :percentage="30" :show-text="false" :stroke-width="15"></el-progress>
+              <div class="text2">87</div>
+              <div class="text">交通出行</div>
+            </div>
+            <div class="item">
+              <el-progress type="dashboard" color="#1327FF" :percentage="75" :show-text="false" :stroke-width="15"></el-progress>
+              <div class="text2">2632</div>
+              <div class="text">生产作业</div>
+            </div>
+            <div class="item">
+              <el-progress type="dashboard" color="#46B7FD" :percentage="10" :show-text="false" :stroke-width="15"></el-progress>
+              <div class="text2">27</div>
+              <div class="text">应急救援</div>
+            </div>
+            <div class="item">
+              <el-progress type="dashboard" color="#BB55FF" :percentage="50" :show-text="false" :stroke-width="15"></el-progress>
+              <div class="text2">109</div>
+              <div class="text">政务巡检</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="box3">
+        <div class="title">
+          <img src="./images/icon_blue_coner_left@2x.png" alt="" class="icon" />
+          <span>低空地图控制</span>
+          <img src="./images/icon_blue_coner_right@2x.png" alt="" class="icon" />
+        </div>
         <div class="boxList">
-          <div class="item" :class="{ item: true, active: tabType == '控制面板' }" @click="tabType = '控制面板'">控制面板</div>
-          <div class="item" :class="{ item: true, active: tabType == '无人机' }" @click="tabType = '无人机'">无人机</div>
+          <div class="item" :class="{ active: tabType == '控制面板' }" @click="tabType = '控制面板'">控制面板</div>
+          <div class="item" :class="{ active: tabType == '无人机' }" @click="tabType = '无人机'">无人机</div>
         </div>
-        <div class="p9_card" v-show="tabType == '控制面板'">
-          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px">
+        <div class="card" v-show="tabType == '控制面板'">
+          <div class="row">
             <span class="label">空中路网：</span>
             <el-switch v-model="showNetwork3DLink" :active-value="true" :inactive-value="false" size="mini"></el-switch>
           </div>
-          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px">
+          <div class="row">
             <span class="label">空中路网节点：</span>
             <el-switch v-model="showNetwork3DNode" :active-value="true" :inactive-value="false" size="mini"></el-switch>
           </div>
-          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px">
+          <div class="row">
             <span class="label">地形图透明度：</span>
             <el-slider style="margin: 0 15px; flex: 1" v-model="tifOpacity" :min="0" :max="1" :step="0.01" size="mini"></el-slider>
           </div>
-          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px">
+          <div class="row">
             <span class="label">飞行曲线：</span>
             <el-select v-model="UAVPathClassName" style="width: 0; flex: 1" size="mini">
               <el-option label="LinePath" value="LinePath"> </el-option>
               <el-option label="CubicBezierPath" value="CubicBezierPath"> </el-option>
             </el-select>
           </div>
-          <div style="display: flex; align-items: center; margin-bottom: 10px">
-            <el-button v-show="playStart == 'stop'" size="mini" @click="play">播放</el-button>
-            <el-button v-show="playStart == 'play'" size="mini" @click="stop">暂停</el-button>
+          <div class="row" style="justify-content: flex-start">
+            <el-button v-show="playStart == 'stop'" size="mini" type="primary" @click="play">播放</el-button>
+            <el-button v-show="playStart == 'play'" size="mini" type="primary" @click="stop">暂停</el-button>
             <el-button size="mini" @click="reset">重置</el-button>
           </div>
-          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px">
+          <div class="row">
             <span class="label">锁定视角：</span>
             <el-switch v-model="lockSelect" :active-value="true" :inactive-value="false"></el-switch>
           </div>
@@ -114,91 +207,97 @@
               <el-form-item label="位置：">{{ Number(playDetail.x).toFixed(2) }}, {{ Number(playDetail.y).toFixed(2) }}, {{ Number(playDetail.z).toFixed(2) }}</el-form-item>
             </template> -->
         </div>
-        <div class="p9_card" v-show="tabType == '无人机'">
+        <div class="card" v-show="tabType == '无人机'">
           <UAVBox class="UAVBox"></UAVBox>
         </div>
       </div>
-    </div>
-    <div class="box4" v-show="pageType === 1">
-      <div class="boxTitle">飞行器数量</div>
-      <div class="chart" ref="chart4"></div>
-    </div>
-    <div class="box5" v-show="pageType === 1">
-      <div class="boxTitle">高峰时段航路监测</div>
-      <div class="chart" ref="chart5"></div>
-    </div>
-    <template v-if="pageType === 2">
-      <div class="p9_return_btn el-icon-arrow-left" @click="lockSelect = false"></div>
-      <div class="p9_lc">
-        <div class="p9_text">路程：{{ playDetail.dis }} / {{ playDetail.tDis }}</div>
-        <div class="p9_progress">
-          <div class="p9_value" :style="`width: ${(playDetail.dis / playDetail.tDis) * 100}%`"></div>
+      <div class="box4">
+        <div class="title">
+          <img src="./images/icon_blue_coner_left@2x.png" alt="" class="icon" />
+          <span>飞行器数量</span>
+          <img src="./images/icon_blue_coner_right@2x.png" alt="" class="icon" />
         </div>
-        <!-- <div class="p9_text">终点</div> -->
+        <div class="chart" ref="chart4"></div>
       </div>
-      <div class="p9_gd">
-        <div class="p9_progress_list">
-          <div class="p9_progress_box">
-            <div class="p9_progress">
-              <div class="p9_line">300</div>
-              <div class="p9_line" style="top: 50%">150</div>
-              <div class="p9_line" style="top: 100%">0</div>
-              <div class="p9_value" :style="`height: ${(playDetail.point.z / 300) * 100}%;max-height:100%`"></div>
-            </div>
-            <div class="p9_progress_name" style="opacity: 0">高度:</div>
-            <div class="p9_progress_name">{{ Number(playDetail.point.z).toFixed(2) }}m</div>
-          </div>
+      <div class="box5">
+        <div class="title">
+          <img src="./images/icon_blue_coner_left@2x.png" alt="" class="icon" />
+          <span>高峰时段航路监测</span>
+          <img src="./images/icon_blue_coner_right@2x.png" alt="" class="icon" />
         </div>
-        <div class="p9_title">高度 m</div>
+        <div class="chart" ref="chart5"></div>
       </div>
-      <div class="p9_sd">
-        <div class="p9_progress_list">
-          <div class="p9_progress_box">
-            <div class="p9_progress">
-              <div class="p9_line">50</div>
-              <div class="p9_line" style="top: 50%">25</div>
-              <div class="p9_line" style="top: 100%">0</div>
-              <div class="p9_value" :style="`height: ${(playDetail.speedX / 50) * 100}%;max-height:100%`"></div>
-            </div>
-            <div class="p9_progress_name">X轴</div>
-            <div class="p9_progress_name">{{ playDetail.speedX }}m/s</div>
+    </div>
+    <div class="page2" v-show="pageType === 2">
+      <div id="mapRoot2" ref="mapRoot2"></div>
+      <img src="./images/img_line_top_left@2x.png" alt="" class="back1" />
+      <img src="./images/img_line_top_middle@2x.png" alt="" class="back2" />
+      <img src="./images/img_line_top_right@2x.png" alt="" class="back3" />
+      <img src="./images/img_line_down_left@2x.png" alt="" class="back4" />
+      <img src="./images/img_line_down_right@2x.png" alt="" class="back5" />
+      <template v-if="playDetail">
+        <div class="p9_lc">
+          <div class="p9_text">路程：{{ playDetail.dis }} / {{ playDetail.tDis }}</div>
+          <div class="p9_progress">
+            <div class="p9_value" :style="`width: ${(playDetail.dis / playDetail.tDis) * 100}%`"></div>
           </div>
-          <div class="p9_progress_box">
-            <div class="p9_progress">
-              <div class="p9_line">50</div>
-              <div class="p9_line" style="top: 50%">25</div>
-              <div class="p9_line" style="top: 100%">0</div>
-              <div class="p9_value" :style="`height: ${(playDetail.speedY / 50) * 100}%;max-height:100%`"></div>
-            </div>
-            <div class="p9_progress_name">Y轴</div>
-            <div class="p9_progress_name">{{ playDetail.speedY }}m/s</div>
-          </div>
-          <div class="p9_progress_box">
-            <div class="p9_progress">
-              <div class="p9_line">50</div>
-              <div class="p9_line" style="top: 50%">25</div>
-              <div class="p9_line" style="top: 100%">0</div>
-              <div class="p9_value" :style="`height: ${(playDetail.speedZ / 50) * 100}%;max-height:100%`"></div>
-            </div>
-            <div class="p9_progress_name">Z轴</div>
-            <div class="p9_progress_name">{{ playDetail.speedZ }}m/s</div>
-          </div>
+          <!-- <div class="p9_text">终点</div> -->
         </div>
-        <div class="p9_title">速度 m/s</div>
-      </div>
 
-      <div class="p9_play_btn_list">
-        <div v-show="playStart == 'stop'" class="p9_play_btn el-icon-video-play" @click="play"></div>
-        <div v-show="playStart == 'play'" class="p9_play_btn el-icon-video-pause" @click="stop"></div>
-        <!-- <div class="p9_play_btn el-icon-refresh" @click="reset"></div> -->
-      </div>
-    </template>
+        <div class="p9_gd">
+          <div class="p9_progress">
+            <div class="p9_line">300</div>
+            <div class="p9_line" style="top: 50%">150</div>
+            <div class="p9_line" style="top: 100%">0</div>
+            <div class="p9_value" :style="`height: ${(playDetail.point.z / 300) * 100}%;max-height:100%`"></div>
+          </div>
+          <div class="p9_title">{{ Number(playDetail.point.z).toFixed(2) }}m</div>
+          <div class="p9_title">高度 m</div>
+        </div>
+
+        <div class="p9_sd">
+          <div class="p9_progress_list">
+            <div class="p9_progress_box">
+              <div class="p9_progress">
+                <div class="p9_line">50</div>
+                <div class="p9_line" style="top: 50%">25</div>
+                <div class="p9_line" style="top: 100%">0</div>
+                <div class="p9_value" :style="`height: ${(playDetail.speedX / 50) * 100}%;max-height:100%`"></div>
+              </div>
+              <div class="p9_title">X轴</div>
+              <div class="p9_title">{{ playDetail.speedX }}m/s</div>
+            </div>
+            <div class="p9_progress_box">
+              <div class="p9_progress">
+                <div class="p9_line">50</div>
+                <div class="p9_line" style="top: 50%">25</div>
+                <div class="p9_line" style="top: 100%">0</div>
+                <div class="p9_value" :style="`height: ${(playDetail.speedY / 50) * 100}%;max-height:100%`"></div>
+              </div>
+              <div class="p9_title">Y轴</div>
+              <div class="p9_title">{{ playDetail.speedY }}m/s</div>
+            </div>
+            <div class="p9_progress_box">
+              <div class="p9_progress">
+                <div class="p9_line">50</div>
+                <div class="p9_line" style="top: 50%">25</div>
+                <div class="p9_line" style="top: 100%">0</div>
+                <div class="p9_value" :style="`height: ${(playDetail.speedZ / 50) * 100}%;max-height:100%`"></div>
+              </div>
+              <div class="p9_title">Z轴</div>
+              <div class="p9_title">{{ playDetail.speedZ }}m/s</div>
+            </div>
+          </div>
+          <div class="p9_title">速度 m/s</div>
+        </div>
+      </template>
+    </div>
   </div>
 </template>
 
 <script>
 import * as echarts from "echarts";
-
+import Sector from "@/components/Sector.vue";
 import { MyMap, MAP_EVENT, MOUSE_BUTTONS } from "@/mymap/index.js";
 import { WGS84ToMercator } from "@/mymap/utils/LngLatUtils";
 
@@ -271,6 +370,7 @@ function arrayToFloat64(arraybuffer) {
 
 export default {
   components: {
+    Sector,
     NewClock,
     UAVBox,
   },
@@ -344,6 +444,9 @@ export default {
   },
   data() {
     return {
+      mainStyle: {
+        transform: ``,
+      },
       playStart: "stop",
       tabType: "控制面板",
       loading: false,
@@ -353,6 +456,17 @@ export default {
       selectStartPink: false,
       endPink: null,
       selectEndPink: false,
+      // playDetail: {
+      //   point: { x: 1, y: 1, z: 1 },
+      //   speed: 0,
+      //   speedX: 0,
+      //   speedY: 0,
+      //   speedZ: 0,
+      //   tDis: 100,
+      //   dis: 20,
+      //   dir: { x: 1, y: 1, z: 1 },
+      //   isEnd: true,
+      // },
       playDetail: null,
       lockSelect: true,
       buildLoading: false,
@@ -374,19 +488,20 @@ export default {
   },
   created() {
     this._chartList = [];
-    window.addEventListener("resize", this.resizeChart.bind(this));
+    window.addEventListener("resize", this.windowResize.bind(this));
   },
   async mounted() {
+    this.windowResize();
     this.initChart1();
-    this.initChart1_2();
+    // this.initChart1_2();
     this.initChart4();
     this.initChart5();
     this.loadMapData();
     // this.initMap();
   },
   beforeDestroy() {
-    window.removeEventListener("resize", this.resizeChart.bind(this));
-    if(this._Map) this._Map.dispose();
+    window.removeEventListener("resize", this.windowResize.bind(this));
+    if (this._Map) this._Map.dispose();
   },
   methods: {
     async loadMapData() {
@@ -593,7 +708,7 @@ export default {
         if (this.time + 1 / 60 > this.maxTime) {
           this.stop();
         } else {
-          this.setTime(this.time + (1 / 60));
+          this.setTime(this.time + 1 / 60);
         }
       }, 1000 / 60);
       // if (this._Map) this._Map.addLayer(this._UAVListLayer);
@@ -608,7 +723,10 @@ export default {
       this.stop();
       this.setTime(0);
     },
-    resizeChart() {
+    windowResize() {
+      const { innerHeight, innerWidth } = window;
+      this.mainStyle.transform = `translate(-50%, -50%) scale(${Math.min(innerHeight / 1080, innerWidth / 1920)})`;
+
       for (const chart of this._chartList) {
         try {
           chart.resize();
@@ -616,6 +734,7 @@ export default {
       }
     },
     initChart1() {
+      // background: linear-gradient( 180deg, #158ECF 0%, #00E4FF 100%);
       const chart = echarts.init(this.$refs.chart1);
       const dataAxis = Array.from({ length: 12 }, (v, i) => `${i + 1}月`);
       const data = [10, 20, 30, 45, 50, 66, 99, 120, 110, 90, 80, 80];
@@ -624,10 +743,10 @@ export default {
           trigger: "item",
         },
         grid: {
-          left: "3%",
+          left: "0%",
           right: "4%",
-          bottom: "15%",
-          top: "10%",
+          bottom: "0%",
+          top: "5%",
           containLabel: true,
         },
         xAxis: {
@@ -652,7 +771,7 @@ export default {
             show: false,
           },
           axisLabel: {
-            color: "#999",
+            color: "#fff",
           },
         },
         dataZoom: [
@@ -665,103 +784,15 @@ export default {
             type: "bar",
             showBackground: false,
             itemStyle: {
-              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                { offset: 0, color: "#4198b9" },
-                { offset: 0.5, color: "#6bb3c0" },
-                { offset: 1, color: "#91cfc9" },
-              ]),
+              normal: {
+                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                  { offset: 0, color: "#158ECF" },
+                  { offset: 1, color: "#00E4FF" },
+                ]),
+                barBorderRadius: [6, 6, 0, 0],
+              },
             },
             data: data,
-          },
-        ],
-      };
-      chart.setOption(option);
-      this._chartList.push(chart);
-    },
-    initChart1_2() {
-      const chart = echarts.init(this.$refs.chart1_2);
-      const option = {
-        color: ["#E04355", "#004960"],
-        tooltip: {
-          trigger: "item",
-        },
-        title: [
-          {
-            subtext: "0-120",
-            left: "16.67%",
-            top: "70%",
-            textAlign: "center",
-            subtextStyle: {
-              color: "#0efcff",
-            },
-          },
-          {
-            subtext: "120-300",
-            left: "50%",
-            top: "70%",
-            textAlign: "center",
-            subtextStyle: {
-              color: "#0efcff",
-            },
-          },
-          {
-            subtext: "300-600",
-            left: "83.33%",
-            top: "70%",
-            textAlign: "center",
-            subtextStyle: {
-              color: "#0efcff",
-            },
-          },
-        ],
-        series: [
-          {
-            name: "0-120",
-            type: "pie",
-            radius: "40%",
-            center: ["16.67%", "45%"],
-            data: [
-              { value: 27, name: "适飞空域" },
-              { value: 100 - 27, name: "不适飞空域" },
-            ],
-            label: {
-              show: false,
-            },
-            labelLine: {
-              show: false,
-            },
-          },
-          {
-            name: "120-300",
-            type: "pie",
-            radius: "40%",
-            center: ["50%", "45%"],
-            data: [
-              { value: 36, name: "适飞空域" },
-              { value: 100 - 36, name: "不适飞空域" },
-            ],
-            label: {
-              show: false,
-            },
-            labelLine: {
-              show: false,
-            },
-          },
-          {
-            name: "300-600",
-            type: "pie",
-            radius: "40%",
-            center: ["83.33%", "45%"],
-            data: [
-              { value: 43, name: "适飞空域" },
-              { value: 100 - 43, name: "不适飞空域" },
-            ],
-            label: {
-              show: false,
-            },
-            labelLine: {
-              show: false,
-            },
           },
         ],
       };
@@ -777,10 +808,10 @@ export default {
           trigger: "item",
         },
         grid: {
-          left: "3%",
+          left: "0%",
           right: "4%",
-          bottom: "15%",
-          top: "10%",
+          bottom: "0%",
+          top: "5%",
           containLabel: true,
         },
         xAxis: {
@@ -805,7 +836,7 @@ export default {
             show: false,
           },
           axisLabel: {
-            color: "#999",
+            color: "#fff",
           },
         },
         dataZoom: [
@@ -818,11 +849,13 @@ export default {
             type: "bar",
             showBackground: false,
             itemStyle: {
-              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                { offset: 0, color: "#2d4e76" },
-                { offset: 0.5, color: "#99bcdd" },
-                { offset: 1, color: "#c4e5ef" },
-              ]),
+              normal: {
+                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                  { offset: 0, color: "#158ECF" },
+                  { offset: 1, color: "#00E4FF" },
+                ]),
+                barBorderRadius: [6, 6, 0, 0],
+              },
             },
             data: data,
           },
@@ -840,10 +873,10 @@ export default {
           trigger: "item",
         },
         grid: {
-          left: "3%",
+          left: "0%",
           right: "4%",
-          bottom: "15%",
-          top: "10%",
+          bottom: "0%",
+          top: "5%",
           containLabel: true,
         },
         xAxis: {
@@ -868,7 +901,7 @@ export default {
             show: false,
           },
           axisLabel: {
-            color: "#999",
+            color: "#fff",
           },
         },
         dataZoom: [
@@ -881,10 +914,7 @@ export default {
             type: "line",
             showBackground: false,
             itemStyle: {
-              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                { offset: 0, color: "#bbabd0" },
-                { offset: 1, color: "#bbabd0" },
-              ]),
+              color: "#00E5FF",
             },
             data: data,
           },
@@ -906,461 +936,362 @@ export default {
 <!-- <style scoped src="./layer4/css/reset.css"></style>
 <style scoped src="./layer4/css/new_index.css"></style>
 <style scoped src="./layer4/css/public.css"></style> -->
-
+<style>
+body {
+  background: #0d111b;
+}
+</style>
 <style lang="scss" scoped>
 .p9_index {
-  position: relative;
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-  position: relative;
-  background: url("./layer4/img/bg.jpg") no-repeat;
-  background-size: cover;
-}
-
-#mapRoot {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 10;
-}
-
-#mapRoot2 {
-  position: absolute;
-  top: 0;
-  // top: 50vh;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 20;
-}
-
-.p9_return_btn {
-  z-index: 100;
-  position: absolute;
-  top: 40px;
-  left: 30px;
-  font-size: 20px;
-  color: #00d2ff;
-  cursor: pointer;
-}
-
-.p9_lc {
-  z-index: 50;
-  position: absolute;
-  top: 40px;
-  left: 30%;
-  width: 40%;
-  display: flex;
-  justify-items: center;
-  align-items: center;
-  gap: 10px;
-  .p9_text {
-    color: #00d2ff;
-  }
-  .p9_progress {
-    flex-grow: 1;
-    width: 0;
-    height: 6px;
-    border-radius: 3px;
-    overflow: hidden;
-    background-color: rgba($color: #999, $alpha: 0.5);
-    .p9_value {
-      width: 100%;
-      height: 100%;
-      background-color: rgba($color: #00d2ff, $alpha: 1);
-    }
-  }
-}
-
-.p9_sd {
-  z-index: 50;
-  position: absolute;
-  right: 20px;
-  top: 25%;
-  height: 50%;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  .p9_title {
-    text-align: center;
-    color: #00d2ff;
-  }
-  .p9_progress_list {
-    flex-grow: 1;
-    height: 0;
-    display: flex;
-    gap: 20px;
-    .p9_progress_box {
-      display: 100%;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      .p9_progress_name {
-        color: #00d2ff;
-      }
-
-      .p9_progress {
-        flex-grow: 1;
-        height: 0;
-        width: 50px;
-        position: relative;
-        border-left: 1px solid #275994;
-        .p9_value {
-          z-index: 10;
-          position: absolute;
-          bottom: 0;
-          left: 0;
-          width: 10px;
-          height: 100%;
-          background-color: rgba($color: #00d2ff, $alpha: 1);
-          transition: height 0.1s;
-        }
-        .p9_line {
-          z-index: 20;
-          position: absolute;
-          z-index: 20px;
-          display: flex;
-          padding-left: 23px;
-          transform: translateY(-50%);
-          color: #00d2ff;
-          &::before {
-            position: absolute;
-            left: 0;
-            top: 50%;
-            content: "";
-            width: 15px;
-            height: 1px;
-            background-color: #275994;
-          }
-        }
-      }
-    }
-  }
-}
-
-.p9_gd {
-  z-index: 50;
-  position: absolute;
-  left: 100px;
-  top: 25%;
-  height: 50%;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  .p9_title {
-    text-align: center;
-    color: #00d2ff;
-  }
-  .p9_progress_list {
-    flex-grow: 1;
-    height: 0;
-    display: flex;
-    gap: 20px;
-    .p9_progress_box {
-      display: 100%;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      .p9_progress_name {
-        color: #00d2ff;
-      }
-
-      .p9_progress {
-        flex-grow: 1;
-        height: 0;
-        width: 50px;
-        position: relative;
-        border-left: 1px solid #275994;
-        .p9_value {
-          z-index: 10;
-          position: absolute;
-          bottom: 0;
-          left: 0;
-          width: 10px;
-          height: 100%;
-          background-color: rgba($color: #00d2ff, $alpha: 1);
-          transition: height 0.1s;
-        }
-        .p9_line {
-          z-index: 20;
-          position: absolute;
-          z-index: 20px;
-          display: flex;
-          padding-left: 23px;
-          transform: translateY(-50%);
-          color: #00d2ff;
-          &::before {
-            position: absolute;
-            left: 0;
-            top: 50%;
-            content: "";
-            width: 15px;
-            height: 1px;
-            background-color: #275994;
-          }
-        }
-      }
-    }
-  }
-}
-
-.p9_play_btn_list {
-  position: absolute;
-  bottom: 100px;
+  background: #000;
+  transform: translate(-50%, -50%) scale(0.8);
+  position: fixed;
+  width: 1920px;
+  height: 1080px;
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
-  z-index: 50;
-  display: flex;
-  gap: 20px;
-  font-size: 50px;
-  color: #00d2ff;
-  .p9_play_btn {
-    cursor: pointer;
-  }
 }
-
-.box1 {
-  z-index: 50;
+.title_box {
   position: absolute;
-  width: 22vw;
-  height: 58vh;
-  top: 6vh;
-  left: 2vw;
-  background-image: url("./layer4/img/left.png");
-  background-size: 100% 100%;
-  .boxTitle {
-    font-size: 1.6vh;
-    margin-top: 0.8vh;
-    margin-left: 2vw;
-    color: #0efcff;
-  }
-  display: flex;
-  flex-direction: column;
-  .chart {
-    flex-grow: 1;
-    height: 0;
-    width: 80%;
-    margin: 0 10%;
-  }
-}
-
-.progress_list {
-  padding-left: 2vw;
-  height: 16vh;
-  display: flex;
-  ::v-deep {
-    .el-progress-circle {
-      width: 5.5vw !important;
-      height: 5.5vw !important;
-    }
-    .el-progress-circle__track {
-      stroke-linecap: round;
-      stroke: #414f67;
-    }
-  }
-  .item {
-    position: relative;
-    flex-grow: 1;
-    width: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    .text2 {
-      position: relative;
-      top: -3vw;
-      font-size: 1.2vh;
-      color: #0efcff;
-      height: 0;
-    }
-    .text {
-      font-size: 1.2vh;
-      color: #0efcff;
-    }
-  }
-}
-
-.box2 {
-  z-index: 50;
-  position: absolute;
-  width: 72vw;
-  height: 26.8vh;
-  top: 68vh;
-  left: 2vw;
-  background-image: url("./layer4/img/微信图片_20250709111547.png");
-  background-size: 100% 100%;
-  .titleList {
-    display: flex;
-    .boxTitle {
-      font-size: 1.6vh;
-      margin-top: 0.8vh;
-      color: #0efcff;
-      text-align: center;
-      &:nth-child(1) {
-        width: 15.5vw;
-        margin-left: 2vw;
-      }
-      &:nth-child(2) {
-        width: 15.5vw;
-        margin-left: 5.9vw;
-      }
-      &:nth-child(3) {
-        width: 15.5vw;
-        margin-left: 15.6vw;
-      }
-    }
-  }
-  display: flex;
-  flex-direction: column;
-  .value {
-    display: flex;
-    height: 100%;
-  }
-  .weather_data {
-    margin-top: 5vh;
-    margin-left: 3vw;
+  z-index: 100;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 80px;
+  overflow: hidden;
+  background: linear-gradient(180deg, #0d111b 0%, #242a3a 100%);
+  .back1 {
     position: absolute;
-    width: 18vw;
-    padding-bottom: 12vw;
-    height: 0;
-    font-size: 1.2vh;
-    /* background-color: yellow; */
-    background-image: url("./layer4/img/bottom_icons.png");
-    background-size: 100%;
-    background-repeat: no-repeat;
-
-    .weather_text {
-      color: #0efcff;
-    }
-
-    .weather_text span {
-      position: absolute;
-      white-space: nowrap;
-      top: 22%;
-      transform: translateX(-50%);
-    }
-
-    .weather_text span:nth-of-type(1) {
-      left: 2%;
-    }
-
-    .weather_text span:nth-of-type(2) {
-      left: 34%;
-    }
-
-    .weather_text span:nth-of-type(3) {
-      left: 63%;
-    }
-
-    .weather_text span:nth-of-type(4) {
-      left: 95%;
-    }
-
-    .text_two span {
-      top: 58%;
-    }
-
-    .text_two span:nth-of-type(1) {
-      left: 10%;
-    }
-
-    .text_two span:nth-of-type(2) {
-      left: 47%;
-    }
-
-    .text_two span:nth-of-type(3) {
-      left: 83%;
-    }
+    top: 53px;
+    right: calc(50% + 450px);
+    width: 500px;
+    height: 10px;
   }
-  .chart {
-    padding-left: 22vw;
-    flex-grow: 1;
-    height: 100%;
-    width: 0%;
-    // background-color: #fff;
+  .back2 {
+    position: absolute;
+    top: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 907px;
+    height: 104px;
+  }
+  .back3 {
+    position: absolute;
+    top: 53px;
+    left: calc(50% + 450px);
+    width: 500px;
+    height: 10px;
+  }
+  .text {
+    position: absolute;
+    top: 0px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #fff;
+    font-size: 44px;
+    font-weight: bold;
   }
 }
-
-.box3 {
-  z-index: 50;
-  position: absolute;
-  width: 22vw;
-  height: 32vh;
-  top: 6vh;
-  right: 2vw;
-  background-image: url("./layer4/img/right2.png");
-  background-size: 100% 100%;
-  .boxTitle {
-    font-size: 1.6vh;
-    margin: 1.1vh 2vw 0 2vw;
-    color: #0efcff;
-    text-align: center;
+.page1,
+.page2 {
+  position: relative;
+  // position: fixed;
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+}
+.page1 {
+  #mapRoot {
+    position: absolute;
+    z-index: 10;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
   }
-
-  .csbaseBox1 {
-    // background-color: #275994;
-    box-sizing: border-box;
+  .box1 {
+    position: absolute;
+    z-index: 100;
+    top: 98px;
+    left: 20px;
+    width: 300px;
+    height: 538px;
+    background: rgba(34, 39, 53, 0.8);
+    box-shadow: inset 0px 4px 10px 0px #075db9;
+    border-radius: 22px;
+    border: 1px solid #075db9;
+    // border: 1px solid ;
+    // border-image: linear-gradient(157deg, rgba(120.00000044703484, 165.00000536441803, 214.00000244379044, 1), rgba(255, 255, 255, 0.1599999964237213)) 1 1;
     display: flex;
     flex-direction: column;
-    padding: 1.5vh 2vw 2vh 2vw;
-    user-select: none;
-    color: #fff;
-    height: 28vh;
-    font-size: 12px;
-    .boxList {
+    .title1 {
+      box-sizing: border-box;
+      margin-top: 20px;
+      margin-left: 24px;
+      width: 252px;
+      padding-left: 20px;
+      line-height: 36px;
+      height: 36px;
+      background-image: url("./images/title_01@2x.png");
+      background-size: cover;
+      color: #fff;
+    }
+    .chart1 {
+      margin-top: 20px;
+      margin-left: 24px;
+      height: 250px;
+      width: 252px;
+    }
+    .title2 {
+      box-sizing: border-box;
+      margin-top: 20px;
+      margin-left: 24px;
+      width: 252px;
+      padding-left: 20px;
+      line-height: 36px;
+      height: 36px;
+      background-image: url("./images/title_01@2x.png");
+      background-size: cover;
+      color: #fff;
+    }
+    .chart1_2_box {
+      margin-top: 20px;
+      margin-left: 24px;
+      width: 252px;
       display: flex;
-      margin-bottom: 3px;
-      border-bottom: 1px solid rgb(40, 229, 233);
+      justify-content: space-between;
       .item {
-        flex-grow: 1;
-        text-align: center;
-        cursor: pointer;
-        line-height: 1.4vw;
-        &.active {
-          color: rgb(40, 229, 233);
-          border-top: 0.02vw solid rgb(40, 229, 233);
-          border-right: 0.02vw solid rgb(40, 229, 233);
-          border-left: 0.02vw solid rgb(40, 229, 233);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        .chart {
+          box-sizing: border-box;
+          padding-top: 13px;
+          padding-left: 12px;
+          width: 76px;
+          height: 76px;
+          background-image: url("./images/bg_ring@2x.png");
+          background-size: cover;
         }
-      }
-    }
-    .p9_card {
-      height: 0;
-      flex-grow: 1;
-      overflow-y: scroll;
-      overflow-x: hidden;
-
-      &::-webkit-scrollbar {
-        display: none;
-      }
-    }
-    .el-form {
-      .el-form-item {
-        margin-bottom: 8px;
-        color: #fff;
-        // color: orange;
-      }
-      ::v-deep {
-        .el-form-item__label {
-          color: #fff !important;
+        .text {
+          color: #fff;
           font-size: 14px;
         }
       }
     }
-
+  }
+  .box2 {
+    position: absolute;
+    z-index: 100;
+    top: 796px;
+    left: 20px;
+    width: 1548px;
+    height: 264px;
+    background: rgba(34, 39, 53, 0.8);
+    box-shadow: inset 0px 4px 10px 0px #075db9;
+    border-radius: 22px 22px 22px 22px;
+    border: 1px solid #075db9;
+    // border: 1px solid ;
+    // border-image: linear-gradient(157deg, rgba(120.00000044703484, 165.00000536441803, 214.00000244379044, 1), rgba(255, 255, 255, 0.1599999964237213)) 1 1;
+    display: flex;
     .title {
-      height: 70px;
+      width: 276px;
+      height: 46px;
+      background-image: url("./images/title_03@2x.png");
+      background-size: cover;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 20px;
+      gap: 6px;
+      .icon {
+        width: 20px;
+        height: 20px;
+      }
+      font-size: 18px;
       font-weight: bold;
-      margin: 8px 0;
-      background-image: url("./data/title.svg");
-      background-size: 100% 100%;
+      color: #fff;
+    }
+    .left {
+      position: relative;
+      width: 520px;
+      .title {
+        position: absolute;
+        top: -24px;
+        left: 0;
+      }
+
+      .item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        .img {
+          display: block;
+          width: 72px;
+          height: 72px;
+        }
+        .text1 {
+          color: #00ffe5;
+          font-size: 14px;
+          font-weight: 700;
+        }
+        .text2 {
+          color: #fff;
+          font-size: 14px;
+        }
+      }
+      .row1 {
+        display: flex;
+        justify-content: space-between;
+        padding-top: 33px;
+        padding-left: 55px;
+        width: 420px;
+      }
+      .row2 {
+        display: flex;
+        justify-content: space-between;
+        padding-top: 10px;
+        padding-left: 80px;
+        width: 360px;
+      }
+    }
+    .line {
+      margin-top: 40px;
+      width: 1px;
+      height: 201px;
+      background: rgba(255, 255, 255, 0.2);
+    }
+    .right {
+      position: relative;
+      flex: 1;
+      .title {
+        position: absolute;
+        top: -24px;
+        left: 0;
+      }
+
+      .progress_list {
+        padding-top: 61px;
+        padding-left: 48px;
+        display: flex;
+        gap: 32px;
+        .el-progress {
+          background: radial-gradient(ellipse 50% 40%, rgba($color: #29f1fa, $alpha: 0.4), transparent);
+        }
+        ::v-deep {
+          .el-progress-circle {
+            width: 120px !important;
+            height: 120px !important;
+          }
+          .el-progress-circle__track {
+            stroke-linecap: round;
+            stroke: #345376;
+          }
+        }
+        .item {
+          position: relative;
+          width: 120px;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          .text2 {
+            position: absolute;
+            top: 60px;
+            left: 60px;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: #29f1fa;
+            font-size: 28px;
+            font-weight: bold;
+          }
+          .text {
+            font-size: 16px;
+            color: #ffffff;
+          }
+        }
+      }
+    }
+  }
+  .box3,
+  .box4,
+  .box5 {
+    .title {
+      margin-top: 20px;
+      margin-left: 30px;
+      width: 260px;
+      height: 36px;
+      background: linear-gradient(180deg, #475776 0%, #273042 100%);
+      border-radius: 6px 6px 6px 6px;
+      border: 1px solid rgba(120, 165, 214, 0.5899999737739563);
+      // border: 1px solid;
+      // border-image: linear-gradient(179deg, rgba(120.00000044703484, 165.00000536441803, 214.00000244379044, 0.5899999737739563), rgba(255, 255, 255, 0)) 1 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      .icon {
+        display: block;
+        width: 14px;
+        height: 14px;
+      }
+      font-size: 18px;
+      font-weight: bold;
+      color: #fff;
+    }
+  }
+  .box3 {
+    position: absolute;
+    z-index: 100;
+    top: 98px;
+    right: 20px;
+    width: 320px;
+    height: 397px;
+    background: rgba(34, 39, 53, 0.8);
+    box-shadow: inset 0px 4px 10px 0px #075db9;
+    border-radius: 22px;
+    border: 1px solid #075db9;
+    display: flex;
+    flex-direction: column;
+    .boxList {
+      display: flex;
+      margin-top: 12px;
+      margin-left: 28px;
+      gap: 8px;
+      .item {
+        width: 128px;
+        height: 28px;
+        line-height: 28px;
+        text-align: center;
+        background-image: url("./images/btn_dk_nor@2x.png");
+        background-size: cover;
+        font-size: 14px;
+        color: #fff;
+        cursor: pointer;
+        &.active {
+          background-image: url("./images/btn_dk_sel@2x.png");
+        }
+      }
+    }
+    .card {
+      margin-top: 12px;
+      margin-left: 30px;
+      width: 260px;
+      height: 270px;
+      overflow-y: scroll;
+      overflow-x: hidden;
+      color: #fff;
+      font-size: 14px;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
+      .row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-bottom: 12px;
+      }
     }
 
     .UAVBox {
@@ -1368,84 +1299,217 @@ export default {
       height: 100%;
     }
   }
+  .box4 {
+    position: absolute;
+    z-index: 100;
+    top: 507px;
+    right: 20px;
+    width: 320px;
+    height: 277px;
+    background: rgba(34, 39, 53, 0.8);
+    box-shadow: inset 0px 4px 10px 0px #075db9;
+    border-radius: 22px;
+    border: 1px solid #075db9;
+    display: flex;
+    flex-direction: column;
+
+    .chart {
+      margin-top: 10px;
+      margin-left: 30px;
+      width: 260px;
+      height: 193px;
+    }
+  }
+  .box5 {
+    position: absolute;
+    z-index: 100;
+    top: 796px;
+    right: 20px;
+    width: 320px;
+    height: 264px;
+    background: rgba(34, 39, 53, 0.8);
+    box-shadow: inset 0px 4px 10px 0px #075db9;
+    border-radius: 22px;
+    border: 1px solid #075db9;
+    display: flex;
+    flex-direction: column;
+
+    .chart {
+      margin-top: 10px;
+      margin-left: 30px;
+      width: 260px;
+      height: 185px;
+    }
+  }
 }
 
-.box4 {
-  z-index: 50;
-  position: absolute;
-  width: 22vw;
-  height: 25vh;
-  top: 42vh;
-  right: 2vw;
-  background-image: url("./layer4/img/right2.png");
-  background-size: 100% 100%;
-  .boxTitle {
-    font-size: 1.6vh;
-    margin: 0.8vh 2vw 0 2vw;
-    color: #0efcff;
+.page2 {
+  #mapRoot2 {
+    position: absolute;
+    z-index: 20;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .back1 {
+    position: absolute;
+    z-index: 100;
+    width: 704px;
+    height: 284px;
+    top: 89px;
+    left: 43px;
+    pointer-events: none;
+  }
+  .back2 {
+    position: absolute;
+    z-index: 100;
+    width: 420px;
+    height: 40px;
+    top: 89px;
+    left: 50%;
+    transform: translateX(-50%);
+    pointer-events: none;
+  }
+
+  .back3 {
+    position: absolute;
+    z-index: 100;
+    width: 704px;
+    height: 284px;
+    top: 89px;
+    right: 43px;
+    pointer-events: none;
+  }
+
+  .back4 {
+    position: absolute;
+    z-index: 100;
+    width: 704px;
+    height: 284px;
+    bottom: 27px;
+    left: 43px;
+    pointer-events: none;
+  }
+
+  .back5 {
+    position: absolute;
+    z-index: 100;
+    width: 704px;
+    height: 284px;
+    bottom: 27px;
+    right: 43px;
+    pointer-events: none;
+  }
+  .p9_title {
     text-align: center;
+    color: #00f7ff;
+    margin-bottom: 10px;
+    font-size: 14px;
   }
-  display: flex;
-  flex-direction: column;
-  .chart {
-    flex-grow: 1;
-    height: 0;
-    width: 80%;
-    margin: 0 10%;
-  }
-}
 
-.box5 {
-  z-index: 50;
-  position: absolute;
-  width: 22vw;
-  height: 25vh;
-  top: 70vh;
-  right: 2vw;
-  background-image: url("./layer4/img/right2.png");
-  background-size: 100% 100%;
-  .boxTitle {
-    font-size: 1.6vh;
-    margin: 0.8vh 2vw 0 2vw;
-    color: #0efcff;
-    text-align: center;
+  .p9_progress {
+    position: relative;
+    border-left: 1px solid #00f7ff;
+    .p9_value {
+      z-index: 10;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 10px;
+      height: 100%;
+      // background-color: rgba($color: #00d2ff, $alpha: 1);
+      transition: height 0.1s;
+      &::before {
+        position: absolute;
+        left: 0;
+        top: 0;
+        transform: translateY(-50%);
+        content: "";
+        width: 0;
+        height: 0;
+        border-width: 9px 9px 9px 0;
+        border-style: solid;
+        border-color: transparent;
+        border-right-color: #00f7ff;
+      }
+    }
+    .p9_line {
+      z-index: 20;
+      position: absolute;
+      z-index: 20px;
+      display: flex;
+      padding-left: 16px;
+      transform: translateY(-50%);
+      color: #00f7ff;
+      font-size: 14px;
+      &::before {
+        position: absolute;
+        left: 0;
+        top: 50%;
+        content: "";
+        width: 8px;
+        height: 1px;
+        background-color: #00f7ff;
+      }
+    }
   }
-  display: flex;
-  flex-direction: column;
-  .chart {
-    flex-grow: 1;
-    height: 0;
-    width: 80%;
-    margin: 0 10%;
-  }
-}
 
-.box6 {
-  z-index: 50;
-  position: absolute;
-  width: 22vw;
-  height: 25vh;
-  top: 70vh;
-  left: 2vw;
-  background-image: url("./layer4/img/right2.png");
-  background-size: 100% 100%;
-  .boxTitle {
-    font-size: 1.6vh;
-    margin: 0.8vh 2vw 0 2vw;
-    color: #0efcff;
-    text-align: center;
+  .p9_lc {
+    z-index: 50;
+    position: absolute;
+    top: 200px;
+    left: 50%;
+    width: 1000px;
+    transform: translateX(-50%);
+    display: flex;
+    justify-items: center;
+    align-items: center;
+    gap: 10px;
+    .p9_text {
+      color: #fff;
+    }
+    .p9_progress {
+      flex-grow: 1;
+      width: 0;
+      height: 6px;
+      border-radius: 3px;
+      overflow: hidden;
+      background-color: rgba($color: #fff, $alpha: 0.2);
+      .p9_value {
+        width: 100%;
+        height: 100%;
+        background-color: rgba($color: #00f7ff, $alpha: 1);
+      }
+    }
   }
-  display: flex;
-  flex-direction: column;
-  .chart {
-    flex-grow: 1;
-    height: 0;
-    width: 80%;
-    margin: 0 10%;
-  }
-}
 
-.baseBox {
-  display: none;
+  .p9_gd {
+    z-index: 50;
+    position: absolute;
+    left: 44px;
+    top: 420px;
+
+    .p9_progress {
+      margin-bottom: 30px;
+      height: 224px;
+    }
+  }
+
+  .p9_sd {
+    z-index: 50;
+    position: absolute;
+    top: 420px;
+    right: 44px;
+    .p9_progress_list {
+      display: flex;
+      gap: 25px;
+      margin-bottom: 10px;
+      .p9_progress {
+        margin-bottom: 30px;
+        height: 224px;
+      }
+    }
+  }
 }
 </style>
