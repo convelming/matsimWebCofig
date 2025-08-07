@@ -10,6 +10,7 @@ import * as THREE from "three";
 import { STLLoader } from "three/addons/loaders/STLLoader.js";
 import { OBJLoader } from "three/addons/loaders/OBJLoader.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { BirdLayer } from "./layer4/BirdLayer.js";
 
 export default {
   name: "index10",
@@ -40,20 +41,38 @@ export default {
 
       this._MapLayer = new MapLayer({ tileClass: MAP_LAYER_STYLE[MAP_LAYER_STYLE.length - 1], zIndex: -1 });
       this._Map.addLayer(this._MapLayer);
+      
+      this._BirdLayer = new BirdLayer({ zIndex: 20000 });
+      this._Map.addLayer(this._BirdLayer);
+      return
 
-      new STLLoader().load(process.env.VUE_APP_BASE_API + "/models/无人机.stl", (geometry) => {
+      new STLLoader().load(process.env.VUE_APP_BASE_API + "/models/无人机2.stl", (geometry) => {
+        const m4 = new THREE.Matrix4().makeScale(1, 1, 1);
+        // m4.multiply(new THREE.Matrix4().makeRotationZ(Math.PI / 2));
+        m4.multiply(new THREE.Matrix4().makeRotationX(-Math.PI / 2));
+        geometry.applyMatrix4(m4);
         const mesh = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({ color: "#275994" }));
         this._Map.world.add(mesh);
       });
+      const ma1 = new THREE.MeshStandardMaterial({ color: "#275994" });
+      const ma2 = new THREE.MeshStandardMaterial({ color: "#999", wireframe: true, wireframeLinewidth: 2 });
+
       new GLTFLoader().load(process.env.VUE_APP_BASE_API + "/models/无人机.glb", (gltf) => {
         let lxjs = [];
         gltf.scene.traverse((child) => {
           console.log(child.isMesh);
           if (child.isMesh) {
-            child.material = new THREE.MeshStandardMaterial({ color: "#275994" });
-          }
-          if (child.isMesh && String(child.name || "").includes("螺旋桨")) {
-            lxjs.push(child);
+            child.material = ma1;
+            child.renderOrder = 1;
+            const mesh = child.clone();
+            mesh.material = ma2;
+            mesh.renderOrder = 2;
+            child.parent.add(mesh);
+
+            if (String(child.name || "").includes("螺旋桨")) {
+              lxjs.push(child);
+              lxjs.push(mesh);
+            }
           }
         });
 
@@ -63,7 +82,7 @@ export default {
             if (mesh.rotation.z >= 2 * Math.PI) mesh.rotation.z = 0;
           }
         }, 1000 / 60);
-        
+
         console.log(gltf);
         gltf.scene.position.set(0, 0, 100);
         // gltf.scene.scale.set(10, 10, 10);

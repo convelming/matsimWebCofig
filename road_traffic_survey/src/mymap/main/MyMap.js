@@ -402,7 +402,7 @@ export class MyMap extends EventListener {
   // 初始化光源
   initLight() {
     // 添加环境光线
-    const light = new THREE.AmbientLight(0xffffff, 0.8);
+    const light = new THREE.AmbientLight(0xffffff, 0.5);
     this.scene.add(light);
 
     const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8); // 创建方向光

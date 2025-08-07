@@ -15,7 +15,7 @@ export class Build3DLayer extends Layer {
     this.buildColor = opt.buildColor || this.buildColor;
     this.buildOpacity = opt.buildOpacity || this.buildOpacity;
 
-    this.polygonMaterial = new GeoJSONPolygonMaterial({
+    this.polygonMaterial = new THREE.MeshStandardMaterial({
       transparent: true,
       color: this.buildColor,
       opacity: this.buildOpacity,

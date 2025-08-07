@@ -219,6 +219,8 @@ export class CubicBezierPath extends THREE.Curve {
   }
 
   getPoint(t, optionalTarget = new THREE.Vector3()) {
+    if (t < 0) return this.getPoint(0, optionalTarget);
+    if (t > 1) return this.getPoint(1, optionalTarget);
     /**贝塞尔曲线控制点数目（阶数）*/
     let number = this.nodes.length;
     let tmpX = 0;
@@ -281,7 +283,9 @@ export class CubicBezierPath extends THREE.Curve {
           dis = p * (ep.d - sp.d) + sp.d;
           const t = dis / this.dis;
           poi = this.getPoint(t);
-          dir = poi.clone();
+          // dir = poi.clone()
+          const poi2 = this.getPoint(t + 0.01);
+          dir = poi2.clone().sub(poi).normalize();
         }
       }
       return {
@@ -295,13 +299,6 @@ export class CubicBezierPath extends THREE.Curve {
         dir: dir,
         isEnd: false,
       };
-      // const t = (time - this.minTime) / (this.maxTime - this.minTime);
-      // return {
-      //   point: this.getPoint(t),
-      //   speed: this.dis / (this.maxTime - this.minTime),
-      //   dir: this.getPoint(t),
-      //   isEnd: false,
-      // };
     }
   }
 }

@@ -6,6 +6,7 @@
 <script>
 import { MyMap, MapLayer, MAP_LAYER_STYLE, MAP_EVENT } from "@/mymap/index.js";
 import { WindLineLayer } from "./layer/WindLineLayer.js";
+import { BirdLayer } from "./layer4/BirdLayer.js";
 
 import wind from "./data/wind.json";
 
@@ -42,6 +43,7 @@ export default {
 
       this._WindLineLayer = new WindLineLayer({ zIndex: 20000, data: wind });
       this._Map.addLayer(this._WindLineLayer);
+
     },
   },
 };

@@ -74,15 +74,15 @@ export class WindLineLayer extends Layer {
       this.scene.add(line);
     }
 
-    // this._interval = setInterval(() => {
-    //   for (const i in this.lineList) {
-    //     const material = this.lineList[i].material;
-    //     let opacity = material.opacity - 1 / 60;
-    //     if (opacity < 0) opacity = 1;
-    //     this.lineList[i].material.setValues({ opacity: opacity });
-    //     this.lineList[i].material.needUpdate = true;
-    //   }
-    // }, 1000 / 60);
+    this._interval = setInterval(() => {
+      for (const i in this.lineList) {
+        const material = this.lineList[i].material;
+        let opacity = material.opacity - 1 / 60;
+        if (opacity < 0) opacity = 1;
+        this.lineList[i].material.setValues({ opacity: opacity });
+        this.lineList[i].material.needUpdate = true;
+      }
+    }, 1000 / 60);
   }
 
   dispose() {

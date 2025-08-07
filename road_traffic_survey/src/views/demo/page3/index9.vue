@@ -1,4 +1,5 @@
 <template>
+  <!-- :style="mainStyle" -->
   <div class="p9_index main" :style="mainStyle" v-loading="loading" style="background-color: #000">
     <div class="title_box">
       <img class="back1" src="./images/top_left@2x.png" alt="" />
@@ -235,6 +236,10 @@
       <img src="./images/img_line_top_right@2x.png" alt="" class="back3" />
       <img src="./images/img_line_down_left@2x.png" alt="" class="back4" />
       <img src="./images/img_line_down_right@2x.png" alt="" class="back5" />
+      <div class="back_btn" @click="lockSelect = false">
+        <img src="./images/icon_back@2x.png" alt="" class="icon" />
+        <span>返回</span>
+      </div>
       <template v-if="playDetail">
         <div class="p9_lc">
           <div class="p9_text">路程：{{ playDetail.dis }} / {{ playDetail.tDis }}</div>
@@ -382,7 +387,8 @@ export default {
   watch: {
     lockSelect: {
       handler(val) {
-        this._UAVListLayer.lockSelect = val;
+        this._UAVListLayer.setLockSelect(val);
+        // this._UAVListLayer.lockSelect = val;
       },
     },
     showNetwork2D: {
@@ -456,6 +462,7 @@ export default {
       selectStartPink: false,
       endPink: null,
       selectEndPink: false,
+      playDetail: null,
       // playDetail: {
       //   point: { x: 1, y: 1, z: 1 },
       //   speed: 0,
@@ -467,7 +474,6 @@ export default {
       //   dir: { x: 1, y: 1, z: 1 },
       //   isEnd: true,
       // },
-      playDetail: null,
       lockSelect: true,
       buildLoading: false,
       networkloading: false,
@@ -483,7 +489,8 @@ export default {
       minTime: 0,
       maxTime: 5000,
       tifOpacity: 1,
-      UAVPathClassName: "LinePath", // LinePath CubicBezierPath
+      // UAVPathClassName: "LinePath", // LinePath CubicBezierPath
+      UAVPathClassName: "CubicBezierPath", // LinePath CubicBezierPath
     };
   },
   created() {
@@ -523,54 +530,54 @@ export default {
       }
       await this.initMap(pageConfig.mapConfig);
       try {
-        if (pageConfig.tif) {
-          await zip
-            .file(pageConfig.tif)
-            .async("arraybuffer")
-            .then((array) => {
-              return this._TileLayer.setTif(array);
-            });
-        }
-        if (pageConfig.network && zip.file(pageConfig.network)) {
-          await Promise.all([
-            zip
-              .file(pageConfig.network + "/node")
-              .async("arraybuffer")
-              .then(arrayToFloat64),
-            zip
-              .file(pageConfig.network + "/link")
-              .async("arraybuffer")
-              .then(arrayToFloat64),
-            zip
-              .file(pageConfig.network + "/node_id")
-              .async("string")
-              .then(JSON.parse),
-            zip
-              .file(pageConfig.network + "/link_id")
-              .async("string")
-              .then(JSON.parse),
-          ]).then(([nodes, links, nodesId, linksId]) => {
-            const network = Network.fromArray(nodes, links);
-            this._Network3DLayer.setNetwork(network);
-            this._nodesId = nodesId;
-            this._linksId = linksId;
-            this._Network3DLayer.addEventListener(MAP_EVENT.HANDLE_PICK_LEFT, (e) => {
-              if (e.data > this._nodesId.length) {
-                alert(`linkId:  ${this._linksId[e.data - this._nodesId.length]}`);
-              } else {
-                alert(`nodeId:  ${this._nodesId[e.data]}`);
-              }
-            });
-          });
-        } else if (pageConfig.networkXmlUrl && zip.file(pageConfig.networkXmlUrl)) {
-          await zip
-            .file(pageConfig.networkXmlUrl)
-            .async("string")
-            .then((xml) => {
-              const network = Network.fromXml(xml);
-              this._Network3DLayer.setNetwork(network);
-            });
-        }
+        // if (pageConfig.tif) {
+        //   await zip
+        //     .file(pageConfig.tif)
+        //     .async("arraybuffer")
+        //     .then((array) => {
+        //       return this._TileLayer.setTif(array);
+        //     });
+        // }
+        // if (pageConfig.network && zip.file(pageConfig.network)) {
+        //   await Promise.all([
+        //     zip
+        //       .file(pageConfig.network + "/node")
+        //       .async("arraybuffer")
+        //       .then(arrayToFloat64),
+        //     zip
+        //       .file(pageConfig.network + "/link")
+        //       .async("arraybuffer")
+        //       .then(arrayToFloat64),
+        //     zip
+        //       .file(pageConfig.network + "/node_id")
+        //       .async("string")
+        //       .then(JSON.parse),
+        //     zip
+        //       .file(pageConfig.network + "/link_id")
+        //       .async("string")
+        //       .then(JSON.parse),
+        //   ]).then(([nodes, links, nodesId, linksId]) => {
+        //     const network = Network.fromArray(nodes, links);
+        //     this._Network3DLayer.setNetwork(network);
+        //     this._nodesId = nodesId;
+        //     this._linksId = linksId;
+        //     this._Network3DLayer.addEventListener(MAP_EVENT.HANDLE_PICK_LEFT, (e) => {
+        //       if (e.data > this._nodesId.length) {
+        //         alert(`linkId:  ${this._linksId[e.data - this._nodesId.length]}`);
+        //       } else {
+        //         alert(`nodeId:  ${this._nodesId[e.data]}`);
+        //       }
+        //     });
+        //   });
+        // } else if (pageConfig.networkXmlUrl && zip.file(pageConfig.networkXmlUrl)) {
+        //   await zip
+        //     .file(pageConfig.networkXmlUrl)
+        //     .async("string")
+        //     .then((xml) => {
+        //       const network = Network.fromXml(xml);
+        //       this._Network3DLayer.setNetwork(network);
+        //     });
+        // }
         if (pageConfig.paths && zip.file(pageConfig.paths)) {
           await zip
             .file(pageConfig.paths)
@@ -590,24 +597,24 @@ export default {
               this._UAVListLayer.setPaths(this._UAVPaths, this.UAVPathClassName);
             });
         }
-        if (pageConfig.build && zip.file(pageConfig.build)) {
-          await zip
-            .file(pageConfig.build)
-            .async("string")
-            .then(parserGeoJSON)
-            .then((json) => {
-              this._Build3DLayer.setData(json, pageConfig.buildJzgdKey, pageConfig.buildHbgdKey);
-            });
-        }
-        if (pageConfig.pink && zip.file(pageConfig.pink)) {
-          await zip
-            .file(pageConfig.pink)
-            .async("string")
-            .then(JSON.parse)
-            .then((json) => {
-              this._PinkLayer.setPinkList(json);
-            });
-        }
+        // if (pageConfig.build && zip.file(pageConfig.build)) {
+        //   await zip
+        //     .file(pageConfig.build)
+        //     .async("string")
+        //     .then(parserGeoJSON)
+        //     .then((json) => {
+        //       this._Build3DLayer.setData(json, pageConfig.buildJzgdKey, pageConfig.buildHbgdKey);
+        //     });
+        // }
+        // if (pageConfig.pink && zip.file(pageConfig.pink)) {
+        //   await zip
+        //     .file(pageConfig.pink)
+        //     .async("string")
+        //     .then(JSON.parse)
+        //     .then((json) => {
+        //       this._PinkLayer.setPinkList(json);
+        //     });
+        // }
       } catch (error) {
         console.log(error);
       }
@@ -670,7 +677,22 @@ export default {
         lockSelect: this.lockSelect,
         linkColor: "#f2c494",
         nodeColor: "#bbabdO",
+        selectLinkColor: "red",
+        selectNodeColor: "red",
         uavColor: "#f3fafa",
+
+        // linkColor: "#a8adbd",
+        // nodeColor: "#bbabdO",
+        // selectLinkColor: "red",
+        // selectNodeColor: "red",
+        // uavColor: "#f3fafa",
+
+        // linkColor: "#f3fafa",
+        // nodeColor: "#bbabdO",
+        // selectLinkColor: "#a8adbd",
+        // selectNodeColor: "#a8adbd",
+        // uavColor: "#f3fafa",
+        // selectUavColor: "#c5cadd",
         rootDoc: this.$refs.mapRoot2,
         event: {
           playing: (res) => {
@@ -686,7 +708,8 @@ export default {
 
       this._Build3DLayer = new Build3DLayer({
         zIndex: 220,
-        // buildColor: "#838385",
+        // buildOpacity: 0.4,
+        // buildColor: "#a8adbd",
         buildColor: "#4198b9",
       });
       this._Map.addLayer(this._Build3DLayer);
@@ -943,6 +966,7 @@ body {
 </style>
 <style lang="scss" scoped>
 .p9_index {
+  user-select: none;
   background: #000;
   transform: translate(-50%, -50%) scale(0.8);
   position: fixed;
@@ -1401,6 +1425,24 @@ body {
     right: 43px;
     pointer-events: none;
   }
+  .back_btn {
+    position: absolute;
+    z-index: 200;
+    top: 160px;
+    left: 112px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    .icon {
+      display: block;
+      width: 24px;
+      height: 24px;
+    }
+    font-size: 24px;
+    color: #00f7ff;
+    cursor: pointer;
+  }
+
   .p9_title {
     text-align: center;
     color: #00f7ff;
@@ -1426,12 +1468,10 @@ body {
         top: 0;
         transform: translateY(-50%);
         content: "";
-        width: 0;
-        height: 0;
-        border-width: 9px 9px 9px 0;
-        border-style: solid;
-        border-color: transparent;
-        border-right-color: #00f7ff;
+        width: 16px;
+        height: 16px;
+        background-image: url("./images/icon_arrow_left@2x.png");
+        background-size: cover;
       }
     }
     .p9_line {

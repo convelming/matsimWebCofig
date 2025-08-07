@@ -8,7 +8,6 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import UAVListLayerWorker from "./UAVListLayer4.worker";
 
 import * as PathCurve from "./PathCurve";
-import { color } from "echarts";
 
 export class UAVListLayer extends Layer {
   center = [0, 0];
@@ -24,28 +23,30 @@ export class UAVListLayer extends Layer {
     this.nodeMeshList2 = [];
     this.nodeGeometry = new THREE.BoxGeometry(this.nodeSize, this.nodeSize, this.nodeSize);
     this.nodesMaterial = new THREE.MeshBasicMaterial({ color: opt.nodeColor || "#76819a", opacity: 0.8, transparent: true });
-    this.nodesMaterial_s = new THREE.MeshBasicMaterial({ depthFunc: THREE.AlwaysDepth, color: "red", opacity: 0.8, transparent: true });
+    this.nodesMaterial_s = new THREE.MeshBasicMaterial({ depthFunc: THREE.AlwaysDepth, color: opt.selectNodeColor || "red", opacity: 0.8, transparent: true });
     this.nodesMaterial1 = new THREE.MeshBasicMaterial({});
 
     this.linkMeshList = [];
     this.linkMeshList1 = [];
     this.linkMeshList2 = [];
     this.linkMaterial = new THREE.MeshBasicMaterial({ color: opt.linkColor || "#e8ce79", opacity: 0.8, transparent: true });
-    this.linkMaterial_s = new THREE.MeshBasicMaterial({ depthFunc: THREE.AlwaysDepth, color: "red", opacity: 0.8, transparent: true });
+    this.linkMaterial_s = new THREE.MeshBasicMaterial({ depthFunc: THREE.AlwaysDepth, color: opt.selectLinkColor || "red", opacity: 0.8, transparent: true });
     this.linkMaterial1 = new THREE.MeshBasicMaterial({});
 
     this.UAVGeometry = new THREE.BoxGeometry(50, 50, 50);
     this.UAVMaterial = new THREE.MeshStandardMaterial({ color: opt.uavColor || "#ea7f7f" });
-    this.UAVMaterial_s = new THREE.MeshStandardMaterial({ color: opt.uavColor || "#ea7f7f", depthFunc: THREE.AlwaysDepth });
+    this.UAVMaterial_s = new THREE.MeshStandardMaterial({ color: opt.selectUavColor || opt.uavColor || "#ea7f7f" });
+    this.UAVMaterial_s2 = new THREE.MeshStandardMaterial({ color: "#ffffff", wireframe: true });
     this.UAVMaterial1 = new THREE.MeshBasicMaterial({});
     this.UAVMaterial2 = new THREE.MeshBasicMaterial({});
     this.UAVMesh = new THREE.InstancedMesh(this.UAVGeometry, this.UAVMaterial, 1);
     this.UAVMesh1 = new THREE.InstancedMesh(this.UAVGeometry, this.UAVMaterial1, 1);
     this.UAVMesh2 = new THREE.InstancedMesh(this.UAVGeometry, this.UAVMaterial2, 1);
 
-    new STLLoader().load(process.env.VUE_APP_BASE_API + "/models/无人机.stl", (geometry) => {
+    new STLLoader().load(process.env.VUE_APP_BASE_API + "/models/无人机2.stl", (geometry) => {
       const m4 = new THREE.Matrix4().makeScale(1, 1, 1);
       m4.multiply(new THREE.Matrix4().makeRotationZ(Math.PI / 2));
+      m4.multiply(new THREE.Matrix4().makeRotationX(-Math.PI / 2));
       geometry.applyMatrix4(m4);
       this.UAVGeometry = geometry;
       this.initUAV();
@@ -57,9 +58,16 @@ export class UAVListLayer extends Layer {
       gltf.scene.traverse((child) => {
         if (child.isMesh) {
           child.material = this.UAVMaterial_s;
-        }
-        if (child.isMesh && String(child.name || "").includes("螺旋桨")) {
-          gltf.lxjs.push(child);
+          child.renderOrder = 1;
+          // const mesh = child.clone();
+          // mesh.material = this.UAVMaterial_s2;
+          // child.renderOrder = 2;
+          // child.parent.add(mesh);
+
+          if (String(child.name || "").includes("螺旋桨")) {
+            gltf.lxjs.push(child);
+            // gltf.lxjs.push(mesh);
+          }
         }
       });
       gltf.interval = setInterval(() => {
@@ -109,12 +117,32 @@ export class UAVListLayer extends Layer {
     this.renderer.domElement.style.left = "0";
     this.renderer.domElement.style.zIndex = "0";
     this.rootDoc.appendChild(this.renderer.domElement);
+
+    new ResizeObserver((entries) => {
+      // 节流
+      if (this._setSizeTimeout) return;
+      this._setSizeTimeout = setTimeout(() => {
+        const width = this.rootDoc.clientWidth;
+        const height = this.rootDoc.clientHeight;
+        console.log("ResizeObserver", width, height);
+        // 更新摄影机的纵横比
+        this.camera.aspect = width / height;
+        this.camera.updateProjectionMatrix();
+        // 更新渲染器的大小
+        this.renderer.setSize(width, height);
+        this._setSizeTimeout = null;
+      }, 1000 / 120);
+    }).observe(this.rootDoc);
   }
 
   render(map) {
     if (this.lockSelect) {
       this.renderer.render(map.scene, this.camera);
     }
+  }
+
+  setLockSelect(val) {
+    this.lockSelect = val;
   }
 
   setPickLayerColor(color) {
@@ -125,11 +153,6 @@ export class UAVListLayer extends Layer {
     this.linkMaterial1.needsUpdate = true;
     this.UAVMaterial1.setValues({ color: color });
     this.UAVMaterial1.needsUpdate = true;
-  }
-
-  dispose() {
-    super.dispose();
-    this.worker.terminate();
   }
 
   on(type, data) {
@@ -148,12 +171,6 @@ export class UAVListLayer extends Layer {
     if (type == MAP_EVENT.HANDLE_PICK_LEFT && data.layerId == this.id) {
       const pickColorNum = data.pickColor;
       this.setSelectPath(pickColorNum - 1);
-    }
-    if (type == MAP_EVENT.UPDATE_RENDERER_SIZE) {
-      const { width, height } = data;
-      this.camera.aspect = width / height;
-      this.camera.updateProjectionMatrix();
-      this.renderer.setSize(width, height);
     }
   }
 
@@ -377,6 +394,7 @@ export class UAVListLayer extends Layer {
 
   dispose() {
     super.dispose();
+    this.worker.terminate();
     this.rootDoc.removeChild(this.renderer.domElement);
     this.renderer.domElement = null;
     this.renderer.forceContextLoss();
