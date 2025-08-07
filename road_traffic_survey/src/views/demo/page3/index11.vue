@@ -10,7 +10,7 @@ import * as THREE from "three";
 import { STLLoader } from "three/addons/loaders/STLLoader.js";
 import { OBJLoader } from "three/addons/loaders/OBJLoader.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-import { BirdLayer } from "./layer4/BirdLayer.js";
+import { Birds } from "./layer4/Birds.js";
 
 export default {
   name: "index10",
@@ -41,10 +41,13 @@ export default {
 
       this._MapLayer = new MapLayer({ tileClass: MAP_LAYER_STYLE[MAP_LAYER_STYLE.length - 1], zIndex: -1 });
       this._Map.addLayer(this._MapLayer);
-      
-      this._BirdLayer = new BirdLayer({ zIndex: 20000 });
-      this._Map.addLayer(this._BirdLayer);
-      return
+
+      this._Birds = new Birds(this._Map.renderer);
+      this._Map.world.add(this._Birds);
+      this._Map.addEventListener(MAP_EVENT.LAYER_BEFORE_RENDER, () => {
+        this._Birds.beforeRender();
+      });
+      this._Birds.position.set(0, 0, 100000);
 
       new STLLoader().load(process.env.VUE_APP_BASE_API + "/models/无人机2.stl", (geometry) => {
         const m4 = new THREE.Matrix4().makeScale(1, 1, 1);
@@ -81,10 +84,13 @@ export default {
             mesh.rotation.z += Math.PI / 30;
             if (mesh.rotation.z >= 2 * Math.PI) mesh.rotation.z = 0;
           }
+          // gltf.scene.position.z += 1;
+          // this._Birds.position.copy(gltf.scene.position);
         }, 1000 / 60);
 
         console.log(gltf);
         gltf.scene.position.set(0, 0, 100);
+        this._Birds.position.copy(gltf.scene.position);
         // gltf.scene.scale.set(10, 10, 10);
         this._Map.world.add(gltf.scene);
       });

@@ -94,12 +94,11 @@ const fragmentShaderVelocity = `
 
 
     // move birds away from predator
-    if ( dist < preyRadius ) {
-
-      f = ( distSquared / preyRadiusSq - 1.0 ) * delta * 100.;
-      velocity += normalize( dir ) * f;
-      limit += 5.0;
-    }
+    // if ( dist < preyRadius ) {
+    //   f = ( distSquared / preyRadiusSq - 1.0 ) * delta * 100.;
+    //   velocity += normalize( dir ) * f;
+    //   limit += 5.0;
+    // }
 
 
     // if (testing == 0.0) {}
@@ -204,10 +203,10 @@ const birdVS = `
 
     vec3 newPosition = position;
 
-    if ( birdVertex == 4.0 || birdVertex == 7.0 ) {
-      // flap wings
-      newPosition.y = sin( tmpPos.w ) * 5.;
-    }
+    // if ( birdVertex == 4.0 || birdVertex == 7.0 ) {
+    //   // flap wings
+    //   newPosition.y = sin( tmpPos.w ) * 5.;
+    // }
 
     newPosition = mat3( modelMatrix ) * newPosition;
 
@@ -255,22 +254,22 @@ const birdFS = `
   void main() {
     // Fake colors for now
     float z2 = 0.2 + ( 1000. - z ) / 1000. * vColor.x;
-    gl_FragColor = vec4( z2, z2, z2, 1. );
+    gl_FragColor = vec4( z2, z2, z2, 1. ) * vec4( color , 1.0 );
 
   }
 `;
 
-const WIDTH = 32;
+// const WIDTH = 100;
 
-const BIRDS = WIDTH * WIDTH;
+// const BIRDS = WIDTH * WIDTH;
 
-const BOUNDS = 800,
-  BOUNDS_HALF = BOUNDS / 2;
+// const BOUNDS = 800,
+//   BOUNDS_HALF = BOUNDS / 2;
 
 class BirdGeometry extends THREE.BufferGeometry {
-  constructor() {
+  constructor(WIDTH) {
     super();
-
+    const BIRDS = WIDTH * WIDTH;
     const trianglesPerBird = 3;
     const triangles = BIRDS * trianglesPerBird;
     const points = triangles * 3;
@@ -300,7 +299,7 @@ class BirdGeometry extends THREE.BufferGeometry {
     for (let f = 0; f < BIRDS; f++) {
       // Body
 
-      verts_push(0, -0, -20, 0, 4, -20, 0, 0, 30);
+      verts_push(0, -0, -0, 0, 0, -0, 0, 0, 0);
 
       // Wings
 
@@ -331,21 +330,43 @@ class BirdGeometry extends THREE.BufferGeometry {
   }
 }
 
-export class BirdLayer extends Layer {
-  constructor(opt) {
-    super(opt);
+export class Birds extends THREE.Mesh {
+  constructor(renderer, WIDTH = 100, BOUNDS = 1000) {
+    const geometry = new BirdGeometry(WIDTH);
 
+    // For Vertex and Fragment
+    const birdUniforms = {
+      color: { value: new THREE.Color(0xff2200) },
+      texturePosition: { value: null },
+      textureVelocity: { value: null },
+      time: { value: 1.0 },
+      delta: { value: 0.0 },
+    };
+
+    // THREE.ShaderMaterial
+    const material = new THREE.ShaderMaterial({
+      uniforms: birdUniforms,
+      vertexShader: birdVS,
+      fragmentShader: birdFS,
+      side: THREE.DoubleSide,
+      depthFunc: THREE.AlwaysDepth,
+    });
+
+    super(geometry, material);
+    this.birdUniforms = birdUniforms;
+    this.rotation.y = Math.PI / 2;
+    this.matrixAutoUpdate = false;
+    this.updateMatrix();
+
+    this.WIDTH = WIDTH;
+    this.BIRDS = WIDTH * WIDTH;
+    this.BOUNDS = BOUNDS;
+    this.BOUNDS_HALF = BOUNDS / 2;
+    this.renderer = renderer;
+    this.initComputeRenderer(this.renderer);
   }
-
-  onAdd(map) {
-    super.onAdd(map);
-
-    this.initComputeRenderer();
-    this.initBirds();
-  }
-
-  initComputeRenderer() {
-    this.gpuCompute = new GPUComputationRenderer(WIDTH, WIDTH, this.map.renderer);
+  initComputeRenderer(renderer) {
+    this.gpuCompute = new GPUComputationRenderer(this.WIDTH, this.WIDTH, renderer);
 
     const dtPosition = this.gpuCompute.createTexture();
     const dtVelocity = this.gpuCompute.createTexture();
@@ -371,7 +392,7 @@ export class BirdLayer extends Layer {
     this.velocityUniforms["cohesionDistance"] = { value: 20.0 };
     this.velocityUniforms["freedomFactor"] = { value: 0.75 };
     this.velocityUniforms["predator"] = { value: new THREE.Vector3() };
-    this.velocityVariable.material.defines.BOUNDS = BOUNDS.toFixed(2);
+    this.velocityVariable.material.defines.BOUNDS = this.BOUNDS.toFixed(2);
 
     this.velocityVariable.wrapS = THREE.RepeatWrapping;
     this.velocityVariable.wrapT = THREE.RepeatWrapping;
@@ -385,41 +406,13 @@ export class BirdLayer extends Layer {
     }
   }
 
-  initBirds() {
-    const geometry = new BirdGeometry();
-
-    // For Vertex and Fragment
-    this.birdUniforms = {
-      color: { value: new THREE.Color(0xff2200) },
-      texturePosition: { value: null },
-      textureVelocity: { value: null },
-      time: { value: 1.0 },
-      delta: { value: 0.0 },
-    };
-
-    // THREE.ShaderMaterial
-    const material = new THREE.ShaderMaterial({
-      uniforms: this.birdUniforms,
-      vertexShader: birdVS,
-      fragmentShader: birdFS,
-      side: THREE.DoubleSide,
-    });
-
-    const birdMesh = new THREE.Mesh(geometry, material);
-    birdMesh.rotation.y = Math.PI / 2;
-    birdMesh.matrixAutoUpdate = false;
-    birdMesh.updateMatrix();
-
-    this.scene.add(birdMesh);
-  }
-
   fillPositionTexture(texture) {
     const theArray = texture.image.data;
 
     for (let k = 0, kl = theArray.length; k < kl; k += 4) {
-      const x = Math.random() * BOUNDS - BOUNDS_HALF;
-      const y = Math.random() * BOUNDS - BOUNDS_HALF;
-      const z = Math.random() * BOUNDS - BOUNDS_HALF;
+      const x = Math.random() * this.BOUNDS - this.BOUNDS_HALF;
+      const y = Math.random() * this.BOUNDS - this.BOUNDS_HALF;
+      const z = Math.random() * this.BOUNDS - this.BOUNDS_HALF;
 
       theArray[k + 0] = x;
       theArray[k + 1] = y;
