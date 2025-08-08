@@ -190,7 +190,7 @@ export class CubicBezierPath extends THREE.Curve {
     let tmpY = 0;
     let tmpZ = 0;
     for (let j = 0; j < number; j++) {
-      let p = Math.pow((1 - t), number - j - 1) * Math.pow(t, j) * this.yangHuiArr[j];
+      let p = Math.pow(1 - t, number - j - 1) * Math.pow(t, j) * this.yangHuiArr[j];
       tmpX += p * this.nodes[j].v.x;
       tmpY += p * this.nodes[j].v.y;
       tmpZ += p * this.nodes[j].v.z;
@@ -228,6 +228,7 @@ export class CubicBezierPath extends THREE.Curve {
           speed = (ep.d - sp.d) / (ep.t - sp.t);
           poi = this.getPoint(t);
           dir = poi.clone();
+          break;
         }
       }
       return {

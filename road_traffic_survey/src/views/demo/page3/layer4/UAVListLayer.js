@@ -5,6 +5,8 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 // 引入轨道控制器扩展库OrbitControls.js
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
+import { Birds } from "./Birds2.js";
+
 import UAVListLayerWorker from "./UAVListLayer4.worker";
 
 import * as PathCurve from "./PathCurve";
@@ -106,33 +108,27 @@ export class UAVListLayer extends Layer {
 
     new GLTFLoader().load(process.env.VUE_APP_BASE_API + "/models/无人机.glb", (gltf) => {
       gltf.lxjs = [];
+      gltf.birds = new Birds(this.renderer);
+      gltf.scene.add(gltf.birds);
 
       gltf.scene.traverse((child) => {
         if (child.isMesh) {
           child.material = this.UAVMaterial_s;
-          child.renderOrder = 1;
-          // const mesh = child.clone();
-          // mesh.material = this.UAVMaterial_s2;
-          // child.renderOrder = 2;
-          // child.parent.add(mesh);
-
           if (String(child.name || "").includes("螺旋桨")) {
             gltf.lxjs.push(child);
-            // gltf.lxjs.push(mesh);
           }
         }
       });
+
       gltf.interval = setInterval(() => {
         for (const mesh of gltf.lxjs) {
           mesh.rotation.z += (Math.PI * 2) / 60;
           if (mesh.rotation.z >= 2 * Math.PI) mesh.rotation.z = 0;
         }
+        gltf.birds.render();
       }, 1000 / 60);
       gltf.scene.rotation.z = Math.PI / 2;
 
-      gltf.scene.add(this.camera);
-
-      console.log(gltf);
       this.SelectUAVModel = gltf;
     });
   }
@@ -179,6 +175,7 @@ export class UAVListLayer extends Layer {
   onAdd(map) {
     super.onAdd(map);
     this.on(MAP_EVENT.UPDATE_CENTER);
+    map.scene.add(this.camera);
   }
 
   setPaths(paths = [], pathClassName = "LinePath") {
@@ -357,23 +354,38 @@ export class UAVListLayer extends Layer {
     const { time, points } = data;
     for (let pIndex = 0; pIndex < points.length; pIndex++) {
       const { point, speed, dir, isEnd } = points[pIndex];
-      if (this.lockSelect && pIndex === this.selecIndex && !isEnd) {
-        const matrix4 = new THREE.Matrix4().makeTranslation(0, 0, -1000);
-        this.UAVMesh.setColorAt(pIndex, new THREE.Color("red"));
-        this.UAVMesh.setMatrixAt(pIndex, matrix4);
-        this.UAVMesh1.setMatrixAt(pIndex, matrix4);
-        this.UAVMesh2.setMatrixAt(pIndex, matrix4);
-
-        if (this.SelectUAVModel) {
-          this.scene.add(this.SelectUAVModel.scene);
-          const [x, y] = this.map.WebMercatorToCanvasXY(point.x + this.center[0], point.y + this.center[1]);
-          this.SelectUAVModel.scene.position.set(x, y, point.z);
-        }
-
-        // this.map.setCenter([point.x + this.center[0], point.y + this.center[1]]);
-        // this.map.setCameraHeight(point.z + 200);
-        this.camera.position.set(0, 50, 0).sub(new THREE.Vector3(dir.x, dir.z, -dir.y).setLength(100));
-        this.camera.lookAt(0, 0, 0);
+      if (pIndex === this.selecIndex) {
+        if (this.SelectUAVModel)
+          if (!isEnd) {
+            if (this.lockSelect) {
+              const [x, y] = this.map.WebMercatorToCanvasXY(point.x + this.center[0], point.y + this.center[1]);
+              this.camera.position.set(x, point.z + 50, -y).sub(new THREE.Vector3(dir.x, dir.z, -dir.y).setLength(100));
+              this.camera.lookAt(x, point.z, -y);
+              this.map.setCameraHeight(point.z + 200);
+              if (this.SelectUAVModel) {
+                const matrix4 = new THREE.Matrix4().makeTranslation(0, 0, -1000);
+                this.UAVMesh.setMatrixAt(pIndex, matrix4);
+                this.UAVMesh1.setMatrixAt(pIndex, matrix4);
+                this.UAVMesh2.setMatrixAt(pIndex, matrix4);
+                this.SelectUAVModel.scene.position.set(x, y, point.z);
+                const target = new THREE.Vector3(x, point.z, -y).sub(new THREE.Vector3(dir.x, point.z, -dir.y).setLength(-100));
+                this.SelectUAVModel.scene.lookAt(target);
+                this.scene.add(this.SelectUAVModel.scene);
+              }
+            }
+            if (!this.lockSelect || (this.lockSelect && !this.SelectUAVModel)) {
+              const matrix4 = new THREE.Matrix4().makeTranslation(point.x, point.y, point.z);
+              this.UAVMesh.setMatrixAt(pIndex, matrix4);
+              this.UAVMesh1.setMatrixAt(pIndex, matrix4);
+              this.UAVMesh2.setMatrixAt(pIndex, matrix4);
+              if (this.SelectUAVModel) this.SelectUAVModel.scene.removeFromParent();
+            }
+          } else {
+            const matrix4 = new THREE.Matrix4().makeTranslation(0, 0, -1000);
+            this.UAVMesh.setMatrixAt(pIndex, matrix4);
+            this.UAVMesh1.setMatrixAt(pIndex, matrix4);
+            this.UAVMesh2.setMatrixAt(pIndex, matrix4);
+          }
       } else if (!isEnd) {
         const matrix4 = new THREE.Matrix4().makeTranslation(point.x, point.y, point.z);
         this.UAVMesh.setMatrixAt(pIndex, matrix4);
@@ -387,7 +399,6 @@ export class UAVListLayer extends Layer {
       }
     }
     this.handleEventListener("playing", { playDetail: points[this.selecIndex] });
-    if (this.UAVMesh.instanceColor) this.UAVMesh.instanceColor.needsUpdate = true;
     if (this.UAVMesh.instanceMatrix) this.UAVMesh.instanceMatrix.needsUpdate = true;
     if (this.UAVMesh1.instanceMatrix) this.UAVMesh1.instanceMatrix.needsUpdate = true;
     if (this.UAVMesh2.instanceMatrix) this.UAVMesh2.instanceMatrix.needsUpdate = true;

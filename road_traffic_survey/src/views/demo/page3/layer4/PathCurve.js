@@ -271,7 +271,7 @@ export class CubicBezierPath extends THREE.Curve {
       let speedZ = 0;
       let dis = 0;
       for (let i = 0; i < this.nodes.length; i++) {
-        if (this.nodes[i].t >= time) {
+        if (this.nodes[i].t > time) {
           const sp = this.nodes[i - 1];
           const ep = this.nodes[i];
           const dtime = ep.t - sp.t;
@@ -286,6 +286,7 @@ export class CubicBezierPath extends THREE.Curve {
           // dir = poi.clone()
           const poi2 = this.getPoint(t + 0.01);
           dir = poi2.clone().sub(poi).normalize();
+          break;
         }
       }
       return {

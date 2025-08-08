@@ -42,12 +42,11 @@ export default {
       this._MapLayer = new MapLayer({ tileClass: MAP_LAYER_STYLE[MAP_LAYER_STYLE.length - 1], zIndex: -1 });
       this._Map.addLayer(this._MapLayer);
 
-      
-      this._Birds = new Birds(this._Map.renderer);
-      this._Map.world.add(this._Birds);
-      this._Map.addEventListener(MAP_EVENT.LAYER_BEFORE_RENDER, () => {
-        this._Birds.render();
-      });
+      // this._Birds = new Birds(this._Map.renderer);
+      // this._Map.world.add(this._Birds);
+      // this._Map.addEventListener(MAP_EVENT.LAYER_BEFORE_RENDER, () => {
+      //   this._Birds.render();
+      // });
       // setInterval(() => {
       //   this._Birds.beforeRender();
       // }, 1000 / 5);
@@ -65,37 +64,29 @@ export default {
       const ma2 = new THREE.MeshStandardMaterial({ color: "#999", wireframe: true, wireframeLinewidth: 2 });
 
       new GLTFLoader().load(process.env.VUE_APP_BASE_API + "/models/无人机.glb", (gltf) => {
-        let lxjs = [];
+        gltf.lxjs = [];
+        gltf.birds = new Birds(this._Map.renderer);
+        gltf.scene.add(gltf.birds);
+
         gltf.scene.traverse((child) => {
-          console.log(child.isMesh);
           if (child.isMesh) {
             child.material = ma1;
-            child.renderOrder = 1;
-            const mesh = child.clone();
-            mesh.material = ma2;
-            mesh.renderOrder = 2;
-            child.parent.add(mesh);
-
             if (String(child.name || "").includes("螺旋桨")) {
-              lxjs.push(child);
-              lxjs.push(mesh);
+              gltf.lxjs.push(child);
             }
           }
         });
 
-        setInterval(() => {
-          for (const mesh of lxjs) {
-            mesh.rotation.z += Math.PI / 30;
+        gltf.interval = setInterval(() => {
+          for (const mesh of gltf.lxjs) {
+            mesh.rotation.z += (Math.PI * 2) / 60;
             if (mesh.rotation.z >= 2 * Math.PI) mesh.rotation.z = 0;
           }
-          // gltf.scene.position.z += 1;
-          // this._Birds.position.copy(gltf.scene.position);
+          gltf.birds.render();
         }, 1000 / 60);
+        gltf.scene.rotation.z = Math.PI / 2;
+        gltf.scene.position.set(0, 0, 1000);
 
-        console.log(gltf);
-        gltf.scene.position.set(0, 0, 100);
-        this._Birds.position.copy(gltf.scene.position);
-        // gltf.scene.scale.set(10, 10, 10);
         this._Map.world.add(gltf.scene);
       });
     },

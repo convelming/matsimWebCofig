@@ -199,7 +199,7 @@
             <el-switch v-model="lockSelect" :active-value="true" :inactive-value="false"></el-switch>
           </div>
           <div style="display: flex; align-items: center; justify-content: space-between">
-            <span class="label" style="width: 80px">时间：{{ time }}</span>
+            <span class="label" style="white-space: nowarp;width: 100px;">时间：{{ time }}</span>
             <el-slider style="margin: 0 15px; flex: 1" :value="time" @input="setTime" :min="minTime" :max="maxTime"></el-slider>
           </div>
           <!-- <template v-show="playDetail">
@@ -513,8 +513,9 @@ export default {
     async loadMapData() {
       this.loading = true;
       let zip, pageConfig;
+      const { fileName, onlyLoad } = this.$route.query;
       try {
-        const url = this.$route.query.fileName ? process.env.VUE_APP_DEMO_SERVER + "/" + this.$route.query.fileName : "/data.zip";
+        const url = fileName ? `${process.env.VUE_APP_DEMO_SERVER}/${fileName}` : "/data.zip";
         console.log(url);
         const response = await fetch(url);
 
@@ -528,14 +529,30 @@ export default {
         pageConfig = {};
       }
       await this.initMap(pageConfig.mapConfig);
+      console.log("loaded map");
+      console.log(onlyLoad);
+      if (onlyLoad) {
+        const list = String(onlyLoad).split(",");
+        const _pageConfig = {
+          network: list.includes("tif") ? pageConfig.tif : null,
+          network: list.includes("network") ? pageConfig.network : null,
+          networkXmlUrl: list.includes("networkXmlUrl") ? pageConfig.networkXmlUrl : null,
+          paths: list.includes("paths") ? pageConfig.paths : null,
+          build: list.includes("build") ? pageConfig.build : null,
+          pink: list.includes("pink") ? pageConfig.pink : null,
+        };
+        console.log(_pageConfig);
+        pageConfig = _pageConfig;
+      }
       try {
-        if (pageConfig.tif) {
+        if (pageConfig.tif && zip.file(pageConfig.tif)) {
           await zip
             .file(pageConfig.tif)
             .async("arraybuffer")
             .then((array) => {
               return this._TileLayer.setTif(array);
             });
+          console.log("loaded tif");
         }
         if (pageConfig.network && zip.file(pageConfig.network)) {
           await Promise.all([
@@ -568,6 +585,7 @@ export default {
               }
             });
           });
+          console.log("loaded network");
         } else if (pageConfig.networkXmlUrl && zip.file(pageConfig.networkXmlUrl)) {
           await zip
             .file(pageConfig.networkXmlUrl)
@@ -576,6 +594,7 @@ export default {
               const network = Network.fromXml(xml);
               this._Network3DLayer.setNetwork(network);
             });
+          console.log("loaded networkXmlUrl");
         }
         if (pageConfig.paths && zip.file(pageConfig.paths)) {
           await zip
@@ -595,6 +614,7 @@ export default {
               this._UAVPaths = paths;
               this._UAVListLayer.setPaths(this._UAVPaths, this.UAVPathClassName);
             });
+          console.log("loaded paths");
         }
         if (pageConfig.build && zip.file(pageConfig.build)) {
           await zip
@@ -604,6 +624,7 @@ export default {
             .then((json) => {
               this._Build3DLayer.setData(json, pageConfig.buildJzgdKey, pageConfig.buildHbgdKey);
             });
+          console.log("loaded build");
         }
         if (pageConfig.pink && zip.file(pageConfig.pink)) {
           await zip
@@ -613,6 +634,7 @@ export default {
             .then((json) => {
               this._PinkLayer.setPinkList(json);
             });
+          console.log("loaded pink");
         }
       } catch (error) {
         console.log(error);
@@ -1459,7 +1481,7 @@ body {
       left: 0;
       width: 10px;
       height: 100%;
-      // background-color: rgba($color: #00d2ff, $alpha: 1);
+      background-color: transparent; 
       transition: height 0.1s;
       &::before {
         position: absolute;
