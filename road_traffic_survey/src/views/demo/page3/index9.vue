@@ -1,6 +1,6 @@
 <template>
   <!-- :style="mainStyle" -->
-  <div class="p9_index main" :style="mainStyle" v-loading="loading" style="background-color: #000">
+  <div class="p9_index main" :style="mainStyle" v-loading="loading">
     <div class="title_box">
       <img class="back1" src="./images/top_left@2x.png" alt="" />
       <img class="back2" src="./images/top_center@2x.png" alt="" />
@@ -199,7 +199,7 @@
             <el-switch v-model="lockSelect" :active-value="true" :inactive-value="false"></el-switch>
           </div>
           <div style="display: flex; align-items: center; justify-content: space-between">
-            <span class="label" style="white-space: nowarp;width: 100px;">时间：{{ time }}</span>
+            <span class="label" style="white-space: nowarp; width: 100px">时间：{{ time }}</span>
             <el-slider style="margin: 0 15px; flex: 1" :value="time" @input="setTime" :min="minTime" :max="maxTime"></el-slider>
           </div>
           <!-- <template v-show="playDetail">
@@ -231,6 +231,7 @@
     </div>
     <div class="page2" v-show="pageType === 2">
       <div id="mapRoot2" ref="mapRoot2"></div>
+      <div class="back"></div>
       <img src="./images/img_line_top_left@2x.png" alt="" class="back1" />
       <img src="./images/img_line_top_middle@2x.png" alt="" class="back2" />
       <img src="./images/img_line_top_right@2x.png" alt="" class="back3" />
@@ -988,7 +989,7 @@ body {
 <style lang="scss" scoped>
 .p9_index {
   user-select: none;
-  background: #000;
+  background: #0d111b;
   transform: translate(-50%, -50%) scale(0.8);
   position: fixed;
   width: 1920px;
@@ -998,7 +999,7 @@ body {
 }
 .title_box {
   position: absolute;
-  z-index: 100;
+  z-index: 200;
   top: 0;
   left: 0;
   width: 100%;
@@ -1040,6 +1041,7 @@ body {
 .page1,
 .page2 {
   position: relative;
+  z-index: 100;
   // position: fixed;
   width: 1920px;
   height: 1080px;
@@ -1397,6 +1399,16 @@ body {
     width: 100%;
     height: 100%;
   }
+  .back {
+    box-shadow: inset 0 50px 150px 120px rgba($color: #0d111b, $alpha: 1);
+    position: absolute;
+    z-index: 50;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
   .back1 {
     position: absolute;
     z-index: 100;
@@ -1481,7 +1493,7 @@ body {
       left: 0;
       width: 10px;
       height: 100%;
-      background-color: transparent; 
+      background-color: transparent;
       transition: height 0.1s;
       &::before {
         position: absolute;

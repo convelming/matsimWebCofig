@@ -35,10 +35,11 @@ export class UAVListLayer extends Layer {
     this.linkMaterial_s = new THREE.MeshBasicMaterial({ depthFunc: THREE.AlwaysDepth, color: opt.selectLinkColor || "red", opacity: 0.8, transparent: true });
     this.linkMaterial1 = new THREE.MeshBasicMaterial({});
 
+    this.uavColor = new THREE.Color(opt.uavColor || "#ea7f7f");
+    this.selectUavColor = new THREE.Color(opt.selectUavColor || this.uavColor);
     this.UAVGeometry = new THREE.BoxGeometry(50, 50, 50);
-    this.UAVMaterial = new THREE.MeshStandardMaterial({ color: opt.uavColor || "#ea7f7f" });
-    this.UAVMaterial_s = new THREE.MeshStandardMaterial({ color: opt.selectUavColor || opt.uavColor || "#ea7f7f" });
-    this.UAVMaterial_s2 = new THREE.MeshStandardMaterial({ color: "#ffffff", wireframe: true });
+    this.UAVMaterial = new THREE.MeshStandardMaterial({ color: this.uavColor });
+    this.UAVMaterial_s = new THREE.MeshStandardMaterial({ color: this.selectUavColor });
     this.UAVMaterial1 = new THREE.MeshBasicMaterial({});
     this.UAVMaterial2 = new THREE.MeshBasicMaterial({});
     this.UAVMesh = new THREE.InstancedMesh(this.UAVGeometry, this.UAVMaterial, 1);
@@ -108,8 +109,8 @@ export class UAVListLayer extends Layer {
 
     new GLTFLoader().load(process.env.VUE_APP_BASE_API + "/models/无人机.glb", (gltf) => {
       gltf.lxjs = [];
-      gltf.birds = new Birds(this.renderer);
-      gltf.scene.add(gltf.birds);
+      // gltf.birds = new Birds(this.renderer);
+      // gltf.scene.add(gltf.birds);
 
       gltf.scene.traverse((child) => {
         if (child.isMesh) {
@@ -125,9 +126,9 @@ export class UAVListLayer extends Layer {
           mesh.rotation.z += (Math.PI * 2) / 60;
           if (mesh.rotation.z >= 2 * Math.PI) mesh.rotation.z = 0;
         }
-        gltf.birds.render();
+        // gltf.birds.render();
       }, 1000 / 60);
-      gltf.scene.rotation.z = Math.PI / 2;
+      // gltf.scene.rotation.z = Math.PI / 2;
 
       this.SelectUAVModel = gltf;
     });
@@ -327,6 +328,7 @@ export class UAVListLayer extends Layer {
     this.UAVMesh2 = new THREE.InstancedMesh(this.UAVGeometry, this.UAVMaterial2, this.pathList.length);
     for (let pIndex = 0; pIndex < this.pathList.length; pIndex++) {
       const matrix4 = new THREE.Matrix4().makeTranslation(0, 0, -1000);
+      this.UAVMesh.setColorAt(pIndex, this.uavColor);
       this.UAVMesh.setMatrixAt(pIndex, matrix4);
       this.UAVMesh1.setMatrixAt(pIndex, matrix4);
       this.UAVMesh2.setMatrixAt(pIndex, matrix4);
@@ -364,17 +366,20 @@ export class UAVListLayer extends Layer {
               this.map.setCameraHeight(point.z + 200);
               if (this.SelectUAVModel) {
                 const matrix4 = new THREE.Matrix4().makeTranslation(0, 0, -1000);
+                this.UAVMesh.setColorAt(pIndex, this.uavColor);
                 this.UAVMesh.setMatrixAt(pIndex, matrix4);
                 this.UAVMesh1.setMatrixAt(pIndex, matrix4);
                 this.UAVMesh2.setMatrixAt(pIndex, matrix4);
                 this.SelectUAVModel.scene.position.set(x, y, point.z);
-                const target = new THREE.Vector3(x, point.z, -y).sub(new THREE.Vector3(dir.x, point.z, -dir.y).setLength(-100));
+                const target = new THREE.Vector3(x, point.z, -y).sub(new THREE.Vector3(-dir.x, point.z, dir.y));
                 this.SelectUAVModel.scene.lookAt(target);
+                this.SelectUAVModel.scene.rotateY(Math.PI);
                 this.scene.add(this.SelectUAVModel.scene);
               }
             }
             if (!this.lockSelect || (this.lockSelect && !this.SelectUAVModel)) {
               const matrix4 = new THREE.Matrix4().makeTranslation(point.x, point.y, point.z);
+              this.UAVMesh.setColorAt(pIndex, this.selectUavColor);
               this.UAVMesh.setMatrixAt(pIndex, matrix4);
               this.UAVMesh1.setMatrixAt(pIndex, matrix4);
               this.UAVMesh2.setMatrixAt(pIndex, matrix4);
@@ -382,17 +387,20 @@ export class UAVListLayer extends Layer {
             }
           } else {
             const matrix4 = new THREE.Matrix4().makeTranslation(0, 0, -1000);
+            this.UAVMesh.setColorAt(pIndex, this.uavColor);
             this.UAVMesh.setMatrixAt(pIndex, matrix4);
             this.UAVMesh1.setMatrixAt(pIndex, matrix4);
             this.UAVMesh2.setMatrixAt(pIndex, matrix4);
           }
       } else if (!isEnd) {
         const matrix4 = new THREE.Matrix4().makeTranslation(point.x, point.y, point.z);
+        this.UAVMesh.setColorAt(pIndex, this.uavColor);
         this.UAVMesh.setMatrixAt(pIndex, matrix4);
         this.UAVMesh1.setMatrixAt(pIndex, matrix4);
         this.UAVMesh2.setMatrixAt(pIndex, matrix4);
       } else {
         const matrix4 = new THREE.Matrix4().makeTranslation(0, 0, -1000);
+        this.UAVMesh.setColorAt(pIndex, this.uavColor);
         this.UAVMesh.setMatrixAt(pIndex, matrix4);
         this.UAVMesh1.setMatrixAt(pIndex, matrix4);
         this.UAVMesh2.setMatrixAt(pIndex, matrix4);

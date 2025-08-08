@@ -275,17 +275,18 @@ export class CubicBezierPath extends THREE.Curve {
           const sp = this.nodes[i - 1];
           const ep = this.nodes[i];
           const dtime = ep.t - sp.t;
-          const p = (time - sp.t) / dtime;
-          speed = (ep.d - sp.d) / dtime;
-          speedX = (ep.v.x - sp.v.x) / dtime;
-          speedY = (ep.v.y - sp.v.y) / dtime;
-          speedZ = (ep.v.z - sp.v.z) / dtime;
-          dis = p * (ep.d - sp.d) + sp.d;
+          dis = ((time - sp.t) / dtime) * (ep.d - sp.d) + sp.d;
           const t = dis / this.dis;
           poi = this.getPoint(t);
-          // dir = poi.clone()
-          const poi2 = this.getPoint(t + 0.01);
-          dir = poi2.clone().sub(poi).normalize();
+
+          const t2 = (((time + 1 - sp.t) / dtime) * (ep.d - sp.d) + sp.d) / this.dis;
+          const poi2 = this.getPoint(t2);
+          dir = poi2.clone().sub(poi);
+          speed = poi2.length();
+          speedX = dir.x;
+          speedY = dir.y;
+          speedZ = dir.z;
+          dir = dir.normalize();
           break;
         }
       }
