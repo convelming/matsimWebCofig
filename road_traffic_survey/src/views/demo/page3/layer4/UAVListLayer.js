@@ -52,36 +52,6 @@ export class UAVListLayer extends Layer {
       this.initUAV();
     });
 
-    new GLTFLoader().load(process.env.VUE_APP_BASE_API + "/models/无人机.glb", (gltf) => {
-      gltf.lxjs = [];
-
-      gltf.scene.traverse((child) => {
-        if (child.isMesh) {
-          child.material = this.UAVMaterial_s;
-          child.renderOrder = 1;
-          // const mesh = child.clone();
-          // mesh.material = this.UAVMaterial_s2;
-          // child.renderOrder = 2;
-          // child.parent.add(mesh);
-
-          if (String(child.name || "").includes("螺旋桨")) {
-            gltf.lxjs.push(child);
-            // gltf.lxjs.push(mesh);
-          }
-        }
-      });
-      gltf.interval = setInterval(() => {
-        for (const mesh of gltf.lxjs) {
-          mesh.rotation.z += (Math.PI * 2) / 60;
-          if (mesh.rotation.z >= 2 * Math.PI) mesh.rotation.z = 0;
-        }
-      }, 1000 / 60);
-      gltf.scene.rotation.z = Math.PI / 2;
-
-      console.log(gltf);
-      this.SelectUAVModel = gltf;
-    });
-
     this.worker = new UAVListLayerWorker();
     this.worker.onmessage = (e) => {
       switch (e.data.key) {
@@ -133,6 +103,38 @@ export class UAVListLayer extends Layer {
         this._setSizeTimeout = null;
       }, 1000 / 120);
     }).observe(this.rootDoc);
+
+    new GLTFLoader().load(process.env.VUE_APP_BASE_API + "/models/无人机.glb", (gltf) => {
+      gltf.lxjs = [];
+
+      gltf.scene.traverse((child) => {
+        if (child.isMesh) {
+          child.material = this.UAVMaterial_s;
+          child.renderOrder = 1;
+          // const mesh = child.clone();
+          // mesh.material = this.UAVMaterial_s2;
+          // child.renderOrder = 2;
+          // child.parent.add(mesh);
+
+          if (String(child.name || "").includes("螺旋桨")) {
+            gltf.lxjs.push(child);
+            // gltf.lxjs.push(mesh);
+          }
+        }
+      });
+      gltf.interval = setInterval(() => {
+        for (const mesh of gltf.lxjs) {
+          mesh.rotation.z += (Math.PI * 2) / 60;
+          if (mesh.rotation.z >= 2 * Math.PI) mesh.rotation.z = 0;
+        }
+      }, 1000 / 60);
+      gltf.scene.rotation.z = Math.PI / 2;
+
+      gltf.scene.add(this.camera);
+
+      console.log(gltf);
+      this.SelectUAVModel = gltf;
+    });
   }
 
   render(map) {
@@ -177,7 +179,6 @@ export class UAVListLayer extends Layer {
   onAdd(map) {
     super.onAdd(map);
     this.on(MAP_EVENT.UPDATE_CENTER);
-    map.scene.add(this.camera);
   }
 
   setPaths(paths = [], pathClassName = "LinePath") {
@@ -369,10 +370,10 @@ export class UAVListLayer extends Layer {
           this.SelectUAVModel.scene.position.set(x, y, point.z);
         }
 
-        this.map.setCenter([point.x + this.center[0], point.y + this.center[1]]);
-        this.map.setCameraHeight(point.z + 200);
-        this.camera.position.set(0, point.z + 50, 0).sub(new THREE.Vector3(dir.x, dir.z, -dir.y).setLength(100));
-        this.camera.lookAt(0, point.z, 0);
+        // this.map.setCenter([point.x + this.center[0], point.y + this.center[1]]);
+        // this.map.setCameraHeight(point.z + 200);
+        this.camera.position.set(0, 50, 0).sub(new THREE.Vector3(dir.x, dir.z, -dir.y).setLength(100));
+        this.camera.lookAt(0, 0, 0);
       } else if (!isEnd) {
         const matrix4 = new THREE.Matrix4().makeTranslation(point.x, point.y, point.z);
         this.UAVMesh.setMatrixAt(pIndex, matrix4);

@@ -10,7 +10,7 @@ import * as THREE from "three";
 import { STLLoader } from "three/addons/loaders/STLLoader.js";
 import { OBJLoader } from "three/addons/loaders/OBJLoader.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-import { Birds } from "./layer4/Birds.js";
+import { Birds } from "./layer4/Birds2.js";
 
 export default {
   name: "index10",
@@ -42,12 +42,16 @@ export default {
       this._MapLayer = new MapLayer({ tileClass: MAP_LAYER_STYLE[MAP_LAYER_STYLE.length - 1], zIndex: -1 });
       this._Map.addLayer(this._MapLayer);
 
+      
       this._Birds = new Birds(this._Map.renderer);
       this._Map.world.add(this._Birds);
       this._Map.addEventListener(MAP_EVENT.LAYER_BEFORE_RENDER, () => {
-        this._Birds.beforeRender();
+        this._Birds.render();
       });
-      this._Birds.position.set(0, 0, 100000);
+      // setInterval(() => {
+      //   this._Birds.beforeRender();
+      // }, 1000 / 5);
+      // this._Birds.beforeRender();
 
       new STLLoader().load(process.env.VUE_APP_BASE_API + "/models/无人机2.stl", (geometry) => {
         const m4 = new THREE.Matrix4().makeScale(1, 1, 1);
