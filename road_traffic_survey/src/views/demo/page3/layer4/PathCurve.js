@@ -45,10 +45,12 @@ export class LinePath extends THREE.Curve {
       for (let i = 0; i < this.nodes.length; i++) {
         const point = this.nodes[i];
         if (point.d >= dis) {
-          const sp = this.nodes[i - 1];
-          const ep = this.nodes[i];
-          const p = (dis - sp.d) / (ep.d - sp.d);
-          const poi = new THREE.Vector3().lerpVectors(sp.v, ep.v, p);
+          // const sp = this.nodes[i - 1];
+          // const ep = this.nodes[i];
+          // const p = (dis - sp.d) / (ep.d - sp.d);
+          // const poi = new THREE.Vector3().lerpVectors(sp.v, ep.v, p);
+          // return optionalTarget.set(poi.x, poi.y, poi.z);
+          const poi = this.nodes[i].v;
           return optionalTarget.set(poi.x, poi.y, poi.z);
         }
       }
@@ -130,6 +132,10 @@ export class LinePath extends THREE.Curve {
         isEnd: false,
       };
     }
+  }
+
+  getPoints2() {
+    return this.nodes.map((v) => v.v);
   }
 }
 
@@ -302,5 +308,9 @@ export class CubicBezierPath extends THREE.Curve {
         isEnd: false,
       };
     }
+  }
+
+  getPoints2() {
+    return this.getPoints(this.nodes.length * 2);
   }
 }

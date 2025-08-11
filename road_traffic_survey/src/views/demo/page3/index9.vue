@@ -308,10 +308,10 @@ import { MyMap, MAP_EVENT, MOUSE_BUTTONS } from "@/mymap/index.js";
 import { WGS84ToMercator } from "@/mymap/utils/LngLatUtils";
 
 import { Build3DLayer } from "./layer4/Build3DLayer";
-import { Network3DLayer, Network } from "./layer4/Network3DLayer";
+import { Network3DLayer, Network } from "./layer4/Network3DLayer2";
 import { PinkLayer } from "./layer4/PinkLayer";
 import { TileLayer } from "./layer4/TileLayer.js";
-import { UAVListLayer } from "./layer4/UAVListLayer";
+import { UAVListLayer } from "./layer4/UAVListLayer2.js";
 
 import NewClock from "@/components/NewClock/index.vue";
 
@@ -535,7 +535,7 @@ export default {
       if (onlyLoad) {
         const list = String(onlyLoad).split(",");
         const _pageConfig = {
-          network: list.includes("tif") ? pageConfig.tif : null,
+          tif: list.includes("tif") ? pageConfig.tif : null,
           network: list.includes("network") ? pageConfig.network : null,
           networkXmlUrl: list.includes("networkXmlUrl") ? pageConfig.networkXmlUrl : null,
           paths: list.includes("paths") ? pageConfig.paths : null,
@@ -674,6 +674,8 @@ export default {
         showLink: this.showNetwork3DLink,
         showNode: this.showNetwork3DNode,
         valueName: "flow",
+        nodeColor: "#5ab640",
+        linkColor: "#00FFFF",
         colorsFunc: function (value) {
           const _value = Number(value || 0);
           if (_value <= 0.2) {
@@ -693,28 +695,22 @@ export default {
 
       this._UAVListLayer = new UAVListLayer({
         zIndex: 300,
-        linkWidth: 2,
+
+        linkWidth: 1,
+        selectLinkWidth: 5,
+        linkColor: "#D8D8D8",
+        selectLinkColor: "#FF7B00",
+
         nodeSize: 5,
+        selectNodeSize: 10,
+        nodeColor: "#D8D8D8",
+        selectNodeColor: "#FF7B00",
+
         time: this.time,
         lockSelect: this.lockSelect,
-        linkColor: "#f2c494",
-        nodeColor: "#bbabdO",
-        selectLinkColor: "red",
-        selectNodeColor: "red",
-        uavColor: "#f3fafa",
+        uavColor: "#53e7ef",
+        selectUavColor: "#ff2c08",
 
-        // linkColor: "#a8adbd",
-        // nodeColor: "#bbabdO",
-        // selectLinkColor: "red",
-        // selectNodeColor: "red",
-        // uavColor: "#f3fafa",
-
-        // linkColor: "#f3fafa",
-        // nodeColor: "#bbabdO",
-        // selectLinkColor: "#a8adbd",
-        // selectNodeColor: "#a8adbd",
-        // uavColor: "#f3fafa",
-        // selectUavColor: "#c5cadd",
         rootDoc: this.$refs.mapRoot2,
         event: {
           playing: (res) => {
@@ -730,9 +726,9 @@ export default {
 
       this._Build3DLayer = new Build3DLayer({
         zIndex: 220,
-        // buildOpacity: 0.4,
-        // buildColor: "#a8adbd",
-        buildColor: "#4198b9",
+        buildOpacity: 0.4,
+        buildColor: "#a8adbd",
+        // buildColor: "#4198b9",
       });
       this._Map.addLayer(this._Build3DLayer);
 
@@ -1062,7 +1058,7 @@ body {
     top: 98px;
     left: 20px;
     width: 300px;
-    height: 538px;
+    // height: 538px; 
     background: rgba(34, 39, 53, 0.8);
     box-shadow: inset 0px 4px 10px 0px #075db9;
     border-radius: 22px;
@@ -1086,8 +1082,8 @@ body {
     .chart1 {
       margin-top: 20px;
       margin-left: 24px;
-      height: 250px;
       width: 252px;
+      height: 193px;
     }
     .title2 {
       box-sizing: border-box;
@@ -1104,6 +1100,7 @@ body {
     .chart1_2_box {
       margin-top: 20px;
       margin-left: 24px;
+      margin-bottom: 25px;
       width: 252px;
       display: flex;
       justify-content: space-between;
