@@ -28,6 +28,12 @@ const routes = [
     component: () => import(/* webpackChunkName: "operationsAnalysisConfig" */ "../views/operationsAnalysis/config/index.vue"),
   },
   {
+    // 公交运行分析配置
+    path: "/operationsAnalysis/config2/:database/:datasource",
+    name: "operationsAnalysisConfig",
+    component: () => import(/* webpackChunkName: "operationsAnalysisConfig" */ "../views/operationsAnalysis/config/index2.vue"),
+  },
+  {
     // 方案对比分析
     path: "/comparativeAnalysis/:database1/:datasource1/:database2/:datasource2",
     name: "comparativeAnalysis",

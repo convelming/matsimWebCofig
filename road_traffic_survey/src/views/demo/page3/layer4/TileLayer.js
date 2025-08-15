@@ -233,6 +233,7 @@ export class TileMesh extends THREE.Mesh {
 
   updateTile() {
     function getUrl(row, col, zoom) {
+      return `http://192.168.60.234:8081/styles/DK/512/${zoom}/${row}/${col}.png`
       let quadKey = "";
       for (let i = zoom; i > 0; i--) {
         let digit = "0";

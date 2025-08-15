@@ -11,6 +11,8 @@ import { LineGeometry } from "./lines/LineGeometry.js";
 
 import * as PathCurve from "./PathCurve";
 
+import { Birds } from "./Birds.js";
+
 const textureLoader = new THREE.TextureLoader();
 
 export class UAVListLayer extends Layer {
@@ -57,7 +59,7 @@ export class UAVListLayer extends Layer {
     });
 
     // 创建相机
-    this.camera = new THREE.PerspectiveCamera(60, 1, 1, 30000);
+    this.camera = new THREE.PerspectiveCamera(60, 1, 0.01, 30000);
     this.renderer = new THREE.WebGLRenderer({
       // 设置抗锯齿
       antialias: true,
@@ -71,6 +73,9 @@ export class UAVListLayer extends Layer {
     this.renderer.domElement.style.top = "0";
     this.renderer.domElement.style.left = "0";
     this.renderer.domElement.style.zIndex = "0";
+    this.renderer.setPixelRatio(window.devicePixelRatio);
+    this.renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
+    this.renderer.useLegacyLights = true;
     this.rootDoc.appendChild(this.renderer.domElement);
 
     // 监听rootDoc大小变化，更新渲染器大小
@@ -144,13 +149,19 @@ export class UAVListLayer extends Layer {
 
     // 初始化渲染无人机需要的资源
     this.UAVGeometry = new THREE.BoxGeometry(50, 50, 50);
-    this.UAVMaterial = new THREE.MeshStandardMaterial({ color: this.uavColor });
+    // this.UAVMaterial = new THREE.MeshStandardMaterial({ color: this.uavColor,vertexColors:true });
+    this.UAVMaterial = new THREE.MeshStandardMaterial({});
     this.UAVMaterial_s = new THREE.MeshStandardMaterial({ color: this.selectUavColor });
     this.UAVMaterial1 = new THREE.MeshBasicMaterial({});
     this.UAVMaterial2 = new THREE.MeshBasicMaterial({});
     this.UAVMesh = new THREE.InstancedMesh(this.UAVGeometry, this.UAVMaterial, 1);
     this.UAVMesh1 = new THREE.InstancedMesh(this.UAVGeometry, this.UAVMaterial1, 1);
     this.UAVMesh2 = new THREE.InstancedMesh(this.UAVGeometry, this.UAVMaterial2, 1);
+
+    this.birds = new Birds(undefined, { opacity: 0.5, width: 20 });
+    this.birds.scale.set(0.5, 0.5, 0.5);
+    this.birds.initComputeRenderer(this.renderer);
+    this.scene.add(this.birds);
 
     // 加载无人机模型
     // 用于优化渲染性能的模型
@@ -164,8 +175,6 @@ export class UAVListLayer extends Layer {
     });
     // 用于螺旋桨旋转的模型
     new GLTFLoader().load(process.env.VUE_APP_BASE_API + "/models/无人机.glb", (gltf) => {
-      // gltf.birds = new Birds(this.renderer);
-      // gltf.scene.add(gltf.birds);
       gltf.lxjs = [];
       gltf.scene.traverse((child) => {
         if (child.isMesh) {
@@ -181,7 +190,6 @@ export class UAVListLayer extends Layer {
           mesh.rotation.z += (Math.PI * 2) / 60;
           if (mesh.rotation.z >= 2 * Math.PI) mesh.rotation.z = 0;
         }
-        // gltf.birds.render();
       }, 1000 / 60);
       // gltf.scene.rotation.z = Math.PI / 2;
 
@@ -215,7 +223,8 @@ export class UAVListLayer extends Layer {
   }
 
   render(map) {
-    if (this.lockSelect) {
+    if (this.lockSelect && this.selecIndex >= 0) {
+      this.birds.render();
       this.renderer.render(map.scene, this.camera);
     }
   }
@@ -286,7 +295,7 @@ export class UAVListLayer extends Layer {
       this.linkMeshList[selecIndex].renderOrder = 100;
     }
   }
-  
+
   setLockSelect(val) {
     this.lockSelect = val;
   }
@@ -309,7 +318,7 @@ export class UAVListLayer extends Layer {
     this.UAVMesh1 = new THREE.InstancedMesh(this.UAVGeometry, this.UAVMaterial1, this.pathList.length);
     this.UAVMesh2 = new THREE.InstancedMesh(this.UAVGeometry, this.UAVMaterial2, this.pathList.length);
     for (let pIndex = 0; pIndex < this.pathList.length; pIndex++) {
-      const matrix4 = new THREE.Matrix4().makeTranslation(0, 0, -1000);
+      const matrix4 = new THREE.Matrix4().makeTranslation(0, 0, -1000000);
       this.UAVMesh.setColorAt(pIndex, this.uavColor);
       this.UAVMesh.setMatrixAt(pIndex, matrix4);
       this.UAVMesh1.setMatrixAt(pIndex, matrix4);
@@ -425,20 +434,25 @@ export class UAVListLayer extends Layer {
   updateUAV(data) {
     if (!this.pathList) return;
     if (!this.map) return;
+    if (this.SelectUAVModel) this.SelectUAVModel.scene.removeFromParent();
+    // if (this.birds) this.birds.removeFromParent();
     const { time, points } = data;
     for (let pIndex = 0; pIndex < points.length; pIndex++) {
       const { point, speed, dir, isEnd } = points[pIndex];
       if (pIndex === this.selecIndex) {
+        const [x, y] = this.map.WebMercatorToCanvasXY(point.x + this.center[0], point.y + this.center[1]);
+        this.birds.position.set(x, y, point.z + 10);
         if (this.SelectUAVModel)
           if (!isEnd) {
             if (this.lockSelect) {
-              const [x, y] = this.map.WebMercatorToCanvasXY(point.x + this.center[0], point.y + this.center[1]);
-              this.camera.position.set(x, point.z + 50, -y).sub(new THREE.Vector3(dir.x, dir.z, -dir.y).setLength(100));
+              this.camera.position.set(x, point.z + 50, -y).sub(new THREE.Vector3(dir.x, dir.z, -dir.y).setLength(50 * 2));
               this.camera.lookAt(x, point.z, -y);
-              this.map.setCameraHeight(point.z + 200);
+              // this.map.setCameraHeight(point.z + 200);
               if (this.SelectUAVModel) {
-                const matrix4 = new THREE.Matrix4().makeTranslation(0, 0, -1000);
-                this.UAVMesh.setColorAt(pIndex, this.uavColor);
+                this.scene.add(this.birds);
+                this.scene.add(this.SelectUAVModel.scene);
+
+                const matrix4 = new THREE.Matrix4().makeTranslation(0, 0, -1000000);
                 this.UAVMesh.setMatrixAt(pIndex, matrix4);
                 this.UAVMesh1.setMatrixAt(pIndex, matrix4);
                 this.UAVMesh2.setMatrixAt(pIndex, matrix4);
@@ -446,7 +460,6 @@ export class UAVListLayer extends Layer {
                 const target = new THREE.Vector3(x, point.z, -y).sub(new THREE.Vector3(-dir.x, point.z, dir.y));
                 this.SelectUAVModel.scene.lookAt(target);
                 this.SelectUAVModel.scene.rotateY(Math.PI);
-                this.scene.add(this.SelectUAVModel.scene);
               }
             }
             if (!this.lockSelect || (this.lockSelect && !this.SelectUAVModel)) {
@@ -455,30 +468,29 @@ export class UAVListLayer extends Layer {
               this.UAVMesh.setMatrixAt(pIndex, matrix4);
               this.UAVMesh1.setMatrixAt(pIndex, matrix4);
               this.UAVMesh2.setMatrixAt(pIndex, matrix4);
-              if (this.SelectUAVModel) this.SelectUAVModel.scene.removeFromParent();
             }
           } else {
-            const matrix4 = new THREE.Matrix4().makeTranslation(0, 0, -1000);
-            this.UAVMesh.setColorAt(pIndex, this.uavColor);
+            const matrix4 = new THREE.Matrix4().makeTranslation(0, 0, -1000000);
             this.UAVMesh.setMatrixAt(pIndex, matrix4);
             this.UAVMesh1.setMatrixAt(pIndex, matrix4);
             this.UAVMesh2.setMatrixAt(pIndex, matrix4);
           }
       } else if (!isEnd) {
         const matrix4 = new THREE.Matrix4().makeTranslation(point.x, point.y, point.z);
-        this.UAVMesh.setColorAt(pIndex, this.uavColor);
         this.UAVMesh.setMatrixAt(pIndex, matrix4);
         this.UAVMesh1.setMatrixAt(pIndex, matrix4);
         this.UAVMesh2.setMatrixAt(pIndex, matrix4);
       } else {
-        const matrix4 = new THREE.Matrix4().makeTranslation(0, 0, -1000);
-        this.UAVMesh.setColorAt(pIndex, this.uavColor);
+        const matrix4 = new THREE.Matrix4().makeTranslation(0, 0, -1000000);
         this.UAVMesh.setMatrixAt(pIndex, matrix4);
         this.UAVMesh1.setMatrixAt(pIndex, matrix4);
         this.UAVMesh2.setMatrixAt(pIndex, matrix4);
       }
+      this.UAVMesh.setColorAt(pIndex, this.uavColor);
     }
     this.handleEventListener("playing", { playDetail: points[this.selecIndex] });
+    if (this.selecIndex > -1) this.UAVMesh.setColorAt(this.selecIndex, this.selectUavColor);
+    if (this.UAVMesh.instanceColor) this.UAVMesh.instanceColor.needsUpdate = true;
     if (this.UAVMesh.instanceMatrix) this.UAVMesh.instanceMatrix.needsUpdate = true;
     if (this.UAVMesh1.instanceMatrix) this.UAVMesh1.instanceMatrix.needsUpdate = true;
     if (this.UAVMesh2.instanceMatrix) this.UAVMesh2.instanceMatrix.needsUpdate = true;

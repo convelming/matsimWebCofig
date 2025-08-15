@@ -1,6 +1,9 @@
 <!-- index10 -->
 <template>
-  <div id="mapRoot"></div>
+  <div>
+    <div id="mapRoot"></div>
+    <div id="mapRoot2" ref="mapRoot2"></div>
+  </div>
 </template>
 
 <script>
@@ -25,11 +28,13 @@ export default {
   data() {
     return {
       time: 100,
+      lockSelect: true,
     };
   },
   created() {},
   async mounted() {
-    await this.loadMapData();
+    // await this.loadMapData();
+    await this.initMap();
   },
   beforeDestroy() {
     if (this._Map) this._Map.dispose();
@@ -138,6 +143,10 @@ export default {
               }
               this._UAVPaths = paths;
               this._UAVListLayer.setPaths(this._UAVPaths, this.UAVPathClassName);
+              setInterval(() => {
+                this.time += 1 / 60;
+                this._UAVListLayer.setTime(this.time);
+              }, 1000 / 60);
             });
           console.log("loaded paths");
         }
@@ -206,19 +215,17 @@ export default {
         lockSelect: this.lockSelect,
         uavColor: "#53e7ef",
         selectUavColor: "#ff2c08",
-        rootDoc: document.createElement("div"),
+        rootDoc: this.$refs.mapRoot2,
       });
       this._Map.addLayer(this._UAVListLayer);
 
-      // this._Birds = new Birds(this._Map.renderer);
-      // this._Map.world.add(this._Birds);
-      // this._Map.addEventListener(MAP_EVENT.LAYER_BEFORE_RENDER, () => {
-      //   this._Birds.render();
-      // });
-      // setInterval(() => {
-      //   this._Birds.beforeRender();
-      // }, 1000 / 5);
-      // this._Birds.beforeRender();
+      this._Birds = new Birds(this._Map.renderer);
+      this._Birds.position.set(0, 0, 1000);
+      // this._Birds.scale.set(0.5, 0.5, 0.5);
+      this._Map.world.add(this._Birds);
+      this._Map.addEventListener(MAP_EVENT.LAYER_BEFORE_RENDER, () => {
+        this._Birds.render();
+      });
 
       // new STLLoader().load(process.env.VUE_APP_BASE_API + "/models/无人机2.stl", (geometry) => {
       //   const m4 = new THREE.Matrix4().makeScale(1, 1, 1);
@@ -269,6 +276,16 @@ export default {
   left: 0;
   width: 100vw;
   height: 100vh;
+  overflow: hidden;
+}
+
+#mapRoot2 {
+  position: fixed;
+  z-index: 100;
+  top: 0;
+  left: 0;
+  width: 30vw;
+  height: 30vh;
   overflow: hidden;
 }
 </style>

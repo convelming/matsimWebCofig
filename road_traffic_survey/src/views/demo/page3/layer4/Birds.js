@@ -25,6 +25,7 @@ const fragmentShaderPosition = `
 `;
 const fragmentShaderVelocity = `
   uniform float time;
+  uniform float testing;
   uniform float delta; // about 0.016
   uniform float separationDistance; // 20
   uniform float alignmentDistance; // 40
@@ -45,8 +46,8 @@ const fragmentShaderVelocity = `
   float separationThresh = 0.45;
   float alignmentThresh = 0.65;
 
-  const float UPPER_bounds = bounds;
-  const float LOWER_bounds = -UPPER_bounds;
+  const float UPPER_BOUNDS = BOUNDS;
+  const float LOWER_BOUNDS = -UPPER_BOUNDS;
 
   const float SPEED_LIMIT = 9.0;
 
@@ -82,7 +83,7 @@ const fragmentShaderVelocity = `
 
     float limit = SPEED_LIMIT;
 
-    dir = predator * UPPER_bounds - selfPosition;
+    dir = predator * UPPER_BOUNDS - selfPosition;
     dir.z = 0.;
     // dir.z *= 0.6;
     dist = length( dir );
@@ -94,10 +95,16 @@ const fragmentShaderVelocity = `
 
     // move birds away from predator
     if ( dist < preyRadius ) {
+
       f = ( distSquared / preyRadiusSq - 1.0 ) * delta * 100.;
       velocity += normalize( dir ) * f;
       limit += 5.0;
     }
+
+
+    // if (testing == 0.0) {}
+    // if ( rand( uv + time ) < freedomFactor ) {}
+
 
     // Attract flocks to the center
     vec3 central = vec3( 0., 0., 0. );
@@ -159,8 +166,6 @@ const fragmentShaderVelocity = `
 
     }
 
-
-
     // this make tends to fly around than down or up
     // if (velocity.y > 0.) velocity.y *= (1. - 0.2 * delta);
 
@@ -175,22 +180,52 @@ const fragmentShaderVelocity = `
 
 `;
 
-export class Birds extends THREE.Points {
+class KnotCurve extends THREE.Curve {
+  constructor(radius = 1, p = 2, q = 3) {
+    super();
+    this.radius = radius;
+    this.p = p;
+    this.q = q;
+  }
+
+  getPoint(t, optionalTarget = new THREE.Vector3()) {
+    const { p, q, radius } = this;
+    const u = t * p * Math.PI * 2;
+
+    const cu = Math.cos(u);
+    const su = Math.sin(u);
+    const quOverP = (q / p) * u;
+    const cs = Math.cos(quOverP);
+
+    optionalTarget.x = radius * (2 + cs) * 0.5 * cu;
+    optionalTarget.y = radius * (2 + cs) * su * 0.5;
+    optionalTarget.z = radius * Math.sin(quOverP) * 0.5;
+    return optionalTarget;
+  }
+}
+
+export class Birds extends THREE.Group {
   constructor(renderer, options) {
-    const { width = 30, bounds = 100, color = 0xff2200, size = 10, opacity = 1, map = null } = options || {};
+    super();
+    const { width = 30, bounds = 100, color = 0x00ffff, size = 2, opacity = 1, map = new THREE.TextureLoader().load(require("@/assets/image/point.svg")) } = options || {};
     const geometry = new THREE.BufferGeometry();
+    geometry.boundingBox = new THREE.Box3(new THREE.Vector3(-bounds, -bounds, -bounds), new THREE.Vector3(bounds, bounds, bounds));
     const material = new THREE.PointsMaterial({
       color: color,
       size: size,
       opacity: opacity,
+      transparent: true,
       map: map,
+      depthFunc: THREE.AlwaysDepth,
+      depthTest: false,
+      depthWrite: false,
     });
-    super(geometry, material);
+    this.mesh = new THREE.Points(geometry, material);
+    this.add(this.mesh);
 
     this.width = width;
     this.bounds = bounds;
     this.bounds_half = bounds / 2;
-    this.renderer = renderer;
 
     const vertices = [];
     const references = [];
@@ -202,6 +237,8 @@ export class Birds extends THREE.Points {
     }
     geometry.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
     geometry.setAttribute("reference", new THREE.Float32BufferAttribute(references, 2));
+    geometry.computeBoundingBox();
+    // geometry.boundingBox = new THREE.Box3(new THREE.Vector3(-this.bounds, -this.bounds, -this.bounds), new THREE.Vector3(this.bounds, this.bounds, this.bounds));
 
     material.onBeforeCompile = (shader) => {
       shader.uniforms.texturePosition = { value: null };
@@ -226,8 +263,8 @@ export class Birds extends THREE.Points {
 
         vec3 pos = tmpPos.xyz;
         vec3 velocity = normalize(texture2D( textureVelocity, reference.xy ).xyz);
-
         vec3 newPosition = position;
+
         newPosition = mat3( modelMatrix ) * ( newPosition );
 
         velocity.z *= -1.;
@@ -255,10 +292,50 @@ export class Birds extends THREE.Points {
       this.materialShader = shader;
     };
 
-    this._initComputeRenderer(this.renderer);
+    this.predatorCurveT = 0;
+    this.predatorCurve = new KnotCurve(bounds , 4, 1);
+    this.predator = this.predatorCurve.getPoint(this.predatorCurveT);
+    // this.predatorMesh = this.getBoxMesh(bounds, 0xff0000);
+
+    // this.add(this.predatorMesh);
+
+    // this.line = this.getCurveLine(bounds * 3);
+    // this.add(this.line);
+
+    this.initComputeRenderer(renderer);
   }
 
-  _initComputeRenderer(renderer) {
+  getCurveLine(radius = 1) {
+    const curve = new KnotCurve(radius, 4, 1);
+    const ponits = curve.getPoints(100);
+    const geometry = new THREE.BufferGeometry().setFromPoints(ponits);
+    const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+    return new THREE.Line(geometry, material);
+  }
+
+  // 创建一个立方体
+  getBoxMesh(size = 100, color = 0xff0000) {
+    //创建一个长方体几何对象Geometry
+    const geometry = new THREE.BoxGeometry(size, size, size);
+    //创建一个材质对象Material
+    const material = new THREE.MeshBasicMaterial({
+      side: THREE.DoubleSide, //两面可见
+      color: color, //0xff0000设置材质颜色为红色
+    });
+    // 两个参数分别为几何体geometry、材质material
+    const mesh = new THREE.Mesh(geometry, material); //网格模型对象Mesh
+    //设置网格模型在三维空间中的位置坐标，默认是坐标原点
+    // mesh.position.set(0, 10, 0);
+    return mesh;
+  }
+
+  initComputeRenderer(renderer) {
+    if (this.gpuCompute) {
+      this.gpuCompute = null;
+      this.gpuCompute.dispose();
+    }
+    if (!renderer) return;
+    this.renderer = renderer;
     this.gpuCompute = new GPUComputationRenderer(this.width, this.width, renderer);
 
     const dtPosition = this.gpuCompute.createTexture();
@@ -279,12 +356,12 @@ export class Birds extends THREE.Points {
     this.positionUniforms["delta"] = { value: 0.0 }; //
     this.velocityUniforms["time"] = { value: 1.0 }; //
     this.velocityUniforms["delta"] = { value: 0.0 }; //
-    this.velocityUniforms["separationDistance"] = { value: 20.0 }; // 分离距离
-    this.velocityUniforms["alignmentDistance"] = { value: 20.0 }; // 对齐距离
-    this.velocityUniforms["cohesionDistance"] = { value: 20.0 }; // 聚居距离
-    this.velocityUniforms["freedomFactor"] = { value: 0.75 }; // 自由因素
-    this.velocityUniforms["predator"] = { value: new THREE.Vector3() }; // 捕食者
-    this.velocityVariable.material.defines.bounds = this.bounds.toFixed(2);
+    this.velocityUniforms["separationDistance"] = { value: 10 }; // 分离距离
+    this.velocityUniforms["alignmentDistance"] = { value: 10 }; // 对齐距离
+    this.velocityUniforms["cohesionDistance"] = { value: 20 }; // 聚居距离
+    this.velocityUniforms["freedomFactor"] = { value: 0.9 }; // 自由因素
+    this.velocityUniforms["predator"] = { value: this.predator }; // 捕食者
+    this.velocityVariable.material.defines.BOUNDS = this.bounds.toFixed(2);
 
     this.velocityVariable.wrapS = THREE.RepeatWrapping;
     this.velocityVariable.wrapT = THREE.RepeatWrapping;
@@ -328,18 +405,28 @@ export class Birds extends THREE.Points {
     }
   }
 
-  last = performance.now();
+  // last = performance.now();
+  last = 0;
+  speed = 50;
   render() {
-    const now = performance.now();
+    // const now = performance.now();
+    // let delta = (now - this.last) / 1000;
+    const now = this.last + this.speed;
     let delta = (now - this.last) / 1000;
 
     if (delta > 1) delta = 1; // safety cap on large deltas
     this.last = now;
 
+    this.predatorCurveT += 0.001;
+    const pos = this.predatorCurve.getPoint(this.predatorCurveT);
+    this.predator.copy(pos);
+    // this.predatorMesh.position.copy(pos);
+
     this.positionUniforms["time"].value = now;
     this.positionUniforms["delta"].value = delta;
     this.velocityUniforms["time"].value = now;
     this.velocityUniforms["delta"].value = delta;
+    this.velocityUniforms["predator"] = { value: this.predator }; // 捕食者
 
     this.gpuCompute.compute();
 
