@@ -13,7 +13,7 @@ import * as THREE from "three";
 import { STLLoader } from "three/addons/loaders/STLLoader.js";
 import { OBJLoader } from "three/addons/loaders/OBJLoader.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-import { Birds } from "./layer4/Birds.js";
+import { Birds } from "./layer4/Birds2.js";
 
 import { WGS84ToMercator } from "@/mymap/utils/LngLatUtils";
 import JSZip from "jszip";
@@ -196,7 +196,7 @@ export default {
       });
 
       this._MapLayer = new MapLayer({ tileClass: MAP_LAYER_STYLE[MAP_LAYER_STYLE.length - 1], zIndex: -1 });
-      this._Map.addLayer(this._MapLayer);
+      // this._Map.addLayer(this._MapLayer);
 
       this._UAVListLayer = new UAVListLayer({
         zIndex: 300,
@@ -220,12 +220,28 @@ export default {
       this._Map.addLayer(this._UAVListLayer);
 
       this._Birds = new Birds(this._Map.renderer);
-      this._Birds.position.set(0, 0, 1000);
+      this._Birds.position.set(0, 0, 0);
       // this._Birds.scale.set(0.5, 0.5, 0.5);
       this._Map.world.add(this._Birds);
       this._Map.addEventListener(MAP_EVENT.LAYER_BEFORE_RENDER, () => {
         this._Birds.render();
       });
+
+      new OBJLoader().load(process.env.VUE_APP_BASE_API + "/models/Bus.obj", (object) => {
+        console.log(object);
+        this._Map.world.add(object);
+      });
+
+      // new STLLoader().load(process.env.VUE_APP_BASE_API + "/models/Bus.stl", (geometry) => {
+      //   const m4 = new THREE.Matrix4().makeScale(1000, 1000, 1000);
+      //   // m4.multiply(new THREE.Matrix4().makeRotationZ(Math.PI / 2));
+      //   // m4.multiply(new THREE.Matrix4().makeRotationX(-Math.PI / 2));
+      //   geometry.applyMatrix4(m4);
+      //   console.log(geometry);
+        
+      //   const mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ color: "#275994", map: new THREE.TextureLoader().load(process.env.VUE_APP_BASE_API + "/models/Bus.png") }));
+      //   this._Map.world.add(mesh);
+      // });
 
       // new STLLoader().load(process.env.VUE_APP_BASE_API + "/models/无人机2.stl", (geometry) => {
       //   const m4 = new THREE.Matrix4().makeScale(1, 1, 1);

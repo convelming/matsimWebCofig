@@ -112,11 +112,38 @@
               </el-collapse>
             </el-form>
           </el-collapse-item>
+          <el-collapse-item name="5" title="交评道路运行现状出图">
+            <el-form class="setting_form" label-position="left" label-width="auto" :inline="false" size="small">
+              <el-form-item>
+                <el-button type="primary" size="small" @click="ctpAddDialog.visible = true">新建项目</el-button>
+                <el-button type="primary" size="small" @click="ctpListDialog.visible = true">载入项目</el-button>
+              </el-form-item>
+              <el-form-item>
+                <el-checkbox v-model="ctpShowAll" label="" :indeterminate="false" @change="">显示已做项目范围</el-checkbox>
+              </el-form-item>
+              <!-- <el-collapse style="user-select: none" v-model="activeNames3">
+                <el-collapse-item title="显示设置" name="1">
+                  <el-form-item label="图标颜色">
+                    <div style="display: flex; align-items: center; gap: 10px 20px; flex-wrap: wrap">
+                      <div style="display: flex; align-items: center; gap: 5px">
+                        <div>图标颜色</div>
+                        <el-color-picker v-model="imageListColor"></el-color-picker>
+                      </div>
+                      <div style="display: flex; align-items: center; gap: 5px">
+                        <div>选中颜色</div>
+                        <el-color-picker v-model="imageListHColor"></el-color-picker>
+                      </div>
+                    </div>
+                  </el-form-item>
+                </el-collapse-item>
+              </el-collapse> -->
+            </el-form>
+          </el-collapse-item>
         </el-collapse>
       </div>
     </Dialog>
     <!-- line流量详情 -->
-    <LinkFlow :visible.sync="linkFlow.visible" :linkId="linkFlow.linkId" @changeLink="handleChangeLink" @updateData="linkFlowUpdateData" @close="linkFlowClose" />
+    <LinkFlow :visible.sync="linkFlow.visible" :proId.sync="linkFlow.proId" :linkId="linkFlow.linkId" @changeLink="handleChangeLink" @updateData="linkFlowUpdateData" @close="linkFlowClose" />
     <!-- line流量查询 -->
     <LinkFlowQuery
       :visible.sync="linkFlowQuery.visible"
@@ -173,6 +200,11 @@
         >
       </div>
     </Dialog>
+
+    <CTPAddDialog :visible.sync="ctpAddDialog.visible" @success="handleAddCTPSuccess" />
+    <CTPListDialog :visible.sync="ctpListDialog.visible" @showProject="handleShowProject" />
+    <CTPModeDialog :visible.sync="ctpModeDialog.visible" @inputMode="handleInputMode" @drawingMode="handleDrawingMode" />
+    <CTPDrawingModelDialog :visible.sync="ctpDrawingModelDialog.visible" :proId="ctpDrawingModelDialog.proId" @close="handleDrawingModelDialogClose" />
   </div>
 </template>
 
@@ -208,6 +240,11 @@ import AddIntersection from "./components/AddIntersection.vue";
 import UploadImageZip from "./components/UploadImageZip.vue";
 import ImageListDialog from "./components/ImageListDialog.vue";
 
+import CTPAddDialog from "./components/CTProject/AddDialog.vue";
+import CTPListDialog from "./components/CTProject/ListDialog.vue";
+import CTPModeDialog from "./components/CTProject/ModeDialog.vue";
+import CTPDrawingModelDialog from "./components/CTProject/DrawingModelDialog.vue";
+
 import { getGeomjson, queryAllMaker, getMatsimLink, intersectionList, mappictureAllMaker, mappictureDelete } from "@/api/index";
 
 export const SHOW_LINK_ZOOM = 14;
@@ -227,12 +264,13 @@ export default {
       FRAME_SELECT_STATE_KEY,
       POINT_SELECT_STATE_KEY,
 
-      activeNames: [],
+      activeNames: ["5"],
       // activeNames: ["1", "2", "3", "4"],
-      activeNames2: ["2-1", "2-2"],
 
       selectRouteId: null,
       selectLinkId: null,
+
+      ctpShowAll: false,
 
       ruleForm: {
         zoom: 13,
@@ -249,6 +287,7 @@ export default {
       linkFlow: {
         visible: false,
         linkId: null,
+        proId: 0,
       },
       linkFlowQuery: {
         visible: false,
@@ -309,11 +348,33 @@ export default {
         visible: false,
       },
 
+      ctpAddDialog: {
+        visible: false,
+        proId: 0,
+      },
+      ctpListDialog: {
+        visible: false,
+        proId: 0,
+      },
+      ctpModeDialog: {
+        visible: false,
+        proId: 0,
+      },
+      ctpEditDialog: {
+        visible: false,
+        proId: 0,
+      },
+      ctpDrawingModelDialog: {
+        visible: false,
+        proId: 0,
+      },
+
       typeOptions: {
         0: "其他",
         1: "人工",
         2: "视频识别",
         3: "互联网路况估算",
+        4: "交评核准",
       },
       typeColorOptions: JSON.parse(JSON.stringify(LinkColorList)),
 
@@ -379,6 +440,10 @@ export default {
     AddIntersection,
     UploadImageZip,
     ImageListDialog,
+    CTPAddDialog,
+    CTPListDialog,
+    CTPModeDialog,
+    CTPDrawingModelDialog,
   },
   computed: {
     showSetting() {
@@ -395,7 +460,12 @@ export default {
         !this.imageListDialog.visible &&
         !this.linkFlow.visible &&
         !this.linkPolygonSelect.visible &&
-        !this.linkFlowQuery.visible
+        !this.linkFlowQuery.visible &&
+        !this.ctpAddDialog.visible &&
+        !this.ctpListDialog.visible &&
+        !this.ctpModeDialog.visible &&
+        !this.ctpDrawingModelDialog.visible &&
+        true
       );
     },
     showCrossroadsList() {
@@ -492,6 +562,15 @@ export default {
         }
       },
     },
+    "ctpDrawingModelDialog.visible": {
+      handler(val) {
+        if (!val) {
+          this._Map.addLayer(this._NetworkLayer);
+        } else {
+          this._Map.removeLayer(this._NetworkLayer);
+        }
+      },
+    },
   },
   created() {
     this.initLayer();
@@ -537,10 +616,8 @@ export default {
         lineWidth: this.ruleForm.wayWidth,
         event: {
           [MAP_EVENT.HANDLE_PICK_LEFT]: (res) => {
-            this.linkFlow = {
-              visible: true,
-              linkId: null,
-            };
+            this.linkFlow.visible = true;
+            this.linkFlow.linkId = null;
             this.selectRouteId = res.data.id;
             this.getLink();
           },
@@ -710,10 +787,8 @@ export default {
     // ****************************** 加载基础数据 -- start
     // ****************************** 路段流量录入 -- start
     handleChangeLink(data) {
-      this.linkFlow = {
-        visible: true,
-        linkId: data.id,
-      };
+      this.linkFlow.visible = true;
+      this.linkFlow.linkId = data.id;
 
       const { clientWidth, clientHeight } = this._Map.rootDoc;
       const [x1, y1] = this._Map.WindowXYToWebMercator(clientWidth / 3, clientHeight / 2);
@@ -732,9 +807,17 @@ export default {
       }
     },
     linkFlowClose() {
+      console.log("linkFlowClose");
+
       this.selectRouteId = null;
       this.linkFlow.linkId = null;
       this._LinkLayer.setData(null);
+
+      if (this.linkFlow.proId) {
+        this.ctpModeDialog.proId = this.linkFlow.proId;
+        this.ctpModeDialog.visible = true;
+        this.linkFlow.proId = null;
+      }
     },
     getLink() {
       if (this.selectRouteId) {
@@ -941,6 +1024,33 @@ export default {
       }
     },
     // ****************************** 数据筛选 -- 区域框选 -- end
+    handleAddCTPSuccess(proId) {
+      this.ctpAddDialog.visible = false;
+      this.ctpModeDialog.visible = true;
+      this.ctpModeDialog.proId = proId;
+    },
+    handleShowProject(proId) {
+      console.log("handleShowProject");
+
+      this.ctpListDialog.visible = false;
+      this.ctpModeDialog.visible = true;
+      this.ctpModeDialog.proId = proId;
+    },
+    handleInputMode() {
+      this.ctpModeDialog.visible = false;
+      this.linkFlow.proId = this.ctpModeDialog.proId;
+      this.linkFlow.visible = true;
+    },
+    handleDrawingMode() {
+      this.ctpModeDialog.visible = false;
+      this.ctpDrawingModelDialog.proId = this.ctpModeDialog.proId;
+      this.ctpDrawingModelDialog.visible = true;
+    },
+    handleDrawingModelDialogClose() {
+      this.ctpDrawingModelDialog.visible = false;
+      this.ctpModeDialog.proId = this.ctpDrawingModelDialog.proId;
+      this.ctpModeDialog.visible = true;
+    },
   },
 };
 </script>

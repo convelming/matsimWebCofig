@@ -40,7 +40,8 @@
             <el-button type="text" size="mini" @click="handleDelete(row)">删除</el-button>
           </template>
         </el-table-column>
-      </el-table>      <h3>附件</h3>
+      </el-table>
+      <h3>附件</h3>
       <div style="margin-bottom: 18px">
         <el-button type="primary" size="mini" @click="addAnnex" :loading="updoading || saving">上传附件</el-button>
       </div>

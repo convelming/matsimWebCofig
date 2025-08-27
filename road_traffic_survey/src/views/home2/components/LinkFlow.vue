@@ -176,6 +176,10 @@ export default {
     linkId: {
       type: [String, Number],
     },
+    proId: {
+      type: [String, Number],
+      default: 0,
+    },
   },
   watch: {
     linkId: {
@@ -245,12 +249,15 @@ export default {
         1: "人工",
         2: "视频识别",
         3: "互联网路况估算",
+        4: "交评核准",
       },
       linkTypeOption: [],
     };
   },
   methods: {
     handleMoveToRoute() {
+      console.log(this.rootVue);
+
       if (this.rootVue) {
         this.rootVue.handleMoveToRoute({ value: this.selectValue });
       }
@@ -446,7 +453,7 @@ export default {
     handleQuery() {
       this.queryParams.pageNum = 1;
       this.getList();
-      this.updateEcharts(); 
+      this.updateEcharts();
     },
     /** 重置按钮操作 */
     resetQuery() {
@@ -506,6 +513,7 @@ export default {
         mtruck: "",
         lcar: "",
         ltruck: "",
+        proId: this.proId,
       };
     },
     /** 修改按钮操作 */
@@ -520,7 +528,7 @@ export default {
       });
     },
     /** 提交按钮 */
-    submitForm: function () {
+    submitForm() {
       this.$refs["form"].validate((valid) => {
         if (valid) {
           let from = JSON.parse(JSON.stringify(this.form));

@@ -7,6 +7,7 @@ export const COLOR_LIST = {
   1: "#f56c6c", // 人工 红色
   2: "#409eff", // 视频识别 蓝色
   3: "#e6a23c", // 互联网路况估算 橙色
+  4: "#909399", // 交评核准 灰色
 };
 
 export const DEFAULT_COLOR = new THREE.Color(COLOR_LIST[0]);

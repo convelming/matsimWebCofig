@@ -532,3 +532,99 @@ export function mappictureDeleteByPath(data) {
     data: data,
   });
 }
+
+// 查询详情
+// GET /link/project/detail/{id}
+// 接口ID：341122869
+// 接口地址：https://app.apifox.com/link/project/3532778/apis/api-341122869
+export function projectDetail(id) {
+  return request({
+    url: `/link/project/detail/${id}`,
+    method: "get",
+  });
+}
+
+// 项目列表
+// GET /link/project/list
+// 接口ID：339141847
+// 接口地址：https://app.apifox.com/link/project/3532778/apis/api-339141847
+export function projectList(params) {
+  return request({
+    url: `/link/project/list`,
+    method: "get",
+    params: params,
+  });
+}
+
+// 修改项目
+// POST /link/project/update
+// 接口ID：340905101
+// 接口地址：https://app.apifox.com/link/project/3532778/apis/api-340905101
+export function projectUpdate(data) {
+  const formData = new FormData();
+  for (const key in data) {
+    formData.append(key, data[key]);
+  }
+  return request({
+    url: `/link/project/update`,
+    method: "post",
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+    data: formData,
+  });
+}
+
+// 新增项目
+// POST /link/project/insert
+// 接口ID：339146028
+// 接口地址：https://app.apifox.com/link/project/3532778/apis/api-339146028
+export function projectInsert(data) {
+  const formData = new FormData();
+  for (const key in data) {
+    formData.append(key, data[key]);
+  }
+  return request({
+    url: `/link/project/insert`,
+    method: "post",
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+    data: formData,
+  });
+}
+
+// 删除项目
+// DELETE /link/project/delete/{id}
+// 接口ID：339388197
+// 接口地址：https://app.apifox.com/link/project/3532778/apis/api-339388197
+export function projectDelete(id) {
+  return request({
+    url: `/link/project/delete/${id}`,
+    method: "delete",
+  });
+}
+
+// 框选设置饱和度服务水平
+// POST /link/project/add/sample
+// 接口ID：339391575
+// 接口地址：https://app.apifox.com/link/project/3532778/apis/api-339391575
+export function projectAddSample(data) {
+  return request({
+    url: `/link/project/add/sample`,
+    method: "post",
+    data: data,
+  });
+}
+
+// 查询示例值
+// POST /link/project/query/sample
+// 接口ID：339444979
+// 接口地址：https://app.apifox.com/link/project/3532778/apis/api-339444979
+export function projectQuerySample(data) {
+  return request({
+    url: `/link/project/query/sample`,
+    method: "post",
+    data: data,
+  });
+}

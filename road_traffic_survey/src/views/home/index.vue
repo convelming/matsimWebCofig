@@ -276,6 +276,7 @@ export default {
         1: "人工",
         2: "视频识别",
         3: "互联网路况估算",
+        4: "交评核准",
       },
       videoTypeOptions: {
         0: "未知",
