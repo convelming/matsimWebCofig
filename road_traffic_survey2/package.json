@@ -1,0 +1,33 @@
+{
+  "name": "road_traffic_survey2",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "format": "prettier --write src/"
+  },
+  "dependencies": {
+    "echarts": "^5.4.3",
+    "element-plus": "^2.11.1",
+    "jszip": "^3.10.1",
+    "moment": "^2.29.3",
+    "pinia": "^3.0.3",
+    "proj4": "^2.9.0",
+    "sass": "^1.91.0",
+    "three": "^0.149.0",
+    "vue": "^3.5.18",
+    "vue-router": "^4.5.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.1",
+    "prettier": "3.6.2",
+    "vite": "^7.0.6",
+    "vite-plugin-vue-devtools": "^8.0.0"
+  }
+}
