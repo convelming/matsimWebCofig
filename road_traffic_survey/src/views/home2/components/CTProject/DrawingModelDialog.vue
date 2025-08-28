@@ -244,8 +244,8 @@ export default {
         xyarr: [
           {
             required: true,
-            validate: (rule, value, callback) => {
-              if (!this.xyarr && this.xyarr.length < 3) {
+            validator: (rule, value, callback) => {
+              if (!this.xyarr || this.xyarr.length < 3) {
                 callback(new Error("项目范围不能为空"));
               } else {
                 callback();

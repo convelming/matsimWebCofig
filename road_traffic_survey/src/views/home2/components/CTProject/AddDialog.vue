@@ -1,34 +1,34 @@
 <!-- AddDialog -->
 <template>
   <Dialog class="AddDialog" title="新建项目" :top="20" :left="20" width="500px" hideMinimize :visible="visible" @close="handleClose">
-    <el-form :model="form" ref="form" :rules="rules" label-width="100px" :inline="false" size="small">
+    <el-form :model="form" ref="form" :rules="rules" label-width="100px" :inline="false" size="mini">
       <el-form-item label="项目名：" prop="name">
-        <el-input v-model="form.name" placeholder="" size="small" clearable @change=""></el-input>
+        <el-input v-model="form.name" placeholder="" size="mini" clearable @change=""></el-input>
       </el-form-item>
       <el-form-item label="创建人：" prop="creator">
-        <el-input v-model="form.creator" placeholder="" size="small" clearable @change=""></el-input>
+        <el-input v-model="form.creator" placeholder="" size="mini" clearable @change=""></el-input>
       </el-form-item>
       <el-form-item label="项目时间：" prop="projectTime">
-        <el-date-picker v-model="form.projectTime" type="month" size="small" placeholder="选择日期时间" value-format="yyyy-MM"> </el-date-picker>
+        <el-date-picker v-model="form.projectTime" type="month" size="mini" placeholder="选择日期时间" value-format="yyyy-MM"> </el-date-picker>
       </el-form-item>
       <el-form-item label="项目范围：" :prop="{ 1: 'xyarr', 2: 'file' }[form.xyarrType]">
-        <el-radio-group v-model="form.xyarrType" size="small">
+        <el-radio-group v-model="form.xyarrType" size="mini">
           <el-radio-button :label="1">地图框选</el-radio-button>
           <el-radio-button :label="2">上传shp</el-radio-button>
         </el-radio-group>
         <template v-if="form.xyarrType == 1">
           <div style="margin-top: 10px">
-            <el-button v-if="selectState == POLYGON_SELECT_STATE_KEY.NOT_STARTED" type="primary" size="small" @click="handlePlayPolygonSelect()">开始圈定</el-button>
+            <el-button v-if="selectState == POLYGON_SELECT_STATE_KEY.NOT_STARTED" type="primary" size="mini" @click="handlePlayPolygonSelect()">开始圈定</el-button>
             <template v-if="selectState != POLYGON_SELECT_STATE_KEY.NOT_STARTED">
-              <el-button type="primary" size="small" @click="handleReplayPolygonSelect()">重新圈定</el-button>
-              <el-button type="primary" size="small" @click="handleStopPolygonSelect()">结束圈定</el-button>
+              <el-button type="primary" size="mini" @click="handleReplayPolygonSelect()">重新圈定</el-button>
+              <el-button type="primary" size="mini" @click="handleStopPolygonSelect()">结束圈定</el-button>
             </template>
           </div>
           <div v-if="form.xyarr" style="margin-top: 10px">{{ form.xyarr }}</div>
         </template>
         <template v-if="form.xyarrType == 2">
           <div style="margin-top: 10px">
-            <el-button type="primary" size="small" @click="handleSelectFile">上传shp</el-button>
+            <el-button type="primary" size="mini" @click="handleSelectFile">上传shp</el-button>
           </div>
           <div v-if="form.file" style="margin-top: 10px">{{ form.file.name }}</div>
         </template>
@@ -128,7 +128,7 @@ export default {
       this._Map.addLayer(this._PolygonSelectLayer);
     },
     handleDisable() {
-      this._PolygonSelectLayer.reset();
+      this.handleStopPolygonSelect(true);
       this._Map.removeLayer(this._PolygonSelectLayer);
     },
     handleClose() {

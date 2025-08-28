@@ -15,7 +15,7 @@
         <div class="_bodyer" v-if="linkId">
           <el-row :gutter="10">
             <el-col :span="10">
-              <el-form class="form_box" ref="infoForm" :model="infoForm" :rules="infoRules" label-width="100px" :inline="false" size="mini" label-position="left">
+              <el-form class="form_box" ref="infoForm" :model="infoForm" :rules="infoRules" label-width="100px" :inline="false" size="small" label-position="left">
                 <el-form-item label="SegmentID：" prop="origid">
                   <template v-if="!infoEdit">{{ info.origid }}</template>
                   <template v-else>{{ infoForm.origid }}</template>
@@ -42,10 +42,6 @@
                   <template v-if="!infoEdit">{{ info.freespeed }} 米 / 秒</template>
                   <el-input-number v-else style="width: 100%" v-model="infoForm.freespeed" :min="0"> </el-input-number>
                 </el-form-item>
-                <el-form-item label="通行能力：" prop="capacity">
-                  <template v-if="!infoEdit">{{ info.capacity }}</template>
-                  <el-input-number v-else style="width: 100%" v-model="infoForm.capacity" :min="0"> </el-input-number>
-                </el-form-item>
                 <el-form-item label-width="0px">
                   <template v-if="!infoEdit">
                     <el-button type="primary" @click="handleEditInfo">编辑道路信息</el-button>
@@ -66,13 +62,13 @@
             </el-col>
             <el-col :span="24">
               <div style="font-size: 14px; line-height: 32px; margin-bottom: 10px; gap: 10px; display: flex">
-                <el-date-picker v-model="queryParams.time" type="daterange" size="mini" range-separator="-" start-placeholder="开始时间" end-placeholder="结束时间" @change="handleQuery"> </el-date-picker>
-                <el-select v-model="queryParams.type" clearable multiple @change="handleQuery" size="mini" placeholder="调查方式">
+                <el-date-picker v-model="queryParams.time" type="daterange" size="small" range-separator="-" start-placeholder="开始时间" end-placeholder="结束时间" @change="handleQuery"> </el-date-picker>
+                <el-select v-model="queryParams.type" clearable multiple @change="handleQuery" size="small" placeholder="调查方式">
                   <el-option v-for="(label, key) in typeOptions" :key="key" :label="label" :value="key"> </el-option>
                 </el-select>
-                <el-button icon="el-icon-plus" type="primary" size="mini" @click="handleAdd">新增数据</el-button>
+                <el-button icon="el-icon-plus" type="primary" size="small" @click="handleAdd">新增数据</el-button>
               </div>
-              <el-table class="mini" height="calc(70vh - 300px)" v-loading="loading" :data="dataList" @selection-change="handleSelectionChange">
+              <el-table class="small" height="calc(70vh - 300px)" v-loading="loading" :data="dataList" @selection-change="handleSelectionChange">
                 <el-table-column type="selection" width="55" align="center" />
                 <el-table-column label="编号" align="center" prop="id" />
                 <el-table-column label="调查开始时间" align="center" prop="beginTime" />
@@ -93,21 +89,13 @@
                   </a>
                 </el-table-column>
                 <el-table-column label="备注" align="center" prop="remark" :show-overflow-tooltip="true" />
-                <el-table-column label="操作" fixed="right" min-width="150" align="center" class-name="mini-padding fixed-width">
+                <el-table-column label="操作" fixed="right" min-width="150" align="center" class-name="small-padding fixed-width">
                   <template slot-scope="scope">
                     <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)">修改</el-button>
                     <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)">删除</el-button>
                   </template>
                 </el-table-column>
               </el-table>
-              <div v-if="zsPCUH" class="table_end">
-                <span>服务水平：{{ zsPCUH.service }} <el-tag>真实</el-tag></span>
-                <span>饱和度：{{ zsPCUH.saturation }} <el-tag>真实</el-tag></span>
-              </div>
-              <div v-else class="table_end">
-                <span>服务水平：{{ info.service }}</span>
-                <span>饱和度：{{ info.saturation }}</span>
-              </div>
               <pagination style="line-height: 1; padding-top: 20px" layout="total, sizes, prev, pager, next" :pagerCount="5" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
             </el-col>
           </el-row>
@@ -116,118 +104,64 @@
       </div>
     </Dialog>
     <!-- 添加或修改参数配置对话框 -->
-    <Dialog :title="title" :visible="open && !open2" @update:visible="open = $event" :top="20" :left="20" width="550px">
-      <div style="overflow-y: auto; max-height: calc(100vh - 200px)">
-        <el-form ref="form" :model="form" :rules="rules" label-width="80px" label-position="left" size="mini">
-          <!-- <el-form-item label="调查时间" prop="timeList">
+    <Dialog :title="title" :visible.sync="open" :top="20" :left="20" width="550px" handleClose>
+      <el-form ref="form" :model="form" :rules="rules" label-width="80px" label-position="left" size="mini">
+        <el-form-item label="调查时间" prop="timeList">
           <el-date-picker v-model="form.timeList" type="datetimerange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd HH:mm:ss" />
           <div style="color: red">注意: 请输入实际调查起止时间，时长需准确</div>
-        </el-form-item> -->
-          <el-form-item label="调查日期" prop="date">
-            <el-date-picker v-model="form.date" type="date" placeholder="选择日期" value-format="yyyy-MM-dd"> </el-date-picker>
-          </el-form-item>
-          <el-form-item label="调查时段" prop="time">
-            <el-select v-model="form.time" placeholder="选择时段">
-              <el-option v-for="(v, i) in 24" :key="i" :label="i + '点'" :value="i"> </el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="调查方式" prop="type">
-            <el-radio-group v-model="form.type">
-              <el-radio v-for="(v, i) in typeOptions" :key="i" :label="String(i)">{{ v }}</el-radio>
-            </el-radio-group>
-          </el-form-item>
-          <el-form-item label="上传视频" prop="video">
-            <UploadVideo v-model="form.video" />
-          </el-form-item>
-          <el-form-item label="视频录像是否可以覆盖到对向车道" label-width="auto" prop="isTwoWay">
-            <el-switch v-model="form.isTwoWay" :active-value="true" :inactive-value="false"> </el-switch>
-          </el-form-item>
-          <el-form-item label="PCU/H">
-            <el-input-number v-model="form.pcuH" :step="0.01" :controls="true" />
-            <el-collapse style="user-select: none; margin-top: 10px">
-              <el-collapse-item title="PCU/H 计算器" name="0">
-                <el-form-item label="调查时长" prop="pcuCM" label-width="auto">
-                  <el-input-number :step="1" step-strictly :min="0" v-model="form.pcuCM" />
-                  分钟
-                </el-form-item>
-                <el-form-item label="小型客车" prop="scar" label-width="auto">
-                  <el-input-number :step="1" step-strictly :min="0" v-model="form.scar" />
-                  辆
-                </el-form-item>
-                <el-form-item label="小型货车" prop="struck" label-width="auto">
-                  <el-input-number :step="1" step-strictly :min="0" v-model="form.struck" />
-                  辆
-                </el-form-item>
-                <el-form-item label="中型客车" prop="mcar" label-width="auto">
-                  <el-input-number :step="1" step-strictly :min="0" v-model="form.mcar" />
-                  辆
-                </el-form-item>
-                <el-form-item label="中型货车" prop="mtruck" label-width="auto">
-                  <el-input-number :step="1" step-strictly :min="0" v-model="form.mtruck" />
-                  辆
-                </el-form-item>
-                <el-form-item label="大型客车" prop="lcar" label-width="auto">
-                  <el-input-number :step="1" step-strictly :min="0" v-model="form.lcar" />
-                  辆
-                </el-form-item>
-                <el-form-item label="大型货车" prop="ltruck" label-width="auto">
-                  <el-input-number :step="1" step-strictly :min="0" v-model="form.ltruck" />
-                  辆
-                </el-form-item>
-                <el-form-item label-width="auto">
-                  <el-button type="primary" size="mini" @click="handleComputePCUH">计算</el-button>
-                  <el-button type="primary" size="mini" @click="handleResetPCUHComputer">重置</el-button>
-                </el-form-item>
-              </el-collapse-item>
-            </el-collapse>
-          </el-form-item>
-          <el-form-item label="数据复用" prop="remark">
-            <el-button type="primary" size="mini" @click="handleOpenFY">交评关键路段流量复用</el-button>
-          </el-form-item>
-          <el-form-item label="备注" prop="remark">
-            <el-input type="textarea" v-model="form.remark" placeholder="请输入备注" :autosize="{ minRows: 3 }" />
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="submitForm" size="mini">确 定</el-button>
-            <el-button @click="cancel" size="mini">取 消</el-button>
-          </el-form-item>
-        </el-form>
-      </div>
-    </Dialog>
-
-    <Dialog title="交评关键路段流量复用" :visible.sync="open2" :top="20" :left="20" width="550px" @close="handleCloseFY">
-      <el-form :model="fyForm" ref="fyForm" :rules="fyRules" label-width="80px" :inline="false" size="normal">
-        <el-form-item label="框选路段" prop="xyarr">
-          <el-button v-if="selectState == POLYGON_SELECT_STATE_KEY.NOT_STARTED" type="primary" size="mini" @click="handlePlayPolygonSelect('fy')">开始圈定</el-button>
-          <template v-if="selectState != POLYGON_SELECT_STATE_KEY.NOT_STARTED">
-            <el-button type="primary" size="mini" @click="handleReplayPolygonSelect('fy')">重新圈定</el-button>
-            <el-button type="primary" size="mini" @click="handleStopPolygonSelect()">结束圈定</el-button>
-          </template>
         </el-form-item>
-        <el-form-item label="复用路段" prop="list">
-          <div style="max-height: calc(100vh - 400px); overflow-y: scroll">
-            <el-tree v-loaading="getFYListLoading" ref="tree" :data="fyForm.list" node-key="id" :props="{ children: 'links', label: 'label' }" :show-checkbox="false">
-              <span class="custom-tree-node" slot-scope="{ node, data }">
-                <span>{{ node.name }}（{{ node.id }}）</span>
-                <span>
-                  <el-button type="text" size="mini" @click="() => handleRemoveFyLink(node, data)"> 删除 </el-button>
-                </span>
-              </span>
-            </el-tree>
-          </div>
+        <el-form-item label="调查方式" prop="type">
+          <el-radio-group v-model="form.type">
+            <el-radio v-for="(v, i) in typeOptions" :key="i" :label="String(i)">{{ v }}</el-radio>
+          </el-radio-group>
         </el-form-item>
-        <el-form-item>
-          <el-button type="primary" size="mini" @click="handleSubmitFY" :loading="fyLoading">提交</el-button>
-          <el-button size="mini" @click="handleCloseFY" :loading="fyLoading">取消</el-button>
+        <el-form-item label="上传视频" prop="video">
+          <UploadVideo v-model="form.video" />
+        </el-form-item>
+        <el-form-item label="视频录像是否可以覆盖到对向车道" label-width="auto" prop="isTwoWay">
+          <el-switch v-model="form.isTwoWay" :active-value="true" :inactive-value="false"> </el-switch>
+        </el-form-item>
+        <el-form-item label="观察数据">
+          <div style="color: red">注：请输入实际观测到数量无需换算成一小时的量</div>
+          <el-form-item label="小型客车" prop="scar" label-width="auto">
+            <el-input-number :step="1" step-strictly :min="0" v-model="form.scar" />
+            辆
+          </el-form-item>
+          <el-form-item label="小型货车" prop="struck" label-width="auto">
+            <el-input-number :step="1" step-strictly :min="0" v-model="form.struck" />
+            辆
+          </el-form-item>
+          <el-form-item label="中型客车" prop="mcar" label-width="auto">
+            <el-input-number :step="1" step-strictly :min="0" v-model="form.mcar" />
+            辆
+          </el-form-item>
+          <el-form-item label="中型货车" prop="mtruck" label-width="auto">
+            <el-input-number :step="1" step-strictly :min="0" v-model="form.mtruck" />
+            辆
+          </el-form-item>
+          <el-form-item label="大型客车" prop="lcar" label-width="auto">
+            <el-input-number :step="1" step-strictly :min="0" v-model="form.lcar" />
+            辆
+          </el-form-item>
+          <el-form-item label="大型货车" prop="ltruck" label-width="auto">
+            <el-input-number :step="1" step-strictly :min="0" v-model="form.ltruck" />
+            辆
+          </el-form-item>
+        </el-form-item>
+        <el-form-item label="备注" prop="remark">
+          <el-input type="textarea" v-model="form.remark" placeholder="请输入备注" :autosize="{ minRows: 3 }" />
         </el-form-item>
       </el-form>
+      <div class="dialog-footer">
+        <el-button type="primary" @click="submitForm" size="mini">确 定</el-button>
+        <el-button @click="cancel" size="mini">取 消</el-button>
+      </div>
     </Dialog>
   </div>
 </template>
 
 <script>
-import { PolygonSelectLayer, POLYGON_SELECT_STATE_KEY, POLYGON_SELECT_EVENT } from "../layer/PolygonSelectLayer";
-import { statsReinstated, getOsmLinksByArea, statsQueryByLinkId, matsimLinkDetail, matsimLinkUpdate, matsimLinkUpdateInWay, getAllLinkType, getReverseLink, statsDetail, statsInsert, statsUpdate, statsDelete, queryAvgStats } from "@/api/index";
+import { statsQueryByLinkId, matsimLinkDetail, matsimLinkUpdate, matsimLinkUpdateInWay, getAllLinkType, getReverseLink, statsDetail, statsInsert, statsUpdate, statsDelete, queryAvgStats } from "@/api/index";
 import RouteSelect from "./RouteSelect.vue";
 import * as echarts from "echarts";
 export default {
@@ -247,22 +181,7 @@ export default {
       default: 0,
     },
   },
-  computed: {
-    _Map() {
-      return this.rootVue._Map;
-    },
-  },
   watch: {
-    visible: {
-      handler(val) {
-        this.s_visible = val;
-        if (val) {
-          this.handleEnable();
-        } else {
-          this.handleDisable();
-        }
-      },
-    },
     linkId: {
       handler(val) {
         if (val != this._linkId) {
@@ -284,11 +203,6 @@ export default {
   },
   data() {
     return {
-      POLYGON_SELECT_STATE_KEY,
-      selectState: POLYGON_SELECT_STATE_KEY.NOT_STARTED,
-      polygonSelectType: "",
-      xyarr: [],
-
       selectValue: null,
       info: {},
       infoEdit: false,
@@ -326,9 +240,7 @@ export default {
       form: {},
       // 表单校验
       rules: {
-        date: [{ required: true, message: "调查日期不能为空", trigger: "blur" }],
-        time: [{ required: true, message: "调查时段不能为空", trigger: "blur" }],
-        // timeList: [{ required: true, message: "时间不能为空", trigger: "blur" }],
+        timeList: [{ required: true, message: "时间不能为空", trigger: "blur" }],
         type: [{ required: true, message: "调查方式不能为空", trigger: "blur" }],
       },
 
@@ -340,164 +252,9 @@ export default {
         4: "交评核准",
       },
       linkTypeOption: [],
-
-      open2: false,
-
-      fyLoading: false,
-      getFYListLoading: false,
-      fyForm: {
-        xyarr: [],
-        list: [],
-      },
-      fyRules: {
-        xyarr: [
-          {
-            required: true,
-            validator: (rule, value, callback) => {
-              if (!this.fyForm.xyarr || this.fyForm.xyarr.length < 3) {
-                callback(new Error("请选择范围"));
-              } else {
-                callback();
-              }
-            },
-          },
-        ],
-        list: [
-          {
-            required: true,
-            validator: (rule, value, callback) => {
-              if (!this.fyForm.list || this.fyForm.list.length < 1) {
-                callback(new Error("复用路段不能为空"));
-              } else {
-                callback();
-              }
-            },
-          },
-        ],
-      },
-
-      zsPCUH: null,
     };
   },
-  created() {
-    this.s_visible = this.visible;
-    this._PolygonSelectLayer = new PolygonSelectLayer({
-      zIndex: 200,
-      event: {
-        [POLYGON_SELECT_EVENT.STATE_CHANGE]: (res) => {
-          this.selectState = res.data.state;
-          if (this.selectState === POLYGON_SELECT_STATE_KEY.ENDED) {
-            const path = res.data.path;
-            path[path.length] = [...path[0]];
-            this.handleStopPolygonSelect();
-            this.xyarr = path;
-
-            if (this.polygonSelectType == "fy") {
-              this.fyForm.xyarr = path;
-              this.handleGetFYList();
-            }
-          }
-        },
-      },
-    });
-  },
-  mounted() {
-    this._interval = setInterval(() => {
-      if (!this._Map) return;
-      clearInterval(this._interval);
-      if (this.s_visible) {
-        this.handleEnable();
-      }
-    }, 1000);
-  },
-  beforeDestroy() {
-    this.handleDisable();
-  },
   methods: {
-    handleEnable() {
-      this._Map.addLayer(this._PolygonSelectLayer);
-    },
-    handleDisable() {
-      this._PolygonSelectLayer.reset();
-      this._Map.removeLayer(this._PolygonSelectLayer);
-    },
-    // ****************************** 数据筛选 -- 区域框选 -- start
-    handlePlayPolygonSelect(polygonSelectType) {
-      this.polygonSelectType = polygonSelectType;
-      if (this._PolygonSelectLayer) {
-        this._PolygonSelectLayer.reset();
-        this._PolygonSelectLayer.play();
-        this.selectState = this._PolygonSelectLayer.state;
-      }
-    },
-    handleReplayPolygonSelect(polygonSelectType) {
-      this.polygonSelectType = polygonSelectType;
-      if (this._PolygonSelectLayer) {
-        this._PolygonSelectLayer.reset();
-        this._PolygonSelectLayer.play();
-        this.selectState = this._PolygonSelectLayer.state;
-      }
-    },
-    handleStopPolygonSelect(reset) {
-      if (this._PolygonSelectLayer) {
-        if (reset === true) {
-          this.xyarr = [];
-          this._PolygonSelectLayer.reset();
-        }
-        this._PolygonSelectLayer.stop();
-        this.selectState = this._PolygonSelectLayer.state;
-      }
-    },
-    // ****************************** 数据筛选 -- 区域框选 -- end
-    handleGetFYList() {
-      this.getFYListLoading = true;
-      getOsmLinksByArea({ xyarr: this.xyarr })
-        .then((res) => {
-          this.fyForm.list = res.data;
-        })
-        .finally(() => {
-          this.getFYListLoading = false;
-        });
-    },
-    handleOpenFY() {
-      this.$refs["form"].validate((valid) => {
-        if (valid) {
-          this.open2 = true;
-        }
-      });
-    },
-    handleCloseFY() {
-      this.open2 = false;
-      this.handleStopPolygonSelect(true);
-    },
-    handleRemoveFyLink(node, data) {
-      const parent = node.parent;
-      const children = parent.data.children || parent.data;
-      const index = children.findIndex((d) => d.id === data.id);
-      children.splice(index, 1);
-    },
-    handleSubmitFY() {
-      this.$refs["fyForm"].validate((valid) => {
-        if (valid) {
-          this.fyLoading = true;
-          const stats = JSON.parse(JSON.stringify(this.form));
-          stats.beginTime = stats.date + " " + (stats.time < 10 ? "0" + stats.time : stats.time) + ":00:00";
-          stats.endTime = stats.date + " " + (stats.time < 9 ? "0" + (stats.time + 1) : stats.time + 1) + ":00:00";
-          const linkIds = this.fyForm.list.map((item) => item.links.map((item2) => item2.id)).flat(2);
-          statsReinstated({ stats, linkIds })
-            .then((res) => {
-              this.$message.success("复用成功");
-              this.fyForm.list = [];
-              this.fyForm.xyarr = [];
-              this.handleStopPolygonSelect(true);
-              this.handleCloseFY();
-            })
-            .finally(() => {
-              this.fyLoading = false;
-            });
-        }
-      });
-    },
     handleMoveToRoute() {
       console.log(this.rootVue);
 
@@ -514,7 +271,7 @@ export default {
       this.updateEcharts();
     },
     handleReverse() {
-      getReverseLink(this.linkId, this.proId).then((res) => {
+      getReverseLink(this.linkId).then((res) => {
         if (res.data) {
           this.$emit("changeLink", res.data);
         } else {
@@ -658,7 +415,6 @@ export default {
         lane: this.info.lane,
         type: this.info.type,
         freespeed: this.info.freespeed,
-        capacity: this.info.capacity,
       };
       this.infoEdit = true;
       this.updateEcharts();
@@ -688,7 +444,7 @@ export default {
       });
     },
     getDetail() {
-      matsimLinkDetail(this.linkId, this.proId).then((res) => {
+      matsimLinkDetail(this.linkId).then((res) => {
         res.data.freespeed = Number(res.data.freespeed).toFixed(2);
         this.info = res.data;
       });
@@ -723,7 +479,6 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map((item) => item.id);
-      this.zsPCUH = selection[selection.length - 1] || null;
       this.single = selection.length != 1;
       this.multiple = !selection.length;
       this.updateEcharts();
@@ -744,8 +499,7 @@ export default {
     reset() {
       this.form = {
         linkId: this.linkId,
-        date: "",
-        time: "",
+        timeList: [],
         beginTime: null,
         endTime: null,
         type: "0",
@@ -753,17 +507,13 @@ export default {
         remark: null,
         isTwoWay: false,
         video: "",
+        scar: "",
+        struck: "",
+        mcar: "",
+        mtruck: "",
+        lcar: "",
+        ltruck: "",
         proId: this.proId,
-
-        pcuH: 0,
-
-        pcuCM: 60,
-        scar: 0,
-        struck: 0,
-        mcar: 0,
-        mtruck: 0,
-        lcar: 0,
-        ltruck: 0,
       };
     },
     /** 修改按钮操作 */
@@ -771,10 +521,7 @@ export default {
       this.reset();
       const id = row.id;
       statsDetail(id).then((response) => {
-        // response.data.timeList = [response.data.beginTime, response.data.endTime];
-        response.data.date = response.data.beginTime.substring(0, 10);
-        response.data.time = Number(response.data.beginTime.substring(11, 13));
-        response.data.pcuCM = 60;
+        response.data.timeList = [response.data.beginTime, response.data.endTime];
         this.form = response.data;
         this.open = true;
         this.title = "修改道路信息";
@@ -784,20 +531,18 @@ export default {
     submitForm() {
       this.$refs["form"].validate((valid) => {
         if (valid) {
-          const form = JSON.parse(JSON.stringify(this.form));
-          form.beginTime = form.date + " " + (form.time < 10 ? "0" + form.time : form.time) + ":00:00";
-          form.endTime = form.date + " " + (form.time < 9 ? "0" + (form.time + 1) : form.time + 1) + ":00:00";
-          // form.beginTime = form.timeList[0];
-          // form.endTime = form.timeList[1];
-          if (form.id != undefined) {
-            statsUpdate(form).then((response) => {
+          let from = JSON.parse(JSON.stringify(this.form));
+          from.beginTime = from.timeList[0];
+          from.endTime = from.timeList[1];
+          if (from.id != undefined) {
+            statsUpdate(from).then((response) => {
               this.$message.success("修改成功");
               this.open = false;
               this.getList();
               this.$emit("updateData");
             });
           } else {
-            statsInsert(form).then((response) => {
+            statsInsert(from).then((response) => {
               this.$message.success("新增成功");
               this.open = false;
               this.getList();
@@ -825,17 +570,6 @@ export default {
         })
         .catch(() => {});
     },
-    handleComputePCUH() {},
-    handleResetPCUHComputer() {
-      this.form.pcuH = 0;
-      this.form.pcuCM = 0;
-      this.form.scar = 0;
-      this.form.struck = 0;
-      this.form.mcar = 0;
-      this.form.mtruck = 0;
-      this.form.lcar = 0;
-      this.form.ltruck = 0;
-    },
   },
 };
 </script>
@@ -860,21 +594,5 @@ export default {
       height: 100%;
     }
   }
-}
-.custom-tree-node {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 14px;
-  padding-right: 8px;
-}
-
-.table_end {
-  padding-top: 20px;
-  background-color: #fff;
-  display: flex;
-  align-items: center;
-  gap: 30px;
 }
 </style>

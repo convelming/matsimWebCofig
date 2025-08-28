@@ -122,10 +122,11 @@ export function statsExport(data) {
 // GET /matsim/link/{id}
 // 接口ID：123621313
 // 接口地址：https://app.apifox.com/link/project/3532778/apis/api-123621313
-export function matsimLinkDetail(id) {
+export function matsimLinkDetail(id, projectId) {
   return request({
     url: `/matsim/link/${id}`,
     method: "get",
+    params: { projectId },
   });
 }
 
@@ -624,6 +625,30 @@ export function projectAddSample(data) {
 export function projectQuerySample(data) {
   return request({
     url: `/link/project/query/sample`,
+    method: "post",
+    data: data,
+  });
+}
+
+// 框选查询osmway和link
+// POST /osm/way/getOsmLinksByArea
+// 接口ID：339872279
+// 接口地址：https://app.apifox.com/link/project/3532778/apis/api-339872279
+export function getOsmLinksByArea(data) {
+  return request({
+    url: `/osm/way/getOsmLinksByArea`,
+    method: "post",
+    data: data,
+  });
+}
+
+// 流量复用
+// POST /link/stats/reinstated
+// 接口ID：338927670
+// 接口地址：https://app.apifox.com/link/project/3532778/apis/api-338927670
+export function statsReinstated(data) {
+  return request({
+    url: `/link/stats/reinstated`,
     method: "post",
     data: data,
   });

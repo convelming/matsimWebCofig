@@ -1,11 +1,11 @@
 <!-- ModeDialog -->
 <template>
   <Dialog title="项目名称" class="ModeDialog" :top="20" :left="20" width="500px" hideMinimize :visible="visible" @close="handleClose">
-    <el-form label-width="70px" :inline="false" size="small">
+    <el-form label-width="70px" :inline="false" size="mini">
       <el-form-item label="">
         <!-- 输入模式直接弹窗 LineFlow -->
-        <el-button type="primary" size="small" @click="$emit('inputMode')">输入模式</el-button>
-        <el-button type="primary" size="small" @click="$emit('drawingMode')">出图模式</el-button>
+        <el-button type="primary" size="mini" @click="$emit('inputMode')">输入模式</el-button>
+        <el-button type="primary" size="mini" @click="$emit('drawingMode')">出图模式</el-button>
       </el-form-item>
       <el-form-item label="注：">
         <div><span style="color: red">输入模式</span>为录入交评重点路段的数据，<span style="color: red">请确保数据准确性。</span></div>
