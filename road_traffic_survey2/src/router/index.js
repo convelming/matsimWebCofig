@@ -7,7 +7,22 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: () => import('@/views/HomeView.vue'),
+      component: () => import('@/views/home/index.vue'),
+    },
+    {
+      path: '/upload',
+      name: 'upload',
+      component: () => import('@/views/upload/index.vue'),
+    },
+    {
+      path: '/download',
+      name: 'download',
+      component: () => import('@/views/download/index.vue'),
+    },
+    {
+      path: '/feedback',
+      name: 'feedback',
+      component: () => import('@/views/feedback/index.vue'),
     },
   ],
   scrollBehavior(to, from, savedPosition) {

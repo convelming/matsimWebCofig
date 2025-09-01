@@ -1,11 +1,11 @@
-<!-- HomeView -->
+<!-- index -->
 <template>
-  <div class="HomeView">HomeViewHomeView</div>
+  <div class="index"></div>
 </template>
 
 <script setup></script>
 
 <style lang="scss" scoped>
-.HomeView {
+.index {
 }
 </style>

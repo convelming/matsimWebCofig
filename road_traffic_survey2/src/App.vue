@@ -3,24 +3,119 @@
   <div class="App">
     <div class="header">
       <div class="title">交通数据采集应用平台</div>
-      <div class="menu_item active">
-        <el-icon><House /></el-icon>首页
-      </div>
-      <div class="menu_item">数据上传</div>
-      <div class="menu_item">数据下载</div>
-      <div class="menu_item">问题反馈</div>
+      <RouterLink class="menu_item" activeClass="active" :to="{ name: 'home' }">
+        <img class="icon" src="@/assets/images/tab_home_nor@2x.png" alt="" />
+        <img class="icon sel" src="@/assets/images/tab_home_sel@2x.png" alt="" />
+        <span class="text">首页</span>
+      </RouterLink>
+      <RouterLink class="menu_item" activeClass="active" :to="{ name: 'upload' }">
+        <img class="icon" src="@/assets/images/tab_upload_nor@2x.png" alt="" />
+        <img class="icon sel" src="@/assets/images/tab_upload_sel@2x.png" alt="" />
+        <span class="text">数据上传</span>
+      </RouterLink>
+      <RouterLink class="menu_item" activeClass="active" :to="{ name: 'download' }">
+        <img class="icon" src="@/assets/images/tab_download_nor@2x.png" alt="" />
+        <img class="icon sel" src="@/assets/images/tab_download_sel@2x.png" alt="" />
+        <span class="text">数据下载</span>
+      </RouterLink>
+      <RouterLink class="menu_item" activeClass="active" :to="{ name: 'feedback' }">
+        <img class="icon" src="@/assets/images/tab_feedback_nor@2x.png" alt="" />
+        <img class="icon sel" src="@/assets/images/tab_feedback_sel@2x.png" alt="" />
+        <span class="text">问题反馈</span>
+      </RouterLink>
     </div>
     <div class="bottom">
-      <div class="left"></div>
-      <div class="right">
-        <RouterView class="App" />
+      <div class="left">
+        <div class="btn">
+          <img class="icon" src="@/assets/images/容器@2x.png" alt="" />
+        </div>
+        <a
+          class="btn"
+          href="https://doc.weixin.qq.com/sheet/e3_AdQA8Aa_ADMt1qh97LkSHer6ALqI2?scode=APwA6gfEAA0aeGdABPAdQA8Aa_ADM&tab=BB08J2"
+          target="_blank"
+        >
+          <img class="icon" src="@/assets/images/容器@2x(1).png" alt="" />
+        </a>
+        <div class="btn">
+          <img class="icon" src="@/assets/images/容器@2x(2).png" alt="" />
+        </div>
+        <div class="btn">
+          <img class="icon" src="@/assets/images/容器@2x(3).png" alt="" />
+        </div>
+      </div>
+      <div class="right" id="page" :style="`--scole:${pageScale}`">
+        <div id="mapRoot" v-show="showMap"></div>
+        <RouterView />
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { House } from '@element-plus/icons-vue'
+import { MyMap, MapLayer, MAP_LAYER_STYLE, MapStyleFactory } from '@/mymap/index.js'
+import { parserGeoJSON } from '@/utils/index.js'
+import { ref } from 'vue'
+import { useRoute } from 'vue-router'
+const route = useRoute()
+
+const MapRef = shallowRef(null)
+const showMap = ref(true)
+const pageScale = ref(1)
+provide('MapRef', MapRef)
+provide('showMap', showMap)
+
+const ro = new ResizeObserver(function (entries) {
+  console.log(entries)
+  const doc = entries[0].target
+  pageScale.value = Math.min(doc.clientHeight / 1080, doc.clientWidth / 1920).toFixed(4)
+})
+
+onMounted(() => {
+  const _Map = new MyMap({
+    rootId: 'mapRoot',
+    // 黄浦区中心点和缩放
+    center: [12634609, 2659952],
+    zoom: 10.74,
+    // 科学城中心点和缩放
+    // center:  [12633548, 2651418],
+    // zoom: 11.628,
+  })
+  // https://t0.dynamic.tiles.ditu.live.com/comp/ch/1321222210103?mkt=zh-CN,en-US&ur=cn&it=G,L&jp=0&og=1&sv=9.27&n=t&o=webp,95&cstl=s23&st=bld|v:0
+  // _Map.enableRotate = true;
+  // getConfigKey('sys.maptile.serve').then((res) => {
+  //   const getUrl = eval(`(z,x,y) => \`${res.msg}\``)
+  //   const tileClass = MapStyleFactory({
+  //     style_name: 'Arcgis',
+  //     background: '#CCE7F9',
+  //     getUrl: function () {
+  //       return getUrl(this.zoom, this.row, this.col)
+  //     },
+  //   })
+  //   const _MapLayer = new MapLayer({ tileClass: tileClass, zIndex: -1 })
+  //   _Map.addLayer(_MapLayer)
+  // })
+  const res = { msg: 'http://192.168.60.234:8081/styles/DK/512/${z}/${x}/${y}.png' }
+  const getUrl = eval(`(z,x,y) => \`${res.msg}\``)
+  const tileClass = MapStyleFactory({
+    style_name: 'Arcgis',
+    background: '#CCE7F9',
+    getUrl: function () {
+      return getUrl(this.zoom, this.row, this.col)
+    },
+  })
+  const _MapLayer = new MapLayer({ tileClass: tileClass, zIndex: -1 })
+  _Map.addLayer(_MapLayer)
+
+  MapRef.value = _Map
+  console.log(_Map)
+
+  ro.observe(document.getElementById('page'))
+})
+
+onUnmounted(() => {
+  MapRef.value.dispose()
+  ro.disconnect()
+})
 </script>
 
 <style lang="scss" scoped>
@@ -51,7 +146,6 @@ import { House } from '@element-plus/icons-vue'
     .menu_list {
     }
     .menu_item {
-      cursor: pointer;
       width: 128px;
       height: 60px;
       display: flex;
@@ -61,6 +155,7 @@ import { House } from '@element-plus/icons-vue'
       position: relative;
       color: #666666;
       font-size: 16px;
+      text-decoration: none;
       &.active {
         color: #30b690;
         &::before {
@@ -72,6 +167,20 @@ import { House } from '@element-plus/icons-vue'
           left: 50%;
           bottom: 0;
           transform: translateX(-50%);
+        }
+        .icon {
+          display: none;
+          &.sel {
+            display: block;
+          }
+        }
+      }
+      .icon {
+        width: 24px;
+        height: 24px;
+        display: block;
+        &.sel {
+          display: none;
         }
       }
     }
@@ -91,6 +200,24 @@ import { House } from '@element-plus/icons-vue'
 
       background: #ffffff;
       box-shadow: 0px 4px 5px 0px rgba(171, 51, 79, 0.1);
+
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: center;
+      padding: 30px 0;
+      gap: 20px;
+      .btn {
+        cursor: pointer;
+        width: 24px;
+        height: 24px;
+        display: block;
+        .icon {
+          width: 24px;
+          height: 24px;
+          display: block;
+        }
+      }
     }
     .right {
       position: relative;
@@ -99,6 +226,11 @@ import { House } from '@element-plus/icons-vue'
       width: 0;
       height: 100%;
       background-color: #ddd;
+      overflow: hidden;
+      #mapRoot {
+        width: 100%;
+        height: 100%;
+      }
     }
   }
 }
