@@ -82,6 +82,11 @@ const routes = [
     component: () => import(/* webpackChunkName: "demopage13" */ "../views/demo/page3/index11.vue"),
   },
   {
+    path: "/demo/page14",
+    name: "demopage14",
+    component: () => import(/* webpackChunkName: "demopage14" */ "../views/demo/page3/index12.vue"),
+  },
+  {
     path: "/demo/UAVBox",
     name: "demoUAVBox",
     component: () => import(/* webpackChunkName: "demoUAVBox" */ "../views/demo/page3/UAVBox/index.vue"),
