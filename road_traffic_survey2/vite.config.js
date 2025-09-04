@@ -24,6 +24,13 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        additionalData: `@use "@/assets/style/func.scss" as func;`,
+      },
+    },
+  },
   // vite 相关配置
   server: {
     port: 80,
@@ -32,9 +39,9 @@ export default defineConfig({
     proxy: {
       // https://cn.vitejs.dev/config/#server-proxy
       '/dev-api': {
-        target: 'http://localhost:8080',
-        target: 'http://192.168.60.231:8080/',
-        // target: 'http://192.168.31.103:8080/',
+        // target: `http://192.168.31.134:23104`, // 本地调试
+        target: `http://192.168.60.231:23104`, // 测试服
+        // target: `http://192.168.31.104:23104`, // 本地调试
         changeOrigin: true,
         rewrite: (p) => p.replace(/^\/dev-api/, ''),
       },

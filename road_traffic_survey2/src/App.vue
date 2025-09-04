@@ -43,7 +43,7 @@
           <img class="icon" src="@/assets/images/容器@2x(3).png" alt="" />
         </div>
       </div>
-      <div class="right" id="page" :style="`--scole:${pageScale}`">
+      <div class="right" id="page" :style="scaleStyle">
         <div id="mapRoot" v-show="showMap"></div>
         <RouterView />
       </div>
@@ -52,22 +52,31 @@
 </template>
 
 <script setup>
-import { MyMap, MapLayer, MAP_LAYER_STYLE, MapStyleFactory } from '@/mymap/index.js'
-import { parserGeoJSON } from '@/utils/index.js'
+import {
+  MyMap,
+  MAP_EVENT,
+  MAP_ZOOM_RANGE,
+  MAP_LAYER_STYLE,
+  DEFAULT_MAP_LAYER_STYLE,
+  MOUSE_BUTTONS,
+  MapLayer,
+  MapStyleFactory,
+} from '@/mymap/index.js'
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 const route = useRoute()
 
 const MapRef = shallowRef(null)
 const showMap = ref(true)
-const pageScale = ref(1)
+const scaleStyle = ref(1)
 provide('MapRef', MapRef)
 provide('showMap', showMap)
 
 const ro = new ResizeObserver(function (entries) {
-  console.log(entries)
   const doc = entries[0].target
-  pageScale.value = Math.min(doc.clientHeight / 1080, doc.clientWidth / 1920).toFixed(4)
+  const scaleY = doc.clientHeight / (1080 - 60)
+  const scaleX = doc.clientWidth / (1920 - 67)
+  scaleStyle.value = `--scale: ${Math.min(scaleX, scaleY)};--scaleY: ${scaleY};--scaleX: ${scaleX};--fs-scale:1;`
 })
 
 onMounted(() => {
@@ -76,6 +85,7 @@ onMounted(() => {
     // 黄浦区中心点和缩放
     center: [12634609, 2659952],
     zoom: 10.74,
+    mouseButtons: MOUSE_BUTTONS.RIGHT,
     // 科学城中心点和缩放
     // center:  [12633548, 2651418],
     // zoom: 11.628,
@@ -94,7 +104,7 @@ onMounted(() => {
   //   const _MapLayer = new MapLayer({ tileClass: tileClass, zIndex: -1 })
   //   _Map.addLayer(_MapLayer)
   // })
-  const res = { msg: 'http://192.168.60.234:8081/styles/DK/512/${z}/${x}/${y}.png' }
+  const res = { msg: 'http://192.168.60.234:8081/styles/OSM%20Liberty/512/${z}/${x}/${y}.png' }
   const getUrl = eval(`(z,x,y) => \`${res.msg}\``)
   const tileClass = MapStyleFactory({
     style_name: 'Arcgis',
@@ -107,7 +117,6 @@ onMounted(() => {
   _Map.addLayer(_MapLayer)
 
   MapRef.value = _Map
-  console.log(_Map)
 
   ro.observe(document.getElementById('page'))
 })
