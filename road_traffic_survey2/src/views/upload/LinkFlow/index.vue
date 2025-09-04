@@ -58,126 +58,26 @@
     </el-scrollbar>
   </MDialog>
 
-  <MDialog
-    mClass="LinkFlowInstall"
-    title="路段流量录入"
-    subTitle="人工数车/ 路段流量录入"
-    :top="80"
-    :left="80"
-    width="798px"
-    hideClose
-    :visible="showLinkDetail"
+  <LinkDetail
+    v-model:visible="showLinkDetail"
+    :linkId="selectLinkId"
+    :proId="proId"
     @close="handleCloseLinkDetail"
-  >
-    <el-scrollbar class="scrollbar">
-      <div class="lfd_bodyer">
-        <img
-          src="@/assets/images/close.svg"
-          class="close_btn"
-          @click.stop="handleCloseLinkDetail"
-        />
-        <div class="search">
-          <div class="title1">路段搜索</div>
-          <RouteSelect ref="routeSelect" @change="handleMoveToRoute" />
-          <el-button type="primary" @click="handleMoveToRoute({ value: selectRouteId })"
-            >搜索定位</el-button
-          >
-        </div>
-        <div class="flex_box">
-          <div class="detail_box">
-            <el-form
-              class="form_box"
-              ref="infoFormRef"
-              :model="infoForm"
-              :rules="infoRules"
-              label-width="100px"
-              :inline="false"
-              label-position="left"
-            >
-              <el-form-item label="SegmentID：" prop="origid">
-                <template v-if="!editInfo">{{ info.origid }}</template>
-                <template v-else>{{ infoForm.origid }}</template>
-              </el-form-item>
-              <el-form-item label="LinkID：" prop="id">
-                <template v-if="!editInfo">{{ info.id }}</template>
-                <template v-else>{{ infoForm.id }}</template>
-              </el-form-item>
-              <el-form-item label="道路名称：" prop="name">
-                <template v-if="!editInfo">{{ info.name }}</template>
-                <el-input  v-else v-model="infoForm.name"></el-input>
-              </el-form-item>
-              <el-form-item label="车道数：" prop="lane">
-                <template v-if="!editInfo">{{ info.lane }}</template>
-                <el-input-number
-                  v-else
-                  style="width: 100%"
-                  v-model="infoForm.lane"
-                  :min="0"
-                  :step="1"
-                  step-strictly
-                >
-                </el-input-number>
-              </el-form-item>
-              <el-form-item label="道路类型：" prop="type">
-                <template v-if="!editInfo">{{ linkTypeOption[info.type] }}</template>
-                <el-select v-else v-model="infoForm.type" style="width: 100%">
-                  <el-option
-                    v-for="(item, key) in linkTypeOption"
-                    :key="key"
-                    :label="item"
-                    :value="key"
-                  >
-                  </el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item label="自由流速度：" prop="freespeed">
-                <template v-if="!editInfo">{{ info.freespeed }} 米 / 秒</template>
-                <el-input-number v-else style="width: 100%" v-model="infoForm.freespeed" :min="0">
-                </el-input-number>
-              </el-form-item>
-              <el-form-item label="通行能力：" prop="capacity">
-                <template v-if="!editInfo">{{ info.capacity }}</template>
-                <el-input-number v-else style="width: 100%" v-model="infoForm.capacity" :min="0">
-                </el-input-number>
-              </el-form-item>
-            </el-form>
-            <div label-width="0px">
-              <template v-if="!editInfo">
-                <el-button type="primary" @click="handleEditInfo">编辑道路信息</el-button>
-                <el-button type="primary" @click="handleReverse">切换反向道路</el-button>
-              </template>
-              <template v-if="editInfo">
-                <el-button type="success" @click="handleUpdateLink">更新当前link</el-button>
-                <el-button type="success" @click="handleUpdateInWay">更新整段segment</el-button>
-                <el-button type="warning" @click="handleCloseEditInfo">取消</el-button>
-              </template>
-            </div>
-          </div>
-          <div class="chart_box">
-            <VChart
-              class="chart"
-              :option="chartOption"
-              autoresize
-              :update-options="{ notMerge: true }"
-            />
-          </div>
-        </div>
-      </div>
-    </el-scrollbar>
-  </MDialog>
+  />
 </template>
 
 <script setup>
-import * as echarts from 'echarts'
 import * as API from '@/api/index'
 import { getMapContext, addWatch } from '@/utils/index'
 import RouteSelect from '@/components/RouteSelect.vue'
+import LinkDetail from './LinkDetail.vue'
 
 import { MAP_EVENT } from '@/mymap/index.js'
 import { NetworkLayer } from '@/utils/MapLayer/NetworkLayer'
 import { LinkLayer } from '@/utils/MapLayer/LinkLayer'
 import { LinkStatsLayer } from '@/utils/MapLayer/LinkStatsLayer'
 
+const emits = defineEmits(['update:visible', 'close'])
 const props = defineProps({
   visible: {
     type: Boolean,
@@ -189,7 +89,6 @@ const props = defineProps({
   },
 })
 
-const emits = defineEmits(['update:visible', 'close'])
 const showLayer = ref(false)
 const activeNames = ref(['显示设置'])
 
@@ -210,107 +109,10 @@ const typeOptions = ref({
 const wayWidth = ref(10)
 const twoWayOffset = ref(0)
 const showLinkDetail = ref(true)
-const selectLinkId = ref(null)
+const selectLinkId = ref(92619)
 const selectRouteId = ref(null)
 const showMain = computed(() => {
   return !showLinkDetail.value && props.visible
-})
-const routeSelect = ref(null)
-const info = ref({})
-const infoForm = ref({
-  id: null,
-  origid: null,
-  name: null,
-  lane: null,
-  type: null,
-  freespeed: null,
-  capacity: null,
-})
-const editInfo = ref(false)
-const linkTypeOption = ref({})
-const infoRules = ref({})
-
-const chartOption = ref({
-  tooltip: {
-    trigger: 'axis',
-  },
-  legend: {
-    data: ['pcu/h', '小型客车', '小型货车', '中型客车', '中型货车', '大型客车', '大型货车'],
-    left: 10,
-    right: 0,
-  },
-  grid: {
-    left: '3%',
-    right: '4%',
-    bottom: '3%',
-    containLabel: true,
-  },
-  toolbox: {
-    feature: {
-      saveAsImage: {},
-    },
-  },
-  xAxis: {
-    type: 'category',
-    boundaryGap: false,
-    data: [], //list.map((v) => v.hour.toString()),
-  },
-  yAxis: [
-    {
-      type: 'value',
-      position: 'left',
-      alignTicks: true,
-    },
-    {
-      type: 'value',
-      position: 'right',
-      alignTicks: true,
-    },
-  ],
-  series: [
-    {
-      name: 'pcu/h',
-      type: 'bar',
-      yAxisIndex: 1,
-      data: [], //list.map((v) => v.pcu_h),
-    },
-    {
-      name: '小型客车',
-      type: 'line',
-      smooth: true,
-      data: [], //list.map((v) => v.scar),
-    },
-    {
-      name: '小型货车',
-      type: 'line',
-      smooth: true,
-      data: [], //list.map((v) => v.struck),
-    },
-    {
-      name: '中型客车',
-      type: 'line',
-      smooth: true,
-      data: [], //list.map((v) => v.mcar),
-    },
-    {
-      name: '中型货车',
-      type: 'line',
-      smooth: true,
-      data: [], // list.map((v) => v.mtruck),
-    },
-    {
-      name: '大型客车',
-      type: 'line',
-      smooth: true,
-      data: [], //list.map((v) => v.lcar),
-    },
-    {
-      name: '大型货车',
-      type: 'line',
-      smooth: true,
-      data: [], //list.map((v) => v.ltruck),
-    },
-  ],
 })
 
 let _Map = null
@@ -361,6 +163,7 @@ const _LinkStatsLayer = new LinkStatsLayer({
 const watchVisible = addWatch(
   () => props.visible,
   (val) => {
+    console.log(val)
     if (val) {
       _Map.addLayer(_LinkLayer)
       _Map.addLayer(_NetworkLayer)
@@ -434,11 +237,6 @@ function handleCilckLink(data) {
   ]
   _Map.setCenter(center)
   _LinkLayer.setSelectId(data.id)
-
-  API.matsimLinkDetail(selectLinkId.value, props.proId).then((res) => {
-    res.data.freespeed = Number(res.data.freespeed).toFixed(2)
-    info.value = res.data
-  })
 }
 function handleMoveToLink({ value, item }) {
   selectRouteId.value = item.origid
@@ -462,37 +260,10 @@ function handleMoveToLink({ value, item }) {
     }
   })
 }
-function getAllLinkType() {
-  API.getAllLinkType().then((res) => {
-    let obj = {}
-    for (const { code, name } of res.data) {
-      obj[code] = name
-    }
-    linkTypeOption.value = obj
-  })
-}
-function handleEditInfo() {
-  // infoForm.value = {
-  //   id: info.value.id,
-  //   origid: info.value.origid,
-  //   name: info.value.name,
-  //   lane: info.value.lane,
-  //   type: info.value.type,
-  //   freespeed: info.value.freespeed,
-  //   capacity: info.value.capacity,
-  // }
-  editInfo.value = true
-  // this.updateEcharts()
-}
-function handleReverse() {}
-function handleUpdateLink() {}
-function handleUpdateInWay() {}
-function handleCloseEditInfo() {}
 
 onMounted(() => {
   handleLoadNetwork()
   handleLoadMaker()
-  getAllLinkType()
 })
 onUnmounted(() => {
   _LinkLayer.dispose()
@@ -594,60 +365,6 @@ getMapContext().then((map) => {
           gap: 5px;
         }
       }
-    }
-  }
-
-  .lfd_bodyer {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding: 16px;
-    .close_btn {
-      cursor: pointer;
-      position: absolute;
-      fill: #000;
-      right: 16px;
-      top: 16px;
-      width: 20px;
-      height: 20px;
-    }
-    .title1 {
-      font-weight: 500;
-      font-size: 14px;
-      color: #2b2b2b;
-    }
-    .search {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 12px;
-      .el-select {
-        width: 280px;
-      }
-    }
-    .flex_box {
-      display: flex;
-      align-items: stretch;
-      gap: 10px;
-    }
-    .detail_box {
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      .form_box {
-        background: #f5f7fa;
-        border-radius: 7px 7px 7px 0px;
-        padding: 12px 20px;
-        .el-form-item {
-          margin-bottom: 6px;
-        }
-      }
-    }
-    .chart_box {
-      width: 100%;
     }
   }
 }

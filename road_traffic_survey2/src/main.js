@@ -18,6 +18,7 @@ const app = createApp(App)
 
 // 全局方法挂载
 app.config.globalProperties.$echarts = echarts
+app.config.globalProperties.$message = ElementPlus.ElMessage
 // 全局组件挂载
 app.component('VChart', VChart)
 app.component('MDialog', Dialog)

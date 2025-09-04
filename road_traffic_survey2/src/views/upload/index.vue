@@ -11,12 +11,7 @@
     :visible="showMenu"
   >
     <el-scrollbar class="scrollbar">
-      <el-collapse
-        class="collapse"
-        v-model="activeNames"
-        @change="handleChange"
-        expand-icon-position="left"
-      >
+      <el-collapse class="collapse" v-model="activeNames" expand-icon-position="left">
         <template v-for="(v1, i1) in menuList">
           <el-collapse-item :title="v1.title" :name="v1.name">
             <template #icon="{ isActive }">
@@ -27,7 +22,7 @@
               />
             </template>
             <template v-for="(v2, i2) in v1.children">
-              <div class="collapse_item">{{ v2.title }}</div>
+              <div class="collapse_item" @click="handleClick(v1, v2)">{{ v2.title }}</div>
             </template>
           </el-collapse-item>
         </template>
@@ -39,7 +34,7 @@
 
 <script setup>
 import Dialog from '@/components/Dialog.vue'
-import LinkFlow from './LinkFlow.vue'
+import LinkFlow from './LinkFlow/index.vue'
 
 const showMenu = computed(() => {
   return !showLinkFlow.value && true
@@ -89,7 +84,11 @@ const menuList = [
 
 const showLinkFlow = ref(true)
 
-function handleChange() {}
+function handleClick(v1, v2) {
+  if (v2.title == '路段流量录入') {
+    showLinkFlow.value = true
+  }
+}
 </script>
 
 <style lang="scss" scoped>
