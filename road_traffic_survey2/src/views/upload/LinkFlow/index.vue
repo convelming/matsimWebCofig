@@ -1,7 +1,7 @@
 <!-- linkFlow -->
 <template>
   <MDialog
-    class="LinkFlowInstall"
+    class="LinkFlow"
     title="路段流量录入"
     subTitle="人工数车/ 路段流量录入"
     :top="80"
@@ -12,7 +12,7 @@
     @close="handleClose"
   >
     <el-scrollbar class="scrollbar">
-      <div class="lfi_bodyer">
+      <div class="lf_bodyer">
         <img src="@/assets/images/close.svg?url" class="close_btn" @click.stop="handleClose" />
         <div class="title1">请输入路段名称：</div>
         <div class="search">
@@ -206,6 +206,10 @@ const watchWayWidth = addWatch(wayWidth, (val) => {
   _NetworkLayer.setValues({ lineWidth: val })
   _LinkLayer.setValues({ lineWidth: val })
 })
+const watchTypeColorOptions = addWatch(typeColorOptions, (val) => {
+  _NetworkLayer.setColors(val)
+  _LinkLayer.setColors(val)
+})
 
 function handleClose() {
   emits('update:visible', false)
@@ -305,8 +309,8 @@ getMapContext().then((map) => {
 .scrollbar {
   max-height: calc(100vh - 200px);
 }
-.LinkFlowInstall {
-  .lfi_bodyer {
+.LinkFlow {
+  .lf_bodyer {
     position: relative;
     display: flex;
     flex-direction: column;

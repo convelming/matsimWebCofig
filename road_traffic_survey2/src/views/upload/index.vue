@@ -30,14 +30,18 @@
     </el-scrollbar>
   </MDialog>
   <LinkFlow v-model:visible="showLinkFlow" />
+  <IntersectionFlow v-model:visible="showIntersectionFlow" />
 </template>
 
 <script setup>
 import LinkFlow from './LinkFlow/index.vue'
+import IntersectionFlow from './IntersectionFlow/index.vue'
 
 const showMenu = computed(() => {
-  return !showLinkFlow.value && true
+  return !showLinkFlow.value && !showIntersectionFlow.value && true
 })
+const showLinkFlow = ref(false)
+const showIntersectionFlow = ref(true)
 const activeNames = ref([])
 const menuList = [
   {
@@ -81,11 +85,11 @@ const menuList = [
   },
 ]
 
-const showLinkFlow = ref(false)
-
 function handleClick(v1, v2) {
   if (v2.title == '路段流量录入') {
     showLinkFlow.value = true
+  } else if (v2.title == '交叉口流量录入') {
+    showIntersectionFlow.value = true
   }
 }
 </script>
