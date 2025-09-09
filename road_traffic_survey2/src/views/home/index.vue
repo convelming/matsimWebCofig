@@ -1,62 +1,65 @@
 <!-- home -->
 <template>
   <el-scrollbar class="scrollbar">
-    <div class="header">
-      <div class="menu1">
-        <RouterLink class="menu_item" activeClass="active" :to="{ name: 'home' }">
-          <!-- <img class="icon" src="@/assets/images/tab_home_nor.svg" alt="" /> -->
-          <TabHome class="icon" />
-          <span class="text">首页</span>
-        </RouterLink>
-        <RouterLink class="menu_item" activeClass="active" :to="{ name: 'upload' }">
-          <TabUpload class="icon" />
-          <span class="text">数据上传</span>
-        </RouterLink>
-        <RouterLink class="menu_item" activeClass="active" :to="{ name: 'download' }">
-          <TabDownload class="icon" />
-          <span class="text">数据下载</span>
-        </RouterLink>
-        <RouterLink class="menu_item" activeClass="active" :to="{ name: 'feedback' }">
-          <TabFeedback class="icon" />
-          <span class="text">问题反馈</span>
-        </RouterLink>
-      </div>
-      <div class="menu2">
-        <div class="btn">帮助</div>
-        <a
-          class="btn"
-          href="https://doc.weixin.qq.com/sheet/e3_AdQA8Aa_ADMt1qh97LkSHer6ALqI2?scode=APwA6gfEAA0aeGdABPAdQA8Aa_ADM&tab=BB08J2"
-          target="_blank"
-          >BUG</a
-        >
-        <div class="btn">日志</div>
-        <div class="btn">视频</div>
-      </div>
-    </div>
     <div class="header2">
-      <div class="title">交通数据采集应用平台</div>
-      <div class="btns">
-        <span>道路路况</span>
-        <span>PTAL</span>
-        <span>道路可达性</span>
-        <span>交评仿真</span>
-      </div>
-      <div class="sreach">
-        <input class="input" type="text" placeholder="输入关键词搜索..." />
-        <Sreach class="icon" />
+      <div class="max_box">
+        <Logo class="logo" />
+        <div class="sreach">
+          <input class="input" type="text" placeholder="输入关键词搜索..." />
+          <div class="line"></div>
+          <Sreach class="icon" />
+        </div>
       </div>
     </div>
-    <div class="home">
+    <div class="header">
+      <div class="max_box">
+        <div class="menu1">
+          <RouterLink class="menu_item" activeClass="active" :to="{ name: 'home' }">
+            <!-- <img class="icon" src="@/assets/images/tab_home_nor.svg" alt="" /> -->
+            <TabHome class="icon" />
+            <span class="text">首页</span>
+          </RouterLink>
+          <RouterLink class="menu_item" activeClass="active" :to="{ name: 'upload' }">
+            <TabUpload class="icon" />
+            <span class="text">数据上传</span>
+          </RouterLink>
+          <RouterLink class="menu_item" activeClass="active" :to="{ name: 'download' }">
+            <TabDownload class="icon" />
+            <span class="text">数据下载</span>
+          </RouterLink>
+          <RouterLink class="menu_item" activeClass="active" :to="{ name: 'feedback' }">
+            <TabQuestion class="icon" />
+            <span class="text">问题反馈</span>
+          </RouterLink>
+          <RouterLink class="menu_item" activeClass="active" :to="{ name: 'feedback' }">
+            <TabWeb class="icon" />
+            <span class="text">研究院官网</span>
+          </RouterLink>
+        </div>
+        <div class="menu2">
+          <div class="btn">帮助</div>
+          <a
+            class="btn"
+            href="https://doc.weixin.qq.com/sheet/e3_AdQA8Aa_ADMt1qh97LkSHer6ALqI2?scode=APwA6gfEAA0aeGdABPAdQA8Aa_ADM&tab=BB08J2"
+            target="_blank"
+            >BUG</a
+          >
+          <div class="btn">日志</div>
+          <div class="btn">视频</div>
+        </div>
+      </div>
+    </div>
+    <div class="home max_box">
       <div class="left card">
+        <!-- 数据库 -->
         <div class="title_box">
-          <img class="icon" src="@/assets/images/icon_shujuku.svg?url" alt="" />
+          <IconSJK class="icon" />
           <div class="text_box">
             <div class="text1">数据库</div>
             <div class="text2">查看下载数据</div>
           </div>
         </div>
-
-        <div class="sjk_box">
+        <div class="box1">
           <div class="row" v-for="(v1, i1) in sjk_list" :key="i1">
             <div class="label">{{ v1.title }}</div>
             <div class="value">
@@ -66,132 +69,198 @@
             </div>
           </div>
         </div>
+        <!-- 数据库 -->
 
+        <!-- 模型库 -->
         <div class="title_box">
-          <img class="icon" src="@/assets/images/icon_modelbase2.svg?url" alt="" />
+          <IconMXK class="icon" />
           <div class="text_box">
             <div class="text1">模型库</div>
             <div class="text2">道路交通模型数据图片下载</div>
           </div>
         </div>
-        <div class="mxk_box">
+        <div class="box2">
           <a class="btn" href="#/" target="_blank" v-for="(v1, i1) in mxk_list" :key="i1">{{
             v1.title
           }}</a>
         </div>
+        <!-- 模型库 -->
 
+        <!-- 案例库 -->
         <div class="title_box">
-          <img class="icon" src="@/assets/images/icon_library.svg?url" alt="" />
-          <div class="text_box">
-            <div class="text1">知识库</div>
-            <div class="text2">政策规范快速了解</div>
-          </div>
-        </div>
-        <div class="mxk_box">
-          <a class="btn" :href="v1.path" target="_blank" v-for="(v1, i1) in zsk_list" :key="i1">{{
-            v1.title
-          }}</a>
-        </div>
-      </div>
-      <div class="center">
-        <div class="box1 card">
-          <div class="title">平台库</div>
-          <div class="list">
-            <a class="item" v-for="(v, i) in ptk_list" :href="v.path" target="_blank">
-              <img :src="v.icon" alt="" class="icon" />
-              <div class="text">{{ v.title }}</div>
-            </a>
-          </div>
-        </div>
-        <div class="box2 card">
-          <div class="nav">
-            <div class="item">新闻</div>
-            <div class="item">通知</div>
-            <div class="upload_btn">
-              <div class="icon"></div>
-              <div class="text"></div>
-            </div>
-          </div>
-        </div>
-        <div class="box1 card">
-          <div class="title">地区库</div>
-          <div class="list">
-            <a
-              class="item"
-              href="http://192.168.60.234:8080/"
-              target="_blank"
-              v-for="(v, i) in dzk_list"
-              :key="i"
-            >
-              <div class="text">{{ v.title }}</div>
-            </a>
-          </div>
-        </div>
-      </div>
-      <div class="right card">
-        <div class="title_box">
-          <img class="icon" src="@/assets/images/icon_resource.svg?url" alt="" />
-          <div class="text_box">
-            <div class="text1">资源库</div>
-            <div class="text2">其他实用工具</div>
-          </div>
-        </div>
-        <div class="mxk_box">
-          <a class="btn" :href="v1.path" target="_blank" v-for="(v1, i1) in zyk_list" :key="i1">{{
-            v1.title
-          }}</a>
-        </div>
-
-        <div class="title_box">
-          <img class="icon" src="@/assets/images/icon_modelbase.svg?url" alt="" />
-          <div class="text_box">
-            <div class="text1">宣传库</div>
-            <div class="text2">道路交通模型数据图片下载</div>
-          </div>
-        </div>
-        <div class="mxk_box">
-          <a class="btn" :href="v1.path" target="_blank" v-for="(v1, i1) in xck_list" :key="i1">{{
-            v1.title
-          }}</a>
-        </div>
-
-        <div class="title_box">
-          <img class="icon" src="@/assets/images/icon_anli.svg?url" alt="" />
+          <IconALK class="icon" />
           <div class="text_box">
             <div class="text1">案例库</div>
             <div class="text2">优秀项目快速了解</div>
           </div>
         </div>
-        <div class="mxk_box">
+        <div class="box2">
           <a class="btn" :href="v1.path" target="_blank" v-for="(v1, i1) in alk_list" :key="i1">{{
             v1.title
           }}</a>
         </div>
-
+        <!-- 案例库 -->
+        <!-- 平台库 -->
         <div class="title_box">
-          <img class="icon" src="@/assets/images/icon_wenjian.svg?url" alt="" />
+          <IconPTK class="icon" />
           <div class="text_box">
-            <div class="text1">总院文件</div>
-            <!-- <div class="text2">优秀项目快速了解</div> -->
+            <div class="text1">平台库</div>
+            <div class="text2">平台搭建汇总</div>
+          </div>
+        </div>
+        <div class="box2">
+          <a class="btn" :href="v1.path" target="_blank" v-for="(v1, i1) in ptk_list" :key="i1">{{
+            v1.title
+          }}</a>
+        </div>
+        <!-- 平台库 -->
+      </div>
+      <div class="center">
+        <div class="box1 card">
+          <div class="title_box">
+            <IconBQ class="icon" />
+            <div class="title">新闻</div>
+            <a class="btn">
+              <IconSC class="icon2" />
+              <span>上传</span>
+            </a>
+          </div>
+          <div class="body1">
+            <div class="left_box"></div>
+            <div class="right_box">
+              <div class="row1">
+                <div class="text1">2025-09-08</div>
+                <div class="text2">院向联合国副秘书长、人居署执行主任报告广州可持续发展实践</div>
+                <div class="text3">院向联合国副秘书长、人居署执行主任报告广州可持续发展实践</div>
+              </div>
+              <div class="row2" v-for="value in 5" :key="value">
+                <span class="text1">院向联合国副秘书长、人居署执行主任报告广州可持续发展实践</span>
+                <span class="text2">2025年8月19日</span>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div class="mxk_box">
+        <div class="box1 card">
+          <div class="title_box">
+            <IconBQ class="icon" />
+            <div class="title">通知</div>
+            <a class="btn">
+              <IconSC class="icon2" />
+              <span>上传</span>
+            </a>
+          </div>
+          <div class="body2">
+            <div class="row2" v-for="value in 5" :key="value">
+              <span class="text1">院向联合国副秘书长、人居署执行主任报告广州可持续发展实践</span>
+              <span class="text2">2025年8月19日</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="right card">
+        <!-- 资源库 -->
+        <div class="title_box">
+          <IconZYK class="icon" />
+          <div class="text_box">
+            <div class="text1">资源库</div>
+            <div class="text2">其他实用工具</div>
+          </div>
+        </div>
+        <div class="box2">
+          <a class="btn" :href="v1.path" target="_blank" v-for="(v1, i1) in zyk_list" :key="i1">{{
+            v1.title
+          }}</a>
+        </div>
+        <!-- 资源库 -->
+
+        <!-- 宣传库 -->
+        <div class="title_box">
+          <IconSCK class="icon" />
+          <div class="text_box">
+            <div class="text1">宣传库</div>
+            <div class="text2">道路交通模型数据图片下载</div>
+          </div>
+        </div>
+        <div class="box2">
+          <a class="btn" :href="v1.path" target="_blank" v-for="(v1, i1) in xck_list" :key="i1">{{
+            v1.title
+          }}</a>
+        </div>
+        <!-- 宣传库 -->
+
+        <!-- 知识库 -->
+        <div class="title_box">
+          <IconZSK class="icon" />
+          <div class="text_box">
+            <div class="text1">知识库</div>
+            <div class="text2">政策规范快速了解</div>
+          </div>
+        </div>
+        <div class="box2">
+          <a class="btn" :href="v1.path" target="_blank" v-for="(v1, i1) in zsk_list" :key="i1">{{
+            v1.title
+          }}</a>
+        </div>
+        <!-- 知识库 -->
+
+        <!-- 总院文件 -->
+        <div class="title_box">
+          <IconZYWJ class="icon" />
+          <div class="text_box">
+            <div class="text1">总院文件</div>
+            <div class="text2">总院资讯快速了解</div>
+          </div>
+        </div>
+        <div class="box2">
           <a class="btn" :href="v1.path" target="_blank" v-for="(v1, i1) in zywj_list" :key="i1">{{
             v1.title
           }}</a>
         </div>
+        <!-- 总院文件 -->
+
+        <!-- 地区库 -->
+        <div class="title_box">
+          <IconDQK class="icon" />
+          <div class="text_box">
+            <div class="text1">地区库</div>
+            <div class="text2">地区归类快速了解</div>
+          </div>
+        </div>
+        <div class="box2">
+          <a class="btn" :href="v1.path" target="_blank" v-for="(v1, i1) in dqk_list" :key="i1">{{
+            v1.title
+          }}</a>
+        </div>
+        <!-- 地区库 -->
       </div>
     </div>
+
+    <div class="footer"></div>
   </el-scrollbar>
 </template>
 
 <script setup>
-import TabHome from '@/assets/images/tab_home_nor.svg'
-import TabUpload from '@/assets/images/tab_upload_nor.svg'
-import TabDownload from '@/assets/images/tab_download_nor.svg'
-import TabFeedback from '@/assets/images/tab_feedback_nor.svg'
-import Sreach from '@/assets/images/sreach.svg'
+import Logo from '@/assets/images/Home/logo.svg'
+import TabHome from '@/assets/images/Home/icon_home2.svg'
+import TabUpload from '@/assets/images/Home/icon_dateup1.svg'
+import TabDownload from '@/assets/images/Home/icon_download1.svg'
+import TabQuestion from '@/assets/images/Home/icon_question1.svg'
+import TabWeb from '@/assets/images/Home/icon_web1.svg'
+import Sreach from '@/assets/images/Home/搜索.svg'
+
+import IconSJK from '@/assets/images/Home/icon_shujuku.svg'
+import IconMXK from '@/assets/images/Home/icon_modelbase.svg'
+import IconALK from '@/assets/images/Home/icon_resource.svg'
+import IconPTK from '@/assets/images/Home/icon_pingtai.svg'
+import IconZYK from '@/assets/images/Home/icon_ziyuan.svg'
+import IconSCK from '@/assets/images/Home/icon_xuanchuan.svg'
+import IconZSK from '@/assets/images/Home/icon_library.svg'
+import IconZYWJ from '@/assets/images/Home/icon_wenjian.svg'
+import IconDQK from '@/assets/images/Home/icon_diqu.svg'
+
+import IconBQ from '@/assets/images/Home/biaoqian.svg'
+import IconSC from '@/assets/images/Home/update.svg'
 
 const sjk_list = [
   {
@@ -434,7 +503,7 @@ const ptk_list = [
     icon: new URL('@/assets/images/icon_number.svg?url', import.meta.url),
   },
 ]
-const dzk_list = [
+const dqk_list = [
   {
     title: '越秀',
     path: 'http://192.168.60.231:8085/地区库/越秀/',
@@ -487,46 +556,51 @@ const dzk_list = [
   height: 100vh;
   background-color: #f5f5fa;
 }
+.max_box {
+  box-sizing: border-box;
+  max-width: 1640px;
+  margin: auto;
+}
 .header {
   position: sticky;
-  top: 0;
+  top: 88px;
   z-index: 1000;
-  display: flex;
-  height: 60px;
-  background: #2fb48f;
-  padding: 0 100px 0 60px;
+  background-color: #fff;
+  box-shadow: 0px 2px 4px 0px rgba(128, 128, 128, 0.05);
+  .max_box {
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
   .menu1 {
     display: flex;
+    gap: 42px;
     .menu_item {
       cursor: pointer;
-      width: 128px;
       height: 60px;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
       position: relative;
-      color: #fff;
-      font-size: 16px;
-      &.active {
-        &::before {
-          position: absolute;
-          content: '';
-          width: 44px;
-          height: 3px;
-          left: 50%;
-          bottom: 0;
-          transform: translateX(-50%);
-          background: #fff;
-          border-radius: 3px;
-        }
-      }
+      color: #999999;
+      font-size: 18px;
+      line-height: 18px;
       .icon {
-        width: 24px;
-        height: 24px;
+        width: 20px;
+        height: 20px;
         display: block;
         :deep(.fill) {
-          fill: #fff;
+          fill: #999999;
+        }
+      }
+
+      &.active {
+        color: #12b385;
+        .icon {
+          :deep(.fill) {
+            fill: #12b385;
+          }
         }
       }
     }
@@ -538,67 +612,69 @@ const dzk_list = [
     gap: 40px;
     * {
       cursor: pointer;
-      color: #fff;
+      color: #999999;
       font-size: 16px;
     }
   }
 }
 .header2 {
-  height: 270px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  background-image: url('@/assets/images/top bg.png');
-  background-size: cover;
-  background-position: bottom left;
-  .title {
-    font-weight: 700;
-    font-size: 56px;
-    color: #ffffff;
-    line-height: 78px;
-  }
-  .btns {
-    display: flex;
-    gap: 40px;
-    * {
-      cursor: pointer;
-      color: #fff;
-      font-size: 16px;
-    }
-  }
-  .sreach {
+  position: sticky;
+  top: 0px;
+  z-index: 1000;
+  background-color: #12b385;
+  .max_box {
+    padding: 0 20px;
+    height: 88px;
     display: flex;
     align-items: center;
-    gap: 24px;
-    box-sizing: border-box;
-    padding: 0 24px;
-    width: 640px;
-    height: 48px;
+    justify-content: space-between;
+  }
+  .logo {
+    width: 342px;
+    height: 40px;
+    display: block;
+  }
+  .sreach {
+    width: 400px;
+    height: 40px;
     background: #ffffff;
-    border-radius: 33px 33px 33px 33px;
+    border-radius: 33px;
+
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    overflow: hidden;
     .input {
       outline: 0;
-      height: 48px;
-      line-height: 48px;
+      height: 40px;
+      line-height: 40px;
       flex: 1;
       width: 0;
       tab-size: 0;
-      padding: 0;
       border: 0;
       margin: 0;
       font-size: 16px;
-      color: #b2b2b2;
+      padding: 0 16px;
+      &::placeholder {
+        color: #b2b2b2;
+      }
+    }
+    .line {
+      width: 1px;
+      height: 20px;
+      background: #d8d8d8;
     }
     .icon {
+      cursor: pointer;
+      width: 24px;
+      height: 24px;
+      padding: 0 20px;
     }
   }
 }
 
 .home {
   padding: 20px;
-  max-width: 1720px;
   margin: auto;
   display: flex;
   flex-wrap: wrap;
@@ -608,7 +684,7 @@ const dzk_list = [
     box-sizing: border-box;
     padding: 30px;
     background: #ffffff;
-    border-radius: 16px 16px 16px 16px;
+    border-radius: 8px;
   }
 
   .title_box {
@@ -632,13 +708,13 @@ const dzk_list = [
         overflow: hidden;
       }
       .text1 {
-        font-weight: 700;
+        font-weight: 600;
         font-size: 20px;
         color: #2c3e50;
       }
       .text2 {
         font-size: 14px;
-        color: #25a582;
+        color: #999999;
       }
     }
   }
@@ -659,60 +735,135 @@ const dzk_list = [
     align-items: stretch;
     gap: 20px;
     .box1 {
-      .title {
-        font-weight: 600;
-        font-size: 20px;
-        color: #2c3e50;
-        line-height: 24px;
-        text-align: center;
-        padding-bottom: 20px;
-      }
-      .list {
-        display: flex;
-        justify-content: space-around;
-        flex-wrap: wrap;
-        gap: 20px 10px;
-        .item {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 10px;
-          .icon {
-            width: 48px;
-            height: 48px;
-            display: block;
-          }
-          .text {
-            font-size: 16px;
-            color: #2c3e50;
-            white-space: nowrap;
-          }
-        }
-      }
-    }
-    .box2 {
       padding: 0;
       border: 1px solid #ffffff;
       overflow: hidden;
-      .nav {
-        height: 74px;
+      .title_box {
+        display: flex;
+        align-items: center;
+        padding: 0 30px;
+        height: 64px;
         background: linear-gradient(
           to right,
           rgba(17, 190, 141, 0.2) 0%,
           rgba(18, 179, 133, 0.05) 100%
         );
-        display: flex;
-        padding: 0 30px;
-        gap: 20px;
-        align-items: center;
-        .item {
-          padding: 0 10px;
-          position: relative;
-          height: 74px;
-          line-height: 74px;
+        gap: 8px;
+        .title {
+          flex: 1;
+          width: 0;
           font-weight: 600;
           font-size: 24px;
           color: #2c3e50;
+        }
+        .icon {
+          position: relative;
+          top: 3px;
+          width: 14px;
+          height: 16px;
+          display: block;
+        }
+        .btn {
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          font-weight: 400;
+          font-size: 14px;
+          color: #30b690;
+          gap: 4px;
+          .icon2 {
+            width: 24px;
+            height: 24px;
+            display: block;
+          }
+        }
+      }
+
+      .body1 {
+        padding: 30px;
+        display: flex;
+        align-items: stretch;
+        gap: 20px;
+        .left_box {
+          width: 0;
+          flex-grow: 3.4;
+          border-radius: 8px;
+          background-color: #f5f5fa;
+        }
+        .right_box {
+          width: 0;
+          flex-grow: 3.6;
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+        }
+      }
+      .body2 {
+        padding: 30px;
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+      }
+
+      .row1 {
+        cursor: pointer;
+        padding: 20px;
+        background: rgba(18, 179, 133, 0.05);
+        border-radius: 8px;
+        border: 1px solid #12b385;
+
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        .text1 {
+          font-size: 12px;
+          color: #9e9e9e;
+        }
+        .text2 {
+          font-size: 16px;
+          color: #2c3e50;
+        }
+        .text3 {
+          font-size: 14px;
+          color: #666666;
+        }
+      }
+
+      .row2 {
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        &::before {
+          display: block;
+          content: '';
+          width: 6px;
+          height: 6px;
+          background: #3ba185;
+          border-radius: 3px;
+        }
+
+        .text1 {
+          flex: 1;
+          width: 0;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          font-size: 16px;
+          color: #2c3e50;
+        }
+
+        .text2 {
+          flex-grow: 0;
+          font-size: 16px;
+          color: #666666;
+          white-space: nowrap;
+        }
+        &:hover {
+          .text1,
+          .text2 {
+            color: #247ce7;
+          }
         }
       }
     }
@@ -724,8 +875,8 @@ const dzk_list = [
     flex-direction: column;
     gap: 20px;
 
-    .sjk_box {
-      padding-bottom: 20px;
+    .box1 {
+      padding-bottom: 10px;
       width: 100%;
       display: flex;
       flex-direction: column;
@@ -765,12 +916,12 @@ const dzk_list = [
       }
     }
 
-    .mxk_box {
-      margin-bottom: 20px;
+    .box2 {
+      margin-bottom: 10px;
       padding: 16px;
       display: flex;
       background: #f5f7fa;
-      border-radius: 8px 8px 8px 8px;
+      border-radius: 8px;
       gap: 16px 24px;
       flex-wrap: wrap;
       .btn {

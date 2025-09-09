@@ -4,47 +4,39 @@
     <div class="header">
       <div class="title">交通数据采集应用平台</div>
       <RouterLink class="menu_item" activeClass="active" :to="{ name: 'home' }">
-        <!-- <img class="icon" src="@/assets/images/tab_home_nor.svg" alt="" />
-        <img class="icon sel" src="@/assets/images/tab_home_sel.svg" alt="" /> -->
         <TabHome class="icon" />
         <span class="text">首页</span>
       </RouterLink>
       <RouterLink class="menu_item" activeClass="active" :to="{ name: 'upload' }">
-        <!-- <img class="icon" src="@/assets/images/tab_upload_nor.svg" alt="" />
-        <img class="icon sel" src="@/assets/images/tab_upload_sel.svg" alt="" /> -->
-        <TabHome class="icon" />
+        <TabUpload class="icon" />
         <span class="text">数据上传</span>
       </RouterLink>
       <RouterLink class="menu_item" activeClass="active" :to="{ name: 'download' }">
-        <!-- <img class="icon" src="@/assets/images/tab_download_nor.svg" alt="" />
-        <img class="icon sel" src="@/assets/images/tab_download_sel.svg" alt="" /> -->
-        <TabHome class="icon" />
+        <TabDownload class="icon" />
         <span class="text">数据下载</span>
       </RouterLink>
       <RouterLink class="menu_item" activeClass="active" :to="{ name: 'feedback' }">
-        <!-- <img class="icon" src="@/assets/images/tab_feedback_nor.svg" alt="" />
-        <img class="icon sel" src="@/assets/images/tab_feedback_sel.svg" alt="" /> -->
-        <TabHome class="icon" />
+        <TabFeedback class="icon" />
         <span class="text">问题反馈</span>
       </RouterLink>
     </div>
     <div class="bottom">
       <div class="left">
         <div class="btn">
-          <img class="icon" src="@/assets/images/容器@2x.png" alt="" />
+          <BtnIcon1 class="icon" src="@/assets/images/容器@2x.png" alt="" />
         </div>
         <a
           class="btn"
           href="https://doc.weixin.qq.com/sheet/e3_AdQA8Aa_ADMt1qh97LkSHer6ALqI2?scode=APwA6gfEAA0aeGdABPAdQA8Aa_ADM&tab=BB08J2"
           target="_blank"
         >
-          <img class="icon" src="@/assets/images/容器@2x(1).png" alt="" />
+          <BtnIcon2 class="icon" src="@/assets/images/容器@2x(1).png" alt="" />
         </a>
         <div class="btn">
-          <img class="icon" src="@/assets/images/容器@2x(2).png" alt="" />
+          <BtnIcon3 class="icon" src="@/assets/images/容器@2x(2).png" alt="" />
         </div>
         <div class="btn">
-          <img class="icon" src="@/assets/images/容器@2x(3).png" alt="" />
+          <BtnIcon4 class="icon" src="@/assets/images/容器@2x(3).png" alt="" />
         </div>
       </div>
       <div class="right" id="page" :style="scaleStyle">
@@ -69,10 +61,15 @@ import {
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 
-import TabHome from '@/assets/images/tab_home_nor.svg'
-import TabUpload from '@/assets/images/tab_upload_nor.svg'
-import TabDownload from '@/assets/images/tab_download_nor.svg'
-import TabFeedback from '@/assets/images/tab_feedback_nor.svg'
+import TabHome from '@/assets/images/MapLayout/home.svg'
+import TabUpload from '@/assets/images/MapLayout/upload.svg'
+import TabDownload from '@/assets/images/MapLayout/download.svg'
+import TabFeedback from '@/assets/images/MapLayout/feedback.svg'
+
+import BtnIcon1 from '@/assets/images/MapLayout/icon1.svg'
+import BtnIcon2 from '@/assets/images/MapLayout/icon2.svg'
+import BtnIcon3 from '@/assets/images/MapLayout/icon3.svg'
+import BtnIcon4 from '@/assets/images/MapLayout/icon4.svg'
 
 const route = useRoute()
 
@@ -187,20 +184,17 @@ onUnmounted(() => {
           transform: translateX(-50%);
         }
         .icon {
-          display: none;
-          &.sel {
-            display: block;
+          :deep(.fill) {
+            fill: #41b997;
           }
         }
       }
       .icon {
-        fill: #7e8c88;
         width: 24px;
         height: 24px;
         display: block;
-        &.sel {
-          fill: #41b997;
-          display: none;
+        :deep(.fill) {
+          fill: #7e8c88;
         }
       }
     }
