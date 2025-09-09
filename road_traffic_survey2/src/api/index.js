@@ -653,3 +653,16 @@ export function statsReinstated(data) {
     data: data,
   });
 }
+
+
+// 计算pcu
+// POST /link/stats/calcPcu
+// 接口ID：339852317
+// 接口地址：https://app.apifox.com/link/project/3532778/apis/api-339852317
+export function statsCalcPcu(data) {
+  return request({
+    url: `/link/stats/calcPcu`,
+    method: "post",
+    data: data,
+  });
+}

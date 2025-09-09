@@ -10,19 +10,27 @@ const router = createRouter({
       component: () => import('@/views/home/index.vue'),
     },
     {
-      path: '/upload',
-      name: 'upload',
-      component: () => import('@/views/upload/index.vue'),
-    },
-    {
-      path: '/download',
-      name: 'download',
-      component: () => import('@/views/download/index.vue'),
-    },
-    {
-      path: '/feedback',
-      name: 'feedback',
-      component: () => import('@/views/feedback/index.vue'),
+      path: '/maplayout',
+      name: 'MapLayout',
+      redirect: '/upload',
+      component: () => import('@/views/MapLayout.vue'),
+      children: [
+        {
+          path: '/upload',
+          name: 'upload',
+          component: () => import('@/views/upload/index.vue'),
+        },
+        {
+          path: '/download',
+          name: 'download',
+          component: () => import('@/views/download/index.vue'),
+        },
+        {
+          path: '/feedback',
+          name: 'feedback',
+          component: () => import('@/views/feedback/index.vue'),
+        },
+      ],
     },
   ],
   scrollBehavior(to, from, savedPosition) {

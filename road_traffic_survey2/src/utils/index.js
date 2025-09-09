@@ -1,3 +1,5 @@
+import { inject, watch } from 'vue'
+
 export function getMapContext() {
   return new Promise((resolve, reject) => {
     const MapRef = inject('MapRef')

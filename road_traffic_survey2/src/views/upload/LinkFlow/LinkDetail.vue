@@ -1,26 +1,26 @@
 <!-- LinkDetail -->
 <template>
   <MDialog
-    mClass="LinkDetail"
+    class="LinkDetail"
     title="Link流量详情"
     subTitle="人工数车 / 路段流量录入 / Link流量详情"
     :top="80"
     :left="80"
     width="798px"
     hideClose
-    :visible="visible"
+    :visible="showMain"
     @close="handleClose"
   >
+    <img src="@/assets/images/close.svg?url" class="close_btn" @click.stop="handleClose" />
+    <div class="search">
+      <div class="title1">路段搜索</div>
+      <RouteSelect ref="routeSelect" @change="handleMoveToRoute" />
+      <el-button type="primary" @click="handleMoveToRoute({ value: selectRouteId })"
+        >搜索定位</el-button
+      >
+    </div>
     <el-scrollbar class="scrollbar">
       <div class="lfd_bodyer">
-        <img src="@/assets/images/close.svg" class="close_btn" @click.stop="handleClose" />
-        <div class="search">
-          <div class="title1">路段搜索</div>
-          <RouteSelect ref="routeSelect" @change="handleMoveToRoute" />
-          <el-button type="primary" @click="handleMoveToRoute({ value: selectRouteId })"
-            >搜索定位</el-button
-          >
-        </div>
         <div class="flex_box">
           <div class="detail_box">
             <el-form
@@ -102,39 +102,126 @@
         </div>
         <div class="query_box">
           <el-date-picker
-            v-model="value1"
+            v-model="timeList"
             type="daterange"
             range-separator="至"
             start-placeholder="开始时间"
             end-placeholder="结束时间"
+            value-format="yyyy-MM-dd"
+            @change="handleQuery"
           />
           <el-select
             v-model="queryParams.type"
             multiple
             collapse-tags
             collapse-tags-tooltip
-            placeholder=""
             clearable
+            @change="handleQuery"
           >
             <el-option v-for="(label, key) in typeOptions" :key="key" :label="label" :value="key" />
           </el-select>
 
-          <el-button type="primary" @click="handleMoveToRoute({ value: selectRouteId })"
-            >搜索定位</el-button
-          >
+          <el-button type="primary" @click="handleAddFlow">新增数据</el-button>
         </div>
+        <el-auto-resizer class="table_box">
+          <template #default="{ height, width }">
+            <el-table
+              :data="tableList"
+              row-key="id"
+              stripe
+              :height="height"
+              @selection-change="handleSelectionChange"
+            >
+              <el-table-column type="selection" width="55" align="center" />
+              <el-table-column label="编号" align="center" prop="id" />
+              <el-table-column label="调查时间" align="center" prop="beginTime" width="120">
+                <template #default="{ row }">{{
+                  String(row.beginTime || '').substring(0, 10)
+                }}</template>
+              </el-table-column>
+              <!-- <el-table-column label="调查结束时间" align="center" prop="endTime" /> -->
+              <el-table-column label="调查方式" align="center" prop="type">
+                <template #default="{ row }">{{ typeOptions[row.type] || '' }}</template>
+              </el-table-column>
+              <el-table-column label="pcu/h" align="center" prop="pcuH" />
+              <el-table-column label="小型客车" align="center" prop="scar" />
+              <el-table-column label="小型货车" align="center" prop="struck" />
+              <el-table-column label="中型客车" align="center" prop="mcar" />
+              <el-table-column label="中型货车" align="center" prop="mtruck" />
+              <el-table-column label="大型客车" align="center" prop="lcar" />
+              <el-table-column label="大型货车" align="center" prop="ltruck" />
+              <el-table-column label="视频" align="center">
+                <template #default="{ row }">
+                  <a :href="`/file/download?url=${row.video}`" class="file_name">
+                    {{ row.video }}
+                  </a>
+                </template>
+              </el-table-column>
+              <el-table-column
+                label="备注"
+                align="center"
+                prop="remark"
+                :show-overflow-tooltip="true"
+              />
+              <el-table-column
+                label="操作"
+                fixed="right"
+                min-width="150"
+                align="center"
+                class-name="mini-padding fixed-width"
+              >
+                <template #default="scope">
+                  <el-button type="text" icon="el-icon-edit" @click="handleUpdateFlow(scope.row)"
+                    >修改</el-button
+                  >
+                  <el-button type="text" icon="el-icon-delete" @click="handleDeleteFlow(scope.row)"
+                    >删除</el-button
+                  >
+                </template>
+              </el-table-column>
+            </el-table>
+          </template>
+        </el-auto-resizer>
+        <div v-if="zsPCUH" class="table_end">
+          <span>服务水平：{{ zsPCUH.service }} <el-tag>真实</el-tag></span>
+          <span>饱和度：{{ zsPCUH.saturation }} <el-tag>真实</el-tag></span>
+        </div>
+        <div v-else class="table_end">
+          <span>服务水平：{{ info.service }}</span>
+          <span>饱和度：{{ info.saturation }}</span>
+        </div>
+        <MPagination
+          layout="total, sizes, prev, pager, next"
+          :pagerCount="5"
+          :total="tableTotal"
+          v-model:page="queryParams.pageNum"
+          v-model:limit="queryParams.pageSize"
+          @pagination="getList"
+        />
       </div>
     </el-scrollbar>
   </MDialog>
+
+  <AELinkFlow
+    v-model:visible="aeFlowData.visible"
+    :flowId="aeFlowData.flowId"
+    :linkId="linkId"
+    :proId="proId"
+    @updateData=""
+  />
 </template>
 
 <script setup>
 import * as API from '@/api/index'
 import { getMapContext, addWatch } from '@/utils/index'
 import RouteSelect from '@/components/RouteSelect.vue'
+import { computed } from 'vue'
+import { typeOptions } from './index.vue'
+
+import AELinkFlow from './AELinkFlow.vue'
 
 const { proxy } = getCurrentInstance()
-const emits = defineEmits(['update:visible', 'close', 'changeLink'])
+const emits = defineEmits(['update:visible', 'close', 'changeLink', 'addOrEditFlow', 'updateData'])
 const props = defineProps({
   visible: {
     type: Boolean,
@@ -165,14 +252,30 @@ const editInfo = ref(false)
 const linkTypeOption = ref({})
 const infoRules = ref({})
 const infoFormRef = ref(null)
+
 const selectFlowIds = ref([])
-const typeOptions = ref({
-  0: '其他',
-  1: '人工',
-  2: '视频识别',
-  3: '互联网路况估算',
-  4: '交评核准',
+const tableList = ref([])
+const tableTotal = ref(0)
+const tableLoading = ref(false)
+const timeList = computed({
+  set: (val) => {
+    if (val && val[0] && val[1]) {
+      queryParams.startTime = val[0]
+      queryParams.endTime = val[1]
+    } else {
+      queryParams.startTime = null
+      queryParams.endTime = null
+    }
+  },
+  get: () => {
+    if (queryParams.startTime && queryParams.endTime) {
+      return [queryParams.startTime, queryParams.endTime]
+    } else {
+      return []
+    }
+  },
 })
+const zsPCUH = ref(null)
 
 const chartOption = ref({
   tooltip: {
@@ -266,20 +369,31 @@ const queryParams = ref({
 })
 
 const watchVisible = addWatch(
-  () => props.visible,
+  props,
   (val) => {
     console.log(val)
-    if (val) {
+    if (val.visible) {
       getAllLinkType()
       getDetail()
-      updateEcharts()
-    } else {
+      handleQuery()
     }
   },
   {
+    deep: true,
     immediate: true,
   },
 )
+
+const showMain = computed(() => {
+  console.log(!aeFlowData.value.visible && props.visible)
+
+  return !aeFlowData.value.visible && props.visible
+})
+
+const aeFlowData = ref({
+  visible: false,
+  flowId: 0,
+})
 
 function getDetail() {
   API.matsimLinkDetail(props.linkId, props.proId).then((res) => {
@@ -287,9 +401,15 @@ function getDetail() {
     info.value = res.data
   })
 }
+
+function handleQuery() {
+  queryParams.value.pageNum = 1
+  getList()
+  updateEcharts()
+}
 function getList() {
   if (!props.linkId) return
-  loading = true
+  tableLoading.value = true
   const _queryParams = {
     pageNum: queryParams.value.pageNum,
     pageSize: queryParams.value.pageSize,
@@ -297,10 +417,10 @@ function getList() {
     endTime: queryParams.value.endTime,
     type: queryParams.value.type ? queryParams.value.type.join(',') : null,
   }
-  statsQueryByLinkId(this.linkId, _queryParams).then((response) => {
-    this.dataList = response.data.data
-    this.total = response.data.total
-    this.loading = false
+  API.statsQueryByLinkId(props.linkId, _queryParams).then((response) => {
+    tableList.value = response.data.data
+    tableTotal.value = response.data.total
+    tableLoading.value = false
   })
 }
 
@@ -325,13 +445,13 @@ function updateEcharts() {
       )
     })
     chartOption.value.xAxis.data = list.map((v) => v.hour.toString())
-    chartOption.value.series[0].data = list.map((v) => v.pcu_h)
-    chartOption.value.series[1].data = list.map((v) => v.scar)
-    chartOption.value.series[2].data = list.map((v) => v.struck)
-    chartOption.value.series[3].data = list.map((v) => v.mcar)
-    chartOption.value.series[4].data = list.map((v) => v.mtruck)
-    chartOption.value.series[5].data = list.map((v) => v.lcar)
-    chartOption.value.series[6].data = list.map((v) => v.ltruck)
+    chartOption.value.series[0].data = list.map((v) => Number(Number(v.pcu_h).toFixed(2)))
+    chartOption.value.series[1].data = list.map((v) => Number(Number(v.scar).toFixed(2)))
+    chartOption.value.series[2].data = list.map((v) => Number(Number(v.struck).toFixed(2)))
+    chartOption.value.series[3].data = list.map((v) => Number(Number(v.mcar).toFixed(2)))
+    chartOption.value.series[4].data = list.map((v) => Number(Number(v.mtruck).toFixed(2)))
+    chartOption.value.series[5].data = list.map((v) => Number(Number(v.lcar).toFixed(2)))
+    chartOption.value.series[6].data = list.map((v) => Number(Number(v.ltruck).toFixed(2)))
   })
 }
 
@@ -344,8 +464,13 @@ function getAllLinkType() {
     linkTypeOption.value = obj
   })
 }
-
+function handleSelectionChange(selection) {
+  selectFlowIds.value = selection.map((item) => item.id)
+  zsPCUH.value = selection[selection.length - 1] || null
+  updateEcharts()
+}
 function handleClose() {
+  aeFlowData.value.validate = false
   emits('update:visible', false)
   emits('close')
 }
@@ -410,47 +535,75 @@ function handleCloseEditInfo() {
   editInfo.value = false
   updateEcharts()
 }
+function handleAddFlow() {
+  aeFlowData.value.visible = true
+  aeFlowData.value.flowId = 0
+}
+function handleUpdateFlow(row) {
+  aeFlowData.value.visible = true
+  aeFlowData.value.flowId = row.id
+}
+function handleDeleteFlow(row) {
+  const ids = row.id
+  proxy
+    .$confirm('是否确认编号为"' + ids + '"的数据项?', '警告', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+    })
+    .then(function () {
+      return API.statsDelete(ids)
+    })
+    .then(() => {
+      getList()
+      proxy.$message.success('删除成功')
+      emits('updateData')
+    })
+    .catch(() => {})
+}
 
 getMapContext().then((map) => {
   _Map = map
 })
 </script>
-
 <style lang="scss" scoped>
-.scrollbar {
-  max-height: calc(100vh - 200px);
-}
 .LinkDetail {
-  .lfd_bodyer {
-    position: relative;
+  .close_btn {
+    cursor: pointer;
+    position: absolute;
+    fill: #000;
+    right: 16px;
+    top: 16px;
+    width: 20px;
+    height: 20px;
+    z-index: 10;
+  }
+  .search {
+    box-sizing: border-box;
+    width: 100%;
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    padding: 16px 16px 12px 16px;
     gap: 10px;
-    padding: 16px;
-    .close_btn {
-      cursor: pointer;
-      position: absolute;
-      fill: #000;
-      right: 16px;
-      top: 16px;
-      width: 20px;
-      height: 20px;
+    .el-select {
+      width: 280px;
     }
+
     .title1 {
       font-weight: 500;
       font-size: 14px;
       color: #2b2b2b;
     }
-    .search {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 12px;
-      .el-select {
-        width: 280px;
-      }
-    }
+  }
+  .scrollbar {
+    height: calc(100vh - 250px);
+  }
+  .lfd_bodyer {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 0 16px 16px 16px;
+    gap: 10px;
     .flex_box {
       display: flex;
       align-items: stretch;
@@ -473,16 +626,28 @@ getMapContext().then((map) => {
     .chart_box {
       width: 100%;
     }
-  }
-  .query_box {
-    display: flex;
-    gap: 10px;
-    :deep(.el-select) {
-      width: 250px;
+    .query_box {
+      display: flex;
+      gap: 10px;
+      :deep(.el-select) {
+        width: 250px;
+      }
+      :deep(.el-date-editor) {
+        width: 300px;
+        flex-grow: 0;
+      }
     }
-    :deep(.el-date-editor) {
-      width: 300px;
-      flex-grow: 0;
+    .table_box {
+      flex: 1;
+      height: 0;
+
+      min-height: 200px !important;
+    }
+
+    .table_end {
+      display: flex;
+      align-items: center;
+      gap: 30px;
     }
   }
 }

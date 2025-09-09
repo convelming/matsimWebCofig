@@ -1,7 +1,7 @@
 <!-- linkFlow -->
 <template>
   <MDialog
-    mClass="LinkFlowInstall"
+    class="LinkFlowInstall"
     title="路段流量录入"
     subTitle="人工数车/ 路段流量录入"
     :top="80"
@@ -13,7 +13,7 @@
   >
     <el-scrollbar class="scrollbar">
       <div class="lfi_bodyer">
-        <img src="@/assets/images/close.svg" class="close_btn" @click.stop="handleClose" />
+        <img src="@/assets/images/close.svg?url" class="close_btn" @click.stop="handleClose" />
         <div class="title1">请输入路段名称：</div>
         <div class="search">
           <RouteSelect ref="routeSelect" @change="handleMoveToRoute" />
@@ -60,11 +60,23 @@
 
   <LinkDetail
     v-model:visible="showLinkDetail"
-    :linkId="selectLinkId"
+    :linkId="linkDetailData.linkId"
     :proId="proId"
     @close="handleCloseLinkDetail"
+    @changeLink="handleClickLink"
+    @updateData="linkFlowUpdateData"
   />
 </template>
+
+<script>
+export const typeOptions = {
+  0: '其他',
+  1: '人工',
+  2: '视频识别',
+  3: '互联网路况估算',
+  4: '交评核准',
+}
+</script>
 
 <script setup>
 import * as API from '@/api/index'
@@ -76,6 +88,7 @@ import { MAP_EVENT } from '@/mymap/index.js'
 import { NetworkLayer } from '@/utils/MapLayer/NetworkLayer'
 import { LinkLayer } from '@/utils/MapLayer/LinkLayer'
 import { LinkStatsLayer } from '@/utils/MapLayer/LinkStatsLayer'
+import { computed } from 'vue'
 
 const emits = defineEmits(['update:visible', 'close'])
 const props = defineProps({
@@ -99,20 +112,23 @@ const typeColorOptions = ref({
   3: '#e6a23c', // 互联网路况估算 橙色
   4: '#909399', // 交评核准 灰色
 })
-const typeOptions = ref({
-  0: '其他',
-  1: '人工',
-  2: '视频识别',
-  3: '互联网路况估算',
-  4: '交评核准',
-})
 const wayWidth = ref(10)
-const twoWayOffset = ref(0)
-const showLinkDetail = ref(true)
-const selectLinkId = ref(92619)
+const twoWayOffset = ref(10)
+// const showLinkDetail = ref(true)
 const selectRouteId = ref(null)
+
+const showLinkDetail = computed(() => {
+  return linkDetailData.visible
+})
+
 const showMain = computed(() => {
-  return !showLinkDetail.value && props.visible
+  return !linkDetailData.visible && props.visible
+})
+
+const linkDetailData = reactive({
+  visible: false,
+  linkId: 0,
+  porId: null,
 })
 
 let _Map = null
@@ -121,9 +137,9 @@ const _NetworkLayer = new NetworkLayer({
   lineWidth: wayWidth.value,
   event: {
     [MAP_EVENT.HANDLE_PICK_LEFT]: (res1) => {
-      showLinkDetail.value = selectRouteId.value == res1.data.id
+      linkDetailData.visible = selectRouteId.value == res1.data.id
+      linkDetailData.linkId = null
       selectRouteId.value = res1.data.id
-      selectLinkId.value = null
       if (selectRouteId.value) {
         API.getMatsimLink(selectRouteId.value).then((res2) => {
           _LinkLayer.setData(res2.data)
@@ -141,7 +157,7 @@ const _LinkLayer = new LinkLayer({
   twoWayOffset: twoWayOffset.value,
   event: {
     [MAP_EVENT.HANDLE_PICK_LEFT]: (res) => {
-      handleCilckLink(res.data)
+      handleClickLink(res.data)
     },
   },
 })
@@ -196,8 +212,8 @@ function handleClose() {
   emits('close')
 }
 function handleCloseLinkDetail() {
-  showLinkDetail.value = false
-  selectLinkId.value = null
+  linkDetailData.visible = false
+  linkDetailData.linkId = null
   _LinkLayer.setSelectId(null)
 }
 function handleMoveToRoute({ value }) {
@@ -223,9 +239,9 @@ function handleLoadMaker() {
     _LinkStatsLayer.setData(res.data)
   })
 }
-function handleCilckLink(data) {
-  showLinkDetail.value = true
-  selectLinkId.value = data.id
+function handleClickLink(data) {
+  linkDetailData.visible = true
+  linkDetailData.linkId = data.id
 
   const { clientWidth, clientHeight } = _Map.rootDoc
   const [x1, y1] = _Map.WindowXYToWebMercator(clientWidth / 3, clientHeight / 2)
@@ -240,7 +256,7 @@ function handleCilckLink(data) {
 }
 function handleMoveToLink({ value, item }) {
   selectRouteId.value = item.origid
-  selectLinkId.value = value
+  linkDetailData.linkId = value
   API.getMatsimLink(selectRouteId.value).then((res) => {
     // 计算地图合适的中心点和zoom
     let { zoom, center } = _Map.getFitZoomAndCenter(res.data[0].map((v) => v.fromxy))
@@ -252,13 +268,21 @@ function handleMoveToLink({ value, item }) {
       for (const link of route) {
         if (link.id == value) {
           setTimeout(() => {
-            handleCilckLink(link)
+            handleClickLink(link)
           }, 500)
           return
         }
       }
     }
   })
+}
+function linkFlowUpdateData() {
+  handleLoadMaker()
+  if (selectRouteId.value) {
+    getMatsimLink(selectRouteId.value).then((res) => {
+      _LinkLayer.setData(res.data, _LinkLayer.selectId)
+    })
+  }
 }
 
 onMounted(() => {

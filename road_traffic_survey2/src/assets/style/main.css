@@ -1,2 +1,13 @@
 @import './base.css';
 
+.flex-scrollbar {
+  flex: 1;
+  height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.flex-scrollbar .el-scrollbar__wrap {
+  flex: 1;
+  height: 0;
+}

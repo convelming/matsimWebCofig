@@ -14,10 +14,16 @@
 body {
   color: var(--color-text);
   background: var(--color-background);
-
+  font-family:
+    Alibaba PuHuiTi 2,
+    Alibaba PuHuiTi 20;
   padding: 0;
   margin: 0;
   border: 0;
   width: 100vw;
   height: 100vh;
+}
+
+a {
+  text-decoration: none;
 }

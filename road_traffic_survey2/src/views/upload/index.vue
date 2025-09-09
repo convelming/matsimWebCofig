@@ -1,7 +1,7 @@
 <!-- index -->
 <template>
-  <Dialog
-    mClass="ImageDialog"
+  <MDialog
+    class="ImageDialog"
     title="查看图片"
     subTitle="数据上传 /"
     :top="80"
@@ -16,7 +16,7 @@
           <el-collapse-item :title="v1.title" :name="v1.name">
             <template #icon="{ isActive }">
               <img
-                src="@/assets/images/icon_tri_nor.svg"
+                src="@/assets/images/icon_tri_nor.svg?url"
                 class="icon_tri_nor"
                 :class="{ active: isActive }"
               />
@@ -28,12 +28,11 @@
         </template>
       </el-collapse>
     </el-scrollbar>
-  </Dialog>
+  </MDialog>
   <LinkFlow v-model:visible="showLinkFlow" />
 </template>
 
 <script setup>
-import Dialog from '@/components/Dialog.vue'
 import LinkFlow from './LinkFlow/index.vue'
 
 const showMenu = computed(() => {
@@ -82,7 +81,7 @@ const menuList = [
   },
 ]
 
-const showLinkFlow = ref(true)
+const showLinkFlow = ref(false)
 
 function handleClick(v1, v2) {
   if (v2.title == '路段流量录入') {
@@ -111,6 +110,7 @@ function handleClick(v1, v2) {
     padding-bottom: 0;
   }
   .collapse_item {
+    cursor: pointer;
     box-sizing: border-box;
     height: 44px;
     padding: 7px 34px;
