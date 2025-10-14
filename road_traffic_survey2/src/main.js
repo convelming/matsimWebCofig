@@ -1,5 +1,3 @@
-import './assets/style/main.css'
-
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 
@@ -16,6 +14,8 @@ import * as echarts from 'echarts'
 import Dialog from '@/components/Dialog.vue'
 import Pagination from '@/components/Pagination.vue'
 import UploadVideo from '@/components/UploadVideo.vue'
+
+import './assets/style/main.scss'
 
 const app = createApp(App)
 

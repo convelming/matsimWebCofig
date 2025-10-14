@@ -569,6 +569,7 @@ getMapContext().then((map) => {
 <style lang="scss" scoped>
 .LinkDetail {
   .close_btn {
+    z-index: 100;
     cursor: pointer;
     position: absolute;
     fill: #000;

@@ -88,7 +88,7 @@ import { MAP_EVENT } from '@/mymap/index.js'
 import { NetworkLayer } from '@/utils/MapLayer/NetworkLayer'
 import { LinkLayer } from '@/utils/MapLayer/LinkLayer'
 import { LinkStatsLayer } from '@/utils/MapLayer/LinkStatsLayer'
-import { computed } from 'vue'
+import { computed, inject } from 'vue'
 
 const emits = defineEmits(['update:visible', 'close'])
 const props = defineProps({
@@ -132,24 +132,21 @@ const linkDetailData = reactive({
 })
 
 let _Map = null
-const _NetworkLayer = new NetworkLayer({
-  zIndex: 10,
-  lineWidth: wayWidth.value,
-  event: {
-    [MAP_EVENT.HANDLE_PICK_LEFT]: (res1) => {
-      linkDetailData.visible = selectRouteId.value == res1.data.id
-      linkDetailData.linkId = null
-      selectRouteId.value = res1.data.id
-      if (selectRouteId.value) {
-        API.getMatsimLink(selectRouteId.value).then((res2) => {
-          _LinkLayer.setData(res2.data)
-        })
-      } else {
-        _LinkLayer.setData(null)
-      }
-    },
-  },
+const _NetworkLayer = inject('_NetworkLayer').value
+const _NetworkLayerEventId = _NetworkLayer.addEventListener(MAP_EVENT.HANDLE_PICK_LEFT, (res1) => {
+  linkDetailData.visible = selectRouteId.value == res1.data.id
+  linkDetailData.linkId = null
+  selectRouteId.value = res1.data.id
+  if (selectRouteId.value) {
+    API.getMatsimLink(selectRouteId.value).then((res2) => {
+      _LinkLayer.setData(res2.data)
+    })
+  } else {
+    _LinkLayer.setData(null)
+  }
 })
+_NetworkLayer.stopEventListener(MAP_EVENT.HANDLE_PICK_LEFT, _NetworkLayerEventId)
+
 const _LinkLayer = new LinkLayer({
   zIndex: 30,
   colors: typeColorOptions.value,
@@ -181,10 +178,15 @@ const watchVisible = addWatch(
   (val) => {
     console.log(val)
     if (val) {
+      _NetworkLayer.resumeEventListener(MAP_EVENT.HANDLE_PICK_LEFT, _NetworkLayerEventId)
+      watchWayWidth.callback(wayWidth.value)
+
       _Map.addLayer(_LinkLayer)
       _Map.addLayer(_NetworkLayer)
       watchShowLayer.callback(showLayer.value)
     } else {
+      _NetworkLayer.stopEventListener(MAP_EVENT.HANDLE_PICK_LEFT, _NetworkLayerEventId)
+
       _Map.removeLayer(_LinkLayer)
       _Map.removeLayer(_NetworkLayer)
       _Map.removeLayer(_LinkStatsLayer)
@@ -199,16 +201,15 @@ const watchShowLayer = addWatch(showLayer, (val) => {
   }
 })
 const watchTwoWayOffset = addWatch(twoWayOffset, (val) => {
-  _NetworkLayer.setValues({ twoWayOffset: val })
   _LinkLayer.setValues({ twoWayOffset: val })
 })
 const watchWayWidth = addWatch(wayWidth, (val) => {
-  _NetworkLayer.setValues({ lineWidth: val })
   _LinkLayer.setValues({ lineWidth: val })
+  _NetworkLayer.setValues({ lineWidth: val })
 })
 const watchTypeColorOptions = addWatch(typeColorOptions, (val) => {
-  _NetworkLayer.setColors(val)
   _LinkLayer.setColors(val)
+  _LinkStatsLayer.setColors(val)
 })
 
 function handleClose() {
@@ -229,13 +230,6 @@ function handleMoveToRoute({ value }) {
     _Map.setZoom(zoom - 1)
 
     _LinkLayer.setData(res.data)
-  })
-}
-function handleLoadNetwork() {
-  API.getGeomjson({
-    selectAll: true,
-  }).then((res) => {
-    _NetworkLayer.setData(res.data)
   })
 }
 function handleLoadMaker() {
@@ -290,12 +284,10 @@ function linkFlowUpdateData() {
 }
 
 onMounted(() => {
-  handleLoadNetwork()
   handleLoadMaker()
 })
 onUnmounted(() => {
   _LinkLayer.dispose()
-  _NetworkLayer.dispose()
   _LinkStatsLayer.dispose()
 })
 
@@ -316,6 +308,7 @@ getMapContext().then((map) => {
     flex-direction: column;
     padding: 16px;
     .close_btn {
+      z-index: 100;
       cursor: pointer;
       position: absolute;
       fill: #000;

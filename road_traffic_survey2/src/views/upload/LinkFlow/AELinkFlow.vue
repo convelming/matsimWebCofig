@@ -194,7 +194,7 @@ const props = defineProps({
 
 const emits = defineEmits(['update:visible', 'close', 'updateData'])
 
-const proxy = getCurrentInstance()
+const { proxy } = getCurrentInstance()
 const formRef = ref(null)
 const form = ref({})
 const title = ref('')
@@ -332,6 +332,7 @@ function handleOpenFY() {
 <style lang="scss" scoped>
 .AELinkFlow {
   .close_btn {
+    z-index: 100;
     cursor: pointer;
     position: absolute;
     fill: #000;

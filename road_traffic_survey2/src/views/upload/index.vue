@@ -34,8 +34,10 @@
 </template>
 
 <script setup>
+import * as API from '@/api/index'
 import LinkFlow from './LinkFlow/index.vue'
 import IntersectionFlow from './IntersectionFlow/index.vue'
+import { NetworkLayer } from '@/utils/MapLayer/NetworkLayer'
 
 const showMenu = computed(() => {
   return !showLinkFlow.value && !showIntersectionFlow.value && true
@@ -85,6 +87,15 @@ const menuList = [
   },
 ]
 
+const _NetworkLayer = shallowRef(new NetworkLayer({ zIndex: 10, lineWidth: 10 }))
+API.getGeomjson({
+  selectAll: true,
+}).then((res) => {
+  _NetworkLayer.value.setData(res.data)
+})
+
+provide('_NetworkLayer', _NetworkLayer)
+
 function handleClick(v1, v2) {
   if (v2.title == '路段流量录入') {
     showLinkFlow.value = true
@@ -92,6 +103,10 @@ function handleClick(v1, v2) {
     showIntersectionFlow.value = true
   }
 }
+
+onUnmounted(() => {
+  _NetworkLayer.value.dispose()
+})
 </script>
 
 <style lang="scss" scoped>

@@ -77,7 +77,7 @@ const props = defineProps({
 let _Map = null
 const emits = defineEmits(['update:visible', 'close'])
 
-const proxy = getCurrentInstance()
+const { proxy } = getCurrentInstance()
 const getListLoading = ref(false)
 const submitLoading = ref(false)
 const formRef = ref(null)
@@ -213,6 +213,7 @@ onUnmounted(() => {
 <style lang="scss" scoped>
 .CopyFlow {
   .close_btn {
+    z-index: 100;
     cursor: pointer;
     position: absolute;
     fill: #000;
