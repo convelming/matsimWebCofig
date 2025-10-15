@@ -169,7 +169,7 @@
 
 <script setup>
 import * as API from '@/api/index'
-import { getMapContext, addWatch } from '@/utils/index'
+import { addWatch } from '@/utils/index'
 import { typeOptions } from './index.vue'
 import CopyFlow from './CopyFlow.vue'
 

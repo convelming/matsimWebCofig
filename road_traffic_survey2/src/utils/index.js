@@ -1,16 +1,16 @@
 import { inject, watch } from 'vue'
 
-export function getMapContext() {
+export function injectSync(name, rule = (v) => !!v) {
   return new Promise((resolve, reject) => {
-    const MapRef = inject('MapRef')
-    if (MapRef.value) {
-      resolve(MapRef.value)
+    const injectValue = inject(name)
+    if (rule(injectValue.value)) {
+      resolve(injectValue)
     } else {
       const stopWatch = watch(
-        MapRef,
-        (mapContext) => {
-          if (mapContext) {
-            resolve(mapContext)
+        injectValue,
+        (value) => {
+          if (rule(injectValue.value)) {
+            resolve(injectValue)
             stopWatch()
           }
         },

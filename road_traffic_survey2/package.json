@@ -13,6 +13,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "konva": "^9.3.14",
     "axios": "^1.11.0",
     "echarts": "5.5.1",
     "element-plus": "^2.11.1",

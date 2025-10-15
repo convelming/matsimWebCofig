@@ -84,17 +84,16 @@
               <el-button
                 v-if="(row.status == 1 || row.status == 3 || row.status == 4) && row.type == 2"
                 type="text"
-                size="mini"
                 @click="handleRunCrossroad(row)"
                 >运行</el-button
               >
-              <el-button type="text" size="mini" @click="handleShowCrossroadsDetail(row)"
-                >查看</el-button
-              >
-              <el-button type="text" size="mini" @click="handleDeleteCrossroad(row)"
-                >移除</el-button
-              >
-              <el-button type="text" size="mini" @click="handleShowDrawLine(row)"
+              <el-button type="text" @click="handleShowCrossroadsDetail(row)">查看</el-button>
+              <el-button type="text" @click="handleDeleteCrossroad(row)">移除</el-button>
+              <el-button
+                type="text"
+                @click="
+                  handleShowDrawLine({ intersectionId: row.intersectionId, crossroadsId: row.id })
+                "
                 >检测线绘制</el-button
               >
             </div>
@@ -111,14 +110,45 @@
     </div>
   </MDialog>
 
-  <VideoInputCrossroads v-model:visible="showVideoInputCrossroads" :id="eidtIntersectionId" />
+  <VideoInputCrossroads
+    v-model:visible="showVideoInputCrossroads"
+    :intersectionId="eidtIntersectionId"
+    @submited="handleSubmitVideoInputCrossroads"
+  />
+  <DrawLine
+    v-model:visible="showDrawLine"
+    :crossroadsId="eidtCrossroadsId"
+    :intersectionId="eidtIntersectionId"
+    @submited="handleSubmitDrawLine"
+  />
+  <CrossroadsStatsEdit
+    v-model:visible="showCrossroadsStatsEdit"
+    :crossroadsId="eidtCrossroadsId"
+    :intersectionId="eidtIntersectionId"
+    @redraw="handleRedraw"
+  />
+  <CrossroadsDetail
+    v-model:visible="showCrossroadsDetail"
+    :crossroadsId="eidtCrossroadsId"
+    :intersectionId="eidtIntersectionId"
+  />
+  <InputCrossroads
+    v-model:visible="showInputCrossroads"
+    :crossroadsId="eidtCrossroadsId"
+    :intersectionId="eidtIntersectionId"
+    @submited="handleSubmitInputCrossroads"
+  />
 </template>
 
 <script setup>
 import * as API from '@/api/index'
-import { getMapContext, addWatch } from '@/utils/index'
+import { injectSync, addWatch } from '@/utils/index'
 
 import VideoInputCrossroads from './VideoInputCrossroads.vue'
+import DrawLine from './DrawLine.vue'
+import CrossroadsStatsEdit from './CrossroadsStatsEdit.vue'
+import CrossroadsDetail from './CrossroadsDetail.vue'
+import InputCrossroads from './InputCrossroads.vue'
 
 let _Map = null
 const { proxy } = getCurrentInstance()
@@ -177,11 +207,23 @@ const videoStateOptions = {
 }
 
 const showMain = computed(() => {
-  return !showVideoInputCrossroads.value && props.visible
+  return (
+    !showInputCrossroads.value &&
+    !showVideoInputCrossroads.value &&
+    !showDrawLine.value &&
+    !showCrossroadsStatsEdit.value &&
+    !showCrossroadsDetail.value &&
+    props.visible
+  )
 })
 
+const showInputCrossroads = ref(false)
 const showVideoInputCrossroads = ref(false)
+const showDrawLine = ref(false)
+const showCrossroadsStatsEdit = ref(false)
+const showCrossroadsDetail = ref(false)
 const eidtIntersectionId = ref(null)
+const eidtCrossroadsId = ref(null)
 
 const watchProps = addWatch(
   props,
@@ -194,6 +236,7 @@ const watchProps = addWatch(
   },
   {
     deep: true,
+    immediate: true,
   },
 )
 
@@ -300,29 +343,63 @@ function handleDeleteCrossroad(row) {
 
 // 查看
 function handleShowCrossroadsDetail(row) {
-  this.$emit('showCrossroadsDetail', row)
-}
-// 检测线绘制
-function handleShowDrawLine(row) {
-  this.$emit('showDrawLine', row)
+  showCrossroadsDetail.value = true
+  eidtIntersectionId.value = row.intersectionId
+  eidtCrossroadsId.value = row.id
+  // this.$emit('showCrossroadsDetail', row)
 }
 // 人工录入
 function handleShowInputCrossroads(row) {
-  this.$emit('showManuallyEnteringCrossroads', {
-    intersectionId: this.crossroadsList.intersectionId,
-  })
+  showInputCrossroads.value = true
+  eidtIntersectionId.value = crossroadsList.intersectionId
+}
+// 人工录入提交成功
+function handleSubmitInputCrossroads(row) {
+  showInputCrossroads.value = false
+  handleShowDrawLine({ intersectionId: row.intersectionId, crossroadsId: row.id })
 }
 // 视频识别
 function handleShowVideoInputCrossroads(row) {
   showVideoInputCrossroads.value = true
   eidtIntersectionId.value = crossroadsList.intersectionId
-  // this.$emit('showVideoInputCrossroads', {
-  //   intersectionId: this.crossroadsList.intersectionId,
-  // })
+}
+// 视频识别提交成功
+function handleSubmitVideoInputCrossroads(row) {
+  showVideoInputCrossroads.value = true
+  handleShowDrawLine({
+    intersectionId: row.intersectionId,
+    crossroadsId: row.id,
+  })
+}
+// 检测线绘制
+function handleShowDrawLine(row) {
+  showDrawLine.value = true
+  eidtIntersectionId.value = row.intersectionId
+  eidtCrossroadsId.value = row.crossroadsId
+}
+// 检测线绘制提交成功
+function handleSubmitDrawLine(row) {
+  showDrawLine.value = false
+  handleShowCrossroadsStatsEdit(row)
+}
+// 编辑交叉口流量线
+function handleShowCrossroadsStatsEdit(row) {
+  showDrawLine.value = false
+  showCrossroadsStatsEdit.value = true
+  eidtIntersectionId.value = row.intersectionId
+  eidtCrossroadsId.value = row.crossroadsId
+}
+// 重新绘制检测线
+function handleRedraw(row) {
+  showCrossroadsStatsEdit.value = false
+  handleShowDrawLine({
+    intersectionId: row.intersectionId,
+    crossroadsId: row.crossroadsId,
+  })
 }
 
-getMapContext().then((map) => {
-  _Map = map
+injectSync('MapRef').then((map) => {
+  _Map = map.value
 })
 </script>
 

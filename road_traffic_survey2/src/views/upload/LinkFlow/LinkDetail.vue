@@ -213,7 +213,7 @@
 
 <script setup>
 import * as API from '@/api/index'
-import { getMapContext, addWatch } from '@/utils/index'
+import { injectSync, addWatch } from '@/utils/index'
 import RouteSelect from '@/components/RouteSelect.vue'
 import { computed } from 'vue'
 import { typeOptions } from './index.vue'
@@ -508,7 +508,7 @@ function handleReverse() {
   })
 }
 function handleUpdateLink() {
-  infoFormRef.validate((valid) => {
+  infoformRef.value.validate((valid) => {
     if (valid) {
       let from = JSON.parse(JSON.stringify(infoForm.value))
       API.matsimLinkUpdate(from).then((response) => {
@@ -520,7 +520,7 @@ function handleUpdateLink() {
   })
 }
 function handleUpdateInWay() {
-  infoFormRef.validate((valid) => {
+  infoformRef.value.validate((valid) => {
     if (valid) {
       let from = JSON.parse(JSON.stringify(infoForm.value))
       API.matsimLinkUpdateInWay(from).then((response) => {
@@ -562,8 +562,8 @@ function handleDeleteFlow(row) {
     .catch(() => {})
 }
 
-getMapContext().then((map) => {
-  _Map = map
+injectSync('MapRef').then((map) => {
+  _Map = map.value
 })
 </script>
 <style lang="scss" scoped>

@@ -43,7 +43,7 @@ const showMenu = computed(() => {
   return !showLinkFlow.value && !showIntersectionFlow.value && true
 })
 const showLinkFlow = ref(false)
-const showIntersectionFlow = ref(true)
+const showIntersectionFlow = ref(false)
 const activeNames = ref([])
 const menuList = [
   {
@@ -88,13 +88,16 @@ const menuList = [
 ]
 
 const _NetworkLayer = shallowRef(new NetworkLayer({ zIndex: 10, lineWidth: 10 }))
+const _NetworkData = shallowRef(null)
 API.getGeomjson({
   selectAll: true,
 }).then((res) => {
   _NetworkLayer.value.setData(res.data)
+  _NetworkData.value = res.data
 })
 
 provide('_NetworkLayer', _NetworkLayer)
+provide('_NetworkData', _NetworkData)
 
 function handleClick(v1, v2) {
   if (v2.title == '路段流量录入') {

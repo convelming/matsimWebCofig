@@ -65,18 +65,18 @@
 
 <script setup>
 import * as API from '@/api/index'
-import { getMapContext, addWatch } from '@/utils/index'
+import { injectSync, addWatch } from '@/utils/index'
 import UploadVideo from '@/components/UploadVideo.vue'
 
 let _Map = null
 const { proxy } = getCurrentInstance()
-const emits = defineEmits(['update:visible', 'close', 'success'])
+const emits = defineEmits(['update:visible', 'close', 'submited'])
 const props = defineProps({
   visible: {
     type: Boolean,
     default: false,
   },
-  id: {
+  intersectionId: {
     type: Number,
     default: 0,
   },
@@ -110,13 +110,14 @@ const watchVisible = addWatch(
     }
   },
   {
+    deep: true,
     immediate: true,
   },
 )
 
 // 组件显示事件
 function handleEnable() {
-  API.intersectionDetail(props.id).then((res) => {
+  API.intersectionDetail(props.intersectionId).then((res) => {
     intersectionDetail.value = res.data
     form.value = {
       date: [],
@@ -170,13 +171,11 @@ function handleSubmit() {
   })
 }
 
-getMapContext().then((map) => {
-  _Map = map
-  // watchVisible.callback(props.visible)
+injectSync('MapRef').then((map) => {
+  _Map = map.value
 })
 onUnmounted(() => {
   watchVisible.stop()
-  _PointSelectLayer.dispose()
 })
 </script>
 

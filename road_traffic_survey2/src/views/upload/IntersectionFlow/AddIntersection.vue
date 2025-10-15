@@ -41,7 +41,7 @@
 <script setup>
 import * as API from '@/api/index'
 import { MercatorToWGS84 } from '@/mymap/utils/LngLatUtils'
-import { getMapContext, addWatch } from '@/utils/index'
+import { injectSync, addWatch } from '@/utils/index'
 import {
   PointSelectLayer,
   POINT_SELECT_STATE_KEY,
@@ -133,8 +133,8 @@ function handleClose() {
   emits('close')
 }
 
-getMapContext().then((map) => {
-  _Map = map
+injectSync('MapRef').then((map) => {
+  _Map = map.value
   watchVisible.callback(props.visible)
 })
 onUnmounted(() => {

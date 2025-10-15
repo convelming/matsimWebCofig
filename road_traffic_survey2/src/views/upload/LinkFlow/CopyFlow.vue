@@ -63,7 +63,7 @@ import {
   POLYGON_SELECT_EVENT,
 } from '@/utils/MapLayer/PolygonSelectLayer'
 import * as API from '@/api/index'
-import { getMapContext, addWatch } from '@/utils/index'
+import { injectSync, addWatch } from '@/utils/index'
 const props = defineProps({
   visible: {
     type: Boolean,
@@ -199,8 +199,8 @@ function handleStopPolygonSelect(reset) {
 }
 // ****************************** 数据筛选 -- 区域框选 -- end
 
-getMapContext().then((map) => {
-  _Map = map
+injectSync('MapRef').then((map) => {
+  _Map = map.value
   watchVisible.callback(props.visible)
 })
 

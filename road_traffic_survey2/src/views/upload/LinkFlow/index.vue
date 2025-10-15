@@ -80,7 +80,7 @@ export const typeOptions = {
 
 <script setup>
 import * as API from '@/api/index'
-import { getMapContext, addWatch } from '@/utils/index'
+import { injectSync, addWatch } from '@/utils/index'
 import RouteSelect from '@/components/RouteSelect.vue'
 import LinkDetail from './LinkDetail.vue'
 
@@ -291,8 +291,8 @@ onUnmounted(() => {
   _LinkStatsLayer.dispose()
 })
 
-getMapContext().then((map) => {
-  _Map = map
+injectSync('MapRef').then((map) => {
+  _Map = map.value
   watchVisible.callback(props.visible)
 })
 </script>

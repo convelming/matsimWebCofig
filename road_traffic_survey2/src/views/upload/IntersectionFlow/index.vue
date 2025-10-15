@@ -76,7 +76,7 @@
 
 <script setup>
 import * as API from '@/api/index'
-import { getMapContext, addWatch } from '@/utils/index'
+import { injectSync, addWatch } from '@/utils/index'
 
 import { MAP_EVENT } from '@/mymap/index.js'
 import { NetworkLayer } from '@/utils/MapLayer/NetworkLayer'
@@ -141,8 +141,6 @@ const watchWayWidth = addWatch(wayWidth, (val) => {
   _NetworkLayer.setValues({ lineWidth: val })
 })
 
-console.log(_IntersectionListLayer)
-
 const watchVisible = addWatch(
   () => props.visible,
   (val) => {
@@ -167,8 +165,6 @@ const watchShowLayer = addWatch(showLayer, (val) => {
 const watchStateColorOptions = addWatch(
   stateColorOptions,
   (val) => {
-    console.log(val)
-
     _IntersectionListLayer.setColors(val)
   },
   {
@@ -219,7 +215,6 @@ function handleSubmitedAdd(data) {
   handleEdit(data)
 }
 function handleEdit(row) {
-  console.log(row)
   eidtIntersectionId.value = row.id
   showAEIntersectionFlow.value = true
 }
@@ -231,8 +226,8 @@ onUnmounted(() => {
   _IntersectionListLayer.dispose()
 })
 
-getMapContext().then((map) => {
-  _Map = map
+injectSync('MapRef').then((map) => {
+  _Map = map.value
   watchVisible.callback(props.visible)
 })
 </script>

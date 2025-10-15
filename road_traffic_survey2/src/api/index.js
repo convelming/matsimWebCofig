@@ -360,7 +360,7 @@ export function crossroadsAnalyzeVideo(cossroadsId) {
   //   url: `/crossroads/analyzeVideo/${cossroadsId}`,
   //   method: "get",
   // });
-  return window.open(`/crossroads/analyzeVideo/${cossroadsId}`, "_blank");
+  return window.open(`${import.meta.env.VITE_APP_BASE_API}/crossroads/analyzeVideo/${cossroadsId}`, "_blank");
 }
 
 // 下载运行轨迹图
@@ -372,7 +372,7 @@ export function crossroadsTrackImage(cossroadsId) {
   //   url: `/crossroads/trackImage/${cossroadsId}`,
   //   method: "get",
   // });
-  return window.open(`/crossroads/trackImage/${cossroadsId}`, "_blank");
+  return window.open(`${import.meta.env.VITE_APP_BASE_API}/crossroads/trackImage/${cossroadsId}`, "_blank");
 }
 
 // 导出十字路流量表
@@ -384,7 +384,7 @@ export function crossroadsExportCorssStatsTable(cossroadsId) {
   //   url: `/crossroads/exportCorssStatsTable/${cossroadsId}`,
   //   method: "get",
   // });
-  return window.open(`/crossroads/exportCorssStatsTable/${cossroadsId}`, "_blank");
+  return window.open(`${import.meta.env.VITE_APP_BASE_API}/crossroads/exportCorssStatsTable/${cossroadsId}`, "_blank");
 }
 
 // 十字路详情信息
