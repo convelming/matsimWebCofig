@@ -10,7 +10,7 @@
     hideClose
     :visible="showMenu"
   >
-    <el-scrollbar class="scrollbar">
+    <el-scrollbar class="flex-scrollbar">
       <el-collapse class="collapse" v-model="activeNames" expand-icon-position="left">
         <template v-for="(v1, i1) in menuList">
           <el-collapse-item :title="v1.title" :name="v1.name">
@@ -31,19 +31,25 @@
   </MDialog>
   <LinkFlow v-model:visible="showLinkFlow" />
   <IntersectionFlow v-model:visible="showIntersectionFlow" />
+  <UploadVideo v-model:visible="showUploadVideo" />
+  <UploadImage v-model:visible="showUploadImage" />
 </template>
 
 <script setup>
 import * as API from '@/api/index'
 import LinkFlow from './LinkFlow/index.vue'
 import IntersectionFlow from './IntersectionFlow/index.vue'
+import UploadVideo from './UploadVideo/index.vue'
+import UploadImage from './UploadImage/index.vue'
 import { NetworkLayer } from '@/utils/MapLayer/NetworkLayer'
 
 const showMenu = computed(() => {
-  return !showLinkFlow.value && !showIntersectionFlow.value && true
+  return !showLinkFlow.value && !showIntersectionFlow.value && !showUploadVideo.value && !showUploadImage.value && true
 })
 const showLinkFlow = ref(false)
 const showIntersectionFlow = ref(false)
+const showUploadVideo = ref(false)
+const showUploadImage = ref(false)
 const activeNames = ref([])
 const menuList = [
   {
@@ -55,7 +61,7 @@ const menuList = [
         title: '路段流量录入',
       },
       {
-        name: '1-1',
+        name: '1-2',
         title: '交叉口流量录入',
       },
     ],
@@ -63,12 +69,30 @@ const menuList = [
   {
     name: '2',
     title: '航拍视频',
-    children: [],
+    children: [
+      {
+        name: '2-1',
+        title: '仅视频',
+      },
+      {
+        name: '2-2',
+        title: '路段流量识别',
+      },
+      {
+        name: '2-3',
+        title: '交叉口流量识别',
+      },
+    ],
   },
   {
     name: '3',
     title: '拍照图片',
-    children: [],
+    children: [
+      {
+        name: '3-1',
+        title: '仅图片',
+      },
+    ],
   },
   {
     name: '4',
@@ -104,6 +128,10 @@ function handleClick(v1, v2) {
     showLinkFlow.value = true
   } else if (v2.title == '交叉口流量录入') {
     showIntersectionFlow.value = true
+  } else if (v2.title == '仅视频') {
+    showUploadVideo.value = true
+  } else if (v2.title == '仅图片') {
+    showUploadImage.value = true
   }
 }
 
@@ -113,7 +141,7 @@ onUnmounted(() => {
 </script>
 
 <style lang="scss" scoped>
-.scrollbar {
+.flex-scrollbar {
   max-height: calc(100vh - 200px);
 }
 .icon_tri_nor {

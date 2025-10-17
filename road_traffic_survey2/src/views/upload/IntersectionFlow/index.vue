@@ -11,7 +11,7 @@
     :visible="showMain"
     @close="handleClose"
   >
-    <el-scrollbar class="scrollbar">
+    <el-scrollbar class="flex-scrollbar">
       <div class="if_bodyer">
         <img src="@/assets/images/close.svg?url" class="close_btn" @click.stop="handleClose" />
         <div class="title1">请输入交叉口名称：</div>
@@ -25,7 +25,7 @@
           <el-button type="primary" @click="handleQuery">搜索</el-button>
           <el-button type="primary" @click="handleAdd">新增</el-button>
         </div>
-        <el-table class="mTable" :data="intersectionData.list" stripe max-height="300px">
+        <el-table class="mTable" :data="intersectionData.list" stripe height="300px">
           <el-table-column prop="name" label="交叉口名称"> </el-table-column>
           <el-table-column label="操作" align="right" width="90px">
             <template #default="scope">
@@ -233,6 +233,9 @@ injectSync('MapRef').then((map) => {
 </script>
 
 <style lang="scss" scoped>
+.flex-scrollbar {
+  max-height: calc(100vh - 200px);
+}
 .IntersectionFlow {
   .if_bodyer {
     position: relative;

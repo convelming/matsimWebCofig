@@ -11,7 +11,7 @@
     :visible="showMain"
     @close="handleClose"
   >
-    <el-scrollbar class="scrollbar">
+    <el-scrollbar class="flex-scrollbar">
       <div class="lf_bodyer">
         <img src="@/assets/images/close.svg?url" class="close_btn" @click.stop="handleClose" />
         <div class="title1">请输入路段名称：</div>
@@ -36,7 +36,7 @@
             <el-form label-position="left" label-width="80px">
               <el-form-item label="图标颜色">
                 <div class="color_picker_box">
-                  <div class="color_picker_item" v-for="(v, i) in typeOptions" :key="i">
+                  <div class="color_picker_item" v-for="[i, v] in typeOptionsList" :key="i">
                     <div>{{ v }}</div>
                     <el-color-picker v-model="typeColorOptions[i]"></el-color-picker>
                   </div>
@@ -71,11 +71,13 @@
 <script>
 export const typeOptions = {
   0: '其他',
-  1: '人工',
   2: '视频识别',
-  3: '互联网路况估算',
+  1: '人工',
   4: '交评核准',
+  3: '互联网路况估算',
 }
+
+const typeOptionsList = [0, 2, 1, 4, 3].map((v) => [v, typeOptions[v]])
 </script>
 
 <script setup>
@@ -298,7 +300,7 @@ injectSync('MapRef').then((map) => {
 </script>
 
 <style lang="scss" scoped>
-.scrollbar {
+.flex-scrollbar {
   max-height: calc(100vh - 200px);
 }
 .LinkFlow {
