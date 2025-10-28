@@ -25,7 +25,7 @@
         </div>
         <el-collapse class="collapse" v-model="activeNames">
           <el-collapse-item title="显示设置" name="显示设置">
-            <el-form label-position="left" label-width="80px">
+            <!-- <el-form label-position="left" label-width="80px">
               <el-form-item label="图标颜色">
                 <div class="color_picker_box">
                   <div class="color_picker_item" v-for="(v, i) in stateOptions" :key="i">
@@ -37,7 +37,7 @@
               <el-form-item label="路段宽度">
                 <el-slider :min="1" :max="30" v-model="wayWidth"></el-slider>
               </el-form-item>
-            </el-form>
+            </el-form> -->
           </el-collapse-item>
         </el-collapse>
       </div>
@@ -73,6 +73,8 @@ const watchVisible = addWatch(
 const showMain = computed(() => {
   return props.visible
 })
+const showLayer = ref(true)
+const activeNames = ref(['显示设置'])
 
 function handleClose() {
   emits('update:visible', false)

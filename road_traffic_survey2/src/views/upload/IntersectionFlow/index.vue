@@ -16,12 +16,7 @@
         <img src="@/assets/images/close.svg?url" class="close_btn" @click.stop="handleClose" />
         <div class="title1">请输入交叉口名称：</div>
         <div class="search">
-          <el-input
-            v-model="intersectionData.name"
-            placeholder="交叉口名称"
-            clearable
-            @change=""
-          ></el-input>
+          <el-input v-model="intersectionData.name" placeholder="交叉口名称" clearable></el-input>
           <el-button type="primary" @click="handleQuery">搜索</el-button>
           <el-button type="primary" @click="handleAdd">新增</el-button>
         </div>

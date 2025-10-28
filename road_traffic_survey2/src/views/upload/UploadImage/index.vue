@@ -14,30 +14,13 @@
     <el-scrollbar class="flex-scrollbar">
       <div class="UploadImage_body">
         <img src="@/assets/images/close.svg?url" class="close_btn" @click.stop="handleClose" />
-        <div class="title1">请选择上传图片：</div>
-        <el-form :model="form" ref="formRef" :rules="rules" label-width="auto" :inline="false">
-          <el-form-item label="名称" prop="projectName">
-            <el-input v-model="form.projectName"></el-input>
+        <div class="title1">上传图片：</div>
+        <el-form label-width="auto" :inline="false">
+          <el-form-item label="数据录入" prop="projectName">
+            <el-button type="primary" @click="handleShowUpload">上传图片</el-button>
           </el-form-item>
-          <el-form-item label="类型" prop="type">
-            <el-input v-model="form.type"></el-input>
-          </el-form-item>
-          <el-form-item label="文件" prop="file">
-            <div class="file_box" v-if="form.file">
-              <div class="file_name">{{ form.file.name }}</div>
-              <i class="el-icon-circle-close" @click="form.file = null"></i>
-            </div>
-            <el-button v-else type="primary" @click="handleSelectFile">选择文件</el-button>
-          </el-form-item>
-          <el-form-item>
-            <div class="progress_box" v-if="updoading">
-              <el-progress :percentage="progress"></el-progress>
-              <i class="el-icon-circle-close" @click="controller.abort()"></i>
-            </div>
-            <template v-else>
-              <el-button type="primary" @click="handleSubmit">立即上传</el-button>
-              <el-button @click="open = false">取消</el-button>
-            </template>
+          <el-form-item label="数据查询" prop="type">
+            <el-button type="primary" @click="handleShowSreach">查询图片</el-button>
           </el-form-item>
         </el-form>
         <div class="checkbox">
@@ -51,9 +34,13 @@
             <el-form label-position="left" label-width="80px">
               <el-form-item label="图标颜色">
                 <div class="color_picker_box">
-                  <div class="color_picker_item" v-for="[i, v] in stateOptionsList" :key="i">
-                    <div>{{ v }}</div>
-                    <el-color-picker v-model="stateColorOptions[i]"></el-color-picker>
+                  <div class="color_picker_item">
+                    <div>图标颜色</div>
+                    <el-color-picker v-model="color"></el-color-picker>
+                  </div>
+                  <div class="color_picker_item">
+                    <div>已选择图标颜色</div>
+                    <el-color-picker v-model="hColor"></el-color-picker>
                   </div>
                 </div>
               </el-form-item>
@@ -63,23 +50,23 @@
       </div>
     </el-scrollbar>
   </MDialog>
-</template>
-<script>
-export const stateOptions = {
-  0: '其他',
-  1: '人工',
-  2: '视频识别',
-  3: '互联网路况估算',
-  4: '交评核准',
-}
 
-const stateOptionsList = [0, 2, 1, 4, 3].map((v) => [v, stateOptions[v]])
-</script>
+  <Sreach v-model:visible="showSreach" />
+  <Upload v-model:visible="showUpload" />
+</template>
 
 <script setup>
 import * as API from '@/api/index'
 import { injectSync, addWatch } from '@/utils/index'
 
+import { MAP_EVENT } from '@/mymap/index.js'
+import { ImageListLayer } from '@/utils/MapLayer/ImageListLayer'
+
+import Sreach from './Sreach.vue'
+import Upload from './Upload.vue'
+import { onUnmounted } from 'vue'
+
+let _Map = null
 const emits = defineEmits(['update:visible', 'close'])
 const props = defineProps({
   visible: {
@@ -88,56 +75,121 @@ const props = defineProps({
   },
 })
 
-const watchVisible = addWatch(
+const showMain = computed(() => {
+  return !showUpload.value && !showSreach.value && props.visible
+})
+const showLayer = ref(true)
+const showUpload = ref(false)
+const showSreach = ref(false)
+const activeNames = ref(['显示设置'])
+const color = ref('#ffa500')
+const hColor = ref('#67C23A')
+let allImageMaker = []
+const imageDialog = ref({
+  visible: false,
+  data: null,
+})
+
+const _ImageListLayer = new ImageListLayer({
+  zIndex: 110,
+  color: color.value,
+  hColor: hColor.value,
+  event: {
+    [MAP_EVENT.HANDLE_PICK_LEFT]: (res) => {
+      handleShowImageDialog(res.data)
+    },
+  },
+})
+
+const watchProps = addWatch(
   props,
   (val) => {
-    if (val) {
+    if (val.visible) {
+      handleLoadImageList()
+      watchShowLayer.callback(showLayer.value)
     } else {
+      _ImageListLayer.removeFromParent()
     }
   },
   {
     deep: true,
-    immediated: true,
   },
 )
 
-const showMain = computed(() => {
-  return props.visible
+const watchColor = addWatch(color, (val) => {
+  if (_ImageListLayer) {
+    _ImageListLayer.setColor(val)
+  }
 })
-const showLayer = ref(false)
-const activeNames = ref(['显示设置'])
-const stateColorOptions = ref({
-  0: '#67C23A', // 其他 绿色
-  1: '#f56c6c', // 人工 红色
-  2: '#409eff', // 视频识别 蓝色
-  3: '#e6a23c', // 互联网路况估算 橙色
-  4: '#909399', // 交评核准 灰色
+
+const watchHColor = addWatch(hColor, (val) => {
+  if (_ImageListLayer) {
+    _ImageListLayer.setHColor(val)
+  }
 })
-const form = ref({
-  name: '',
-  type: '',
-  file: null,
-})
-const formRef = ref(null)
-const rules = {
-  file: [
-    {
-      trigger: 'blur',
-      validator: (rule, value, callback) => {
-        if (!this.form.file) {
-          callback(new Error('请选择文件'))
-        } else {
-          callback()
-        }
-      },
-    },
-  ],
+
+const watchShowLayer = addWatch(
+  () => showLayer.value && !showSreach.value,
+  (val) => {
+    if (val) {
+      _Map.addLayer(_ImageListLayer)
+    } else {
+      _Map.removeLayer(_ImageListLayer)
+    }
+  },
+)
+
+function handleShowUpload() {
+  showUpload.value = true
+  _Map.removeLayer(_ImageListLayer)
+}
+function handleShowSreach() {
+  showSreach.value = true
 }
 
 function handleClose() {
   emits('update:visible', false)
   emits('close')
 }
+function handleShowImageDialog(row) {
+  imageDialog.value = {
+    visible: !!row,
+    data: row,
+  }
+  _ImageListLayer.setHMesh(row)
+}
+
+function handleLoadImageList() {
+  API.mappictureAllMaker().then((res) => {
+    allImageMaker = res.data
+    _ImageListLayer.setData(allImageMaker)
+  })
+}
+function handleDeleteImage(row) {
+  proxy
+    .$confirm(`是否确认删除当前图片?`, '警告', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+    })
+    .then(function () {
+      return API.mappictureDelete(row.id)
+    })
+    .then(() => {
+      handleShowImageDialog(null)
+      handleLoadImageList()
+      proxy.$message.success('删除成功')
+    })
+    .catch(() => {})
+}
+
+injectSync('MapRef').then((map) => {
+  _Map = map.value
+  watchProps.callback(props)
+})
+onUnmounted(() => {
+  _ImageListLayer.dispose()
+})
 </script>
 
 <style lang="scss" scoped>
@@ -147,7 +199,7 @@ function handleClose() {
 .UploadImage_body {
   position: relative;
   padding: 20px;
-  .title1{
+  .title1 {
     margin-bottom: 20px;
   }
   .close_btn {

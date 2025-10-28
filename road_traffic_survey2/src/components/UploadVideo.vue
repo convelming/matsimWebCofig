@@ -1,6 +1,6 @@
 <template>
   <div class="UploadVideo">
-    <div class="progress_box" v-if="updoading">
+    <div class="progress_box" v-if="uploading">
       <el-progress :percentage="progress"></el-progress>
       <i class="el-icon-circle-close" @click="controller.abort()"></i>
     </div>
@@ -28,7 +28,7 @@ export default {
     return {
       controller: null,
       progress: 0,
-      updoading: false,
+      uploading: false,
     };
   },
   beforeDestroy() {
@@ -64,7 +64,7 @@ export default {
             console.log(progressEvent);
             // this.progress = progressEvent.loaded / progressEvent.total;
             this.progress = Math.floor(progressEvent.progress * 95);
-            this.updoading = true;
+            this.uploading = true;
           },
         })
           .then((res) => {
@@ -72,7 +72,7 @@ export default {
           })
           .finally(() => {
             document.body.removeChild(input);
-            this.updoading = false;
+            this.uploading = false;
             this.progress = 0;
           });
       };

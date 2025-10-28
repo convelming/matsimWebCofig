@@ -49,7 +49,7 @@ const showMenu = computed(() => {
 const showLinkFlow = ref(false)
 const showIntersectionFlow = ref(false)
 const showUploadVideo = ref(false)
-const showUploadImage = ref(false)
+const showUploadImage = ref(true)
 const activeNames = ref([])
 const menuList = [
   {
