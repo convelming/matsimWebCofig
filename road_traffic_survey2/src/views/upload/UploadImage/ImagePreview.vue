@@ -5,7 +5,7 @@
       v-if="visible"
       :url-list="previewSrcList"
       show-progress
-      :initial-index="1"
+      :initial-index="index"
       @close="handleClose"
     >
       <template #toolbar="{ actions, prev, next, reset, activeIndex, setActiveItem }">
@@ -16,7 +16,7 @@
         <el-icon @click="actions('clockwise')"><RefreshRight /></el-icon>
         <el-icon @click="actions('anticlockwise')"><RefreshLeft /></el-icon>
         <el-icon @click="reset"><Refresh /></el-icon>
-        <el-icon @click=""><Delete /></el-icon>
+        <el-icon @click="handelRemove(activeIndex)"><Delete /></el-icon>
       </template>
     </el-image-viewer>
   </Teleport>
@@ -43,14 +43,30 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  previewSrcList: {
+  imageList: {
     type: Array,
   },
+  urlKey: {
+    type: String,
+    default: 'url',
+  },
+  index: {
+    type: Number,
+    default: 0,
+  },
+})
+
+const previewSrcList = computed(() => {
+  return props.imageList.map((item) => item[props.urlKey])
 })
 
 function handleClose() {
   emits('update:visible', false)
   emits('close')
+}
+
+function handelRemove(index) {
+  emits('delete', props.imageList[index])
 }
 </script>
 

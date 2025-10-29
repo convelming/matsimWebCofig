@@ -53,6 +53,13 @@
 
   <Sreach v-model:visible="showSreach" />
   <Upload v-model:visible="showUpload" />
+
+  <ImagePreview
+    v-model:visible="showPreview"
+    :imageList="previewImageList"
+    url-key="b_url"
+    @delete="handleDeleteImage"
+  />
 </template>
 
 <script setup>
@@ -64,7 +71,8 @@ import { ImageListLayer } from '@/utils/MapLayer/ImageListLayer'
 
 import Sreach from './Sreach.vue'
 import Upload from './Upload.vue'
-import { onUnmounted } from 'vue'
+
+import ImagePreview from './ImagePreview.vue'
 
 let _Map = null
 const emits = defineEmits(['update:visible', 'close'])
@@ -81,14 +89,12 @@ const showMain = computed(() => {
 const showLayer = ref(true)
 const showUpload = ref(false)
 const showSreach = ref(false)
+const showPreview = ref(false)
 const activeNames = ref(['显示设置'])
 const color = ref('#ffa500')
 const hColor = ref('#67C23A')
 let allImageMaker = []
-const imageDialog = ref({
-  visible: false,
-  data: null,
-})
+const previewImageList = ref([])
 
 const _ImageListLayer = new ImageListLayer({
   zIndex: 110,
@@ -96,7 +102,7 @@ const _ImageListLayer = new ImageListLayer({
   hColor: hColor.value,
   event: {
     [MAP_EVENT.HANDLE_PICK_LEFT]: (res) => {
-      handleShowImageDialog(res.data)
+      handleShowPreview(res.data)
     },
   },
 })
@@ -151,19 +157,17 @@ function handleClose() {
   emits('update:visible', false)
   emits('close')
 }
-function handleShowImageDialog(row) {
-  imageDialog.value = {
-    visible: !!row,
-    data: row,
-  }
-  _ImageListLayer.setHMesh(row)
-}
 
 function handleLoadImageList() {
   API.mappictureAllMaker().then((res) => {
     allImageMaker = res.data
     _ImageListLayer.setData(allImageMaker)
   })
+}
+function handleShowPreview(row) {
+  showPreview.value = true
+  previewImageList.value = [{ ...row, b_url: import.meta.env.VITE_APP_BASE_API + row.url }]
+  _ImageListLayer.setHMesh(row)
 }
 function handleDeleteImage(row) {
   proxy
@@ -176,8 +180,8 @@ function handleDeleteImage(row) {
       return API.mappictureDelete(row.id)
     })
     .then(() => {
-      handleShowImageDialog(null)
       handleLoadImageList()
+      showPreview.value = false
       proxy.$message.success('删除成功')
     })
     .catch(() => {})

@@ -89,7 +89,7 @@
       </el-auto-resizer>
     </div>
   </MDialog>
-  <ImageList v-model:visible="showImageList" :data="imageListData" />
+  <ImageList v-model:visible="showImageList" :data="imageListData" @refresh="getTree" />
 </template>
 
 <script setup>

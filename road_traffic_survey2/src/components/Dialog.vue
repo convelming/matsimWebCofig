@@ -10,7 +10,7 @@
           </div>
           <img
             v-show="!hideClose"
-            src="@/assets/images/close.svg"
+            src="@/assets/images/close.svg?url"
             class="dg_close_btn"
             @click.stop="close"
           />
