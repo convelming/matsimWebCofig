@@ -130,7 +130,45 @@ function handleShowPreview(index) {
   showPreview.value = true
 }
 
-function uploadOneImage() {}
+function uploadOneImage() {
+  let input = document.createElement('input')
+  input.type = 'file'
+  input.accept = 'image/*'
+  input.style = 'position: fixed;left: -100vw;top: -100vh;'
+  input.onchange = () => {
+    let file = input.files[0]
+    let data = new FormData()
+    data.append('path', props.data.path)
+    data.append('file', file)
+    let loading = proxy.$loading()
+    request({
+      url: `/mappicture/uploadimg`,
+      method: 'post',
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      data: data,
+      // signal: this.controller.signal,
+      // onUploadProgress: (progressEvent) => {
+      //   // this.progress = progressEvent.loaded / progressEvent.total;
+      //   this.progress = Math.floor(progressEvent.progress * 95);
+      //   this.updoading = true;
+      // },
+    })
+      .then((res) => {
+        emits('refresh')
+        proxy.$message.success('上传成功')
+      })
+      .finally(() => {
+        document.body.removeChild(input)
+        // this.updoading = false;
+        // this.progress = 0;
+        loading.close()
+      })
+  }
+  document.body.appendChild(input)
+  input.click()
+}
 
 function handleSetCenter(row) {
   if (_Map) {

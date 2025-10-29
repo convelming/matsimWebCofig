@@ -209,7 +209,43 @@ function handleShowImageList(row) {
     showImageList.value = false
   }
 }
-
+function handleRename(data) {
+  proxy
+    .$prompt('请输入新名称', '提示', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      inputValue: data.name,
+    })
+    .then(({ value }) => {
+      API.mappictureRename({
+        path: data.path,
+        name: value,
+      })
+        .then(() => {
+          getTree()
+          proxy.$message.success('修改成功')
+        })
+        .catch(() => {})
+    })
+}
+function handleDeleteDir(row) {
+  proxy
+    .$confirm(`是否确认删除目录“${row.path}”及目录下全部内容?`, '警告', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+    })
+    .then(function () {
+      mappictureDeleteByPath({
+        path: row.path,
+      })
+        .then(() => {
+          getTree()
+          proxy.$message.success('删除成功')
+        })
+        .catch(() => {})
+    })
+}
 function handleCheckChange() {
   if (treeRef.value) {
     const pathList = treeRef.value.getCheckedNodes()
