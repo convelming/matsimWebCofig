@@ -81,6 +81,8 @@ export class LinkLayer extends Layer {
   }
 
   setData(data, selectId) {
+    console.log(data, selectId);
+    
     try {
       this.selectId = selectId
       this.center = data[0][0].fromxy

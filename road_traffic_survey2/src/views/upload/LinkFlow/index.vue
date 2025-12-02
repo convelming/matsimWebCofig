@@ -228,6 +228,8 @@ function handleMoveToRoute({ value }) {
   API.getMatsimLink(selectRouteId.value).then((res) => {
     // 计算地图合适的中心点和zoom
     let { zoom, center } = _Map.getFitZoomAndCenter(res.data[0].map((v) => v.fromxy))
+    console.log(zoom, center, res.data)
+
     _Map.setCenter(center)
     _Map.setZoom(zoom - 1)
 
