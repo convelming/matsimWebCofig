@@ -14,6 +14,7 @@
               <GeoJSON :showLayer.sync="showLayerGeoJSON" :lock2D.sync="lock2DGeoJSON" name="GeoJSON" ref="GeoJSON" />
               <Parking :showLayer.sync="showLayerParking" :lock2D.sync="lock2DParking" name="Parking" ref="Parking" />
               <TrafficRegionAnalysis :showLayer.sync="showLayerTrafficRegionAnalysis" :lock2D.sync="lock2DTrafficRegionAnalysis" name="TrafficRegionAnalysis" ref="TrafficRegionAnalysis" />
+              <RoutePlanning :showLayer.sync="showLayerRoutePlanning" :lock2D.sync="lock2DRoutePlanning" name="RoutePlanning" ref="RoutePlanning" />
               <div style="height: 100px"></div>
             </el-collapse>
           </Drawer>
@@ -57,7 +58,7 @@ export default {
   mixins: [mixins, configMixins],
   data() {
     return {
-      activeNames: ["PublicTransit", "MotorizedTravel", "CarTravel", "Build3D", "Network", "Activity3D", "GeoJSON", "Parking", "TrafficRegionAnalysis"],
+      activeNames: ["PublicTransit", "MotorizedTravel", "CarTravel", "Build3D", "Network", "Activity3D", "GeoJSON", "Parking", "TrafficRegionAnalysis","RoutePlanning"],
     };
   },
   created() {

@@ -77,7 +77,7 @@ export const MAP_ZOOM_RANGE = {
 const MAP_ZOOM_BASE = 18;
 
 // 地图层级缩放高度基数
-const MAP_ZOOM_HEIGHT = 300;
+const MAP_ZOOM_HEIGHT = 400;
 
 export class MyMap extends EventListener {
   name = "map";
@@ -186,8 +186,8 @@ export class MyMap extends EventListener {
       const width2 = this.rootDoc.offsetWidth
       const scale = width1 / width2
       // const [x1, y1] = this.WindowXYToCanvasXY(0, 0)
-      // const [x2, y2] = this.WindowXYToCanvasXY(30, 40)
-      // const scale = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)) / 50
+      // const [x2, y2] = this.WindowXYToCanvasXY(0, 30)
+      // const scale = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)) / 30
       return scale
     } catch (error) {
       return 1

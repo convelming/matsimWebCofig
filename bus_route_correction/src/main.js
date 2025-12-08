@@ -20,6 +20,7 @@ import IconSelect from "@/components/IconSelect.vue";
 import ColorPicker from "@/components/ColorPicker.vue";
 import Tags from "@/components/Tags.vue";
 import Clock from "@/components/Clock/index.vue";
+import AutoSize from "@/components/AutoSize.vue";
 
 // Vue.config.productionTip = false;
 
@@ -34,6 +35,7 @@ Vue.component("IconSelect", IconSelect);
 Vue.component("ColorPicker", ColorPicker);
 Vue.component("Tags", Tags);
 Vue.component("Clock", Clock);
+Vue.component("AutoSize", AutoSize);
 Vue.use(ElementUI);
 Vue.use(language);
 

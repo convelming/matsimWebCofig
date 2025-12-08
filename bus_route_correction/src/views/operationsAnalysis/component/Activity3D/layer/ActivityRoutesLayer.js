@@ -15,7 +15,7 @@ export class ActivityRoutesLayer extends Layer {
 
   actScale = 1;
   actWidth = 2;
-  actTexture = new THREE.TextureLoader().load(require("@/assets/image/point.png"));
+  actTexture = new THREE.TextureLoader().load(require("@/assets/image/point.svg"));
   actList = [];
   actStartMeshList = [];
   actEndMeshList = [];

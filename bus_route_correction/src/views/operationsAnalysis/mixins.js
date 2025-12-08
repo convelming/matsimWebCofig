@@ -1,4 +1,3 @@
-
 import PublicTransit from "./component/PublicTransit/index.vue";
 import MotorizedTravel from "./component/MotorizedTravel/index.vue";
 import Build3D from "./component/Build3D/index.vue";
@@ -8,6 +7,7 @@ import GeoJSON from "./component/GeoJSON/index.vue";
 import CarTravel from "./component/CarTravel/index.vue";
 import Parking from "./component/Parking/index.vue";
 import TrafficRegionAnalysis from "./component/TrafficRegionAnalysis/index.vue";
+import RoutePlanning from "./component/RoutePlanning/index.vue";
 
 import NewClock from "@/components/NewClock/index.vue";
 
@@ -26,12 +26,12 @@ export default {
     CarTravel,
     Parking,
     TrafficRegionAnalysis,
+    RoutePlanning,
 
     NewClock,
   },
   data() {
     return {
-
       loading: false,
       _Map: null,
       _MapLayer: null,
@@ -65,6 +65,9 @@ export default {
 
       showLayerTrafficRegionAnalysis: false,
       lock2DTrafficRegionAnalysis: false,
+
+      showLayerRoutePlanning: false,
+      lock2DRoutePlanning: false,
 
       showStopToolbar: true,
       showLeftToolbar: true,
@@ -164,6 +167,15 @@ export default {
       this.handleChangeTimeSpeed();
       this.handleChangeMapCameraControls();
     },
+    showLayerRoutePlanning(val) {
+      this.handleChangeTimeSpeed();
+      this.handleChangeMapCameraControls();
+      this.handleToolbarActiveModel("RoutePlanning");
+    },
+    lock2DRoutePlanning(val) {
+      this.handleChangeTimeSpeed();
+      this.handleChangeMapCameraControls();
+    },
   },
   provide() {
     return {
@@ -208,6 +220,7 @@ export default {
       if (this.showLayerCarTravel) enableRotate = true;
       if (this.showLayerParking) enableRotate = true;
       if (this.showLayerTrafficRegionAnalysis) enableRotate = true;
+      if (this.showLayerRoutePlanning) enableRotate = true;
       return enableRotate;
     },
     canChangeMapCameraControls() {
@@ -221,6 +234,7 @@ export default {
       if (this.showLayerCarTravel && this.lock2DCarTravel) enableRotate = false;
       if (this.showLayerParking && this.lock2DParking) enableRotate = false;
       if (this.showLayerTrafficRegionAnalysis && this.lock2DTrafficRegionAnalysis) enableRotate = false;
+      if (this.showLayerRoutePlanning && this.lock2DRoutePlanning) enableRotate = false;
       return enableRotate;
     },
     handleToolbarActiveModel(id) {

@@ -116,7 +116,7 @@ export class StopsLayer extends Layer {
       this.update();
     }
     if (type == MAP_EVENT.UPDATE_CAMERA_HEIGHT) {
-      this.setSize(this.map.plottingScale * 10);
+      this.setSize(this.plottingScale * 10);
       this.setPitch(this.pitch);
       this.update();
     }
@@ -184,12 +184,16 @@ export class StopsLayer extends Layer {
     if (type == MAP_EVENT.UPDATE_CAMERA_ROTATE) {
       this.setPitch(data.newPitch);
     }
+  }
 
+  get plottingScale() {
+    // return this.map.plottingScale;
+    return this.map.cameraHeight / 500
   }
 
   onAdd(map) {
     super.onAdd(map);
-    this.setSize(this.map.plottingScale * 10);
+    this.setSize(this.plottingScale * 10);
     this.setPitch(this.map.pitch);
     this.update();
   }
@@ -248,7 +252,7 @@ export class StopsLayer extends Layer {
     }
 
     if (this.labelData && this.labelMesh) {
-      const scale = this.map.plottingScale * 0.3;
+      const scale = this.plottingScale * 0.3;
       this.labelMesh.scale.set(this.labelData.mapWidth * scale, this.labelData.mapHeight * scale, 1);
     }
   }
@@ -256,7 +260,7 @@ export class StopsLayer extends Layer {
   show() {
     super.show();
     if (this.map) {
-      this.setSize(this.map.plottingScale * 10);
+      this.setSize(this.plottingScale * 10);
       this.setPitch(this.map.pitch);
       this.update();
     }
@@ -274,9 +278,9 @@ export class StopsLayer extends Layer {
     this.selectMaterial.needsUpdate = true;
   }
 
-  showName() { }
+  showName() {}
 
-  hideName() { }
+  hideName() {}
 
   async update() {
     if (this.updateTimeout) return;
@@ -396,7 +400,7 @@ export class StopsLayer extends Layer {
     } else {
       this.labelMesh.material.setValues({ map: this.labelData.map });
       this.labelMesh.material.needsUpdate = true;
-      const scale = this.map.plottingScale * 0.3;
+      const scale = this.plottingScale * 0.3;
       this.labelMesh.scale.set(this.labelData.mapWidth * scale, this.labelData.mapHeight * scale, 1);
       const [x, y] = this.map.WebMercatorToCanvasXY(this.labelData.x, this.labelData.y);
       this.labelMesh.position.set(x, y, 10);
@@ -410,7 +414,7 @@ export class StopsLayer extends Layer {
       transparent: true,
       sizeAttenuation: true,
       vertexColors: true,
-      
+
       depthWrite: false,
 
       ...opt,

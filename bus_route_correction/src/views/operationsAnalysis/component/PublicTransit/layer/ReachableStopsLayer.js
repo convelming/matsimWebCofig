@@ -15,7 +15,7 @@ export class ReachableStopsLayer extends Layer {
   center = [0, 0];
   highStopId = -1;
 
-  texture = new THREE.TextureLoader().load(require("@/assets/image/point.png"));
+  texture = new THREE.TextureLoader().load(require("@/assets/image/point.svg"));
 
   constructor(opt) {
     super(opt);

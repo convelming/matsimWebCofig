@@ -12,7 +12,7 @@ export class RouteFlowsLayer extends Layer {
   data = [];
   stopList = [];
 
-  texture = new THREE.TextureLoader().load(require("@/assets/image/point.png"));
+  texture = new THREE.TextureLoader().load(require("@/assets/image/point.svg"));
 
   meshMap = new Map();
   selectMesh = null;

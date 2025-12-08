@@ -1019,3 +1019,88 @@ export function getUploadLines(data) {
     method: "post",
   });
 }
+
+
+// 新增空轨起降点
+// POST /pt/uam/add
+// 接口ID：386379230
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-386379230
+export function addUam(data) {
+  return request({
+    url: `/pt/uam/add`,
+    method: "post",
+    data: data,
+  });
+}
+
+
+// 删除空轨起降点
+// DELETE /pt/uam/delete/{id}
+// 接口ID：386398372
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-386398372
+export function deleteUam(id) {
+  return request({
+    url: `/pt/uam/delete/${id}`,
+    method: "delete",
+  });
+}
+
+
+// 空轨起降点列表
+// GET /pt/uam/list
+// 接口ID：386399030
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-386399030
+export function listUam(params) {
+  return request({
+    url: `/pt/uam/list`,
+    method: "get",
+    params: params,
+  });
+}
+
+
+// 生成空轨路径
+// POST /pt/uam/genRoute
+// 接口ID：386405575
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-386405575
+export function genUamRoute(data) {
+  return request({
+    url: `/pt/uam/genRoute`,
+    method: "post",
+    data,
+  });
+}
+
+// 轨迹列表
+// GET /pt/uam/routeList
+// 接口ID：387028060
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-387028060
+export function uamRouteList(params) {
+  return request({
+    url: `/pt/uam/routeList`,
+    method: "get",
+    params: params,
+  });
+}
+
+// 删除轨迹
+// DELETE /pt/uam/deleteRoute/{id}
+// 接口ID：387127925
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-387127925
+export function deleteUamRoute(id) {
+  return request({
+    url: `/pt/uam/deleteRoute/${id}`,
+    method: "DELETE",
+  });
+}
+
+
+
+
+
+
+
+
+
+
+

@@ -11,6 +11,7 @@
         <div class="item" :id="GeoJSON.id" :class="{ active: activeModel === GeoJSON.id }" @click="handleActiveModel(GeoJSON.id)">{{ $l(GeoJSON.name) }}</div>
         <div class="item" :id="Parking.id" :class="{ active: activeModel === Parking.id }" @click="handleActiveModel(Parking.id)">{{ $l(Parking.name) }}</div>
         <div class="item" :id="TrafficRegionAnalysis.id" :class="{ active: activeModel === TrafficRegionAnalysis.id }" @click="handleActiveModel(TrafficRegionAnalysis.id)">{{ $l(TrafficRegionAnalysis.name) }}</div>
+        <div class="item" :id="RoutePlanning.id" :class="{ active: activeModel === RoutePlanning.id }" @click="handleActiveModel(RoutePlanning.id)">{{ $l(RoutePlanning.name) }}</div>
       </div>
       <div class="btn el-icon-caret-right" @click="handleScroll(150)"></div>
     </div>
@@ -60,6 +61,9 @@
         <component v-for="item in TrafficRegionAnalysis.list" :show="item.name == TrafficRegionAnalysis.activeName" :key="item.name" :is="item.type" :name="item.name" v-bind="item.data" :config="item.config" ref="TrafficRegionAnalysisItem" />
       </el-collapse>
     </div>
+    <div class="toolbar-bodyer" v-show="activeModel === RoutePlanning.id">
+      <RoutePlanningList ref="RoutePlanningItem" />
+    </div>
   </div>
 </template>
 
@@ -105,6 +109,10 @@
     "zh-CN": "区域交通分析",
     "en-US": "Traffic Region Analysis"
   },
+  "航路自动划设":{
+    "zh-CN": "航路自动划设",
+    "en-US": "Route Planning"
+  },
 }
 </language>
 
@@ -144,6 +152,8 @@ import ParkingGeoJSONDetail from "../Parking/toolbar/ParkingGeoJSONDetail.vue";
 import TRAGeoJSONHeader from "../TrafficRegionAnalysis/toolbar/TRAGeoJSONHeader.vue";
 import MultiplePathsDetail from "../TrafficRegionAnalysis/toolbar/MultiplePathsDetail.vue";
 import SinglePathDetail from "../TrafficRegionAnalysis/toolbar/SinglePathDetail.vue";
+// 航路自动划设
+import RoutePlanningList from "../RoutePlanning/toolbar/RoutePlanningList.vue";
 
 export default {
   name: "Toolbar",
@@ -181,6 +191,8 @@ export default {
     TRAGeoJSONHeader,
     MultiplePathsDetail,
     SinglePathDetail,
+
+    RoutePlanningList,
   },
   inject: ["rootVue"],
   data() {
@@ -279,6 +291,15 @@ export default {
         // ],
         // activeName: "38e4047c-7a67-4c49-9e3b-cb40a22d8bd3",
       },
+      RoutePlanning: {
+        id: "RoutePlanning",
+        name: "航路自动划设",
+        components: ["RoutePlanningList", "RoutePlanningList"],
+        sreach: {},
+        params: {},
+        list: [],
+        activeName: "",
+      },
       modelMap: {
         RouteDetail: "PublicTransit",
         StopAndRoute: "PublicTransit",
@@ -305,8 +326,10 @@ export default {
 
         MultiplePathsDetail: "TrafficRegionAnalysis",
         SinglePathDetail: "TrafficRegionAnalysis",
+
+        RoutePlanningList: "RoutePlanning",
       },
-      activeModel: this.isDev ? "TrafficRegionAnalysis" : "PublicTransit",
+      activeModel: this.isDev ? "RoutePlanning" : "PublicTransit",
       activeName: "",
       list: [],
     };
@@ -377,6 +400,13 @@ export default {
         this.$set(this.TrafficRegionAnalysis, "params", TrafficRegionAnalysisToolbar.params || {});
         this.$set(this.TrafficRegionAnalysis, "activeName", TrafficRegionAnalysisToolbar.activeName || "");
         this.$set(this.TrafficRegionAnalysis, "list", TrafficRegionAnalysisToolbar.list || []);
+      }
+      {
+        const RoutePlanningToolbar = config.RoutePlanningToolbar || {};
+        this.$set(this.RoutePlanning, "sreach", RoutePlanningToolbar.sreach || {});
+        this.$set(this.RoutePlanning, "params", RoutePlanningToolbar.params || {});
+        this.$set(this.RoutePlanning, "activeName", RoutePlanningToolbar.activeName || "");
+        this.$set(this.RoutePlanning, "list", RoutePlanningToolbar.list || []);
       }
       {
         try {
@@ -534,6 +564,25 @@ export default {
           sreach: this.TrafficRegionAnalysis.sreach,
           params: this.TrafficRegionAnalysis.params,
           activeName: this.TrafficRegionAnalysis.activeName,
+          list: list,
+        };
+      }
+      {
+        const list = [];
+        const refs = this.$refs["RoutePlanningToolbarItem"];
+        for (const item of this.RoutePlanningToolbar.list) {
+          const ref = refs.find((v) => v.name == item.name);
+          list.push({
+            type: item.type,
+            name: item.name,
+            data: JSON.parse(JSON.stringify(item.data)),
+            config: await ref.exportConfig(),
+          });
+        }
+        config.RoutePlanningToolbarToolbar = {
+          sreach: this.RoutePlanningToolbar.sreach,
+          params: this.RoutePlanningToolbar.params,
+          activeName: this.RoutePlanningToolbar.activeName,
           list: list,
         };
       }

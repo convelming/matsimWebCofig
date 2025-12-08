@@ -11,7 +11,7 @@ export class BusStopLayer extends Layer {
 
   data = [];
   center = [0, 0];
-  texture = new THREE.TextureLoader().load(require("@/assets/image/point.png"));
+  texture = new THREE.TextureLoader().load(require("@/assets/image/point.svg"));
 
   // 初始化函数
   constructor(opt) {

@@ -14,7 +14,7 @@ export class BusRouteLinkLayer extends Layer {
   linkData = [];
   middleLinkData = [];
   stopData = [];
-  pointTexture = new THREE.TextureLoader().load(require("@/assets/image/point.png"));
+  pointTexture = new THREE.TextureLoader().load(require("@/assets/image/point.svg"));
   linkTexture = new THREE.TextureLoader().load(require("@/assets/image/link_top5.png"));
 
   constructor(opt) {

@@ -20,7 +20,7 @@ export class BusStopLayer extends Layer {
     this.color = new THREE.Color(opt.color || this.color);
     this.highStopColor = new THREE.Color(opt.highStopColor || this.highStopColor);
 
-    this.texture = new THREE.TextureLoader().load(require("@/assets/image/point.png"));
+    this.texture = new THREE.TextureLoader().load(require("@/assets/image/point.svg"));
 
     this.geometry = new THREE.BufferGeometry();
     this.material = this.getMaterial({

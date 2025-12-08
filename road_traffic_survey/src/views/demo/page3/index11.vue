@@ -58,6 +58,7 @@ export default {
         console.log(error);
         pageConfig = {};
       }
+      console.log(pageConfig);
       await this.initMap(pageConfig.mapConfig);
       console.log("loaded map");
       console.log(onlyLoad);

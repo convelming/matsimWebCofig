@@ -21,7 +21,7 @@ export class StopsLayer extends Layer {
     this.data = opt.data || this.data;
     this.color = new THREE.Color(opt.color || this.color);
 
-    this.texture = new THREE.TextureLoader().load(require("@/assets/image/point.png"));
+    this.texture = new THREE.TextureLoader().load(require("@/assets/image/point.svg"));
 
     this.geometry = new THREE.BufferGeometry();
     this.material = this.getMaterial({
