@@ -28,6 +28,7 @@ export class NetworkLayer extends Layer {
 
     this.time = opt.time || this.time;
     this.colors = opt.colors || this.colors;
+    this.modes = opt.modes || "";
 
     this.lineWidth = opt.lineWidth || this.lineWidth;
     this.lineOffset = opt.lineOffset || this.lineOffset;
@@ -158,7 +159,7 @@ export class NetworkLayer extends Layer {
   }
 
   handleLoadTile(tile) {
-    if (this.loadingNum < 20) {
+    if (this.loadingNum < 20 && !this._isDisposed) {
       this.loadingNum++;
       this.handleEventListener(MAP_EVENT.LAYER_LOADING, this.loadingNum > 0);
       tile.load(this).then((tile) => {
@@ -191,6 +192,7 @@ export class NetworkLayer extends Layer {
           tile = new NetworkTile({
             row: i,
             col: j,
+            modes: this.modes,
             time: this.time,
             lineWidth: this.lineWidth,
             lineOffset: this.lineOffset,
@@ -267,7 +269,7 @@ export class NetworkTile {
     return this._flowNum;
   }
 
-  constructor({ row, col, flowNum = 0, lineWidth = 10, lineOffset = 0, colors = ColorBar2DColors, pickLayerColor = 0xff0000, showNode = false, showVideoIcon = false, videoIconWidth = 10 }) {
+  constructor({ row, col, modes, flowNum = 0, lineWidth = 10, lineOffset = 0, colors = ColorBar2DColors, pickLayerColor = 0xff0000, showNode = false, showVideoIcon = false, videoIconWidth = 10 }) {
     this._row = row;
     this._col = col;
     this._x = ((row + 0.5) * (EARTH_RADIUS * 2)) / Math.pow(2, BUILD_ZOOM) - EARTH_RADIUS;
@@ -282,6 +284,7 @@ export class NetworkTile {
     this._lineData = {};
     this._videoIconData = {};
     this._videoIconWidth = videoIconWidth;
+    this._modes = modes;
 
     this._geometry = new THREE.BufferGeometry();
     this._baseMaterial = new NetworkMaterial({
@@ -345,7 +348,7 @@ export class NetworkTile {
     try {
       this._loadStatus = 4;
       let pickColorNum = 0;
-      const { data } = await getTileNetwork({ x: this._row, y: this._col });
+      const { data } = await getTileNetwork({ x: this._row, y: this._col, modes: this._modes });
       if (data && data.length > 0) {
         this._lineData = {};
         this._nodeData = {};

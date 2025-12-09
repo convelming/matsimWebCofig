@@ -12,7 +12,7 @@
       <div class="form_item">
         <div class="form_label">{{ $l("是否显示起降点：") }}</div>
         <div class="form_value">
-          <el-switch :disabled="!s_showLayer" v-model="showPoint"  @change="handleEmitOption"></el-switch>
+          <el-switch :disabled="!s_showLayer" v-model="showPoint" @change="handleEmitOption"></el-switch>
         </div>
       </div>
       <div class="form_item">
@@ -27,16 +27,25 @@
           <ColorPicker :disabled="!s_showLayer" :title="$l('公交站点颜色')" size="mini" :predefine="predefineColors" v-model="pointColor" @change="handleEmitOption" />
         </div>
       </div>
-      <!-- <div class="form_item">
-        <div class="form_label">{{ $l("是否显示航路：") }}</div>
-        <div class="form_value">
-          <el-switch :disabled="!s_showLayer" v-model="selectStop" @change="handleSelectStop"></el-switch>
-        </div>
-      </div> -->
       <div class="form_item">
         <div class="form_label">{{ $l("是否显示划设路线：") }}</div>
         <div class="form_value">
-          <el-switch :disabled="!s_showLayer" v-model="selectStop" @change="handleSelectStop"></el-switch>
+          <el-switch :disabled="!s_showLayer" v-model="showRoute" @change="handleEmitOption"></el-switch>
+        </div>
+      </div>
+
+      <div class="form_item">
+        <div class="form_label">{{ $l("是否显示航路：") }}</div>
+        <div class="form_value">
+          <el-switch :disabled="!s_showLayer" v-model="showNetwork" @change="handleChangeNetworkMode(false)"></el-switch>
+        </div>
+      </div>
+      <div class="form_item">
+        <div class="form_label">{{ $l("航路类型：") }}</div>
+        <div class="form_value">
+          <el-select v-model="networkMode" :disabled="!s_showLayer" size="small" multiple @change="handleChangeNetworkMode">
+            <el-option v-for="value in networkModeList" :label="value" :value="value" :key="value" />
+          </el-select>
         </div>
       </div>
     </div>
@@ -65,12 +74,23 @@
     "zh-CN": "是否显示划设路线：",
     "en-US": "是否显示划设路线："
   },
+  "是否显示航路：":{
+    "zh-CN": "是否显示航路：",
+    "en-US": "是否显示航路："
+  },
+  "航路类型：":{
+    "zh-CN": "航路类型：",
+    "en-US": "航路类型："
+  },
 }
 </language>
 
 <script>
+import { getNetworkModes } from "@/api/index";
 import { MAP_EVENT } from "@/mymap";
 import { COLOR_LIST } from "@/utils/utils";
+
+import { NetworkLayer } from "./layer/NetworkLayer.js";
 
 export default {
   props: ["name", "showLayer", "lock2D"],
@@ -114,7 +134,11 @@ export default {
       pointColor: "#ff0000",
       pointSize: 2,
 
-      showNetwork: true,
+      showNetwork: false,
+      networkMode: "",
+      networkModeList: [],
+      colorsList: COLOR_LIST,
+
       showRoute: true,
     };
   },
@@ -122,6 +146,13 @@ export default {
     this.s_showLayer = this.showLayer;
     this.rootVue.$on("RoutePlanning_Get_Options", (data) => {
       this.handleEmitOption();
+    });
+    getNetworkModes().then((res) => {
+      this.networkModeList = res.data;
+    });
+
+    this._NetworkLayer = new NetworkLayer({
+      modes: "undefined",
     });
   },
   mounted() {
@@ -137,6 +168,61 @@ export default {
     this.handleDisable();
   },
   methods: {
+    handleChangeNetworkMode(value) {
+      const newModes = this.networkMode.join(",");
+      if (this.showNetwork && newModes && !value) {
+        if (this._NetworkLayer.modes != newModes) {
+          this._NetworkLayer.dispose();
+          this._NetworkLayer = new NetworkLayer({
+            lineWidth: 1,
+            lineOffset: 1,
+            colors: this.getLayerColors(this.colorsList[this.colors]),
+            showNode: false,
+            showVideoIcon: null,
+            videoIconWidth: 0,
+
+            modes: this.networkMode.join(","),
+          });
+        }
+        this._Map.addLayer(this._NetworkLayer);
+      } else {
+        this._NetworkLayer.removeFromParent();
+      }
+    },
+    getLayerColors(colors) {
+      try {
+        return {
+          0: colors[0],
+          0.4: colors[0],
+          0.4: colors[1],
+          0.6: colors[1],
+          0.6: colors[2],
+          0.75: colors[2],
+          0.75: colors[3],
+          0.85: colors[3],
+          0.85: colors[4],
+          0.95: colors[4],
+          0.95: colors[5],
+          1: colors[5],
+        };
+      } catch (error) {
+        colors = ["#313695", "#74add1", "#e0f3f8", "#fdae61", "#f46d43", "#a50026"];
+        return {
+          0: colors[0],
+          0.4: colors[0],
+          0.4: colors[1],
+          0.6: colors[1],
+          0.6: colors[2],
+          0.75: colors[2],
+          0.75: colors[3],
+          0.85: colors[3],
+          0.85: colors[4],
+          0.95: colors[4],
+          0.95: colors[5],
+          1: colors[5],
+        };
+      }
+    },
     handleEmitOption() {
       this.rootVue.$emit("RoutePlanning_Options", {
         showLayer: this.s_showLayer,

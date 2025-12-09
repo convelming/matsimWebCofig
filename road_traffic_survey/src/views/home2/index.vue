@@ -119,7 +119,7 @@
                 <el-button type="primary" size="small" @click="ctpListDialog.visible = true">载入项目</el-button>
               </el-form-item>
               <el-form-item>
-                <el-checkbox v-model="ctpShowAll" label="" :indeterminate="false" @change="">显示已做项目范围</el-checkbox>
+                <el-checkbox v-model="ctpShowAll" :indeterminate="false" @change="handleCTPShowAll">显示已做项目范围</el-checkbox>
               </el-form-item>
               <!-- <el-collapse style="user-select: none" v-model="activeNames3">
                 <el-collapse-item title="显示设置" name="1">
@@ -245,7 +245,9 @@ import CTPListDialog from "./components/CTProject/ListDialog.vue";
 import CTPModeDialog from "./components/CTProject/ModeDialog.vue";
 import CTPDrawingModelDialog from "./components/CTProject/DrawingModelDialog.vue";
 
-import { getGeomjson, queryAllMaker, getMatsimLink, intersectionList, mappictureAllMaker, mappictureDelete } from "@/api/index";
+import { getGeomjson, queryAllMaker, getMatsimLink, intersectionList, mappictureAllMaker, mappictureDelete, jsonAllProject } from "@/api/index";
+import { GeoJSONLayer } from "./layer/GeoJSONLayer";
+import GeoJSONLayerWorker from "./layer/GeoJSONLayer.home.worker.js";
 
 export const SHOW_LINK_ZOOM = 14;
 
@@ -703,6 +705,16 @@ export default {
         zIndex: 10,
         color: "red",
       });
+
+      this._AllProjectLayer = new GeoJSONLayer({
+        zIndex: 100,
+
+        polygonColor: "orange",
+        polygonOpacity: 0.5,
+        polygonBorderOpacity: 0.8,
+        polygonBorderWidth: 10,
+        polygonBorderColor: "orange",
+      });
     },
     initMap() {
       this._Map = new MyMap({
@@ -1051,8 +1063,48 @@ export default {
       this.ctpModeDialog.proId = this.ctpDrawingModelDialog.proId;
       this.ctpModeDialog.visible = true;
     },
+    handleCTPShowAll() {
+      console.log("handleCTPShowAll");
+      jsonAllProject()
+        .then((res) => parserGeoJSON(res.data))
+        .then((res) => {
+          this._AllProjectLayer.setGeoJsonData(res);
+        });
+      if (this.ctpShowAll) {
+        this._Map.addLayer(this._AllProjectLayer);
+      } else {
+        this._Map.removeLayer(this._AllProjectLayer);
+      }
+    },
   },
 };
+function parserGeoJSON(text, options = {}) {
+  // const timeKey = "parserGeoJSON_" + new Date().getTime();
+  // console.time(timeKey);
+  return new Promise((resolve, reject) => {
+    const worker = new GeoJSONLayerWorker();
+    worker.onmessage = (event) => {
+      const { range, center, pointArray, lineArray, polygonArray, propertiesListArray, propertiesLabelsArray, geomListArray } = event.data;
+
+      const textDecoder = new TextDecoder();
+      const propertiesLabels = JSON.parse(textDecoder.decode(propertiesLabelsArray));
+      const propertiesList = JSON.parse(textDecoder.decode(propertiesListArray));
+      const geomList = JSON.parse(textDecoder.decode(geomListArray));
+
+      // console.timeEnd(timeKey);
+      resolve({ range, center, pointArray, lineArray, polygonArray, propertiesList, propertiesLabels, geomList });
+      worker.terminate();
+    };
+    worker.addEventListener("error", (error) => {
+      reject(error);
+      worker.terminate();
+    });
+
+    let textEncoder = new TextEncoder();
+    const array = new Int8Array(textEncoder.encode(text));
+    worker.postMessage({ json: array, options: options }, [array.buffer]);
+  }).catch(console.log);
+}
 </script>
 
 <style lang="scss" scoped>

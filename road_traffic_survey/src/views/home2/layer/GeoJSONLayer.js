@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { Layer, MAP_EVENT } from "@/mymap/index.js";
 import { ColorBar2D } from "./ColorBar2D";
 
-export const ICON_LIST = Object.values(import.meta.glob("@/assets/icon_traffic/**"));
+// export const ICON_LIST = Object.values(import.meta.glob("@/assets/icon_traffic/**"));
 
 export const LINE_STYLE = {
   NONE: 1, // 不显示
@@ -25,7 +25,7 @@ const defaultParams = {
   pointAutoSize: 10,
   pointSize: 500,
   pointColor: "#01ae9c", // ffa500
-  pointIcon: new URL("@/assets/icon_traffic/point.svg", import.meta.url).href,
+  pointIcon: new URL("@/assets/image/point.svg", import.meta.url).href,
   pointValue: "",
   pointColorBar: [],
   pointOpacity: 1,
@@ -593,33 +593,33 @@ export class GeoJSONLayer extends Layer {
   }
 
   on(type, data) {
-    if (type == MAP_EVENT.UPDATE_CAMERA_HEIGHT) {
-      this.map.nextFrame(() => {
-        if (this.pointAutoSize > 0) {
-          const size = this.pointAutoSize * this.map.plottingScale;
-          this.pointMaterial.uniforms.size.value = size;
-          this.pointMaterial.needsUpdate = true;
-          this.pointPickLayerMaterial.uniforms.size.value = size;
-          this.pointPickLayerMaterial.needsUpdate = true;
-          this.pointPickItemMaterial.uniforms.size.value = size;
-          this.pointPickItemMaterial.needsUpdate = true;
-        }
-        if (this.lineAutoWidth > 0) {
-          const lineWidth = this.lineAutoWidth * this.map.plottingScale;
-          this.lineMaterial.uniforms.lineWidth.value = lineWidth;
-          this.lineMaterial.needsUpdate = true;
-          this.linePickLayerMaterial.uniforms.lineWidth.value = lineWidth;
-          this.linePickLayerMaterial.needsUpdate = true;
-          this.linePickItemMaterial.uniforms.lineWidth.value = lineWidth;
-          this.linePickItemMaterial.needsUpdate = true;
-        }
-        if (this.polygonBorderAutoWidth > 0) {
-          const lineWidth = this.polygonBorderAutoWidth * this.map.plottingScale;
-          this.polygonBorderMaterial.uniforms.lineWidth.value = lineWidth;
-          this.polygonBorderMaterial.needsUpdate = true;
-        }
-      });
-    }
+    // if (type == MAP_EVENT.UPDATE_CAMERA_HEIGHT) {
+    //   this.map.nextFrame(() => {
+    //     if (this.pointAutoSize > 0) {
+    //       const size = this.pointAutoSize * this.map.plottingScale;
+    //       this.pointMaterial.uniforms.size.value = size;
+    //       this.pointMaterial.needsUpdate = true;
+    //       this.pointPickLayerMaterial.uniforms.size.value = size;
+    //       this.pointPickLayerMaterial.needsUpdate = true;
+    //       this.pointPickItemMaterial.uniforms.size.value = size;
+    //       this.pointPickItemMaterial.needsUpdate = true;
+    //     }
+    //     if (this.lineAutoWidth > 0) {
+    //       const lineWidth = this.lineAutoWidth * this.map.plottingScale;
+    //       this.lineMaterial.uniforms.lineWidth.value = lineWidth;
+    //       this.lineMaterial.needsUpdate = true;
+    //       this.linePickLayerMaterial.uniforms.lineWidth.value = lineWidth;
+    //       this.linePickLayerMaterial.needsUpdate = true;
+    //       this.linePickItemMaterial.uniforms.lineWidth.value = lineWidth;
+    //       this.linePickItemMaterial.needsUpdate = true;
+    //     }
+    //     if (this.polygonBorderAutoWidth > 0) {
+    //       const lineWidth = this.polygonBorderAutoWidth * this.map.plottingScale;
+    //       this.polygonBorderMaterial.uniforms.lineWidth.value = lineWidth;
+    //       this.polygonBorderMaterial.needsUpdate = true;
+    //     }
+    //   });
+    // }
     if (type == MAP_EVENT.UPDATE_CENTER) {
       const list = [
         this.pointMeshList,
