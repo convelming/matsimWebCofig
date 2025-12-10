@@ -1,14 +1,16 @@
+importScripts("/static/js/proj4.js", "/static/js/config.js");
+
 import * as THREE from "three";
-import { WGS84ToMercator } from "@/mymap/utils/LngLatUtils"
+import { WGS84ToMercator } from "@/mymap/utils/LngLatUtils";
 
 function calculatePosition(path, time) {
   if (path.length == 1) {
-    return { start: path[0].point, end: path[0].point, index: 0, isRunning: false }
+    return { start: path[0].point, end: path[0].point, index: 0, isRunning: false };
   }
   const route_startTime = path[0].time;
   const route_endTime = path[path.length - 1].time;
   if (time <= route_startTime) {
-    return { start: path[0].point, end: path[1].point, index: 0, isRunning: false }
+    return { start: path[0].point, end: path[1].point, index: 0, isRunning: false };
   } else if (time >= route_endTime) {
     return { start: path[path.length - 1].point, end: path[path.length - 1].point, index: path.length - 1, isRunning: false };
   }
@@ -40,7 +42,7 @@ function calculatePosition(path, time) {
         start: pointMove(line_start, line_end, percentage),
         end: line_end,
         isRunning: true,
-        index: i
+        index: i,
       };
     }
   }
@@ -49,7 +51,7 @@ function calculatePosition(path, time) {
 function pointMove(start, end, percentage) {
   let x = start[0] + (end[0] - start[0]) * percentage;
   let y = start[1] + (end[1] - start[1]) * percentage;
-  return [x, y]
+  return [x, y];
 }
 
 function pointDistance(start, end, percentage) {
@@ -84,7 +86,6 @@ class WorkerClass {
         const { track, index, typeIndex } = v1;
         const { start, end, index: sindex } = calculatePosition(track, time);
 
-
         if (v1.index == selectCarIndex) {
           const { track, ...d } = v1;
           detail = d;
@@ -110,7 +111,7 @@ class WorkerClass {
     }
     return {
       array: new Float64Array(runCarList),
-      detail: detail
+      detail: detail,
     };
   }
 
@@ -133,14 +134,13 @@ class WorkerClass {
 
       if (v1.track.length < 1) continue;
 
-
       const carId = Symbol(i1);
 
       v1.id = k1;
-      v1.typeIndex = typeList.findIndex(v => v == v1.type);
+      v1.typeIndex = typeList.findIndex((v) => v == v1.type);
       if (v1.typeIndex < 0) {
-        v1.typeIndex = typeList.length
-        typeList.push(v1.type)
+        v1.typeIndex = typeList.length;
+        typeList.push(v1.type);
       }
       v1.startTime = v1.endTime = 0;
       v1.index = idList.length;
@@ -163,13 +163,12 @@ class WorkerClass {
         let speed = 0;
         if (perv) {
           dispose = pointDistance(perv.point, v2.point, 1) || 0;
-          speed = dispose / (v2.time - perv.time)
+          speed = dispose / (v2.time - perv.time);
         }
 
         totalDispose += dispose;
         v2.dispose = totalDispose;
         v2.speed = speed;
-
 
         perv = v2;
       }
@@ -189,7 +188,7 @@ class WorkerClass {
     this.typeList = typeList;
     console.log(carMap);
 
-    return { center: center, idList: idList, typeList: typeList }
+    return { center: center, idList: idList, typeList: typeList };
   }
 }
 
@@ -210,7 +209,7 @@ onmessage = function (e) {
         type: type,
         postTime: postTime,
         callTime: new Date().getTime(),
-        ...workerData
+        ...workerData,
       });
       break;
     }
@@ -218,13 +217,16 @@ onmessage = function (e) {
       //"render":
       // console.log("car:render", new Date().getTime() - callTime);
       const workerData = worker.render(data);
-      this.postMessage({
-        type: type,
-        postTime: postTime,
-        callTime: new Date().getTime(),
-        array: workerData.array,
-        detail: workerData.detail
-      }, [workerData.array.buffer]);
+      this.postMessage(
+        {
+          type: type,
+          postTime: postTime,
+          callTime: new Date().getTime(),
+          array: workerData.array,
+          detail: workerData.detail,
+        },
+        [workerData.array.buffer]
+      );
       break;
     }
   }

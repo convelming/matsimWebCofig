@@ -1,8 +1,7 @@
 import * as THREE from "three";
 import { Layer, MAP_EVENT } from "@/mymap/index.js";
 import { STLLoader } from "three/addons/loaders/STLLoader.js";
-import { WGS84ToMercator } from "@/mymap/utils/LngLatUtils"
-
+import { WGS84ToMercator } from "@/mymap/utils/LngLatUtils";
 
 const loader = new STLLoader();
 
@@ -22,33 +21,35 @@ export class UAVLayer extends Layer {
     this.group = new THREE.Group();
 
     const geometry = new THREE.ConeGeometry(22, 40, 4);
-    geometry.rotateY(45 / 180 * Math.PI).rotateX(90 / 180 * Math.PI);
+    geometry.rotateY((45 / 180) * Math.PI).rotateX((90 / 180) * Math.PI);
     geometry.scale(1.6, 1, 0.9);
     geometry.translate(0, 0, -18);
 
-    const material = new THREE.MeshBasicMaterial({ color: 0xffffff, opacity: 0.2, transparent: true, });
+    const material = new THREE.MeshBasicMaterial({ color: 0xffffff, opacity: 0.2, transparent: true });
     const cylinder = new THREE.Mesh(geometry, material);
     this.group.add(cylinder);
 
     // 创建材质并设置描边
     var material2 = new THREE.MeshBasicMaterial({
-      color: 0xffffff, 
-      wireframe: true, 
-      wireframeLinewidth: 4 
+      color: 0xffffff,
+      wireframe: true,
+      wireframeLinewidth: 4,
     });
     var cube = new THREE.Mesh(geometry, material2);
     this.group.add(cube);
 
-    loader.load(process.env.VUE_APP_BASE_API + "/models/无人机.stl", geometry => {
+    loader.load(process.env.VUE_APP_BASE_API + "/models/无人机.stl", (geometry) => {
+      const m4 = new THREE.Matrix4().makeScale(0.05, 0.05, 0.05);
+      geometry.applyMatrix4(m4);
       const mesh = new THREE.Mesh(geometry, new THREE.MeshNormalMaterial());
       this.group.add(mesh);
       this.update();
-    })
+    });
   }
 
   on(type, data) {
     if (type == MAP_EVENT.UPDATE_CENTER) {
-      this.update()
+      this.update();
     }
   }
 
@@ -120,8 +121,8 @@ export class UAVLayer extends Layer {
               } else if (px < 0 && pz >= 0) {
                 rotation = Math.PI * 2 + rotation;
               }
-              console.log((-rotation * 180 / Math.PI) || 0);
-              this.map.setPitchAndRotation(undefined, (2 * Math.PI - rotation * 180 / Math.PI) || 0)
+              console.log((-rotation * 180) / Math.PI || 0);
+              this.map.setPitchAndRotation(undefined, 2 * Math.PI - (rotation * 180) / Math.PI || 0);
             } catch (error) {
               console.log(error);
             }
@@ -139,16 +140,15 @@ export class UAVLayer extends Layer {
           this.group.scale.set(scale, scale, scale);
           this.group.position.set(line_start_map[0], line_start_map[1], line_start[2]);
           this.group.quaternion.setFromRotationMatrix(m4);
-          break
+          break;
         }
       }
     }
   }
 
-
   setModelSize(modelSize) {
     this.modelSize = modelSize;
-    this.update()
+    this.update();
   }
 
   setData(data) {
@@ -162,8 +162,8 @@ export class UAVLayer extends Layer {
         const [x1, y1] = WGS84ToMercator(point[0], point[1]);
         const [x2, y2] = WGS84ToMercator(lookAt[0], lookAt[1]);
 
-        perv = [time, x1, y1]
-        lookAtPerv = [time, x2, y2]
+        perv = [time, x1, y1];
+        lookAtPerv = [time, x2, y2];
 
         const d1 = Math.sqrt(Math.pow(x1 - perv[1], 2) + Math.pow(y1 - perv[2], 2));
         dispose += d1;
@@ -171,19 +171,17 @@ export class UAVLayer extends Layer {
         const d2 = Math.sqrt(Math.pow(x2 - lookAtPerv[1], 2) + Math.pow(y2 - lookAtPerv[2], 2));
         lookAtDispose += d2;
 
-
         return {
           time: time,
           point: [x1, y1, point[2]],
           lookAt: [x2, y2, lookAt[2]],
           dispose: dispose,
-          lookAtDispose: lookAtDispose
-        }
+          lookAtDispose: lookAtDispose,
+        };
       });
       this.path = path;
       this.canRender = true;
       this.update();
-
     } catch (error) {
       console.log(error);
       this.path = [];

@@ -1,0 +1,49 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  fill="none"
+  version="1.1"
+  width="930"
+  height="510"
+  viewBox="0 0 930 510"
+>
+  <circle cx="185" cy="155" r="85" fill="#DEC6E1" stroke-width="0" />
+  <text x="185" y="167" font-size="36" fill="#59415D" text-anchor="middle"
+    style="font-weight: bold;">建筑学</text>
+
+  <circle cx="469" cy="235" r="125" fill="#EDC49B" stroke-width="0" />
+  <text x="469" y="235" font-size="36" fill="#76593E" text-anchor="middle"
+    style="font-weight: bold;">交通运输</text>
+  <text x="469" y="280" font-size="36" fill="#76593E" text-anchor="middle"
+    style="font-weight: bold;">工程</text>
+
+  <circle cx="672" cy="112" r="80" fill="#B7D9E7" stroke-width="0" />
+  <text x="672" y="122" font-size="28" fill="#2A6579" text-anchor="middle"
+    style="font-weight: bold;">城市规划</text>
+
+  <circle cx="862" cy="137" r="50" fill="#E4DCD5" stroke-width="0" />
+  <text x="862" y="142" font-size="14" fill="#76593E" text-anchor="middle"
+    style="font-weight: bold;">土地资源管理</text>
+
+  <circle cx="762" cy="271" r="85" fill="#99C19B" stroke-width="0" />
+  <text x="762" y="285" font-size="30" fill="#375238" text-anchor="middle"
+    style="font-weight: bold;">安全工程</text>
+
+  <circle cx="134" cy="411" r="50" fill="#B7D9E7" stroke-width="0" />
+  <text x="134" y="409" font-size="12" fill="#2A6579" text-anchor="middle"
+    style="font-weight: bold;">城市轨道交通</text>
+  <text x="134" y="429" font-size="12" fill="#2A6579" text-anchor="middle"
+    style="font-weight: bold;">结构设计</text>
+
+  <circle cx="292" cy="367" r="60" fill="#E7DDE1" stroke-width="0" />
+  <text x="292" y="375" font-size="22" fill="#645058" text-anchor="middle"
+    style="font-weight: bold;">地理学</text>
+
+  <circle cx="631" cy="404" r="80" fill="#DFC6E3" stroke-width="0" />
+  <text x="631" y="415" font-size="24" fill="#59415D" text-anchor="middle"
+    style="font-weight: bold;">物流工程</text>
+
+  <circle cx="864" cy="381" r="50" fill="#758E8F" stroke-width="0" />
+  <text x="864" y="387" font-size="16" fill="#354E50" text-anchor="middle"
+    style="font-weight: bold;">工程及控制</text>
+</svg>

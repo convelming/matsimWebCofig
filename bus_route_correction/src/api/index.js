@@ -439,6 +439,18 @@ export function getTileNetwork(params) {
   });
 }
 
+// 获取路网所有的mode
+// GET /pt/network/getNetworkModes
+// 接口ID：386149521
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-386149521
+export function getNetworkModes(params) {
+  return request({
+    url: `/pt/network/getNetworkModes`,
+    params: params,
+    method: "get",
+  });
+}
+
 // 根据id查询link详情
 // GET /pt/link/getLinkById
 // 接口ID：166838450

@@ -653,3 +653,11 @@ export function statsReinstated(data) {
     data: data,
   });
 }
+
+export function jsonAllProject(data) {
+  return request({
+    url: `/link/project/geojson`,
+    method: "get",
+    data: data,
+  });
+}
