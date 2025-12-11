@@ -3,8 +3,15 @@
   <div class="home">
     <div class="nav">
       <img src="@/assets/image/home/logo2.svg?url" alt="" class="logo" />
-      <img src="@/assets/image/home/菜单.svg?url" alt="" class="icon" />
-      <img src="@/assets/image/home/搜索.svg?url" alt="" class="icon" />
+      <a href="http://192.168.60.231:23105/pt.html#/" class="icon" target="_blank">
+        <img src="@/assets/image/home/菜单.svg?url" alt="" />
+      </a>
+      <!-- <a href="http://192.168.60.231:23105/pt.html#/" class="icon">
+        <img src="@/assets/image/home/菜单.svg?url" alt="" />
+      </a> -->
+      <a href="http://192.168.60.231:23105/pt.html#/" class="icon">
+        <img src="@/assets/image/home/搜索.svg?url" alt="" />
+      </a>
     </div>
     <video class="video" src="/53941bcfa09e859cc89db3753af9fb78.mp4" autoplay muted></video>
 
@@ -145,6 +152,11 @@ const footer_list = [
     width: 24px;
     height: 24px;
     cursor: pointer;
+    img {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
   }
 }
 .video {

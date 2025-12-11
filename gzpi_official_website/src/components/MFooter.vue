@@ -3,7 +3,7 @@
   <div class="MFooter">
     <div class="f_box1">
       <img src="@/assets/image/footer/logo2.svg?url" alt="" class="logo" />
-      <div class="link_box">
+      <!-- <div class="link_box">
         <div class="item">
           <a class="title">本院概括</a>
           <a class="link">本院介绍</a>
@@ -29,6 +29,11 @@
           <a class="link">社会招聘</a>
           <a class="link">招聘答疑</a>
         </div>
+      </div> -->
+      <div class="link_box">
+        <div class="item" v-for="item1 in list">
+          <a :class="item2.class" :href="item2.link" v-for="item2 in item1">{{ item2.text }}</a>
+        </div>
       </div>
       <div class="ecode_box">
         <img class="img" src="@/assets/image/footer/ecode.png?url" alt="" />
@@ -41,7 +46,44 @@
   </div>
 </template>
 
-<script setup></script>
+<script setup>
+import { useRouter, useRoute } from 'vue-router'
+const router = useRouter()
+const route = useRoute()
+const createHref = router.options.history.createHref
+const list = [
+  [
+    { text: '本院概况', class: 'title', link: createHref('/bygk'), name: 'bygk' },
+    { text: '本院介绍', class: 'link', link: createHref('/bygk?scroll=rsgzpi'), name: 'bygk' },
+    { text: '人才结构', class: 'link', link: createHref('/bygk?scroll=rcjg'), name: 'bygk' },
+    { text: '组织架构', class: 'link', link: createHref('/bygk?scroll=zzjg'), name: 'bygk' },
+  ],
+  [
+    { text: '项目展示', class: 'title', link: createHref('/xmzs'), name: 'xmzs' },
+    {
+      text: '城市综合交通规划',
+      class: 'link',
+      link: createHref('/xmzs?scroll=cszhjtgh'),
+      name: 'xmzs',
+    },
+    { text: '智慧交通', class: 'link', link: createHref('/xmzs?scroll=zhjt'), name: 'xmzs' },
+    { text: '枢纽与物流', class: 'link', link: createHref('/xmzs?scroll=znywl'), name: 'xmzs' },
+    { text: '低空经济', class: 'link', link: createHref('/xmzs?scroll=dkjj'), name: 'xmzs' },
+  ],
+  [
+    { text: '科研成果', class: 'title', link: createHref('/kycg'), name: 'kycg' },
+    { text: '项目获奖', class: 'link', link: createHref('/kycg?scroll=xmhj'), name: 'kycg' },
+    { text: '集体荣誉', class: 'link', link: createHref('/kycg?scroll=jtry'), name: 'kycg' },
+    { text: '科研建设', class: 'link', link: createHref('/kycg?scroll=kyjs'), name: 'kycg' },
+  ],
+  [
+    { text: '加入我们', class: 'title', link: createHref('/rczp'), name: 'rczp' },
+    { text: '校园招聘', class: 'link', link: createHref('/rczp?scroll='), name: 'rczp' },
+    { text: '社会招聘', class: 'link', link: createHref('/rczp?scroll='), name: 'rczp' },
+    { text: '招聘答疑', class: 'link', link: createHref('/rczp?scroll='), name: 'rczp' },
+  ],
+]
+</script>
 
 <style lang="scss" scoped>
 .MFooter {

@@ -2,14 +2,13 @@
 <template>
   <div class="kycg">
     <MHeader />
-
     <div class="box1">
       <div class="text1">
         <div>Scientific research achievements</div>
         <div>科研成果</div>
       </div>
     </div>
-    <div class="box2">
+    <div class="box2" id="xmhj">
       <div class="title1">Award-winning project</div>
       <div class="title2">项目获奖</div>
       <div class="content">
@@ -71,7 +70,7 @@
         </div>
       </div>
     </div>
-    <div class="box3">
+    <div class="box3" id="jtry">
       <div class="title1">Collective Honor</div>
       <div class="title2">集体荣誉</div>
       <div class="content">
@@ -112,8 +111,7 @@
         </div>
       </div>
     </div>
-
-    <div class="box4">
+    <div class="box4" id="kyjs">
       <div class="title1">Scientific research and construction</div>
       <div class="title2">科研建设</div>
       <div class="content">

@@ -1,5 +1,5 @@
 import { createRouter, createWebHashHistory, createWebHistory } from 'vue-router'
-
+import { onMounted, nextTick } from 'vue'
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
   routes: [
@@ -34,6 +34,23 @@ const router = createRouter({
       component: () => import('@/views/rczp.vue'),
     },
   ],
+  scrollBehavior(to, from, savedPosition) {
+    console.log('scrollBehavior')
+    if (to.query.scroll) {
+      // nextTick(() => {
+      //   if (to.query.scroll) {
+      //     const element = document.querySelector(`#${to.query.scroll}`)
+      //     console.log(element)
+      //     if (element) {
+      //       element.scrollIntoView({ behavior: 'smooth' })
+      //     }
+      //   }
+      // })
+      return { top: document.getElementById(to.query.scroll).offsetTop }
+    } else {
+      return { top: 0 }
+    }
+  },
 })
 
 export default router

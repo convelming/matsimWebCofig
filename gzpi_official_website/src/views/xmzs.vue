@@ -8,7 +8,11 @@
         <div>项目展示</div>
       </div>
     </div>
-    <div class="box2" style="background-image: url('@/assets/image/bygk/蒙版组 2.png');">
+    <div
+      class="box2"
+      id="cszhjtgh"
+      style="background-image: url('@/assets/image/bygk/蒙版组 2.png')"
+    >
       <div class="title1">Urban Integrated Transport Planning</div>
       <div class="title2">城市综合交通规划</div>
       <div class="list">
@@ -23,7 +27,7 @@
         </div>
       </div>
     </div>
-    <div class="box3">
+    <div class="box3" id="zhjt">
       <div class="title1">Smart Traffic</div>
       <div class="title2">智慧交通</div>
       <div class="list">
@@ -42,7 +46,7 @@
         </div>
       </div>
     </div>
-    <div class="box2" >
+    <div class="box2" id="znywl">
       <div class="title1">Hub and Logistics</div>
       <div class="title2">枢纽与物流</div>
       <div class="list">
@@ -57,7 +61,7 @@
         </div>
       </div>
     </div>
-    <div class="box3">
+    <div class="box3" id="dkjj">
       <div class="title1">Low-altitude economy</div>
       <div class="title2">低空经济</div>
       <div class="list">

@@ -2,13 +2,13 @@
 <template>
   <div class="gk">
     <MHeader class="header" />
-    <div class="box1">
+    <div class="box1" id="box1">
       <div class="text1">
         <div>Overview of this court</div>
         <div>本院概况</div>
       </div>
     </div>
-    <div class="box2">
+    <div class="box2" id="rsgzpi">
       <div class="left">
         <div class="text1">认识GZPI</div>
         <div class="text2">创造更美好的人居环境</div>
@@ -24,7 +24,7 @@
           技术和产品，致力于建设成为粤港澳大湾区技术领先、特色
         </div>
         <img class="img" src="@/assets/image/bygk/2.svg" alt="" />
-        <div class="sj_box">
+        <div class="sj_box" id="rcjg">
           <div class="item">
             <div class="text1">93%</div>
             <div class="text2">研究生占比</div>
@@ -50,7 +50,7 @@
         <img class="img" src="@/assets/image/bygk/矩形6092.jpg" alt="" />
       </div>
     </div>
-    <div class="box3">
+    <div class="box3" id="zzjg">
       <div class="title1">Organizational structure</div>
       <div class="title2">组织架构</div>
       <div class="tree">
