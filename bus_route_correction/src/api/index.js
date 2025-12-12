@@ -1106,7 +1106,17 @@ export function deleteUamRoute(id) {
   });
 }
 
-
+// 全部轨迹
+// GET /pt/uam/allTrack
+// 接口ID：390232072
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-390232072
+export function allTrack(params) {
+  return request({
+    url: `/pt/uam/allTrack`,
+    method: "get",
+    params: params,
+  });
+}
 
 
 

@@ -76,6 +76,76 @@
         </el-form-item>
       </el-form>
     </Dialog>
+
+    <div class="page2" v-show="showUAVPage">
+      <div id="mapRoot2" ref="mapRoot2"></div>
+      <div class="back"></div>
+      <img src="../images/img_line_top_left@2x.png" alt="" class="back1" />
+      <img src="../images/img_line_top_middle@2x.png" alt="" class="back2" />
+      <img src="../images/img_line_top_right@2x.png" alt="" class="back3" />
+      <img src="../images/img_line_down_left@2x.png" alt="" class="back4" />
+      <img src="../images/img_line_down_right@2x.png" alt="" class="back5" />
+      <div class="back_btn" @click="handleCloseUAVPage">
+        <img src="../images/icon_back@2x.png" alt="" class="icon" />
+        <span>返回</span>
+      </div>
+      <template v-if="playDetail">
+        <div class="p9_lc">
+          <div class="p9_text">路程：{{ playDetail.dis }} / {{ playDetail.tDis }}</div>
+          <div class="p9_progress">
+            <div class="p9_value" :style="`width: ${(playDetail.dis / playDetail.tDis) * 100}%`"></div>
+          </div>
+          <!-- <div class="p9_text">终点</div> -->
+        </div>
+
+        <div class="p9_gd">
+          <div class="p9_progress">
+            <div class="p9_line">300</div>
+            <div class="p9_line" style="top: 50%">150</div>
+            <div class="p9_line" style="top: 100%">0</div>
+            <div class="p9_value" :style="`height: ${(playDetail.point.z / 300) * 100}%;max-height:100%`"></div>
+          </div>
+          <div class="p9_title">{{ Number(playDetail.point.z).toFixed(2) }}m</div>
+          <div class="p9_title">高度 m</div>
+        </div>
+
+        <div class="p9_sd">
+          <div class="p9_progress_list">
+            <div class="p9_progress_box">
+              <div class="p9_progress">
+                <div class="p9_line">50</div>
+                <div class="p9_line" style="top: 50%">25</div>
+                <div class="p9_line" style="top: 100%">0</div>
+                <div class="p9_value" :style="`height: ${(playDetail.speedX / 50) * 100}%;max-height:100%`"></div>
+              </div>
+              <div class="p9_title">X轴</div>
+              <div class="p9_title">{{ playDetail.speedX }}m/s</div>
+            </div>
+            <div class="p9_progress_box">
+              <div class="p9_progress">
+                <div class="p9_line">50</div>
+                <div class="p9_line" style="top: 50%">25</div>
+                <div class="p9_line" style="top: 100%">0</div>
+                <div class="p9_value" :style="`height: ${(playDetail.speedY / 50) * 100}%;max-height:100%`"></div>
+              </div>
+              <div class="p9_title">Y轴</div>
+              <div class="p9_title">{{ playDetail.speedY }}m/s</div>
+            </div>
+            <div class="p9_progress_box">
+              <div class="p9_progress">
+                <div class="p9_line">50</div>
+                <div class="p9_line" style="top: 50%">25</div>
+                <div class="p9_line" style="top: 100%">0</div>
+                <div class="p9_value" :style="`height: ${(playDetail.speedZ / 50) * 100}%;max-height:100%`"></div>
+              </div>
+              <div class="p9_title">Z轴</div>
+              <div class="p9_title">{{ playDetail.speedZ }}m/s</div>
+            </div>
+          </div>
+          <div class="p9_title">速度 m/s</div>
+        </div>
+      </template>
+    </div>
   </div>
 </template>
 
@@ -109,11 +179,12 @@
 </language>
 
 <script>
-import { addUam, deleteUam, listUam, genUamRoute, uamRouteList, deleteUamRoute } from "@/api/index.js";
+import { addUam, deleteUam, listUam, genUamRoute, uamRouteList, deleteUamRoute, allTrack } from "@/api/index.js";
 import { MercatorToWGS84 } from "@/mymap/utils/LngLatUtils";
 import { PointSelectLayer, POINT_SELECT_STATE_KEY, POINT_SELECT_EVENT } from "../layer/PointSelectLayer";
 import { PointListLayer } from "../layer/PointListLayer2";
 import { RouteListLayer } from "../layer/RouteListLayer";
+import { UAVListLayer } from "../layer/UAVListLayer";
 
 export default {
   name: "RoutePlanningList",
@@ -175,11 +246,12 @@ export default {
           },
         ],
       },
+
+      showUAVPage: false,
+      playDetail: null,
     };
   },
   created() {
-    this.getUAMPoint();
-    this.getUAMRoute();
     this._PointSelectLayer = new PointSelectLayer({
       zIndex: 120,
       color: "#ff0000",
@@ -212,13 +284,55 @@ export default {
     });
 
     this.rootVue.$on("RoutePlanning_Options", this.updateByOption);
+
+    this.rootVue.$on("timeChange", this.handleTimeChange);
+
+    this._UAVListLayer = new UAVListLayer({
+      zIndex: 300,
+
+      linkWidth: 1,
+      selectLinkWidth: 5,
+      linkColor: "#D8D8D8",
+      selectLinkColor: "#FF7B00",
+
+      nodeSize: 5,
+      selectNodeSize: 10,
+      nodeColor: "#D8D8D8",
+      selectNodeColor: "#FF7B00",
+
+      time: 0,
+      lockSelect: true,
+      uavColor: "#53e7ef",
+      selectUavColor: "#ff2c08",
+
+      rootDoc: this.$refs.mapRoot2,
+      event: {
+        playing: (res) => {
+          if (this._playTimeout) return;
+          this.playDetail = res.data.playDetail;
+          this.showUAVPage = !!res.data.playDetail;
+          this._playTimeout = setTimeout(() => {
+            this._playTimeout = null;
+          }, 200);
+        },
+      },
+    });
   },
   beforeDestroy() {
     this._PointSelectLayer.dispose();
     this._PointListLayer.dispose();
     this._RouteListLayer.dispose();
+    this._UAVListLayer.dispose();
   },
   methods: {
+    handleCloseUAVPage() {
+      this._UAVListLayer.setSelectPath(-1);
+      this.showUAVPage = false;
+      this.playDetail = null;
+    },
+    handleTimeChange(time) {
+      this._UAVListLayer.setTime(time);
+    },
     updateByOption(res) {
       this._options = res;
 
@@ -234,8 +348,15 @@ export default {
 
       if (this._Map && res.showRoute && res.showLayer) {
         this._Map.addLayer(this._RouteListLayer);
+        this._Map.addLayer(this._UAVListLayer);
       } else {
         this._RouteListLayer.removeFromParent();
+        this._UAVListLayer.removeFromParent();
+      }
+
+      if (res.showLayer) {
+        this.getUAMPoint();
+        this.getUAMRoute();
       }
     },
     MercatorToWGS84(array) {
@@ -311,21 +432,24 @@ export default {
     },
 
     getUAMRoute() {
-      uamRouteList().then((res) => {
-        this.routeList = res.data;
+      Promise.all([uamRouteList(), allTrack()]).then(([res, res2]) => {
         res.data.forEach((item) => {
-          console.log(item);
-
-          const nodes = [{ x: item.start.x, y: item.start.y, z: 0 }, item.links[0].fromCoord];
-          const center = item.links[0].fromCoord;
-          for (const link of item.links) {
-            nodes.push(link.toCoord);
-          }
-          nodes.push({ x: item.end.x, y: item.end.y, z: 0 });
-          item.nodes = nodes;
-          item.center = center;
+          item.nodes = res2.data[item.id];
+          item.center = item.nodes[0];
+          // const nodes = [{ x: item.start.x, y: item.start.y, z: 0 }, item.links[0].fromCoord];
+          // const center = item.links[0].fromCoord;
+          // for (const link of item.links) {
+          //   nodes.push(link.toCoord);
+          // }
+          // nodes.push({ x: item.end.x, y: item.end.y, z: 0 });
+          // item.nodes = nodes;
+          // item.center = center;
         });
-        this._RouteListLayer.setPaths(res.data);
+        console.log(res2);
+
+        this.routeList = res.data;
+        // this._RouteListLayer.setPaths(res.data);
+        this._UAVListLayer.setPaths(res.data, this.UAVPathClassName);
       });
     },
     handleOpenAddRoute() {
@@ -381,5 +505,208 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+.page2 {
+  position: fixed;
+  z-index: 1000;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  #mapRoot2 {
+    position: absolute;
+    z-index: 20;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .back {
+    box-shadow: inset 0 50px 150px 120px rgba($color: #0d111b, $alpha: 1);
+    position: absolute;
+    z-index: 50;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+  .back1 {
+    position: absolute;
+    z-index: 100;
+    width: 704px;
+    height: 284px;
+    top: 89px;
+    left: 43px;
+    pointer-events: none;
+  }
+  .back2 {
+    position: absolute;
+    z-index: 100;
+    width: 420px;
+    height: 40px;
+    top: 89px;
+    left: 50%;
+    transform: translateX(-50%);
+    pointer-events: none;
+  }
+
+  .back3 {
+    position: absolute;
+    z-index: 100;
+    width: 704px;
+    height: 284px;
+    top: 89px;
+    right: 43px;
+    pointer-events: none;
+  }
+
+  .back4 {
+    position: absolute;
+    z-index: 100;
+    width: 704px;
+    height: 284px;
+    bottom: 27px;
+    left: 43px;
+    pointer-events: none;
+  }
+
+  .back5 {
+    position: absolute;
+    z-index: 100;
+    width: 704px;
+    height: 284px;
+    bottom: 27px;
+    right: 43px;
+    pointer-events: none;
+  }
+  .back_btn {
+    position: absolute;
+    z-index: 200;
+    top: 160px;
+    left: 112px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    .icon {
+      display: block;
+      width: 24px;
+      height: 24px;
+    }
+    font-size: 24px;
+    color: #00f7ff;
+    cursor: pointer;
+  }
+
+  .p9_title {
+    text-align: center;
+    color: #00f7ff;
+    margin-bottom: 10px;
+    font-size: 14px;
+  }
+
+  .p9_progress {
+    position: relative;
+    border-left: 1px solid #00f7ff;
+    .p9_value {
+      z-index: 10;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 10px;
+      height: 100%;
+      background-color: transparent;
+      transition: height 0.1s;
+      &::before {
+        position: absolute;
+        left: 0;
+        top: 0;
+        transform: translateY(-50%);
+        content: "";
+        width: 16px;
+        height: 16px;
+        background-image: url("../images/icon_arrow_left@2x.png");
+        background-size: cover;
+      }
+    }
+    .p9_line {
+      z-index: 20;
+      position: absolute;
+      z-index: 20px;
+      display: flex;
+      padding-left: 16px;
+      transform: translateY(-50%);
+      color: #00f7ff;
+      font-size: 14px;
+      &::before {
+        position: absolute;
+        left: 0;
+        top: 50%;
+        content: "";
+        width: 8px;
+        height: 1px;
+        background-color: #00f7ff;
+      }
+    }
+  }
+
+  .p9_lc {
+    z-index: 50;
+    position: absolute;
+    top: 200px;
+    left: 50%;
+    width: 1000px;
+    transform: translateX(-50%);
+    display: flex;
+    justify-items: center;
+    align-items: center;
+    gap: 10px;
+    .p9_text {
+      color: #fff;
+    }
+    .p9_progress {
+      flex-grow: 1;
+      width: 0;
+      height: 6px;
+      border-radius: 3px;
+      overflow: hidden;
+      background-color: rgba($color: #fff, $alpha: 0.2);
+      .p9_value {
+        width: 100%;
+        height: 100%;
+        background-color: rgba($color: #00f7ff, $alpha: 1);
+      }
+    }
+  }
+
+  .p9_gd {
+    z-index: 50;
+    position: absolute;
+    left: 44px;
+    top: 420px;
+
+    .p9_progress {
+      margin-bottom: 30px;
+      height: 224px;
+    }
+  }
+
+  .p9_sd {
+    z-index: 50;
+    position: absolute;
+    top: 420px;
+    right: 44px;
+    .p9_progress_list {
+      display: flex;
+      gap: 25px;
+      margin-bottom: 10px;
+      .p9_progress {
+        margin-bottom: 30px;
+        height: 224px;
+      }
+    }
+  }
 }
 </style>

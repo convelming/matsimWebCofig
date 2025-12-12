@@ -13,7 +13,12 @@
       </div>
       <div class="title">
         <img class="logo" src="@/assets/image/favicon.png" alt="" />
-        <span>{{ $l("智慧公交线网仿真与在线优化平台") }}</span>
+        <div style="display: flex;flex-direction: column;gap: 8px; align-items: flex-start;">
+          <div  style="font-size: 30px;line-height: 30px;">ATLAS</div>
+          <div style="font-size: 12px;line-height: 12px;font-weight: 400;"><strong>A</strong>ctivity-based <strong>T</strong>ransportation & <strong>L</strong>and-use <strong>A</strong>gent <strong>S</strong>ystem</div>
+          <div style="font-size: 55px;line-height: 55px;">多智能体城市交通建模平台</div>
+        <!-- <span>{{ $l("ATLAS多智能体城市交通建模平台") }}</span> -->
+        </div>
       </div>
       <div class="list">
         <div @click="handleClickItem('operationsAnalysis')" class="item" style="background-color: yellowgreen">
@@ -36,6 +41,17 @@
           </div>
           <div class="el-icon-question item_help" @click.stop="showPAHelpDialog = true"></div>
         </div>
+        <div @click="handleClickItem('MATSim')" class="item" style="background-color: #474ba6">
+          <div class="item_title">
+            <img class="item_icon" src="@/assets/image/道路交通.png" />
+            <img class="item_icon" style="width: 0; flex: 1; object-fit: contain" src="@/assets/image/MATSim.png" />
+            <!-- <span>{{ $l("MATSim onLine 场景建模") }}</span> -->
+          </div>
+          <div class="item_detail">
+            {{ $l("MATSim onLine 场景建模") }}
+          </div>
+          <!-- <div class="el-icon-question item_help" @click.stop="showSEHelpDialog = true"></div> -->
+        </div>
         <div @click="handleClickItem('comparativeAnalysis')" class="item" style="background-color: #52b3ba">
           <div class="item_title">
             <img class="item_icon" src="@/assets/image/比幅对比_1.svg" />
@@ -55,6 +71,16 @@
             {{ $l("公交系统总体运行评估包括可达性。") }}
           </div>
           <div class="el-icon-question item_help" @click.stop="showSEHelpDialog = true"></div>
+        </div>
+        <div @click="handleClickItem('ActivitySim')" class="item" style="background-color: green">
+          <div class="item_title">
+            <img class="item_icon" style="object-fit: contain" src="@/assets/image/Activity2.png" />
+            <!-- <span>{{ $l("ActivitySim_title") }}</span> -->
+          </div>
+          <div class="item_detail">
+            {{ $l("ActivitySim_detail") }}
+          </div>
+          <!-- <div class="el-icon-question item_help" @click.stop="showSEHelpDialog = true"></div> -->
         </div>
       </div>
     </div>
@@ -348,6 +374,10 @@
     "zh-CN":"MATSim广州&公交优化平台",
     "en-US":"MATSim Viz & PT Optimization with AIGC",
   },
+  "ATLAS多智能体城市交通建模平台": {
+    "zh-CN":"ATLAS多智能体城市交通建模平台",
+    "en-US":"Activity-based Transportation & Land-use Agent System",
+  },
   "城市公交路线规划平台": {
     "zh-CN":"城市公交路线规划平台",
     "en-US":"Platform of Urban Public Tranist Planning ",
@@ -383,6 +413,18 @@
   "公交系统总体运行评估包括可达性。": {
     "zh-CN":"公交系统总体运行评估包括可达性。",
     "en-US":"The overall operational assessment of the transit system includes accessibility.",
+  },
+  "MATSim onLine 场景建模": {
+    "zh-CN":"MATSim onLine 场景建模",
+    "en-US":"MATSim onLine Scene Modeling",
+  },
+  "ActivitySim_title": {
+    "zh-CN":"UrbanSim & ActivitySim",
+    "en-US":"UrbanSim & ActivitySim",
+  },
+  "ActivitySim_detail": {
+    "zh-CN":"UrbanSim用于模拟城市土地利用与人口就业分布，ActivitySim用于生成基于活动出行链的个体出行需求，为MATSim提供多智能体的出行计划输入，实现从城市结构到交通流的端到端建模。",
+    "en-US":"UrbanSim用于模拟城市土地利用与人口就业分布，ActivitySim用于生成基于活动出行链的个体出行需求，为MATSim提供多智能体的出行计划输入，实现从城市结构到交通流的端到端建模。",
   },
   "克隆": {
     "zh-CN":"克隆",
@@ -576,7 +618,8 @@ export default {
       }
     },
     handleClickItem(key) {
-      if (!this.dataBase && key != "systemEvaluation") {
+      const onBatabaseKeys = ["systemEvaluation", "MATSim", "ActivitySim"];
+      if (!this.dataBase && !onBatabaseKeys.includes(key)) {
         this.handleShowDataBase(key);
         return;
       }
@@ -592,6 +635,12 @@ export default {
           break;
         case "systemEvaluation":
           window.open("http://192.168.60.231:23334/kepler.gl.html", "_blank");
+          break;
+        case "MATSim":
+          window.open("http://192.168.60.231:23103/static/login/loginPage.html", "_blank");
+          break;
+        case "ActivitySim":
+          window.open("https://populationold-shrb5fb86gswhl6bseu3we.streamlit.app/ ", "_blank");
           break;
       }
     },
@@ -619,7 +668,7 @@ export default {
       }).href;
       window.open(href, "_blank");
     },
-    handleOperationsAnalysisRunLog(row){
+    handleOperationsAnalysisRunLog(row) {
       window.open(`${process.env.VUE_APP_BASE_API}/pt/main/runMatsimLog?key=${row.name}`, "_blank");
     },
     // 线路方案调整
@@ -777,11 +826,11 @@ export default {
 
 .root {
   width: 100%;
-  min-width: 1200px;
+  min-width: 1600px;
 }
 
 .module {
-  width: 1100px;
+  width: 1500px;
   margin: 0 auto;
   height: 80px;
   display: flex;
@@ -795,41 +844,45 @@ export default {
 }
 
 .title {
-  width: 1100px;
-  font-size: 60px;
-  line-height: 60px;
+  width: 1500px;
+  // font-size: 60px;
+  // line-height: 60px;
   font-weight: bold;
   margin: 0 auto;
   color: #fff;
   display: flex;
   align-items: center;
-  padding-bottom: 50px;
+  padding-bottom: 30px;
   .logo {
     width: auto;
-    height: 60px;
+    height: 120px;
     margin-right: 20px;
     margin-top: 5px;
+  }
+  strong{
+    font-weight: 1000 !important;
   }
 }
 
 .list {
-  width: 1200px;
+  width: 1600px;
   margin: auto;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   /* margin: -10px; */
+  gap: 40px;
 }
 .item {
   position: relative;
-  width: 550px;
+  // width: 550px;
+  width: 30%;
   height: 300px;
   display: block;
   text-decoration: none;
   box-sizing: border-box;
   border-radius: 10px;
   overflow: hidden;
-  margin: 20px;
   padding: 30px;
   color: #fff;
   background-size: cover;
@@ -844,7 +897,7 @@ export default {
     font-size: 40px;
   }
   .item_icon {
-    width: 100px;
+    // width: 100px;
     height: 100px;
     margin-right: 30px;
   }
