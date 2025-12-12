@@ -4,7 +4,7 @@
       <div class="el-icon-question" @click="open = true"></div>
       <a class="bug" href="https://doc.weixin.qq.com/sheet/e3_AdQA8Aa_ADMt1qh97LkSHer6ALqI2?scode=APwA6gfEAA0aeGdABPAdQA8Aa_ADM&tab=BB08J2" target="_blank">BUG</a>
       <a class="count" href="./keyPressed.html" target="_blank">C</a>
-      <a class="count" href="/#/demo/page1" target="_blank">demo</a>
+      <a class="count" href="/#/demo/menu" target="_blank">demo</a>
     </div>
     <el-dialog :visible.sync="open" width="500px" append-to-body center @close="handleClose" :close-on-click-modal="false">
       <div class="body">
