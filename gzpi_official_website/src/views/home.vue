@@ -13,10 +13,16 @@
         <img src="@/assets/image/home/搜索.svg?url" alt="" />
       </a>
     </div>
-    <video class="video" src="/53941bcfa09e859cc89db3753af9fb78.mp4" autoplay muted></video>
+    <video
+      class="video"
+      src="/53941bcfa09e859cc89db3753af9fb78.mp4"
+      autoplay
+      muted
+      @timeupdate="handleTimeupdate"
+    ></video>
 
-    <transition name="el-fade-in-linear">
-      <div class="bodyer_item one">
+    <transition name="el-zoom-in-bottom">
+      <div class="bodyer_item one" v-show="playTime > 2000">
         <img src="@/assets/image/home/科研建设.svg?url" alt="" class="icon" />
         <div class="text_box">
           <div class="text1">科研建设</div>
@@ -28,9 +34,8 @@
         </div>
       </div>
     </transition>
-
-    <transition name="el-fade-in-linear">
-      <div class="bodyer_item two">
+    <transition name="el-zoom-in-bottom">
+      <div class="bodyer_item two" v-show="playTime > 4000">
         <img src="@/assets/image/home/获奖项目.svg?url" alt="" class="icon" />
         <div class="text_box">
           <div class="text1">获奖项目</div>
@@ -43,8 +48,8 @@
         </div>
       </div>
     </transition>
-    <transition name="el-fade-in-linear">
-      <div class="bodyer_item three">
+    <transition name="el-zoom-in-bottom">
+      <div class="bodyer_item three" v-show="playTime > 6000">
         <img src="@/assets/image/home/比例.svg?url" alt="" class="icon" />
         <div class="text_box">
           <div class="text1">研究生比例</div>
@@ -58,7 +63,7 @@
       </div>
     </transition>
 
-    <el-scrollbar class="footer" width="100vw" height="160px">
+    <!-- <el-scrollbar class="footer" width="100vw" height="160px">
       <div class="footer_box">
         <a class="footer_item" v-for="item in footer_list" :href="item.link">
           <img :src="item.icon" alt="" class="icon" />
@@ -68,58 +73,77 @@
           </div>
         </a>
       </div>
-    </el-scrollbar>
+    </el-scrollbar> -->
+    <div class="footer">
+      <LoopScroll class="footer_box" :dataSource="footer_list" direction="left">
+        <template #default="{ item }">
+          <a class="footer_item" :href="item.link">
+            <img :src="item.icon" alt="" class="icon" />
+            <div class="text_box">
+              <div class="text1">{{ item.text1 }}</div>
+              <div class="text2">{{ item.text2 }}</div>
+            </div>
+          </a>
+        </template>
+      </LoopScroll>
+      <!-- <div class="footer_box">
+        <a class="footer_item" v-for="item in footer_list" :href="item.link">
+          <img :src="item.icon" alt="" class="icon" />
+          <div class="text_box">
+            <div class="text1">{{ item.text1 }}</div>
+            <div class="text2">{{ item.text2 }}</div>
+          </div>
+        </a>
+      </div> -->
+    </div>
   </div>
 </template>
 
 <script setup>
 import { useRouter } from 'vue-router'
+import { LoopScroll } from '@joyday/vue-loop-scroll'
 
 const router = useRouter()
-const footer_list = [
-  {
-    icon: new URL('@/assets/image/home/概况.svg?url', import.meta.url).href,
-    text1: '本院概况',
-    text2: '创造更美好的人居环境',
-    link: router.options.history.createHref('/bygk'),
-  },
-  {
-    icon: new URL('@/assets/image/home/新闻.svg?url', import.meta.url).href,
-    text1: '新闻中心',
-    text2: '创造更美好的人居环境',
-    link: router.options.history.createHref('/xwzx'),
-  },
-  {
-    icon: new URL('@/assets/image/home/项目.svg?url', import.meta.url).href,
-    text1: '项目展示',
-    text2: '创造更美好的人居环境',
-    link: router.options.history.createHref('/xmzs'),
-  },
-  {
-    icon: new URL('@/assets/image/home/科研.svg?url', import.meta.url).href,
-    text1: '科研成果',
-    text2: '创造更美好的人居环境',
-    link: router.options.history.createHref('/kycg'),
-  },
-  {
-    icon: new URL('@/assets/image/home/招聘.svg?url', import.meta.url).href,
-    text1: '人才招聘',
-    text2: '创造更美好的人居环境',
-    link: router.options.history.createHref('/rczp'),
-  },
-  {
-    icon: new URL('@/assets/image/home/概况.svg?url', import.meta.url).href,
-    text1: '本院概况',
-    text2: '创造更美好的人居环境',
-    link: router.options.history.createHref('/bygk'),
-  },
-  {
-    icon: new URL('@/assets/image/home/新闻.svg?url', import.meta.url).href,
-    text1: '新闻中心',
-    text2: '创造更美好的人居环境',
-    link: router.options.history.createHref('/kycg'),
-  },
-]
+const footer_list = new Array(2)
+  .fill([
+    {
+      icon: new URL('@/assets/image/home/概况.svg?url', import.meta.url).href,
+      text1: '本院概况',
+      text2: '创造更美好的人居环境',
+      link: router.options.history.createHref('/bygk'),
+    },
+    {
+      icon: new URL('@/assets/image/home/新闻.svg?url', import.meta.url).href,
+      text1: '新闻中心',
+      text2: '创造更美好的人居环境',
+      link: router.options.history.createHref('/xwzx'),
+    },
+    {
+      icon: new URL('@/assets/image/home/项目.svg?url', import.meta.url).href,
+      text1: '项目展示',
+      text2: '创造更美好的人居环境',
+      link: router.options.history.createHref('/xmzs'),
+    },
+    {
+      icon: new URL('@/assets/image/home/科研.svg?url', import.meta.url).href,
+      text1: '科研成果',
+      text2: '创造更美好的人居环境',
+      link: router.options.history.createHref('/kycg'),
+    },
+    {
+      icon: new URL('@/assets/image/home/招聘.svg?url', import.meta.url).href,
+      text1: '人才招聘',
+      text2: '创造更美好的人居环境',
+      link: router.options.history.createHref('/rczp'),
+    },
+  ])
+  .flat(2)
+
+const playTime = ref(10000)
+
+function handleTimeupdate(e) {
+  // playTime.value = e.timeStamp
+}
 </script>
 
 <style lang="scss" scoped>
@@ -249,17 +273,15 @@ const footer_list = [
   right: 0;
   height: 160px;
   background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, #000000 100%);
-
   .footer_box {
-    box-sizing: border-box;
-    min-width: 100%;
+    width: 100vw;
     padding: 60px 40px 0 40px;
-
-    display: flex;
-    width: fit-content;
-    justify-content: center;
-    align-items: center;
-    gap: 40px;
+    box-sizing: border-box;
+    // display: flex;
+    // width: fit-content;
+    // justify-content: center;
+    // align-items: center;
+    // gap: 40px;
   }
   &::-webkit-scrollbar {
     display: none;
@@ -272,6 +294,7 @@ const footer_list = [
     gap: 12px;
     text-wrap: nowrap;
     text-decoration: none;
+    margin-left: 40px;
 
     cursor: pointer;
     .icon {

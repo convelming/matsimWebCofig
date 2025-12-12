@@ -5,12 +5,10 @@
         <div></div>
         <div class="mapBox">
           <div id="mapRoot"></div>
-          <div class="box">
-            <!-- <div class="title">控制面板</div> -->
-            <div class="card">
-              <el-form size="small" label-position="left">
-                <el-row :gutter="0">
-                  <!-- <el-col :span="12" :offset="0">
+          <div class="box" style="width: 350px">
+            <el-form size="small" label-position="left">
+              <el-row :gutter="0">
+                <!-- <el-col :span="12" :offset="0">
                   <el-form-item label="建筑：">
                     <el-switch v-model="showBuild" :active-value="true" :inactive-value="false"></el-switch>
                   </el-form-item>
@@ -20,55 +18,54 @@
                     <el-switch v-model="showNetwork2D" :active-value="true" :inactive-value="false"></el-switch>
                   </el-form-item>
                 </el-col> -->
+                <el-col :span="12" :offset="0">
+                  <el-form-item label="空中路网：">
+                    <el-switch v-model="showNetwork3DLink" :active-value="true" :inactive-value="false"></el-switch>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="12" :offset="0">
+                  <el-form-item label="空中路网节点：">
+                    <el-switch v-model="showNetwork3DNode" :active-value="true" :inactive-value="false"></el-switch>
+                  </el-form-item>
+                </el-col>
+                <!-- <el-col :span="12" :offset="0">
+                  <el-form-item label="地形图：">
+                    <el-switch v-model="showTifLayer" :active-value="true" :inactive-value="false"></el-switch>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="24" :offset="0">
+                  <div style="display: flex; align-items: center; justify-content: space-between">
+                    <span style="font-size: 14px; color: #2c3e50; width: 110px">地形图透明度：</span>
+                    <el-slider style="margin: 0 15px; flex: 1" v-model="tifOpacity" :min="0" :max="1" :step="0.01"></el-slider>
+                  </div>
+                </el-col> -->
+                <el-col :span="24" :offset="0">
+                  <el-form-item label-width="0">
+                    <el-button size="small" @click="play">播放</el-button>
+                    <el-button size="small" @click="stop">暂停</el-button>
+                    <el-button size="small" @click="reset">重置</el-button>
+                    <span style="margin-left: 20px">锁定视角：</span><el-switch v-model="lockSelect" :active-value="true" :inactive-value="false"></el-switch>
+                  </el-form-item>
+                </el-col>
+                <el-col :span="24" :offset="0">
+                  <div style="display: flex; align-items: center; justify-content: space-between">
+                    <span style="font-size: 14px; color: #2c3e50; width: 110px">时间：{{ time }}</span>
+                    <el-slider style="margin: 0 15px; flex: 1" :value="time" @input="setTime" :min="minTime" :max="maxTime"></el-slider>
+                  </div>
+                </el-col>
+                <template v-if="playDetail">
                   <el-col :span="12" :offset="0">
-                    <el-form-item label="空中路网：">
-                      <el-switch v-model="showNetwork3DLink" :active-value="true" :inactive-value="false"></el-switch>
-                    </el-form-item>
+                    <el-form-item label="时间：">{{ Number(playDetail.time).toFixed(0) }} s</el-form-item>
                   </el-col>
                   <el-col :span="12" :offset="0">
-                    <el-form-item label="空中路网节点：">
-                      <el-switch v-model="showNetwork3DNode" :active-value="true" :inactive-value="false"></el-switch>
-                    </el-form-item>
-                  </el-col>
-                  <el-col :span="12" :offset="0">
-                    <el-form-item label="地形图：">
-                      <el-switch v-model="showTifLayer" :active-value="true" :inactive-value="false"></el-switch>
-                    </el-form-item>
+                    <el-form-item label="速度：">{{ Number(playDetail.speed).toFixed(3) }} m/s</el-form-item>
                   </el-col>
                   <el-col :span="24" :offset="0">
-                    <div style="display: flex; align-items: center; justify-content: space-between">
-                      <span class="el-form-item__label">地形图透明度：</span>
-                      <el-slider style="margin: 0 15px; flex: 1" v-model="tifOpacity" :min="0" :max="1" :step="0.01"></el-slider>
-                    </div>
+                    <el-form-item label="位置：">{{ Number(playDetail.x).toFixed(2) }}, {{ Number(playDetail.y).toFixed(2) }}, {{ Number(playDetail.z).toFixed(2) }}</el-form-item>
                   </el-col>
-                  <el-col :span="24" :offset="0">
-                    <el-form-item label-width="0">
-                      <el-button size="small" @click="play">播放</el-button>
-                      <el-button size="small" @click="stop">暂停</el-button>
-                      <el-button size="small" @click="reset">重置</el-button>
-                      <span style="margin-left: 20px">锁定视角：</span><el-switch v-model="lockSelect" :active-value="true" :inactive-value="false"></el-switch>
-                    </el-form-item>
-                  </el-col>
-                  <el-col :span="24" :offset="0">
-                    <div style="display: flex; align-items: center; justify-content: space-between">
-                      <span class="el-form-item__label">时间：{{ time }}</span>
-                      <el-slider style="margin: 0 15px; flex: 1" :value="time" @input="setTime" :min="minTime" :max="maxTime"></el-slider>
-                    </div>
-                  </el-col>
-                  <template v-if="playDetail">
-                    <el-col :span="12" :offset="0">
-                      <el-form-item label="时间：">{{ Number(playDetail.time).toFixed(0) }} s</el-form-item>
-                    </el-col>
-                    <el-col :span="12" :offset="0">
-                      <el-form-item label="速度：">{{ Number(playDetail.speed).toFixed(3) }} m/s</el-form-item>
-                    </el-col>
-                    <el-col :span="24" :offset="0">
-                      <el-form-item label="位置：">{{ Number(playDetail.x).toFixed(2) }}, {{ Number(playDetail.y).toFixed(2) }}, {{ Number(playDetail.z).toFixed(2) }}</el-form-item>
-                    </el-col>
-                  </template>
-                </el-row>
-              </el-form>
-            </div>
+                </template>
+              </el-row>
+            </el-form>
           </div>
         </div>
         <div></div>
@@ -78,14 +75,13 @@
 </template>
 
 <script>
-import { MyMap, MAP_LAYER_STYLE, MAP_EVENT } from "@/mymap/index.js";
+import { MyMap, MapLayer, MAP_LAYER_STYLE, MAP_EVENT } from "@/mymap/index.js";
 import { WGS84ToMercator } from "@/mymap/utils/LngLatUtils";
 import { TifLayer } from "./layer/TifLayer";
 import { Network3DLayer, Network } from "./layer/Network3DLayer";
 import { UAVListLayer } from "./layer/UAVListLayer";
 import { Build3DLayer } from "./layer/Build3DLayer";
 import { PinkLayer } from "./layer/PinkLayer";
-import { MapLayer } from "@/mymap/index.js";
 
 import NewClock from "@/components/NewClock/index.vue";
 
@@ -149,13 +145,11 @@ export default {
     showNetwork3DNode: {
       handler(val) {
         this._Network3DLayer.setShowNode(val);
-        this.loadNetwork();
       },
     },
     showNetwork3DLink: {
       handler(val) {
         this._Network3DLayer.setShowLink(val);
-        this.loadNetwork();
       },
     },
     tifOpacity: {
@@ -185,8 +179,8 @@ export default {
       networkloading: false,
       showBuild: false,
       showNetwork2D: false,
-      showNetwork3DNode: false,
-      showNetwork3DLink: false,
+      showNetwork3DNode: true,
+      showNetwork3DLink: true,
       showTifLayer: true,
       paths: {},
       selectPath: null,
@@ -200,26 +194,25 @@ export default {
   async mounted() {
     this.initMap();
     this.loadPaths();
-    // this.loadTif();
+    this.loadTif();
+    // this.loadNetwork();
     this.loadBuild();
     this.loadPink();
-    // this.loadNetwork();
   },
   methods: {
     // 初始化地图
     async initMap() {
       this._Map = new MyMap({
         rootId: "mapRoot",
+        // center: [12707787.79, 2759380.11],
         center: [12716943.337189136, 2761023.0570991505],
-        center: [12712568.18680353, 2760364.2506704303],
         zoom: 13.5,
         minPitch: -90,
         mapZoomHeight: 600,
-        pitch: 70,
-        enableRotate: true,
       });
       console.log(this._Map);
 
+      this._Map.cameraControls.enableRotate = true;
       // this._MapLayer = new MapLayer({ tileClass: MAP_LAYER_STYLE[MAP_LAYER_STYLE.length - 1], zIndex: -1 });
       // this._Map.addLayer(this._MapLayer);
 
@@ -260,8 +253,6 @@ export default {
       this._Map.addLayer(this._PinkLayer);
     },
     async loadNetwork() {
-      if (this._loadNetwork) return;
-      this._loadNetwork = true;
       const response = await fetch(process.env.VUE_APP_DEMO_SERVER + "/output_network.zip");
       if (response.ok) {
         const blob = await response.blob();
@@ -295,27 +286,26 @@ export default {
       }
     },
     async loadTif() {
-      const tif = await GeoTIFF.fromUrl(process.env.VUE_APP_DEMO_SERVER + "/新丰县dem.tif");
-      const tifImage = await tif.getImage();
-      const tifImageData = await tifImage.readRasters({
-        interleave: true,
-      });
-      const bbox = tifImage.getBoundingBox();
-      const [x1, y1] = WGS84ToMercator(bbox[0], bbox[1]);
-      const [x2, y2] = WGS84ToMercator(bbox[2], bbox[3]);
-      // tifImage.getCanvasTexture();
-
-      const image = {
-        imgWidth: tifImage.getWidth(),
-        imgHeight: tifImage.getHeight(),
-        tl: [x1, y1],
-        br: [x2, y2],
-        center: [(x1 + x2) / 2, (y1 + y2) / 2],
-        width: Math.abs(x2 - x1),
-        height: Math.abs(y2 - y1),
-        data: tifImageData,
-      };
-      this._TifLayer.setTifImage(image);
+      // const tif = await GeoTIFF.fromUrl(process.env.VUE_APP_DEMO_SERVER + "/新丰县dem.tif");
+      // const tifImage = await tif.getImage();
+      // const tifImageData = await tifImage.readRasters({
+      //   interleave: true,
+      // });
+      // const bbox = tifImage.getBoundingBox();
+      // const [x1, y1] = WGS84ToMercator(bbox[0], bbox[1]);
+      // const [x2, y2] = WGS84ToMercator(bbox[2], bbox[3]);
+      // // tifImage.getCanvasTexture();
+      // const image = {
+      //   imgWidth: tifImage.getWidth(),
+      //   imgHeight: tifImage.getHeight(),
+      //   tl: [x1, y1],
+      //   br: [x2, y2],
+      //   center: [(x1 + x2) / 2, (y1 + y2) / 2],
+      //   width: Math.abs(x2 - x1),
+      //   height: Math.abs(y2 - y1),
+      //   data: tifImageData,
+      // };
+      // this._TifLayer.setTifImage(image);
       // this._MapLayer.setTiff(tifImage);
     },
     async loadBuild() {
@@ -386,50 +376,20 @@ export default {
   }
 }
 .box {
-  width: 500px;
+  width: 400px;
   position: absolute;
-  right: 0;
-  top: 0;
+  right: 20px;
+  top: 20px;
   z-index: 1500;
-  background-color: #275994;
+  background-color: #ffffffaa;
   user-select: none;
-  color: #fff;
-  .card {
-    background-image: url("./data/card.svg");
-    background-size: 100% 100%;
-    padding: 25px;
-  }
-  .el-form {
-    height: 200px;
-    overflow-y: scroll;
-    overflow-x: hidden;
-
-    .el-form-item {
-      margin-bottom: 8px;
-      color: #fff;
-      // color: orange;
-    }
-    ::v-deep {
-      .el-form-item__label {
-        color: #fff !important;
-        font-size: 14px;
-      }
-    }
-    &::-webkit-scrollbar {
-      display: none;
-    }
-  }
-
-  .title {
-    height: 70px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-    font-weight: bold;
-    margin: 8px 0;
-    background-image: url("./data/title.svg");
-    background-size: 100% 100%;
+  padding: 12px;
+  background: #ffffff;
+  box-shadow: 0px 4px 10px 0px rgba(0, 0, 0, 0.3);
+  border-radius: 6px;
+  .el-form-item {
+    margin-bottom: 8px;
+    // color: orange;
   }
 }
 

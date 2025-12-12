@@ -32,14 +32,14 @@
                   </el-col>
                   <!-- <el-col :span="12" :offset="0">
                     <el-form-item label="地形图：">
-                      <el-switch v-model="showTiffLayer" :active-value="true" :inactive-value="false"></el-switch>
+                      <el-switch v-model="showTifLayer" :active-value="true" :inactive-value="false"></el-switch>
                     </el-form-item>
                   </el-col> -->
-                  <!-- <el-col :span="12" :offset="0">
+                  <el-col :span="12" :offset="0">
                     <el-form-item label="实体3维：">
                       <el-switch v-model="showOBJLayer" :active-value="true" :inactive-value="false"></el-switch>
                     </el-form-item>
-                  </el-col> -->
+                  </el-col>
                   <el-col :span="24" :offset="0">
                     <div style="display: flex; align-items: center; justify-content: space-between">
                       <span class="el-form-item__label">地形图透明度：</span>
@@ -85,18 +85,21 @@
 <script>
 import { MyMap, MAP_EVENT } from "@/mymap/index.js";
 import { WGS84ToMercator } from "@/mymap/utils/LngLatUtils";
-
-import { Build3DLayer } from "./layer2/Build3DLayer";
-import { Network3DLayer, Network } from "./layer2/Network3DLayer";
-import { PinkLayer } from "./layer2/PinkLayer";
-import { TileLayer } from "./layer2/TileLayer.js";
-import { UAVListLayer } from "./layer2/UAVListLayer";
+import { TifLayer } from "./layer/TifLayer";
+import { Network3DLayer, Network } from "./layer/Network3DLayer";
+import { UAVListLayer } from "./layer/UAVListLayer";
+import { Build3DLayer } from "./layer/Build3DLayer";
+import { PinkLayer } from "./layer/PinkLayer";
+import { MapLayer, MapTile } from "./layer3/MapLayer.js";
 
 import NewClock from "@/components/NewClock/index.vue";
 
 import JSZip from "jszip";
 
 import GeoJSONLayerWorker from "./layer/GeoJSONLayer.worker";
+
+import { TileLayer } from "./layer/TileLayer.js";
+import { OBJLayer } from "./layer/OBJLayer.js";
 
 import * as GeoTIFF from "geotiff";
 
@@ -133,24 +136,6 @@ function arrayToFloat64(arraybuffer) {
   }
   return array;
 }
-
-const pageConfig = {
-  mapConfig: {
-    center: [12613317.745000001, 2649719.39],
-    zoom: 13.5,
-    // mapZoomHeight: 600,
-    pitch: 30,
-    rotation: -10,
-    minPitch: -90,
-    enableRotate: true,
-  },
-  tif: process.env.VUE_APP_DEMO_SERVER + "/广州中心四区.tif",
-  network: process.env.VUE_APP_DEMO_SERVER + "/network.zip",
-  networkXmlUrl: process.env.VUE_APP_DEMO_SERVER + "/edgelistGz4Zone.xml.zip",
-  paths: process.env.VUE_APP_DEMO_SERVER + "/leg(1).json",
-  build: process.env.VUE_APP_DEMO_SERVER + "/buildingCentral4demWgs84.geojson",
-  pink: process.env.VUE_APP_DEMO_SERVER + "/新丰县起降点wgs84_dem.json",
-};
 
 export default {
   components: {
@@ -191,14 +176,17 @@ export default {
     },
     tifOpacity: {
       handler(val) {
+        this._TifLayer.setOpacity(val);
         this._TileLayer.setOpacity(val);
       },
     },
-    showTiffLayer: {
+    showTifLayer: {
       handler(val) {
         if (val) {
+          this._Map.addLayer(this._TifLayer);
           this._Map.addLayer(this._TileLayer);
         } else {
+          this._Map.removeLayer(this._TifLayer);
           this._Map.removeLayer(this._TileLayer);
         }
       },
@@ -227,7 +215,7 @@ export default {
       showNetwork2D: false,
       showNetwork3DNode: false,
       showNetwork3DLink: false,
-      showTiffLayer: true,
+      showTifLayer: true,
       showOBJLayer: false,
       paths: {},
       selectPath: null,
@@ -241,26 +229,41 @@ export default {
   async mounted() {
     this.initMap();
     this.loadPaths();
+    this.loadPaths2();
+    // this.loadTif();
     this.loadBuild();
     this.loadPink();
     // this.loadNetwork();
-    this.loadNetworkXml();
+    this.loadNetwork3();
   },
   methods: {
     // 初始化地图
     async initMap() {
       this._Map = new MyMap({
         rootId: "mapRoot",
-        ...pageConfig.mapConfig,
+        center: [12716943.337189136, 2761023.0570991505],
+        center: [12712568.18680353, 2760364.2506704303],
+        // center: [12702456.02, 2753085.897],
+        // zoom: 15,
+        zoom: 13.5,
+        mapZoomHeight: 600,
+        pitch: 30,
+        rotation: -10,
+        enableRotate: true,
       });
       console.log(this._Map);
 
-      this._TileLayer = new TileLayer({
-        zIndex: 200,
-        opacity: this.tifOpacity,
-        tifUrl: pageConfig.tif,
-      });
-      if (this.showTiffLayer) this._Map.addLayer(this._TileLayer);
+      // this._MapLayer = new MapLayer({ tileClass: MapTile, zIndex: -1 });
+      // this._Map.addLayer(this._MapLayer);
+
+      this._OBJLayer = new OBJLayer({ zIndex: 30, num: this.$route.query.num });
+      if (this.showOBJLayer) this._Map.addLayer(this._OBJLayer);
+
+      this._TifLayer = new TifLayer({ zIndex: 100, opacity: this.tifOpacity });
+      if (this.showTifLayer) this._Map.addLayer(this._TifLayer);
+
+      this._TileLayer = new TileLayer({ zIndex: 200, opacity: this.tifOpacity });
+      if (this.showTifLayer) this._Map.addLayer(this._TileLayer);
 
       this._Network3DLayer = new Network3DLayer({
         zIndex: 200,
@@ -281,6 +284,18 @@ export default {
       });
       // this._Map.addLayer(this._UAVListLayer);
 
+      this._UAVListLayer2 = new UAVListLayer({
+        zIndex: 300,
+        color: "red",
+        lockSelect: this.lockSelect,
+        event: {
+          playing: (res) => {
+            this.playDetail = res.data;
+          },
+        },
+      });
+      this._Map.addLayer(this._UAVListLayer2);
+
       this._Build3DLayer = new Build3DLayer({
         zIndex: 220,
         // buildColor: "#838385",
@@ -293,15 +308,14 @@ export default {
       });
       this._Map.addLayer(this._PinkLayer);
     },
-    async loadNetworkXml() {
+    async loadNetwork() {
       if (this._loadNetwork) return;
       this._loadNetwork = true;
-      // const response = await fetch(process.env.VUE_APP_DEMO_SERVER + "/edgelistGz4Zone.xml.zip");
-      const response = await fetch(pageConfig.networkXmlUrl);
+      const response = await fetch(process.env.VUE_APP_DEMO_SERVER + "/output_network.zip");
       if (response.ok) {
         const blob = await response.blob();
         const zip = await JSZip.loadAsync(blob);
-        const xml = await zip.file("edgelistGz4Zone.xml").async("string");
+        const xml = await zip.file("output_network.xml").async("string");
         console.time("new Network");
         const network = Network.fromXml(xml);
         console.timeEnd("new Network");
@@ -310,10 +324,10 @@ export default {
         console.error(`HTTP error! status: ${response.status}`, response);
       }
     },
-    async loadNetwork() {
+    async loadNetwork3() {
       if (this._loadNetwork) return;
       this._loadNetwork = true;
-      const response = await fetch(pageConfig.network);
+      const response = await fetch(process.env.VUE_APP_DEMO_SERVER + "/network.zip");
       if (response.ok) {
         const blob = await response.blob();
         const zip = await JSZip.loadAsync(blob);
@@ -344,7 +358,7 @@ export default {
       }
     },
     async loadPaths() {
-      const response = await fetch(pageConfig.paths);
+      const response = await fetch(process.env.VUE_APP_DEMO_SERVER + "/leg(1).json");
       if (response.ok) {
         const xml = await response.text();
         const paths = [];
@@ -363,8 +377,55 @@ export default {
         console.error(`HTTP error! status: ${response.status}`, response);
       }
     },
+    async loadPaths2() {
+      const response = await fetch(process.env.VUE_APP_DEMO_SERVER + "/leg3.json");
+      if (response.ok) {
+        const xml = await response.text();
+        const paths = [];
+        const list = Object.entries(JSON.parse(xml));
+        console.log(list);
+        for (const [k, v] of list) {
+          const l1 = v.split(",");
+          const l2 = l1.map((v2, i) => {
+            const l3 = v2.split(" ");
+            const [x, y] = WGS84ToMercator(l3[0], l3[1]);
+            return [x, y, l3[2], i * 10];
+          });
+          paths.push({ id: k, nodes: l2, center: l2[0] });
+        }
+        this._UAVListLayer2.setPaths(paths);
+        // this._paths = Object.entries(JSON.parse(xml));
+      } else {
+        console.error(`HTTP error! status: ${response.status}`, response);
+      }
+    },
+    async loadTif() {
+      const tif = await GeoTIFF.fromUrl(process.env.VUE_APP_DEMO_SERVER + "/新丰县dem.tif");
+      const tifImage = await tif.getImage();
+      const tifImageData = await tifImage.readRasters({
+        interleave: true,
+      });
+      const bbox = tifImage.getBoundingBox();
+      const [x1, y1] = WGS84ToMercator(bbox[0], bbox[1]);
+      const [x2, y2] = WGS84ToMercator(bbox[2], bbox[3]);
+      // tifImage.getCanvasTexture();
+
+      const image = {
+        imgWidth: tifImage.getWidth(),
+        imgHeight: tifImage.getHeight(),
+        tl: [x1, y1],
+        br: [x2, y2],
+        center: [(x1 + x2) / 2, (y1 + y2) / 2],
+        width: Math.abs(x2 - x1),
+        height: Math.abs(y2 - y1),
+        data: tifImageData,
+      };
+      this._TifLayer.setTifImage(image);
+      // this._MapLayer.setTiff(tifImage);
+    },
     async loadBuild() {
-      const response = await fetch(pageConfig.build);
+      // const response = await fetch(process.env.VUE_APP_DEMO_SERVER + "/新丰县建筑DEM.geojson");
+      const response = await fetch(process.env.VUE_APP_DEMO_SERVER + "/新丰县buildingWithDem.geojson");
       if (response.ok) {
         const geoJsonData = await response.text().then(parserGeoJSON);
         this._Build3DLayer.setData(geoJsonData);
@@ -373,10 +434,13 @@ export default {
       }
     },
     async loadPink() {
-      const response = await fetch(pageConfig.pink);
+      const response = await fetch(process.env.VUE_APP_DEMO_SERVER + "/新丰县起降点wgs84_dem.json");
       if (response.ok) {
         const text = await response.text();
         this._PinkLayer.setPinkList(JSON.parse(text));
+
+        this._pinks = JSON.parse(text);
+        this.computedPathsAndPink();
       } else {
         console.error(`HTTP error! status: ${response.status}`, response);
       }
@@ -405,6 +469,31 @@ export default {
     reset() {
       this.stop();
       this.setTime(0);
+    },
+    computedPathsAndPink() {
+      return;
+      if (!this._pinks || !this._paths) return;
+      const list = [];
+      for (const path of this._paths) {
+        const obj = {};
+        obj.id = path[0];
+        obj.nodes = path[1];
+        const [x1, y1] = obj.nodes[0];
+        const [x2, y2] = obj.nodes[obj.nodes.length - 1];
+        for (const pink of this._pinks) {
+          const { wgs_lon: x, wgs_lat: y } = pink;
+          console.log(Math.abs(x1 - x), Math.abs(y1 - y), Math.abs(x2 - x), Math.abs(y2 - y));
+          const offset = 0.001;
+          if (Math.abs(x1 - x) <= offset && Math.abs(y1 - y) <= offset) {
+            obj.start = pink;
+          }
+          if (Math.abs(x2 - x) <= offset && Math.abs(y2 - y) <= offset) {
+            obj.end = pink;
+          }
+        }
+        list.push(obj);
+      }
+      console.log(list);
     },
   },
 };

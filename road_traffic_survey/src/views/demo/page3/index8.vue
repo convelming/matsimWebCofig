@@ -1,5 +1,5 @@
 <template>
-  <div class="index" v-loading="loading">
+  <div class="index">
     <div class="grid_root">
       <div class="Drawer_row">
         <div></div>
@@ -47,14 +47,6 @@
                     </div>
                   </el-col>
                   <el-col :span="24" :offset="0">
-                    <el-form-item label="无人机飞行曲线：">
-                      <el-select v-model="UAVPathClassName">
-                        <el-option label="LinePath" value="LinePath"> </el-option>
-                        <el-option label="CubicBezierPath" value="CubicBezierPath"> </el-option>
-                      </el-select>
-                    </el-form-item>
-                  </el-col>
-                  <el-col :span="24" :offset="0">
                     <el-form-item label-width="0">
                       <el-button size="small" @click="play">播放</el-button>
                       <el-button size="small" @click="stop">暂停</el-button>
@@ -97,7 +89,7 @@ import { WGS84ToMercator } from "@/mymap/utils/LngLatUtils";
 import { Build3DLayer } from "./layer2/Build3DLayer";
 import { Network3DLayer, Network } from "./layer2/Network3DLayer";
 import { PinkLayer } from "./layer2/PinkLayer";
-import { TileLayer } from "./layer2/TileLayer2.js";
+import { TileLayer } from "./layer2/TileLayer.js";
 import { UAVListLayer } from "./layer2/UAVListLayer";
 
 import NewClock from "@/components/NewClock/index.vue";
@@ -142,22 +134,23 @@ function arrayToFloat64(arraybuffer) {
   return array;
 }
 
-// const pageConfig = {
-//   mapConfig: {
-//     center: [12613317.745000001, 2649719.39],
-//     zoom: 13.5,
-//     mapZoomHeight: 600,
-//     pitch: 30,
-//     rotation: -10,
-//     enableRotate: true,
-//   },
-//   tif: process.env.VUE_APP_DEMO_SERVER + "/广州中心四区.tif",
-//   network: process.env.VUE_APP_DEMO_SERVER + "/network.zip",
-//   networkXmlUrl: process.env.VUE_APP_DEMO_SERVER + "/coords_100m_gz4_250529.zip",
-//   paths: process.env.VUE_APP_DEMO_SERVER + "/leg(1).json",
-//   build: process.env.VUE_APP_DEMO_SERVER + "/buildingCentral4demWgs84.geojson",
-//   pink: process.env.VUE_APP_DEMO_SERVER + "/新丰县起降点wgs84_dem.json",
-// };
+const pageConfig = {
+  mapConfig: {
+    center: [12613317.745000001, 2649719.39],
+    zoom: 13.5,
+    // mapZoomHeight: 600,
+    pitch: 30,
+    rotation: -10,
+    minPitch: -90,
+    enableRotate: true,
+  },
+  tif: process.env.VUE_APP_DEMO_SERVER + "/广州中心四区.tif",
+  network: process.env.VUE_APP_DEMO_SERVER + "/network.zip",
+  networkXmlUrl: process.env.VUE_APP_DEMO_SERVER + "/edgelistGz4Zone.xml.zip",
+  paths: process.env.VUE_APP_DEMO_SERVER + "/leg(1).json",
+  build: process.env.VUE_APP_DEMO_SERVER + "/buildingCentral4demWgs84.geojson",
+  pink: process.env.VUE_APP_DEMO_SERVER + "/新丰县起降点wgs84_dem.json",
+};
 
 export default {
   components: {
@@ -187,11 +180,13 @@ export default {
     showNetwork3DNode: {
       handler(val) {
         this._Network3DLayer.setShowNode(val);
+        this.loadNetwork();
       },
     },
     showNetwork3DLink: {
       handler(val) {
         this._Network3DLayer.setShowLink(val);
+        this.loadNetwork();
       },
     },
     tifOpacity: {
@@ -208,25 +203,18 @@ export default {
         }
       },
     },
-    UAVPathClassName: {
+    showOBJLayer: {
       handler(val) {
-        this._UAVListLayer.setPaths(this._UAVPaths, this.UAVPathClassName);
+        if (val) {
+          this._Map.addLayer(this._OBJLayer);
+        } else {
+          this._Map.removeLayer(this._OBJLayer);
+        }
       },
     },
-    // showOBJLayer: {
-    //   handler(val) {
-    //     if (val) {
-    //       this._Map.addLayer(this._OBJLayer);
-    //     } else {
-    //       this._Map.removeLayer(this._OBJLayer);
-    //     }
-    //   },
-    // },
   },
   data() {
     return {
-      loading: true,
-
       startPink: null,
       selectStartPink: false,
       endPink: null,
@@ -247,140 +235,30 @@ export default {
       minTime: 0,
       maxTime: 5000,
       tifOpacity: 1,
-      UAVPathClassName: "LinePath", // LinePath CubicBezierPath
     };
   },
   created() {},
   async mounted() {
-    this.loading = true;
-    let zip, pageConfig;
-    try {
-      const url = this.$route.query.fileName ? process.env.VUE_APP_DEMO_SERVER + "/" + this.$route.query.fileName : "/data.zip";
-      console.log(url);
-      const response = await fetch(url);
-
-      const blob = await response.blob();
-      zip = await JSZip.loadAsync(blob);
-
-      const config = await zip.file("config.json").async("string");
-      pageConfig = JSON.parse(config);
-    } catch (error) {
-      console.log(error);
-      pageConfig = {};
-    }
-    await this.initMap(pageConfig.mapConfig);
-    try {
-      if (pageConfig.tif) {
-        await zip
-          .file(pageConfig.tif)
-          .async("arraybuffer")
-          .then((array) => {
-            return this._TileLayer.setTif(array);
-          });
-      }
-      if (pageConfig.network && zip.file(pageConfig.network)) {
-        await Promise.all([
-          zip
-            .file(pageConfig.network + "/node")
-            .async("arraybuffer")
-            .then(arrayToFloat64),
-          zip
-            .file(pageConfig.network + "/link")
-            .async("arraybuffer")
-            .then(arrayToFloat64),
-          zip
-            .file(pageConfig.network + "/node_id")
-            .async("string")
-            .then(JSON.parse),
-          zip
-            .file(pageConfig.network + "/link_id")
-            .async("string")
-            .then(JSON.parse),
-        ]).then(([nodes, links, nodesId, linksId]) => {
-          const network = Network.fromArray(nodes, links);
-          this._Network3DLayer.setNetwork(network);
-          this._nodesId = nodesId;
-          this._linksId = linksId;
-          this._Network3DLayer.addEventListener(MAP_EVENT.HANDLE_PICK_LEFT, (e) => {
-            if (e.data > this._nodesId.length) {
-              alert(`linkId:  ${this._linksId[e.data - this._nodesId.length]}`);
-            } else {
-              alert(`nodeId:  ${this._nodesId[e.data]}`);
-            }
-          });
-        });
-      } else if (pageConfig.networkXmlUrl && zip.file(pageConfig.networkXmlUrl)) {
-        await zip
-          .file(pageConfig.networkXmlUrl)
-          .async("string")
-          .then((xml) => {
-            const network = Network.fromXml(xml);
-            this._Network3DLayer.setNetwork(network);
-          });
-      }
-      if (pageConfig.paths && zip.file(pageConfig.paths)) {
-        await zip
-          .file(pageConfig.paths)
-          .async("string")
-          .then((xml) => {
-            const paths = [];
-            const list = Object.entries(JSON.parse(xml));
-            for (const v of list) {
-              for (const v1 of v[1]) {
-                const [x, y] = WGS84ToMercator(v1[0], v1[1]);
-                v1[0] = x;
-                v1[1] = y;
-              }
-              paths.push({ id: v[0], nodes: v[1], center: v[1][0] });
-            }
-            this._UAVPaths = paths;
-            this._UAVListLayer.setPaths(this._UAVPaths, this.UAVPathClassName);
-          });
-      }
-      if (pageConfig.build && zip.file(pageConfig.build)) {
-        await zip
-          .file(pageConfig.build)
-          .async("string")
-          .then(parserGeoJSON)
-          .then((json) => {
-            this._Build3DLayer.setData(json);
-          });
-      }
-      if (pageConfig.pink && zip.file(pageConfig.pink)) {
-        await zip
-          .file(pageConfig.pink)
-          .async("string")
-          .then(JSON.parse)
-          .then((json) => {
-            this._PinkLayer.setPinkList(json);
-          });
-      }
-    } catch (error) {
-      console.log(error);
-    }
-    this.loading = false;
+    this.initMap();
+    this.loadPaths();
+    this.loadBuild();
+    this.loadPink();
+    // this.loadNetwork();
+    this.loadNetworkXml();
   },
   methods: {
     // 初始化地图
-    async initMap(
-      mapConfig = {
-        center: [12613317.745000001, 2649719.39],
-        zoom: 13.5,
-        mapZoomHeight: 300,
-        background: "#000",
-        pitch: 30,
-        rotation: -10,
-        enableRotate: true,
-      }
-    ) {
+    async initMap() {
       this._Map = new MyMap({
         rootId: "mapRoot",
-        ...mapConfig,
-        mapZoomHeight: 300,
+        ...pageConfig.mapConfig,
       });
+      console.log(this._Map);
+
       this._TileLayer = new TileLayer({
         zIndex: 200,
         opacity: this.tifOpacity,
+        tifUrl: pageConfig.tif,
       });
       if (this.showTiffLayer) this._Map.addLayer(this._TileLayer);
 
@@ -394,8 +272,6 @@ export default {
 
       this._UAVListLayer = new UAVListLayer({
         zIndex: 300,
-        linkWidth: 2,
-        nodeSize: 30,
         lockSelect: this.lockSelect,
         event: {
           playing: (res) => {
@@ -403,7 +279,7 @@ export default {
           },
         },
       });
-      this._Map.addLayer(this._UAVListLayer);
+      // this._Map.addLayer(this._UAVListLayer);
 
       this._Build3DLayer = new Build3DLayer({
         zIndex: 220,
@@ -417,10 +293,98 @@ export default {
       });
       this._Map.addLayer(this._PinkLayer);
     },
+    async loadNetworkXml() {
+      if (this._loadNetwork) return;
+      this._loadNetwork = true;
+      // const response = await fetch(process.env.VUE_APP_DEMO_SERVER + "/edgelistGz4Zone.xml.zip");
+      const response = await fetch(pageConfig.networkXmlUrl);
+      if (response.ok) {
+        const blob = await response.blob();
+        const zip = await JSZip.loadAsync(blob);
+        const xml = await zip.file("edgelistGz4Zone.xml").async("string");
+        console.time("new Network");
+        const network = Network.fromXml(xml);
+        console.timeEnd("new Network");
+        this._Network3DLayer.setNetwork(network);
+      } else {
+        console.error(`HTTP error! status: ${response.status}`, response);
+      }
+    },
+    async loadNetwork() {
+      if (this._loadNetwork) return;
+      this._loadNetwork = true;
+      const response = await fetch(pageConfig.network);
+      if (response.ok) {
+        const blob = await response.blob();
+        const zip = await JSZip.loadAsync(blob);
+        const [nodes, links, nodesId, linksId] = await Promise.all([
+          zip.file("node").async("arraybuffer").then(arrayToFloat64),
+          zip.file("link").async("arraybuffer").then(arrayToFloat64),
+          zip.file("node_id").async("string").then(JSON.parse),
+          zip.file("link_id").async("string").then(JSON.parse),
+          // zip.file(new RegExp(/[node]$/)).async("arraybuffer").then(arrayToFloat64),
+          // zip.file(new RegExp(/[link]$/)).async("arraybuffer").then(arrayToFloat64),
+          // zip.file(new RegExp(/[node_id]$/)).async("string").then(JSON.parse),
+          // zip.file(new RegExp(/[link_id]$/)).async("string").then(JSON.parse),
+        ]);
+        const network = Network.fromArray(nodes, links);
+        this._Network3DLayer.setNetwork(network);
+        this._nodesId = nodesId;
+        this._linksId = linksId;
+        this._Network3DLayer.addEventListener(MAP_EVENT.HANDLE_PICK_LEFT, (e) => {
+          console.log(e.data);
+          if (e.data > this._nodesId.length) {
+            alert(`linkId:  ${this._linksId[e.data - this._nodesId.length]}`);
+          } else {
+            alert(`nodeId:  ${this._nodesId[e.data]}`);
+          }
+        });
+      } else {
+        console.error(`HTTP error! status: ${response.status}`, response);
+      }
+    },
+    async loadPaths() {
+      const response = await fetch(pageConfig.paths);
+      if (response.ok) {
+        const xml = await response.text();
+        const paths = [];
+        const list = Object.entries(JSON.parse(xml));
+        for (const v of list) {
+          for (const v1 of v[1]) {
+            const [x, y] = WGS84ToMercator(v1[0], v1[1]);
+            v1[0] = x;
+            v1[1] = y;
+          }
+          paths.push({ id: v[0], nodes: v[1], center: v[1][0] });
+        }
+        this._UAVListLayer.setPaths(paths);
+        this._paths = Object.entries(JSON.parse(xml));
+      } else {
+        console.error(`HTTP error! status: ${response.status}`, response);
+      }
+    },
+    async loadBuild() {
+      const response = await fetch(pageConfig.build);
+      if (response.ok) {
+        const geoJsonData = await response.text().then(parserGeoJSON);
+        this._Build3DLayer.setData(geoJsonData);
+      } else {
+        console.error(`HTTP error! status: ${response.status}`, response);
+      }
+    },
+    async loadPink() {
+      const response = await fetch(pageConfig.pink);
+      if (response.ok) {
+        const text = await response.text();
+        this._PinkLayer.setPinkList(JSON.parse(text));
+      } else {
+        console.error(`HTTP error! status: ${response.status}`, response);
+      }
+    },
     setTime(time) {
       if (time > this.maxTime) time = this.maxTime;
       this.time = Number(Number(time).toFixed(3));
-      if (this._Map) this._UAVListLayer.setTime(this.time);
+      this._UAVListLayer.setTime(this.time);
     },
     play() {
       if (this._interval) clearInterval(this._interval);
@@ -431,12 +395,12 @@ export default {
           this.setTime(this.time + (1 / 60) * 10);
         }
       }, 1000 / 60);
-      // if (this._Map) this._Map.addLayer(this._UAVListLayer);
+      this._Map.addLayer(this._UAVListLayer);
     },
     stop() {
       clearInterval(this._interval);
       this._interval = null;
-      // if (this._Map) this._UAVListLayer.removeFromParent();
+      this._UAVListLayer.removeFromParent();
     },
     reset() {
       this.stop();
