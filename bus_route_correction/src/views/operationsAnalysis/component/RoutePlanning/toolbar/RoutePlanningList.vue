@@ -54,6 +54,9 @@
         <el-form-item label="航路名称" prop="name">
           <el-input v-model="addRouteForm.name"></el-input>
         </el-form-item>
+        <el-form-item label="出发时间" prop="departureTime">
+          <el-time-picker v-model="addRouteForm.departureTime" placeholder="出发时间" value-format="hh:mm:ss"></el-time-picker>
+        </el-form-item>
         <el-form-item label="起点" prop="startId">
           <el-select v-model="addRouteForm.startId">
             <el-option v-for="item in pointList" :key="item.id" :label="item.name" :value="item.id"> </el-option>
@@ -227,8 +230,10 @@ export default {
         name: "",
         reversalName: "",
         reversal: true,
+        departureTime: "00:00:00",
       },
       addRouteRules: {
+        departureTime: [{ required: true, message: "起点出发时间不能为空", trigger: "blur" }],
         startId: [{ required: true, message: "起点不能为空", trigger: "blur" }],
         endId: [{ required: true, message: "降点不能为空", trigger: "blur" }],
         name: [{ required: true, message: "航路名称不能为空", trigger: "blur" }],
@@ -354,10 +359,8 @@ export default {
         this._UAVListLayer.removeFromParent();
       }
 
-      if (res.showLayer) {
-        this.getUAMPoint();
-        this.getUAMRoute();
-      }
+      this.getUAMPoint();
+      this.getUAMRoute();
     },
     MercatorToWGS84(array) {
       try {
@@ -459,6 +462,7 @@ export default {
         name: "",
         reversal: true,
         reversalName: "",
+        departureTime: "00:00:00",
       };
       this.showAddRoute = true;
     },
@@ -468,7 +472,11 @@ export default {
     onSubmitAddRoute() {
       this.$refs.addRouteForm.validate((valid) => {
         if (valid) {
-          genUamRoute(this.addRouteForm)
+          const form = JSON.parse(JSON.stringify(this.addRouteForm));
+          const l = form.departureTime.split(":").map((v) => Number(v));
+          const departureTime = l[0] * 3600 + l[1] * 60 + l[2];
+          form.departureTime = departureTime;
+          genUamRoute(form)
             .then((res) => {
               this.$message.success("添加成功");
               this.handleCloseAddRoute();
