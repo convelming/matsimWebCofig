@@ -295,8 +295,8 @@ export default {
     this._UAVListLayer = new UAVListLayer({
       zIndex: 300,
 
-      linkWidth: 1,
-      selectLinkWidth: 5,
+      linkWidth: 3,
+      selectLinkWidth: 3.1,
       linkColor: "#D8D8D8",
       selectLinkColor: "#FF7B00",
 

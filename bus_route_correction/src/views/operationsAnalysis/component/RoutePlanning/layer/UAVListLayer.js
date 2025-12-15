@@ -29,8 +29,8 @@ export class UAVListLayer extends Layer {
     this.linkColor = new THREE.Color(opt.linkColor || "#e8ce79");
     this.selectLinkColor = new THREE.Color(opt.selectLinkColor || "#e8ce79");
 
-    this.nodeSize = opt.nodeSize || 5;
-    this.selectNodeSize = opt.selectNodeSize || 5;
+    this.nodeSize = opt.nodeSize || 15;
+    this.selectNodeSize = opt.selectNodeSize || 15;
     this.nodeColor = new THREE.Color(opt.nodeColor || "#76819a");
     this.selectNodeColor = new THREE.Color(opt.selectNodeColor || "#ea7f7f");
     this.nodeMap = textureLoader.load(require("@/assets/image/point.svg"));
@@ -302,7 +302,6 @@ export class UAVListLayer extends Layer {
     if (this.linkSelectMesh) {
       this.linkSelectMesh.removeFromParent();
       this.linkSelectMesh.geometry.dispose();
-      this.linkSelectMesh.dispose();
       this.linkSelectMesh = null;
     }
     if (path) {
