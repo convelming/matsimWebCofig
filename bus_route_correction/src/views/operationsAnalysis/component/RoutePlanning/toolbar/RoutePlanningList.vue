@@ -80,7 +80,7 @@
       </el-form>
     </Dialog>
 
-    <div class="page2" v-show="showUAVPage">
+    <div ref="page2" class="page2" v-show="showUAVPage">
       <div id="mapRoot2" ref="mapRoot2"></div>
       <div class="back"></div>
       <img src="../images/img_line_top_left@2x.png" alt="" class="back1" />
@@ -322,12 +322,15 @@ export default {
         },
       },
     });
+
+    document.body.append(this.$refs.page2);
   },
   beforeDestroy() {
     this._PointSelectLayer.dispose();
     this._PointListLayer.dispose();
     this._RouteListLayer.dispose();
     this._UAVListLayer.dispose();
+    document.body.removeChild(this.$refs.page2);
   },
   methods: {
     handleCloseUAVPage() {
@@ -517,7 +520,7 @@ export default {
 
 .page2 {
   position: fixed;
-  z-index: 1000;
+  z-index: 10000;
   top: 0;
   left: 0;
   width: 100vw;
@@ -546,7 +549,7 @@ export default {
     z-index: 100;
     width: 704px;
     height: 284px;
-    top: 89px;
+    top: 43px;
     left: 43px;
     pointer-events: none;
   }
@@ -555,7 +558,7 @@ export default {
     z-index: 100;
     width: 420px;
     height: 40px;
-    top: 89px;
+    top: 43px;
     left: 50%;
     transform: translateX(-50%);
     pointer-events: none;
@@ -566,7 +569,7 @@ export default {
     z-index: 100;
     width: 704px;
     height: 284px;
-    top: 89px;
+    top: 43px;
     right: 43px;
     pointer-events: none;
   }
@@ -693,7 +696,7 @@ export default {
     z-index: 50;
     position: absolute;
     left: 44px;
-    top: 420px;
+    top: 360px;
 
     .p9_progress {
       margin-bottom: 30px;
@@ -704,7 +707,7 @@ export default {
   .p9_sd {
     z-index: 50;
     position: absolute;
-    top: 420px;
+    top: 360px;
     right: 44px;
     .p9_progress_list {
       display: flex;

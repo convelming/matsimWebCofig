@@ -279,6 +279,10 @@ export default class extends THREE.Sprite {
 
     return this;
   }
+
+  dispose(){
+    this.texture.dispose();
+  }
 }
 
 function getTextWidth(ctx, text) {

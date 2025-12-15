@@ -87,6 +87,14 @@ export class PointListLayer extends Layer {
   }
 
   update() {
+    if (this.labelList) {
+      while (this.labelList.length) {
+        const mesh = this.labelList.pop();
+        mesh.removeFromParent();
+        mesh.dispose();
+      }
+    }
+
     const center = [0, 0];
     const pointList = [];
 
@@ -101,6 +109,7 @@ export class PointListLayer extends Layer {
       const pos = new THREE.Vector3(v.x - center[0], v.y - center[1], v.sample_1 || 0);
       pointList.push(pos);
       const label = new SpriteText(v.name, 12, "#fff");
+      label.dis;
       label.center.set(0.5, -0.5);
       label.position.copy(pos);
       labelGroup.add(label);
