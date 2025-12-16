@@ -16,7 +16,7 @@
     <el-button type="primary" size="small" @click="handleOpenAddRoute">{{ $l("添加航路划设") }}</el-button>
     <AutoSize class="flex-h">
       <template slot-scope="{ width, height }">
-        <el-table class="small" :data="routeList" border stripe :height="height">
+        <el-table class="small" :data="routeList" border stripe :height="height" @row-click="handleTableRowClick">
           <!-- <el-table-column type="selection" width="45" align="center" /> -->
           <el-table-column :label="$l('航路名称')" prop="name">
             <template slot-scope="{ row }"> {{ row.name }} ( {{ row.start.name }} - {{ row.end.name }}) </template>
@@ -295,8 +295,8 @@ export default {
     this._UAVListLayer = new UAVListLayer({
       zIndex: 300,
 
-      linkWidth: 3,
-      selectLinkWidth: 3.1,
+      linkWidth: 5,
+      selectLinkWidth: 5.1,
       linkColor: "#D8D8D8",
       selectLinkColor: "#FF7B00",
 
@@ -315,10 +315,14 @@ export default {
         playing: (res) => {
           if (this._playTimeout) return;
           this.playDetail = res.data.playDetail;
-          this.showUAVPage = !!res.data.playDetail;
+          // this.showUAVPage = !!res.data.playDetail;
           this._playTimeout = setTimeout(() => {
             this._playTimeout = null;
           }, 200);
+
+          // this.rootVue.$emit("RoutePlanning_Get_Options", {
+          //   showUAVPage: this.showUAVPage,
+          // });
         },
       },
     });
@@ -333,16 +337,31 @@ export default {
     document.body.removeChild(this.$refs.page2);
   },
   methods: {
+    handleTableRowClick(row, column, event) {
+      if(!this._options.showLayer) return;
+      const path = this._UAVListLayer.setSelectPathById(row.id);
+      const center = path.center;
+      const node1 = path.nodes[0];
+      console.log(center, node1, [center.x + node1.v.x, center.y + node1.v.y]);
+
+      this._Map.setCenter([center.x + node1.v.x, center.y + node1.v.y])
+    },
     handleCloseUAVPage() {
       this._UAVListLayer.setSelectPath(-1);
       this.showUAVPage = false;
       this.playDetail = null;
+
+      this.rootVue.$emit("RoutePlanning_Get_Options", {
+        showUAVPage: this.showUAVPage,
+      });
     },
     handleTimeChange(time) {
       this._UAVListLayer.setTime(time);
     },
     updateByOption(res) {
       this._options = res;
+
+      this.showUAVPage = res.showUAVPage;
 
       this._PointListLayer.setSize(res.pointSize);
       this._PointListLayer.setColor(res.pointColor);

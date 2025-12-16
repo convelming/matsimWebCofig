@@ -42,6 +42,10 @@ export class PointListLayer extends Layer {
     this.size = size;
     this.material.setValues({ size: this.size * 10 });
     this.material.needsUpdate = true;
+
+    this.labelList?.forEach((label) => {
+      label.center.set(0.5, (-0.5 * this.size) / 2);
+    });
   }
 
   setColor(color) {
@@ -109,8 +113,8 @@ export class PointListLayer extends Layer {
       const pos = new THREE.Vector3(v.x - center[0], v.y - center[1], v.sample_1 || 0);
       pointList.push(pos);
       const label = new SpriteText(v.name, 12, "#fff");
-      label.dis;
-      label.center.set(0.5, -0.5);
+      label.material.setValues({ depthWrite: false });
+      label.center.set(0.5, (-0.5 * this.size) / 2);
       label.position.copy(pos);
       labelGroup.add(label);
       labelList.push(label);

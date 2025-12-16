@@ -131,20 +131,20 @@ export class UAVListLayer extends Layer {
     this.linkMeshList2 = [];
     this.linkMaterial = new THREE.MeshBasicMaterial({
       color: this.linkColor,
-      linewidth: this.linkWidth,
+      // linewidth: this.linkWidth,
       opacity: 0.8,
       transparent: true,
     });
     this.linkMaterial1 = new THREE.MeshBasicMaterial({
       color: this.pickLayerColor,
-      linewidth: this.linkWidth,
+      // linewidth: this.linkWidth,
       opacity: 1,
       transparent: true,
     });
     this.linkSelectMesh = null;
     this.linkMaterial_s = new THREE.MeshBasicMaterial({
       color: this.selectLinkColor,
-      linewidth: this.selectLinkWidth,
+      // linewidth: this.selectLinkWidth,
       opacity: 1,
       transparent: true,
     });
@@ -278,24 +278,6 @@ export class UAVListLayer extends Layer {
   }
 
   setSelectPath(selectIndex) {
-    // const oldIndex = this.selectIndex;
-    // this.selectIndex = selectIndex;
-    // if (oldIndex > -1) {
-    //   // this.nodeMeshList[oldIndex].material = this.nodeMaterial;
-    //   // this.nodeMeshList[oldIndex].needsUpdate = true;
-    //   // this.nodeMeshList[oldIndex].renderOrder = 20;
-    //   this.linkMeshList[oldIndex].material = this.linkMaterial;
-    //   this.linkMeshList[oldIndex].needsUpdate = true;
-    //   this.linkMeshList[oldIndex].renderOrder = 10;
-    // }
-    // if (selectIndex > -1) {
-    //   // this.nodeMeshList[selectIndex].material = this.nodeMaterial_s;
-    //   // this.nodeMeshList[selectIndex].needsUpdate = true;
-    //   // this.nodeMeshList[selectIndex].renderOrder = 200;
-    //   this.linkMeshList[selectIndex].material = this.linkMaterial_s;
-    //   this.linkMeshList[selectIndex].needsUpdate = true;
-    //   this.linkMeshList[selectIndex].renderOrder = 100;
-    // }
 
     this.selectIndex = selectIndex;
     const path = this.pathList[selectIndex];
@@ -313,6 +295,12 @@ export class UAVListLayer extends Layer {
     }
     
     if (this.map) this.on(MAP_EVENT.UPDATE_CENTER);
+  }
+
+  setSelectPathById(id){
+    const index = this.pathList.findIndex(v=>v.id == id);
+    this.setSelectPath(index);
+    return this.pathList[index];
   }
 
   setLockSelect(val) {

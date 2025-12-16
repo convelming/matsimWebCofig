@@ -48,6 +48,13 @@
           </el-select>
         </div>
       </div>
+
+      <div class="form_item">
+        <div class="form_label">{{ $l("是否查看无人机飞行视角：") }}</div>
+        <div class="form_value">
+          <el-switch :disabled="!s_showLayer" v-model="showUAVPage" @change="handleEmitOption"></el-switch>
+        </div>
+      </div>
     </div>
   </el-collapse-item>
 </template>
@@ -81,6 +88,10 @@
   "航路类型：":{
     "zh-CN": "航路类型：",
     "en-US": "航路类型："
+  },
+  "是否查看无人机飞行视角：":{
+    "zh-CN": "是否查看无人机飞行视角：",
+    "en-US": "是否查看无人机飞行视角："
   },
 }
 </language>
@@ -140,12 +151,20 @@ export default {
       colorsList: COLOR_LIST,
 
       showRoute: true,
+
+      showUAVPage: false,
     };
   },
   created() {
     this.s_showLayer = this.showLayer;
     this.rootVue.$on("RoutePlanning_Get_Options", (data) => {
-      this.handleEmitOption();
+      if (data) {
+        for (const key in data) {
+          this[key] = data[key];
+        }
+      } else {
+        this.handleEmitOption();
+      }
     });
     getNetworkModes().then((res) => {
       this.networkModeList = res.data;
@@ -233,6 +252,8 @@ export default {
 
         showNetwork: this.showNetwork,
         showRoute: this.showRoute,
+
+        showUAVPage: this.showUAVPage,
       });
     },
     // 组件初始化事件
