@@ -16,7 +16,7 @@
     </div>
     <div class="scrollbar">
       <div class="list">
-        <div class="groud2">
+        <div class="groud4">
           <div class="groud_title">综合演示</div>
           <a class="item item1_2" target="_blank" href="#/demo/page11" style="background-color: yellowgreen">
             <img class="item_icon" src="./image/数据底座.png" />
@@ -25,23 +25,12 @@
               大屏动态集成了运行容量（航线数、空域分层占比）、环境（实时天气与风向）、流量（各型无人机作业数量、高峰热力图）等核心数据。在三维地理信息底图上，叠加了结构化航路网、禁限飞区与建筑物，实现了无人机实时位置与直播视频流的同屏融合显示。
             </div>
           </a>
-        </div>
-        <div class="groud6">
-          <div class="groud_title">环境模拟</div>
-          <a class="item item1_2" target="_blank" href="#/demo/UAVBox" style="background-color: #983379">
+          <a class="item item1_2" target="_blank" href="http://192.168.60.231:23105/pt.html#/operationsAnalysis/%E6%B5%B7%E7%8F%A0/%E6%88%98%E7%95%A5%E8%AF%BE%E9%A2%98demo2" style="background-color: yellowgreen">
             <img class="item_icon" src="./image/数据底座.png" />
-            <div class="item_title">无人机气象环境模拟</div>
-            <div class="item_detail">模拟一架无人机在由风向、风速、降水等多要素构成的动态三维气象场中的飞行状态，在其航迹周围空间单元实时可视化封装区域内的微观气象条件。</div>
-          </a>
-          <a class="item item1_2" target="_blank" href="#/demo/page12" style="background-color: #983379">
-            <img class="item_icon" src="./image/数据底座.png" />
-            <div class="item_title">低空风场环境模拟</div>
-            <div class="item_detail">以简洁直观的方式，呈现特定时间段内风向、风速的时空演变规律，模拟结果可直接服务于低空飞行安全评估与航路规划。</div>
-          </a>
-          <a class="item item1_2" target="_blank" href="#/demo/page13" style="background-color: #983379">
-            <img class="item_icon" src="./image/数据底座.png" />
-            <div class="item_title">低空类鸟群环境模拟</div>
-            <div class="item_detail">通过模拟鸟群的飞行行为，用于研究无人机在共享空域中如何感知、预测并与生物群体安全共存。</div>
+            <div class="item_title">海珠战略课题demo</div>
+            <div class="item_detail">
+              <!-- 大屏动态集成了运行容量（航线数、空域分层占比）、环境（实时天气与风向）、流量（各型无人机作业数量、高峰热力图）等核心数据。在三维地理信息底图上，叠加了结构化航路网、禁限飞区与建筑物，实现了无人机实时位置与直播视频流的同屏融合显示。 -->
+            </div>
           </a>
         </div>
         <div class="groud4">
@@ -81,6 +70,24 @@
             <img class="item_icon" src="./image/数据底座.png" />
             <div class="item_title">地图样式资源库</div>
             <div class="item_detail">本资源库集成并封装了多种适用于专业地理信息系统的现成地图样式方案。</div>
+          </a>
+        </div>
+        <div class="groud6">
+          <div class="groud_title">环境模拟</div>
+          <a class="item item1_2" target="_blank" href="#/demo/UAVBox" style="background-color: #983379">
+            <img class="item_icon" src="./image/数据底座.png" />
+            <div class="item_title">无人机气象环境模拟</div>
+            <div class="item_detail">模拟一架无人机在由风向、风速、降水等多要素构成的动态三维气象场中的飞行状态，在其航迹周围空间单元实时可视化封装区域内的微观气象条件。</div>
+          </a>
+          <a class="item item1_2" target="_blank" href="#/demo/page12" style="background-color: #983379">
+            <img class="item_icon" src="./image/数据底座.png" />
+            <div class="item_title">低空风场环境模拟</div>
+            <div class="item_detail">以简洁直观的方式，呈现特定时间段内风向、风速的时空演变规律，模拟结果可直接服务于低空飞行安全评估与航路规划。</div>
+          </a>
+          <a class="item item1_2" target="_blank" href="#/demo/page13" style="background-color: #983379">
+            <img class="item_icon" src="./image/数据底座.png" />
+            <div class="item_title">低空类鸟群环境模拟</div>
+            <div class="item_detail">通过模拟鸟群的飞行行为，用于研究无人机在共享空域中如何感知、预测并与生物群体安全共存。</div>
           </a>
         </div>
         <div class="groud2">

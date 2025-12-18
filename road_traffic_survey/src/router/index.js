@@ -133,6 +133,14 @@ export const demoPage = [
       title: "无人机动画测试页面",
     },
   },
+  {
+    path: "/demo/UAVPhysicsBox",
+    name: "demoUAVPhysicsBox",
+    component: () => import(/* webpackChunkName: "demoUAVBox" */ "@/views/demo/page4/UAVPhysicsBox.vue"),
+    menu: {
+      title: "无人机动画测试页面",
+    },
+  },
 ];
 
 const routes = [

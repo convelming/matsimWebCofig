@@ -4,7 +4,7 @@ import { Layer, MAP_EVENT } from "@/mymap/index.js";
 import { getTileNetwork } from "@/api/index.js";
 import { guid } from "@/utils/utils";
 
-const BUILD_ZOOM = 11;
+const BUILD_ZOOM = 12;
 const EARTH_RADIUS = 20037508.3427892;
 
 export class NetworkLayer extends Layer {

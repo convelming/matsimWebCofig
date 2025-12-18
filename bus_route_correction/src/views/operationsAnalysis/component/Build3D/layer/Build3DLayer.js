@@ -5,7 +5,7 @@ import { guid } from "@/utils/utils";
 
 import { getTileFacilities } from "@/api/index";
 
-const BUILD_ZOOM = 11;
+const BUILD_ZOOM = 12;
 const EARTH_RADIUS = 20037508.3427892;
 
 export class Build3DLayer extends Layer {

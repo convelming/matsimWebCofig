@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { Layer, MAP_EVENT } from "@/mymap/index.js";
 import Build3DLayerWorker from "./Build3DLayerWorker.js";
 
-const BUILD_ZOOM = 11;
+const BUILD_ZOOM = 12;
 const EARTH_RADIUS = 20037508.3427892;
 
 export class Build3DLayer extends Layer {
