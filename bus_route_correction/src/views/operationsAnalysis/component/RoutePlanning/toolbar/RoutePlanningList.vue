@@ -62,10 +62,16 @@
             <el-option v-for="item in pointList" :key="item.id" :label="item.name" :value="item.id"> </el-option>
           </el-select>
         </el-form-item>
+        <el-form-item label="起点高度" prop="startHeight">
+          <el-input-number v-model="addRouteForm.startHeight" :min="0" :step="0.1" :controls="true"> </el-input-number>
+        </el-form-item>
         <el-form-item label="降点" prop="endId">
           <el-select v-model="addRouteForm.endId">
             <el-option v-for="item in pointList" :key="item.id" :label="item.name" :value="item.id"> </el-option>
           </el-select>
+        </el-form-item>
+        <el-form-item label="降点高度" prop="endHeight">
+          <el-input-number v-model="addRouteForm.endHeight" :min="0" :step="0.1" :controls="true"> </el-input-number>
         </el-form-item>
         <el-form-item label="是否生成反向航路" prop="reversal">
           <el-switch v-model="addRouteForm.reversal" :active-value="true" :inactive-value="false" @change=""> </el-switch>
@@ -80,7 +86,7 @@
       </el-form>
     </Dialog>
 
-    <div ref="page2" class="page2" v-show="showUAVPage">
+    <div ref="page2" class="page2" v-show="showUAVPage && playDetail">
       <div id="mapRoot2" ref="mapRoot2"></div>
       <div class="back"></div>
       <img src="../images/img_line_top_left@2x.png" alt="" class="back1" />
@@ -226,15 +232,19 @@ export default {
       showAddRoute: false,
       addRouteForm: {
         startId: "",
+        startHeight: 0,
         endId: "",
+        endHeight: 0,
         name: "",
         reversalName: "",
         reversal: true,
         departureTime: "00:00:00",
       },
       addRouteRules: {
-        departureTime: [{ required: true, message: "起点出发时间不能为空", trigger: "blur" }],
+        departureTime: [{ required: true, message: "出发时间不能为空", trigger: "blur" }],
+        startHeight: [{ required: true, message: "起点出发高度不能为空", trigger: "blur" }],
         startId: [{ required: true, message: "起点不能为空", trigger: "blur" }],
+        endHeight: [{ required: true, message: "降点出发高度不能为空", trigger: "blur" }],
         endId: [{ required: true, message: "降点不能为空", trigger: "blur" }],
         name: [{ required: true, message: "航路名称不能为空", trigger: "blur" }],
         reversalName: [
@@ -338,13 +348,12 @@ export default {
   },
   methods: {
     handleTableRowClick(row, column, event) {
-      if(!this._options.showLayer) return;
+      if (!this._options.showLayer) return;
       const path = this._UAVListLayer.setSelectPathById(row.id);
       const center = path.center;
       const node1 = path.nodes[0];
-      console.log(center, node1, [center.x + node1.v.x, center.y + node1.v.y]);
 
-      this._Map.setCenter([center.x + node1.v.x, center.y + node1.v.y])
+      this._Map.setCenter([center.x + node1.v.x, center.y + node1.v.y]);
     },
     handleCloseUAVPage() {
       this._UAVListLayer.setSelectPath(-1);
@@ -365,7 +374,6 @@ export default {
 
       this._PointListLayer.setSize(res.pointSize);
       this._PointListLayer.setColor(res.pointColor);
-      console.log(this._Map, res.showPoint, res.showLayer);
 
       if (this._Map && res.showPoint && res.showLayer) {
         this._Map.addLayer(this._PointListLayer);
@@ -470,7 +478,6 @@ export default {
           // item.nodes = nodes;
           // item.center = center;
         });
-        console.log(res2);
 
         this.routeList = res.data;
         // this._RouteListLayer.setPaths(res.data);
@@ -480,10 +487,12 @@ export default {
     handleOpenAddRoute() {
       this.addRouteForm = {
         startId: "",
+        startHeight: 0,
         endId: "",
+        endHeight: 0,
         name: "",
-        reversal: true,
         reversalName: "",
+        reversal: true,
         departureTime: "00:00:00",
       };
       this.showAddRoute = true;

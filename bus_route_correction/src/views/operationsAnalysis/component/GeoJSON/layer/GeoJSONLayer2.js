@@ -1071,27 +1071,27 @@ export class GeoJSONPolygonListGeometry extends THREE.BufferGeometry {
       }
 
       // 添加底面
-      // {
-      //   const indicesOffset = vertices.length / 3;
-      //   // 添加点，法向量，uv，保存点对应的valueKey
-      //   for (let i = 0, l = shapeVertices.length; i < l; i++) {
-      //     const vertex = shapeVertices[i];
-      //     vertices.push(vertex.x, vertex.y, 0);
-      //     // normals.push(0, 0, 1);
-      //     uvs.push(vertex.x, vertex.y); // world uvs
+      {
+        const indicesOffset = vertices.length / 3;
+        // 添加点，法向量，uv，保存点对应的valueKey
+        for (let i = 0, l = shapeVertices.length; i < l; i++) {
+          const vertex = shapeVertices[i];
+          vertices.push(vertex.x, vertex.y, 0);
+          // normals.push(0, 0, 1);
+          uvs.push(vertex.x, vertex.y); // world uvs
 
-      //     propertiesKeyList.push(value);
-      //     values.push(0);
-      //   }
-      //   // 添加面
-      //   for (let i = 0, l = faces.length; i < l; i++) {
-      //     const face = faces[i];
-      //     const a = face[0] + indicesOffset;
-      //     const b = face[1] + indicesOffset;
-      //     const c = face[2] + indicesOffset;
-      //     indices.push(a, b, c);
-      //   }
-      // }
+          propertiesKeyList.push(value);
+          values.push(0);
+        }
+        // 添加面
+        for (let i = 0, l = faces.length; i < l; i++) {
+          const face = faces[i];
+          const a = face[0] + indicesOffset;
+          const b = face[1] + indicesOffset;
+          const c = face[2] + indicesOffset;
+          indices.push(a, b, c);
+        }
+      }
 
       // 添加顶面
       {

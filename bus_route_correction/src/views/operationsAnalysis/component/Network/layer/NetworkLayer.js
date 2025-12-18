@@ -724,6 +724,9 @@ export class NetworkGeometry extends THREE.BufferGeometry {
         list.setX(i * 4 + 3, flow);
       }
       const lineDirection = new THREE.Vector2(toCoord.x - fromCoord.x, toCoord.y - fromCoord.y);
+      if (toCoord.x == fromCoord.x && toCoord.y == fromCoord.y && toCoord.z != fromCoord.z) {
+        lineDirection.set(0, 1);
+      }
       const lineLength = lineDirection.length();
       lineDirection.normalize();
       const normal = new THREE.Vector2(-lineDirection.y, lineDirection.x);

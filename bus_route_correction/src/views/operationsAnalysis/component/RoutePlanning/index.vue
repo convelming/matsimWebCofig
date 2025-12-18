@@ -37,15 +37,42 @@
       <div class="form_item">
         <div class="form_label">{{ $l("是否显示航路：") }}</div>
         <div class="form_value">
-          <el-switch :disabled="!s_showLayer" v-model="showNetwork" @change="handleChangeNetworkMode(false)"></el-switch>
+          <el-switch :disabled="!s_showLayer" v-model="showNetwork" @change="handleChangeNetwork"></el-switch>
+        </div>
+      </div>
+      <div class="form_item">
+        <div class="form_label">{{ $l("是否显示航路区域：") }}</div>
+        <div class="form_value">
+          <el-switch :disabled="!s_showLayer" v-model="showFlyableArea" @change="handleChangeNetwork"></el-switch>
         </div>
       </div>
       <div class="form_item">
         <div class="form_label">{{ $l("航路类型：") }}</div>
         <div class="form_value">
-          <el-select v-model="networkMode" :disabled="!s_showLayer" size="small" multiple @change="handleChangeNetworkMode">
+          <el-select v-model="networkMode" :disabled="!s_showLayer" size="small" multiple @change="handleChangeNetwork">
             <el-option v-for="value in networkModeList" :label="value" :value="value" :key="value" />
           </el-select>
+        </div>
+      </div>
+      <div class="form_item">
+        <div class="form_label">{{ $l("航路高度：") }}</div>
+        <div class="form_value">
+          <el-select v-model="networkHeight" :disabled="!s_showLayer" size="small" multiple @change="handleChangeNetwork">
+            <el-option v-for="value in networkHeightList" :label="value" :value="value" :key="value" />
+          </el-select>
+        </div>
+      </div>
+      <div class="form_item">
+        <div class="form_label">{{ $l("航路颜色：") }}</div>
+        <div class="form_value">
+          <el-table class="small" :data="tableList" border stripe>
+            <el-table-column prop="color" label="color" width="60">
+              <template slot-scope="{ row }">
+                <el-color-picker v-model="row.color" size="small" :show-alpha="false" @change="handleChangeNetworkColor(row)"></el-color-picker>
+              </template>
+            </el-table-column>
+            <el-table-column prop="label" label="label"> </el-table-column>
+          </el-table>
         </div>
       </div>
 
@@ -85,9 +112,21 @@
     "zh-CN": "是否显示航路：",
     "en-US": "是否显示航路："
   },
+  "是否显示航路区域：":{
+    "zh-CN": "是否显示航路区域：",
+    "en-US": "是否显示航路区域："
+  },
   "航路类型：":{
     "zh-CN": "航路类型：",
     "en-US": "航路类型："
+  },
+  "航路高度：":{
+    "zh-CN": "航路高度：",
+    "en-US": "航路高度："
+  },
+  "航路颜色：":{
+    "zh-CN": "航路颜色：",
+    "en-US": "航路颜色："
   },
   "是否查看无人机飞行视角：":{
     "zh-CN": "是否查看无人机飞行视角：",
@@ -102,6 +141,7 @@ import { MAP_EVENT } from "@/mymap";
 import { COLOR_LIST } from "@/utils/utils";
 
 import { NetworkLayer } from "./layer/NetworkLayer.js";
+import { FlyableAreaLayer } from "./layer/FlyableAreaLayer";
 
 export default {
   props: ["name", "showLayer", "lock2D"],
@@ -110,6 +150,10 @@ export default {
   computed: {
     _Map() {
       return this.rootVue._Map;
+    },
+    tableList() {
+      let list = Object.values(this.Layer_Map);
+      return list;
     },
   },
   watch: {
@@ -146,13 +190,17 @@ export default {
       pointSize: 2,
 
       showNetwork: false,
-      networkMode: "",
+      showFlyableArea: false,
+      networkMode: [],
       networkModeList: [],
+      networkHeight: ["60~120"],
+      networkHeightList: ["0~60", "60~120", "120~300", "300~600", "600~1200"],
       colorsList: COLOR_LIST,
 
       showRoute: true,
 
       showUAVPage: false,
+      Layer_Map: {},
     };
   },
   created() {
@@ -169,10 +217,9 @@ export default {
     getNetworkModes().then((res) => {
       this.networkModeList = res.data;
     });
-
-    this._NetworkLayer = new NetworkLayer({
-      modes: "undefined",
-    });
+    // this._NetworkLayer = new NetworkLayer({
+    //   modes: "undefined",
+    // });
   },
   mounted() {
     this._interval = setInterval(() => {
@@ -182,31 +229,90 @@ export default {
         this.handleEnable();
       }
     }, 1000);
+    this.handleChangeNetwork();
   },
   beforeDestroy() {
     this.handleDisable();
   },
   methods: {
-    handleChangeNetworkMode(value) {
-      const newModes = this.networkMode.join(",");
-      if (this.showNetwork && newModes && !value) {
-        if (this._NetworkLayer.modes != newModes) {
-          this._NetworkLayer.dispose();
-          this._NetworkLayer = new NetworkLayer({
-            lineWidth: 1,
-            lineOffset: 1,
-            colors: this.getLayerColors(this.colorsList[this.colors]),
-            showNode: false,
-            showVideoIcon: null,
-            videoIconWidth: 0,
-
-            modes: this.networkMode.join(","),
-          });
+    handleChangeNetworkColor(row) {
+      const height = row.label;
+      const color = row.color;
+      const item = this.Layer_Map[height];
+      Object.values(item.NetworkLayer_Map).forEach((v) => {
+        v._NetworkLayer.setColors({
+          0: color,
+          1: color,
+        });
+      });
+    },
+    handleChangeNetwork() {
+      Object.values(this.Layer_Map).forEach((v) => {
+        v.show = false;
+        Object.values(v.NetworkLayer_Map).forEach((v2) => {
+          v2.show = false;
+        });
+      });
+      for (const height of this.networkHeight) {
+        let item1 = this.Layer_Map[height];
+        const [minh, maxh] = height.split("~");
+        if (!item1) {
+          item1 = {
+            show: false,
+            label: height,
+            color: "#ffa500",
+            _FlyableAreaLayer: new FlyableAreaLayer({
+              color: "#00ff00",
+              minh: minh,
+              maxh: maxh,
+            }),
+            NetworkLayer_Map: {},
+          };
+          // this.Layer_Map[height] = item1;
+          this.$set(this.Layer_Map, height, item1);
         }
-        this._Map.addLayer(this._NetworkLayer);
-      } else {
-        this._NetworkLayer.removeFromParent();
+        item1.show = true;
+
+        for (const mode of this.networkMode) {
+          let item2 = item1.NetworkLayer_Map[mode];
+          if (!item2) {
+            item2 = {
+              show: false,
+              label: mode,
+              _NetworkLayer: new NetworkLayer({
+                colors: {
+                  0: item1.color,
+                  1: item1.color,
+                },
+                modes: mode,
+                minh: minh,
+                maxh: maxh,
+              }),
+            };
+            this.$set(item1.NetworkLayer_Map, mode, item2);
+            // item1.NetworkLayer_Map[mode] = item2;
+          }
+          item2.show = true;
+        }
       }
+
+      Object.values(this.Layer_Map).forEach((v) => {
+        if (v.show && this.showFlyableArea) {
+          this._Map.addLayer(v._FlyableAreaLayer);
+        } else {
+          v._FlyableAreaLayer.removeFromParent();
+        }
+
+        Object.values(v.NetworkLayer_Map).forEach((v2) => {
+          if (v2.show && this.showNetwork) {
+            this._Map.addLayer(v2._NetworkLayer);
+          } else {
+            v2._NetworkLayer.removeFromParent();
+          }
+        });
+      });
+
+      console.log(this.Layer_Map);
     },
     getLayerColors(colors) {
       try {
@@ -259,7 +365,14 @@ export default {
     // 组件初始化事件
     handleEnable() {},
     // 组件卸载事件
-    handleDisable() {},
+    handleDisable() {
+      Object.values(this.Layer_Map).forEach((v) => {
+        v._FlyableAreaLayer.dispose();
+        Object.values(v.NetworkLayer_Map).forEach((v2) => {
+          v2._NetworkLayer.dispose();
+        });
+      });
+    },
     handleChangeShowLayer(value) {
       this.s_showLayer = value;
       this.$emit("update:showLayer", value);

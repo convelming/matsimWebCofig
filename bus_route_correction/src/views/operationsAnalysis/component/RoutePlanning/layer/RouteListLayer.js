@@ -66,19 +66,19 @@ export class RouteListLayer extends Layer {
     this.linkMeshList2 = [];
     this.linkMaterial = new THREE.MeshBasicMaterial({
       color: this.linkColor,
-      linewidth: this.linkWidth,
+      // linewidth: this.linkWidth,
       opacity: 0.8,
       transparent: true,
     });
     this.linkMaterial1 = new THREE.MeshBasicMaterial({
       color: this.pickLayerColor,
-      linewidth: this.linkWidth,
+      // linewidth: this.linkWidth,
       opacity: 1,
       transparent: true,
     });
     this.linkMaterial_s = new THREE.MeshBasicMaterial({
       color: this.selectLinkColor,
-      linewidth: this.selectLinkWidth,
+      // linewidth: this.selectLinkWidth,
       opacity: 1,
       transparent: true,
     });
@@ -322,7 +322,12 @@ export class RouteListLayer extends Layer {
       this.pickLayerScene.add(link1);
       this.linkMeshList1.push(link1);
 
-      const linkMaterial2 = new THREE.MeshBasicMaterial({ color: pickColor, linewidth: this.linkWidth, opacity: 1, transparent: true });
+      const linkMaterial2 = new THREE.MeshBasicMaterial({
+        color: pickColor,
+        // linewidth: this.linkWidth,
+        opacity: 1,
+        transparent: true,
+      });
       const link2 = new THREE.Mesh(linkGeometry, linkMaterial2);
       link2.renderOrder = 10;
       this.pickMeshScene.add(link2);

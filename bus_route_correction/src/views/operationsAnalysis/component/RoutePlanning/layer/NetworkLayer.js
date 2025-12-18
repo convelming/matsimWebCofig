@@ -29,6 +29,8 @@ export class NetworkLayer extends Layer {
     this.time = opt.time || this.time;
     this.colors = opt.colors || this.colors;
     this.modes = opt.modes || "";
+    this.minh = opt.minh || "";
+    this.maxh = opt.maxh || "";
 
     this.lineWidth = opt.lineWidth || this.lineWidth;
     this.lineOffset = opt.lineOffset || this.lineOffset;
@@ -137,15 +139,12 @@ export class NetworkLayer extends Layer {
         const nodeItem = tile.getNodeByPickColor(pickColorNum);
         const videoIconItem = tile.getVideoIconByPickColor(pickColorNum);
         if (lineItem) {
-          console.log("lineItem", pickColorNum);
           this.handleEventListener(type, JSON.parse(JSON.stringify(lineItem)));
           break;
         } else if (nodeItem) {
-          console.log("nodeItem", pickColorNum);
           this.handleEventListener(type, JSON.parse(JSON.stringify(nodeItem)));
           break;
         } else if (videoIconItem) {
-          console.log("videoIconItem", pickColorNum);
           this.handleEventListener(type, JSON.parse(JSON.stringify(videoIconItem)));
           break;
         }
@@ -166,7 +165,6 @@ export class NetworkLayer extends Layer {
         tile.pickColorOffset = this.pickColorOffset;
         this.pickColorOffset += tile.pickColorNum;
         tile.update();
-        console.log(this, tile.pickColorNum, tile.pickColorOffset);
 
         this.loadingNum--;
         this.handleEventListener(MAP_EVENT.LAYER_LOADING, this.loadingNum > 0);
@@ -193,6 +191,8 @@ export class NetworkLayer extends Layer {
             row: i,
             col: j,
             modes: this.modes,
+            minh: this.minh,
+            maxh: this.maxh,
             time: this.time,
             lineWidth: this.lineWidth,
             lineOffset: this.lineOffset,
@@ -269,7 +269,7 @@ export class NetworkTile {
     return this._flowNum;
   }
 
-  constructor({ row, col, modes, flowNum = 0, lineWidth = 10, lineOffset = 0, colors = ColorBar2DColors, pickLayerColor = 0xff0000, showNode = false, showVideoIcon = false, videoIconWidth = 10 }) {
+  constructor({ row, col, modes, minh, maxh, flowNum = 0, lineWidth = 10, lineOffset = 0, colors = ColorBar2DColors, pickLayerColor = 0xff0000, showNode = false, showVideoIcon = false, videoIconWidth = 10 }) {
     this._row = row;
     this._col = col;
     this._x = ((row + 0.5) * (EARTH_RADIUS * 2)) / Math.pow(2, BUILD_ZOOM) - EARTH_RADIUS;
@@ -285,6 +285,8 @@ export class NetworkTile {
     this._videoIconData = {};
     this._videoIconWidth = videoIconWidth;
     this._modes = modes;
+    this._minh = minh;
+    this._maxh = maxh;
 
     this._geometry = new THREE.BufferGeometry();
     this._baseMaterial = new NetworkMaterial({
@@ -348,7 +350,7 @@ export class NetworkTile {
     try {
       this._loadStatus = 4;
       let pickColorNum = 0;
-      const { data } = await getTileNetwork({ x: this._row, y: this._col, modes: this._modes });
+      const { data } = await getTileNetwork({ x: this._row, y: this._col, modes: this._modes, minh: this._minh, maxh: this._maxh });
       if (data && data.length > 0) {
         this._lineData = {};
         this._nodeData = {};
@@ -727,6 +729,9 @@ export class NetworkGeometry extends THREE.BufferGeometry {
         list.setX(i * 4 + 3, flow);
       }
       const lineDirection = new THREE.Vector2(toCoord.x - fromCoord.x, toCoord.y - fromCoord.y);
+      if (toCoord.x == fromCoord.x && toCoord.y == fromCoord.y && toCoord.z != fromCoord.z) {
+        lineDirection.set(0, 1);
+      }
       const lineLength = lineDirection.length();
       lineDirection.normalize();
       const normal = new THREE.Vector2(-lineDirection.y, lineDirection.x);

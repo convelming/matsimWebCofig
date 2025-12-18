@@ -18,7 +18,7 @@ const textureLoader = new THREE.TextureLoader();
 export class UAVListLayer extends Layer {
   center = [0, 0];
   selectIndex = -1;
-  
+
   constructor(opt) {
     super(opt);
     this.rootDoc = opt.rootDoc;
@@ -86,7 +86,6 @@ export class UAVListLayer extends Layer {
       this._setSizeTimeout = setTimeout(() => {
         const width = this.rootDoc.clientWidth;
         const height = this.rootDoc.clientHeight;
-        console.log("ResizeObserver", width, height);
         // 更新摄影机的纵横比
         this.camera.aspect = width / height;
         this.camera.updateProjectionMatrix();
@@ -278,7 +277,6 @@ export class UAVListLayer extends Layer {
   }
 
   setSelectPath(selectIndex) {
-
     this.selectIndex = selectIndex;
     const path = this.pathList[selectIndex];
     if (this.linkSelectMesh) {
@@ -293,12 +291,12 @@ export class UAVListLayer extends Layer {
       this.scene.add(link);
       this.linkSelectMesh = link;
     }
-    
+
     if (this.map) this.on(MAP_EVENT.UPDATE_CENTER);
   }
 
-  setSelectPathById(id){
-    const index = this.pathList.findIndex(v=>v.id == id);
+  setSelectPathById(id) {
+    const index = this.pathList.findIndex((v) => v.id == id);
     this.setSelectPath(index);
     return this.pathList[index];
   }
@@ -445,7 +443,12 @@ export class UAVListLayer extends Layer {
       this.pickLayerScene.add(link1);
       this.linkMeshList1.push(link1);
 
-      const linkMaterial2 = new THREE.MeshBasicMaterial({ color: pickColor, linewidth: this.linkWidth, opacity: 1, transparent: true });
+      const linkMaterial2 = new THREE.MeshBasicMaterial({
+        color: pickColor,
+        // linewidth: this.linkWidth,
+        opacity: 1,
+        transparent: true,
+      });
       const link2 = new THREE.Mesh(linkGeometry, linkMaterial2);
       link2.renderOrder = 10;
       this.pickMeshScene.add(link2);
