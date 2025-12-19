@@ -322,7 +322,7 @@ export class CubicBezierPath extends THREE.Curve {
     }
   }
 
-  getPoints2() {
-    return this.getPoints(Math.ceil(this.dis / 100));
+  getPoints2(num = 100) {
+    return this.getPoints(Math.ceil(this.dis / num));
   }
 }

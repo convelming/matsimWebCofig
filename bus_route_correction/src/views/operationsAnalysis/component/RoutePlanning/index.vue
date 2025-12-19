@@ -214,14 +214,6 @@ export default {
       predefineColors: ["#5470c6", "#91cc75", "#fac858", "#ee6666", "#73c0de", "#3ba272", "#fc8452", "#9a60b4", "#ea7ccc"],
       s_showLayer: true,
 
-      colors: 0,
-      width: 1,
-      offset: 0,
-      color: "#E9CDAA",
-      linkColor: "#E9CDAA",
-      showNode: false,
-      canSelect: false,
-
       colorsList: COLOR_LIST,
 
       loading: false,
@@ -232,7 +224,7 @@ export default {
 
       showRoute: true,
       routeSize: 5,
-      routeColor: "#FF6161",
+      routeColor: "#409BFC",
 
       showNetwork: false,
       showFlyableArea: false,

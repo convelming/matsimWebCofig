@@ -62,16 +62,13 @@
             <el-option v-for="item in pointList" :key="item.id" :label="item.name" :value="item.id"> </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="起点高度" prop="startHeight">
-          <el-input-number v-model="addRouteForm.startHeight" :min="0" :step="0.1" :controls="true"> </el-input-number>
-        </el-form-item>
         <el-form-item label="降点" prop="endId">
           <el-select v-model="addRouteForm.endId">
             <el-option v-for="item in pointList" :key="item.id" :label="item.name" :value="item.id"> </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="降点高度" prop="endHeight">
-          <el-input-number v-model="addRouteForm.endHeight" :min="0" :step="0.1" :controls="true"> </el-input-number>
+        <el-form-item label="巡航高度" prop="startHeight">
+          <el-input-number v-model="addRouteForm.startHeight" :min="0" :step="0.1" :controls="true"> </el-input-number>
         </el-form-item>
         <el-form-item label="是否生成反向航路" prop="reversal">
           <el-switch v-model="addRouteForm.reversal" :active-value="true" :inactive-value="false" @change=""> </el-switch>
@@ -162,27 +159,31 @@
 {
   "添加起降点":{
     "zh-CN": "添加起降点",
-    "en-US": "Route Planning"
+    "en-US": "添加起降点"
   },
   "起降点名称":{
     "zh-CN": "起降点名称",
-    "en-US": "Route Planning"
+    "en-US": "起降点名称"
   },
   "添加航路划设":{
     "zh-CN": "添加航路划设",
-    "en-US": "Route Planning"
+    "en-US": "添加航路划设"
   },
   "航路名称":{
     "zh-CN": "航路名称",
-    "en-US": "Route Planning"
+    "en-US": "航路名称"
+  },
+  "航路":{
+    "zh-CN": "航路",
+    "en-US": "航路"
   },
   "起点":{
     "zh-CN": "起点",
-    "en-US": "Route Planning"
+    "en-US": "起点"
   },
   "降点":{
     "zh-CN": "降点",
-    "en-US": "Route Planning"
+    "en-US": "降点"
   },
 }
 </language>
@@ -310,18 +311,18 @@ export default {
 
       linkWidth: 10,
       selectLinkWidth: 10.1,
-      linkColor: "#D8D8D8",
-      selectLinkColor: "#FF7B00",
+      linkColor: "#409BFC",
+      selectLinkColor: "#409BFC",
 
-      nodeSize: 5,
-      selectNodeSize: 10,
-      nodeColor: "#D8D8D8",
-      selectNodeColor: "#FF7B00",
+      // nodeSize: 5,
+      // selectNodeSize: 10,
+      // nodeColor: "#D8D8D8",
+      // selectNodeColor: "#FF7B00",
 
       time: 0,
       lockSelect: true,
-      uavColor: "#53e7ef",
-      selectUavColor: "#ff2c08",
+      uavColor: "orange",
+      selectUavColor: "#04BDFD",
 
       rootDoc: this.$refs.mapRoot2,
       event: {
@@ -518,6 +519,7 @@ export default {
           const l = form.departureTime.split(":").map((v) => Number(v));
           const departureTime = l[0] * 3600 + l[1] * 60 + l[2];
           form.departureTime = departureTime;
+          form.endHeight = form.startHeight;
           genUamRoute(form)
             .then((res) => {
               this.$message.success("添加成功");
