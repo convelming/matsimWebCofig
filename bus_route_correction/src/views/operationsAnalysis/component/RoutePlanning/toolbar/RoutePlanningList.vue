@@ -18,8 +18,8 @@
       <template slot-scope="{ width, height }">
         <el-table class="small" :data="routeList" border stripe :height="height" @row-click="handleTableRowClick">
           <!-- <el-table-column type="selection" width="45" align="center" /> -->
-          <el-table-column :label="$l('航路名称')" prop="name">
-            <template slot-scope="{ row }"> {{ row.name }} ( {{ row.start.name }} - {{ row.end.name }}) </template>
+          <el-table-column :label="$l('航路')" prop="name">
+            <template slot-scope="{ row }"> {{ row.name }} ({{ row.start.name }} - {{ row.end.name }}) <br/> ({{ formatHour(row.startTime) }} - {{ formatHour(row.endTime) }})</template>
           </el-table-column>
           <el-table-column :label="$l('操作')" width="80">
             <template slot-scope="{ row }">
@@ -50,7 +50,7 @@
     </Dialog>
 
     <Dialog ref="dialog" :title="$l('添加航路划设')" :visible="showAddRoute" @close="handleCloseAddRoute" left="340px" width="400px">
-      <el-form :model="addRouteForm" ref="addRouteForm" :rules="addRouteRules" label-width="140px" :inline="false" size="small">
+      <el-form :model="addRouteForm" ref="addRouteForm" :rules="addRouteRules" label-width="140px" :inline="false" size="small" v-loading="addRouteLoading">
         <el-form-item label="航路名称" prop="name">
           <el-input v-model="addRouteForm.name"></el-input>
         </el-form-item>
@@ -195,6 +195,8 @@ import { PointListLayer } from "../layer/PointListLayer";
 import { RouteListLayer } from "../layer/RouteListLayer";
 import { UAVListLayer } from "../layer/UAVListLayer";
 
+import { formatHour } from "@/utils/utils";
+
 export default {
   name: "RoutePlanningList",
   inject: ["rootVue"],
@@ -230,6 +232,7 @@ export default {
 
       routeList: [],
       showAddRoute: false,
+      addRouteLoading: false,
       addRouteForm: {
         startId: "",
         startHeight: 0,
@@ -322,7 +325,7 @@ export default {
 
       rootDoc: this.$refs.mapRoot2,
       event: {
-        select: (res) => { 
+        select: (res) => {
           this.showUAVPage = res.data.flag;
         },
         playing: (res) => {
@@ -349,6 +352,7 @@ export default {
     document.body.removeChild(this.$refs.page2);
   },
   methods: {
+    formatHour: formatHour,
     handleTableRowClick(row, column, event) {
       if (!this._options.showLayer) return;
       const path = this._UAVListLayer.setSelectPathById(row.id);
@@ -377,7 +381,8 @@ export default {
       this._PointListLayer.setSize(res.pointSize);
       this._PointListLayer.setColor(res.pointColor);
 
-      this._UAVListLayer.setLinkColor(res.routeColor)
+      this._UAVListLayer.setLinkColor(res.routeColor);
+      this._UAVListLayer.setLinkWidth(res.routeSize);
 
       if (this._Map && res.showPoint && res.showLayer) {
         this._Map.addLayer(this._PointListLayer);
@@ -487,6 +492,7 @@ export default {
         // this._RouteListLayer.setPaths(res.data);
         this._UAVListLayer.setPaths(res.data, "CubicBezierPath");
       });
+      Path;
     },
     handleOpenAddRoute() {
       this.addRouteForm = {
@@ -507,6 +513,7 @@ export default {
     onSubmitAddRoute() {
       this.$refs.addRouteForm.validate((valid) => {
         if (valid) {
+          this.addRouteLoading = true;
           const form = JSON.parse(JSON.stringify(this.addRouteForm));
           const l = form.departureTime.split(":").map((v) => Number(v));
           const departureTime = l[0] * 3600 + l[1] * 60 + l[2];
@@ -517,7 +524,10 @@ export default {
               this.handleCloseAddRoute();
               this.getUAMRoute();
             })
-            .catch((err) => {});
+            .catch((err) => {})
+            .finally(() => {
+              this.addRouteLoading = false;
+            });
         }
       });
     },

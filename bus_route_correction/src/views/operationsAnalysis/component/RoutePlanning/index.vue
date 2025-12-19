@@ -39,6 +39,12 @@
           <ColorPicker :disabled="!s_showLayer" size="mini" :predefine="predefineColors" v-model="routeColor" @change="handleEmitOption" />
         </div>
       </div>
+      <div class="form_item">
+        <div class="form_label">{{ $l("划设路线大小：") }}</div>
+        <div class="form_value">
+          <el-slider style="padding: 0 calc(2em - 10px)" :disabled="!s_showLayer" v-model="routeSize" :min="0" :max="20" :step="0.1" @change="handleEmitOption"></el-slider>
+        </div>
+      </div>
 
       <div class="form_item">
         <div class="form_label">{{ $l("是否显示航路：") }}</div>
@@ -66,6 +72,13 @@
           <el-select v-model="networkHeight" :disabled="!s_showLayer" size="small" multiple @change="handleChangeNetwork">
             <el-option v-for="value in networkHeightList" :label="value" :value="value" :key="value" />
           </el-select>
+        </div>
+      </div>
+
+      <div class="form_item">
+        <div class="form_label">{{ $l("航路大小：") }}</div>
+        <div class="form_value">
+          <el-slider style="padding: 0 calc(2em - 10px)" :disabled="!s_showLayer" v-model="networkSize" :min="0" :max="20" :step="0.1" @change="handleEmitOption"></el-slider>
         </div>
       </div>
       <div class="form_item">
@@ -138,6 +151,14 @@
     "zh-CN": "划设路线颜色：",
     "en-US": "划设路线颜色："
   },
+  "划设路线大小：":{
+    "zh-CN": "划设路线大小：",
+    "en-US": "划设路线大小："
+  },
+  "航路大小：":{
+    "zh-CN": "航路大小：",
+    "en-US": "航路大小："
+  },
   "是否查看无人机飞行视角：":{
     "zh-CN": "是否查看无人机飞行视角：",
     "en-US": "是否查看无人机飞行视角："
@@ -178,6 +199,15 @@ export default {
         }
       },
     },
+    networkSize: {
+      handler(val) {
+        Object.values(this.Layer_Map).forEach((v) => {
+          Object.values(v.NetworkLayer_Map).forEach((v2) => {
+            v2._NetworkLayer.setLineWidth(val);
+          });
+        });
+      },
+    },
   },
   data() {
     return {
@@ -201,6 +231,7 @@ export default {
       pointColor: "#FF6161",
 
       showRoute: true,
+      routeSize: 5,
       routeColor: "#FF6161",
 
       showNetwork: false,
@@ -210,6 +241,7 @@ export default {
       networkHeight: ["60~120"],
       networkHeightList: ["0~60", "60~120", "120~300", "300~600", "600~1200"],
       colorsList: COLOR_LIST,
+      networkSize: 5,
 
       showUAVPage: false,
       Layer_Map: {},
@@ -299,6 +331,7 @@ export default {
                 modes: mode,
                 minh: minh,
                 maxh: maxh,
+                lineWidth: this.networkSize,
               }),
             };
             this.$set(item1.NetworkLayer_Map, mode, item2);
@@ -333,14 +366,16 @@ export default {
         showPoint: this.showPoint,
         pointColor: this.pointColor,
         pointSize: this.pointSize,
-        
+
         showRoute: this.showRoute,
+        routeSize: this.routeSize,
         routeColor: this.routeColor,
-        
+
         showNetwork: this.showNetwork,
         showFlyableArea: this.showFlyableArea,
         networkMode: this.networkMode,
         networkModeList: this.networkModeList,
+        networkSize: this.networkSize,
 
         showUAVPage: this.showUAVPage,
       });

@@ -254,6 +254,7 @@ export class CubicBezierPath extends THREE.Curve {
   getPointByTime(time) {
     if (time <= this.minTime) {
       const point = this.getPoint(0);
+      const point2 = this.getPoint(0.01);
       return {
         point: point,
         speed: 0,
@@ -262,11 +263,12 @@ export class CubicBezierPath extends THREE.Curve {
         speedZ: 0,
         tDis: Math.abs(Math.floor(this.dis)),
         dis: 0,
-        dir: point,
+        dir: point2.clone().sub(point).normalize(),
         isEnd: true,
       };
     } else if (time >= this.maxTime) {
       const point = this.getPoint(1);
+      const point2 = this.getPoint(0.99);
       return {
         point: point,
         speed: 0,
@@ -275,7 +277,7 @@ export class CubicBezierPath extends THREE.Curve {
         speedZ: 0,
         tDis: Math.abs(Math.floor(this.dis)),
         dis: Math.abs(Math.floor(this.dis)),
-        dir: point,
+        dir: point.clone().sub(point2).normalize(),
         isEnd: true,
       };
     } else {
@@ -321,6 +323,6 @@ export class CubicBezierPath extends THREE.Curve {
   }
 
   getPoints2() {
-    return this.getPoints(this.nodes.length * 2);
+    return this.getPoints(Math.ceil(this.dis / 100));
   }
 }

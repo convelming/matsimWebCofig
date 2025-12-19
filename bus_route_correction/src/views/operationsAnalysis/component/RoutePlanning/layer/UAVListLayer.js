@@ -139,11 +139,9 @@ export class UAVListLayer extends Layer {
       transparent: true,
       worldUnits: true,
 
-      // dashed: true,
-      // dashScale: this.linkWidth * 2,
-      // dashSize: this.linkWidth * 5,
-      // dashOffset: 0,
-      // gapSize: this.linkWidth * 3,
+      dashed: true,
+      dashSize: this.linkWidth * 3,
+      gapSize: this.linkWidth * 3,
     });
     this.linkMaterial1 = new LineMaterial({
       color: this.pickLayerColor,
@@ -280,6 +278,22 @@ export class UAVListLayer extends Layer {
     this.linkMaterial.needsUpdate = true;
     this.linkMaterial_s.setValues({ color: linkColor });
     this.linkMaterial_s.needsUpdate = true;
+  }
+
+  setLinkWidth(linkWidth) {
+    this.linkWidth = linkWidth;
+
+    this.linkMaterial.setValues({ linewidth: this.linkWidth, dashSize: this.linkWidth * 3, gapSize: this.linkWidth * 3 });
+    this.linkMaterial.needsUpdate = true;
+    this.linkMaterial1.setValues({ linewidth: this.linkWidth });
+    this.linkMaterial1.needsUpdate = true;
+    this.linkMaterial_s.setValues({ linewidth: this.linkWidth + 0.1 });
+    this.linkMaterial_s.needsUpdate = true;
+
+    this.linkMeshList2.forEach((mesh) => {
+      mesh.material.setValues({ linewidth: this.linkWidth });
+      mesh.material.needsUpdate = true;
+    });
   }
 
   // LinePath  CubicBezierPath
@@ -453,11 +467,11 @@ export class UAVListLayer extends Layer {
       const linkPoints = positions.map((v, i) => [v.x, v.y, v.z]).flat();
       const linkGeometry = new LineGeometry();
       linkGeometry.setPositions(linkPoints);
-      const segmentsGeometry = new LineSegmentsGeometry();
-      segmentsGeometry.setPositions(linkPoints);
+      // const segmentsGeometry = new LineSegmentsGeometry();
+      // segmentsGeometry.setPositions(linkPoints);
 
-      const link = new LineSegments2(segmentsGeometry, this.linkMaterial);
-      // const link = new Line2(linkGeometry, this.linkMaterial);
+      // const link = new LineSegments2(segmentsGeometry, this.linkMaterial);
+      const link = new Line2(linkGeometry, this.linkMaterial);
       link.computeLineDistances();
       link.renderOrder = 10;
       this.scene.add(link);
