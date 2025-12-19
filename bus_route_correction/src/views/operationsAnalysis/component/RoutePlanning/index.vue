@@ -24,13 +24,19 @@
       <div class="form_item">
         <div class="form_label">{{ $l("起降点颜色：") }}</div>
         <div class="form_value">
-          <ColorPicker :disabled="!s_showLayer" :title="$l('公交站点颜色')" size="mini" :predefine="predefineColors" v-model="pointColor" @change="handleEmitOption" />
+          <ColorPicker :disabled="!s_showLayer" size="mini" :predefine="predefineColors" v-model="pointColor" @change="handleEmitOption" />
         </div>
       </div>
       <div class="form_item">
         <div class="form_label">{{ $l("是否显示划设路线：") }}</div>
         <div class="form_value">
           <el-switch :disabled="!s_showLayer" v-model="showRoute" @change="handleEmitOption"></el-switch>
+        </div>
+      </div>
+      <div class="form_item">
+        <div class="form_label">{{ $l("划设路线颜色：") }}</div>
+        <div class="form_value">
+          <ColorPicker :disabled="!s_showLayer" size="mini" :predefine="predefineColors" v-model="routeColor" @change="handleEmitOption" />
         </div>
       </div>
 
@@ -128,6 +134,10 @@
     "zh-CN": "航路颜色：",
     "en-US": "航路颜色："
   },
+  "划设路线颜色：":{
+    "zh-CN": "划设路线颜色：",
+    "en-US": "划设路线颜色："
+  },
   "是否查看无人机飞行视角：":{
     "zh-CN": "是否查看无人机飞行视角：",
     "en-US": "是否查看无人机飞行视角："
@@ -178,6 +188,7 @@ export default {
       width: 1,
       offset: 0,
       color: "#E9CDAA",
+      linkColor: "#E9CDAA",
       showNode: false,
       canSelect: false,
 
@@ -186,8 +197,11 @@ export default {
       loading: false,
 
       showPoint: true,
-      pointColor: "#ff0000",
-      pointSize: 2,
+      pointSize: 1.5,
+      pointColor: "#FF6161",
+
+      showRoute: true,
+      routeColor: "#FF6161",
 
       showNetwork: false,
       showFlyableArea: false,
@@ -196,8 +210,6 @@ export default {
       networkHeight: ["60~120"],
       networkHeightList: ["0~60", "60~120", "120~300", "300~600", "600~1200"],
       colorsList: COLOR_LIST,
-
-      showRoute: true,
 
       showUAVPage: false,
       Layer_Map: {},
@@ -314,40 +326,6 @@ export default {
 
       console.log(this.Layer_Map);
     },
-    getLayerColors(colors) {
-      try {
-        return {
-          0: colors[0],
-          0.4: colors[0],
-          0.4: colors[1],
-          0.6: colors[1],
-          0.6: colors[2],
-          0.75: colors[2],
-          0.75: colors[3],
-          0.85: colors[3],
-          0.85: colors[4],
-          0.95: colors[4],
-          0.95: colors[5],
-          1: colors[5],
-        };
-      } catch (error) {
-        colors = ["#313695", "#74add1", "#e0f3f8", "#fdae61", "#f46d43", "#a50026"];
-        return {
-          0: colors[0],
-          0.4: colors[0],
-          0.4: colors[1],
-          0.6: colors[1],
-          0.6: colors[2],
-          0.75: colors[2],
-          0.75: colors[3],
-          0.85: colors[3],
-          0.85: colors[4],
-          0.95: colors[4],
-          0.95: colors[5],
-          1: colors[5],
-        };
-      }
-    },
     handleEmitOption() {
       this.rootVue.$emit("RoutePlanning_Options", {
         showLayer: this.s_showLayer,
@@ -355,9 +333,14 @@ export default {
         showPoint: this.showPoint,
         pointColor: this.pointColor,
         pointSize: this.pointSize,
-
-        showNetwork: this.showNetwork,
+        
         showRoute: this.showRoute,
+        routeColor: this.routeColor,
+        
+        showNetwork: this.showNetwork,
+        showFlyableArea: this.showFlyableArea,
+        networkMode: this.networkMode,
+        networkModeList: this.networkModeList,
 
         showUAVPage: this.showUAVPage,
       });

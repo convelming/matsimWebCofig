@@ -6,8 +6,12 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import UAVListLayerWorker from "./UAVListLayer.worker";
 
 import { Line2 } from "./lines/Line2.js";
+import { LineSegments2 } from "./lines/LineSegments2.js";
+
 import { LineMaterial } from "./lines/LineMaterial.js";
+
 import { LineGeometry } from "./lines/LineGeometry.js";
+import { LineSegmentsGeometry } from "./lines/LineSegmentsGeometry.js";
 
 import * as PathCurve from "./PathCurve.js";
 
@@ -128,24 +132,33 @@ export class UAVListLayer extends Layer {
     this.linkMeshList = [];
     this.linkMeshList1 = [];
     this.linkMeshList2 = [];
-    this.linkMaterial = new THREE.MeshBasicMaterial({
+    this.linkMaterial = new LineMaterial({
       color: this.linkColor,
-      // linewidth: this.linkWidth,
+      linewidth: this.linkWidth,
       opacity: 0.8,
       transparent: true,
+      worldUnits: true,
+
+      // dashed: true,
+      // dashScale: this.linkWidth * 2,
+      // dashSize: this.linkWidth * 5,
+      // dashOffset: 0,
+      // gapSize: this.linkWidth * 3,
     });
-    this.linkMaterial1 = new THREE.MeshBasicMaterial({
+    this.linkMaterial1 = new LineMaterial({
       color: this.pickLayerColor,
-      // linewidth: this.linkWidth,
+      linewidth: this.linkWidth,
       opacity: 1,
       transparent: true,
+      worldUnits: true,
     });
     this.linkSelectMesh = null;
-    this.linkMaterial_s = new THREE.MeshBasicMaterial({
+    this.linkMaterial_s = new LineMaterial({
       color: this.selectLinkColor,
-      // linewidth: this.selectLinkWidth,
+      linewidth: this.selectLinkWidth,
       opacity: 1,
       transparent: true,
+      worldUnits: true,
     });
 
     // 初始化渲染无人机需要的资源
@@ -188,7 +201,7 @@ export class UAVListLayer extends Layer {
       // 设置定时器旋转螺旋桨
       gltf.interval = setInterval(() => {
         for (const mesh of gltf.lxjs) {
-          mesh.rotation.z += (Math.PI * 2) / 60;
+          mesh.rotation.z += (Math.PI * 2) / 15;
           if (mesh.rotation.z >= 2 * Math.PI) mesh.rotation.z = 0;
         }
       }, 1000 / 60);
@@ -213,7 +226,14 @@ export class UAVListLayer extends Layer {
     }
     if (type == MAP_EVENT.HANDLE_PICK_LEFT && data.layerId == this.id) {
       const pickColorNum = data.pickColor;
+      this.handleEventListener("select", { flag: !!this.pathList[pickColorNum - 1] });
       this.setSelectPath(pickColorNum - 1);
+    }
+
+    if (type == MAP_EVENT.zoom) {
+      if (this.map.zoom > 13) {
+      } else {
+      }
     }
   }
 
@@ -251,6 +271,17 @@ export class UAVListLayer extends Layer {
     this.UAVMaterial1.setValues({ color: color });
     this.UAVMaterial1.needsUpdate = true;
   }
+
+  setLinkColor(linkColor) {
+    this.linkColor = linkColor;
+
+    this.linkMaterial.setValues({ color: linkColor });
+
+    this.linkMaterial.needsUpdate = true;
+    this.linkMaterial_s.setValues({ color: linkColor });
+    this.linkMaterial_s.needsUpdate = true;
+  }
+
   // LinePath  CubicBezierPath
   setPaths(paths = [], pathClassName = "LinePath") {
     const center = [paths[0].center[0], paths[0].center[1]];
@@ -285,8 +316,13 @@ export class UAVListLayer extends Layer {
       this.linkSelectMesh = null;
     }
     if (path) {
-      const linkGeometry = new THREE.TubeGeometry(path, path.nodes.length * 20, this.linkWidth + 0.1, 8, false);
-      const link = new THREE.Mesh(linkGeometry, this.linkMaterial_s);
+      const positions = path.getPoints2();
+      const linkPoints = positions.map((v, i) => [v.x, v.y, v.z]).flat();
+      const linkGeometry = new LineGeometry();
+      linkGeometry.setPositions(linkPoints);
+
+      const link = new Line2(linkGeometry, this.linkMaterial_s);
+
       link.renderOrder = 10;
       this.scene.add(link);
       this.linkSelectMesh = link;
@@ -413,46 +449,58 @@ export class UAVListLayer extends Layer {
       // this.pickMeshScene.add(node2);
       // this.nodeMeshList2.push(node2);
 
-      // const positions = path.getPoints2();
-      // const linkGeometry = new LineGeometry();
-      // linkGeometry.setPositions(positions.map((v) => [v.x, v.y, v.z]).flat());
+      const positions = path.getPoints2();
+      const linkPoints = positions.map((v, i) => [v.x, v.y, v.z]).flat();
+      const linkGeometry = new LineGeometry();
+      linkGeometry.setPositions(linkPoints);
+      const segmentsGeometry = new LineSegmentsGeometry();
+      segmentsGeometry.setPositions(linkPoints);
+
+      const link = new LineSegments2(segmentsGeometry, this.linkMaterial);
       // const link = new Line2(linkGeometry, this.linkMaterial);
-      // link.renderOrder = 10;
-      // this.scene.add(link);
-      // this.linkMeshList.push(link);
-
-      // const link1 = new Line2(linkGeometry, this.linkMaterial1);
-      // link1.renderOrder = 10;
-      // this.pickLayerScene.add(link1);
-      // this.linkMeshList1.push(link1);
-
-      // const linkMaterial2 = new LineMaterial({ color: pickColor, linewidth: this.linkWidth, opacity: 1, transparent: true });
-      // const link2 = new Line2(linkGeometry, linkMaterial2);
-      // link2.renderOrder = 10;
-      // this.pickMeshScene.add(link2);
-      // this.linkMeshList2.push(link2);
-
-      const linkGeometry = new THREE.TubeGeometry(path, path.nodes.length * 20, this.linkWidth, 8, false);
-      const link = new THREE.Mesh(linkGeometry, this.linkMaterial);
+      link.computeLineDistances();
       link.renderOrder = 10;
       this.scene.add(link);
       this.linkMeshList.push(link);
 
-      const link1 = new THREE.Mesh(linkGeometry, this.linkMaterial1);
+      const link1 = new Line2(linkGeometry, this.linkMaterial1);
       link1.renderOrder = 10;
       this.pickLayerScene.add(link1);
       this.linkMeshList1.push(link1);
 
-      const linkMaterial2 = new THREE.MeshBasicMaterial({
+      const linkMaterial2 = new LineMaterial({
         color: pickColor,
-        // linewidth: this.linkWidth,
+        linewidth: this.linkWidth,
+        worldUnits: true,
         opacity: 1,
         transparent: true,
       });
-      const link2 = new THREE.Mesh(linkGeometry, linkMaterial2);
+      const link2 = new Line2(linkGeometry, linkMaterial2);
       link2.renderOrder = 10;
       this.pickMeshScene.add(link2);
       this.linkMeshList2.push(link2);
+
+      // const linkGeometry = new THREE.TubeGeometry(path, path.nodes.length * 20, this.linkWidth, 8, false);
+      // const link = new THREE.Mesh(linkGeometry, this.linkMaterial);
+      // link.renderOrder = 10;
+      // this.scene.add(link);
+      // this.linkMeshList.push(link);
+
+      // const link1 = new THREE.Mesh(linkGeometry, this.linkMaterial1);
+      // link1.renderOrder = 10;
+      // this.pickLayerScene.add(link1);
+      // this.linkMeshList1.push(link1);
+
+      // const linkMaterial2 = new THREE.MeshBasicMaterial({
+      //   color: pickColor,
+      //   // linewidth: this.linkWidth,
+      //   opacity: 1,
+      //   transparent: true,
+      // });
+      // const link2 = new THREE.Mesh(linkGeometry, linkMaterial2);
+      // link2.renderOrder = 10;
+      // this.pickMeshScene.add(link2);
+      // this.linkMeshList2.push(link2);
     }
     if (this.map) this.on(MAP_EVENT.UPDATE_CENTER);
     this.setSelectPath(this.selectIndex);
@@ -483,8 +531,8 @@ export class UAVListLayer extends Layer {
                 this.UAVMesh.setMatrixAt(pIndex, matrix4);
                 this.UAVMesh1.setMatrixAt(pIndex, matrix4);
                 this.UAVMesh2.setMatrixAt(pIndex, matrix4);
-                this.SelectUAVModel.scene.position.set(x, y, point.z);
-                const target = new THREE.Vector3(x, point.z, -y).sub(new THREE.Vector3(-dir.x, point.z, dir.y));
+                this.SelectUAVModel.scene.position.set(x, y, point.z + 10);
+                const target = new THREE.Vector3(x, point.z + 10, -y).sub(new THREE.Vector3(-dir.x, point.z + 10, dir.y));
                 this.SelectUAVModel.scene.lookAt(target);
                 this.SelectUAVModel.scene.rotateY(Math.PI);
               }

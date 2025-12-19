@@ -80,7 +80,6 @@ export default function (threeBox) {
           const box = new THREE.Box3().expandByObject(gltf.scene);
           const scale = new THREE.Vector3();
           box.getSize(scale);
-          console.log(scale);
           const physics = new CANNON.Body({
             mass: 3, //碰撞体质量
             shape: new CANNON.Box(new CANNON.Vec3(scale.x / 2, scale.y / 2, scale.z / 2)),
@@ -368,7 +367,7 @@ export default function (threeBox) {
 
     return {
       reset: () => {
-        camera.position.set(0, 50, 200);
+        camera.position.set(0, 100, 50);
         camera.lookAt(0, 50, 0);
 
         flag = false;
@@ -457,9 +456,9 @@ export default function (threeBox) {
 
     return {
       reset: () => {
-        camera.position.set(0, 50, 200);
+        camera.position.set(0, 100, 50);
         camera.lookAt(0, 50, 0);
-        
+
         time = 0;
         callback();
         scene.add(world);
@@ -474,10 +473,170 @@ export default function (threeBox) {
     };
   }
 
+  async function play5() {
+    // 创建基础场景
+    const { world, physics_scene } = getWorld();
+
+    // 创建无人机
+    const { mesh: uav_mesh1, physics: uav_mesh1_physics, material: material1 } = await getUAVMesh();
+    world.add(uav_mesh1);
+    physics_scene.addBody(uav_mesh1_physics);
+
+    // 创建无人机
+    const { mesh: uav_mesh2, physics: uav_mesh2_physics, material: material2 } = await getUAVMesh();
+    material2.setValues({ color: new THREE.Color(0xffffff) });
+    world.add(uav_mesh2);
+    physics_scene.addBody(uav_mesh2_physics);
+
+    // 虚线
+    const point1 = [
+      [-50, 50, 0],
+      [50, 50, 0],
+    ].map((item) => new THREE.Vector3(...item));
+    const curve1 = new THREE.CatmullRomCurve3(point1);
+    const line1 = new THREE.Line(new THREE.BufferGeometry().setFromPoints(curve1.getPoints(50)), new THREE.LineDashedMaterial({ color: "#f00", scale: 1, dashSize: 3, gapSize: 1 }));
+    line1.position.set(0, 0, 0.2);
+    line1.computeLineDistances();
+    world.add(line1);
+
+    // 虚线
+    const point2 = [
+      [0, 50, -50],
+      [0, 50, 50],
+    ].map((item) => new THREE.Vector3(...item));
+    const curve2 = new THREE.CatmullRomCurve3(point2);
+    const line2 = new THREE.Line(new THREE.BufferGeometry().setFromPoints(curve2.getPoints(50)), new THREE.LineDashedMaterial({ color: "#fff", scale: 1, dashSize: 3, gapSize: 1 }));
+    line2.position.set(0, 0, 0.2);
+    line2.computeLineDistances();
+    world.add(line2);
+
+    let flag = false;
+    function handleCollide(e) {
+      flag = true;
+    }
+    uav_mesh1_physics.addEventListener("collide", handleCollide);
+
+    return {
+      reset: () => {
+        camera.position.set(0, 100, 50);
+        camera.lookAt(0, 50, 0);
+
+        flag = false;
+        uav_mesh1_physics.position.set(-50, 50, 0);
+        uav_mesh1.position.copy(uav_mesh1_physics.position);
+        uav_mesh2_physics.position.set(0, 50, 50);
+        uav_mesh2.position.copy(uav_mesh2_physics.position);
+        scene.add(world);
+      },
+      close: () => {
+        scene.remove(world);
+        animationCallBack = null;
+      },
+      play: () => {
+        uav_mesh1_physics.velocity.set(40, 0, 0);
+        uav_mesh2_physics.velocity.set(0, 0, -40);
+        animationCallBack = () => {
+          physics_scene.step(1 / 60);
+          uav_mesh1.position.copy(uav_mesh1_physics.position);
+          uav_mesh2.position.copy(uav_mesh2_physics.position);
+          if (!flag) uav_mesh1_physics.applyForce(new CANNON.Vec3(0, uav_mesh1_physics.mass * 9.8, 0));
+          if (!flag) uav_mesh2_physics.applyForce(new CANNON.Vec3(0, uav_mesh2_physics.mass * 9.8, 0));
+        };
+      },
+    };
+  }
+
+  async function play6() {
+    // 创建基础场景
+    const { world, physics_scene } = getWorld();
+
+    // 创建无人机
+    const { mesh: uav_mesh1, physics: uav_mesh1_physics, material: material1 } = await getUAVMesh();
+    world.add(uav_mesh1);
+    physics_scene.addBody(uav_mesh1_physics);
+
+    // 创建无人机
+    const { mesh: uav_mesh2, physics: uav_mesh2_physics, material: material2 } = await getUAVMesh();
+    material2.setValues({ color: new THREE.Color(0xffffff) });
+    uav_mesh2.rotation.z += Math.PI / 2;
+    world.add(uav_mesh2);
+    physics_scene.addBody(uav_mesh2_physics);
+
+    // 虚线
+    const point1 = [
+      [-50, 50, 0],
+      [50, 50, 0],
+    ].map((item) => new THREE.Vector3(...item));
+    const curve1 = new THREE.CatmullRomCurve3(point1);
+    const line1 = new THREE.Line(new THREE.BufferGeometry().setFromPoints(curve1.getPoints(50)), new THREE.LineDashedMaterial({ color: "#f00", scale: 1, dashSize: 3, gapSize: 1 }));
+    line1.position.set(0, 0, 0.2);
+    line1.computeLineDistances();
+    world.add(line1);
+
+    // 虚线
+    const point2 = [
+      [0, 50, -50],
+      [0, 50, 50],
+    ].map((item) => new THREE.Vector3(...item));
+    const curve2 = new THREE.CatmullRomCurve3(point2);
+    const line2 = new THREE.Line(new THREE.BufferGeometry().setFromPoints(curve2.getPoints(50)), new THREE.LineDashedMaterial({ color: "#fff", scale: 1, dashSize: 3, gapSize: 1 }));
+    line2.position.set(0, 0, 0.2);
+    line2.computeLineDistances();
+    world.add(line2);
+
+    let flag = false;
+    function handleCollide(e) {
+      flag = true;
+    }
+    uav_mesh1_physics.addEventListener("collide", handleCollide);
+
+    return {
+      reset: () => {
+        camera.position.set(0, 100, 50);
+        camera.lookAt(0, 50, 0);
+
+        flag = false;
+        uav_mesh1_physics.position.set(-50, 50, 0);
+        uav_mesh1.position.copy(uav_mesh1_physics.position);
+        uav_mesh2_physics.position.set(0, 50, 50);
+        uav_mesh2.position.copy(uav_mesh2_physics.position);
+        scene.add(world);
+      },
+      close: () => {
+        scene.remove(world);
+        animationCallBack = null;
+      },
+      play: () => {
+        uav_mesh1_physics.velocity.set(40, 0, 0);
+        uav_mesh2_physics.velocity.set(0, 0, -40);
+        animationCallBack = () => {
+          physics_scene.step(1 / 60);
+          uav_mesh1.position.copy(uav_mesh1_physics.position);
+          uav_mesh2.position.copy(uav_mesh2_physics.position);
+          if (!flag) uav_mesh1_physics.applyForce(new CANNON.Vec3(0, uav_mesh1_physics.mass * 9.8, 0));
+          if (!flag) uav_mesh2_physics.applyForce(new CANNON.Vec3(0, uav_mesh2_physics.mass * 9.8, 0));
+          if (uav_mesh1.position.x >= 10) {
+            uav_mesh2_physics.velocity.set(0, 0, -40);
+          } else if (uav_mesh1.position.x >= -10) {
+            uav_mesh2_physics.velocity.set(0, 0, 0);
+          }
+          if (uav_mesh1.position.x >= 50) {
+            uav_mesh1_physics.velocity.set(0, 0, 0);
+          }
+          if (uav_mesh2.position.z <= -50) {
+            uav_mesh2_physics.velocity.set(0, 0, 0);
+          }
+        };
+      },
+    };
+  }
+
   return {
     play1,
     play2,
     play3,
     play4,
+    play5,
+    play6,
   };
 }

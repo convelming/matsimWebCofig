@@ -1,26 +1,58 @@
 import * as THREE from "three";
 import { Layer, MAP_EVENT } from "@/mymap/index.js";
 
+import SpriteText from "./SpriteText.js";
+
+const textureLoader = new THREE.TextureLoader();
+
 export class PointListLayer extends Layer {
+  name = "PointListLayer";
+
+  texture = textureLoader.load(require("@/assets/image/point.svg"));
+  texture2 = textureLoader.load(require("@/assets/image/字母-V.svg"));
+  texture3D = textureLoader.load(require("@/assets/image/mti-停机坪.svg"));
+
   constructor(opt) {
     super(opt);
+    this.color = opt.color || new THREE.Color(0xff0000);
+    this.size = opt.size || 1;
     this.geometry = new THREE.CylinderGeometry(100, 100, 25, 32); //new THREE.BoxGeometry(80, 80, 80); //new THREE.PlaneGeometry(100, 100);
 
-    const m4 = new THREE.Matrix4().makeTranslation(0, 0, this.geometry.parameters.height / 2);
-    m4.multiply(new THREE.Matrix4().makeRotationX(-Math.PI / 2));
-    m4.multiply(new THREE.Matrix4().makeRotationY(-Math.PI / 2));
+    this.geometry = new THREE.BufferGeometry();
+    this.material = new THREE.PointsMaterial({
+      color: this.color,
+      size: this.size * 10,
+      sizeAttenuation: false,
+      opacity: 1,
+      transparent: true,
 
-    this.geometry.applyMatrix4(m4);
+      depthWrite: false,
+      depthTest: false,
+      depthFunc: THREE.AlwaysDepth,
 
-    this.materialTop = new THREE.MeshBasicMaterial({ color: opt.color || "#76819a", opacity: 0.8, transparent: true, map: new THREE.TextureLoader().load(require("@/assets/image/停机坪.svg")) });
-    this.materialWall = new THREE.MeshBasicMaterial({ color: opt.color || "#76819a", opacity: 0.8, transparent: true });
+      map: this.texture,
+    });
 
-    // const mesh = new THREE.InstancedMesh(this.geometry, [this.materialWall, this.materialWall, this.materialTop], 1);
-    // const matrix4 = new THREE.Matrix4().makeTranslation(0, 0, 0);
+    this.mesh = new THREE.Points(this.geometry, this.material);
+    this.scene.add(this.mesh);
 
-    // mesh.setMatrixAt(0, matrix4);
-    // mesh.instanceMatrix.needsUpdate = true;
-    // this.scene.add(mesh);
+    this.labelGroup = new THREE.Group();
+  }
+
+  setSize(size) {
+    this.size = size;
+    this.material.setValues({ size: this.size * 10 });
+    this.material.needsUpdate = true;
+
+    this.labelList?.forEach((label) => {
+      label.center.set(0.5, (-0.5 * this.size) / 2);
+    });
+  }
+
+  setColor(color) {
+    this.color = color;
+    this.material.setValues({ color: this.color });
+    this.material.needsUpdate = true;
   }
 
   on(type, data) {
@@ -28,6 +60,35 @@ export class PointListLayer extends Layer {
       const center = this.center;
       const [x, y] = this.map.WebMercatorToCanvasXY(center[0], center[1]);
       this.mesh.position.set(x, y, 0);
+      this.labelGroup.position.set(x, y, 0);
+    }
+    if (type == MAP_EVENT.UPDATE_ZOOM) {
+      if (this.map.zoom > 13) {
+        this.scene.add(this.labelGroup);
+      } else {
+        this.scene.remove(this.labelGroup);
+      }
+    }
+
+    if (type == MAP_EVENT.UPDATE_CAMERA_HEIGHT) {
+      this.setPitch(this.map.pitch);
+    }
+  }
+
+  setPitch(pitch) {
+    this.pitch = pitch;
+    if (this.pitch < 80) {
+      this.material.setValues({ map: this.texture3D });
+      this.material.needsUpdate = true;
+
+      this.mesh.position.setZ(this.size * 0.5);
+      console.log("this.pitch < 80");
+    } else {
+      this.material.setValues({ map: this.map.zoom > 15 ? this.texture2 : this.texture });
+      this.material.needsUpdate = true;
+
+      this.mesh.position.setZ(0);
+      console.log("this.pitch >= 80");
     }
   }
 
@@ -36,44 +97,55 @@ export class PointListLayer extends Layer {
     this.center = null;
     this.update();
   }
-  clearScene() {
-    super.clearScene();
-    if (this.mesh) this.mesh.dispose();
-  }
+
   update() {
-    this.clearScene();
-    const pointList = this.pointList;
-    const center = [0, 0];
-
-    const mesh = new THREE.InstancedMesh(this.geometry, [this.materialWall, this.materialWall, this.materialTop], pointList.length);
-
-    for (let i = 0; i < pointList.length; i++) {
-      const node = pointList[i];
-      if (i == 0) {
-        center[0] = node.x;
-        center[1] = node.y;
+    if (this.labelList) {
+      while (this.labelList.length) {
+        const mesh = this.labelList.pop();
+        mesh.removeFromParent();
+        mesh.dispose();
       }
-
-      const matrix4 = new THREE.Matrix4().makeTranslation(node.x - center[0], node.y - center[1], node.sample_1 || 0);
-      // matrix4.multiply(new THREE.Matrix4().makeScale(10,10,10));
-
-      mesh.setMatrixAt(i, matrix4);
     }
 
-    if (mesh.instanceMatrix) mesh.instanceMatrix.needsUpdate = true;
+    const center = [0, 0];
+    const pointList = [];
 
-    this.scene.add(mesh);
+    const labelList = [];
 
-    this.mesh = mesh;
+    this.pointList.forEach((v, i) => {
+      if (i == 0) {
+        center[0] = v.x;
+        center[1] = v.y;
+      }
+      const pos = new THREE.Vector3(v.x - center[0], v.y - center[1], v.sample_1 || 0);
+      pointList.push(pos);
+      const label = new SpriteText(v.name, 12, "#000", "#fff");
+      label.material.setValues({ depthWrite: false });
+      label.center.set(0.5, (-0.5 * this.size) / 2);
+      label.position.copy(pos);
+      this.labelGroup.add(label);
+      labelList.push(label);
+    });
+
+    this.geometry.setFromPoints(pointList);
+    this.geometry.computeBoundingSphere();
+    this.geometry.computeBoundingSphere();
+    this.geometry.needsUpdate = true;
+
     this.center = center;
+    this.labelList = labelList;
 
     if (this.map) {
       this.on(MAP_EVENT.UPDATE_CENTER);
+      this.on(MAP_EVENT.UPDATE_ZOOM);
+      this.on(MAP_EVENT.UPDATE_CAMERA_HEIGHT);
     }
   }
 
   onAdd(map) {
     super.onAdd(map);
     this.on(MAP_EVENT.UPDATE_CENTER);
+    this.on(MAP_EVENT.UPDATE_ZOOM);
+    this.on(MAP_EVENT.UPDATE_CAMERA_HEIGHT);
   }
 }

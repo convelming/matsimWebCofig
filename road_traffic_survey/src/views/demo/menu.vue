@@ -72,7 +72,7 @@
             <div class="item_detail">本资源库集成并封装了多种适用于专业地理信息系统的现成地图样式方案。</div>
           </a>
         </div>
-        <div class="groud6">
+        <div class="groud8">
           <div class="groud_title">环境模拟</div>
           <a class="item item1_2" target="_blank" href="#/demo/UAVBox" style="background-color: #983379">
             <img class="item_icon" src="./image/数据底座.png" />
@@ -88,6 +88,11 @@
             <img class="item_icon" src="./image/数据底座.png" />
             <div class="item_title">低空类鸟群环境模拟</div>
             <div class="item_detail">通过模拟鸟群的飞行行为，用于研究无人机在共享空域中如何感知、预测并与生物群体安全共存。</div>
+          </a>
+          <a class="item item1_2" target="_blank" href="#/demo/UAVPhysicsBox" style="background-color: #983379">
+            <img class="item_icon" src="./image/数据底座.png" />
+            <div class="item_title">无人机碰撞测试</div>
+            <div class="item_detail"></div>
           </a>
         </div>
         <div class="groud2">
@@ -283,6 +288,15 @@ body {
   flex-wrap: wrap;
   flex-grow: 0;
   max-width: calc(420px * 3 + 10px * 2);
+  min-width: 420px;
+  gap: 10px;
+}
+.groud8 {
+  flex-grow: 0;
+  display: inline-flex;
+  flex-wrap: wrap;
+  flex-grow: 0;
+  max-width: calc(420px * 4 + 10px * 3);
   min-width: 420px;
   gap: 10px;
 }

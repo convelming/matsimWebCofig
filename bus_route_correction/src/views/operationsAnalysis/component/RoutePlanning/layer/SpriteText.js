@@ -1,7 +1,7 @@
 import * as THREE from "three";
 
 export default class extends THREE.Sprite {
-  constructor(text = "", fontSize = 50, color = "rgba(255, 255, 255, 1)") {
+  constructor(text = "", fontSize = 50, color = "rgba(255, 255, 255, 1)",strokeColor = "rgba(0, 0, 0, 1)") {
     const canvas = document.createElement("canvas");
     const texture = new THREE.CanvasTexture(canvas);
     const material = new THREE.SpriteMaterial({ sizeAttenuation: false, transparent: true, map: texture });
@@ -18,7 +18,7 @@ export default class extends THREE.Sprite {
     this._borderColor = "white";
 
     this._strokeWidth = 1;
-    this._strokeColor = "rgba(0, 0, 0, 1)";
+    this._strokeColor = strokeColor;
 
     this._fontFace = "system-ui";
     this._fontSize = fontSize; // defines text resolution

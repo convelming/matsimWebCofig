@@ -191,7 +191,7 @@
 import { addUam, deleteUam, listUam, genUamRoute, uamRouteList, deleteUamRoute, allTrack } from "@/api/index.js";
 import { MercatorToWGS84 } from "@/mymap/utils/LngLatUtils";
 import { PointSelectLayer, POINT_SELECT_STATE_KEY, POINT_SELECT_EVENT } from "../layer/PointSelectLayer";
-import { PointListLayer } from "../layer/PointListLayer2";
+import { PointListLayer } from "../layer/PointListLayer";
 import { RouteListLayer } from "../layer/RouteListLayer";
 import { UAVListLayer } from "../layer/UAVListLayer";
 
@@ -305,8 +305,8 @@ export default {
     this._UAVListLayer = new UAVListLayer({
       zIndex: 300,
 
-      linkWidth: 5,
-      selectLinkWidth: 5.1,
+      linkWidth: 10,
+      selectLinkWidth: 10.1,
       linkColor: "#D8D8D8",
       selectLinkColor: "#FF7B00",
 
@@ -322,10 +322,12 @@ export default {
 
       rootDoc: this.$refs.mapRoot2,
       event: {
+        select: (res) => { 
+          this.showUAVPage = res.data.flag;
+        },
         playing: (res) => {
           if (this._playTimeout) return;
           this.playDetail = res.data.playDetail;
-          // this.showUAVPage = !!res.data.playDetail;
           this._playTimeout = setTimeout(() => {
             this._playTimeout = null;
           }, 200);
@@ -356,9 +358,9 @@ export default {
       this._Map.setCenter([center.x + node1.v.x, center.y + node1.v.y]);
     },
     handleCloseUAVPage() {
-      this._UAVListLayer.setSelectPath(-1);
       this.showUAVPage = false;
-      this.playDetail = null;
+      // this._UAVListLayer.setSelectPath(-1);
+      // this.playDetail = null;
 
       this.rootVue.$emit("RoutePlanning_Get_Options", {
         showUAVPage: this.showUAVPage,
@@ -375,6 +377,8 @@ export default {
       this._PointListLayer.setSize(res.pointSize);
       this._PointListLayer.setColor(res.pointColor);
 
+      this._UAVListLayer.setLinkColor(res.routeColor)
+
       if (this._Map && res.showPoint && res.showLayer) {
         this._Map.addLayer(this._PointListLayer);
       } else {
@@ -382,10 +386,10 @@ export default {
       }
 
       if (this._Map && res.showRoute && res.showLayer) {
-        this._Map.addLayer(this._RouteListLayer);
+        // this._Map.addLayer(this._RouteListLayer);
         this._Map.addLayer(this._UAVListLayer);
       } else {
-        this._RouteListLayer.removeFromParent();
+        // this._RouteListLayer.removeFromParent();
         this._UAVListLayer.removeFromParent();
       }
 
@@ -481,7 +485,7 @@ export default {
 
         this.routeList = res.data;
         // this._RouteListLayer.setPaths(res.data);
-        this._UAVListLayer.setPaths(res.data, this.UAVPathClassName);
+        this._UAVListLayer.setPaths(res.data, "CubicBezierPath");
       });
     },
     handleOpenAddRoute() {

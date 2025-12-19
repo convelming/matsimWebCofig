@@ -395,6 +395,7 @@ ShaderLib[ 'line' ] = {
 
 			#include <tonemapping_fragment>
 			// #include <colorspace_fragment>
+			gl_FragColor = linearToOutputTexel( gl_FragColor );
 			#include <fog_fragment>
 			#include <premultiplied_alpha_fragment>
 
