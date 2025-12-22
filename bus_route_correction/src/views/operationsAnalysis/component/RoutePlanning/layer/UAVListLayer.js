@@ -154,9 +154,13 @@ export class UAVListLayer extends Layer {
     this.linkMaterial_s = new LineMaterial({
       color: this.selectLinkColor,
       linewidth: this.selectLinkWidth,
-      opacity: 1,
+      opacity: 0.5,
       transparent: true,
       worldUnits: true,
+
+      dashed: false,
+      dashSize: 0,
+      gapSize: 0,
     });
 
     // 初始化渲染无人机需要的资源
@@ -188,7 +192,7 @@ export class UAVListLayer extends Layer {
     // 用于螺旋桨旋转的模型
     new GLTFLoader().load(process.env.VUE_APP_BASE_API + "/models/无人机.glb", (gltf) => {
       const SelectUAVModel = {};
-      
+
       SelectUAVModel.lxjs = [];
       gltf.scene.traverse((child) => {
         if (child.isMesh) {
@@ -210,7 +214,7 @@ export class UAVListLayer extends Layer {
 
       SelectUAVModel.scene = new THREE.Group();
       SelectUAVModel.scene.add(gltf.scene);
-      
+
       this.SelectUAVModel = SelectUAVModel;
     });
   }
@@ -327,28 +331,50 @@ export class UAVListLayer extends Layer {
     });
   }
 
+  // setSelectPath(selectIndex) {
+  //   this.selectIndex = selectIndex;
+  //   const path = this.pathList[selectIndex];
+  //   if (this.linkSelectMesh) {
+  //     this.linkSelectMesh.removeFromParent();
+  //     this.linkSelectMesh.geometry.dispose();
+  //     this.linkSelectMesh = null;
+  //   }
+  //   if (path) {
+  //     const positions = path.getPoints2(10);
+  //     const linkPoints = positions.map((v, i) => [v.x, v.y, v.z]).flat();
+  //     const linkGeometry = new LineGeometry();
+  //     linkGeometry.setPositions(linkPoints);
+
+  //     const link = new Line2(linkGeometry, this.linkMaterial_s);
+
+  //     link.renderOrder = 10;
+  //     this.scene.add(link);
+  //     this.linkSelectMesh = link;
+  //   }
+
+  //   if (this.map) this.on(MAP_EVENT.UPDATE_CENTER);
+  // }
+  
+
   setSelectPath(selectIndex) {
+    const oldIndex = this.selectIndex;
     this.selectIndex = selectIndex;
-    const path = this.pathList[selectIndex];
-    if (this.linkSelectMesh) {
-      this.linkSelectMesh.removeFromParent();
-      this.linkSelectMesh.geometry.dispose();
-      this.linkSelectMesh = null;
+    if (oldIndex > -1) {
+      // this.nodeMeshList[oldIndex].material = this.nodeMaterial;
+      // this.nodeMeshList[oldIndex].needsUpdate = true;
+      // this.nodeMeshList[oldIndex].renderOrder = 20;
+      this.linkMeshList[oldIndex].material = this.linkMaterial;
+      this.linkMeshList[oldIndex].needsUpdate = true;
+      this.linkMeshList[oldIndex].renderOrder = 10;
     }
-    if (path) {
-      const positions = path.getPoints2(10);
-      const linkPoints = positions.map((v, i) => [v.x, v.y, v.z]).flat();
-      const linkGeometry = new LineGeometry();
-      linkGeometry.setPositions(linkPoints);
-
-      const link = new Line2(linkGeometry, this.linkMaterial_s);
-
-      link.renderOrder = 10;
-      this.scene.add(link);
-      this.linkSelectMesh = link;
+    if (selectIndex > -1) {
+      // this.nodeMeshList[selectIndex].material = this.nodeMaterial_s;
+      // this.nodeMeshList[selectIndex].needsUpdate = true;
+      // this.nodeMeshList[selectIndex].renderOrder = 200;
+      this.linkMeshList[selectIndex].material = this.linkMaterial_s;
+      this.linkMeshList[selectIndex].needsUpdate = true;
+      this.linkMeshList[selectIndex].renderOrder = 100;
     }
-
-    if (this.map) this.on(MAP_EVENT.UPDATE_CENTER);
   }
 
   setSelectPathById(id) {
@@ -475,6 +501,8 @@ export class UAVListLayer extends Layer {
       const linkPoints = positions.map((v, i) => [v.x, v.y, v.z]).flat();
       const linkGeometry = new LineGeometry();
       linkGeometry.setPositions(linkPoints);
+      console.log(linkGeometry);
+      
       // const segmentsGeometry = new LineSegmentsGeometry();
       // segmentsGeometry.setPositions(linkPoints);
 

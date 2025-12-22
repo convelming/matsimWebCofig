@@ -232,6 +232,8 @@ export default {
       networkModeList: [],
       networkHeight: ["60~120"],
       networkHeightList: ["0~60", "60~120", "120~300", "300~600", "600~1200"],
+      // 60-120米的默认颜色#4ECBA8，120-300米的颜色#27BAB5，300-600米的颜色337FA8，600-1200的颜色4264A7 @曾任
+      networkHeightColors: ["#4ECB78", "#4ECBA8", "#27BAB5", "#337FA8", "#4264A7"],
       colorsList: COLOR_LIST,
       networkSize: 5,
 
@@ -289,16 +291,17 @@ export default {
           v2.show = false;
         });
       });
-      for (const height of this.networkHeight) {
+      for (let i = 0, l = this.networkHeightList.length; i < l; i++) {
+        const height = this.networkHeightList[i];
         let item1 = this.Layer_Map[height];
         const [minh, maxh] = height.split("~");
         if (!item1) {
           item1 = {
             show: false,
             label: height,
-            color: "#ffa500",
+            color: this.networkHeightColors[i],
             _FlyableAreaLayer: new FlyableAreaLayer({
-              color: "#00ff00",
+              color: this.networkHeightColors[i],
               minh: minh,
               maxh: maxh,
             }),
@@ -307,29 +310,30 @@ export default {
           // this.Layer_Map[height] = item1;
           this.$set(this.Layer_Map, height, item1);
         }
-        item1.show = true;
-
-        for (const mode of this.networkMode) {
-          let item2 = item1.NetworkLayer_Map[mode];
-          if (!item2) {
-            item2 = {
-              show: false,
-              label: mode,
-              _NetworkLayer: new NetworkLayer({
-                colors: {
-                  0: item1.color,
-                  1: item1.color,
-                },
-                modes: mode,
-                minh: minh,
-                maxh: maxh,
-                lineWidth: this.networkSize,
-              }),
-            };
-            this.$set(item1.NetworkLayer_Map, mode, item2);
-            // item1.NetworkLayer_Map[mode] = item2;
+        item1.show = this.networkHeight.includes(height);
+        if (item1.show) {
+          for (const mode of this.networkMode) {
+            let item2 = item1.NetworkLayer_Map[mode];
+            if (!item2) {
+              item2 = {
+                show: false,
+                label: mode,
+                _NetworkLayer: new NetworkLayer({
+                  colors: {
+                    0: item1.color,
+                    1: item1.color,
+                  },
+                  modes: mode,
+                  minh: minh,
+                  maxh: maxh,
+                  lineWidth: this.networkSize,
+                }),
+              };
+              this.$set(item1.NetworkLayer_Map, mode, item2);
+              // item1.NetworkLayer_Map[mode] = item2;
+            }
+            item2.show = true;
           }
-          item2.show = true;
         }
       }
 

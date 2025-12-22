@@ -46,7 +46,6 @@ export class FlyableAreaLayer extends Layer {
       this.center = center;
       this.propertiesLabels = JSON.parse(textDecoder.decode(propertiesLabelsArray));
       this.polygonArray = polygonArray;
-      // console.log(event.data);
 
       this.clearPolygon();
       this.updatePolygon();
@@ -98,7 +97,6 @@ export class FlyableAreaLayer extends Layer {
         mesh.position.setZ(z);
         this.polygonMeshList.push(mesh);
         this.scene.add(mesh);
-        console.log(geometry);
         
       }
     }
@@ -108,7 +106,6 @@ export class FlyableAreaLayer extends Layer {
   onAdd(map) {
     super.onAdd(map);
     this.on(MAP_EVENT.UPDATE_CENTER);
-    console.log("onAdd");
   }
 }
 

@@ -40,7 +40,6 @@ export class FlyableAreaLayer extends Layer {
       shininess: 90,
       side: THREE.DoubleSide,
     });
-    console.log(list.length);
 
     const mesh = new THREE.InstancedMesh(geometry, material, list.length);
     for (let i = 0; i < list.length; i++) {

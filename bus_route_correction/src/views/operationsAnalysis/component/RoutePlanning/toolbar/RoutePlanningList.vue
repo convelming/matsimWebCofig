@@ -19,7 +19,10 @@
         <el-table class="small" :data="routeList" border stripe :height="height" @row-click="handleTableRowClick">
           <!-- <el-table-column type="selection" width="45" align="center" /> -->
           <el-table-column :label="$l('航路')" prop="name">
-            <template slot-scope="{ row }"> {{ row.name }} ({{ row.start.name }} - {{ row.end.name }}) <br/> ({{ formatHour(row.startTime) }} - {{ formatHour(row.endTime) }})</template>
+            <template slot-scope="{ row }">
+              {{ row.name }} ({{ row.start.name }} - {{ row.end.name }}) <br />
+              ({{ formatHour(row.startTime) }} - {{ formatHour(row.endTime) }})</template
+            >
           </el-table-column>
           <el-table-column :label="$l('操作')" width="80">
             <template slot-scope="{ row }">
@@ -328,6 +331,9 @@ export default {
       event: {
         select: (res) => {
           this.showUAVPage = res.data.flag;
+          this.rootVue.$emit("RoutePlanning_Get_Options", {
+            showUAVPage: this.showUAVPage,
+          });
         },
         playing: (res) => {
           if (this._playTimeout) return;
@@ -493,7 +499,6 @@ export default {
         // this._RouteListLayer.setPaths(res.data);
         this._UAVListLayer.setPaths(res.data, "CubicBezierPath");
       });
-      Path;
     },
     handleOpenAddRoute() {
       this.addRouteForm = {
