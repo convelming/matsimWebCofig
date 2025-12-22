@@ -94,11 +94,24 @@
           </el-table>
         </div>
       </div>
-
+      
+      <div class="form_item">
+        <div class="form_label">{{ $l("无人机大小：") }}</div>
+        <div class="form_value">
+          <el-slider style="padding: 0 calc(2em - 10px)" :disabled="!s_showLayer" v-model="uavSize" :min="0" :max="20" :step="0.1" @change="handleEmitOption"></el-slider>
+        </div>
+      </div>
       <div class="form_item">
         <div class="form_label">{{ $l("是否查看无人机飞行视角：") }}</div>
         <div class="form_value">
           <el-switch :disabled="!s_showLayer" v-model="showUAVPage" @change="handleEmitOption"></el-switch>
+        </div>
+      </div>
+
+      <div class="form_item">
+        <div class="form_label">{{ $l("是否跟随无人机飞行：") }}</div>
+        <div class="form_value">
+          <el-switch :disabled="!s_showLayer" v-model="lockUAV" @change="handleEmitOption"></el-switch>
         </div>
       </div>
     </div>
@@ -163,6 +176,14 @@
     "zh-CN": "是否查看无人机飞行视角：",
     "en-US": "是否查看无人机飞行视角："
   },
+  "是否跟随无人机飞行：":{
+    "zh-CN": "是否跟随无人机飞行：",
+    "en-US": "是否跟随无人机飞行："
+  },
+  "无人机大小：":{
+    "zh-CN": "无人机大小：",
+    "en-US": "无人机大小："
+  },
 }
 </language>
 
@@ -211,6 +232,9 @@ export default {
   },
   data() {
     return {
+
+      configKey: "publicTransitConfig",
+
       predefineColors: ["#5470c6", "#91cc75", "#fac858", "#ee6666", "#73c0de", "#3ba272", "#fc8452", "#9a60b4", "#ea7ccc"],
       s_showLayer: true,
 
@@ -238,6 +262,8 @@ export default {
       networkSize: 5,
 
       showUAVPage: false,
+      lockUAV: false,
+      uavSize: 3,
       Layer_Map: {},
     };
   },
@@ -374,6 +400,8 @@ export default {
         networkSize: this.networkSize,
 
         showUAVPage: this.showUAVPage,
+        lockUAV: this.lockUAV,
+        uavSize: this.uavSize,
       });
     },
     // 组件初始化事件

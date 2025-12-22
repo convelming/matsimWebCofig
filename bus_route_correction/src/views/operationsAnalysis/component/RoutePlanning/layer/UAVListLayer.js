@@ -22,6 +22,7 @@ const textureLoader = new THREE.TextureLoader();
 export class UAVListLayer extends Layer {
   center = [0, 0];
   selectIndex = -1;
+  texture = new THREE.TextureLoader().load(require("@/assets/image/point.svg"));
 
   constructor(opt) {
     super(opt);
@@ -29,16 +30,7 @@ export class UAVListLayer extends Layer {
     this.lockSelect = opt.lockSelect || false;
 
     this.linkWidth = opt.linkWidth || 10;
-    this.selectLinkWidth = opt.selectLinkWidth || 10.1;
     this.linkColor = new THREE.Color(opt.linkColor || "#e8ce79");
-    this.selectLinkColor = new THREE.Color(opt.selectLinkColor || "#e8ce79");
-
-    this.nodeSize = opt.nodeSize || 15;
-    this.selectNodeSize = opt.selectNodeSize || 15;
-    this.nodeColor = new THREE.Color(opt.nodeColor || "#76819a");
-    this.selectNodeColor = new THREE.Color(opt.selectNodeColor || "#ea7f7f");
-    this.nodeMap = textureLoader.load(require("@/assets/image/point.svg"));
-    this.selectNodeMap = textureLoader.load(require("@/assets/image/point2.svg"));
 
     this.uavColor = new THREE.Color(opt.uavColor || "#ea7f7f");
     this.selectUavColor = new THREE.Color(opt.selectUavColor || this.uavColor);
@@ -99,49 +91,17 @@ export class UAVListLayer extends Layer {
       }, 1000 / 120);
     }).observe(this.rootDoc);
 
-    // 初始化渲染节点需要的资源
-    this.nodeMeshList = [];
-    this.nodeMeshList1 = [];
-    this.nodeMeshList2 = [];
-    this.nodeMaterial = new THREE.PointsMaterial({
-      size: this.nodeSize,
-      sizeAttenuation: false,
-      color: this.nodeColor,
-      opacity: 1,
-      transparent: true,
-      map: this.nodeMap,
-    });
-    this.nodeMaterial1 = new THREE.PointsMaterial({
-      color: this.pickLayerColor,
-      size: this.nodeSize,
-      sizeAttenuation: false,
-      opacity: 1,
-      transparent: true,
-      map: this.nodeMap,
-    });
-    this.nodeMaterial_s = new THREE.PointsMaterial({
-      size: this.selectNodeSize,
-      sizeAttenuation: false,
-      // color: this.selectNodeColor,
-      opacity: 1,
-      transparent: true,
-      map: this.selectNodeMap,
-    });
-
     // 初始化渲染线路需要的资源
     this.linkMeshList = [];
     this.linkMeshList1 = [];
     this.linkMeshList2 = [];
-    this.linkMaterial = new LineMaterial({
+    this.linkMaterial = new THREE.PointsMaterial({
       color: this.linkColor,
-      linewidth: this.linkWidth,
+      size: this.linkWidth,
+      sizeAttenuation: true,
       opacity: 0.5,
       transparent: true,
-      worldUnits: true,
-
-      dashed: true,
-      dashSize: this.linkWidth * 3,
-      gapSize: this.linkWidth * 3,
+      map: this.texture,
     });
     this.linkMaterial1 = new LineMaterial({
       color: this.pickLayerColor,
@@ -150,24 +110,42 @@ export class UAVListLayer extends Layer {
       transparent: true,
       worldUnits: true,
     });
-    this.linkSelectMesh = null;
-    this.linkMaterial_s = new LineMaterial({
-      color: this.selectLinkColor,
-      linewidth: this.selectLinkWidth,
-      opacity: 0.5,
-      transparent: true,
-      worldUnits: true,
+    this.linkSelectMesh1 = new Line2(
+      new LineGeometry(),
+      new LineMaterial({
+        color: this.linkColor,
+        linewidth: this.linkWidth * 0.8,
+        opacity: 1,
+        transparent: true,
+        worldUnits: true,
 
-      dashed: false,
-      dashSize: 0,
-      gapSize: 0,
-    });
+        dashed: false,
+        dashSize: 0,
+        gapSize: 0,
+      })
+    );
+    this.linkSelectMesh2 = new THREE.Points(
+      new THREE.BufferGeometry(),
+      new THREE.PointsMaterial({
+        color: this.linkColor,
+        size: this.linkWidth,
+        sizeAttenuation: true,
+        opacity: 0.5,
+        transparent: true,
+
+        // depthWrite: false,
+        // depthTest: false,
+        // depthFunc: THREE.AlwaysDepth,
+
+        map: this.texture,
+      })
+    );
 
     // 初始化渲染无人机需要的资源
     this.UAVGeometry = new THREE.BoxGeometry(50, 50, 50);
     // this.UAVMaterial = new THREE.MeshStandardMaterial({ color: this.uavColor,vertexColors:true });
-    this.UAVMaterial = new THREE.MeshStandardMaterial({ color: this.uavColor, wireframe: true });
-    this.UAVMaterial_s = new THREE.MeshStandardMaterial({ color: this.selectUavColor, wireframe: true });
+    this.UAVMaterial = new THREE.MeshBasicMaterial({ color: this.uavColor, wireframe: true });
+    this.UAVMaterial_s = new THREE.MeshBasicMaterial({ color: this.selectUavColor, wireframe: true });
     this.UAVMaterial1 = new THREE.MeshBasicMaterial({});
     this.UAVMaterial2 = new THREE.MeshBasicMaterial({});
     this.UAVMesh = new THREE.InstancedMesh(this.UAVGeometry, this.UAVMaterial, 1);
@@ -214,7 +192,7 @@ export class UAVListLayer extends Layer {
 
       SelectUAVModel.scene = new THREE.Group();
       SelectUAVModel.scene.add(gltf.scene);
-
+      SelectUAVModel.scene.renderOrder = 100;
       this.SelectUAVModel = SelectUAVModel;
     });
   }
@@ -223,6 +201,7 @@ export class UAVListLayer extends Layer {
     if (type == MAP_EVENT.UPDATE_CENTER) {
       const [x, y] = this.map.WebMercatorToCanvasXY(this.center[0], this.center[1]);
       for (const mesh of this.scene.children) {
+        if (this.linkSelectMesh && mesh.uuid == this.linkSelectMesh.uuid) console.log(mesh);
         mesh.position.set(x, y, 0);
       }
       for (const mesh of this.pickLayerScene.children) {
@@ -270,10 +249,12 @@ export class UAVListLayer extends Layer {
     }
   }
 
+  setUavSize(uavSize) {
+    this.uavSize = uavSize;
+  }
+
   setPickLayerColor(color) {
     super.setPickLayerColor(color);
-    this.nodeMaterial1.setValues({ color: color });
-    this.nodeMaterial1.needsUpdate = true;
     this.linkMaterial1.setValues({ color: color });
     this.linkMaterial1.needsUpdate = true;
     this.UAVMaterial1.setValues({ color: color });
@@ -284,21 +265,30 @@ export class UAVListLayer extends Layer {
     this.linkColor = linkColor;
 
     this.linkMaterial.setValues({ color: linkColor });
-
     this.linkMaterial.needsUpdate = true;
-    this.linkMaterial_s.setValues({ color: linkColor });
-    this.linkMaterial_s.needsUpdate = true;
+
+    this.linkSelectMesh1.material.setValues({ color: linkColor });
+    this.linkSelectMesh1.material.needsUpdate = true;
+
+    this.linkSelectMesh2.material.setValues({ color: linkColor });
+    this.linkSelectMesh2.material.needsUpdate = true;
   }
 
   setLinkWidth(linkWidth) {
     this.linkWidth = linkWidth;
 
-    this.linkMaterial.setValues({ linewidth: this.linkWidth, dashSize: this.linkWidth * 3, gapSize: this.linkWidth * 3 });
+    // this.linkMaterial.setValues({ linewidth: this.linkWidth, dashSize: this.linkWidth * 3, gapSize: this.linkWidth * 3 });
+    // this.linkMaterial.needsUpdate = true;
+    this.linkMaterial.setValues({ size: this.linkWidth });
     this.linkMaterial.needsUpdate = true;
     this.linkMaterial1.setValues({ linewidth: this.linkWidth });
     this.linkMaterial1.needsUpdate = true;
-    this.linkMaterial_s.setValues({ linewidth: this.linkWidth + 0.1 });
-    this.linkMaterial_s.needsUpdate = true;
+
+    this.linkSelectMesh1.material.setValues({ linewidth: this.linkWidth * 0.8 });
+    this.linkSelectMesh1.material.needsUpdate = true;
+
+    this.linkSelectMesh2.material.setValues({ size: this.linkWidth });
+    this.linkSelectMesh2.material.needsUpdate = true;
 
     this.linkMeshList2.forEach((mesh) => {
       mesh.material.setValues({ linewidth: this.linkWidth });
@@ -309,9 +299,7 @@ export class UAVListLayer extends Layer {
   // LinePath  CubicBezierPath
   setPaths(paths = [], pathClassName = "LinePath") {
     const center = [paths[0].center[0], paths[0].center[1]];
-    console.time("setPaths");
     this.pathList = paths.map((v) => new PathCurve[pathClassName](v.id, v.nodes, new THREE.Vector3(center[0], center[1], 0)));
-    console.timeEnd("setPaths");
     this.center = center;
     this.worker.postMessage({
       key: "setPaths",
@@ -331,49 +319,31 @@ export class UAVListLayer extends Layer {
     });
   }
 
-  // setSelectPath(selectIndex) {
-  //   this.selectIndex = selectIndex;
-  //   const path = this.pathList[selectIndex];
-  //   if (this.linkSelectMesh) {
-  //     this.linkSelectMesh.removeFromParent();
-  //     this.linkSelectMesh.geometry.dispose();
-  //     this.linkSelectMesh = null;
-  //   }
-  //   if (path) {
-  //     const positions = path.getPoints2(10);
-  //     const linkPoints = positions.map((v, i) => [v.x, v.y, v.z]).flat();
-  //     const linkGeometry = new LineGeometry();
-  //     linkGeometry.setPositions(linkPoints);
-
-  //     const link = new Line2(linkGeometry, this.linkMaterial_s);
-
-  //     link.renderOrder = 10;
-  //     this.scene.add(link);
-  //     this.linkSelectMesh = link;
-  //   }
-
-  //   if (this.map) this.on(MAP_EVENT.UPDATE_CENTER);
-  // }
-  
-
-  setSelectPath(selectIndex) {
-    const oldIndex = this.selectIndex;
-    this.selectIndex = selectIndex;
-    if (oldIndex > -1) {
-      // this.nodeMeshList[oldIndex].material = this.nodeMaterial;
-      // this.nodeMeshList[oldIndex].needsUpdate = true;
-      // this.nodeMeshList[oldIndex].renderOrder = 20;
-      this.linkMeshList[oldIndex].material = this.linkMaterial;
-      this.linkMeshList[oldIndex].needsUpdate = true;
-      this.linkMeshList[oldIndex].renderOrder = 10;
+  setSmallView(smallView) {
+    this.smallView = smallView;
+    if (this.smallView) {
+      this.scene.remove(this.linkSelectMesh1);
+      this.scene.add(this.linkSelectMesh2);
+    } else {
+      this.scene.add(this.linkSelectMesh1);
+      this.scene.remove(this.linkSelectMesh2);
     }
-    if (selectIndex > -1) {
-      // this.nodeMeshList[selectIndex].material = this.nodeMaterial_s;
-      // this.nodeMeshList[selectIndex].needsUpdate = true;
-      // this.nodeMeshList[selectIndex].renderOrder = 200;
-      this.linkMeshList[selectIndex].material = this.linkMaterial_s;
-      this.linkMeshList[selectIndex].needsUpdate = true;
-      this.linkMeshList[selectIndex].renderOrder = 100;
+    if (this.map) this.on(MAP_EVENT.UPDATE_CENTER);
+  }
+  setSelectPath(selectIndex) {
+    this.selectIndex = selectIndex;
+
+    const path = this.pathList[selectIndex];
+    if (path) {
+      const positions = path.getPoints2(10);
+      this.linkSelectMesh2.geometry.setFromPoints(positions);
+      this.linkSelectMesh2.geometry.needsUpdate = true;
+      this.setSmallView(this.smallView);
+
+      const linkPoints = positions.map((v, i) => [v.x, v.y, v.z]).flat();
+      this.linkSelectMesh1.geometry.setPositions(linkPoints);
+      this.linkSelectMesh1.geometry.needsUpdate = true;
+      this.linkSelectMesh1.computeLineDistances();
     }
   }
 
@@ -431,21 +401,6 @@ export class UAVListLayer extends Layer {
   }
 
   updatePaths() {
-    for (const mesh of this.nodeMeshList) {
-      mesh.removeFromParent();
-      mesh.geometry.dispose();
-    }
-    for (const mesh of this.nodeMeshList1) {
-      mesh.removeFromParent();
-      mesh.geometry.dispose();
-    }
-    for (const mesh of this.nodeMeshList2) {
-      mesh.removeFromParent();
-      mesh.geometry.dispose();
-    }
-    this.nodeMeshList = [];
-    this.nodeMeshList1 = [];
-    this.nodeMeshList2 = [];
     for (const mesh of this.linkMeshList) {
       mesh.removeFromParent();
       mesh.geometry.dispose();
@@ -470,45 +425,14 @@ export class UAVListLayer extends Layer {
       const path = this.pathList[pIndex];
       const pickColor = new THREE.Color(Number(pIndex + 1));
 
-      // const nodePoints = path.nodes.map((node) => new THREE.Vector3(node.v.x, node.v.y, node.v.z));
-      // const nodeGeometry = new THREE.BufferGeometry().setFromPoints(nodePoints);
-      // nodeGeometry.computeBoundingBox();
-      // nodeGeometry.computeBoundingSphere();
-      // const node = new THREE.Points(nodeGeometry, this.nodeMaterial);
-      // node.renderOrder = 10;
-      // this.scene.add(node);
-      // this.nodeMeshList.push(node);
-
-      // const node1 = new THREE.Points(nodeGeometry, this.nodeMaterial1);
-      // node1.renderOrder = 10;
-      // this.pickLayerScene.add(node1);
-      // this.nodeMeshList1.push(node1);
-
-      // const nodeMaterial2 = new THREE.PointsMaterial({
-      //   color: pickColor,
-      //   size: this.nodeSize,
-      //   sizeAttenuation: false,
-      //   opacity: 1,
-      //   transparent: true,
-      //   map: this.nodeMap,
-      // });
-      // const node2 = new THREE.Points(nodeGeometry, nodeMaterial2);
-      // node2.renderOrder = 10;
-      // this.pickMeshScene.add(node2);
-      // this.nodeMeshList2.push(node2);
-
       const positions = path.getPoints2(10);
       const linkPoints = positions.map((v, i) => [v.x, v.y, v.z]).flat();
       const linkGeometry = new LineGeometry();
       linkGeometry.setPositions(linkPoints);
-      console.log(linkGeometry);
-      
-      // const segmentsGeometry = new LineSegmentsGeometry();
-      // segmentsGeometry.setPositions(linkPoints);
 
-      // const link = new LineSegments2(segmentsGeometry, this.linkMaterial);
-      const link = new Line2(linkGeometry, this.linkMaterial);
-      link.computeLineDistances();
+      const linkGeometry2 = new THREE.BufferGeometry();
+      linkGeometry2.setFromPoints(positions);
+      const link = new THREE.Points(linkGeometry2, this.linkMaterial);
       link.renderOrder = 10;
       this.scene.add(link);
       this.linkMeshList.push(link);
@@ -529,28 +453,6 @@ export class UAVListLayer extends Layer {
       link2.renderOrder = 10;
       this.pickMeshScene.add(link2);
       this.linkMeshList2.push(link2);
-
-      // const linkGeometry = new THREE.TubeGeometry(path, path.nodes.length * 20, this.linkWidth, 8, false);
-      // const link = new THREE.Mesh(linkGeometry, this.linkMaterial);
-      // link.renderOrder = 10;
-      // this.scene.add(link);
-      // this.linkMeshList.push(link);
-
-      // const link1 = new THREE.Mesh(linkGeometry, this.linkMaterial1);
-      // link1.renderOrder = 10;
-      // this.pickLayerScene.add(link1);
-      // this.linkMeshList1.push(link1);
-
-      // const linkMaterial2 = new THREE.MeshBasicMaterial({
-      //   color: pickColor,
-      //   // linewidth: this.linkWidth,
-      //   opacity: 1,
-      //   transparent: true,
-      // });
-      // const link2 = new THREE.Mesh(linkGeometry, linkMaterial2);
-      // link2.renderOrder = 10;
-      // this.pickMeshScene.add(link2);
-      // this.linkMeshList2.push(link2);
     }
     if (this.map) this.on(MAP_EVENT.UPDATE_CENTER);
     this.setSelectPath(this.selectIndex);
@@ -562,6 +464,8 @@ export class UAVListLayer extends Layer {
     if (this.SelectUAVModel) this.SelectUAVModel.scene.removeFromParent();
     // if (this.birds) this.birds.removeFromParent();
     const { time, points } = data;
+    const uavSize = this.smallView ? 1 : this.uavSize;
+    const uavSizeMatrix4 = new THREE.Matrix4().makeScale(uavSize, uavSize, uavSize)
     for (let pIndex = 0; pIndex < points.length; pIndex++) {
       const { point, speed, dir, isEnd } = points[pIndex];
       if (pIndex === this.selectIndex) {
@@ -570,25 +474,27 @@ export class UAVListLayer extends Layer {
         if (this.SelectUAVModel)
           if (!isEnd) {
             if (this.lockSelect) {
-              this.camera.position.set(x, point.z + 30, -y).sub(new THREE.Vector3(dir.x, dir.z, -dir.y).setLength(30 * 2));
-              this.camera.lookAt(x, point.z, -y);
-              // this.map.setCameraHeight(point.z + 200);
+              this.camera.position.set(x, point.z + 20, -y).sub(new THREE.Vector3(dir.x, dir.z, -dir.y).setLength(15));
+              this.camera.lookAt(x, point.z + 10, -y);
               if (this.SelectUAVModel) {
-                // this.scene.add(this.birds);
                 this.scene.add(this.SelectUAVModel.scene);
 
                 const matrix4 = new THREE.Matrix4().makeTranslation(0, 0, -1000000);
+                matrix4.multiply(uavSizeMatrix4);
                 this.UAVMesh.setMatrixAt(pIndex, matrix4);
                 this.UAVMesh1.setMatrixAt(pIndex, matrix4);
                 this.UAVMesh2.setMatrixAt(pIndex, matrix4);
                 this.SelectUAVModel.scene.position.set(x, y, point.z);
+                this.SelectUAVModel.scene.scale.set(uavSize, uavSize, uavSize);
                 const target = new THREE.Vector3(x, point.z, -y).sub(new THREE.Vector3(-dir.x, point.z, dir.y));
                 this.SelectUAVModel.scene.lookAt(target);
                 this.SelectUAVModel.scene.rotateY(Math.PI);
+
               }
             }
             if (!this.lockSelect || (this.lockSelect && !this.SelectUAVModel)) {
               const matrix4 = new THREE.Matrix4().makeTranslation(point.x, point.y, point.z);
+              matrix4.multiply(uavSizeMatrix4);
               this.UAVMesh.setColorAt(pIndex, this.selectUavColor);
               this.UAVMesh.setMatrixAt(pIndex, matrix4);
               this.UAVMesh1.setMatrixAt(pIndex, matrix4);
@@ -596,24 +502,29 @@ export class UAVListLayer extends Layer {
             }
           } else {
             const matrix4 = new THREE.Matrix4().makeTranslation(0, 0, -1000000);
+            matrix4.multiply(uavSizeMatrix4);
             this.UAVMesh.setMatrixAt(pIndex, matrix4);
             this.UAVMesh1.setMatrixAt(pIndex, matrix4);
             this.UAVMesh2.setMatrixAt(pIndex, matrix4);
           }
       } else if (!isEnd) {
         const matrix4 = new THREE.Matrix4().makeTranslation(point.x, point.y, point.z);
+        matrix4.multiply(uavSizeMatrix4);
         this.UAVMesh.setMatrixAt(pIndex, matrix4);
         this.UAVMesh1.setMatrixAt(pIndex, matrix4);
         this.UAVMesh2.setMatrixAt(pIndex, matrix4);
       } else {
         const matrix4 = new THREE.Matrix4().makeTranslation(0, 0, -1000000);
+        matrix4.multiply(uavSizeMatrix4);
         this.UAVMesh.setMatrixAt(pIndex, matrix4);
         this.UAVMesh1.setMatrixAt(pIndex, matrix4);
         this.UAVMesh2.setMatrixAt(pIndex, matrix4);
       }
       this.UAVMesh.setColorAt(pIndex, this.uavColor);
     }
-    this.handleEventListener("playing", { playDetail: points[this.selectIndex] });
+    this.handleEventListener("playing", {
+      playDetail: points[this.selectIndex],
+    });
     if (this.selectIndex > -1) this.UAVMesh.setColorAt(this.selectIndex, this.selectUavColor);
     if (this.UAVMesh.instanceColor) this.UAVMesh.instanceColor.needsUpdate = true;
     if (this.UAVMesh.instanceMatrix) this.UAVMesh.instanceMatrix.needsUpdate = true;

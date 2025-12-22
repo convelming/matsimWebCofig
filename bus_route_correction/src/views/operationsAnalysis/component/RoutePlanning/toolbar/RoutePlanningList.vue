@@ -34,7 +34,7 @@
     </AutoSize>
 
     <Dialog ref="dialog" :title="$l('添加起降点')" :visible="showAddPoint" @close="handleCloseAddPoint" left="340px" width="400px">
-      <el-form :model="addPointForm" ref="addPointForm" :rules="addPointRules" label-width="100px" :inline="false" size="small">
+      <el-form v-if="showAddPoint" :model="addPointForm" ref="addPointForm" :rules="addPointRules" label-width="100px" :inline="false" size="small">
         <el-form-item label="起降点名称" prop="name">
           <el-input v-model="addPointForm.name"></el-input>
         </el-form-item>
@@ -53,12 +53,12 @@
     </Dialog>
 
     <Dialog ref="dialog" :title="$l('添加航路划设')" :visible="showAddRoute" @close="handleCloseAddRoute" left="340px" width="400px">
-      <el-form :model="addRouteForm" ref="addRouteForm" :rules="addRouteRules" label-width="140px" :inline="false" size="small" v-loading="addRouteLoading">
+      <el-form v-if="showAddRoute" :model="addRouteForm" ref="addRouteForm" :rules="addRouteRules" label-width="140px" :inline="false" size="small" v-loading="addRouteLoading">
         <el-form-item label="航路名称" prop="name">
           <el-input v-model="addRouteForm.name"></el-input>
         </el-form-item>
         <el-form-item label="出发时间" prop="departureTime">
-          <el-time-picker v-model="addRouteForm.departureTime" placeholder="出发时间" value-format="hh:mm:ss"></el-time-picker>
+          <el-time-picker v-model="addRouteForm.departureTime" placeholder="出发时间" value-format="HH:mm:ss"></el-time-picker>
         </el-form-item>
         <el-form-item label="起点" prop="startId">
           <el-select v-model="addRouteForm.startId">
@@ -192,6 +192,7 @@
 </language>
 
 <script>
+import * as THREE from "three";
 import { addUam, deleteUam, listUam, genUamRoute, uamRouteList, deleteUamRoute, allTrack } from "@/api/index.js";
 import { MercatorToWGS84 } from "@/mymap/utils/LngLatUtils";
 import { PointSelectLayer, POINT_SELECT_STATE_KEY, POINT_SELECT_EVENT } from "../layer/PointSelectLayer";
@@ -211,7 +212,11 @@ export default {
       return this.rootVue._Map;
     },
   },
-  watch: {},
+  watch: {
+    showUAVPage(val) {
+      this._UAVListLayer.setSmallView(val);
+    },
+  },
   data() {
     return {
       POINT_SELECT_STATE_KEY: POINT_SELECT_STATE_KEY,
@@ -324,8 +329,8 @@ export default {
 
       time: 0,
       lockSelect: true,
-      uavColor: "orange",
-      selectUavColor: "#04BDFD",
+      uavColor: "#72B6FF",
+      selectUavColor: "#FF6161",
 
       rootDoc: this.$refs.mapRoot2,
       event: {
@@ -338,9 +343,17 @@ export default {
         playing: (res) => {
           if (this._playTimeout) return;
           this.playDetail = res.data.playDetail;
+          if (this._options.lockUAV && res.data.playDetail && !res.data.playDetail.isEnd) {
+            const center = this._UAVListLayer.center;
+            const point = new THREE.Vector3().copy(res.data.playDetail.point);
+            const step = new THREE.Vector3().copy(res.data.playDetail.dir).setLength(100);
+            point.add(step);
+            this._Map.setCenter([point.x + center[0], point.y + center[1]]);
+            this._Map.setCameraHeight(point.z + 100, false);
+          }
           this._playTimeout = setTimeout(() => {
             this._playTimeout = null;
-          }, 200);
+          }, 1000 / 60);
 
           // this.rootVue.$emit("RoutePlanning_Get_Options", {
           //   showUAVPage: this.showUAVPage,
@@ -390,6 +403,7 @@ export default {
 
       this._UAVListLayer.setLinkColor(res.routeColor);
       this._UAVListLayer.setLinkWidth(res.routeSize);
+      this._UAVListLayer.setUavSize(res.uavSize);
 
       if (this._Map && res.showPoint && res.showLayer) {
         this._Map.addLayer(this._PointListLayer);
@@ -422,8 +436,9 @@ export default {
     },
     getUAMPoint() {
       listUam().then((res) => {
-        this.pointList = res.data;
-        this._PointListLayer.setPointList(res.data);
+        const list = res.data.filter((v) => !!v);
+        this.pointList = list;
+        this._PointListLayer.setPointList(list);
       });
     },
 

@@ -37,6 +37,7 @@ export class PointListLayer extends Layer {
     this.scene.add(this.mesh);
 
     this.labelGroup = new THREE.Group();
+    this.labelGroup.renderOrder = Number.MAX_SAFE_INTEGER;
   }
 
   setSize(size) {
@@ -82,13 +83,11 @@ export class PointListLayer extends Layer {
       this.material.needsUpdate = true;
 
       this.mesh.position.setZ(this.size * 0.5);
-      console.log("this.pitch < 80");
     } else {
       this.material.setValues({ map: this.map.zoom > 15 ? this.texture2 : this.texture });
       this.material.needsUpdate = true;
 
       this.mesh.position.setZ(0);
-      console.log("this.pitch >= 80");
     }
   }
 
@@ -120,7 +119,12 @@ export class PointListLayer extends Layer {
       const pos = new THREE.Vector3(v.x - center[0], v.y - center[1], v.sample_1 || 0);
       pointList.push(pos);
       const label = new SpriteText(v.name, 12, "#000", "#fff");
-      label.material.setValues({ depthWrite: false });
+      label.material.setValues({
+        depthWrite: false,
+        depthTest: false,
+        depthFunc: THREE.AlwaysDepth,
+      });
+      label.material.needsUpdate = true;
       label.center.set(0.5, (-0.5 * this.size) / 2);
       label.position.copy(pos);
       this.labelGroup.add(label);
