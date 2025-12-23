@@ -167,34 +167,10 @@ export class UAVListLayer extends Layer {
       this.UAVGeometry = geometry;
       this.initUAV();
     });
-    // 用于螺旋桨旋转的模型
-    new GLTFLoader().load(process.env.VUE_APP_BASE_API + "/models/无人机.glb", (gltf) => {
-      const SelectUAVModel = {};
 
-      SelectUAVModel.lxjs = [];
-      gltf.scene.traverse((child) => {
-        if (child.isMesh) {
-          child.material = this.UAVMaterial_s;
-          if (String(child.name || "").includes("螺旋桨")) {
-            SelectUAVModel.lxjs.push(child);
-          }
-        }
-      });
-      gltf.scene.scale.set(0.2, 0.2, 0.2);
-      gltf.scene.position.set(0, 0, 5);
-      // 设置定时器旋转螺旋桨
-      SelectUAVModel.interval = setInterval(() => {
-        for (const mesh of SelectUAVModel.lxjs) {
-          mesh.rotation.z += (Math.PI * 2) / 15;
-          if (mesh.rotation.z >= 2 * Math.PI) mesh.rotation.z = 0;
-        }
-      }, 1000 / 60);
-
-      SelectUAVModel.scene = new THREE.Group();
-      SelectUAVModel.scene.add(gltf.scene);
-      SelectUAVModel.scene.renderOrder = 100;
-      this.SelectUAVModel = SelectUAVModel;
-    });
+    this.SelectUAVModel = new SelectUAVModel(this.UAVMaterial_s);
+    this.SelectUAVModel.play();
+    this.scene.add(this.SelectUAVModel);
   }
 
   on(type, data) {
@@ -244,9 +220,7 @@ export class UAVListLayer extends Layer {
     this.renderer.domElement = null;
     this.renderer.forceContextLoss();
     this.renderer.dispose();
-    if (this.SelectUAVModel) {
-      clearInterval(this.SelectUAVModel.interval);
-    }
+    this.SelectUAVModel.stop();
   }
 
   setUavSize(uavSize) {
@@ -332,7 +306,6 @@ export class UAVListLayer extends Layer {
   }
   setSelectPath(selectIndex) {
     this.selectIndex = selectIndex;
-
     const path = this.pathList[selectIndex];
     if (path) {
       const positions = path.getPoints2(10);
@@ -345,6 +318,7 @@ export class UAVListLayer extends Layer {
       this.linkSelectMesh1.geometry.needsUpdate = true;
       this.linkSelectMesh1.computeLineDistances();
     }
+    if (this.map) this.on(MAP_EVENT.UPDATE_CENTER);
   }
 
   setSelectPathById(id) {
@@ -461,54 +435,57 @@ export class UAVListLayer extends Layer {
   updateUAV(data) {
     if (!this.pathList) return;
     if (!this.map) return;
-    if (this.SelectUAVModel) this.SelectUAVModel.scene.removeFromParent();
-    // if (this.birds) this.birds.removeFromParent();
+    this.SelectUAVModel.hide();
     const { time, points } = data;
     const uavSize = this.smallView ? 1 : this.uavSize;
-    const uavSizeMatrix4 = new THREE.Matrix4().makeScale(uavSize, uavSize, uavSize)
+    const uavSizeMatrix4 = new THREE.Matrix4().makeScale(uavSize, uavSize, uavSize);
     for (let pIndex = 0; pIndex < points.length; pIndex++) {
       const { point, speed, dir, isEnd } = points[pIndex];
+
       if (pIndex === this.selectIndex) {
         const [x, y] = this.map.WebMercatorToCanvasXY(point.x + this.center[0], point.y + this.center[1]);
+        const [x2, y2] = this.map.WebMercatorToCanvasXY(this.center[0], this.center[1]);
         // this.birds.position.set(x, y, point.z + 10);
-        if (this.SelectUAVModel)
-          if (!isEnd) {
-            if (this.lockSelect) {
-              this.camera.position.set(x, point.z + 20, -y).sub(new THREE.Vector3(dir.x, dir.z, -dir.y).setLength(15));
-              this.camera.lookAt(x, point.z + 10, -y);
-              if (this.SelectUAVModel) {
-                this.scene.add(this.SelectUAVModel.scene);
+        if (!isEnd) {
+          if (this.lockSelect) {
+            this.camera.position.set(x, point.z + 20, -y).sub(new THREE.Vector3(dir.x, dir.z, -dir.y).setLength(15));
+            this.camera.lookAt(x, point.z + 10, -y);
+            this.SelectUAVModel.show();
 
-                const matrix4 = new THREE.Matrix4().makeTranslation(0, 0, -1000000);
-                matrix4.multiply(uavSizeMatrix4);
-                this.UAVMesh.setMatrixAt(pIndex, matrix4);
-                this.UAVMesh1.setMatrixAt(pIndex, matrix4);
-                this.UAVMesh2.setMatrixAt(pIndex, matrix4);
-                this.SelectUAVModel.scene.position.set(x, y, point.z);
-                this.SelectUAVModel.scene.scale.set(uavSize, uavSize, uavSize);
-                const target = new THREE.Vector3(x, point.z, -y).sub(new THREE.Vector3(-dir.x, point.z, dir.y));
-                this.SelectUAVModel.scene.lookAt(target);
-                this.SelectUAVModel.scene.rotateY(Math.PI);
-
-              }
-            }
-            if (!this.lockSelect || (this.lockSelect && !this.SelectUAVModel)) {
-              const matrix4 = new THREE.Matrix4().makeTranslation(point.x, point.y, point.z);
-              matrix4.multiply(uavSizeMatrix4);
-              this.UAVMesh.setColorAt(pIndex, this.selectUavColor);
-              this.UAVMesh.setMatrixAt(pIndex, matrix4);
-              this.UAVMesh1.setMatrixAt(pIndex, matrix4);
-              this.UAVMesh2.setMatrixAt(pIndex, matrix4);
-            }
-          } else {
             const matrix4 = new THREE.Matrix4().makeTranslation(0, 0, -1000000);
             matrix4.multiply(uavSizeMatrix4);
             this.UAVMesh.setMatrixAt(pIndex, matrix4);
             this.UAVMesh1.setMatrixAt(pIndex, matrix4);
             this.UAVMesh2.setMatrixAt(pIndex, matrix4);
+
+            const matrix42 = new THREE.Matrix4().makeTranslation(point.x, point.y, point.z);
+            matrix42.lookAt(new THREE.Vector3(0, 0, 0), new THREE.Vector3(dir.x, dir.y, 0), new THREE.Vector3(0, 0, 1));
+            matrix42.multiply(new THREE.Matrix4().makeRotationX(-Math.PI / 2));
+            matrix42.multiply(uavSizeMatrix4);
+            const uav = this.SelectUAVModel.uav;
+            matrix42.decompose(uav.position, uav.quaternion, uav.scale);
           }
+          if (!this.lockSelect || (this.lockSelect && !this.SelectUAVModel)) {
+            const matrix4 = new THREE.Matrix4().makeTranslation(point.x, point.y, point.z);
+            matrix4.lookAt(new THREE.Vector3(0, 0, 0), new THREE.Vector3(dir.x, dir.y, 0), new THREE.Vector3(0, -1, 0));
+            matrix4.multiply(new THREE.Matrix4().makeRotationY(-Math.PI / 2));
+            matrix4.multiply(uavSizeMatrix4);
+            this.UAVMesh.setColorAt(pIndex, this.selectUavColor);
+            this.UAVMesh.setMatrixAt(pIndex, matrix4);
+            this.UAVMesh1.setMatrixAt(pIndex, matrix4);
+            this.UAVMesh2.setMatrixAt(pIndex, matrix4);
+          }
+        } else {
+          const matrix4 = new THREE.Matrix4().makeTranslation(0, 0, -1000000);
+          matrix4.multiply(uavSizeMatrix4);
+          this.UAVMesh.setMatrixAt(pIndex, matrix4);
+          this.UAVMesh1.setMatrixAt(pIndex, matrix4);
+          this.UAVMesh2.setMatrixAt(pIndex, matrix4);
+        }
       } else if (!isEnd) {
         const matrix4 = new THREE.Matrix4().makeTranslation(point.x, point.y, point.z);
+        matrix4.lookAt(new THREE.Vector3(0, 0, 0), new THREE.Vector3(dir.x, dir.y, 0), new THREE.Vector3(0, -1, 0));
+        matrix4.multiply(new THREE.Matrix4().makeRotationY(-Math.PI / 2));
         matrix4.multiply(uavSizeMatrix4);
         this.UAVMesh.setMatrixAt(pIndex, matrix4);
         this.UAVMesh1.setMatrixAt(pIndex, matrix4);
@@ -530,5 +507,54 @@ export class UAVListLayer extends Layer {
     if (this.UAVMesh.instanceMatrix) this.UAVMesh.instanceMatrix.needsUpdate = true;
     if (this.UAVMesh1.instanceMatrix) this.UAVMesh1.instanceMatrix.needsUpdate = true;
     if (this.UAVMesh2.instanceMatrix) this.UAVMesh2.instanceMatrix.needsUpdate = true;
+  }
+}
+
+class SelectUAVModel extends THREE.Group {
+  uav = new THREE.Group();
+  lxjs = [];
+  interval = null;
+
+  constructor(material) {
+    super();
+
+    new GLTFLoader().load(process.env.VUE_APP_BASE_API + "/models/无人机.glb", (gltf) => {
+      gltf.scene.traverse((child) => {
+        if (child.isMesh) {
+          child.material = material;
+          if (String(child.name || "").includes("螺旋桨")) {
+            this.lxjs.push(child);
+          }
+        }
+      });
+
+      gltf.scene.scale.set(0.2, 0.2, 0.2);
+      gltf.scene.position.set(0, 0, 5);
+      this.uav.add(gltf.scene);
+    });
+  }
+
+  play() {
+    if (!this.interval) {
+      this.interval = setInterval(() => {
+        for (const mesh of this.lxjs) {
+          mesh.rotation.z += (Math.PI * 2) / 15;
+          if (mesh.rotation.z >= 2 * Math.PI) mesh.rotation.z = 0;
+        }
+      }, 1000 / 60);
+    }
+  }
+
+  stop() {
+    if (this.interval) clearInterval(this.interval);
+    this.interval = null;
+  }
+
+  hide() {
+    this.remove(this.uav);
+  }
+
+  show() {
+    this.add(this.uav);
   }
 }
