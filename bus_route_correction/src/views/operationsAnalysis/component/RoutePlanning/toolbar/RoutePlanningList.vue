@@ -328,7 +328,6 @@ export default {
       // selectNodeColor: "#FF7B00",
 
       time: 0,
-      lockSelect: true,
       uavColor: "#72B6FF",
       selectUavColor: "#FF6161",
 
