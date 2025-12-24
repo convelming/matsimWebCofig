@@ -1,7 +1,7 @@
 import * as THREE from "three";
 
 export default class extends THREE.Sprite {
-  constructor(text = "", fontSize = 50, color = "rgba(255, 255, 255, 1)",strokeColor = "rgba(0, 0, 0, 1)") {
+  constructor(text = "", fontSize = 50, color = "rgba(255, 255, 255, 1)", strokeColor = "rgba(0, 0, 0, 1)") {
     const canvas = document.createElement("canvas");
     const texture = new THREE.CanvasTexture(canvas);
     const material = new THREE.SpriteMaterial({ sizeAttenuation: false, transparent: true, map: texture });
@@ -25,8 +25,23 @@ export default class extends THREE.Sprite {
     this._fontWeight = "normal";
     this._canvas = canvas;
     this._texture = texture;
+
+    this._xScale = 1;
+    this._yScale = 1;
+    this._fontScale = 1;
+
     this._genCanvas();
   }
+
+  set fontScale(fontScale) {
+    this._fontScale = fontScale;
+    this.scale.set(this._xScale * this._fontScale, this._yScale * this._fontScale, 0);
+  }
+
+  get fontScale() {
+    return this._fontScale;
+  }
+
   get canvas() {
     return this._canvas;
   }
@@ -253,10 +268,10 @@ export default class extends THREE.Sprite {
     });
 
     this.texture.needsUpdate = true;
-    const yScale = textHeight / relFactor / 600;
-    const xScale = (yScale * canvas.width) / canvas.height;
-    this.scale.set(xScale, yScale, 0);
-    // this.scale.set(1, canvas.height / canvas.width, 1);
+    this._yScale = textHeight / relFactor / 600;
+    this._xScale = (this._yScale * canvas.width) / canvas.height;
+    console.log(this._text, this._yScale, this._xScale);
+    this.scale.set(this._xScale * this._fontScale, this._yScale * this._fontScale, 0);
   }
 
   clone() {
@@ -280,7 +295,7 @@ export default class extends THREE.Sprite {
     return this;
   }
 
-  dispose(){
+  dispose() {
     this.texture.dispose();
   }
 }
