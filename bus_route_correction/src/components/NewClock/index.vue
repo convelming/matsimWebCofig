@@ -7,7 +7,7 @@
       <Help v-show="showFun" @click.native="$emit('showHelp')"></Help>
       <Language v-show="showFun"></Language>
       <slot :showFun="showFun"></slot>
-      <div class="time" :style="{ background: showFun ? '#E5E5E5' : '' }" @click="showFun = !showFun">
+      <div class="time" :class="{ active: showFun }" @click="showFun = !showFun">
         {{ formatHour(s_time) }}
       </div>
     </div>
@@ -110,8 +110,8 @@ export default {
 .box {
   user-select: none;
   padding: 12px;
-  background: #ffffff;
-  box-shadow: 0px 4px 10px 0px rgba(0, 0, 0, 0.3);
+  background: var(--color-white);
+  box-shadow: 0px 4px 10px 0px rgb(from var(--color-black) r g b / 0.3);
   border-radius: 6px;
   width: auto;
 
@@ -126,7 +126,7 @@ export default {
 
     .time {
       cursor: pointer;
-      border: 1px solid #e5e5e5;
+      border: 1px solid var(--border-color-base);
       border-radius: 4px;
       height: 32px;
       line-height: 32px;
@@ -134,6 +134,10 @@ export default {
       align-items: center;
       font-family: wending;
       padding: 0 4px;
+
+      &.active {
+        background-color: rgb(from var(--color-black) r g b / 0.2);
+      }
     }
   }
   .bottom {

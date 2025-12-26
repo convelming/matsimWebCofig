@@ -148,7 +148,8 @@ export default {
   top: 0;
   left: 0;
   padding: 5px 10px;
-  background-color: rgba($color: #000000, $alpha: 0.8);
+  // background-color: rgba($color: var(--color-black), $alpha: 0.8);
+  background-color: rgb(from var(--color-black) r g b / 0.8);
   border-radius: 5px;
   .item {
     line-height: 30px;
@@ -157,7 +158,7 @@ export default {
     align-items: center;
     justify-content: flex-end;
     .text {
-      color: #fff;
+      color: var(--color-white);
       margin-right: 10px;
     }
     .color {

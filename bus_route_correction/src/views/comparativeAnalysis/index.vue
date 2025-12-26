@@ -166,12 +166,12 @@ export default {
   }
 
   .left_toolber {
-    background-color: #eef2fd;
+    background-color: var(--background-color-light);
     .el-input__inner {
       background-color: rgba(0, 0, 0, 0.05);
     }
     .el-collapse-item__wrap {
-      background-color: #eef2fd;
+      background-color: var(--background-color-light);
     }
   }
 }

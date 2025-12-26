@@ -193,7 +193,7 @@ export default {
     padding-bottom: 20px;
     .file_item {
       box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-      border: 1px solid #000;
+      border: 1px solid var(--color-black);
       border-radius: 4px;
     }
     .file_row {
@@ -201,13 +201,13 @@ export default {
       display: flex;
       align-items: center;
       & + .file_row {
-        border-top: 1px solid #000;
+        border-top: 1px solid var(--color-black);
       }
       .file_btn {
         flex-shrink: 0;
         height: 40px;
         width: 40px;
-        border-left: 1px solid #000;
+        border-left: 1px solid var(--color-black);
         display: flex;
         align-items: center;
         justify-content: center;

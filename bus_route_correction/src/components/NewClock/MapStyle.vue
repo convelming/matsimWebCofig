@@ -81,7 +81,7 @@ export default {
   cursor: pointer;
   position: relative;
   height: 32px;
-  border: 1px solid #e5e5e5;
+  border: 1px solid var(--border-color-base);
   border-radius: 4px;
   display: flex;
   align-items: center;
@@ -103,7 +103,7 @@ export default {
   .text {
     font-weight: 400;
     font-size: 14px;
-    color: #434343;
+    color: var(--color-text-regular);
     line-height: 20px;
   }
 
@@ -115,10 +115,11 @@ export default {
     // height: 390px;
     // width: 40px;
     overflow: hidden;
-    background: #fff;
+    background: var(--color-white);
     transition: width 0.3s;
     border-radius: 5px;
-    box-shadow: 0 0px 15px rgba(0, 0, 0, 0.8);
+    // box-shadow: 0 0px 15px rgba($color: var(--color-black), $alpha: 0.8);
+    box-shadow: 0 0px 15px rgb(from var(--color-black) r g b / 0.8);
     padding: 10px;
 
     &.hide {
@@ -139,7 +140,7 @@ export default {
         margin-top: 10px;
       }
       &.active {
-        border-color: #409eff;
+        border-color: var(--color-primary);
       }
     }
   }

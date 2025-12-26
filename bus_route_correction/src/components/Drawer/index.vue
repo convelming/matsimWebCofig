@@ -73,7 +73,7 @@ export default {
   .bar {
     position: absolute;
     z-index: 20;
-    background-color: #e0e0e0;
+    background-color: var(--border-color-lighter);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -84,7 +84,7 @@ export default {
       height: 40px;
       width: var(--bar-size);
       flex-shrink: 0;
-      background: #fff;
+      background: var(--color-white);
       border-radius: calc(var(--bar-size) / 4);
       &::before {
         position: absolute;
@@ -93,8 +93,8 @@ export default {
         left: 67%;
         content: "";
         display: block;
-        border-left: 2px solid #000;
-        border-bottom: 2px solid #000;
+        border-left: 2px solid var(--color-black);
+        border-bottom: 2px solid var(--color-black);
         width: calc(var(--bar-size) - 2px);
         height: calc(var(--bar-size) - 2px);
         transform-origin: center;

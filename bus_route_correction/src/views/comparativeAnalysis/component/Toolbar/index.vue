@@ -739,9 +739,9 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<!-- <style lang="scss" scoped>
 .toolbar-container {
-  background-color: #eef2fd;
+  background-color: var(--background-color-light);
   height: 100vh;
   overflow: hidden;
   .toolbar-header {
@@ -799,4 +799,4 @@ export default {
     }
   }
 }
-</style>
+</style> -->

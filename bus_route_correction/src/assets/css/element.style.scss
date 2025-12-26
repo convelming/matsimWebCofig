@@ -3,9 +3,20 @@
 * 变量请不要写在当前文件中，如需修改变量，请在 element-variables.scss 文件中修改
 */
 
+@import "@/assets/css/element.variables.scss";
+
 // * {
 //   user-select: none;
 // }
+.el-dropdown-menu__item.is-disabled {
+  color: var(--color-text-placeholder);
+}
+.el-color-picker__mask {
+  background-color: rgb(from var(--color-white) r g b / 0.5);
+}
+.el-color-picker__trigger {
+  border: 1px solid var(--border-color-base);
+}
 
 .el-zoom-in-right-enter-active,
 .el-zoom-in-right-leave-active {
@@ -92,6 +103,67 @@
   }
 }
 
+.toolbar-container {
+  background-color: var(--background-color-light);
+  height: 100vh;
+  overflow: hidden;
+  .toolbar-header {
+    display: flex;
+    height: 44px;
+    border-bottom: 2px solid var(--border-color-base);
+    .btn {
+      width: 24px;
+      height: 44px;
+      text-align: center;
+      line-height: 44px;
+      // background: rgba($color: var(--color-black), $alpha: 0.05);
+      background: rgb(from var(--color-black) r g b / 0.05);
+      cursor: pointer;
+    }
+    .list {
+      width: calc(100% - 48px);
+      overflow-x: scroll;
+      overflow-y: hidden;
+      text-wrap: nowrap;
+      &::-webkit-scrollbar {
+        display: none;
+      }
+      .item {
+        display: inline-block;
+        font-size: 14px;
+        font-weight: bold;
+        box-sizing: border-box;
+        padding: 12px;
+        height: 44px;
+        line-height: 20px;
+        text-wrap: nowrap;
+        color: var(--color-text-secondary);
+        cursor: pointer;
+        &.active {
+          color: var(--color-text-primary);
+        }
+      }
+    }
+  }
+  .toolbar-bodyer {
+    display: flex;
+    flex-direction: column;
+    height: calc(100% - 46px);
+    .toolbar-search {
+      border-bottom: 2px solid var(--border-color-base);
+      flex-shrink: 0;
+    }
+
+    .toolbar-collapse {
+      flex-grow: 1;
+      overflow-y: scroll;
+      &::-webkit-scrollbar {
+        display: none;
+      }
+    }
+  }
+}
+
 .my_collapse_item {
   padding: 0 12px;
   padding-top: 12px;
@@ -143,7 +215,8 @@
     border-radius: 4px;
 
     &.active {
-      background-color: rgba($color: #409eff, $alpha: 1);
+      // background-color: rgba($color: #409eff, $alpha: 1);
+      background-color: var(--color-primary);
       color: #ffffff;
     }
   }
@@ -152,7 +225,7 @@
     background-color: transparent;
     border-color: transparent;
     &.is-active {
-      background-color: rgba(0, 0, 0, 0.05);
+      background-color: rgb(from var(--color-black) r g b / 0.05); //rgba(0, 0, 0, 0.05);
       border-radius: 6px;
     }
   }
@@ -213,19 +286,19 @@
 
   .el-collapse-item__content {
     padding-bottom: 20px;
-    border-bottom: 2px solid #bbc0cf;
+    border-bottom: 2px solid var(--border-color-base);
   }
 
   &.active {
     .is-active {
-      background-color: #d2d6e5;
+      background-color: var(--background-color-lighter);
       border-radius: 6px;
     }
   }
 }
 
 .toolbar_item {
-  background-color: #eef2fd;
+  background-color: var(--background-color-light);
 
   .toolbar_item_header {
     padding-left: 12px;
@@ -258,8 +331,8 @@
   .toolbar_item_bodyer {
     padding: 0 12px;
   }
-  
-  .el-input__inner{
+
+  .el-input__inner {
     background-color: rgba(0, 0, 0, 0.05);
   }
 
@@ -279,21 +352,26 @@
   }
 }
 
+// .el-table--striped .el-table__body tr.el-table__row--striped td.el-table__cell {
+//   background: var(--background-color-base) !important;
+// }
+
 .my_tabel {
-  border: 1px solid #bbc0cf !important;
-  background-color: #eef2fd;
+  border: 1px solid var(--border-color-base) !important;
+  background-color: var(--background-color-light);
   border-radius: 4px;
   overflow: hidden;
+
   .el-table__cell {
-    border-color: #bbc0cf !important;
-    background-color: #eef2fd;
+    border-color: var(--border-color-base) !important;
   }
 
   th.el-table__cell {
-    background: #ccd4ea;
-    color: #000;
+    background: var(--background-color-extra-light) !important;
+    color: var(--color-black);
   }
   td.el-table__cell {
-    background-color: #eef2fd !important;
+    background-color: var(--background-color-light) !important;
+    color: var(--color-text-primary);
   }
 }

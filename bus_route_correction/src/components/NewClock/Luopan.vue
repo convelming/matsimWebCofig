@@ -107,7 +107,7 @@ export default {
   cursor: pointer;
   width: 32px;
   height: 32px;
-  border: 1px solid #e5e5e5;
+  border: 1px solid var(--border-color-base);
   border-radius: 4px;
   display: flex;
   align-items: center;

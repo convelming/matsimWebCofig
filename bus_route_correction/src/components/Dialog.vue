@@ -205,10 +205,11 @@ export default {
 .Dialog {
   position: fixed;
   z-index: 1000;
-  background: #fff;
+  background: var(--color-white);
   overflow: hidden;
   border-radius: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.04);
+  // box-shadow: 0 2px 4px rgba($color: var(--color-black), $alpha: 0.12), 0 0 6px rgba($color: var(--color-black), $alpha: 0.04);
+  box-shadow: 0 2px 4px rgb(from var(--color-black) r g b / 0.12), 0 0 6px rgb(from var(--color-black) r g b / 0.04);
   .flex_box {
     width: 100%;
     height: 100%;
@@ -235,13 +236,12 @@ export default {
     line-height: 25px;
     height: 25px;
     font-size: 16px;
-    color: #409eff;
+    color: var(--color-primary);
     margin-left: auto;
     cursor: pointer;
     padding-left: 10px;
   }
   .bodyer {
-
     box-sizing: border-box;
     height: calc(100% - 45px);
     padding: 20px;

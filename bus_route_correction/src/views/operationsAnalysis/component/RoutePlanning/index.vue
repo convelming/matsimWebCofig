@@ -84,17 +84,17 @@
       <div class="form_item">
         <div class="form_label">{{ $l("航路颜色：") }}</div>
         <div class="form_value">
-          <el-table class="small" :data="tableList" border stripe>
+          <el-table class="small my_tabel" :data="tableList" border stripe>
             <el-table-column prop="color" label="color" width="60">
               <template slot-scope="{ row }">
-                <el-color-picker v-model="row.color" size="small" :show-alpha="false" @change="handleChangeNetworkColor(row)"></el-color-picker>
+                <el-color-picker style="display: block;" v-model="row.color" size="small" :show-alpha="false" @change="handleChangeNetworkColor(row)"></el-color-picker>
               </template>
             </el-table-column>
             <el-table-column prop="label" label="label"> </el-table-column>
           </el-table>
         </div>
       </div>
-      
+
       <div class="form_item">
         <div class="form_label">{{ $l("无人机大小：") }}</div>
         <div class="form_value">
@@ -232,7 +232,6 @@ export default {
   },
   data() {
     return {
-
       configKey: "publicTransitConfig",
 
       predefineColors: ["#5470c6", "#91cc75", "#fac858", "#ee6666", "#73c0de", "#3ba272", "#fc8452", "#9a60b4", "#ea7ccc"],

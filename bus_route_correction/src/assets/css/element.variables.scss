@@ -1,0 +1,117 @@
+/**
+* I think element-ui's default theme color is too light for long-term use.
+* So I modified the default color and you can modify it to your liking.
+**/
+
+
+@function mix($color1, $color2, $p: 50%) {
+  @return color-mix(in srgb, $color1 $p, $color2);
+}
+
+// 默认主题
+:root {
+  --color-primary: #409eff;
+  --color-white: #ffffff;
+  --color-black: #000000;
+
+  --color-success: #67c23a;
+  --color-warning: #e6a23c;
+  --color-danger: #f56c6c;
+  --color-info: #909399;
+
+  --color-text-primary: #2c3e50;
+  --color-text-regular: color-mix(in srgb, var(--color-text-primary) 75%, var(--color-white));
+  --color-text-secondary: color-mix(in srgb, var(--color-text-primary) 50%, var(--color-white));
+  --color-text-placeholder: color-mix(in srgb, var(--color-text-primary) 25%, var(--color-white));
+  --border-color-base: #dcdfe6;
+  --border-color-light: #e4e7ed;
+  --border-color-lighter: #ebeef5;
+  --border-color-extra-light: #f2f6fc;
+
+  --background-color-base: #f5f7fa;
+  --background-color-light: #eef2fd;
+  --background-color-lighter: #d2d6e5;
+  --background-color-extra-light: #ccd4ea;
+}
+
+[data-theme="dark"] {
+  --color-primary: #409eff;
+  --color-white: #000000;
+  --color-black: #ffffff;
+
+  --color-success: #67c23a;
+  --color-warning: #e6a23c;
+  --color-danger: #f56c6c;
+  --color-info: #909399;
+
+  --color-text-primary: #cfcecc;
+  --color-text-regular: color-mix(in srgb, var(--color-text-primary) 75%, var(--color-white));
+  --color-text-secondary: color-mix(in srgb, var(--color-text-primary) 50%, var(--color-white));
+  --color-text-placeholder: color-mix(in srgb, var(--color-text-primary) 25%, var(--color-white));
+
+  // --border-color-base: #232019;
+  // --border-color-light: #1b1812;
+  // --border-color-lighter: #14110a;
+  // --border-color-extra-light: #0d0903;
+  --border-color-base: #444;
+  --border-color-light: #333;
+  --border-color-lighter: #222;
+  --border-color-extra-light: #111;
+
+  --background-color-base: #000000;
+  --background-color-light: #222222;
+  --background-color-lighter: #444444;
+  --background-color-extra-light: #555555;
+}
+
+/* Color
+-------------------------- */
+$--color-primary: var(--color-primary);
+$--color-white: var(--color-white);
+$--color-black: var(--color-black);
+// $--color-primary-light-1: mix($--color-white, $--color-primary, 10%); /* 53a8ff */
+// $--color-primary-light-2: mix($--color-white, $--color-primary, 20%); /* 66b1ff */
+// $--color-primary-light-3: mix($--color-white, $--color-primary, 30%); /* 79bbff */
+// $--color-primary-light-4: mix($--color-white, $--color-primary, 40%); /* 8cc5ff */
+// $--color-primary-light-5: mix($--color-white, $--color-primary, 50%); /* a0cfff */
+// $--color-primary-light-6: mix($--color-white, $--color-primary, 60%); /* b3d8ff */
+// $--color-primary-light-7: mix($--color-white, $--color-primary, 70%); /* c6e2ff */
+// $--color-primary-light-8: mix($--color-white, $--color-primary, 80%); /* d9ecff */
+// $--color-primary-light-9: mix($--color-white, $--color-primary, 90%); /* ecf5ff */
+$--color-success: var(--color-success);
+$--color-warning: var(--color-warning);
+$--color-danger: var(--color-danger);
+$--color-info: var(--color-info);
+
+// $--color-success-light: mix($--color-white, $--color-success, 80%);
+// $--color-warning-light: mix($--color-white, $--color-warning, 80%);
+// $--color-danger-light: mix($--color-white, $--color-danger, 80%);
+// $--color-info-light: mix($--color-white, $--color-info, 80%);
+
+// $--color-success-lighter: mix($--color-white, $--color-success, 90%);
+// $--color-warning-lighter: mix($--color-white, $--color-warning, 90%);
+// $--color-danger-lighter: mix($--color-white, $--color-danger, 90%);
+// $--color-info-lighter: mix($--color-white, $--color-info, 90%);
+$--color-text-primary: var(--color-text-primary);
+$--color-text-regular: var(--color-text-regular);
+$--color-text-secondary: var(--color-text-secondary);
+$--color-text-placeholder: var(--color-text-placeholder);
+$--border-color-base: var(--border-color-base);
+$--border-color-light: var(--border-color-light);
+$--border-color-lighter: var(--border-color-lighter);
+$--border-color-extra-light: var(--border-color-extra-light);
+
+$--background-color-base: var(--background-color-base);
+$--background-color-light: var(--background-color-light);
+$--background-color-lighter: var(--background-color-lighter);
+
+/* icon font path, required */
+$--font-path: "~element-ui/lib/theme-chalk/fonts";
+
+@import "~element-ui/packages/theme-chalk/src/index";
+
+// the :export directive is the magic sauce for webpack
+// https://www.bluematador.com/blog/how-to-share-variables-between-js-and-sass
+:export {
+  theme: $--color-primary;
+}

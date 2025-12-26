@@ -3,7 +3,7 @@
   <div class="RoutePlanningList">
     <el-button type="primary" size="small" @click="handleOpenAddPoint">{{ $l("添加起降点") }}</el-button>
     <div>
-      <el-table class="small" :data="pointList" border stripe height="250">
+      <el-table class="small my_tabel" :data="pointList" border stripe height="250">
         <!-- <el-table-column type="selection" width="45" align="center" /> -->
         <el-table-column :label="$l('起降点名称')" prop="name"> </el-table-column>
         <el-table-column :label="$l('操作')" width="80">
@@ -16,7 +16,7 @@
     <el-button type="primary" size="small" @click="handleOpenAddRoute">{{ $l("添加航路划设") }}</el-button>
     <AutoSize class="flex-h">
       <template slot-scope="{ width, height }">
-        <el-table class="small" :data="routeList" border stripe :height="height" @row-click="handleTableRowClick">
+        <el-table class="small my_tabel" :data="routeList" border stripe :height="height" @row-click="handleTableRowClick">
           <!-- <el-table-column type="selection" width="45" align="center" /> -->
           <el-table-column :label="$l('航路')" prop="name">
             <template slot-scope="{ row }">

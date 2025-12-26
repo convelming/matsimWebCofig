@@ -141,7 +141,7 @@ export default {
       box-sizing: border-box;
       width: 100%;
       font-size: 14px;
-      color: #606266;
+      color: var(--color-text-secondary);
       padding: 0 calc(2em - 10px);
     }
   }
@@ -149,7 +149,8 @@ export default {
     .speed {
       cursor: pointer;
       height: 26px;
-      background: rgba(0, 0, 0, 0.05);
+      // background: rgba($color: var(--color-black), $alpha: 0.05);
+      background: rgb(from var(--color-black) r g b / 0.05);
       padding: 4px 8px;
       border-radius: 4px;
       display: flex;
@@ -163,7 +164,7 @@ export default {
       }
 
       .text {
-        color: #434343;
+        color: var(--color-text-regular);
         font-size: 16px;
         font-weight: 400;
         line-height: 20px;

@@ -58,7 +58,7 @@ export default {
   mixins: [mixins, configMixins],
   data() {
     return {
-      activeNames: ["PublicTransit", "MotorizedTravel", "CarTravel", "Build3D", "Network", "Activity3D", "GeoJSON", "Parking", "TrafficRegionAnalysis","RoutePlanning"],
+      activeNames: ["PublicTransit", "MotorizedTravel", "CarTravel", "Build3D", "Network", "Activity3D", "GeoJSON", "Parking", "TrafficRegionAnalysis", "RoutePlanning"],
     };
   },
   created() {
@@ -112,16 +112,16 @@ export default {
   }
 
   .left_toolber {
-    background-color: #eef2fd;
+    background-color: var(--background-color-light);
     .el-input__inner {
       background-color: rgba(0, 0, 0, 0.05);
     }
     .el-collapse-item__wrap {
-      background-color: #eef2fd;
+      background-color: var(--background-color-light);
     }
   }
   .right_toolber {
-    background-color: #eef2fd;
+    background-color: var(--background-color-light);
   }
 }
 
@@ -182,7 +182,7 @@ export default {
       position: relative;
       top: 3px;
       cursor: pointer;
-      color: #409eff;
+      color: var(--color-primary);
       font-size: 20px;
     }
   }
