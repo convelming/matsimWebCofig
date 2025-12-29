@@ -48,6 +48,7 @@ export default {
   .icon {
     width: 24px;
     height: 24px;
+    filter: var(--image-filter-invert10);
   }
 
   .text {

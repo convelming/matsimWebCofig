@@ -2,7 +2,7 @@
   <el-collapse-item class="my_collapse_item" :name="name" :class="{ active: s_showLayer }">
     <div class="el-collapse-item__title" slot="title" :title="$l('Traffic Region Analysis')">
       <el-checkbox class="checkbox" :value="s_showLayer" @change="handleChangeShowLayer">
-        <img class="item_icon" v-show="s_showLayer" src="@/assets/image/road_network_icon_a.png" />
+        <img class="item_icon active" v-show="s_showLayer" src="@/assets/image/road_network_icon_a.png" />
         <img class="item_icon" v-show="!s_showLayer" src="@/assets/image/road_network_icon.png" />
         <span class="item_title">{{ $l("Traffic Region Analysis") }}</span>
         <span v-if="loading" class="el-icon-loading" style="margin-left: 10px"></span>

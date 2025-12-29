@@ -32,6 +32,11 @@
   --background-color-light: #eef2fd;
   --background-color-lighter: #d2d6e5;
   --background-color-extra-light: #ccd4ea;
+
+  --image-filter-invert10: none;
+  --image-filter-invert8: none;
+  --image-filter-invert5: none;
+  --image-no-filter: none;
 }
 
 [data-theme="dark"] {
@@ -62,6 +67,11 @@
   --background-color-light: #222222;
   --background-color-lighter: #444444;
   --background-color-extra-light: #555555;
+
+  --image-filter-invert10: invert(1);
+  --image-filter-invert8: invert(0.8);
+  --image-filter-invert5: invert(0.5);
+  --image-no-filter: none;
 }
 
 /* Color

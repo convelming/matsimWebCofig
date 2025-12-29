@@ -70,7 +70,7 @@
 
   .el-input__inner {
     border: none;
-    background-color: rgba(0, 0, 0, 0.05) !important;
+    background-color: rgb(from var(--color-black) r g b / 0.05) !important;
     padding: 0;
     margin: 0 39px;
     width: calc(100% - 78px);
@@ -89,16 +89,20 @@
   }
   .el-input-number__decrease {
     background: url("@/assets/image/minus_icon.png") no-repeat center center;
+    filter: var(--image-filter-invert5);
   }
   .el-input-number__increase {
     background: url("@/assets/image/push_icon.png") no-repeat center center;
+    filter: var(--image-filter-invert5);
   }
   &:not(.is-disabled):hover {
     .el-input-number__decrease:hover {
       background-image: url("@/assets/image/minus_icon_a.png");
+      filter: var(--image-no-filter);
     }
     .el-input-number__increase:hover {
       background-image: url("@/assets/image/push_icon_a.png");
+      filter: var(--image-no-filter);
     }
   }
 }
@@ -211,13 +215,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid #e6e6e6;
+    border: 1px solid var(--border-color-light);
     border-radius: 4px;
 
     &.active {
       // background-color: rgba($color: #409eff, $alpha: 1);
       background-color: var(--color-primary);
-      color: #ffffff;
+      color: var(--color-white);
     }
   }
 
@@ -279,6 +283,10 @@
           width: 18px;
           height: 18px;
           margin-right: 7px;
+          filter: var(--image-filter-invert8);
+          &.active {
+            filter: var(--image-no-filter);
+          }
         }
       }
     }

@@ -247,7 +247,7 @@ export default {
       loading.close();
     },
     async removeConfig(configName) {
-      await this.$confirm(this.$l("isRemoveSuccess") + " \"" + configName + "\" ?", this.$l("提示"), {
+      await this.$confirm(this.$l("isRemoveSuccess") + ' "' + configName + '" ?', this.$l("提示"), {
         confirmButtonText: this.$l("确定"),
         cancelButtonText: this.$l("取消"),
         type: "warning",
@@ -285,7 +285,7 @@ export default {
     width: 65px;
     cursor: pointer;
     height: 32px;
-    border: 1px solid #e5e5e5;
+    border: 1px solid var(--border-color-base);
     border-radius: 4px;
     display: flex;
     align-items: center;
@@ -296,12 +296,13 @@ export default {
       width: 24px;
       height: 24px;
       margin-right: 5px;
+      filter: var(--image-filter-invert8);
     }
 
     .text {
       font-weight: 400;
       font-size: 14px;
-      color: #434343;
+      color: var(--color-text-regular);
       line-height: 20px;
     }
   }

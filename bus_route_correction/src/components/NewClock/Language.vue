@@ -49,6 +49,7 @@ export default {
       width: 24px;
       height: 24px;
       margin-right: 5px;
+      filter: var(--image-filter-invert10);
     }
 
     .text {

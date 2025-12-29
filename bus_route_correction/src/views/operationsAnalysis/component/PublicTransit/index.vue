@@ -2,7 +2,7 @@
   <el-collapse-item class="my_collapse_item" :name="name" :class="{ active: s_showLayer }">
     <div class="el-collapse-item__title" slot="title" :title="$l('公交轨道站点')">
       <el-checkbox class="checkbox" :value="s_showLayer" @change="handleChangeShowLayer">
-        <img class="item_icon" v-show="s_showLayer" src="@/assets/image/PublicTransit_icon_a.png" />
+        <img class="item_icon active" v-show="s_showLayer" src="@/assets/image/PublicTransit_icon_a.png" />
         <img class="item_icon" v-show="!s_showLayer" src="@/assets/image/PublicTransit_icon.png" />
         <span class="item_title">{{ $l("公交轨道站点") }}</span>
         <span v-if="loading" class="el-icon-loading" style="margin-left: 10px"></span>
