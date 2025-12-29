@@ -46,17 +46,21 @@ export default {
       if (this._MapLayer) {
         const itemDocList = [];
         const list = Object.values(MAP_LAYER_STYLE);
+        let selectIndex = -1;
         for (let i = 0, l = list.length; i < l; i++) {
           const value = list[i];
-          if (value === this._MapLayer.tileClass) this.active = i;
+          if (value === this._MapLayer.tileClass) selectIndex = i;
+          const ins = new value(15, 26700, 14218, 200);
           const item = {
             title: value.style_name,
-            url: new value(15, 26700, 14218, 200).getUrl(),
+            url: ins.getUrl(),
+            theme: ins.theme,
             c: value,
           };
           itemDocList.push(item);
         }
         this.styleList = itemDocList;
+        if (selectIndex > -1) this.handleChangeStyle(selectIndex);
         clearInterval(this._interval);
       }
     }, 500);
@@ -68,6 +72,8 @@ export default {
     handleChangeStyle(i) {
       this.open = false;
       this.active = i;
+
+      document.body.setAttribute("data-theme", this.styleList[i].theme);
       this._MapLayer.setTileClass(this.styleList[i].c);
     },
   },

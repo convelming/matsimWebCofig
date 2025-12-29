@@ -1,7 +1,9 @@
 EARTH_RADIUS = 20037508.3427892;
 
+console.log("使用外部配置的config.js");
+
 // 地图默认样式序号，如果地图样式列表中没有这个样式，则默认序号为0的样式
-DEFAULT_MAP_LAYER_STYLE_INDEX = 2;
+DEFAULT_MAP_LAYER_STYLE_INDEX = 0;
 
 // 地图样式列表
 // {
@@ -11,14 +13,37 @@ DEFAULT_MAP_LAYER_STYLE_INDEX = 2;
 //   min_zoom: 0,
 //   x_offset: 0,
 //   y_offset: 0,
+//   theme: "light", // 页面主题 drak为暗黑主题 其他为浅色主题
 //   get_url: function () {
 //     return `http://192.168.60.231:23334/osm/MapTilerBasic/${this.zoom}/${this.row}/${this.col}.png`;
 //   }
 // }
 MAP_LAYER_STYLE = [
   {
+    style_name: "light blue",
+    theme: "light",
+    getUrl: function () {
+      return `http://192.168.60.234:8081/styles/LightBlue/512/${this.zoom}/${this.row}/${this.col}.png`;
+    },
+  },
+  {
+    style_name: "drak blue",
+    theme: "dark",
+    getUrl: function() {
+      return `http://192.168.60.234:8081/styles/DRAKBlue/512/${this.zoom}/${this.row}/${this.col}.png`;
+    }
+  },
+  {
+    style_name: "POSITRON",
+    theme: "light",
+    getUrl: function () {
+      return `http://192.168.60.231:23334/osm/Positron/${this.zoom}/${this.row}/${this.col}.png`;
+    },
+  },
+ {
     style_name: "Bing地图",
     background: `#0a4173`,
+    theme: "dark",
     x_offset: -590,
     y_offset: 335,
     getUrl: function () {
@@ -39,37 +64,22 @@ MAP_LAYER_STYLE = [
     },
   },
   {
-    style_name: "tianditu",
-    getUrl: function () {
-      return `http://t0.tianditu.gov.cn/img_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=img&STYLE=default&TILEMATRIXSET=w&FORMAT=tiles&TILEMATRIX=${this.zoom}&TILEROW=${this.col}&TILECOL=${this.row}&tk=fcaaabe9f71c6322310f751c434a8a2b`;
-    },
-  },
-  {
-    style_name: "argisServer",
-    getUrl: function () {
-      return `https://server.arcgisonline.com/arcgis/rest/services/World_Street_Map/MapServer/tile/${this.zoom}/${this.col}/${this.row}`;
-    },
-  },
-  {
-    style_name: "POSITRON",
-    getUrl: function () {
-      return `http://192.168.60.231:23334/osm/Positron/${this.zoom}/${this.row}/${this.col}.png`;
-    },
-  },
-  {
     style_name: "OSM_LIDERTY",
+    theme: "light",
     getUrl: function () {
       return `http://192.168.60.231:23334/osm/OSMLiberty/${this.zoom}/${this.row}/${this.col}.png`;
     },
   },
   {
     style_name: "MAP_TILER_BASIC",
+    theme: "light",
     getUrl: function () {
       return `http://192.168.60.231:23334/osm/MapTilerBasic/${this.zoom}/${this.row}/${this.col}.png`;
     },
   },
   {
     style_name: "DARK_MATTER",
+    theme: "dark",
     background: `#0a4173`,
     getUrl: function () {
       return `http://192.168.60.231:23334/osm/DarkMatter/${this.zoom}/${this.row}/${this.col}.png`;
@@ -77,48 +87,57 @@ MAP_LAYER_STYLE = [
   },
   {
     style_name: "OSM_BROGHT",
+    theme: "light",
     getUrl: function () {
       return `http://192.168.60.231:23334/osm/OSMBroght/${this.zoom}/${this.row}/${this.col}.png`;
     },
   },
+//  {
+//    style_name: "LIBERTY",
+//    getUrl: function () {
+//      return `http://192.168.60.231:23334/osm/liberty/${this.zoom}/${this.row}/${this.col}.png`;
+//    },
+//  },
+//  {
+//    style_name: "MAPBOX",
+//    getUrl: function () {
+//      return `https://api.mapbox.com/styles/v1/convel/ck8frzi262yko1invkvbif5aw/tiles/512/${this.zoom}/${this.row}/${this.col}@2x?access_token=pk.eyJ1Ijoic2t1bjE2IiwiYSI6ImNsNmN6bDAxaDAwbmozam55bjBrZWVybTUifQ.vg3pEDwpnUgxmJMmeB8nGQ`;
+//    },
+//  }, 
   {
-    style_name: "LIBERTY",
+    style_name: "argisServer",
+    theme: "light",
     getUrl: function () {
-      return `http://192.168.60.231:23334/osm/liberty/${this.zoom}/${this.row}/${this.col}.png`;
+      return `https://server.arcgisonline.com/arcgis/rest/services/World_Street_Map/MapServer/tile/${this.zoom}/${this.col}/${this.row}`;
     },
   },
-  // {
-  //   style_name: "MAPBOX",
-  //   getUrl: function () {
-  //     return `https://api.mapbox.com/styles/v1/convel/ck8frzi262yko1invkvbif5aw/tiles/512/${this.zoom}/${this.row}/${this.col}@2x?access_token=pk.eyJ1IjoiY29udmVsIiwiYSI6ImNtOW50Z2c0NTAyNGMybHB5Y2txcXY0NmgifQ.zM_QAebuyQtVh-A93w5wyA`;
-  //   },
-  // },
-  // {
-  //   style_name: "极夜蓝",
-  //   background: `#0a4173`,
-  //   getUrl: function () {
-  //     return `https://api.mapbox.com/styles/v1/dasin/cltigm5bp010s01ptciblgffl/tiles/512/${this.zoom}/${this.row}/${this.col}@2x?access_token=pk.eyJ1IjoiY29udmVsIiwiYSI6ImNtOW50Z2c0NTAyNGMybHB5Y2txcXY0NmgifQ.zM_QAebuyQtVh-A93w5wyA`;
-  //   },
-  // },
-  // {
-  //   style_name: "Arcgis",
-  //   background: `#0a4173`,
-  //   getUrl: function () {
-  //     const { x, y, zoom } = this;
-  //     const width = EARTH_RADIUS / Math.pow(2, zoom);
-  //     const bbox = `${x - width},${y - width},${x + width},${y + width}`;
-  //     const bboxSR = "3857";
-  //     const imageSR = "3857";
-  //     return `http://192.168.60.232:9195/mserver/arcgis/rest/services/csjt/%E5%B9%BF%E4%B8%9C%E7%9C%81wgs/MapServer/export?dpi=96&transparent=true&format=png8&layers=show:0,1,2,3&bbox=${bbox}&f=image&bboxSR=${bboxSR}&imageSR=${imageSR}`;
-  //   },
-  // },
   {
-    style_name: "天地图",
+    style_name: "极夜蓝",
     background: `#0a4173`,
+    theme: "dark",
     getUrl: function () {
-      return `http://t0.tianditu.gov.cn/vec_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=vec&STYLE=default&TILEMATRIXSET=w&FORMAT=tiles&TileMatrix=${this.zoom}&TileRow=${this.col}&TileCol=${this.row}&tk=fcaaabe9f71c6322310f751c434a8a2b`;
+      return `https://api.mapbox.com/styles/v1/dasin/cltigm5bp010s01ptciblgffl/tiles/512/${this.zoom}/${this.row}/${this.col}@2x?access_token=`;
     },
   },
+  // {
+  //   style_name: "卫星图",
+  //   getUrl: function () {
+  //     return `http://192.168.60.231:23334/baidu/satellite/${this.zoom}/${this.row}/${this.col}.jpg`;
+  //   },
+  // },
+//  {
+//    style_name: "Arcgis",
+//    background: `#0a4173`,
+//    getUrl: function () {
+//      const { x, y, zoom } = this;
+//      const width = EARTH_RADIUS / Math.pow(2, zoom);
+//      const bbox = `${x - width},${y - width},${x + width},${y + width}`;
+//      const bboxSR = "3857";
+//      const imageSR = "3857";
+
+//      return `http://192.168.60.232:9195/mserver/arcgis/rest/services/csjt/%E5%B9%BF%E4%B8%9C%E7%9C%81wgs/MapServer/export?dpi=96&transparent=true&format=png8&layers=show:0,1,2,3&bbox=${bbox}&f=image&bboxSR=${bboxSR}&imageSR=${imageSR}`;
+//    },
+//  },
 ];
 
 // geojson地图坐标系转换配置
