@@ -117,6 +117,7 @@ export default {
     };
   },
   created() {
+    document.body.setAttribute("data-theme", "light");
     const { database, datasource } = this.$route.params;
     this.$store.dispatch("setDataBase", database);
     this.$store.dispatch("setDataSource", database + "/" + datasource);

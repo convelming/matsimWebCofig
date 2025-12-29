@@ -87,7 +87,7 @@
           <el-table class="small my_tabel" :data="tableList" border stripe>
             <el-table-column prop="color" label="color" width="60">
               <template slot-scope="{ row }">
-                <el-color-picker style="display: block;" v-model="row.color" size="small" :show-alpha="false" @change="handleChangeNetworkColor(row)"></el-color-picker>
+                <el-color-picker style="display: block" v-model="row.color" size="small" :show-alpha="false" @change="handleChangeNetworkColor(row)"></el-color-picker>
               </template>
             </el-table-column>
             <el-table-column prop="label" label="label"> </el-table-column>
@@ -232,7 +232,7 @@ export default {
   },
   data() {
     return {
-      configKey: "publicTransitConfig",
+      configKey: "routePlanningConfig",
 
       predefineColors: ["#5470c6", "#91cc75", "#fac858", "#ee6666", "#73c0de", "#3ba272", "#fc8452", "#9a60b4", "#ea7ccc"],
       s_showLayer: true,
@@ -298,10 +298,60 @@ export default {
     this.handleDisable();
   },
   methods: {
+    initByConfig(config) {
+      config = config || this.rootVue.defaultConfig.RoutePlanningConfig;
+      this.s_showLayer = config.showLayer;
+      this.$emit("update:showLayer", config.showLayer);
+      this.$emit("update:lock2D", config.lock2D);
+
+      this.showPoint = config.showPoint;
+      this.pointColor = config.pointColor;
+      this.pointSize = config.pointSize;
+
+      this.showRoute = config.showRoute;
+      this.routeSize = config.routeSize;
+      this.routeColor = config.routeColor;
+
+      this.showNetwork = config.showNetwork;
+      this.showFlyableArea = config.showFlyableArea;
+      this.networkSize = config.networkSize;
+      this.networkHeightColors = config.networkHeightColors;
+      for (let i = 0; i < this.tableList.length; i++) {
+        const row = this.tableList[i];
+        this.handleChangeNetworkColor({ ...row, color: this.networkHeightColors[i] });
+      }
+
+      this.showUAVPage = config.showUAVPage;
+      this.lockUAV = config.lockUAV;
+      this.uavSize = config.uavSize;
+    },
+    async exportConfig() {
+      return {
+        showPoint: this.showPoint,
+        pointColor: this.pointColor,
+        pointSize: this.pointSize,
+
+        showRoute: this.showRoute,
+        routeSize: this.routeSize,
+        routeColor: this.routeColor,
+
+        showNetwork: this.showNetwork,
+        showFlyableArea: this.showFlyableArea,
+        networkSize: this.networkSize,
+
+        networkHeightColors: this.networkHeightColors,
+
+        showUAVPage: this.showUAVPage,
+        lockUAV: this.lockUAV,
+        uavSize: this.uavSize,
+      };
+    },
     handleChangeNetworkColor(row) {
       const height = row.label;
       const color = row.color;
       const item = this.Layer_Map[height];
+      const index = this.networkHeightList.indexOf(height);
+      this.networkHeightColors[index] = color;
       Object.values(item.NetworkLayer_Map).forEach((v) => {
         v._NetworkLayer.setColors({
           0: color,

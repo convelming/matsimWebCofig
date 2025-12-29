@@ -13,11 +13,11 @@
       </div>
       <div class="title">
         <img class="logo" src="@/assets/image/favicon.png" alt="" />
-        <div style="display: flex;flex-direction: column;gap: 8px; align-items: flex-start;">
-          <div  style="font-size: 30px;line-height: 30px;">ATLAS</div>
-          <div style="font-size: 12px;line-height: 12px;font-weight: 400;"><strong>A</strong>ctivity-based <strong>T</strong>ransportation & <strong>L</strong>and-use <strong>A</strong>gent <strong>S</strong>ystem</div>
-          <div style="font-size: 55px;line-height: 55px;">多智能体城市交通建模平台</div>
-        <!-- <span>{{ $l("ATLAS多智能体城市交通建模平台") }}</span> -->
+        <div style="display: flex; flex-direction: column; gap: 8px; align-items: flex-start">
+          <div style="font-size: 30px; line-height: 30px">ATLAS</div>
+          <div style="font-size: 12px; line-height: 12px; font-weight: 400"><strong>A</strong>ctivity-based <strong>T</strong>ransportation & <strong>L</strong>and-use <strong>A</strong>gent <strong>S</strong>ystem</div>
+          <div style="font-size: 55px; line-height: 55px">多智能体城市交通建模平台</div>
+          <!-- <span>{{ $l("ATLAS多智能体城市交通建模平台") }}</span> -->
         </div>
       </div>
       <div class="list">
@@ -582,6 +582,7 @@ export default {
     },
   },
   created() {
+    document.body.setAttribute("data-theme", "light");
     console.log("index created");
     const dataBase = this.$route.params.base;
     if (dataBase) {
@@ -859,7 +860,7 @@ export default {
     margin-right: 20px;
     margin-top: 5px;
   }
-  strong{
+  strong {
     font-weight: 1000 !important;
   }
 }

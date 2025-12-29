@@ -570,7 +570,7 @@ export default {
       {
         const list = [];
         const refs = this.$refs["RoutePlanningToolbarItem"];
-        for (const item of this.RoutePlanningToolbar.list) {
+        for (const item of this.RoutePlanning.list) {
           const ref = refs.find((v) => v.name == item.name);
           list.push({
             type: item.type,
@@ -579,10 +579,10 @@ export default {
             config: await ref.exportConfig(),
           });
         }
-        config.RoutePlanningToolbarToolbar = {
-          sreach: this.RoutePlanningToolbar.sreach,
-          params: this.RoutePlanningToolbar.params,
-          activeName: this.RoutePlanningToolbar.activeName,
+        config.RoutePlanningToolbar = {
+          sreach: this.RoutePlanning.sreach,
+          params: this.RoutePlanning.params,
+          activeName: this.RoutePlanning.activeName,
           list: list,
         };
       }

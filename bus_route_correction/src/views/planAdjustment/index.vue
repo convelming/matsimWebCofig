@@ -386,6 +386,7 @@ export default {
     };
   },
   created() {
+    document.body.setAttribute("data-theme", "light");
     const { database, datasource } = this.$route.params;
     this.database = database;
     this.datasource = datasource;

@@ -103,4 +103,22 @@ export default {
 
   trafficRegionAnalysisConfig: { showLayer: false, lock2D: false },
   TrafficRegionAnalysisToolbar: { sreach: {}, params: {}, activeName: "", list: [] },
+
+  routePlanningConfig: {
+    showPoint: true,
+    pointColor: "#FF6161",
+    pointSize: 1.5,
+    showRoute: true,
+    routeSize: 5,
+    routeColor: "#409BFC",
+    showNetwork: false,
+    showFlyableArea: false,
+    networkMode: [],
+    // "networkModeList": ["bus", "car", "artificial", "stopFacilityLink", "tram", "subway", "ferry"],
+    networkSize: 5,
+    showUAVPage: false,
+    lockUAV: false,
+    uavSize: 3,
+  },
+  RoutePlanningToolbar: { sreach: {}, params: {}, activeName: "", list: [] },
 };
