@@ -173,7 +173,7 @@ const ColorList = [
 ]
 
 const { proxy } = getCurrentInstance()
-const emits = defineEmits(['update:visible', 'close'])
+const emit = defineEmits(['update:visible', 'close'])
 const props = defineProps({
   visible: {
     type: Boolean,
@@ -568,8 +568,8 @@ function handleDraw() {
   _outTextMap = chart._outTextMap
 }
 function handleClose() {
-  emits('update:visible', false)
-  emits('close')
+  emit('update:visible', false)
+  emit('close')
 }
 function getCrossroadsDetail() {
   return API.crossroadsDetail(props.crossroadsId).then((res) => {

@@ -54,7 +54,7 @@ import { reactive } from 'vue'
 
 let _Map = null
 const { proxy } = getCurrentInstance()
-const emits = defineEmits(['update:visible', 'close', 'submited'])
+const emit = defineEmits(['update:visible', 'close', 'submited'])
 const props = defineProps({
   visible: {
     type: Boolean,
@@ -123,8 +123,8 @@ function handleEnable() {
 // 组件隐藏事件
 function handleDisable() {}
 function handleClose() {
-  emits('update:visible', false)
-  emits('close')
+  emit('update:visible', false)
+  emit('close')
 }
 function handleUploadAnnex(response, file, fileList) {
   form.value.annex = fileList
@@ -153,7 +153,7 @@ function handleSubmit() {
       saving.value = true
       API.crossroadsInsert(form)
         .then((res) => {
-          emits('submited', res.data)
+          emit('submited', res.data)
           saving.value = false
         })
         .catch((err) => {

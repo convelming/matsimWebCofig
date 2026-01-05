@@ -37,7 +37,7 @@ import {
   Delete,
 } from '@element-plus/icons-vue'
 
-const emits = defineEmits(['update:visible', 'close', 'delete'])
+const emit = defineEmits(['update:visible', 'close', 'delete'])
 const props = defineProps({
   visible: {
     type: Boolean,
@@ -61,12 +61,12 @@ const previewSrcList = computed(() => {
 })
 
 function handleClose() {
-  emits('update:visible', false)
-  emits('close')
+  emit('update:visible', false)
+  emit('close')
 }
 
 function handelRemove(index) {
-  emits('delete', props.imageList[index])
+  emit('delete', props.imageList[index])
 }
 </script>
 

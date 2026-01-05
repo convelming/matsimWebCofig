@@ -812,7 +812,23 @@ export class MyMap extends EventListener {
     this.render();
     this.afterRender();
     // this.stats.update();
-    window.requestAnimationFrame(this.animation.bind(this));
+    window.requestAnimationFrame(() => {
+      this.animation();
+      for (let i = 0, l = this._nextFrameFunList.length; i < l; i++) {
+        try {
+          const fun = this._nextFrameFunList[i];
+          fun();
+        } catch (error) {
+          console.log(error);
+        }
+      }
+      this._nextFrameFunList.length = 0;
+    });
+  }
+
+  _nextFrameFunList = [];
+  nextFrame(fun) {
+    this._nextFrameFunList.push(fun);
   }
 
   // 销毁地图，释放内存
@@ -958,6 +974,9 @@ export class MyMap extends EventListener {
       minY: minY,
       width: distance(topLeft, topRight),
       height: distance(topLeft, bottomLeft),
+      docWidth: width,
+      docHeight: height,
+      center: center,
     };
   }
 

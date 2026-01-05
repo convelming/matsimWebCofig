@@ -82,7 +82,7 @@ import { JsonParse, addWatch } from '@/utils'
 
 let _Map = null
 const { proxy } = getCurrentInstance()
-const emits = defineEmits(['update:visible', 'close', 'redraw'])
+const emit = defineEmits(['update:visible', 'close', 'redraw'])
 const props = defineProps({
   visible: {
     type: Boolean,
@@ -178,8 +178,8 @@ function loadData() {
   })
 }
 function handleClose() {
-  emits('update:visible', false)
-  emits('close')
+  emit('update:visible', false)
+  emit('close')
 }
 function getCrossroadsDetail() {
   return API.crossroadsDetail(props.crossroadsId).then((res) => {

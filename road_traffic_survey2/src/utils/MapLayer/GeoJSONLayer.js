@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { Layer, MAP_EVENT } from "@/mymap/index.js";
 import { ColorBar2D } from "./ColorBar2D";
+import GeoJSONLayerWorker from "./GeoJSONLayer.worker.js?worker";
 
 export const ICON_LIST = Object.values(import.meta.glob("@/assets/icon_traffic/**"));
 
@@ -22,7 +23,7 @@ const defaultParams = {
 
   // ******************** 点 ******************** //
   showPoints: true,
-  pointAutoSize: 10,
+  pointAutoSize: 13,
   pointSize: 500,
   pointColor: "#01ae9c", // ffa500
   pointIcon: new URL("@/assets/icon_traffic/point.svg", import.meta.url).href,
@@ -48,7 +49,7 @@ const defaultParams = {
   polygonBorderOpacity: 1,
   polygonBorderAutoWidth: 2,
   polygonBorderWidth: 100,
-  polygonBorderColor: "#fff",
+  polygonBorderColor: "#ffffff",
   polygonBorderStyle: LINE_STYLE.SOLID,
   polygonValue: "",
   polygonColorBar: [],
@@ -56,12 +57,45 @@ const defaultParams = {
   polygonScale3D: 0,
 };
 
+export function parserGeoJSON(text, options = {}) {
+  // const timeKey = "parserGeoJSON_" + new Date().getTime();
+  // console.time(timeKey);
+  return new Promise((resolve, reject) => {
+    const worker = new GeoJSONLayerWorker();
+    worker.onmessage = (event) => {
+      const { range, center, pointArray, lineArray, polygonArray, propertiesListArray, propertiesLabelsArray, geomListArray } = event.data;
+
+      const textDecoder = new TextDecoder();
+      const propertiesLabels = JSON.parse(textDecoder.decode(propertiesLabelsArray));
+      const propertiesList = JSON.parse(textDecoder.decode(propertiesListArray));
+      const geomList = JSON.parse(textDecoder.decode(geomListArray));
+
+      // console.timeEnd(timeKey);
+      resolve({ range, center, pointArray, lineArray, polygonArray, propertiesList, propertiesLabels, geomList });
+      worker.terminate();
+    };
+    worker.addEventListener("error", (error) => {
+      reject(error);
+      worker.terminate();
+    });
+
+    let textEncoder = new TextEncoder();
+    const array = new Int8Array(textEncoder.encode(text));
+    worker.postMessage({ json: array, options: options }, [array.buffer]);
+  }).catch(console.log);
+}
+
+export function getGeoJSONLayerParams(){
+  return Object.assign({}, defaultParams);
+}
+
 export class GeoJSONLayer extends Layer {
   name = "GeoJSONLayer";
   color = new THREE.Color(0xffa500);
   center = [0, 0];
   propertiesLabels = {};
   propertiesList = [];
+  geomList = [];
 
   showPoints = true;
   pointAutoSize = 0;
@@ -112,6 +146,7 @@ export class GeoJSONLayer extends Layer {
   polygonBorderGroup = new THREE.Group();
 
   setGeoJsonData(res) {
+    if (this.isDisposed) return;
     this.propertiesList = res.propertiesList;
     this.geomList = res.geomList;
     this.setCenter(res.center);
@@ -119,6 +154,43 @@ export class GeoJSONLayer extends Layer {
     this.setLineArray(res.lineArray);
     this.setPolygonArray(res.polygonArray);
     this.setPropertiesLabels(res.propertiesLabels);
+  }
+
+  setParams(params = defaultParams) {
+    this.setZIndex(params.zIndex)
+    this.setShowPoints(params.showPoints)
+    this.setPointAutoSize(params.pointAutoSize)
+    this.setPointSize(params.pointSize)
+    this.setPointColor(params.pointColor)
+    this.setPointIcon(params.pointIcon)
+    this.setPointValue(params.pointValue)
+    this.setPointColorBar(params.pointColorBar)
+    this.setPointOpacity(params.pointOpacity)
+
+    this.setShowLines(params.showLines)
+    this.setLineAutoWidth(params.lineAutoWidth)
+    this.setLineWidth(params.lineWidth)
+    this.setLineOffset(params.lineOffset)
+    this.setLineWidthStyle(params.lineWidthStyle)
+    this.setLineAnimation(params.lineAnimation)
+    this.setLineColor(params.lineColor)
+    this.setLineStyle(params.lineStyle)
+    this.setLineValue(params.lineValue)
+    this.setLineColorBar(params.lineColorBar)
+    this.setLineOpacity(params.lineOpacity)
+
+    this.setShowPolygons(params.showPolygons)
+    this.setPolygonColor(params.polygonColor)
+    this.setPolygonOpacity(params.polygonOpacity)
+    this.setPolygonBorderOpacity(params.polygonBorderOpacity)
+    this.setPolygonBorderAutoWidth(params.polygonBorderAutoWidth)
+    this.setPolygonBorderWidth(params.polygonBorderWidth)
+    this.setPolygonBorderColor(params.polygonBorderColor)
+    this.setPolygonBorderStyle(params.polygonBorderStyle)
+    this.setPolygonValue(params.polygonValue)
+    this.setPolygonColorBar(params.polygonColorBar)
+    this.setPolygonValue3D(params.polygonValue3D)
+    this.setPolygonScale3D(params.polygonScale3D)
   }
 
   // ******************** 点 ******************** //
@@ -162,16 +234,16 @@ export class GeoJSONLayer extends Layer {
     this.pointMaterial.uniforms.diffuse.value = this.pointColor;
     this.pointMaterial.needsUpdate = true;
   }
-  setPointIcon(pointIcon) {
+  setPointIcon(pointIcon, pickPointIcon) {
     this.pointIcon = pointIcon;
     this.pointTexture = textureLoader.load(
       pointIcon,
       (data) => {
-        console.log("setPointIcon success", data, pointIcon);
+        // console.log("setPointIcon success", data, pointIcon);
       },
       null,
       (error) => {
-        console.log("setPointIcon error", error, pointIcon);
+        // console.log("setPointIcon error", error, pointIcon);
       }
     );
     this.pointMaterial.defines.USE_MAP = !!this.pointIcon;
@@ -414,7 +486,7 @@ export class GeoJSONLayer extends Layer {
       this.polygonPickItemMaterial.uniforms.max3DValue.value = properties.max;
       this.polygonBorderMaterial.uniforms.min3DValue.value = properties.min;
       this.polygonBorderMaterial.uniforms.max3DValue.value = properties.max;
-      console.log(properties);
+      // console.log(properties);
     }
 
     this.polygonMaterial.defines.USE_3D = !!this.polygonValue3D;
@@ -593,7 +665,7 @@ export class GeoJSONLayer extends Layer {
   }
 
   on(type, data) {
-    if (type == MAP_EVENT.UPDATE_CAMERA_HEIGHT) {
+    if (type == MAP_EVENT.UPDATE_CAMERA_HEIGHT || type == MAP_EVENT.UPDATE_RENDERER_SIZE) {
       this.map.nextFrame(() => {
         if (this.pointAutoSize > 0) {
           const size = this.pointAutoSize * this.map.plottingScale;
@@ -664,10 +736,13 @@ export class GeoJSONLayer extends Layer {
       const pickId = data.pickColor;
       const properties = this.propertiesList[data.pickColor] || {};
       const geom = this.geomList[data.pickColor] || {};
+
+      const geomBc = [(geom.br.x + geom.tl.x) / 2 + this.center[0], geom.br.y + this.center[1]];
       return JSON.parse(
         JSON.stringify({
           canvasXY: data.canvasXY,
-          webMercatorXY: data.webMercatorXY,
+          webMercatorXY: geomBc,
+          // webMercatorXY: data.webMercatorXY,
           windowSize: data.windowSize,
           windowXY: data.windowXY,
           pickId: data.pickColor,
@@ -675,6 +750,7 @@ export class GeoJSONLayer extends Layer {
           geom: {
             ...geom,
             center: this.center,
+            propertiesLabels: {},
           },
           layerId: this.id,
         })
@@ -712,7 +788,7 @@ export class GeoJSONLayer extends Layer {
 
   async updatePoint() {
     this.clearPoint();
-    if (!this.pointArray) return;
+    if (!this.pointArray || this.isDisposed) return;
     let cx = 0,
       cy = 0;
     if (this.map) [cx, cy] = this.map.WebMercatorToCanvasXY(this.center[0], this.center[1]);
@@ -762,7 +838,7 @@ export class GeoJSONLayer extends Layer {
   }
   async updateLine() {
     this.clearLine();
-    if (!this.lineArray) return;
+    if (!this.lineArray || this.isDisposed) return;
     let cx = 0,
       cy = 0;
     if (this.map) [cx, cy] = this.map.WebMercatorToCanvasXY(this.center[0], this.center[1]);
@@ -833,7 +909,7 @@ export class GeoJSONLayer extends Layer {
   }
   async updatePolygon() {
     this.clearPolygon();
-    if (!this.polygonArray) return;
+    if (!this.polygonArray || this.isDisposed) return;
     let cx = 0,
       cy = 0;
     if (this.map) [cx, cy] = this.map.WebMercatorToCanvasXY(this.center[0], this.center[1]);
@@ -1102,7 +1178,7 @@ export class GeoJSONPointMaterial extends THREE.Material {
           if(p< 0.0) p = 0.0;
           vec4 barDiffuseColor = texture2D(colorBar, vec2(p , 0.5));
           diffuseColor.rgb = barDiffuseColor.rgb;
-          // diffuseColor.a *= barDiffuseColor.a;
+          diffuseColor.a *= barDiffuseColor.a;
         #endif
 
         #ifdef USE_MAP
@@ -1159,10 +1235,10 @@ export class GeoJSONLineListGeometry extends THREE.BufferGeometry {
     for (let i1 = 0, l1 = lineList.length; i1 < l1; i1++) {
       const value = lineList[i1][0];
       const array = lineList[i1].slice(1);
-      // const startIndex = attrIndex.length;
+      const startIndex = attrIndex.length;
       addLine(array, value);
-      // const endIndex = attrIndex.length - startIndex;
-      // this.addGroup(startIndex, endIndex, i1);
+      const endIndex = attrIndex.length - startIndex;
+      this.addGroup(startIndex, endIndex, i1);
     }
     this.setAttribute("position", new THREE.Float32BufferAttribute(attrPosition, 3));
     this.setAttribute("pickColor", new THREE.Float32BufferAttribute(attrPickColor, 3));
@@ -1444,7 +1520,7 @@ export class GeoJSONLineMaterial extends THREE.Material {
           if(p< 0.0) p = 0.0;
           vec4 barDiffuseColor = texture2D(colorBar, vec2(p , 0.5));
           diffuseColor.rgb = barDiffuseColor.rgb;
-          // diffuseColor.a *= barDiffuseColor.a;
+          diffuseColor.a *= barDiffuseColor.a;
         #endif
 
         if(lineStyle == ${Number(LINE_STYLE.DASHED).toFixed(1)}){
@@ -1517,10 +1593,10 @@ export class GeoJSONPolygonListGeometry extends THREE.BufferGeometry {
     const values = [];
     for (let i = 0; i < polygonList.length; i++) {
       const { shape, value } = getShape(polygonList[i]);
-      // const startIndex = attrIndex.length;
+      const startIndex = indices.length;
       addShape(shape, value);
-      // const endIndex = attrIndex.length - startIndex;
-      // this.addGroup(startIndex, endIndex, i1);
+      const endIndex = indices.length - startIndex;
+      this.addGroup(startIndex, endIndex, i);
     }
     // build geometry
     this.setIndex(indices);
@@ -1891,7 +1967,7 @@ export class GeoJSONPolygonMaterial extends THREE.Material {
           if(p < 0.0) p = 0.0;
           vec4 barDiffuseColor = texture2D(colorBar, vec2(p , 0.5));
           diffuseColor.rgb = barDiffuseColor.rgb;
-          // diffuseColor.a *= barDiffuseColor.a;
+          diffuseColor.a *= barDiffuseColor.a;
         #endif
         
         #ifdef USE_PICK_COLOR
@@ -2015,7 +2091,7 @@ export class GeoJSONPolygonBorderListGeometry extends THREE.BufferGeometry {
         attrDistance[attrDistance.length] = distance;
         attrDistance[attrDistance.length] = distance;
 
-        attrSide[attrSide.length] = 0;
+        attrSide[attrSide.length] = -1;
         attrSide[attrSide.length] = 1;
 
         if (i2 < l2 - 1) {
@@ -2177,7 +2253,7 @@ export class GeoJSONPolygonBorderMaterial extends THREE.Material {
       void main() {
         vValue = value;
         vDistance = distance;
-
+        
         #ifdef USE_MAP
           vUv = ( uvTransform * vec3( uv, 1 ) ).xy;
         #endif
@@ -2253,6 +2329,7 @@ export class GeoJSONPolygonBorderMaterial extends THREE.Material {
 
         if(lineStyle == ${Number(LINE_STYLE.DASHED).toFixed(1)}){
           float dl = mod(vDistance / (lineWidth * 3.0), 1.0);
+          dl += vUv.y;
           if(0.50 < dl && dl <= 1.0){
             diffuseColor.a = 0.0;
           }

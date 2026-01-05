@@ -51,7 +51,7 @@ import { CloseBold } from '@element-plus/icons-vue'
 
 let _Map = null
 const { proxy } = getCurrentInstance()
-const emits = defineEmits(['update:visible', 'close', 'submited'])
+const emit = defineEmits(['update:visible', 'close', 'submited'])
 const props = defineProps({
   visible: {
     type: Boolean,
@@ -109,8 +109,8 @@ const watchProps = addWatch(
 )
 
 function handleClose() {
-  emits('update:visible', false)
-  emits('close')
+  emit('update:visible', false)
+  emit('close')
 }
 
 let _input = null
@@ -159,7 +159,7 @@ function handleSubmit() {
       },
     })
       .then((res) => {
-        emits('submited', res)
+        emit('submited', res)
         proxy.$message.success('上传成功')
       })
       .finally(() => {

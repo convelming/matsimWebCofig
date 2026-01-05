@@ -33,7 +33,7 @@ if (!window.MDialogData) {
   }
 }
 
-const emits = defineEmits(['close', 'update:visible', 'open'])
+const emit = defineEmits(['close', 'update:visible', 'open'])
 const props = defineProps({
   class: {
     type: String,
@@ -150,8 +150,8 @@ function endMove(event) {
   document.body.removeEventListener('mouseleave', endMove)
 }
 function open() {
-  emits('update:visible', true)
-  emits('open')
+  emit('update:visible', true)
+  emit('open')
   nextTick(() => {
     toTop()
     s_data.s_top = parseFloat(props.top)
@@ -159,8 +159,8 @@ function open() {
   })
 }
 function close() {
-  emits('update:visible', false)
-  emits('close')
+  emit('update:visible', false)
+  emit('close')
 }
 function offset(top, left) {
   s_data.s_top += Number(top) || 0

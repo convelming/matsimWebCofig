@@ -60,7 +60,7 @@ import ImagePreview from './ImagePreview.vue'
 
 let _Map = null
 const { proxy } = getCurrentInstance()
-const emits = defineEmits(['update:visible', 'close', 'refresh'])
+const emit = defineEmits(['update:visible', 'close', 'refresh'])
 const props = defineProps({
   visible: {
     type: Boolean,
@@ -156,7 +156,7 @@ function uploadOneImage() {
       // },
     })
       .then((res) => {
-        emits('refresh')
+        emit('refresh')
         proxy.$message.success('上传成功')
       })
       .finally(() => {
@@ -187,7 +187,7 @@ function handleDeleteImage(row) {
       return API.mappictureDelete(row.id)
     })
     .then(() => {
-      emits('refresh')
+      emit('refresh')
       proxy.$message.success('删除成功')
     })
     .catch(() => {})
@@ -197,8 +197,8 @@ function handleImageListCheckChange() {
 }
 
 function handleClose() {
-  emits('update:visible', false)
-  emits('close')
+  emit('update:visible', false)
+  emit('close')
 }
 
 injectSync('MapRef').then((map) => {

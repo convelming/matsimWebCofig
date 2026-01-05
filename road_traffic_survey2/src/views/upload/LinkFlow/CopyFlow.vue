@@ -75,7 +75,7 @@ const props = defineProps({
   },
 })
 let _Map = null
-const emits = defineEmits(['update:visible', 'close'])
+const emit = defineEmits(['update:visible', 'close'])
 
 const { proxy } = getCurrentInstance()
 const getListLoading = ref(false)
@@ -131,8 +131,8 @@ function handleClose() {
     list: [],
   }
   handleStopPolygonSelect(true)
-  emits('update:visible', false)
-  emits('close')
+  emit('update:visible', false)
+  emit('close')
 }
 function handleGetFYList() {
   getListLoading.value = true

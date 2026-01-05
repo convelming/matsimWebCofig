@@ -169,7 +169,7 @@ import { addWatch, injectSync, JsonParse } from '@/utils/index'
 let _Map = null
 let _DrawLineLayer = null
 const { proxy } = getCurrentInstance()
-const emits = defineEmits(['update:visible', 'close', 'submited'])
+const emit = defineEmits(['update:visible', 'close', 'submited'])
 const props = defineProps({
   visible: {
     type: Boolean,
@@ -292,8 +292,8 @@ onUnmounted(() => {
 })
 
 function handleClose() {
-  emits('update:visible', false)
-  emits('close')
+  emit('update:visible', false)
+  emit('close')
 }
 
 // 组件显示事件
@@ -516,7 +516,7 @@ function handleSubmit() {
   saving.value = true
   API.crossroadsSaveLine(form)
     .then((res) => {
-      emits('submited', {
+      emit('submited', {
         crossroadsId: props.crossroadsId,
         intersectionId: props.intersectionId,
       })

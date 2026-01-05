@@ -50,7 +50,7 @@ import {
 import { onUnmounted } from 'vue'
 
 let _Map = null
-const emits = defineEmits(['update:visible', 'close', 'submited'])
+const emit = defineEmits(['update:visible', 'close', 'submited'])
 const props = defineProps({
   visible: {
     type: Boolean,
@@ -118,7 +118,7 @@ function handleSubmit() {
       saving.value = true
       intersectionInsert(form)
         .then((res) => {
-          emits('submited', res.data)
+          emit('submited', res.data)
           saving.value = false
         })
         .catch((err) => {
@@ -129,8 +129,8 @@ function handleSubmit() {
 }
 
 function handleClose() {
-  emits('update:visible', false)
-  emits('close')
+  emit('update:visible', false)
+  emit('close')
 }
 
 injectSync('MapRef').then((map) => {

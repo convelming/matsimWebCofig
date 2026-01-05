@@ -107,7 +107,7 @@ import ImageList from './ImageList.vue'
 const BASE_API = import.meta.env.VITE_APP_BASE_API
 let _Map = null
 const { proxy } = getCurrentInstance()
-const emits = defineEmits(['update:visible', 'close', 'submited'])
+const emit = defineEmits(['update:visible', 'close', 'submited'])
 const props = defineProps({
   visible: {
     type: Boolean,
@@ -162,8 +162,8 @@ const watchProps = addWatch(
 )
 
 function handleClose() {
-  emits('update:visible', false)
-  emits('close')
+  emit('update:visible', false)
+  emit('close')
 }
 
 function getTree() {

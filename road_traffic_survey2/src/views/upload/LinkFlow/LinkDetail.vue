@@ -221,7 +221,7 @@ import { typeOptions } from './index.vue'
 import AELinkFlow from './AELinkFlow.vue'
 
 const { proxy } = getCurrentInstance()
-const emits = defineEmits(['update:visible', 'close', 'changeLink', 'addOrEditFlow', 'updateData'])
+const emit = defineEmits(['update:visible', 'close', 'changeLink', 'addOrEditFlow', 'updateData'])
 const props = defineProps({
   visible: {
     type: Boolean,
@@ -471,8 +471,8 @@ function handleSelectionChange(selection) {
 }
 function handleClose() {
   aeFlowData.value.validate = false
-  emits('update:visible', false)
-  emits('close')
+  emit('update:visible', false)
+  emit('close')
 }
 function handleMoveToRoute({ value }) {
   selectRouteId.value = value
@@ -501,7 +501,7 @@ function handleEditInfo() {
 function handleReverse() {
   API.getReverseLink(props.linkId, props.proId).then((res) => {
     if (res.data) {
-      emits('changeLink', res.data)
+      emit('changeLink', res.data)
     } else {
       proxy.$message.warning('切换失败，没有找到反向道路')
     }
@@ -557,7 +557,7 @@ function handleDeleteFlow(row) {
     .then(() => {
       getList()
       proxy.$message.success('删除成功')
-      emits('updateData')
+      emit('updateData')
     })
     .catch(() => {})
 }

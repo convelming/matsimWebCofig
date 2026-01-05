@@ -19,7 +19,7 @@
 
 export default {
   name: 'Pagination',
-  emits: ['update:page', 'update:limit', 'pagination'],
+  emit: ['update:page', 'update:limit', 'pagination'],
   props: {
     small: {
       type: Boolean,

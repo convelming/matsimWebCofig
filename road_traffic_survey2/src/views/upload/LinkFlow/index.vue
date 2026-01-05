@@ -92,7 +92,7 @@ import { LinkLayer } from '@/utils/MapLayer/LinkLayer'
 import { LinkStatsLayer } from '@/utils/MapLayer/LinkStatsLayer'
 import { computed, inject } from 'vue'
 
-const emits = defineEmits(['update:visible', 'close'])
+const emit = defineEmits(['update:visible', 'close'])
 const props = defineProps({
   visible: {
     type: Boolean,
@@ -215,8 +215,8 @@ const watchTypeColorOptions = addWatch(typeColorOptions, (val) => {
 })
 
 function handleClose() {
-  emits('update:visible', false)
-  emits('close')
+  emit('update:visible', false)
+  emit('close')
 }
 function handleCloseLinkDetail() {
   linkDetailData.visible = false

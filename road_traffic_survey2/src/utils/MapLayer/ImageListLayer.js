@@ -3,55 +3,58 @@ import { Layer, MAP_EVENT } from '@/mymap/index.js'
 
 export class ImageListLayer extends Layer {
   name = 'ImageListLayer'
-  size = 100
-  data = []
-  color = null
+  center = [0, 0]
 
   // 高亮
 
   constructor(opt) {
     super(opt)
-    this.size = opt.size || 100
-    this.data = opt.data
+    this.size = opt.size || 20
+    this.data = opt.data || null
     this.color = new THREE.Color(opt.color || 'orange')
     this.hColor = new THREE.Color(opt.hColor || '#67C23A')
-
-    // this.texture = new THREE.TextureLoader().load(opt.texture || require("@/assets/image/image.svg"));
+    this.icon = opt.icon || new URL('@/assets/images/image.svg?url', import.meta.url).href
 
     this.texture = new THREE.TextureLoader().load(
-      new URL('@/assets/images/image.svg?url', import.meta.url).href,
+      this.icon,
       console.log,
       console.log,
       console.error,
     )
     this.geometry = new THREE.BufferGeometry()
 
-    this.material = this.getMaterial({
+    this.material = new THREE.PointsMaterial({
+      size: this.size,
+      color: this.color,
       map: this.texture,
-      vertexColors: true,
-      usePickColor: false,
+      vertexColors: false,
+      transparent: true,
+      sizeAttenuation: false,
     })
     this.mesh = new THREE.Points(this.geometry, this.material)
-    this.mesh.userData.center = [0, 0]
     this.mesh.position.set(0, 0, 0)
     this.scene.add(this.mesh)
 
-    this.pickLayerMaterial = this.getMaterial({
+    this.pickLayerMaterial = new THREE.PointsMaterial({
+      size: this.size,
       color: this.pickLayerColor,
+      // map: this.texture,
       vertexColors: false,
-      usePickColor: false,
+      transparent: true,
+      sizeAttenuation: false,
     })
     this.pickLayerMesh = new THREE.Points(this.geometry, this.pickLayerMaterial)
-    this.pickLayerMesh.userData.center = [0, 0]
     this.pickLayerMesh.position.set(0, 0, 0)
     this.pickLayerScene.add(this.pickLayerMesh)
 
-    this.pickMaterial = this.getMaterial({
+    this.pickMaterial = new THREE.PointsMaterial({
+      size: this.size,
+      // map: this.texture,
       vertexColors: true,
-      usePickColor: true,
+      transparent: true,
+      sizeAttenuation: false,
     })
     this.pickMesh = new THREE.Points(this.geometry, this.pickMaterial)
-    this.pickMesh.userData.center = [0, 0]
     this.pickMesh.position.set(0, 0, 0)
     this.pickMeshScene.add(this.pickMesh)
 
@@ -60,45 +63,36 @@ export class ImageListLayer extends Layer {
       'position',
       new THREE.BufferAttribute(new Float32Array([0, 0, 0]), 3),
     )
-    this.hMaterial = this.getMaterial({
+    this.hMaterial = new THREE.PointsMaterial({
+      size: this.size,
       map: this.texture,
       color: this.hColor,
       vertexColors: false,
-      usePickColor: false,
+      transparent: true,
+      sizeAttenuation: false,
     })
     this.hMesh = new THREE.Points(this.hGeometry, this.hMaterial)
-    this.hMesh.userData.center = [0, 0]
-    this.hMesh.position.set(0, 0, -1000)
+    this.hMesh.position.set(0, 0, 1)
   }
 
   on(type, data) {
     if (type == MAP_EVENT.UPDATE_CENTER) {
-      for (const mesh of this.scene.children) {
-        const [x, y] = this.map.WebMercatorToCanvasXY(...mesh.userData.center)
-        mesh.position.set(x, y, mesh.position.z)
-      }
-      for (const mesh of this.pickLayerScene.children) {
-        const [x, y] = this.map.WebMercatorToCanvasXY(...mesh.userData.center)
-        mesh.position.set(x, y, mesh.position.z)
-      }
-      for (const mesh of this.pickMeshScene.children) {
-        const [x, y] = this.map.WebMercatorToCanvasXY(...mesh.userData.center)
-        mesh.position.set(x, y, mesh.position.z)
-      }
-      this.handleEventListener(type)
+      const [x, y] = this.map.WebMercatorToCanvasXY(this.center[0], this.center[1])
+      console.log(x, y, this.center)
+
+      this.mesh.position.set(x, y, 0)
+      this.pickLayerMesh.position.set(x, y, 0)
+      this.pickMesh.position.set(x, y, 0)
+      this.hMesh.position.set(x, y, 1)
     }
     if (type == MAP_EVENT.HANDLE_PICK_LEFT && data.layerId == this.id) {
       this.handleEventListener(type, this.data[data.pickColor - 1])
-    }
-    if (type == MAP_EVENT.UPDATE_CAMERA_HEIGHT) {
-      this.setSize(this.map.cameraHeight / 20)
     }
   }
 
   onAdd(map) {
     super.onAdd(map)
-    this.update()
-    this.setSize(this.map.cameraHeight / 20)
+    this.on(MAP_EVENT.UPDATE_CENTER)
   }
 
   setSize(size) {
@@ -143,15 +137,15 @@ export class ImageListLayer extends Layer {
   }
 
   setHMesh(data) {
-    console.log(data)
-
-    if (!!data) {
-      const center = [data.x, data.y]
-      this.hMesh.userData.center = center
-      if (this.map) {
-        let [x, y] = this.map.WebMercatorToCanvasXY(...center)
-        this.hMesh.position.set(x, y, 1)
-      }
+    if (!!data && !!this.data) {
+      console.log(data)
+      const x = data.x - this.center[0]
+      const y = data.y - this.center[1]
+      this.hGeometry.setAttribute(
+        'position',
+        new THREE.BufferAttribute(new Float32Array([x, y, 0]), 3),
+      )
+      this.hGeometry.needsUpdate = true
       this.scene.add(this.hMesh)
     } else {
       this.scene.remove(this.hMesh)
@@ -159,12 +153,10 @@ export class ImageListLayer extends Layer {
   }
 
   update() {
-    if (!this.map) return
     if (!this.data) return
     const count = this.data.length
     const positions = new THREE.BufferAttribute(new Float32Array(count * 3), 3)
     const pickColors = new THREE.BufferAttribute(new Float32Array(count * 3), 3)
-    const colors = new THREE.BufferAttribute(new Float32Array(count * 3), 3)
     let center = []
 
     for (let i = 0; i < count; i++) {
@@ -173,68 +165,15 @@ export class ImageListLayer extends Layer {
       positions.setXYZ(i, v.x - center[0], v.y - center[1], 0)
       const pickColor = new THREE.Color(i + 1)
       pickColors.setXYZ(i, pickColor.r, pickColor.g, pickColor.b)
-      const color = this.color
-      colors.setXYZ(i, color.r, color.g, color.b)
     }
 
     this.geometry.setAttribute('position', positions)
-    this.geometry.setAttribute('pickColor', pickColors)
-    this.geometry.setAttribute('color', colors)
+    this.geometry.setAttribute('color', pickColors)
     this.geometry.needsUpdate = true
-
     this.geometry.computeBoundingSphere()
 
-    let [x, y] = this.map.WebMercatorToCanvasXY(...center)
+    this.center = center
 
-    this.mesh.userData.center = center
-    this.mesh.position.set(x, y, 0)
-
-    this.pickLayerMesh.userData.center = center
-    this.pickLayerMesh.position.set(x, y, 0)
-
-    this.pickMesh.userData.center = center
-    this.pickMesh.position.set(x, y, 0)
-  }
-
-  getMaterial({ usePickColor, ...opt }) {
-    const material = new THREE.PointsMaterial({
-      size: this.size,
-      transparent: true,
-      sizeAttenuation: true,
-      ...opt,
-    })
-    material.onBeforeCompile = (shader) => {
-      if (usePickColor) {
-        shader.vertexShader = shader.vertexShader.replace(
-          '#include <color_pars_vertex>',
-          `
-            #include <color_pars_vertex>
-            attribute vec3 pickColor;
-          `,
-        )
-        shader.vertexShader = shader.vertexShader.replace(
-          '#include <color_vertex>',
-          `
-            #include <color_vertex>
-            vColor.rgb = pickColor.rgb;
-          `,
-        )
-      }
-    }
-    /**
-     * 当用到onBeforeCompile回调的时候，
-     * 这个回调函数可以用来定义在onBeforeCompile中使用的配置项，
-     * 这样three.js就可以根据这个回调返回的字符串来判定使用一个
-     * 缓存的编译好的着色器代码还是根据需求重新编译一段新的着色器代码。
-     * material.needsUpdate也要设置为true
-     */
-    material.customProgramCacheKey = () => {
-      return JSON.stringify({
-        uuid: material.uuid,
-        usePickColor: usePickColor,
-      })
-    }
-
-    return material
+    if (this.map) this.on(MAP_EVENT.UPDATE_CENTER)
   }
 }

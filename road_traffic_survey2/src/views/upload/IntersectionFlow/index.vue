@@ -84,7 +84,7 @@ import AddIntersection from './AddIntersection.vue'
 import AEIntersectionFlow from './AEIntersectionFlow.vue'
 
 let _Map = null
-const emits = defineEmits(['update:visible', 'close'])
+const emit = defineEmits(['update:visible', 'close'])
 const props = defineProps({
   visible: {
     type: Boolean,
@@ -168,8 +168,8 @@ const watchStateColorOptions = addWatch(
 )
 
 function handleClose() {
-  emits('update:visible', false)
-  emits('close')
+  emit('update:visible', false)
+  emit('close')
 }
 function handleQuery() {
   intersectionData.pageNum = 1

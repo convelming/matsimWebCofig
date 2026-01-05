@@ -1,0 +1,42 @@
+.TreeItem {
+  .content {
+    cursor: pointer;
+    box-sizing: border-box;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    color: #333333;
+    border-radius: 6px 6px 6px 6px;
+    padding: 5px;
+    gap: 5px;
+    &:hover {
+      color: #409eff;
+      background: #edf6ff;
+      .icon_left * {
+        fill: #409eff !important;
+      }
+    }
+    .icon_left {
+      width: 10px;
+      height: 10px;
+      display: block;
+      transition: transform 0.3s ease-in-out;
+      * {
+        fill: #2c3e50;
+      }
+      &.active {
+        transform: rotate(90deg);
+        * {
+          fill: #409eff;
+        }
+      }
+    }
+    .text {
+      width: 0;
+      flex: 1;
+    }
+    .icon_right {
+    }
+  }
+}

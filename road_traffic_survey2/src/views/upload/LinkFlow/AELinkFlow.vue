@@ -192,7 +192,7 @@ const props = defineProps({
   },
 })
 
-const emits = defineEmits(['update:visible', 'close', 'updateData'])
+const emit = defineEmits(['update:visible', 'close', 'updateData'])
 
 const { proxy } = getCurrentInstance()
 const formRef = ref(null)
@@ -230,8 +230,8 @@ const showMain = computed(() => {
   return !showCopy.value && props.visible
 })
 function handleClose() {
-  emits('update:visible', false)
-  emits('close')
+  emit('update:visible', false)
+  emit('close')
 }
 function handleAdd() {
   formRef.value.resetFields()
@@ -307,13 +307,13 @@ function handleSubmit() {
       if (form.id != undefined) {
         API.statsUpdate(form).then((response) => {
           proxy.$message.success('修改成功')
-          emits('updateData')
+          emit('updateData')
           handleClose()
         })
       } else {
         API.statsInsert(form).then((response) => {
           proxy.$message.success('新增成功')
-          emits('updateData')
+          emit('updateData')
           handleClose()
         })
       }

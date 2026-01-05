@@ -44,6 +44,9 @@
                   </div>
                 </div>
               </el-form-item>
+              <el-form-item label="图标大小">
+                <el-slider :min="1" :max="100" v-model="size"></el-slider>
+              </el-form-item>
             </el-form>
           </el-collapse-item>
         </el-collapse>
@@ -75,7 +78,7 @@ import Upload from './Upload.vue'
 import ImagePreview from './ImagePreview.vue'
 
 let _Map = null
-const emits = defineEmits(['update:visible', 'close'])
+const emit = defineEmits(['update:visible', 'close'])
 const props = defineProps({
   visible: {
     type: Boolean,
@@ -93,11 +96,13 @@ const showPreview = ref(false)
 const activeNames = ref(['显示设置'])
 const color = ref('#ffa500')
 const hColor = ref('#67C23A')
+const size = ref(20)
 let allImageMaker = []
 const previewImageList = ref([])
 
 const _ImageListLayer = new ImageListLayer({
   zIndex: 110,
+  size: size.value,
   color: color.value,
   hColor: hColor.value,
   event: {
@@ -133,6 +138,11 @@ const watchHColor = addWatch(hColor, (val) => {
     _ImageListLayer.setHColor(val)
   }
 })
+const watchSize = addWatch(size, (val) => {
+  if (_ImageListLayer) {
+    _ImageListLayer.setSize(val)
+  }
+})
 
 const watchShowLayer = addWatch(
   () => showLayer.value && !showSreach.value,
@@ -154,8 +164,8 @@ function handleShowSreach() {
 }
 
 function handleClose() {
-  emits('update:visible', false)
-  emits('close')
+  emit('update:visible', false)
+  emit('close')
 }
 
 function handleLoadImageList() {

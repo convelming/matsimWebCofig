@@ -152,7 +152,7 @@ import InputCrossroads from './InputCrossroads.vue'
 
 let _Map = null
 const { proxy } = getCurrentInstance()
-const emits = defineEmits(['update:visible', 'close'])
+const emit = defineEmits(['update:visible', 'close'])
 const props = defineProps({
   visible: {
     type: Boolean,
@@ -241,8 +241,8 @@ const watchProps = addWatch(
 )
 
 function handleClose() {
-  emits('update:visible', false)
-  emits('close')
+  emit('update:visible', false)
+  emit('close')
 }
 
 async function handleShowEditIntersection() {

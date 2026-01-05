@@ -17,7 +17,7 @@
 <script setup>
 import { getWayByName } from '@/api/index'
 
-const emits = defineEmits(['update:model-value', 'update:label', 'change'])
+const emit = defineEmits(['update:model-value', 'update:label', 'change'])
 const props = defineProps({
   modelValue: {},
   label: {},
@@ -38,9 +38,9 @@ function handleInput(val) {
   let item = options.value.find((v) => v.id == val)
   if (item) {
     s_value.value = item.id
-    emits('update:model-value', item.id)
-    emits('update:label', item.name)
-    emits('change', { value: item.id, item: item })
+    emit('update:model-value', item.id)
+    emit('update:label', item.name)
+    emit('change', { value: item.id, item: item })
   }
 }
 
@@ -62,7 +62,7 @@ defineExpose({
   remoteMethod,
 })
 // export default {
-//   emits: ['update:model-value', 'update:label', 'change'],
+//   emit: ['update:model-value', 'update:label', 'change'],
 //   props: ['modelValue', 'label', 'size'],
 //   watch: {
 //     modelValue: {
