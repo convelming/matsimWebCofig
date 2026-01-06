@@ -114,7 +114,7 @@ class BusMotionWorker {
       const departures = array.slice(1 + i + 1, 1 + i + 1 + departuresLength);
       const pathLength = array[1 + i + 1 + departuresLength];
       const path = array.slice(1 + i + 1 + departuresLength + 1, 1 + i + 1 + departuresLength + 1 + pathLength);
-
+      
       const totalDistance = path[path.length - 1];
       const pathId = Symbol();
       for (let j = 0; j < departuresLength; j += 3) {

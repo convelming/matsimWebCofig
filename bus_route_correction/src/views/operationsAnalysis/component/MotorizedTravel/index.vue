@@ -19,91 +19,20 @@
         <div class="form_label">{{ $l("显示图层：") }}</div>
         <div class="form_value">
           <el-switch :disabled="!s_showLayer" v-model="showBus3DLayer" @change="handleShowBus3DLayer($event), handleShowSubway3DLayer($event)"> </el-switch>
-          <!-- <div
-            class="layer"
-            @click="
-              () => {
-                if (s_showLayer) {
-                  showBus3DLayer = !showBus3DLayer;
-                  handleShowBus3DLayer(showBus3DLayer);
-                  handleShowSubway3DLayer(showBus3DLayer);
-                }
-              }
-            "
-          >
-            <template v-if="showBus3DLayer">
-              <div class="text">{{ $l("公交车") }}</div>
-              <img class="icon" src="@/assets/image/eye-fill.png" />
-            </template>
-            <template v-else>
-              <div class="text2">{{ $l("公交车") }}</div>
-              <img class="icon" src="@/assets/image/eye-close-line.png" />
-            </template>
-          </div>
-          <div
-            class="layer"
-            @click="
-              () => {
-                if (s_showLayer) {
-                  showCar3DLayer = !showCar3DLayer;
-                  handleShowCar3DLayer(showCar3DLayer);
-                }
-              }
-            "
-          >
-            <template v-if="showCar3DLayer">
-              <div class="text">{{ $l("私家车") }}</div>
-              <img class="icon" src="@/assets/image/eye-fill.png" />
-            </template>
-            <template v-else>
-              <div class="text2">{{ $l("私家车") }}</div>
-              <img class="icon" src="@/assets/image/eye-close-line.png" />
-            </template>
-          </div> -->
         </div>
       </div>
       <div class="form_item">
         <div class="form_label">{{ $l("车辆大小：") }}</div>
         <div class="form_value">
           <el-slider :disabled="!s_showLayer" style="padding: 0 calc(2em - 10px)" v-model="modelSize" :step="0.1" :min="0" :max="20"> </el-slider>
-          <!--            <el-input-number class="my_input_number_1" style="width: 100%" :disabled="!s_showLayer" size="small"-->
-          <!--            v-model="modelSize" :min="1" :max="30" :step="1" step-strictly> </el-input-number>-->
         </div>
       </div>
       <div class="form_item">
         <div class="form_label">{{ $l("最大显示数量：") }}</div>
         <div class="form_value">
-          <el-input-number class="my_input_number_1" style="width: 100%" :disabled="!s_showLayer" size="medium" v-model="maxVehicleNum" :min="0" :step="100" step-strictly> </el-input-number>
+          <el-input-number class="my_input_number_1" style="width: 100%" size="medium" v-model="maxVehicleNum" :min="0" :step="100" step-strictly> </el-input-number>
         </div>
       </div>
-      <!-- <div class="form_item">
-        <div class="form_label">{{ $l("时间：") }}</div>
-        <div class="form_value">
-          <TimeSlider
-            :disabled="!s_showLayer"
-            v-model="time"
-            :speed="60 * 60 * 4"
-            :min="minTime"
-            :max="maxTime"
-          ></TimeSlider>
-        </div>
-      </div>
-      <div class="form_item">
-        <div class="form_label">{{ $l("速度：") }}</div>
-        <div class="form_value">
-          <el-slider
-            :disabled="!s_showLayer"
-            style="padding: 0 calc(2em - 10px)"
-            v-model="speed"
-            :step="0.1"
-            :min="0"
-            :max="30"
-            :marks="speedMarks"
-            :format-tooltip="formatSpeed"
-          >
-          </el-slider>
-        </div>
-      </div> -->
     </div>
   </el-collapse-item>
 </template>
@@ -176,8 +105,8 @@ export default {
     },
     maxVehicleNum: {
       handler(val) {
-        this._BusMotionLayer.maxBusNum = val;
-        this._SubwayMotionLayer.maxSubwayNum = val;
+        this._BusMotionLayer.maxBusNum = val * 0.75;
+        this._SubwayMotionLayer.maxSubwayNum = val * 0.25;
         // this._CarMotionLayer.maxCarNum = val;
       },
     },
@@ -232,7 +161,7 @@ export default {
     this._BusMotionLayer = new BusMotionLayer({
       zIndex: 0,
       lockSelectBus: this.lockSelectVehicle,
-      maxBusNum: this.maxVehicleNum,
+      maxBusNum: this.maxVehicleNum * 0.75,
       modelSize: this.modelSize,
       event: {
         [MAP_EVENT.HANDLE_PICK_LEFT]: ({ data }) => {
@@ -247,7 +176,7 @@ export default {
     this._SubwayMotionLayer = new SubwayMotionLayer({
       zIndex: 0,
       lockSelectSubway: this.lockSelectVehicle,
-      maxSubwayNum: this.maxVehicleNum,
+      maxSubwayNum: this.maxVehicleNum * 0.25,
       modelSize: this.modelSize,
       event: {
         [MAP_EVENT.HANDLE_PICK_LEFT]: ({ data }) => {

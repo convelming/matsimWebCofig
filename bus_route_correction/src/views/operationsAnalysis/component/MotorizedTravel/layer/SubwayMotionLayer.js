@@ -2,14 +2,14 @@ import * as THREE from "three";
 import { Layer, MAP_EVENT } from "@/mymap/index.js";
 import { ModelPool } from "@/mymap/utils/ModelPool.js";
 
-import SubwayMotionLayerWorker from "../worker/SubwayMotionLayer.worker";
+import SubwayMotionLayerWorker from "../worker/SubwayMotionLayer.worker.js";
 
 // {
 //   array: [
 //     cx, cy,
 //     公交数据总大小,
 //     班次数据总大小, 班次index, 班次发车时间, 班次速度, 班次index, 班次发车时间, 班次速度, ... ,
-//     路径数据总大小, 路径长度, 路径点x, 路径点y, 路径点x, 路径点y
+//     路径数据总大小, 路径长度, 路径点x, 路径点y, 距离 , 路径点x, 路径点y, 距离 ...
 //   ],
 //   map: [
 //      班次id,班次id,班次id,班次id...
@@ -22,10 +22,11 @@ export class SubwayMotionLayer extends Layer {
   timeSpeed = 60 * 1;
 
   timeObj = new Map();
-  subwayMap = new Map();
+  busMap = new Map();
   runSubwayList = new Array();
 
   selectSubwayIndex = -1;
+  selectSubwayId = null;
 
   maxSubwayNum = 2000;
   modelSize = 10;
@@ -47,7 +48,7 @@ export class SubwayMotionLayer extends Layer {
       Subway: "/models/Subway.gltf",
     });
 
-    this.subwayGroup = new THREE.Group();
+    this.busGroup = new THREE.Group();
 
     this.pickLayerMaterial = new THREE.PointsMaterial({
       size: this.modelSize * 5,
@@ -70,7 +71,7 @@ export class SubwayMotionLayer extends Layer {
 
     this.pickMeshMesh = new THREE.Points(this.pickGeometry, this.pickMeshMaterial);
 
-    this.scene.add(this.subwayGroup);
+    this.scene.add(this.busGroup);
     this.pickLayerScene.add(this.pickLayerMesh);
     this.pickMeshScene.add(this.pickMeshMesh);
 
@@ -93,12 +94,10 @@ export class SubwayMotionLayer extends Layer {
           this.canRender = true;
           if (this.map) {
             const [x, y] = this.map.WebMercatorToCanvasXY(...this.center);
-            this.subwayGroup.position.set(x, y, 0);
+            this.busGroup.position.set(x, y, 0);
             this.pickLayerMesh.position.set(x, y, 0);
             this.pickMeshMesh.position.set(x, y, 0);
-            this.canRender = true;
-            const array = new Float64Array([2, new Date().getTime(), this.time, this.maxSubwayNum, this.selectSubwayIndex]);
-            this.worker.postMessage(array, [array.buffer]);
+            this.callWorkerRender();
           }
           break;
         case 2:
@@ -114,7 +113,7 @@ export class SubwayMotionLayer extends Layer {
   on(type, data) {
     if (type == MAP_EVENT.UPDATE_CENTER) {
       const [x, y] = this.map.WebMercatorToCanvasXY(...this.center);
-      this.subwayGroup.position.set(x, y, 0);
+      this.busGroup.position.set(x, y, 0);
       this.pickLayerMesh.position.set(x, y, 0);
       this.pickMeshMesh.position.set(x, y, 0);
 
@@ -138,23 +137,42 @@ export class SubwayMotionLayer extends Layer {
 
   render() {
     super.render();
-    // if (this.canRender) {
-    //   const array = new Float64Array([2, new Date().getTime(), this.time, this.maxSubwayNum, this.selectSubwayIndex]);
-    //   this.worker.postMessage(array, [array.buffer]);
-    // }
+    // if (this.canRender) this.callWorkerRender();
   }
 
   dispose() {
     super.dispose();
     this.worker.terminate();
-    const modelName = "SUV";
+    const modelName = "Subway";
     this.runSubwayList.forEach((model) => {
-      this.subwayGroup.remove(model);
+      this.busGroup.remove(model);
       this.modelPool.still(modelName, model);
     });
     this.runSubwayList.length = 0;
     this.modelPool.dispose();
     this.pickGeometry.dispose();
+  }
+
+  callWorkerRender() {
+    let windowRange = {
+      maxX: 0,
+      minX: 0,
+      maxY: 0,
+      minY: 0,
+      width: 0,
+      height: 0,
+    };
+    if (this.map) windowRange = this.map.getWindowRangeAndWebMercator();
+    const list = [2, new Date().getTime()];
+    list.push(this.time);
+    list.push(this.maxSubwayNum);
+    list.push(this.selectSubwayIndex);
+    list.push(windowRange.maxX);
+    list.push(windowRange.minX);
+    list.push(windowRange.maxY);
+    list.push(windowRange.minY);
+    const array = new Float64Array(list);
+    this.worker.postMessage(array, [array.buffer]);
   }
 
   handleRenderCallback(array) {
@@ -166,7 +184,7 @@ export class SubwayMotionLayer extends Layer {
     const attrPickColors = [];
     const modelName = "Subway";
 
-    this.subwayGroup.remove(this.coneMesh);
+    this.busGroup.remove(this.coneMesh);
     for (let i = 0; i < num; i++) {
       let model = this.runSubwayList[i];
       const data = array.slice(i * arraySize, i * arraySize + arraySize);
@@ -175,11 +193,11 @@ export class SubwayMotionLayer extends Layer {
         this.coneMesh.position.set(x, y, z + this.modelSize * 7);
         const scale = this.modelSize * 0.1;
         this.coneMesh.scale.set(scale, scale, scale);
-        this.subwayGroup.add(this.coneMesh);
+        this.busGroup.add(this.coneMesh);
         if (this.lockSelectSubway && this.map) this.map.setCenter([x + this.center[0], y + this.center[1]]);
       } else if (i > this.maxSubwayNum || id == undefined) {
         if (model) {
-          this.subwayGroup.remove(model);
+          this.busGroup.remove(model);
           this.modelPool.still(modelName, model);
         }
         continue;
@@ -187,9 +205,9 @@ export class SubwayMotionLayer extends Layer {
       if (!model) {
         model = this.modelPool.take(modelName);
         if (!model) continue;
-        this.subwayGroup.add(model);
+        this.busGroup.add(model);
       }
-
+      
       const scale = this.modelSize * 0.005;
       model.scale.set(scale, scale, scale);
       model.position.set(x, y, z + this.modelSize);
@@ -238,10 +256,7 @@ export class SubwayMotionLayer extends Layer {
     if (this._changeTimeout || Math.abs(this.time - time) < 0.001) return;
     this._changeTimeout = setTimeout(() => {
       this.time = Number(time.toFixed(4));
-      if (this.canRender) {
-        const array = new Float64Array([2, new Date().getTime(), this.time, this.maxSubwayNum, this.selectSubwayIndex]);
-        this.worker.postMessage(array, [array.buffer]);
-      }
+      if (this.canRender) this.callWorkerRender();
       this._changeTimeout = null;
     }, 1000 / 60);
   }
@@ -252,11 +267,12 @@ export class SubwayMotionLayer extends Layer {
     this.pickLayerMaterial.needsUpdate = true;
     this.pickMeshMaterial.setValues({ size: this.modelSize * 5 });
     this.pickMeshMaterial.needsUpdate = true;
+    if (this.canRender) this.callWorkerRender();
   }
 
   setSelectSubwayId(selectSubwayId) {
+    this.selectSubwayId = selectSubwayId;
     this.selectSubwayIndex = this.idList.findIndex((v) => v == selectSubwayId);
-    const array = new Float64Array([2, new Date().getTime(), this.time, this.maxSubwayNum, this.selectSubwayIndex]);
-    this.worker.postMessage(array, [array.buffer]);
+    if (this.canRender) this.callWorkerRender();
   }
 }

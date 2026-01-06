@@ -140,6 +140,19 @@ export class BusMotionLayer extends Layer {
     // if (this.canRender) this.callWorkerRender();
   }
 
+  dispose() {
+    super.dispose();
+    this.worker.terminate();
+    const modelName = "Bus";
+    this.runBusList.forEach((model) => {
+      this.busGroup.remove(model);
+      this.modelPool.still(modelName, model);
+    });
+    this.runBusList.length = 0;
+    this.modelPool.dispose();
+    this.pickGeometry.dispose();
+  }
+
   callWorkerRender() {
     let windowRange = {
       maxX: 0,
@@ -160,19 +173,6 @@ export class BusMotionLayer extends Layer {
     list.push(windowRange.minY);
     const array = new Float64Array(list);
     this.worker.postMessage(array, [array.buffer]);
-  }
-
-  dispose() {
-    super.dispose();
-    this.worker.terminate();
-    const modelName = "SUV";
-    this.runBusList.forEach((model) => {
-      this.busGroup.remove(model);
-      this.modelPool.still(modelName, model);
-    });
-    this.runBusList.length = 0;
-    this.modelPool.dispose();
-    this.pickGeometry.dispose();
   }
 
   handleRenderCallback(array) {

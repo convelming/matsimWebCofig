@@ -16,24 +16,6 @@ function calculatePosition(path, distance) {
     return { start: [endX, endY, endZ], end: [endX, endY, endZ], isRunning: false };
   }
 
-  // let startX = path[0];
-  // let startY = path[1];
-  // let startDistance = path[2];
-  // for (let i = 3; i < path.length; i += 3) {
-  //   const endX = path[i];
-  //   const endY = path[i + 1];
-  //   const endDistance = path[i + 2];
-  //   if (endDistance > distance) {
-  //     return {
-  //       start: pointMove([startX, startY], [endX, endY], (distance - startDistance) / (endDistance - startDistance)),
-  //       end: [endX, endY],
-  //       isRunning: false
-  //     }
-  //   }
-  //   startX = endX;
-  //   startY = endY;
-  // }
-
   let min = 0;
   let max = path.length / 4 - 1;
   let num = 0;
@@ -71,7 +53,8 @@ function calculatePosition(path, distance) {
 function pointMove(start, end, percentage) {
   let x = start[0] + (end[0] - start[0]) * percentage;
   let y = start[1] + (end[1] - start[1]) * percentage;
-  return [x, y];
+  let z = start[2] + (end[2] - start[2]) * percentage;
+  return [x, y, z];
 }
 
 class BusMotionWorker {
@@ -103,18 +86,11 @@ class BusMotionWorker {
         const [x1, y1, z1] = end;
         const position = new THREE.Vector3(x0, y0, z0);
         const target = new THREE.Vector3(x1, y1, z1); // 你的目标点
-        // const direction = new THREE.Vector3().subVectors(target, position).normalize();
-        // const m4 = new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(1, 0, 0), Math.PI / 2);
-        // m4.multiply(new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(0, 1, 0), Math.atan2(direction.y, direction.x) + Math.PI / 2));
-        // const rotation = new THREE.Euler();
-        // rotation.setFromRotationMatrix(m4);
-        // const rotationOrderMap = { "XYZ": 1, "YXZ": 2, "ZXY": 3, "ZYX": 4, "YZX": 5, "XZY": 6 };
-        // runBusList.push(id, x0, y0, rotation.x, rotation.y, rotation.z, rotationOrderMap[rotation.order]);
 
         const m4 = new THREE.Matrix4().lookAt(position, target, new THREE.Vector3(0, 0, 1));
         m4.multiply(new THREE.Matrix4().makeRotationY(Math.PI));
         const q = new THREE.Quaternion().setFromRotationMatrix(m4);
-        runBusList.push(id, x0, y0, z0, q.x, q.y, q.z, q.w); // length = 7
+        runBusList.push(id, x0, y0, z0, q.x, q.y, q.z, q.w); // length = 8
       }
     }
     return new Float64Array(runBusList);
