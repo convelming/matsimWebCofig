@@ -139,8 +139,11 @@ export class LinePath extends THREE.Curve {
     }
   }
 
-  getPoints2() {
-    return this.nodes.map((v) => v.v);
+  // getPoints2() {
+  //   return this.nodes.map((v) => v.v);
+  // }
+  getPoints2(num = 100) {
+    return this.getPoints(Math.ceil(this.dis / num));
   }
 }
 

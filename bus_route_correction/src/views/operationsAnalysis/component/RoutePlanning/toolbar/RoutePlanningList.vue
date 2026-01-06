@@ -511,7 +511,8 @@ export default {
 
         this.routeList = res.data;
         // this._RouteListLayer.setPaths(res.data);
-        this._UAVListLayer.setPaths(res.data, "CubicBezierPath");
+        // this._UAVListLayer.setPaths(res.data, "CubicBezierPath");
+        this._UAVListLayer.setPaths(res.data, "LinePath");
       });
     },
     handleOpenAddRoute() {

@@ -24,7 +24,7 @@
       <div class="GeoJSONParams_body">
         <el-collapse class="collapse" v-model="activeNames" expand-icon-position="left">
           <!-- ******************************* PointSetting ******************************* -->
-          <el-collapse-item title="PointSetting" name="PointSetting" v-if="!hasPoint">
+          <el-collapse-item title="PointSetting" name="PointSetting" v-if="hasPoint">
             <template #title>
               <el-checkbox v-model="geojsonParams.showPoints" @click.stop></el-checkbox>
               <span>PointSetting</span>
@@ -154,7 +154,7 @@
             </el-form>
           </el-collapse-item>
           <!-- ******************************* LineSetting ******************************* -->
-          <el-collapse-item title="LineSetting" name="LineSetting" v-if="!hasLine">
+          <el-collapse-item title="LineSetting" name="LineSetting" v-if="hasLine">
             <template #title>
               <el-checkbox v-model="geojsonParams.showLines" @click.stop></el-checkbox>
               <span>LineSetting</span>
@@ -356,7 +356,7 @@
                 <span style="margin-left: 10px">{{ geojsonParams.polygonBorderColor }}</span>
               </el-form-item>
               <el-divider content-position="left"></el-divider>
-              <el-form-item label="Value3D" prop="polygonValue3D">
+              <!-- <el-form-item label="Value3D" prop="polygonValue3D">
                 <el-select
                   v-model="geojsonParams.polygonValue3D"
                   placeholder="请选择"
@@ -372,7 +372,7 @@
                 </el-select>
               </el-form-item>
               <el-form-item label="Scale3D" prop="polygonScale3D"></el-form-item>
-              <el-divider content-position="left"></el-divider>
+              <el-divider content-position="left"></el-divider> -->
               <el-form-item label="ColorType" prop="polygonColorType">
                 <el-radio-group v-model="geojsonParams.polygonColorType">
                   <el-radio-button label="color">单一颜色</el-radio-button>

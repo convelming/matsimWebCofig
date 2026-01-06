@@ -668,7 +668,7 @@ export class GeoJSONLayer extends Layer {
     if (type == MAP_EVENT.UPDATE_CAMERA_HEIGHT || type == MAP_EVENT.UPDATE_RENDERER_SIZE) {
       this.map.nextFrame(() => {
         if (this.pointAutoSize > 0) {
-          const size = this.pointAutoSize * this.map.plottingScale;
+          const size = this.pointAutoSize * Math.ceil(this.map.plottingScale);
           this.pointMaterial.uniforms.size.value = size;
           this.pointMaterial.needsUpdate = true;
           this.pointPickLayerMaterial.uniforms.size.value = size;
@@ -677,7 +677,7 @@ export class GeoJSONLayer extends Layer {
           this.pointPickItemMaterial.needsUpdate = true;
         }
         if (this.lineAutoWidth > 0) {
-          const lineWidth = this.lineAutoWidth * this.map.plottingScale;
+          const lineWidth = this.lineAutoWidth * Math.ceil(this.map.plottingScale);
           this.lineMaterial.uniforms.lineWidth.value = lineWidth;
           this.lineMaterial.needsUpdate = true;
           this.linePickLayerMaterial.uniforms.lineWidth.value = lineWidth;
@@ -686,7 +686,7 @@ export class GeoJSONLayer extends Layer {
           this.linePickItemMaterial.needsUpdate = true;
         }
         if (this.polygonBorderAutoWidth > 0) {
-          const lineWidth = this.polygonBorderAutoWidth * this.map.plottingScale;
+          const lineWidth = this.polygonBorderAutoWidth * Math.ceil(this.map.plottingScale);
           this.polygonBorderMaterial.uniforms.lineWidth.value = lineWidth;
           this.polygonBorderMaterial.needsUpdate = true;
         }
@@ -2328,9 +2328,8 @@ export class GeoJSONPolygonBorderMaterial extends THREE.Material {
         #include <logdepthbuf_fragment>
 
         if(lineStyle == ${Number(LINE_STYLE.DASHED).toFixed(1)}){
-          float dl = mod(vDistance / (lineWidth * 3.0), 1.0);
-          dl += vUv.y;
-          if(0.50 < dl && dl <= 1.0){
+          float dl = mod(vDistance , lineWidth * 10.0);
+          if(dl > lineWidth * 5.0){
             diffuseColor.a = 0.0;
           }
         } else if(lineStyle == ${Number(LINE_STYLE.NONE).toFixed(1)}){

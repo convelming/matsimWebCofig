@@ -2,12 +2,12 @@
 <template>
   <div class="TreeItem FileItem">
     <div class="content">
-      <el-checkbox
+      <!-- <el-checkbox
         @click.stop
         v-model="check"
         :indeterminate="indeterminate"
         @change="handleChangeCheck"
-      />
+      /> -->
       <div class="text">{{ title }}</div>
     </div>
   </div>
