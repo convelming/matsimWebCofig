@@ -176,8 +176,6 @@ export class RouteListLayer extends Layer {
     //   pathClassName: pathClassName,
     //   center: center,
     // });
-    console.log(this.pathList);
-
     this.updatePaths();
     this.initUAV();
   }

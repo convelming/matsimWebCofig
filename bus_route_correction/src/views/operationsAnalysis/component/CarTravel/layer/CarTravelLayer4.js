@@ -74,7 +74,6 @@ export class CarTravelLayer4 extends Layer {
       this.inited = true;
       this.clearScene();
       const [array1, array2] = await Promise.all([getFloat32Buffer(`/data/congestion`), getFloat32Buffer(`/data/way`)]);
-      console.log(array1, array2);
       const map1 = new Map();
       let maxLength = 0;
       let maxFlow = 0;
@@ -96,7 +95,6 @@ export class CarTravelLayer4 extends Layer {
       //   if (data.length > maxLength) maxLength = data.length;
       //   map1.set(key, flowList);
       // }
-      console.log(map1, maxLength, maxFlow);
     } catch (error) {
       console.log(error);
     }

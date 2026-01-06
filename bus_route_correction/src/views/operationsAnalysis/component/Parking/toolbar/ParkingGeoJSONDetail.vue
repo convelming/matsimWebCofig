@@ -246,7 +246,6 @@ export default {
       }
     },
     handleChangeLayerParams(layerName, type, value) {
-      console.log(type, value);
       const layer = this.layerList.find((v) => v.name == layerName);
       if (!layer) return console.log("layer not found", layerName);
       layer.params[type] = value;
@@ -525,7 +524,6 @@ export default {
           min: total2Min,
         };
 
-        console.log(propertiesList);
         for (const layer of layerList) {
           console.time("onmessage");
 

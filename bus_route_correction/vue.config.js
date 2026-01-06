@@ -1,8 +1,10 @@
 const { defineConfig } = require("@vue/cli-service");
-const path = require('path');
+const path = require("path");
+const TerserPlugin = require("terser-webpack-plugin");
+
 const timestamp = new Date().getTime();
 function resolve(dir) {
-  return path.join(__dirname, dir)
+  return path.join(__dirname, dir);
 }
 
 module.exports = defineConfig({
@@ -24,7 +26,7 @@ module.exports = defineConfig({
   // dev环境代理
   devServer: {
     client: {
-      overlay: false
+      overlay: false,
     },
     proxy: {
       "/": {
@@ -49,7 +51,7 @@ module.exports = defineConfig({
       // },
     },
   },
-  
+
   pages: {
     pt: {
       entry: "./src/main.js",
@@ -91,6 +93,17 @@ module.exports = defineConfig({
       .resourceQuery(/blockType=language/)
       .use("language")
       .loader(require.resolve("./src/language/loader.js"));
-
+    if (process.env.NODE_ENV === "production") {
+      config.optimization.minimizer = [
+        new TerserPlugin({
+          terserOptions: {
+            compress: {
+              drop_console: true, // 移除console
+              drop_debugger: true, // 移除debugger
+            },
+          },
+        }),
+      ];
+    }
   },
 });

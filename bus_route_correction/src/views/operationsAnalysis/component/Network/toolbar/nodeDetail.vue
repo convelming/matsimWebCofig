@@ -129,7 +129,6 @@ export default {
       getNodeById({ nodeId: this.nodeDetail.id })
         .then((res) => {
           res.data.normal = this.nodeDetail.normal || {};
-          console.log(res.data);
           this.resData = res.data;
           this.handleLineOffsetChange(this.nodeDetail.lineOffset);
           this._SelectStopLayer.setData(this.resData);

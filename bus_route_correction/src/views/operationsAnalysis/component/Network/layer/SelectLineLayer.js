@@ -50,7 +50,6 @@ export class SelectLineLayer extends Layer {
   }
 
   setData(data) {
-    console.log(data);
     const { fromCoord, toCoord, center } = data
     this.data = {
       center: center,

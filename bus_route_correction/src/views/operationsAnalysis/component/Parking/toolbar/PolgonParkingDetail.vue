@@ -135,8 +135,6 @@ export default {
     this.getDetail();
     this.handleChangeGeoId(this.polgonParkingDetail);
     this._resizeObserver = new ResizeObserver((entries) => {
-      console.log("resize");
-
       // 节流
       if (this._setSizeTimeout) return;
       this._setSizeTimeout = setTimeout(() => {
@@ -202,7 +200,6 @@ export default {
       this.polgonParkingDetail.geoId = data.geoId;
       if (this.polgonParkingDetail.geoId) {
         rangeRequireRatio2(this.polgonParkingDetail).then((res) => {
-          console.log("rangeRequireRatio2", res);
           this.rangeRequireRatioData = res.data.requireRatio;
           this._chart2.setOption(this.getChartOptions2(), true);
           this._chart2Big.setOption(this.getChartOptions2(), true);

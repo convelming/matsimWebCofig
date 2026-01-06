@@ -8,8 +8,6 @@ onmessage = function (e) {
   switch (key) {
     case "setPaths": {
       const { paths, pathClassName, center } = e.data;
-      console.log(PathCurve);
-
       pathList = paths.map((v) => new PathCurve[pathClassName](v.id, v.nodes, new THREE.Vector3(center[0], center[1], 0)));
       postMessage({
         key: key,

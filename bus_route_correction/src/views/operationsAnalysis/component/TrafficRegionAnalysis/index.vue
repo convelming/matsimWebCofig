@@ -114,7 +114,6 @@ export default {
             const type = this.polygonSelectType;
             this.handleStopPolygonSelect(type);
             if (type == "link") {
-              console.log("link", path);
               this.rootVue.handleShowSinglePathDetail({
                 uuid: guid(),
                 singlePathDetail: {
@@ -124,7 +123,6 @@ export default {
                 },
               });
             } else if (type == "build") {
-              console.log("build", path);
               this.rootVue.handleShowSinglePathDetail({
                 uuid: guid(),
                 singlePathDetail: {

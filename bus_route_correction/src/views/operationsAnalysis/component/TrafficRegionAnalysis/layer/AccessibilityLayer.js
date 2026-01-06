@@ -132,6 +132,5 @@ export class AccessibilityLayer extends Layer {
         this.scene.remove(group);
       }
     }
-    console.log("updateValue", this);
   }
 }

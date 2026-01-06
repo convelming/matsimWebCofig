@@ -58,7 +58,6 @@ export class Build3DLayer extends Layer {
         if (item) {
           this.handleEventListener(type, item); 
           break;
-          // console.log(pickColorNum, item);
         }
       }
     }
@@ -301,7 +300,6 @@ export class BuildTile {
   //   } catch (error) {
   //     this._geometry = new THREE.BufferGeometry();
   //     this._loadStatus = 3;
-  //     console.log(this._row, this._col, error);
   //   }
 
   //   this._baseMesh.geometry = this._geometry;

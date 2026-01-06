@@ -138,8 +138,6 @@ export default {
     },
     // 获取图表配置
     getChartOption() {
-      console.log(this.form);
-
       // prettier-ignore
       const hours = new Array(24).fill(0).map((v, i) => i);
       // prettier-ignore

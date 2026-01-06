@@ -6,8 +6,21 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'home',
-      component: () => import('@/views/home/index.vue'),
+      name: 'NoMapLayout',
+      redirect: '/home',
+      component: () => import('@/views/NoMapLayout.vue'),
+      children: [
+        {
+          path: '/home',
+          name: 'home',
+          component: () => import('@/views/home/index.vue'),
+        },
+        {
+          path: '/news/detail',
+          name: 'NewsDetail',
+          component: () => import('@/views/home/News/NewsDetail.vue'),
+        },
+      ],
     },
     {
       path: '/maplayout',

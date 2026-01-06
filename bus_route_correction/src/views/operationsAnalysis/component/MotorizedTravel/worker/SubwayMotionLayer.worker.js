@@ -173,8 +173,6 @@ onmessage = function (e) {
     const data = e.data.slice(2);
     switch (key) {
       case 1: {
-        //"setData":
-        // console.log("bus:setData", new Date().getTime() - postTime);
         const workerData = worker.setData(data);
         const array = new Float64Array(workerData.length + 3);
         array.set([key, new Date().getTime(), postTime], 0);
@@ -183,8 +181,6 @@ onmessage = function (e) {
         break;
       }
       case 2: {
-        //"render":
-        // console.log("bus:render", new Date().getTime() - postTime, data);
         const workerData = worker.render(data);
         const array = new Float64Array(workerData.length + 3);
         array.set([key, new Date().getTime(), postTime], 0);

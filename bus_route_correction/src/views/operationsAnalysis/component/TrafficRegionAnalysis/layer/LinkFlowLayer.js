@@ -11,7 +11,6 @@ export class LinkFlowLayer extends Layer {
     super(opt);
     this.height = opt.height || this.height;
     this.timeRange = opt.timeRange;
-    console.log(opt.colorBar);
 
     this.colorBar = new ColorBar2D(opt.colorBar || []);
 
@@ -56,8 +55,6 @@ export class LinkFlowLayer extends Layer {
   }
 
   setData(data) {
-    console.log(data);
-
     this.data = data;
     this.update();
   }
@@ -70,8 +67,6 @@ export class LinkFlowLayer extends Layer {
   }
 
   update() {
-    console.log("update");
-
     this.clearScene();
     if (!this.map) return;
     if (!this.data) return;

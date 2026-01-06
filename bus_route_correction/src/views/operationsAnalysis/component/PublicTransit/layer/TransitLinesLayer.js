@@ -77,7 +77,6 @@ export class TransitLinesLayer extends Layer {
     try {
       const center = data[0].center;
       const list = [];
-      console.log(data);
       for (const transitRoute of data) {
         const routelist = transitRoute.getRouteLink(transitRoute.route);
         let lineLength = 0;
@@ -112,7 +111,6 @@ export class TransitLinesLayer extends Layer {
 
   setShowLine(idList) {
     this.showLine = idList;
-    console.log(idList);
     if (this.map) {
       for (const data of this.data) {
         if (idList.includes(data.id)) {
@@ -124,7 +122,6 @@ export class TransitLinesLayer extends Layer {
         }
       }
     }
-    console.log(this.scene);
     
   }
 

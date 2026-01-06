@@ -169,7 +169,6 @@ export default {
         [MAP_EVENT.HANDLE_PICK_LEFT]: ({ data }) => {
           const _data = JSON.parse(JSON.stringify(data));
           _data._form_type = "mymap";
-          console.log(data);
 
           this.rootVue.handleShowActivityDetail({
             uuid: data.pickColor,

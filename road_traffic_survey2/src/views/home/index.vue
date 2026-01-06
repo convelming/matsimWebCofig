@@ -1,156 +1,89 @@
 <!-- home -->
 <template>
-  <el-scrollbar class="scrollbar">
-    <div class="header2">
-      <div class="max_box">
-        <Logo class="logo" />
-        <div class="sreach">
-          <input class="input" type="text" placeholder="输入关键词搜索..." />
-          <div class="line"></div>
-          <Sreach class="icon" />
+  <div class="home max_box">
+    <div class="left card">
+      <!-- 数据库 -->
+      <div class="title_box">
+        <IconSJK class="icon" />
+        <div class="text_box">
+          <div class="text1">数据库</div>
+          <div class="text2">查看下载数据</div>
         </div>
       </div>
+      <div class="box1">
+        <div class="row" v-for="(v1, i1) in sjk_list" :key="i1">
+          <div class="label">{{ v1.title }}</div>
+          <div class="value">
+            <a href="#/" class="btn" target="_blank" v-for="(v2, i2) in v1.btns" :key="i2">{{
+              v2.title
+            }}</a>
+          </div>
+        </div>
+      </div>
+      <!-- 数据库 -->
+
+      <!-- 模型库 -->
+      <div class="title_box">
+        <IconMXK class="icon" />
+        <div class="text_box">
+          <div class="text1">模型库</div>
+          <div class="text2">道路交通模型数据图片下载</div>
+        </div>
+      </div>
+      <div class="box2">
+        <a class="btn" href="#/" target="_blank" v-for="(v1, i1) in mxk_list" :key="i1">{{
+          v1.title
+        }}</a>
+      </div>
+      <!-- 模型库 -->
+
+      <!-- 案例库 -->
+      <div class="title_box">
+        <IconALK class="icon" />
+        <div class="text_box">
+          <div class="text1">案例库</div>
+          <div class="text2">优秀项目快速了解</div>
+        </div>
+      </div>
+      <div class="box2">
+        <a class="btn" :href="v1.path" target="_blank" v-for="(v1, i1) in alk_list" :key="i1">{{
+          v1.title
+        }}</a>
+      </div>
+      <!-- 案例库 -->
+      <!-- 平台库 -->
+      <div class="title_box">
+        <IconPTK class="icon" />
+        <div class="text_box">
+          <div class="text1">平台库</div>
+          <div class="text2">平台搭建汇总</div>
+        </div>
+      </div>
+      <div class="box2">
+        <a class="btn" :href="v1.path" target="_blank" v-for="(v1, i1) in ptk_list" :key="i1">{{
+          v1.title
+        }}</a>
+      </div>
+      <!-- 平台库 -->
     </div>
-    <div class="header">
-      <div class="max_box">
-        <div class="menu1">
-          <RouterLink class="menu_item" activeClass="active" :to="{ name: 'home' }">
-            <!-- <img class="icon" src="@/assets/images/tab_home_nor.svg" alt="" /> -->
-            <TabHome class="icon" />
-            <span class="text">首页</span>
-          </RouterLink>
-          <RouterLink class="menu_item" activeClass="active" :to="{ name: 'upload' }">
-            <TabUpload class="icon" />
-            <span class="text">数据上传</span>
-          </RouterLink>
-          <RouterLink class="menu_item" activeClass="active" :to="{ name: 'download' }">
-            <TabDownload class="icon" />
-            <span class="text">数据下载</span>
-          </RouterLink>
-          <RouterLink class="menu_item" activeClass="active" :to="{ name: 'feedback' }">
-            <TabQuestion class="icon" />
-            <span class="text">问题反馈</span>
-          </RouterLink>
-          <RouterLink class="menu_item" activeClass="active" :to="{ name: 'feedback' }">
-            <TabWeb class="icon" />
-            <span class="text">研究院官网</span>
-          </RouterLink>
-        </div>
-        <div class="menu2">
-          <div class="btn">帮助</div>
-          <a
-            class="btn"
-            href="https://doc.weixin.qq.com/sheet/e3_AdQA8Aa_ADMt1qh97LkSHer6ALqI2?scode=APwA6gfEAA0aeGdABPAdQA8Aa_ADM&tab=BB08J2"
-            target="_blank"
-            >BUG</a
-          >
-          <div class="btn">日志</div>
-          <div class="btn">视频</div>
-        </div>
-      </div>
-    </div>
-    <div class="home max_box">
-      <div class="left card">
-        <!-- 数据库 -->
+    <div class="center">
+      <div class="box1 card">
         <div class="title_box">
-          <IconSJK class="icon" />
-          <div class="text_box">
-            <div class="text1">数据库</div>
-            <div class="text2">查看下载数据</div>
-          </div>
+          <IconBQ class="icon" />
+          <div class="title">新闻</div>
+          <a class="btn">
+            <IconSC class="icon2" />
+            <span>上传</span>
+          </a>
         </div>
-        <div class="box1">
-          <div class="row" v-for="(v1, i1) in sjk_list" :key="i1">
-            <div class="label">{{ v1.title }}</div>
-            <div class="value">
-              <a href="#/" class="btn" target="_blank" v-for="(v2, i2) in v1.btns" :key="i2">{{
-                v2.title
-              }}</a>
+        <div class="body1">
+          <div class="left_box"></div>
+          <div class="right_box">
+            <div class="row1">
+              <div class="text1">2025-09-08</div>
+              <div class="text2">院向联合国副秘书长、人居署执行主任报告广州可持续发展实践</div>
+              <div class="text3">院向联合国副秘书长、人居署执行主任报告广州可持续发展实践</div>
             </div>
-          </div>
-        </div>
-        <!-- 数据库 -->
-
-        <!-- 模型库 -->
-        <div class="title_box">
-          <IconMXK class="icon" />
-          <div class="text_box">
-            <div class="text1">模型库</div>
-            <div class="text2">道路交通模型数据图片下载</div>
-          </div>
-        </div>
-        <div class="box2">
-          <a class="btn" href="#/" target="_blank" v-for="(v1, i1) in mxk_list" :key="i1">{{
-            v1.title
-          }}</a>
-        </div>
-        <!-- 模型库 -->
-
-        <!-- 案例库 -->
-        <div class="title_box">
-          <IconALK class="icon" />
-          <div class="text_box">
-            <div class="text1">案例库</div>
-            <div class="text2">优秀项目快速了解</div>
-          </div>
-        </div>
-        <div class="box2">
-          <a class="btn" :href="v1.path" target="_blank" v-for="(v1, i1) in alk_list" :key="i1">{{
-            v1.title
-          }}</a>
-        </div>
-        <!-- 案例库 -->
-        <!-- 平台库 -->
-        <div class="title_box">
-          <IconPTK class="icon" />
-          <div class="text_box">
-            <div class="text1">平台库</div>
-            <div class="text2">平台搭建汇总</div>
-          </div>
-        </div>
-        <div class="box2">
-          <a class="btn" :href="v1.path" target="_blank" v-for="(v1, i1) in ptk_list" :key="i1">{{
-            v1.title
-          }}</a>
-        </div>
-        <!-- 平台库 -->
-      </div>
-      <div class="center">
-        <div class="box1 card">
-          <div class="title_box">
-            <IconBQ class="icon" />
-            <div class="title">新闻</div>
-            <a class="btn">
-              <IconSC class="icon2" />
-              <span>上传</span>
-            </a>
-          </div>
-          <div class="body1">
-            <div class="left_box"></div>
-            <div class="right_box">
-              <div class="row1">
-                <div class="text1">2025-09-08</div>
-                <div class="text2">院向联合国副秘书长、人居署执行主任报告广州可持续发展实践</div>
-                <div class="text3">院向联合国副秘书长、人居署执行主任报告广州可持续发展实践</div>
-              </div>
-              <div class="row2" v-for="value in 5" :key="value">
-                <span class="text1">院向联合国副秘书长、人居署执行主任报告广州可持续发展实践</span>
-                <span class="text2">2025年8月19日</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="box1 card">
-          <div class="title_box">
-            <IconBQ class="icon" />
-            <div class="title">通知</div>
-            <a class="btn">
-              <IconSC class="icon2" />
-              <span>上传</span>
-            </a>
-          </div>
-          <div class="body2">
             <div class="row2" v-for="value in 5" :key="value">
               <span class="text1">院向联合国副秘书长、人居署执行主任报告广州可持续发展实践</span>
               <span class="text2">2025年8月19日</span>
@@ -158,96 +91,104 @@
           </div>
         </div>
       </div>
-      <div class="right card">
-        <!-- 资源库 -->
-        <div class="title_box">
-          <IconZYK class="icon" />
-          <div class="text_box">
-            <div class="text1">资源库</div>
-            <div class="text2">其他实用工具</div>
-          </div>
-        </div>
-        <div class="box2">
-          <a class="btn" :href="v1.path" target="_blank" v-for="(v1, i1) in zyk_list" :key="i1">{{
-            v1.title
-          }}</a>
-        </div>
-        <!-- 资源库 -->
 
-        <!-- 宣传库 -->
+      <div class="box1 card">
         <div class="title_box">
-          <IconSCK class="icon" />
-          <div class="text_box">
-            <div class="text1">宣传库</div>
-            <div class="text2">道路交通模型数据图片下载</div>
+          <IconBQ class="icon" />
+          <div class="title">通知</div>
+          <a class="btn">
+            <IconSC class="icon2" />
+            <span>上传</span>
+          </a>
+        </div>
+        <div class="body2">
+          <div class="row2" v-for="value in 5" :key="value">
+            <span class="text1">院向联合国副秘书长、人居署执行主任报告广州可持续发展实践</span>
+            <span class="text2">2025年8月19日</span>
           </div>
         </div>
-        <div class="box2">
-          <a class="btn" :href="v1.path" target="_blank" v-for="(v1, i1) in xck_list" :key="i1">{{
-            v1.title
-          }}</a>
-        </div>
-        <!-- 宣传库 -->
-
-        <!-- 知识库 -->
-        <div class="title_box">
-          <IconZSK class="icon" />
-          <div class="text_box">
-            <div class="text1">知识库</div>
-            <div class="text2">政策规范快速了解</div>
-          </div>
-        </div>
-        <div class="box2">
-          <a class="btn" :href="v1.path" target="_blank" v-for="(v1, i1) in zsk_list" :key="i1">{{
-            v1.title
-          }}</a>
-        </div>
-        <!-- 知识库 -->
-
-        <!-- 总院文件 -->
-        <div class="title_box">
-          <IconZYWJ class="icon" />
-          <div class="text_box">
-            <div class="text1">总院文件</div>
-            <div class="text2">总院资讯快速了解</div>
-          </div>
-        </div>
-        <div class="box2">
-          <a class="btn" :href="v1.path" target="_blank" v-for="(v1, i1) in zywj_list" :key="i1">{{
-            v1.title
-          }}</a>
-        </div>
-        <!-- 总院文件 -->
-
-        <!-- 地区库 -->
-        <div class="title_box">
-          <IconDQK class="icon" />
-          <div class="text_box">
-            <div class="text1">地区库</div>
-            <div class="text2">地区归类快速了解</div>
-          </div>
-        </div>
-        <div class="box2">
-          <a class="btn" :href="v1.path" target="_blank" v-for="(v1, i1) in dqk_list" :key="i1">{{
-            v1.title
-          }}</a>
-        </div>
-        <!-- 地区库 -->
       </div>
     </div>
+    <div class="right card">
+      <!-- 资源库 -->
+      <div class="title_box">
+        <IconZYK class="icon" />
+        <div class="text_box">
+          <div class="text1">资源库</div>
+          <div class="text2">其他实用工具</div>
+        </div>
+      </div>
+      <div class="box2">
+        <a class="btn" :href="v1.path" target="_blank" v-for="(v1, i1) in zyk_list" :key="i1">{{
+          v1.title
+        }}</a>
+      </div>
+      <!-- 资源库 -->
 
-    <div class="footer"></div>
-  </el-scrollbar>
+      <!-- 宣传库 -->
+      <div class="title_box">
+        <IconSCK class="icon" />
+        <div class="text_box">
+          <div class="text1">宣传库</div>
+          <div class="text2">道路交通模型数据图片下载</div>
+        </div>
+      </div>
+      <div class="box2">
+        <a class="btn" :href="v1.path" target="_blank" v-for="(v1, i1) in xck_list" :key="i1">{{
+          v1.title
+        }}</a>
+      </div>
+      <!-- 宣传库 -->
+
+      <!-- 知识库 -->
+      <div class="title_box">
+        <IconZSK class="icon" />
+        <div class="text_box">
+          <div class="text1">知识库</div>
+          <div class="text2">政策规范快速了解</div>
+        </div>
+      </div>
+      <div class="box2">
+        <a class="btn" :href="v1.path" target="_blank" v-for="(v1, i1) in zsk_list" :key="i1">{{
+          v1.title
+        }}</a>
+      </div>
+      <!-- 知识库 -->
+
+      <!-- 总院文件 -->
+      <div class="title_box">
+        <IconZYWJ class="icon" />
+        <div class="text_box">
+          <div class="text1">总院文件</div>
+          <div class="text2">总院资讯快速了解</div>
+        </div>
+      </div>
+      <div class="box2">
+        <a class="btn" :href="v1.path" target="_blank" v-for="(v1, i1) in zywj_list" :key="i1">{{
+          v1.title
+        }}</a>
+      </div>
+      <!-- 总院文件 -->
+
+      <!-- 地区库 -->
+      <div class="title_box">
+        <IconDQK class="icon" />
+        <div class="text_box">
+          <div class="text1">地区库</div>
+          <div class="text2">地区归类快速了解</div>
+        </div>
+      </div>
+      <div class="box2">
+        <a class="btn" :href="v1.path" target="_blank" v-for="(v1, i1) in dqk_list" :key="i1">{{
+          v1.title
+        }}</a>
+      </div>
+      <!-- 地区库 -->
+    </div>
+  </div>
 </template>
 
 <script setup>
-import Logo from '@/assets/images/Home/logo.svg'
-import TabHome from '@/assets/images/Home/icon_home2.svg'
-import TabUpload from '@/assets/images/Home/icon_dateup1.svg'
-import TabDownload from '@/assets/images/Home/icon_download1.svg'
-import TabQuestion from '@/assets/images/Home/icon_question1.svg'
-import TabWeb from '@/assets/images/Home/icon_web1.svg'
-import Sreach from '@/assets/images/Home/搜索.svg'
 
 import IconSJK from '@/assets/images/Home/icon_shujuku.svg'
 import IconMXK from '@/assets/images/Home/icon_modelbase.svg'
@@ -549,125 +490,10 @@ const dqk_list = [
 </script>
 
 <style lang="scss" scoped>
-.scrollbar {
-  height: 100vh;
-  background-color: #f5f5fa;
-}
 .max_box {
   box-sizing: border-box;
   max-width: 1640px;
   margin: auto;
-}
-.header {
-  position: sticky;
-  top: 88px;
-  z-index: 1000;
-  background-color: #fff;
-  box-shadow: 0px 2px 4px 0px rgba(128, 128, 128, 0.05);
-  .max_box {
-    padding: 0 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .menu1 {
-    display: flex;
-    gap: 42px;
-    .menu_item {
-      cursor: pointer;
-      height: 60px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      color: #999999;
-      font-size: 18px;
-      line-height: 18px;
-      .icon {
-        width: 20px;
-        height: 20px;
-        display: block;
-        :deep(.fill) {
-          fill: #999999;
-        }
-      }
-
-      &.active {
-        color: #12b385;
-        .icon {
-          :deep(.fill) {
-            fill: #12b385;
-          }
-        }
-      }
-    }
-  }
-  .menu2 {
-    margin-left: auto;
-    display: flex;
-    align-items: center;
-    gap: 40px;
-    * {
-      cursor: pointer;
-      color: #999999;
-      font-size: 16px;
-    }
-  }
-}
-.header2 {
-  position: sticky;
-  top: 0px;
-  z-index: 1000;
-  background-color: #12b385;
-  .max_box {
-    padding: 0 20px;
-    height: 88px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .logo {
-    width: 342px;
-    height: 40px;
-    display: block;
-  }
-  .sreach {
-    width: 400px;
-    height: 40px;
-    background: #ffffff;
-    border-radius: 33px;
-
-    display: flex;
-    align-items: center;
-    box-sizing: border-box;
-    overflow: hidden;
-    .input {
-      outline: 0;
-      height: 40px;
-      line-height: 40px;
-      flex: 1;
-      width: 0;
-      tab-size: 0;
-      border: 0;
-      margin: 0;
-      font-size: 16px;
-      padding: 0 16px;
-      &::placeholder {
-        color: #b2b2b2;
-      }
-    }
-    .line {
-      width: 1px;
-      height: 20px;
-      background: #d8d8d8;
-    }
-    .icon {
-      cursor: pointer;
-      width: 24px;
-      height: 24px;
-      padding: 0 20px;
-    }
-  }
 }
 
 .home {

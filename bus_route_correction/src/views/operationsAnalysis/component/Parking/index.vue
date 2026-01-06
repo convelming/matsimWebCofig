@@ -294,7 +294,6 @@ export default {
           name: this.rootVue.parkingGeoJSON.name,
           show: true,
         };
-        console.log(geoJSON);
       } catch (error) {}
       return {
         showLayer: this.s_showLayer,
@@ -360,7 +359,6 @@ export default {
     // ******************************* 交通交叉口 -- start
     handleShowParkDetail(path) {
       this.handleStopPolygonSelect();
-      console.log(path);
       this.rootVue.handleShowPolgonParkingDetail({
         uuid: guid(),
         polgonParkingDetail: {

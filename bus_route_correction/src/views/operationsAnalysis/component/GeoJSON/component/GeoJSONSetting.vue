@@ -344,7 +344,6 @@ export default {
     handleAutogenerate(lItem) {
       const item = this.s_form[lItem.name];
       const data = lItem.options[item.valueKey];
-      console.log(lItem.options, item.valueKey, item);
 
       const startColor = new THREE.Color(item.startColor);
       const endColor = new THREE.Color(item.endColor);
@@ -427,13 +426,11 @@ export default {
           });
         }
       }
-      console.log(list);
       
       this.$set(item, "data", list);
       this.handleChangeImage(lItem);
     },
     handleDeleteColorBarItem(lItem, index) {
-      console.log(lItem, index);
 
       const item = this.s_form[lItem.name];
       item.data.splice(index, 1);

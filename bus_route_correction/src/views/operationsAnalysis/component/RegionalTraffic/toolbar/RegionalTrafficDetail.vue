@@ -253,7 +253,6 @@ export default {
       this._Map.removeLayer(this._RegionalTrafficFlowLayer2);
     },
     handleChangeLayerParams(layerName, type, value) {
-      console.log(type, value);
       const layer = this.layerList.find((v) => v.name == layerName);
       if (!layer) return console.log("layer not found", layerName);
       layer.params[type] = value;
@@ -513,7 +512,6 @@ export default {
       worker.onmessage = (event) => {
         const { center, propertiesLabels, pointArray, lineArray, polygonArray, propertiesListArray } = event.data;
         const propertiesList = JSON.parse(new TextDecoder().decode(propertiesListArray));
-        console.log(event.data);
 
         for (const layer of layerList) {
           console.time("onmessage");

@@ -214,7 +214,6 @@ export default {
     },
     handleChangeMapCenterAndZoom() {
       try {
-        console.log("handleChangeMapCenterAndZoom");
         this._Map.setCenter([this.resData.coord.x, this.resData.coord.y]);
         this._Map.setZoom(13);
       } catch (error) {

@@ -31,7 +31,6 @@ export default {
       }
       this.activeNames = config.activeNames;
       Object.entries(this.$refs).forEach(([k, v]) => {
-        console.log(k, v.name);
         if (v.configKey == "ToolbarConfig") {
           v.initByConfig(config);
         } else if (v.initByConfig && v.configKey) {
@@ -42,7 +41,6 @@ export default {
     },
     async getConfig() {
       let cameraRotation = this._Map.cameraRotation;
-      console.log(cameraRotation);
       let map_style_name = "";
       try {
         map_style_name = this._MapLayer.tileClass.style_name;

@@ -388,8 +388,6 @@ export default {
       }
     },
     handleOneStopMenu({ data, command }) {
-      console.log(data, command);
-
       switch (command) {
         case "Stop Load...":
           this.handleShowTransitStopLoad({

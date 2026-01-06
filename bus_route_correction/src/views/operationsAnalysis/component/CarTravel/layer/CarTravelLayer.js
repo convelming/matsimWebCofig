@@ -87,8 +87,6 @@ export class CarTravelLayer extends Layer {
           break;
         }
         case 2: {
-          //"render":
-          // console.log(data);
           this.handleRenderCallback(data);
           break;
         }

@@ -230,8 +230,6 @@ export class ActivityRoutesLayer extends Layer {
     this.labelMeshList = [];
     this.actCylMeshList = [];
     this.labelMeshList = [];
-    console.log(this.actList);
-    console.log(this.legList);
 
     // 活动
     {
@@ -288,7 +286,6 @@ export class ActivityRoutesLayer extends Layer {
         const item = this.legList[i];
         const { path, activity } = item;
         const color = new THREE.Color(this.legColors.get(activity) || COLOR);
-        console.log(activity, color.getHexString());
         const geometry = this.getLegGeometry(path.paths);
         const material = this.getLegMaterial({
           side: THREE.DoubleSide,

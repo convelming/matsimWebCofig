@@ -40,11 +40,9 @@ export class Build3DLayer extends Layer {
     this.worker.onmessage = (e) => {
       switch (e.data.key) {
         case "success": {
-          console.log(e.data);
           break;
         }
         case "error": {
-          console.log(e.data);
           break;
         }
       }
@@ -70,7 +68,6 @@ export class Build3DLayer extends Layer {
       //   if (item) {
       //     this.handleEventListener(type, item);
       //     break;
-      //     // console.log(pickColorNum, item);
       //   }
       // }
     }

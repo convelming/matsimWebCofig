@@ -13,11 +13,12 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
-    "konva": "^9.3.14",
+    "@vueup/vue-quill": "^1.2.0",
     "axios": "^1.11.0",
     "echarts": "5.5.1",
     "element-plus": "^2.11.1",
     "jszip": "^3.10.1",
+    "konva": "^9.3.14",
     "moment": "^2.29.3",
     "pinia": "^3.0.3",
     "proj4": "^2.9.0",

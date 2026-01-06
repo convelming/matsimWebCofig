@@ -162,7 +162,6 @@ export default {
       if (!this.carDetail) return;
       const { database, datasource } = this.$route.params;
       getCarDetail(database, datasource, this.carDetail.index).then((res) => {
-        console.log(res);
         const { paths, ...departure } = res.data;
         // 创建路径SVG
         this.departure = departure;

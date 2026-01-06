@@ -223,7 +223,6 @@ export default {
           },
 
           formatter(params, ticket) {
-            console.log(params);
             let l1 = [];
 
             for (const v of params) {

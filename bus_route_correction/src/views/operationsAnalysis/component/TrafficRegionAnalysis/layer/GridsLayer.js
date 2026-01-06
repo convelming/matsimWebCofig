@@ -198,9 +198,6 @@ export class GridsLayer extends Layer {
     const { center } = mesh.userData;
     const [x, y] = this.map.WebMercatorToCanvasXY(center[0], center[1]);
     mesh.position.set(x, y, 0);
-
-    console.log(mesh.count, list);
-
   }
 
 

@@ -1016,8 +1016,6 @@ export default {
       this.rootVue.$on("timeChange", this.handleTimeChange);
     },
     handleDisable() {
-      console.log("handleDisable");
-
       if (this._SelectGeoJSONLayer) this._SelectGeoJSONLayer.removeFromParent();
       if (this._LinkGeoJSONLayer) this._LinkGeoJSONLayer.removeFromParent();
       if (this._LinkFlowLayer) this._LinkFlowLayer.removeFromParent();
@@ -1036,7 +1034,6 @@ export default {
           build: "facility",
         }[this.singlePathDetail.type],
       }).then((res) => {
-        console.log(res);
         this.loading = false;
         res.data.forEach((v1) => {
           v1.label = `${v1.name || ""} (${v1.id})`;

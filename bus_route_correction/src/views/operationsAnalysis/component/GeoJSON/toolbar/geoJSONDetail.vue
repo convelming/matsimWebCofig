@@ -392,7 +392,6 @@ export default {
       const textDecoder = new TextDecoder();
       const propertiesList = JSON.parse(textDecoder.decode(propertiesListArray));
       this._GeoJSONLayer.setPropertiesList(propertiesList, propertiesLabels);
-      this.isDev && (console.log(event.data) || console.log(propertiesList) || console.log(propertiesLabels) || console.log(JSON.parse(textDecoder.decode(propertiesLabelsArray))));
       console.timeEnd("onmessage");
       worker.terminate();
     };

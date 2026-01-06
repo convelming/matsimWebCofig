@@ -136,15 +136,12 @@ export class NetworkLayer extends Layer {
         const nodeItem = tile.getNodeByPickColor(pickColorNum);
         const videoIconItem = tile.getVideoIconByPickColor(pickColorNum);
         if (lineItem) {
-          console.log("lineItem", pickColorNum);
           this.handleEventListener(type, JSON.parse(JSON.stringify(lineItem)));
           break;
         } else if (nodeItem) {
-          console.log("nodeItem", pickColorNum);
           this.handleEventListener(type, JSON.parse(JSON.stringify(nodeItem)));
           break;
         } else if (videoIconItem) {
-          console.log("videoIconItem", pickColorNum);
           this.handleEventListener(type, JSON.parse(JSON.stringify(videoIconItem)));
           break;
         }
@@ -165,7 +162,6 @@ export class NetworkLayer extends Layer {
         tile.pickColorOffset = this.pickColorOffset;
         this.pickColorOffset += tile.pickColorNum;
         tile.update();
-        console.log(this, tile.pickColorNum, tile.pickColorOffset);
 
         this.loadingNum--;
         this.handleEventListener(MAP_EVENT.LAYER_LOADING, this.loadingNum > 0);

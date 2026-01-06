@@ -310,7 +310,6 @@ export default {
       const list = val.map((v) => v.routeId);
       this._TransitLinesLayer.setShowLine(list);
       this.showStopList = this._ReachableStopsLayer.setShowLine(list);
-      console.log(this.showStopList);
 
       // this.multipleSelection = val;
     },

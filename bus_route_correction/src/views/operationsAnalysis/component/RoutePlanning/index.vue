@@ -427,8 +427,6 @@ export default {
           }
         });
       });
-
-      console.log(this.Layer_Map);
     },
     handleEmitOption() {
       this.rootVue.$emit("RoutePlanning_Options", {

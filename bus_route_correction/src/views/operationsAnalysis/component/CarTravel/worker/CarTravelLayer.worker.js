@@ -157,7 +157,6 @@ class Worker {
         path: path,
       };
       
-    console.log(car);
       carMap.set(carId, car);
       for (let j = startTime; j < endTime + timeSpeed; j += timeSpeed) {
         const key = Math.ceil(j / timeSpeed);
@@ -219,8 +218,6 @@ onmessage = function (e) {
   const { key } = e.data;
   switch (key) {
     case 1: {
-      //"loadTiles":
-      // console.log("car:loadTiles", new Date().getTime() - data.postTime);
       const workerData = worker.loadTiles(e.data);
       const array = new Float64Array(workerData.length + 1);
       array.set([key], 0);
@@ -229,8 +226,6 @@ onmessage = function (e) {
       break;
     }
     case 2: {
-      //"render":
-      // console.log("car:render", new Date().getTime() - data.postTime);
       const workerData = worker.render(e.data);
       const array = new Float64Array(workerData.length + 1);
       array.set([key], 0);

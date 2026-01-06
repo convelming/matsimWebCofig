@@ -175,7 +175,6 @@ export class UAVListLayer extends Layer {
     if (type == MAP_EVENT.UPDATE_CENTER) {
       const [x, y] = this.map.WebMercatorToCanvasXY(this.center[0], this.center[1]);
       for (const mesh of this.scene.children) {
-        if (this.linkSelectMesh && mesh.uuid == this.linkSelectMesh.uuid) console.log(mesh);
         mesh.position.set(x, y, 0);
       }
       for (const mesh of this.pickLayerScene.children) {

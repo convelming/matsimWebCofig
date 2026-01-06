@@ -653,7 +653,6 @@ export default {
       if (list.length > 15) {
         list.splice(15);
       }
-      console.log(list);
       this.$set(obj, "list", list);
       this.$set(obj, "activeName", activeName);
       this.handleActiveModel(obj.id);

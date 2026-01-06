@@ -117,8 +117,6 @@ export class RouteFlowsLayer extends Layer {
 
   // 设置数据
   setData(stops, data, maxValue) {
-    console.log(stops, data, maxValue);
-
     try {
       const _data = [];
       let pickColorNum = 1;
@@ -174,7 +172,6 @@ export class RouteFlowsLayer extends Layer {
     if (this.data) {
       for (const value of this.data) {
         const [x, y] = this.map.WebMercatorToCanvasXY(value.center[0], value.center[1]);
-        console.log(value.proportion * this.maxTube);
 
         const geometry = new THREE.TorusGeometry(value.distance / 2, value.proportion * this.maxTube, 16, 100, Math.PI);
         this.geometryList.push(geometry);

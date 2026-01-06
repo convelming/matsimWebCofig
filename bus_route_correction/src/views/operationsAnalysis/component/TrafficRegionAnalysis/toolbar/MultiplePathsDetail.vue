@@ -309,8 +309,6 @@ export default {
     });
     this._SelectGeoJSONLayer.setCenter(this.multiplePathsDetail._center);
     this._SelectGeoJSONLayer.setPolygonArray(this.multiplePathsDetail._polygonArray);
-    console.log(this.multiplePathsDetail._center);
-    console.log(this.multiplePathsDetail._polygonArray);
 
     this._OriginGridsLayer = new PolygonGridLayer({ zIndex: 140, colorBar: this.COLOR_LIST[this.originColor] });
     this._DestinationsGridsLayer = new PolygonGridLayer({ zIndex: 150, colorBar: this.COLOR_LIST[this.destinationsColor] });
@@ -458,7 +456,6 @@ export default {
       if (this.showDestinationsLayer) this._Map.addLayer(this._DestinationsGridsLayer);
       if (this.showDesireLineLayer) this._Map.addLayer(this._DesireLineLayer);
       this.rootVue.$on("timeChange", this.handleTimeChange);
-      console.log("handleEnable", this._Map, this.selectPolygonList);
     },
     handleDisable() {
       this._Map.removeLayer(this._SelectGeoJSONLayer);

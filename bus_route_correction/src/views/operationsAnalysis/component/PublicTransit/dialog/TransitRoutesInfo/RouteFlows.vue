@@ -204,7 +204,6 @@ export default {
             })
           );
           this._RouteFlowsLayer.setData(this.stopMap, this.linkObj, this.maxPassenger);
-          console.log(this._RouteFlowsLayer);
 
           this.loading = false;
         })

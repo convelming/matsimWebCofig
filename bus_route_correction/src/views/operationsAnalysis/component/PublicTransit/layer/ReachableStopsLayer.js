@@ -193,7 +193,6 @@ export class ReachableStopsLayer extends Layer {
         lineList.push(line);
       }
       this.data = lineList;
-      console.log(lineList);
 
       this.center = center.toList();
       this.update();
