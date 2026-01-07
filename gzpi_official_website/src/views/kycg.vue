@@ -324,7 +324,6 @@ import MFooter from '@/components/MFooter.vue'
           .title {
             font-weight: 500;
             font-size: 24px;
-            color: #2c3e50;
             margin-bottom: 10px;
 
             white-space: nowrap;
@@ -444,7 +443,6 @@ import MFooter from '@/components/MFooter.vue'
         font-weight: 500;
         font-size: max(2.5vw, 20px);
         line-height: max(2.5vw, 20px);
-        color: #2c3e50;
         margin-bottom: max(1.66vw, 16px);
       }
       .text2 {
@@ -479,7 +477,6 @@ import MFooter from '@/components/MFooter.vue'
         font-weight: 500;
         font-size: max(2.5vw, 20px);
         line-height: max(2.5vw, 20px);
-        color: #2c3e50;
         margin-bottom: max(1.66vw, 16px);
       }
       .text2 {
@@ -508,7 +505,6 @@ import MFooter from '@/components/MFooter.vue'
         font-weight: 500;
         font-size: max(2.5vw, 20px);
         line-height: max(2.5vw, 20px);
-        color: #2c3e50;
         margin-bottom: max(1.66vw, 16px);
       }
       .text2 {
@@ -585,7 +581,6 @@ import MFooter from '@/components/MFooter.vue'
         width: 23vw;
         position: relative;
         font-size: max(1.25vw, 12px);
-        color: #2c3e50;
         line-height: max(1.9vw, 14px);
         padding-left: max(1.56vw, 16px);
         margin-bottom: max(1.56vw, 16px);

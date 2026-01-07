@@ -35,7 +35,7 @@
                 </el-col>
                 <el-col :span="24" :offset="0">
                   <div style="display: flex; align-items: center; justify-content: space-between">
-                    <span style="font-size: 14px; color: #2c3e50; width: 110px">地形图透明度：</span>
+                    <span style="font-size: 14px;  width: 110px">地形图透明度：</span>
                     <el-slider style="margin: 0 15px; flex: 1" v-model="tifOpacity" :min="0" :max="1" :step="0.01"></el-slider>
                   </div>
                 </el-col> -->
@@ -49,7 +49,7 @@
                 </el-col>
                 <el-col :span="24" :offset="0">
                   <div style="display: flex; align-items: center; justify-content: space-between">
-                    <span style="font-size: 14px; color: #2c3e50; width: 110px">时间：{{ time }}</span>
+                    <span style="font-size: 14px; width: 110px">时间：{{ time }}</span>
                     <el-slider style="margin: 0 15px; flex: 1" :value="time" @input="setTime" :min="minTime" :max="maxTime"></el-slider>
                   </div>
                 </el-col>

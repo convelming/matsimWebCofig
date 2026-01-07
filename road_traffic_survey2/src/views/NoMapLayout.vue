@@ -1,59 +1,55 @@
 <!-- NoMapLayout -->
 <template>
-  <el-scrollbar class="scrollbar">
-    <div class="NoMapLayout">
-      <div class="header2">
-        <div class="max_box">
-          <Logo class="logo" />
-          <div class="sreach">
-            <input class="input" type="text" placeholder="输入关键词搜索..." />
-            <div class="line"></div>
-            <Sreach class="icon" />
-          </div>
+  <el-scrollbar ref="scrollbarRef" class="scrollbar">
+    <div class="header2">
+      <div class="max_box">
+        <Logo class="logo" />
+        <div class="sreach">
+          <input class="input" type="text" placeholder="输入关键词搜索..." />
+          <div class="line"></div>
+          <Sreach class="icon" />
         </div>
       </div>
-      <div class="header">
-        <div class="max_box">
-          <div class="menu1">
-            <RouterLink class="menu_item" activeClass="active" :to="{ name: 'home' }">
-              <!-- <img class="icon" src="@/assets/images/tab_home_nor.svg" alt="" /> -->
-              <TabHome class="icon" />
-              <span class="text">首页</span>
-            </RouterLink>
-            <RouterLink class="menu_item" activeClass="active" :to="{ name: 'upload' }">
-              <TabUpload class="icon" />
-              <span class="text">数据上传</span>
-            </RouterLink>
-            <RouterLink class="menu_item" activeClass="active" :to="{ name: 'download' }">
-              <TabDownload class="icon" />
-              <span class="text">数据下载</span>
-            </RouterLink>
-            <RouterLink class="menu_item" activeClass="active" :to="{ name: 'feedback' }">
-              <TabQuestion class="icon" />
-              <span class="text">问题反馈</span>
-            </RouterLink>
-            <RouterLink class="menu_item" activeClass="active" :to="{ name: 'feedback' }">
-              <TabWeb class="icon" />
-              <span class="text">研究院官网</span>
-            </RouterLink>
-          </div>
-          <div class="menu2">
-            <div class="btn">帮助</div>
-            <a
-              class="btn"
-              href="https://doc.weixin.qq.com/sheet/e3_AdQA8Aa_ADMt1qh97LkSHer6ALqI2?scode=APwA6gfEAA0aeGdABPAdQA8Aa_ADM&tab=BB08J2"
-              target="_blank"
-              >BUG</a
-            >
-            <div class="btn">日志</div>
-            <div class="btn">视频</div>
-          </div>
-        </div>
-      </div>
-      <RouterView />
-
-      <div class="footer"></div>
     </div>
+    <div class="header">
+      <div class="max_box">
+        <div class="menu1">
+          <RouterLink class="menu_item" activeClass="active" :to="{ name: 'home' }">
+            <!-- <img class="icon" src="@/assets/images/tab_home_nor.svg" alt="" /> -->
+            <TabHome class="icon" />
+            <span class="text">首页</span>
+          </RouterLink>
+          <RouterLink class="menu_item" activeClass="active" :to="{ name: 'upload' }">
+            <TabUpload class="icon" />
+            <span class="text">数据上传</span>
+          </RouterLink>
+          <RouterLink class="menu_item" activeClass="active" :to="{ name: 'download' }">
+            <TabDownload class="icon" />
+            <span class="text">数据下载</span>
+          </RouterLink>
+          <RouterLink class="menu_item" activeClass="active" :to="{ name: 'feedback' }">
+            <TabQuestion class="icon" />
+            <span class="text">问题反馈</span>
+          </RouterLink>
+          <RouterLink class="menu_item" activeClass="active" :to="{ name: 'feedback' }">
+            <TabWeb class="icon" />
+            <span class="text">研究院官网</span>
+          </RouterLink>
+        </div>
+        <div class="menu2">
+          <div class="btn">帮助</div>
+          <a
+            class="btn"
+            href="https://doc.weixin.qq.com/sheet/e3_AdQA8Aa_ADMt1qh97LkSHer6ALqI2?scode=APwA6gfEAA0aeGdABPAdQA8Aa_ADM&tab=BB08J2"
+            target="_blank"
+            >BUG</a
+          >
+          <div class="btn">日志</div>
+          <div class="btn">视频</div>
+        </div>
+      </div>
+    </div>
+    <RouterView />
   </el-scrollbar>
 </template>
 
@@ -65,10 +61,17 @@ import TabDownload from '@/assets/images/Home/icon_download1.svg'
 import TabQuestion from '@/assets/images/Home/icon_question1.svg'
 import TabWeb from '@/assets/images/Home/icon_web1.svg'
 import Sreach from '@/assets/images/Home/搜索.svg'
+
+import { onBeforeRouteUpdate } from 'vue-router'
+const scrollbarRef = ref(null)
+onBeforeRouteUpdate((to, from) => {
+  scrollbarRef.value.setScrollTop(0)
+})
 </script>
 
 <style lang="scss" scoped>
 .scrollbar {
+  width: 100vw;
   height: 100vh;
   background-color: #f5f5fa;
 }

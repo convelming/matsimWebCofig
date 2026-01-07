@@ -251,7 +251,6 @@ injectSync('MapRef').then((map) => {
     .title1 {
       font-weight: 700;
       font-size: 16px;
-      color: #2c3e50;
       margin-bottom: 16px;
     }
     .search {

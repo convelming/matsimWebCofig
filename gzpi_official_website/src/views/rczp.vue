@@ -196,7 +196,6 @@ const list = [
         padding-top: 2vw;
         padding-bottom: 2vw;
         font-size: max(1.66vw, 20px);
-        color: #2c3e50;
       }
       border-bottom: 1px solid #eee;
     }
@@ -206,7 +205,6 @@ const list = [
         padding-bottom: 2.5vw;
         font-size: max(1.25vw, 14px);
         line-height: max(1.66vw, 20px);
-        color: #2c3e50;
         border-bottom: 1px solid #eee;
       }
       .row2 {
@@ -217,12 +215,10 @@ const list = [
           margin: max(1.66vw, 20px) 0;
           font-weight: 500;
           font-size: max(1.66vw, 20px);
-          color: #2c3e50;
           line-height: max(2vw, 20px);
         }
         .text {
           font-size: max(1.25vw, 14px);
-          color: #2c3e50;
           line-height: max(2vw, 20px);
         }
       }

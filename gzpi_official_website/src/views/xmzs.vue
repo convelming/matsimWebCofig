@@ -263,7 +263,6 @@ const list4 = [
         .title {
           font-weight: 500;
           font-size: 24px;
-          color: #2c3e50;
           margin-bottom: 18px;
           // 一行文字
           overflow: hidden;
@@ -338,7 +337,6 @@ const list4 = [
         .title {
           font-weight: 500;
           font-size: 24px;
-          color: #2c3e50;
           margin-bottom: 40px;
           // 一行文字
           overflow: hidden;

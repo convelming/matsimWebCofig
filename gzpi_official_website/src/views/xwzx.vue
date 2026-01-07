@@ -154,7 +154,6 @@ const list1 = [
         .title {
           font-weight: 500;
           font-size: 24px;
-          color: #2c3e50;
           margin-bottom: 15px;
           // 一行文字
           overflow: hidden;

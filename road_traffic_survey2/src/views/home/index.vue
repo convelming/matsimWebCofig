@@ -71,7 +71,7 @@
         <div class="title_box">
           <IconBQ class="icon" />
           <div class="title">新闻</div>
-          <a class="btn">
+          <a class="btn" @click="showAddNews = true">
             <IconSC class="icon2" />
             <span>上传</span>
           </a>
@@ -79,15 +79,21 @@
         <div class="body1">
           <div class="left_box"></div>
           <div class="right_box">
-            <div class="row1">
-              <div class="text1">2025-09-08</div>
-              <div class="text2">院向联合国副秘书长、人居署执行主任报告广州可持续发展实践</div>
-              <div class="text3">院向联合国副秘书长、人居署执行主任报告广州可持续发展实践</div>
-            </div>
-            <div class="row2" v-for="value in 5" :key="value">
-              <span class="text1">院向联合国副秘书长、人居署执行主任报告广州可持续发展实践</span>
-              <span class="text2">2025年8月19日</span>
-            </div>
+            <a class="row1" :href="`#/news/detail?id=${news_one.id}`" v-if="news_one">
+              <!-- <div class="text1">{{ news_one.date }}</div> -->
+              <div class="text1">{{ $moment(news_one.date).format('YYYY-MM-DD') }}</div>
+              <div class="text2">{{ news_one.title }}</div>
+              <div class="text3">{{ news_one.content_text }}</div>
+            </a>
+            <a
+              class="row2"
+              :href="`#/news/detail?id=${value.id}`"
+              v-for="value in news_list"
+              :key="value"
+            >
+              <span class="text1">{{ value.title }}</span>
+              <!-- <span class="text2">{{ $moment(value.date).format('YYYY年MM月DD日') }}</span> -->
+            </a>
           </div>
         </div>
       </div>
@@ -102,10 +108,10 @@
           </a>
         </div>
         <div class="body2">
-          <div class="row2" v-for="value in 5" :key="value">
+          <a class="row2" href="" v-for="value in 5" :key="value">
             <span class="text1">院向联合国副秘书长、人居署执行主任报告广州可持续发展实践</span>
             <span class="text2">2025年8月19日</span>
-          </div>
+          </a>
         </div>
       </div>
     </div>
@@ -186,9 +192,13 @@
       <!-- 地区库 -->
     </div>
   </div>
+
+  <AddNews v-model:visible="showAddNews" />
 </template>
 
 <script setup>
+import AddNews from './News/AddNews.vue'
+import { newsList } from '@/api/home.js'
 
 import IconSJK from '@/assets/images/Home/icon_shujuku.svg'
 import IconMXK from '@/assets/images/Home/icon_modelbase.svg'
@@ -202,6 +212,24 @@ import IconDQK from '@/assets/images/Home/icon_diqu.svg'
 
 import IconBQ from '@/assets/images/Home/biaoqian.svg'
 import IconSC from '@/assets/images/Home/update.svg'
+
+const showAddNews = ref(false)
+
+const news_one = ref(null)
+const news_list = ref([])
+newsList().then((res) => {
+  const one = res.data.data[0]
+  if (one) {
+    one.content_text = one.content.replace(/<[^>]+>/g, '').replace(/&[^&]+;/g, '')
+    if (one.content_text.length > 100) {
+      one.content_text = one.content_text.substring(0, 100) + '...'
+    }
+    news_one.value = one
+  } else {
+    news_one.value = null
+  }
+  news_list.value = res.data.data?.slice(1, 6)
+})
 
 const sjk_list = [
   {
@@ -533,7 +561,6 @@ const dqk_list = [
       .text1 {
         font-weight: 600;
         font-size: 20px;
-        color: #2c3e50;
       }
       .text2 {
         font-size: 14px;
@@ -577,7 +604,6 @@ const dqk_list = [
           width: 0;
           font-weight: 600;
           font-size: 24px;
-          color: #2c3e50;
         }
         .icon {
           position: relative;
@@ -644,7 +670,6 @@ const dqk_list = [
         }
         .text2 {
           font-size: 16px;
-          color: #2c3e50;
         }
         .text3 {
           font-size: 14px;
@@ -673,7 +698,6 @@ const dqk_list = [
           white-space: nowrap;
           text-overflow: ellipsis;
           font-size: 16px;
-          color: #2c3e50;
         }
 
         .text2 {
@@ -730,7 +754,6 @@ const dqk_list = [
           .btn {
             font-weight: 400;
             font-size: 14px;
-            color: #2c3e50;
             &:hover {
               color: #247ce7;
             }
@@ -751,7 +774,6 @@ const dqk_list = [
         cursor: pointer;
         font-weight: 400;
         font-size: 14px;
-        color: #2c3e50;
         &:hover {
           color: #247ce7;
         }
