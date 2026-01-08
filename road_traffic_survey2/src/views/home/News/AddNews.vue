@@ -5,7 +5,7 @@
       <transition name="el-zoom-in-center">
         <div class="AddNews_dialog">
           <div class="AddNews_dialog_header">
-            <div class="text">{{ title[type] }}</div>
+            <div class="text">{{ title }}</div>
             <el-icon class="close_btn" size="30px" @click="handleClose"><Close /></el-icon>
           </div>
           <el-scrollbar class="AddNews_dialog_bodyer">
@@ -86,24 +86,25 @@
 </template>
 
 <script setup>
-import { newsAdd } from '@/api/home.js'
+import { newsAdd, newsDetail,newsUpdate } from '@/api/home.js'
 import { Close, UploadFilled, Plus } from '@element-plus/icons-vue'
-import { watch } from 'vue'
+import { computed, watch } from 'vue'
 
 const VITE_APP_BASE_API = import.meta.env.VITE_APP_BASE_API
 const { proxy } = getCurrentInstance()
 const emit = defineEmits(['close', 'update:visible'])
 const props = defineProps({
   visible: Boolean,
+  title: String,
   type: {
     type: String,
     default: '0', // 0: 新闻，1：通知
   },
+  id: {
+    type: [Number, String],
+    default: -1,
+  },
 })
-const title = {
-  0: '上传新闻',
-  1: '上传通知',
-}
 const submiting = ref(false)
 const form = ref({
   title: '',
@@ -148,19 +149,65 @@ watch(
   () => props.visible,
   (val) => {
     if (val) {
-      form.value = {
-        title: '',
-        author: '',
-        date: '',
-        content: '',
-        cover: [],
-        annexs: [],
+      if (props.id == -1) {
+        resetForm()
+      } else {
+        getDetail()
       }
-      QuillEditorRef.value.setHTML('')
-      formRef.value.resetFields()
     }
   },
 )
+
+function resetForm() {
+  form.value = {
+    title: '',
+    author: '',
+    date: '',
+    content: '',
+    cover: [],
+    annexs: [],
+  }
+  QuillEditorRef.value.setHTML('')
+  formRef.value.resetFields()
+}
+
+function getDetail() {
+  newsDetail(props.id).then((res) => {
+    formRef.value.resetFields()
+    const cover = res.data.annexs
+      ?.filter((v) => v.type == 0)
+      .map((v) => {
+        return {
+          name: v.name,
+          url: v.url,
+          response: {
+            data: v,
+          },
+        }
+      })
+
+    const annexs = res.data.annexs
+      ?.filter((v) => v.type == 1)
+      .map((v) => {
+        return {
+          name: v.name,
+          url: v.url,
+          response: {
+            data: v,
+          },
+        }
+      })
+    form.value = {
+      title: res.data.title,
+      author: res.data.author,
+      date: res.data.date,
+      content: res.data.content,
+      cover: cover,
+      annexs: annexs,
+    }
+    QuillEditorRef.value.setHTML(res.data.content)
+  })
+}
 
 function handleClose() {
   emit('update:visible', false)
@@ -183,11 +230,20 @@ function onSubmit() {
         author: form.value.author,
         type: props.type,
       }
-      return newsAdd(_form)
+      if (props.id == -1) {
+        return newsAdd(_form)
+      } else {
+        _form.id = props.id
+        return newsUpdate(_form)
+      }
     })
     .then(() => {
-      proxy.$message.success('添加成功')
-      handleClose()
+      if (props.id == -1) {
+        proxy.$message.success('添加成功')
+      } else {
+        proxy.$message.success('修改成功')
+      }
+      // handleClose()
     })
     .finally(() => {
       submiting.value = false

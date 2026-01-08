@@ -77,7 +77,7 @@
             <IconBQ class="icon" />
             <span>新闻</span>
           </div>
-          <div class="btn" @click="showAddNews = true">
+          <div class="btn" @click="handleShowAddNews(null)">
             <IconSC class="icon2" />
             <span>上传</span>
           </div>
@@ -96,32 +96,47 @@
             ></el-image>
           </div>
           <div class="right_box" style="height: 400px">
-            <a class="row1" :href="`#/news/detail?id=${news_one.id}`" v-if="news_one">
-              <!-- <div class="text1">{{ news_one.date }}</div> -->
-              <div class="text1">{{ $moment(news_one.date).format('YYYY-MM-DD') }}</div>
-              <div class="text2">{{ news_one.title }}</div>
-              <div class="text3">{{ news_one.content_text }}</div>
-            </a>
+            <div class="row1">
+              <a :href="`#/news/detail?id=${news_one.id}`" v-if="news_one">
+                <!-- <div class="text1">{{ news_one.date }}</div> -->
+                <div class="text1">{{ $moment(news_one.date).format('YYYY-MM-DD') }}</div>
+
+                <div class="text2">{{ news_one.title }}</div>
+                <div class="text3">{{ news_one.content_text }}</div>
+              </a>
+              <template v-if="showEditNews">
+                <el-icon
+                  class="btn"
+                  color="#30b690"
+                  size="16px"
+                  @click="handleShowAddNews(news_one)"
+                  ><Edit
+                /></el-icon>
+                <el-icon
+                  class="btn"
+                  color="var(--el-color-danger)"
+                  size="16px"
+                  @click="handleDeleteNews(news_one)"
+                  ><Delete
+                /></el-icon>
+              </template>
+            </div>
             <div class="row2" v-for="value in news_list" :key="value">
               <a :href="`#/news/detail?id=${value.id}`">
                 <span class="text1">{{ value.title }}</span>
               </a>
-            <template v-if="showEditNews">
-              <el-icon
-                class="btn"
-                color="#30b690"
-                size="16px"
-                @click="handleShowAddNews(value.id)"
-                ><Edit
-              /></el-icon>
-              <el-icon
-                class="btn"
-                color="var(--el-color-danger)"
-                size="16px"
-                @click="handleDeleteNews(value.id)"
-                ><Delete
-              /></el-icon>
-            </template>
+              <template v-if="showEditNews">
+                <el-icon class="btn" color="#30b690" size="16px" @click="handleShowAddNews(value)"
+                  ><Edit
+                /></el-icon>
+                <el-icon
+                  class="btn"
+                  color="var(--el-color-danger)"
+                  size="16px"
+                  @click="handleDeleteNews(value)"
+                  ><Delete
+                /></el-icon>
+              </template>
             </div>
             <el-pagination
               style="margin-left: auto; margin-top: auto"
@@ -142,7 +157,7 @@
             <IconBQ class="icon" />
             <span>通知</span>
           </div>
-          <div class="btn" @click="handleShowAddNotice(-1)">
+          <div class="btn" @click="handleShowAddNotice(null)">
             <IconSC class="icon2" />
             <span>上传</span>
           </div>
@@ -159,18 +174,14 @@
               <span class="text2">{{ $moment(value.date).format('YYYY年MM月DD日') }}</span>
             </a>
             <template v-if="showEditNotice">
-              <el-icon
-                class="btn"
-                color="#30b690"
-                size="16px"
-                @click="handleShowAddNotice(value.id)"
+              <el-icon class="btn" color="#30b690" size="16px" @click="handleShowAddNotice(value)"
                 ><Edit
               /></el-icon>
               <el-icon
                 class="btn"
                 color="var(--el-color-danger)"
                 size="16px"
-                @click="handleDeleteNotice(value.id)"
+                @click="handleDeleteNotice(value)"
                 ><Delete
               /></el-icon>
             </template>
@@ -265,13 +276,25 @@
     </div>
   </div>
 
-  <AddNews v-model:visible="showAddNews" type="0" @close="updateNews" />
-  <AddNews v-model:visible="showAddNotice" type="1" @close="updateNotice" />
+  <AddNews
+    v-model:visible="showAddNews"
+    type="0"
+    :title="addNewsTitle"
+    :id="editNewsId"
+    @close="updateNews"
+  />
+  <AddNews
+    v-model:visible="showAddNotice"
+    type="1"
+    :title="addNoticeTitle"
+    :id="editNoticeId"
+    @close="updateNotice"
+  />
 </template>
 
 <script setup>
 import AddNews from './News/AddNews.vue'
-import { newsList } from '@/api/home.js'
+import { newsList, newsDelete } from '@/api/home.js'
 
 import { Setting, Delete, Edit } from '@element-plus/icons-vue'
 
@@ -289,10 +312,12 @@ import IconBQ from '@/assets/images/Home/biaoqian.svg'
 import IconSC from '@/assets/images/Home/update.svg'
 
 const VITE_APP_BASE_API = import.meta.env.VITE_APP_BASE_API
+const { proxy } = getCurrentInstance()
 
 /************************ 新闻 ************************/
 const showAddNews = ref(false)
 const editNewsId = ref(-1)
+const addNewsTitle = ref('添加新闻')
 const showEditNews = ref(false)
 const news_params = ref({
   pageNum: 1,
@@ -327,19 +352,32 @@ function updateNews() {
 }
 updateNews()
 
-function handleShowAddNews(id) {
-  editNewsId.value = id
+function handleShowAddNews(row) {
+  addNewsTitle.value = !row ? '添加新闻' : '编辑新闻'
+  editNewsId.value = row.id
   showAddNews.value = true
 }
-function handleDeleteNews(id) {
-  // editNoticeId.value = id
-  // showAddNotice.value = true
+function handleDeleteNews(row) {
+  proxy
+    .$confirm('是否删除新闻——' + row.title + '？', '提示', {
+      confirmButtonText: '删除',
+      cancelButtonText: '取消',
+      type: 'error',
+    })
+    .then(function () {
+      return newsDelete(row.id)
+    })
+    .then(() => {
+      proxy.$message.success('删除成功')
+      updateNews()
+    })
+    .catch(() => {})
 }
-
 
 /************************ 通知 ************************/
 const showAddNotice = ref(false)
 const editNoticeId = ref(-1)
+const addNoticeTitle = ref('添加通知')
 const showEditNotice = ref(false)
 const notice_params = ref({
   pageNum: 1,
@@ -351,18 +389,31 @@ const notice_list = ref([])
 function updateNotice() {
   newsList(notice_params.value).then((res) => {
     notice_list.value = res.data.data || []
+    notice_total.value = res.data.total
   })
 }
 updateNotice()
-function handleShowAddNotice(id) {
-  editNoticeId.value = id
+function handleShowAddNotice(row) {
+  addNoticeTitle.value = !row ? '添加通知' : '编辑通知'
+  editNoticeId.value = row.id
   showAddNotice.value = true
 }
-function handleDeleteNotice(id) {
-  // editNoticeId.value = id
-  // showAddNotice.value = true
+function handleDeleteNotice(row) {
+  proxy
+    .$confirm('是否删除通知——' + row.title + '？', '提示', {
+      confirmButtonText: '删除',
+      cancelButtonText: '取消',
+      type: 'error',
+    })
+    .then(function () {
+      return newsDelete(row.id)
+    })
+    .then(() => {
+      proxy.$message.success('删除成功')
+      updateNotice()
+    })
+    .catch(() => {})
 }
-
 
 /************************ 数据库 ************************/
 const sjk_list = ref([])
@@ -372,8 +423,6 @@ fetch(import.meta.env.VITE_APP_PUBLIC_PATH + 'download_menu.json')
     sjk_list.value = tree
   })
 
-
-  
 /************************ 模型库 ************************/
 const mxk_list = [
   {
@@ -735,28 +784,38 @@ const dqk_list = [
       }
 
       .row1 {
-        cursor: pointer;
-        padding: 20px;
-        background: rgba(18, 179, 133, 0.05);
-        border-radius: 8px;
-        border: 1px solid #12b385;
-
         display: flex;
-        flex-direction: column;
-        gap: 8px;
-        .text1 {
-          font-size: 12px;
-          color: #9e9e9e;
+        align-items: center;
+        gap: 15px;
+        a {
+          flex: 1;
+          padding: 20px;
+          background: rgba(18, 179, 133, 0.05);
+          border-radius: 8px;
+          border: 1px solid #12b385;
+
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+
+          .text1 {
+            font-size: 12px;
+            color: #9e9e9e;
+          }
+          .text2 {
+            font-size: 16px;
+          }
+          .text3 {
+            font-size: 14px;
+            color: #666666;
+            overflow: hidden;
+            word-wrap: break-word; /* 旧版写法，兼容性较好 */
+            overflow-wrap: break-word; /* 新版写法，推荐使用 */
+          }
         }
-        .text2 {
-          font-size: 16px;
-        }
-        .text3 {
-          font-size: 14px;
-          color: #666666;
-          overflow: hidden;
-          word-wrap: break-word; /* 旧版写法，兼容性较好 */
-          overflow-wrap: break-word; /* 新版写法，推荐使用 */
+
+        .btn {
+          cursor: pointer;
         }
       }
 
