@@ -5,7 +5,7 @@
       <transition name="el-zoom-in-center">
         <div class="AddNews_dialog">
           <div class="AddNews_dialog_header">
-            <div class="text">上传新闻</div>
+            <div class="text">{{ title[type] }}</div>
             <el-icon class="close_btn" size="30px" @click="handleClose"><Close /></el-icon>
           </div>
           <el-scrollbar class="AddNews_dialog_bodyer">
@@ -95,7 +95,15 @@ const { proxy } = getCurrentInstance()
 const emit = defineEmits(['close', 'update:visible'])
 const props = defineProps({
   visible: Boolean,
+  type: {
+    type: String,
+    default: '0', // 0: 新闻，1：通知
+  },
 })
+const title = {
+  0: '上传新闻',
+  1: '上传通知',
+}
 const submiting = ref(false)
 const form = ref({
   title: '',
@@ -106,15 +114,15 @@ const form = ref({
   annexs: [],
 })
 const rules = {
-  title: [{ required: true, message: '请输入新闻标题', trigger: 'blur' }],
-  content: [{ required: true, message: '请输入新闻内容', trigger: 'blur' }],
+  title: [{ required: true, message: '请输入标题', trigger: 'blur' }],
+  content: [{ required: true, message: '请输入内容', trigger: 'blur' }],
 }
 const formRef = ref(null)
 const QuillEditorRef = ref(null)
 const uploadConfig = reactive({
   action: import.meta.env.VITE_APP_BASE_API + '/newsAnnex',
   data: {
-    type: 0,
+    type: 1,
   },
   accept: '',
   limit: 10,
@@ -126,7 +134,7 @@ const uploadConfig = reactive({
 const uploadConfig2 = reactive({
   action: import.meta.env.VITE_APP_BASE_API + '/newsAnnex',
   data: {
-    type: 1,
+    type: 0,
   },
   accept: 'image/*',
   limit: 1,
@@ -173,6 +181,7 @@ function onSubmit() {
         ],
         date: form.value.date,
         author: form.value.author,
+        type: props.type,
       }
       return newsAdd(_form)
     })

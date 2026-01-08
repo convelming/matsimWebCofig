@@ -25,8 +25,10 @@ const props = defineProps({
   check: Boolean,
 })
 
-const { check, indeterminate, getCheck, setCheck, handleChangeCheck } =
-  initCheck(getCurrentInstance())
+const { check, indeterminate, getCheck, setCheck, handleChangeCheck } = initCheck(
+  { emit },
+  props.check,
+)
 
 defineExpose({
   getCheck,

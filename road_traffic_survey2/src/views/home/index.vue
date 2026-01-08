@@ -14,9 +14,13 @@
         <div class="row" v-for="(v1, i1) in sjk_list" :key="i1">
           <div class="label">{{ v1.title }}</div>
           <div class="value">
-            <a href="#/" class="btn" target="_blank" v-for="(v2, i2) in v1.btns" :key="i2">{{
-              v2.title
-            }}</a>
+            <a
+              :href="`#/download?open=${v1.title},${v2.defOpen || v2.title}`"
+              class="btn"
+              v-for="(v2, i2) in v1.children"
+              :key="i2"
+              >{{ v2.title }}</a
+            >
           </div>
         </div>
       </div>
@@ -69,49 +73,117 @@
     <div class="center">
       <div class="box1 card">
         <div class="title_box">
-          <IconBQ class="icon" />
-          <div class="title">新闻</div>
-          <a class="btn" @click="showAddNews = true">
+          <div class="title">
+            <IconBQ class="icon" />
+            <span>新闻</span>
+          </div>
+          <div class="btn" @click="showAddNews = true">
             <IconSC class="icon2" />
             <span>上传</span>
-          </a>
+          </div>
+          <div class="btn" @click="showEditNews = !showEditNews">
+            <Setting class="icon2" />
+            <span v-if="showEditNews">完成</span>
+            <span v-else>编辑</span>
+          </div>
         </div>
         <div class="body1">
-          <div class="left_box"></div>
-          <div class="right_box">
+          <div class="left_box">
+            <el-image
+              :src="VITE_APP_BASE_API + news_cover"
+              fit="cover"
+              :preview-src-list="[VITE_APP_BASE_API + news_cover]"
+            ></el-image>
+          </div>
+          <div class="right_box" style="height: 400px">
             <a class="row1" :href="`#/news/detail?id=${news_one.id}`" v-if="news_one">
               <!-- <div class="text1">{{ news_one.date }}</div> -->
               <div class="text1">{{ $moment(news_one.date).format('YYYY-MM-DD') }}</div>
               <div class="text2">{{ news_one.title }}</div>
               <div class="text3">{{ news_one.content_text }}</div>
             </a>
-            <a
-              class="row2"
-              :href="`#/news/detail?id=${value.id}`"
-              v-for="value in news_list"
-              :key="value"
-            >
-              <span class="text1">{{ value.title }}</span>
-              <!-- <span class="text2">{{ $moment(value.date).format('YYYY年MM月DD日') }}</span> -->
-            </a>
+            <div class="row2" v-for="value in news_list" :key="value">
+              <a :href="`#/news/detail?id=${value.id}`">
+                <span class="text1">{{ value.title }}</span>
+              </a>
+            <template v-if="showEditNews">
+              <el-icon
+                class="btn"
+                color="#30b690"
+                size="16px"
+                @click="handleShowAddNews(value.id)"
+                ><Edit
+              /></el-icon>
+              <el-icon
+                class="btn"
+                color="var(--el-color-danger)"
+                size="16px"
+                @click="handleDeleteNews(value.id)"
+                ><Delete
+              /></el-icon>
+            </template>
+            </div>
+            <el-pagination
+              style="margin-left: auto; margin-top: auto"
+              @current-change="updateNews"
+              v-model:currentPage="news_params.pageNum"
+              :page-size="news_params.pageSize"
+              layout=" prev, pager, next, total"
+              :total="news_total"
+              :pager-count="5"
+            />
           </div>
         </div>
       </div>
 
       <div class="box1 card">
         <div class="title_box">
-          <IconBQ class="icon" />
-          <div class="title">通知</div>
-          <a class="btn">
+          <div class="title">
+            <IconBQ class="icon" />
+            <span>通知</span>
+          </div>
+          <div class="btn" @click="handleShowAddNotice(-1)">
             <IconSC class="icon2" />
             <span>上传</span>
-          </a>
+          </div>
+          <div class="btn" @click="showEditNotice = !showEditNotice">
+            <Setting class="icon2" />
+            <span v-if="showEditNotice">完成</span>
+            <span v-else>编辑</span>
+          </div>
         </div>
-        <div class="body2">
-          <a class="row2" href="" v-for="value in 5" :key="value">
-            <span class="text1">院向联合国副秘书长、人居署执行主任报告广州可持续发展实践</span>
-            <span class="text2">2025年8月19日</span>
-          </a>
+        <div class="body2" style="height: 360px">
+          <div class="row2" v-for="value in notice_list" :key="value">
+            <a :href="`#/notice/detail?id=${value.id}`">
+              <span class="text1">{{ value.title }}</span>
+              <span class="text2">{{ $moment(value.date).format('YYYY年MM月DD日') }}</span>
+            </a>
+            <template v-if="showEditNotice">
+              <el-icon
+                class="btn"
+                color="#30b690"
+                size="16px"
+                @click="handleShowAddNotice(value.id)"
+                ><Edit
+              /></el-icon>
+              <el-icon
+                class="btn"
+                color="var(--el-color-danger)"
+                size="16px"
+                @click="handleDeleteNotice(value.id)"
+                ><Delete
+              /></el-icon>
+            </template>
+          </div>
+          <el-pagination
+            style="margin: auto auto 0 auto"
+            @current-change="updateNotice"
+            v-model:currentPage="notice_params.pageNum"
+            :page-size="notice_params.pageSize"
+            layout=" prev, pager, next, total"
+            :total="notice_total"
+            :pager-count="5"
+          />
         </div>
       </div>
     </div>
@@ -193,12 +265,15 @@
     </div>
   </div>
 
-  <AddNews v-model:visible="showAddNews" />
+  <AddNews v-model:visible="showAddNews" type="0" @close="updateNews" />
+  <AddNews v-model:visible="showAddNotice" type="1" @close="updateNotice" />
 </template>
 
 <script setup>
 import AddNews from './News/AddNews.vue'
 import { newsList } from '@/api/home.js'
+
+import { Setting, Delete, Edit } from '@element-plus/icons-vue'
 
 import IconSJK from '@/assets/images/Home/icon_shujuku.svg'
 import IconMXK from '@/assets/images/Home/icon_modelbase.svg'
@@ -213,115 +288,93 @@ import IconDQK from '@/assets/images/Home/icon_diqu.svg'
 import IconBQ from '@/assets/images/Home/biaoqian.svg'
 import IconSC from '@/assets/images/Home/update.svg'
 
-const showAddNews = ref(false)
+const VITE_APP_BASE_API = import.meta.env.VITE_APP_BASE_API
 
+/************************ 新闻 ************************/
+const showAddNews = ref(false)
+const editNewsId = ref(-1)
+const showEditNews = ref(false)
+const news_params = ref({
+  pageNum: 1,
+  pageSize: 5,
+  type: 0,
+})
+const news_total = ref(0)
 const news_one = ref(null)
 const news_list = ref([])
-newsList().then((res) => {
-  const one = res.data.data[0]
-  if (one) {
-    one.content_text = one.content.replace(/<[^>]+>/g, '').replace(/&[^&]+;/g, '')
-    if (one.content_text.length > 100) {
-      one.content_text = one.content_text.substring(0, 100) + '...'
+const news_cover = ref('')
+function updateNews() {
+  newsList(news_params.value).then((res) => {
+    const one = res.data.data[0]
+    if (one) {
+      one.content_text =
+        one.content
+          ?.replace(/<[^>]+>/g, '')
+          .replace(/&[^&]+;/g, '')
+          .substring(0, 200) || ''
+      news_one.value = one
+    } else {
+      news_one.value = null
     }
-    news_one.value = one
-  } else {
-    news_one.value = null
-  }
-  news_list.value = res.data.data?.slice(1, 6)
-})
+    news_list.value = res.data.data?.slice(1)
+    news_total.value = res.data.total
 
-const sjk_list = [
-  {
-    title: '城市底座：',
-    btns: [
-      {
-        title: '区划边界',
-        path: '',
-      },
-      {
-        title: '土地利用',
-        path: '',
-      },
-      {
-        title: '建筑白模',
-        path: '',
-      },
-      {
-        title: 'POI',
-        path: '',
-      },
-    ],
-  },
-  {
-    title: '职住通勤：',
-    btns: [
-      {
-        title: '通勤OD',
-        path: '',
-      },
-      {
-        title: '普查人口',
-        path: '',
-      },
-    ],
-  },
-  {
-    title: '道路流量：',
-    btns: [
-      {
-        title: '路段流量',
-        path: '',
-      },
-      {
-        title: '交叉口流量',
-        path: '',
-      },
-      {
-        title: '道路路况',
-        path: '',
-      },
-    ],
-  },
-  {
-    title: '公共交通：',
-    btns: [
-      {
-        title: '公共交通',
-        path: '',
-      },
-      {
-        title: '地铁网线',
-        path: '',
-      },
-      {
-        title: 'PTAL',
-        path: '',
-      },
-      {
-        title: '公交客流',
-        path: '',
-      },
-    ],
-  },
-  {
-    title: '货运物流：',
-    btns: [
-      {
-        title: '企业位置',
-        path: '',
-      },
-      {
-        title: '星级酒店',
-        path: '',
-      },
-      {
-        title: '末端物流网点',
-        path: '',
-      },
-    ],
-  },
-]
+    const hasCoverNews = res.data.data.find((v) => v.annexs && v.annexs.find((v2) => v2.type == 0))
+    if (hasCoverNews) {
+      news_cover.value = hasCoverNews.annexs.find((v) => v.type == 0).url
+    }
+  })
+}
+updateNews()
+
+function handleShowAddNews(id) {
+  editNewsId.value = id
+  showAddNews.value = true
+}
+function handleDeleteNews(id) {
+  // editNoticeId.value = id
+  // showAddNotice.value = true
+}
+
+
+/************************ 通知 ************************/
+const showAddNotice = ref(false)
+const editNoticeId = ref(-1)
+const showEditNotice = ref(false)
+const notice_params = ref({
+  pageNum: 1,
+  pageSize: 5,
+  type: 1,
+})
+const notice_total = ref(0)
+const notice_list = ref([])
+function updateNotice() {
+  newsList(notice_params.value).then((res) => {
+    notice_list.value = res.data.data || []
+  })
+}
+updateNotice()
+function handleShowAddNotice(id) {
+  editNoticeId.value = id
+  showAddNotice.value = true
+}
+function handleDeleteNotice(id) {
+  // editNoticeId.value = id
+  // showAddNotice.value = true
+}
+
+
+/************************ 数据库 ************************/
+const sjk_list = ref([])
+fetch(import.meta.env.VITE_APP_PUBLIC_PATH + 'download_menu.json')
+  .then((res) => res.json())
+  .then((tree) => {
+    sjk_list.value = tree
+  })
+
+
+  
+/************************ 模型库 ************************/
 const mxk_list = [
   {
     title: '道路路况',
@@ -598,19 +651,22 @@ const dqk_list = [
           rgba(17, 190, 141, 0.2) 0%,
           rgba(18, 179, 133, 0.05) 100%
         );
-        gap: 8px;
+        gap: 15px;
         .title {
           flex: 1;
           width: 0;
+          display: flex;
+          align-items: center;
           font-weight: 600;
           font-size: 24px;
-        }
-        .icon {
-          position: relative;
-          top: 3px;
-          width: 14px;
-          height: 16px;
-          display: block;
+          gap: 8px;
+          .icon {
+            position: relative;
+            top: 3px;
+            width: 14px;
+            height: 16px;
+            display: block;
+          }
         }
         .btn {
           cursor: pointer;
@@ -634,20 +690,44 @@ const dqk_list = [
         align-items: stretch;
         gap: 20px;
         .left_box {
-          width: 0;
-          flex-grow: 3.4;
+          position: relative;
+          width: 50%;
           border-radius: 8px;
           background-color: #f5f5fa;
+          overflow: hidden;
+          .el-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+          }
         }
         .right_box {
           width: 0;
-          flex-grow: 3.6;
+          flex: 1;
           display: flex;
           flex-direction: column;
           gap: 20px;
+          .row1 {
+            .text2 {
+              display: -webkit-box; /* 必须 */
+              -webkit-box-orient: vertical; /* 必须 */
+              -webkit-line-clamp: 2; /* 显示的行数 */
+              overflow: hidden;
+            }
+            .text3 {
+              display: -webkit-box; /* 必须 */
+              -webkit-box-orient: vertical; /* 必须 */
+              -webkit-line-clamp: 3; /* 显示的行数 */
+              overflow: hidden;
+            }
+          }
         }
       }
       .body2 {
+        box-sizing: border-box;
         padding: 30px;
         display: flex;
         flex-direction: column;
@@ -674,43 +754,57 @@ const dqk_list = [
         .text3 {
           font-size: 14px;
           color: #666666;
+          overflow: hidden;
+          word-wrap: break-word; /* 旧版写法，兼容性较好 */
+          overflow-wrap: break-word; /* 新版写法，推荐使用 */
         }
       }
 
       .row2 {
-        cursor: pointer;
         display: flex;
         align-items: center;
-        gap: 8px;
-        &::before {
-          display: block;
-          content: '';
-          width: 6px;
-          height: 6px;
-          background: #3ba185;
-          border-radius: 3px;
-        }
+        gap: 15px;
 
-        .text1 {
+        a {
+          display: flex;
+          align-items: center;
+
           flex: 1;
           width: 0;
-          overflow: hidden;
-          white-space: nowrap;
-          text-overflow: ellipsis;
-          font-size: 16px;
-        }
+          gap: 8px;
 
-        .text2 {
-          flex-grow: 0;
-          font-size: 16px;
-          color: #666666;
-          white-space: nowrap;
-        }
-        &:hover {
-          .text1,
-          .text2 {
-            color: #247ce7;
+          &::before {
+            display: block;
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: #3ba185;
+            border-radius: 3px;
           }
+          .text1 {
+            flex: 1;
+            width: 0;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            font-size: 16px;
+          }
+
+          .text2 {
+            flex-grow: 0;
+            font-size: 16px;
+            color: #666666;
+            white-space: nowrap;
+          }
+          &:hover {
+            .text1,
+            .text2 {
+              color: #247ce7;
+            }
+          }
+        }
+        .btn {
+          cursor: pointer;
         }
       }
     }

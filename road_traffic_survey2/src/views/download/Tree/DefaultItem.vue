@@ -7,7 +7,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup name="DefaultItem">
 
 const emit = defineEmits(['check-change'])
 const props = defineProps({

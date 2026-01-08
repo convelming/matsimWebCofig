@@ -1,9 +1,8 @@
 import { ref, getCurrentInstance } from 'vue'
 
-export function initCheck(ctx) {
+export function initCheck(ctx, defaultValue = false) {
   const { emit } = ctx || getCurrentInstance()
-
-  const check = ref(false)
+  const check = ref(defaultValue)
   const indeterminate = ref(false)
   function getCheck() {
     return { check: check.value, indeterminate: indeterminate.value }
@@ -14,5 +13,8 @@ export function initCheck(ctx) {
   function handleChangeCheck() {
     emit('check-change', getCheck())
   }
+  onMounted(() => {
+    handleChangeCheck()
+  })
   return { check, indeterminate, getCheck, setCheck, handleChangeCheck }
 }

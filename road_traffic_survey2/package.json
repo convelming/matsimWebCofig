@@ -17,6 +17,7 @@
     "axios": "^1.11.0",
     "echarts": "5.5.1",
     "element-plus": "^2.11.1",
+    "file-saver": "^2.0.5",
     "jszip": "^3.10.1",
     "konva": "^9.3.14",
     "moment": "^2.29.3",

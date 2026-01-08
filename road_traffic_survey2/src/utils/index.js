@@ -655,9 +655,33 @@ export function selectFile(accept = '*/*') {
     const input = document.createElement('input')
     input.type = 'file'
     input.accept = accept
+    input.style = 'position:absolute;width:0;height:0;top: -100px;'
+    document.body.appendChild(input)
     input.onchange = () => {
       resolve(input.files[0])
     }
     input.click()
+    document.body.removeChild(input)
+  })
+}
+
+//string转file
+export function stringToFile(str, filename) {
+  let blob = new Blob([str])
+  return new File([blob], filename)
+}
+//file转string
+
+export function fileToString(file) {
+  return new Promise((resolve, reject) => {
+    const fileReader = new FileReader()
+    fileReader.onload = (e) => {
+      resolve(e.target.result)
+    }
+    // readAsDataURL
+    fileReader.readAsText(file)
+    fileReader.onerror = () => {
+      reject(new Error('fileToString error'))
+    }
   })
 }

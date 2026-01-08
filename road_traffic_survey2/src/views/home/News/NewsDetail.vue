@@ -1,7 +1,12 @@
 <!-- NewsDetail -->
 <template>
   <div class="NewsDetail">
-    <div class="box1">首页 > 新闻管理 > 新闻动态 > <span class="end">院内新闻</span></div>
+    <div class="box1" v-if="route.meta.type == 0">
+      首页 > 新闻管理 > 新闻动态 > <span class="end">院内新闻</span>
+    </div>
+    <div class="box1" v-if="route.meta.type == 1">
+      首页 > 通知管理 > 通知动态 > <span class="end">院内通知</span>
+    </div>
     <div class="title">{{ detail.title }}</div>
     <div class="info">
       <div class="time">{{ $moment(detail.date).format('YYYY-MM-DD HH:mm') }}</div>
@@ -80,7 +85,7 @@ newsDetail(route.query.id).then((res) => {
   const { annexs, ...data } = res.data
   console.log(annexs, data)
 
-  file_list.value = annexs
+  file_list.value = annexs?.filter((v) => v.type == 1)
   detail.value = data
 })
 

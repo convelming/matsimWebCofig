@@ -77,11 +77,7 @@
                 </el-form-item>
                 <template v-if="pointColorBarParams.type == 'Number'">
                   <el-form-item label="分区模式">
-                    <el-select
-                      style="width: 150px"
-                      v-model="pointColorBarParams.model"
-                      @change=""
-                    >
+                    <el-select style="width: 150px" v-model="pointColorBarParams.model" @change="">
                       <el-option label="Equal Count" value="count" />
                       <el-option label="Equal Interval" value="interval" />
                     </el-select>
@@ -170,10 +166,6 @@
               <el-form-item label="Opacity" prop="lineOpacity">
                 <el-slider v-model="geojsonParams.lineOpacity" :min="0" :max="1" :step="0.1" />
               </el-form-item>
-              <el-form-item label="Color" prop="lineColor">
-                <el-color-picker v-model="geojsonParams.lineColor" />
-                <span style="margin-left: 10px">{{ geojsonParams.lineColor }}</span>
-              </el-form-item>
               <el-form-item label="Width" prop="lineAutoWidth">
                 <el-input-number v-model="geojsonParams.lineAutoWidth" :min="0" :step="0.1" />
               </el-form-item>
@@ -194,20 +186,20 @@
                 <el-input-number v-model="geojsonParams.lineAnimation" :min="0" :step="0.1" />
               </el-form-item> -->
               <el-form-item label="Style" prop="lineStyle">
-                <el-radio-group v-model="geojsonParams.lineWidthStyle">
+                <el-radio-group v-model="geojsonParams.lineStyle">
                   <el-radio-button :label="LINE_STYLE.NONE">不显示</el-radio-button>
                   <el-radio-button :label="LINE_STYLE.SOLID">实线</el-radio-button>
                   <el-radio-button :label="LINE_STYLE.DASHED">虚线</el-radio-button>
                 </el-radio-group>
               </el-form-item>
-              
+
               <el-divider content-position="left"></el-divider>
               <el-form-item label="ColorType" prop="lineColorType">
                 <el-radio-group v-model="geojsonParams.lineColorType">
                   <el-radio-button label="color">单一颜色</el-radio-button>
                   <el-radio-button label="colorBar">分区颜色</el-radio-button>
                 </el-radio-group>
-              </el-form-item> 
+              </el-form-item>
               <el-form-item
                 label="Color"
                 prop="lineColor"
@@ -234,11 +226,7 @@
                 </el-form-item>
                 <template v-if="lineColorBarParams.type == 'Number'">
                   <el-form-item label="分区模式">
-                    <el-select
-                      style="width: 150px"
-                      v-model="lineColorBarParams.model"
-                      @change=""
-                    >
+                    <el-select style="width: 150px" v-model="lineColorBarParams.model" @change="">
                       <el-option label="Equal Count" value="count" />
                       <el-option label="Equal Interval" value="interval" />
                     </el-select>
@@ -485,10 +473,14 @@
         </el-collapse>
       </div>
     </el-scrollbar>
+    <div class="GeoJSONParams_footer">
+      <el-button @click="handleImportConfig">加载配置</el-button>
+      <el-button type="primary" @click="handleExportConfig">保存配置</el-button>
+    </div>
   </MDialog>
 </template>
 
-<script setup>
+<script setup name="GeoJSONItem">
 import { initCheck } from './mixins'
 import { Setting, Download, Loading, Delete, Plus } from '@element-plus/icons-vue'
 import {
@@ -499,9 +491,11 @@ import {
   LINE_WIDTH_STYLE,
 } from '@/utils/MapLayer/GeoJSONLayer'
 import { getColorBarByPropertie } from '@/utils/MapLayer/ColorBar2DUtil'
-import { injectSync, addWatch } from '@/utils/index'
-import { getCurrentInstance, inject, onUnmounted, reactive, ref } from 'vue'
+import { injectSync, addWatch, selectFile, fileToString, stringToFile } from '@/utils/index'
 
+import { saveAs } from 'file-saver'
+
+const { proxy } = getCurrentInstance()
 const emit = defineEmits(['check-change'])
 const props = defineProps({
   id: String,
@@ -511,12 +505,16 @@ const props = defineProps({
   check: Boolean,
   path: String,
   download: String,
+  config: String,
 })
 
-const { check, indeterminate, getCheck, setCheck, handleChangeCheck } = initCheck({ emit })
+const { check, indeterminate, getCheck, setCheck, handleChangeCheck } = initCheck(
+  { emit },
+  props.check,
+)
 
 let _Map = null
-const geojsonParams = reactive({
+const geojsonParams = ref({
   ...getGeoJSONLayerParams(),
   // ******************** 点 ******************** //
   pointColorType: 'color',
@@ -525,9 +523,9 @@ const geojsonParams = reactive({
   // ******************** 面 ******************** //
   polygonColorType: 'color',
 })
-const _GeoJSONLayer = new GeoJSONLayer(geojsonParams)
+const _GeoJSONLayer = new GeoJSONLayer(geojsonParams.value)
 
-const activeNames = ref(['PointSetting', 'PolygonSetting'])
+const activeNames = ref(['PointSetting', 'LineSetting', 'PolygonSetting'])
 const loaded = ref(false)
 const loading = ref(false)
 const showGeoJSONParams = inject('showGeoJSONParams')
@@ -554,10 +552,10 @@ addWatch(
   },
 )
 addWatch(
-  () => geojsonParams.pointValue,
+  () => geojsonParams.value.pointValue,
   () => {
     try {
-      const data = properties.value[geojsonParams.pointValue]
+      const data = properties.value[geojsonParams.value.pointValue]
       if (data.type == 'Number') {
         pointColorBarParams.value = {
           type: 'Number',
@@ -582,17 +580,52 @@ addWatch(
           ],
         }
       }
-      geojsonParams.pointColorBar = getColorBarByPropertie(data, pointColorBarParams.value)
+      geojsonParams.value.pointColorBar = getColorBarByPropertie(data, pointColorBarParams.value)
     } catch (error) {
       pointColorBarParams.value = {}
     }
   },
 )
 addWatch(
-  () => geojsonParams.polygonValue,
+  () => geojsonParams.value.lineValue,
   () => {
     try {
-      const data = properties.value[geojsonParams.polygonValue]
+      const data = properties.value[geojsonParams.value.lineValue]
+      if (data.type == 'Number') {
+        lineColorBarParams.value = {
+          type: 'Number',
+          model: 'count', // count interval
+          modelClass: 5,
+          labelRule: undefined, // null || undefined 使用`${min} ~ ${max}` en 使用字母顺序
+          toFixed: 2,
+          colorList: ['#FEE0D2', '#B50404'],
+        }
+      } else if (data.type == 'String') {
+        lineColorBarParams.value = {
+          type: 'String',
+          colorList: [
+            '#91cc75',
+            '#fac858',
+            '#ee6666',
+            '#73c0de',
+            '#3ba272',
+            '#fc8452',
+            '#9a60b4',
+            '#ea7ccc',
+          ],
+        }
+      }
+      geojsonParams.value.lineColorBar = getColorBarByPropertie(data, lineColorBarParams.value)
+    } catch (error) {
+      lineColorBarParams.value = {}
+    }
+  },
+)
+addWatch(
+  () => geojsonParams.value.polygonValue,
+  () => {
+    try {
+      const data = properties.value[geojsonParams.value.polygonValue]
       if (data.type == 'Number') {
         polygonColorBarParams.value = {
           type: 'Number',
@@ -647,44 +680,79 @@ function handleDownload() {
 async function loadData() {
   if (loading.value) return
   loading.value = true
-  try {
-    const res = await fetch(props.path)
-    const data = await res.text()
-    const json = await parserGeoJSON(data)
-    hasPoint.value = json.pointArray.length > 0
-    hasLine.value = json.lineArray.length > 0
-    hasPolygon.value = json.polygonArray.length > 0
-    properties.value = json.propertiesLabels
-    console.log(json)
+  fetch(props.path)
+    .then((res) => res.text())
+    .then((str) => parserGeoJSON(str))
+    .then((json) => {
+      hasPoint.value = json.pointArray.length > 0
+      hasLine.value = json.lineArray.length > 0
+      hasPolygon.value = json.polygonArray.length > 0
+      properties.value = json.propertiesLabels
+      console.log(json)
 
-    _GeoJSONLayer.setGeoJsonData(json)
-    loaded.value = true
-    loading.value = false
-  } catch (error) {
-    console.log(error)
-    loaded.value = false
-    loading.value = false
-  }
+      _GeoJSONLayer.setGeoJsonData(json)
+      loaded.value = true
+      loading.value = false
+    })
+    .catch((error) => {
+      console.log(error)
+      loaded.value = false
+      loading.value = false
+    })
+  fetch(props.config)
+    .then((res) => res.json())
+    .then((configJson) => {
+      if (configJson.geojsonParams) geojsonParams.value = configJson.geojsonParams
+      if (configJson.pointColorBarParams) pointColorBarParams.value = configJson.pointColorBarParams
+      if (configJson.lineColorBarParams) lineColorBarParams.value = configJson.lineColorBarParams
+      if (configJson.polygonColorBarParams)
+        polygonColorBarParams.value = configJson.polygonColorBarParams
+    })
+
+  // try {
+  //   const res = await fetch(props.path)
+  //   const data = await res.text()
+  //   const json = await parserGeoJSON(data)
+  //   hasPoint.value = json.pointArray.length > 0
+  //   hasLine.value = json.lineArray.length > 0
+  //   hasPolygon.value = json.polygonArray.length > 0
+  //   properties.value = json.propertiesLabels
+  //   console.log(json)
+
+  //   _GeoJSONLayer.setGeoJsonData(json)
+  //   loaded.value = true
+  //   loading.value = false
+  // } catch (error) {
+  //   console.log(error)
+  //   loaded.value = false
+  //   loading.value = false
+  // }
 }
 function handleAutoGetColorBar(key) {
   try {
     switch (key) {
       case 'point':
         {
-          const data = properties.value[geojsonParams.pointValue]
-          geojsonParams.pointColorBar = getColorBarByPropertie(data, pointColorBarParams.value)
+          const data = properties.value[geojsonParams.value.pointValue]
+          geojsonParams.value.pointColorBar = getColorBarByPropertie(
+            data,
+            pointColorBarParams.value,
+          )
         }
         break
       case 'line':
         {
-          const data = properties.value[geojsonParams.lineValue]
-          geojsonParams.lineColorBar = getColorBarByPropertie(data, lineColorBarParams.value)
+          const data = properties.value[geojsonParams.value.lineValue]
+          geojsonParams.value.lineColorBar = getColorBarByPropertie(data, lineColorBarParams.value)
         }
         break
       case 'polygon':
         {
-          const data = properties.value[geojsonParams.polygonValue]
-          geojsonParams.polygonColorBar = getColorBarByPropertie(data, polygonColorBarParams.value)
+          const data = properties.value[geojsonParams.value.polygonValue]
+          geojsonParams.value.polygonColorBar = getColorBarByPropertie(
+            data,
+            polygonColorBarParams.value,
+          )
         }
         break
     }
@@ -697,17 +765,17 @@ function handleDeleteColorBar(key, index) {
     switch (key) {
       case 'point':
         {
-          geojsonParams.pointColorBar.splice(index, 1)
+          geojsonParams.value.pointColorBar.splice(index, 1)
         }
         break
       case 'line':
         {
-          geojsonParams.lineColorBar.splice(index, 1)
+          geojsonParams.value.lineColorBar.splice(index, 1)
         }
         break
       case 'polygon':
         {
-          geojsonParams.polygonColorBar.splice(index, 1)
+          geojsonParams.value.polygonColorBar.splice(index, 1)
         }
         break
     }
@@ -728,17 +796,17 @@ function handleAddNumberColorBar(key) {
     switch (key) {
       case 'point':
         {
-          geojsonParams.pointColorBar.push(item)
+          geojsonParams.value.pointColorBar.push(item)
         }
         break
       case 'line':
         {
-          geojsonParams.lineColorBar.push(item)
+          geojsonParams.value.lineColorBar.push(item)
         }
         break
       case 'polygon':
         {
-          geojsonParams.polygonColorBar.push(item)
+          geojsonParams.value.polygonColorBar.push(item)
         }
         break
     }
@@ -760,23 +828,52 @@ function handleAddStringColorBar(key) {
     switch (key) {
       case 'point':
         {
-          geojsonParams.pointColorBar.push(item)
+          geojsonParams.value.pointColorBar.push(item)
         }
         break
       case 'line':
         {
-          geojsonParams.lineColorBar.push(item)
+          geojsonParams.value.lineColorBar.push(item)
         }
         break
       case 'polygon':
         {
-          geojsonParams.polygonColorBar.push(item)
+          geojsonParams.value.polygonColorBar.push(item)
         }
         break
     }
   } catch (error) {
     console.error(error)
   }
+}
+
+function handleImportConfig() {
+  selectFile()
+    .then((file) => fileToString(file))
+    .then((configJsonStr) => {
+      const configJson = JSON.parse(configJsonStr)
+      if (configJson.geojsonParams) geojsonParams.value = configJson.geojsonParams
+      if (configJson.pointColorBarParams) pointColorBarParams.value = configJson.pointColorBarParams
+      if (configJson.lineColorBarParams) lineColorBarParams.value = configJson.lineColorBarParams
+      if (configJson.polygonColorBarParams)
+        polygonColorBarParams.value = configJson.polygonColorBarParams
+    })
+}
+function handleExportConfig() {
+  const config = {
+    geojsonParams: geojsonParams.value,
+    pointColorBarParams: pointColorBarParams.value,
+    lineColorBarParams: lineColorBarParams.value,
+    polygonColorBarParams: polygonColorBarParams.value,
+  }
+  const blob = new Blob([JSON.stringify(config)], { type: 'application/json' })
+  const link = document.createElement('a')
+  link.href = URL.createObjectURL(blob)
+  // link.download = `${props.title}_${proxy.$moment().format('YYYYMMDDHHmmss')}.config.json`
+  const fileName = props.path.split('/').pop().split('.')[0]
+  link.download = `${fileName}.config.json`
+  link.click()
+  URL.revokeObjectURL(link.href)
 }
 
 injectSync('MapRef').then((map) => {
@@ -798,7 +895,7 @@ defineExpose({
 
 <style lang="scss" scoped>
 .flex-scrollbar {
-  max-height: calc(100vh - 200px);
+  max-height: calc(100vh - 300px);
   min-height: 200px;
 }
 .GeoJSONItem {
@@ -812,16 +909,22 @@ defineExpose({
 .GeoJSONParams_body {
   position: relative;
   padding: 20px;
-  
+
   :deep(.el-collapse-item__title) {
     font-size: 16px;
     display: flex;
     gap: 5px;
     align-items: center;
   }
-  :deep(.el-collapse-item__content){
+  :deep(.el-collapse-item__content) {
     padding: 0 15px;
   }
+}
+.GeoJSONParams_footer {
+  padding: 0 20px 20px 20px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
 }
 
 .color_bar {

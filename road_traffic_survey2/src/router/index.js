@@ -18,11 +18,17 @@ const router = createRouter({
         {
           path: '/news/detail',
           name: 'NewsDetail',
+          meta: {
+            type: 0,
+          },
           component: () => import('@/views/home/News/NewsDetail.vue'),
         },
         {
           path: '/notice/detail',
           name: 'NoticeDetail',
+          meta: {
+            type: 1,
+          },
           component: () => import('@/views/home/News/NewsDetail.vue'),
         },
       ],
