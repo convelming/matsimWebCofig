@@ -38,7 +38,7 @@ class Language {
       },
       computed: {
         $l() {
-          return (key) => _self.internationalize(key, this.language, this.page_language);
+          return (key) => _self.internationalize(key, this.language, this.page_language) || key;
         },
       },
       beforeCreate() {

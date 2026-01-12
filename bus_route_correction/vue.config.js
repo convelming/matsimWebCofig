@@ -54,9 +54,21 @@ module.exports = defineConfig({
 
   pages: {
     pt: {
-      entry: "./src/main.js",
-      template: "./public/pt.html",
+      entry: "./src/pages/pt/main.js",
+      template: "./public/index.html",
       fliename: "pt.html",
+      name: process.env.VUE_APP_TITLE,
+    },
+    index: {
+      entry: "./src/pages/index/main.js",
+      template: "./public/index.html",
+      fliename: "index.html",
+      name: process.env.VUE_APP_TITLE,
+    },
+    home: {
+      entry: "./src/pages/home/main.js",
+      template: "./public/index.html",
+      fliename: "home.html",
       name: process.env.VUE_APP_TITLE,
     },
   },
@@ -68,13 +80,12 @@ module.exports = defineConfig({
     //   },
     // },
   },
-  // configureWebpack: {
-  //   externals: {
-  //     "vue": "Vue",
-  //     "element-ui": "ELEMENT",
-  //     "proj4": "proj4",
-  //   }
-  // },
+  configureWebpack: {
+    externals: {
+      // "proj4": "^2.9.0",
+      proj4: "proj4",
+    },
+  },
   chainWebpack: (config) => {
     // 配置 index.html 中的 htmlWebpackPlugin.options
     // config.plugin("html").tap((args) => {

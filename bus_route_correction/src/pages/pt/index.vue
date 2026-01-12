@@ -490,10 +490,10 @@
 </language>
 
 <script>
-import OAHelpDialog from "./operationsAnalysis/component/HelpDialog/index2.vue";
-import PAHelpDialog from "./planAdjustment/component/HelpDialog/index.vue";
-import CAHelpDialog from "./comparativeAnalysis/component/HelpDialog/index2.vue";
-import SEHelpDialog from "./systemEvaluation/component/HelpDialog/index.vue";
+import OAHelpDialog from "@/views/operationsAnalysis/component/HelpDialog/index2.vue";
+import PAHelpDialog from "@/views/planAdjustment/component/HelpDialog/index.vue";
+import CAHelpDialog from "@/views/comparativeAnalysis/component/HelpDialog/index2.vue";
+import SEHelpDialog from "@/views/systemEvaluation/component/HelpDialog/index.vue";
 import { updateScale } from "@/api/database";
 
 export default {
