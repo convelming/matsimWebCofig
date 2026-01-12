@@ -1,13 +1,4 @@
-import {
-  getAllBase,
-  getAllScheme,
-  loadScheme,
-  runMatsim,
-  addScheme,
-  saveScheme,
-  delScheme,
-  copyScheme
-} from "@/api/database";
+import { getDefaultBase, getAllBase, getAllScheme, loadScheme, runMatsim, addScheme, saveScheme, delScheme, copyScheme } from "@/api/database";
 
 const datasource = {
   state: {
@@ -66,6 +57,16 @@ const datasource = {
     },
     setDataSource({ commit }, dataSource) {
       commit("SET_DATA_SOURCE", dataSource);
+    },
+
+    async getDefaultBase({ commit, state, dispatch }) {
+      try {
+        const res = await getDefaultBase();
+        const [database, datasource] = res.data.name.split("/");
+        commit("SET_DATA_BASE", database);
+        commit("SET_DATA_SOURCE", datasource);
+        return res;
+      } catch (error) {}
     },
 
     async getDataBaseList({ commit }) {

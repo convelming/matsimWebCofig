@@ -225,15 +225,8 @@ export default {
   data() {
     return {
       page_language: "zh-CN",
-      // language: language,
-      dataBaseListLoading: false,
-      dataBaseList: [],
-      dataSourceListLoading: false,
-      dataSourceList: [],
 
-      defaultDataSource: "",
-
-      dataBase: "",
+      defaultDataSource: {},
 
       dataBaseDialog: {
         show: false,
@@ -248,19 +241,36 @@ export default {
       },
     };
   },
-  // computed: {
-  //   $l() {
-  //     return (key) => internationalize(key, this.language, this.page_language);
-  //   },
-  // },
-  created() {
+  computed: {
+    dataBase() {
+      return this.$store.getters.dataBase;
+    },
+    dataBaseList() {
+      return this.$store.getters.dataBaseList;
+    },
+    dataBaseListLoading() {
+      return this.$store.getters.dataBaseListLoading;
+    },
+    dataSource() {
+      return this.$store.getters.dataSource;
+    },
+    dataSourceList() {
+      return this.$store.getters.dataSourceList;
+    },
+    dataSourceListLoading() {
+      return this.$store.getters.dataSourceListLoading;
+    },
+  },
+  async created() {
     this.page_language = sessionStorage.getItem("language") || this.page_language;
-    Promise.all([this.handleGetDataBaseList(), this.getDefaultDataSource()]).then((res) => {
-      this.dataBase = res[1].dataBase;
-      this.handleGetDateSourceList(res[1].dataBase);
-    });
-    this._interval = setInterval(() => {
-      this.getDefaultDataSource();
+    await this.getDefaultDataSource();
+    await this.handleGetDataBaseList();
+    await this.handleGetDateSourceList(this.dataBase);
+    this._interval = setInterval(async () => {
+      await this.getDefaultDataSource();
+      if (this.defaultDataSource.loadStatus == "已加载") {
+        clearInterval(this._interval);
+      }
     }, 5000);
   },
   mounted() {},
@@ -268,57 +278,30 @@ export default {
     clearInterval(this._interval);
   },
   methods: {
+    changeLanguage(lan) {
+      this.$setLanguage(lan);
+    },
     getDefaultDataSource() {
-      return fetch(BASE_API_URL + "/pt/main/getDefault", {
-        headers: {
-          uuid: "123",
-        },
-      })
-        .then((res) => res.json())
-        .then((res) => {
-          const [database, datasource] = res.data.name.split("/");
-          res.data.dataBase = database;
-          res.data.dataSource = datasource;
-          this.defaultDataSource = res.data;
-          return res.data;
-        });
+      return this.$store.dispatch("getDefaultBase").then((res) => {
+        const [database, datasource] = res.data.name.split("/");
+        res.data.dataBase = database;
+        res.data.dataSource = datasource;
+        this.defaultDataSource = res.data;
+      });
     },
-    changeLanguage(lang) {
-      this.page_language = lang;
-      sessionStorage.setItem("language", lang);
-    },
-    handleOperationsAnalysisLoad(name) {
-      const item = this.dataSourceList.find((v) => v.name === name);
-      this.$set(item, "loadStatus", "加载中");
-      fetch(BASE_API_URL + "/pt/main/loadScheme?key=" + name)
-        .then((res) => res.json())
-        .then((res) => {
-          this.dataBaseList = res.data.map((v) => ({ name: v }));
-          this.$set(item, "loadStatus", "已加载");
-        });
+    handleOperationsAnalysisLoad(row) {
+      return this.$store.dispatch("loadDataSource", row);
     },
     handleOperationsAnalysisToDetail(name) {
       const [database, datasource] = name.split("/");
       const href = `/pt.html#/operationsAnalysis/${database}/${datasource}`;
-      // const href = this.$router.resolve({
-      //   name: "operationsAnalysis",
-      //   params: { database: database, datasource: datasource },
-      // }).href;
       window.open(href, "_blank");
     },
     handleGetDataBaseList() {
-      fetch(BASE_API_URL + "/pt/main/getAllBase")
-        .then((res) => res.json())
-        .then((res) => {
-          this.dataBaseList = res.data.map((v) => ({ name: v }));
-        });
+      return this.$store.dispatch("getDataBaseList", this.dataBase);
     },
-    handleGetDateSourceList(dataBase) {
-      fetch(BASE_API_URL + "/pt/main/getAllScheme" + "?base=" + dataBase)
-        .then((res) => res.json())
-        .then((res) => {
-          this.dataSourceList = res.data;
-        });
+    handleGetDateSourceList() {
+      return this.$store.dispatch("getDataSourceList", this.dataBase);
     },
     handleShowDataBase(itemKey = "") {
       this.dataBaseDialog.show = true;

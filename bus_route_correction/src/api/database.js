@@ -14,6 +14,21 @@ export function getAllBase(params) {
   });
 }
 
+
+// 获取全部基准
+// GET /pt/main/getAllBase
+// 接口ID：154393801
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-154393801
+export function getDefaultBase(params) {
+  return request({
+    url: `/pt/main/getDefault`,
+    method: "get",
+    params: params,
+    isNoBatasource: true,
+    // noMsg: true,
+  });
+}
+
 // 获取全部方案
 // GET /pt/main/getAllScheme
 // 接口ID：154393801
