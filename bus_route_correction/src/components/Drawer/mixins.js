@@ -11,11 +11,11 @@ export default {
   },
   watch: {
     show() {
-      this.handleShow(this.show)
+      this.handleShow(this.show, true);
     },
     size() {
-      this.s_size = this.size
-    }
+      this.s_size = this.size;
+    },
   },
   computed: {
     s_style() {
@@ -37,6 +37,8 @@ export default {
       _startEvent: null,
       _moveEvent: null,
       _endEvent: null,
+
+      animation: false,
     };
   },
   created() {
@@ -44,9 +46,14 @@ export default {
     this.s_size = this.size;
   },
   methods: {
-    handleShow(show) {
-      if (show && this.s_size < 20 && !this._startEvent)
-        this.s_size = this.size;
+    handleShow(show, animation) {
+      if (animation) {
+        clearTimeout(this.animation);
+        this.animation = setTimeout(() => {
+          this.animation = false;
+        }, 500);
+      }
+      if (show && this.s_size < 20 && !this._startEvent) this.s_size = this.size;
       this.s_show = show;
       this.$emit("update:show", show);
     },
@@ -62,7 +69,7 @@ export default {
     moveing(event) {
       this._moveEvent = event;
       this.m_size = this.getMsize();
-      this.handleShow(this.s_size + this.m_size > 20);
+      this.handleShow(this.s_size + this.m_size > 20, false);
     },
     endMove(event) {
       this._startEvent = null;

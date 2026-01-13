@@ -1,5 +1,5 @@
 <template>
-  <div class="Drawer" :style="s_style">
+  <div class="Drawer" :class="{ animation: !!animation }" :style="s_style">
     <div class="content">
       <slot></slot>
     </div>
@@ -41,5 +41,8 @@ export default {
       }
     }
   }
+}
+.animation {
+  transition: width 0.3s;
 }
 </style>
