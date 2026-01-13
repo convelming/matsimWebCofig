@@ -4,6 +4,16 @@
     <div class="home">
       <div class="nav">
         <img src="@/assets/image/home/logo2.svg?url" alt="" class="logo" />
+
+        <el-dropdown class="language" @command="changeLanguage" placement="top-start" trigger="click">
+          <div class="module_menu">{{ { "zh-CN": "中文（简体）", "en-US": "English" }[page_language] }}<i class="el-icon-arrow-down el-icon--right"></i></div>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item command="zh-CN" :disabled="page_language == 'zh-CN'">中文（简体）</el-dropdown-item>
+            <!-- <el-dropdown-item command="zh_MO" :disabled="page_language == 'zh-MO'">中文（繁體）</el-dropdown-item> -->
+            <el-dropdown-item command="en-US" :disabled="page_language == 'en-US'">English</el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
+
         <a href="http://192.168.60.231:23105/pt.html#/" class="icon" target="_blank">
           <img src="@/assets/image/home/菜单.svg?url" alt="" />
         </a>
@@ -11,8 +21,8 @@
           <img src="@/assets/image/home/搜索.svg?url" alt="" />
         </a>
       </div>
-      <video class="video" src="/53941bcfa09e859cc89db3753af9fb78.mp4" autoplay muted @timeupdate="handleTimeupdate"></video>
-
+      <video class="video" src="@/assets/image/home/53941bcfa09e859cc89db3753af9fb78.mp4" autoplay muted @timeupdate="handleTimeupdate"></video>
+      <Typewriter :lines="tpyelines" :speed="200" />
       <transition name="el-zoom-in-bottom">
         <div class="bodyer_item one" v-show="playTime > 2000">
           <img src="@/assets/image/home/科研建设.svg?url" alt="" class="icon" />
@@ -55,17 +65,19 @@
         </div>
       </transition>
       <div class="footer">
-        <LoopScroll class="footer_box" :dataSource="footer_list" direction="left">
-          <template #default="{ item }">
-            <a class="footer_item" :href="item.link">
-              <img :src="item.icon" alt="" class="icon" />
-              <div class="text_box">
-                <div class="text1">{{ item.text1 }}</div>
-                <div class="text2">{{ item.text2 }}</div>
-              </div>
-            </a>
-          </template>
-        </LoopScroll>
+        <VueSeamlessScroll :data="footer_list" :classOption="{ direction: 2 }">
+          <div class="footer_box">
+            <template v-for="item in footer_list">
+              <a class="footer_item" :href="item.link" target="_blank">
+                <img :src="item.icon" alt="" class="icon" />
+                <div class="text_box">
+                  <div class="text1">{{ item.text1 }}</div>
+                  <div class="text2">{{ item.text2 }}</div>
+                </div>
+              </a>
+            </template>
+          </div>
+        </VueSeamlessScroll>
       </div>
     </div>
   </div>
@@ -77,151 +89,87 @@
     "zh-CN": "进入页面",
     "en-US": "Enter page",
   },
+  typewriter:{
+    "zh-CN":"MATSim 可视化建模与仿真开源平台 是一个面向城市交通研究的网页端拖拽式建模平台，将复杂的 MATSim 建模过程模块化、图形化。平台集成 UrbanSim、ActivitySim 与 MATSim，实现从城市空间、出行需求到交通运行的一体化仿真与分析，坚持开源与可扩展设计，适用于科研、规划与工程应用。项目由 广州城市交通科学研究院有限公司赞助并由模型团队负责长期维护，如在建模过程中有任何疑问和问题请在留言板块留言或直接联系开发人员，邮箱convel@163.com。",
+    "en-US":"This is a web-based, drag-and-drop modeling platform for urban transportation research, transforming complex MATSim modeling processes into modular and intuitive graphical workflows. The platform integrates UrbanSim, ActivitySim, and MATSim to enable unified simulation and analysis across urban spatial development, travel demand, and traffic operations, with an open-source and extensible design suitable for research, planning, and engineering applications. The project is sponsored by Guangzhou Urban Transportation Research Institute Co., Ltd. and maintained long-term by the modeling team. If you have any questions or encounter issues during modeling, please leave a message on the discussion board or contact the developers directly at convel@163.com."
+  }
 }
 </language>
 
 <script>
-const BASE_API_URL = "";
+import VueSeamlessScroll from "vue-seamless-scroll";
+import Typewriter from "@/components/Typewriter.vue";
 
 export default {
   name: "App",
+  components: {
+    VueSeamlessScroll,
+    Typewriter,
+  },
   data() {
     return {
-      page_language: "zh-CN",
+      playTime: 10000,
+      footer_list: new Array(3)
+        .fill([
+          {
+            icon: require("@/assets/image/home/概况.svg?url"),
+            text1: "MATSim",
+            text2: "多智能体交通模型",
+            link: "./pt.html",
+          },
+          {
+            icon: require("@/assets/image/home/新闻.svg?url"),
+            text1: "ActivitySim",
+            text2: "活动出行链构建",
+            link: "",
+          },
+          {
+            icon: require("@/assets/image/home/项目.svg?url"),
+            text1: "UrbanSim",
+            text2: "时空分布预测",
+            link: "",
+          },
+          {
+            icon: require("@/assets/image/home/科研.svg?url"),
+            text1: "建模/Modeling",
+            text2: "拖拽式建模",
+            link: "",
+          },
+          {
+            icon: require("@/assets/image/home/招聘.svg?url"),
+            text1: "可视化/Viz",
+            text2: "3d模型可视化",
+            link: "",
+          },
+          {
+            icon: require("@/assets/image/home/github.svg?url"),
+            text1: "Github",
+            text2: "源代码开源",
+            link: "https://github.com/convelming",
+          },
+        ])
+        .flat(2),
     };
   },
-  // computed: {
-  //   $l() {
-  //     return (key) => internationalize(key, this.language, this.page_language);
-  //   },
-  // },
-  created() {
-    this.page_language = sessionStorage.getItem("language") || this.page_language;
-    Promise.all([this.handleGetDataBaseList(), this.getDefaultDataSource()]).then((res) => {
-      this.dataBase = res[1].dataBase;
-      this.handleGetDateSourceList(res[1].dataBase);
-    });
-    this._interval = setInterval(() => {
-      this.getDefaultDataSource();
-    }, 5000);
+  computed: {
+    tpyelines() {
+      return this.$l("typewriter");
+    },
+    playTime() {
+      return this.playTime;
+    },
   },
+  created() {},
   mounted() {},
   beforeDestroy() {
     clearInterval(this._interval);
   },
   methods: {
-    getDefaultDataSource() {
-      return fetch(BASE_API_URL + "/pt/main/getDefault", {
-        headers: {
-          uuid: "123",
-        },
-      })
-        .then((res) => res.json())
-        .then((res) => {
-          const [database, datasource] = res.data.name.split("/");
-          res.data.dataBase = database;
-          res.data.dataSource = datasource;
-          this.defaultDataSource = res.data;
-          return res.data;
-        });
+    changeLanguage(lan) {
+      this.$setLanguage(lan);
     },
-    changeLanguage(lang) {
-      this.page_language = lang;
-      sessionStorage.setItem("language", lang);
-    },
-    handleOperationsAnalysisLoad(name) {
-      const item = this.dataSourceList.find((v) => v.name === name);
-      this.$set(item, "loadStatus", "加载中");
-      fetch(BASE_API_URL + "/pt/main/loadScheme?key=" + name)
-        .then((res) => res.json())
-        .then((res) => {
-          this.dataBaseList = res.data.map((v) => ({ name: v }));
-          this.$set(item, "loadStatus", "已加载");
-        });
-    },
-    handleOperationsAnalysisToDetail(name) {
-      const [database, datasource] = name.split("/");
-      const href = `/pt.html#/operationsAnalysis/${database}/${datasource}`;
-      // const href = this.$router.resolve({
-      //   name: "operationsAnalysis",
-      //   params: { database: database, datasource: datasource },
-      // }).href;
-      window.open(href, "_blank");
-    },
-    handleGetDataBaseList() {
-      fetch(BASE_API_URL + "/pt/main/getAllBase")
-        .then((res) => res.json())
-        .then((res) => {
-          this.dataBaseList = res.data.map((v) => ({ name: v }));
-        });
-    },
-    handleGetDateSourceList(dataBase) {
-      fetch(BASE_API_URL + "/pt/main/getAllScheme" + "?base=" + dataBase)
-        .then((res) => res.json())
-        .then((res) => {
-          this.dataSourceList = res.data;
-        });
-    },
-    handleShowDataBase(itemKey = "") {
-      this.dataBaseDialog.show = true;
-      this.dataBaseDialog.dataBase = this.dataBase;
-      this.dataBaseDialog.itemKey = itemKey;
-    },
-    handleSelectDataBase(row, column, event) {
-      this.dataBaseDialog.dataBase = row.name;
-    },
-    handleChangeDataBase() {
-      this.dataBase = this.dataBaseDialog.dataBase;
-      this.handleGetDateSourceList(this.dataBase);
-      const itemKey = this.dataBaseDialog.itemKey;
-      this.dataBaseDialog.dataBase = "";
-      this.dataBaseDialog.itemKey = "";
-      this.dataBaseDialog.show = false;
-      if (itemKey) {
-        this.$nextTick(() => {
-          this.handleClickItem(itemKey);
-        });
-      }
-    },
-    handleClickItem(key) {
-      if (!this.dataBase && key != "systemEvaluation") {
-        this.handleShowDataBase(key);
-        return;
-      }
-      switch (key) {
-        case "operationsAnalysis":
-          this.handleShowOperationsAnalysisDialog();
-          break;
-      }
-    },
-    handleToSelectDataBase(key) {
-      this.handleShowDataBase(key);
-      switch (key) {
-        case "operationsAnalysis":
-          this.operationsAnalysisDialog.show = false;
-          this.operationsAnalysisDialog.dataSource = "";
-          break;
-      }
-    },
-    handleShowOperationsAnalysisDialog() {
-      this.operationsAnalysisDialog.show = true;
-      this.operationsAnalysisDialog.dataSource = "";
-    },
-    handleChangeScale(row) {
-      this.$prompt(this.$l("请输入系数"), this.$l("提示"), {
-        confirmButtonText: this.$l("确定"),
-        cancelButtonText: this.$l("取消"),
-        inputValue: row.scale,
-        inputValidator: (value) => {
-          if (!Number.isFinite(Number(value))) return this.$l("请输入数字作为系数");
-        },
-      })
-        .then(({ value }) => updateScale({ key: row.name, scale: value }))
-        .then(() => {
-          this.$message.success(this.$l("修改成功"));
-          this.handleGetDateSourceList();
-        })
-        .catch(() => {});
+    handleTimeupdate(e) {
+      // playTime.value = e.timeStamp
     },
   },
 };
@@ -254,6 +202,9 @@ body {
   width: 100vw;
   height: 100vh;
   background-color: #666;
+}
+.language{
+  color: #fff;
 }
 .nav {
   position: absolute;
@@ -377,13 +328,12 @@ body {
   background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, #000000 100%);
   .footer_box {
     width: 100vw;
-    padding: 60px 40px 0 40px;
+    padding: 60px 0 0 0;
     box-sizing: border-box;
-    // display: flex;
-    // width: fit-content;
-    // justify-content: center;
-    // align-items: center;
-    // gap: 40px;
+    display: flex;
+    width: fit-content;
+    justify-content: center;
+    align-items: center;
   }
   &::-webkit-scrollbar {
     display: none;
@@ -417,5 +367,15 @@ body {
       line-height: 20px;
     }
   }
+}
+.typewriter {
+  position: absolute;
+  top: 80px;
+  left: 20px;
+  color: #000;
+
+  width: 30vw;
+
+  // text-shadow: -0.5px -0.5px 0 black, /* 左上 */ 0.5px -0.5px 0 black, /* 右上 */ -0.5px 0.5px 0 black, /* 左下 */ 0.5px 0.5px 0 black; /* 右下 */
 }
 </style>

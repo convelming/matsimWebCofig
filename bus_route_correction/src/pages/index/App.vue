@@ -224,8 +224,6 @@ export default {
   name: "App",
   data() {
     return {
-      page_language: "zh-CN",
-
       defaultDataSource: {},
 
       dataBaseDialog: {

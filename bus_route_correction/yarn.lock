@@ -865,6 +865,11 @@
   dependencies:
     "@hapi/hoek" "^9.0.0"
 
+"@joyday/vue-loop-scroll@^1.1.4":
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/@joyday/vue-loop-scroll/-/vue-loop-scroll-1.1.4.tgz#bd6bfd8980fe60f9c9984d22f769ea70c1cc64f5"
+  integrity sha512-BrWw9Gii6dJiVZAyq0vYvgA/tTj3tdYY9LnP+kOqrbAfi8TVoF6fBx4HK/jcUpMsAobL9Z7lolWYEHAkiSD/Pg==
+
 "@jridgewell/gen-mapping@^0.3.12", "@jridgewell/gen-mapping@^0.3.5":
   version "0.3.13"
   resolved "https://registry.yarnpkg.com/@jridgewell/gen-mapping/-/gen-mapping-0.3.13.tgz#6342a19f44347518c93e43b1ac69deb3c4656a1f"
@@ -2395,6 +2400,11 @@ compression@^1.7.4:
     on-headers "~1.1.0"
     safe-buffer "5.2.1"
     vary "~1.1.2"
+
+comutils@^1.1.9:
+  version "1.1.19"
+  resolved "https://registry.yarnpkg.com/comutils/-/comutils-1.1.19.tgz#3e07f306abf48e83726511713a72b20565034443"
+  integrity sha512-JxXB67juILiwhdLwOsYyjUqwWEhHdObI0EClOPk+JDtEuTbac59s0pxGpfCBnNNQ5JommifmcMGneW/4Cg7YWw==
 
 concat-map@0.0.1:
   version "0.0.1"
@@ -6066,10 +6076,22 @@ vue-loader@^17.0.0:
     hash-sum "^2.0.0"
     watchpack "^2.4.0"
 
+vue-loop@^0.2.6:
+  version "0.2.6"
+  resolved "https://registry.yarnpkg.com/vue-loop/-/vue-loop-0.2.6.tgz#2fac1e8ff721f010fbf1a0682f2923994bcd3993"
+  integrity sha512-T3D8dSZQrRQQSJ2JP2hRH6cgg0nPd1yO0QOtIO4Q/lKKoKdq7jMWXXAo1YUDwdnDYqtyg3p/1adky4ssplD2ow==
+
 vue-router@^3.5.1:
   version "3.6.5"
   resolved "https://registry.yarnpkg.com/vue-router/-/vue-router-3.6.5.tgz#95847d52b9a7e3f1361cb605c8e6441f202afad8"
   integrity sha512-VYXZQLtjuvKxxcshuRAwjHnciqZVoXAjTjcqBTz4rKc8qih9g9pI3hbDjmqXaHdgL3v8pV6P8Z335XvHzESxLQ==
+
+vue-seamless-scroll@^1.1.23:
+  version "1.1.23"
+  resolved "https://registry.yarnpkg.com/vue-seamless-scroll/-/vue-seamless-scroll-1.1.23.tgz#dde81b3c79aa499791b3c3bffd0fdb22ff3e59a7"
+  integrity sha512-HBjUub8WwsKJzbFCrwKPDrZn4e+SSbkKgwWtjKtfLwesiFGwSsVxP44/Z6d3kpXy94qIFOiflJH6l0/9pj7SGA==
+  dependencies:
+    comutils "^1.1.9"
 
 vue-style-loader@^4.1.0, vue-style-loader@^4.1.3:
   version "4.1.3"
