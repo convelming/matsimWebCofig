@@ -72,7 +72,7 @@
 import { MAP_EVENT } from "@/mymap";
 import { STOPS_STATE_KEY, STOPS_EVENT, StopsLayer } from "./layer/StopsLayer";
 import { LINK_EVENT, LINK_STATE_KEY, LinkLayer } from "./layer/LinkLayer";
-import LineDetail from "@/views/operationsAnalysis/component/Network/toolbar/lineDetail.vue";
+import LineDetail from "../Network/toolbar/lineDetail.vue";
 
 export default {
   props: ["name", "showLayer", "lock2D"],

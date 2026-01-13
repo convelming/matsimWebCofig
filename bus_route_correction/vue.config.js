@@ -2,11 +2,6 @@ const { defineConfig } = require("@vue/cli-service");
 const path = require("path");
 const TerserPlugin = require("terser-webpack-plugin");
 
-const timestamp = new Date().getTime();
-function resolve(dir) {
-  return path.join(__dirname, dir);
-}
-
 module.exports = defineConfig({
   transpileDependencies: true,
   // 部署生产环境和开发环境下的URL。
@@ -39,16 +34,6 @@ module.exports = defineConfig({
         //   "/": "/",
         // },
       },
-      // "/pt/main/getJsConfig": {
-      //   ws: false,
-      //   target: `http://192.168.60.231:23105`, // 测试服
-      //   // target: `http://192.168.31.102:23105`, // 本地调试
-      //   // target: `http://localhost:23105`, // 测试服
-      //   changeOrigin: true,
-      //   // pathRewrite: {
-      //   //   "/": "/",
-      //   // },
-      // },
     },
   },
 
@@ -71,6 +56,12 @@ module.exports = defineConfig({
       fliename: "home.html",
       name: process.env.VUE_APP_TITLE,
     },
+    feedback: {
+      entry: "./src/pages/feedback/main.js",
+      template: "./public/index.html",
+      fliename: "feedback.html",
+      name: process.env.VUE_APP_TITLE,
+    },
   },
   css: {
     // 配置css预处理器
@@ -87,11 +78,6 @@ module.exports = defineConfig({
     },
   },
   chainWebpack: (config) => {
-    // 配置 index.html 中的 htmlWebpackPlugin.options
-    // config.plugin("html").tap((args) => {
-    //   args[0].title = process.env.VUE_APP_TITLE || "";
-    //   return args;
-    // });
     // 配置可以使用import导入webworker
     config.module
       .rule("worker")
