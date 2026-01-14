@@ -443,7 +443,7 @@ export default {
   }
   .text1 {
     font-size: 14px;
-    color: #606266;
+    color: var(--color-text-regular);
   }
 }
 .Transfers_dialog3 {

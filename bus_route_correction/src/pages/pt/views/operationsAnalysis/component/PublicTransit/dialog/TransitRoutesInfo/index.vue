@@ -131,7 +131,7 @@ export default {
 <style lang="scss" scoped>
 .TransitRoutesInfo__bodyer {
   font-size: 14px;
-  color: #606266;
+  color: var(--color-text-regular);
   .row {
     line-height: 35px;
     display: flex;

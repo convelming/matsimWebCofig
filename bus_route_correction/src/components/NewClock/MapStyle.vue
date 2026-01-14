@@ -20,6 +20,7 @@
 </language>
 
 <script>
+import * as echarts from "@/utils/echarts.utils";
 import { MAP_LAYER_STYLE } from "@/mymap/index";
 
 export default {
@@ -74,6 +75,7 @@ export default {
       this.active = i;
 
       document.body.setAttribute("data-theme", this.styleList[i].theme);
+      echarts.setTheme(this.styleList[i].theme);
       this._MapLayer.setTileClass(this.styleList[i].c);
     },
   },

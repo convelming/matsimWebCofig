@@ -234,7 +234,7 @@ export default {
   }
   .tip {
     font-size: 12px;
-    color: #e6a23c;
+    color: var(--color-warning);
   }
   .btn_box {
     margin-top: 20px;

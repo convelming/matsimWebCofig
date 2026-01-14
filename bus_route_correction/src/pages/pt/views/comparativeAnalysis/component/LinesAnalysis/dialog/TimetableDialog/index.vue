@@ -64,7 +64,7 @@
 </language>
 
 <script>
-import * as echarts from "echarts";
+import * as echarts from "@/utils/echarts.utils";
 import { formatHour } from "@/utils/utils";
 import { departureChangeInfo, routeTimeDiagram } from "@/api/contrast";
 
@@ -118,7 +118,12 @@ export default {
     this._chart = echarts.init(this.$refs.chart);
     this.updateChart();
   },
-  destroyed() {},
+  beforeDestroy() {
+    if (this._chart) {
+      this._chart.dispose();
+      this._chart = null;
+    }
+  },
   methods: {
     // 格式化时间
     formatHour,

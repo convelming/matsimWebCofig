@@ -76,7 +76,7 @@ export default {
   box-sizing: border-box;
   width: 100%;
   font-size: 14px;
-  color: #606266;
+  color: var(--color-text-regular);
   padding: 0 calc(2em - 10px);
 }
 </style>

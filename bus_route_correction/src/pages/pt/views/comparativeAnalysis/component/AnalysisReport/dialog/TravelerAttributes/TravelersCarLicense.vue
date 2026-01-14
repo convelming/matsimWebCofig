@@ -44,7 +44,7 @@
 </language>
 
 <script>
-import * as echarts from "echarts";
+import * as echarts from "@/utils/echarts.utils";
 import { travelersCarLicense } from "@/api/crt.js";
 
 export default {

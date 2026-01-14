@@ -17,6 +17,15 @@ body {
   overflow: hidden;
 }
 
+a {
+  text-decoration: none;
+  color: var(--color-text-primary);
+}
+
+input::placeholder{
+  color: var(--color-text-placeholder) !important;
+}
+
 @font-face {
   font-family: wending;
   src: url("./DigitalNumbers-Regular.ttf");

@@ -59,7 +59,7 @@
 </language>
 
 <script>
-import * as echarts from "echarts";
+import * as echarts from "@/utils/echarts.utils";
 import "echarts-gl";
 import { rangeParking, rangeRequireRatio, rangeRequireRatio2 } from "@/api/index";
 import { PolygonSelectLayer } from "../layer/PolygonSelectLayer";
@@ -164,6 +164,18 @@ export default {
     if (this._chart3) {
       this._chart3.dispose();
       this._chart3 = null;
+    }
+    if (this._chart1Big) {
+      this._chart1Big.dispose();
+      this._chart1Big = null;
+    }
+    if (this._chart2Big) {
+      this._chart2Big.dispose();
+      this._chart2Big = null;
+    }
+    if (this._chart3Big) {
+      this._chart3Big.dispose();
+      this._chart3Big = null;
     }
     this.rootVue.$off("Parking_Geojson_Uuid", this.handleChangeGeoId);
   },

@@ -40,7 +40,7 @@
 </language>
 
 <script>
-import * as echarts from "echarts";
+import * as echarts from "@/utils/echarts.utils";
 import { travelUtilityTree } from "@/api/crt.js";
 
 export default {

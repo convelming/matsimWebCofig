@@ -55,7 +55,7 @@
 
 <script>
 import { formatHour } from "@/utils/utils";
-import * as echarts from "echarts";
+import * as echarts from "@/utils/echarts.utils";
 import { intersectionFlows } from "@/api/index";
 export default {
   props: {
@@ -89,6 +89,12 @@ export default {
   mounted() {
     this._chart = echarts.init(this.$refs.chart);
     this.updateChart();
+  },
+  beforeDestroy() {
+    if (this._chart) {
+      this._chart.dispose();
+      this._chart = null;
+    }
   },
   methods: {
     // tab切换事件
@@ -183,7 +189,7 @@ export default {
 <style lang="scss" scoped>
 .IntersectionFlows__bodyer {
   font-size: 14px;
-  color: #606266;
+  color: var(--color-text-regular);
   .row {
     line-height: 35px;
     display: flex;

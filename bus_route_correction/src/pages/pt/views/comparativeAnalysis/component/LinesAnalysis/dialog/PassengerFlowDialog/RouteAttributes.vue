@@ -86,7 +86,7 @@
 </language>
 
 <script>
-import * as echarts from "echarts";
+import * as echarts from "@/utils/echarts.utils";
 import { routeAttributes } from "@/api/contrast";
 export default {
   props: {
@@ -126,6 +126,12 @@ export default {
   mounted() {
     this._chart = echarts.init(this.$refs.chart);
     this.updateChart();
+  },
+  beforeDestroy() {
+    if (this._chart) {
+      this._chart.dispose();
+      this._chart = null;
+    }
   },
   methods: {
     // tab切换事件

@@ -75,7 +75,8 @@ export default {
 .TimeRangeSlider {
   width: 100%;
   font-size: 14px;
-  color: #606266;
+  color: var(--color-text-regular);
+  color: var(--color-text-regular);
   .slider_box {
     padding: 0 calc(2em - 10px);
     .el-slider {

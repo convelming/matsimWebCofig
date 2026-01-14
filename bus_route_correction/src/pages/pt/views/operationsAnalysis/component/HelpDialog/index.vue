@@ -85,7 +85,7 @@ export default {
     padding: 10px 10px 0 10px;
   }
   .el-carousel__item h3 {
-    color: #475669;
+    color: var(--color-text-regular);
     font-size: 18px;
     opacity: 0.75;
     line-height: 300px;

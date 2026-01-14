@@ -11,7 +11,6 @@ export function listPosts(params) {
   });
 }
 
-
 // 发布帖子
 // PUT /matsim/posts
 // 接口ID：404046850
@@ -24,6 +23,12 @@ export function addPosts(params) {
   });
 }
 
+export function getPosts(id) {
+  return request({
+    url: `/matsim/posts/${id}`,
+    method: "get",
+  });
+}
 
 // 评论帖子/回复评论
 // PUT /matsim/posts/comment
@@ -36,7 +41,6 @@ export function commentPosts(params) {
     params: params,
   });
 }
-
 
 // 评论列表
 // GET /matsim/posts/comment/page

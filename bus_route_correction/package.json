@@ -15,7 +15,7 @@
     "codemirror": "^5.65.16",
     "core-js": "^3.8.3",
     "d3": "^7.8.5",
-    "echarts": "^5.5.0",
+    "echarts": "6",
     "echarts-gl": "^2.0.9",
     "element-ui": "^2.15.14",
     "meshline": "^3.1.6",

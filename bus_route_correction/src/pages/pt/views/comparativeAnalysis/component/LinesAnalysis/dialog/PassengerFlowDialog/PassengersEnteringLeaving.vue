@@ -120,7 +120,7 @@
 </language>
 
 <script>
-import * as echarts from "echarts";
+import * as echarts from "@/utils/echarts.utils";
 import { passengerEnteringAndLeaving } from "@/api/index";
 import { passengerInfo } from "@/api/contrast";
 import { color } from "d3";
@@ -162,6 +162,12 @@ export default {
   mounted() {
     this._chart = echarts.init(this.$refs.chart);
     this.updateChart();
+  },
+  beforeDestroy() {
+    if (this._chart) {
+      this._chart.dispose();
+      this._chart = null;
+    }
   },
   methods: {
     // tab切换事件

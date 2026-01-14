@@ -197,13 +197,13 @@ export default {
         [margin, width - margin]
       );
       const X = new Map(nodes.map(({ id }) => [id, x(id)]));
-      const svg = d3.create("svg").attr("width", width).attr("height", height).attr("viewBox", [0, 0, width, height]).attr("style", "width:100%;height:auto;background: #fff");
+      const svg = d3.create("svg").attr("width", width).attr("height", height).attr("viewBox", [0, 0, width, height]).attr("style", "width:100%;height:auto;background: var(--color-white);");
 
       const defs = svg.append("defs");
       const linerGradient = defs.append("linearGradient").attr("id", "linearColor").attr("x1", "0%").attr("y1", "0%").attr("x2", "100%").attr("y2", "0%");
-      linerGradient.append("stop").attr("offset", "0%").style("stop-color", "#ff0000");
-      linerGradient.append("stop").attr("offset", "50%").style("stop-color", "#ffffff");
-      linerGradient.append("stop").attr("offset", "100%").style("stop-color", "#00ff00");
+      linerGradient.append("stop").attr("offset", "0%").style("stop-color", "var(--color-danger)");
+      linerGradient.append("stop").attr("offset", "50%").style("stop-color", "var(--color-white)");
+      linerGradient.append("stop").attr("offset", "100%").style("stop-color", "var(--color-success)");
 
       const fromOffsetObj = {};
       const toOffsetObj = {};
@@ -221,7 +221,7 @@ export default {
         .attr("y", 0)
         .attr("width", (width / 30) * 2)
         .attr("height", (width / 30) * 1)
-        .attr("fill", "#ff0000");
+        .attr("fill", "var(--color-danger)");
       lable_box
         .append("text")
         .attr("font-size", width / 50)
@@ -239,7 +239,7 @@ export default {
         .attr("y", 0)
         .attr("width", (width / 30) * 2)
         .attr("height", (width / 30) * 1)
-        .attr("fill", "#00ff00");
+        .attr("fill", "var(--color-success)");
       lable_box2
         .append("text")
         .attr("font-size", width / 50)
@@ -257,6 +257,7 @@ export default {
         .attr("text-anchor", "middle")
         .attr("x", width / 2)
         .attr("y", (width / 30) * 2)
+        .attr("fill", "var(--color-black)")
         .text(this.routeInfo.routeId);
       const subtitle_box = svg
         .append("text")
@@ -266,6 +267,7 @@ export default {
         .attr("x", width / 2)
         .attr("y", (width / 30) * 3)
         .attr("dy", "1em")
+        .attr("fill", "var(--color-black)")
         .text("base");
 
       const path = svg
@@ -302,7 +304,7 @@ export default {
           g
             .append("circle")
             .attr("r", step / 16)
-            .attr("fill", "#000")
+            .attr("fill", "var(--color-black)")
         )
         .call((g) =>
           g
@@ -310,7 +312,7 @@ export default {
             .attr("text-anchor", "middle")
             .attr("x", -labelHeight / 2)
             .attr("dy", "0.35em")
-            .attr("fill", "#000")
+            .attr("fill", "var(--color-black)")
             .text((d) => d.name)
         )
         .call((g) =>
@@ -318,7 +320,7 @@ export default {
             .append("circle")
             .attr("cx", -labelHeight)
             .attr("r", step / 16)
-            .attr("fill", "#000")
+            .attr("fill", "var(--color-black)")
         );
 
       const fromOffsetObj2 = {};
@@ -358,6 +360,7 @@ export default {
         .attr("text-anchor", "middle")
         .attr("x", width / 2)
         .attr("y", height - (width / 30) * 2)
+        .attr("fill", "var(--color-black)")
         .text(this.routeInfo.routeId);
       const subtitle_box2 = svg
         .append("text")
@@ -367,6 +370,7 @@ export default {
         .attr("x", width / 2)
         .attr("y", height - (width / 30) * 5)
         .attr("dy", "1em")
+        .attr("fill", "var(--color-black)")
         .text("contrast");
 
       return svg.node().outerHTML;

@@ -88,7 +88,7 @@
 
 <script>
 import { guid } from "@/utils/utils";
-import * as echarts from "echarts";
+import * as echarts from "@/utils/echarts.utils";
 import { passengerEnteringAndLeaving } from "@/api/index";
 export default {
   props: {
@@ -124,6 +124,12 @@ export default {
   mounted() {
     this._chart = echarts.init(this.$refs.chart);
     this.updateChart();
+  },
+  beforeDestroy() {
+    if (this._chart) {
+      this._chart.dispose();
+      this._chart = null;
+    }
   },
   methods: {
     // tab切换事件
@@ -223,8 +229,8 @@ export default {
           },
 
           formatter(params, ticket) {
-            let l1 = [];
-
+            console.log(params);
+            let l1 = [`<div style="font-size:14px;margin-bottom: 5px;">${params[0].axisValue}</div>`];
             for (const v of params) {
               l1.push(`
                 <div style="font-size:12px;">
@@ -237,7 +243,9 @@ export default {
             return l1.join("\n");
           },
         },
-        legend: {},
+        legend: {
+          top: 10,
+        },
         grid: [
           {
             top: 80,

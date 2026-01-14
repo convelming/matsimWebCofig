@@ -228,7 +228,7 @@ export default {
 ::v-deep {
   .el-dropdown-link {
     cursor: pointer;
-    color: #409eff;
+    color: var(--color-primary);
   }
   .labelClassName {
     width: 150px;
