@@ -43,6 +43,7 @@ module.exports = defineConfig({
       template: "./public/index.html",
       fliename: "pt.html",
       name: process.env.VUE_APP_TITLE,
+      chunks: ["chunk-vendors", "chunk-common", "pt"],
     },
     index: {
       entry: "./src/pages/index/main.js",
@@ -60,6 +61,12 @@ module.exports = defineConfig({
       entry: "./src/pages/feedback/main.js",
       template: "./public/index.html",
       fliename: "feedback.html",
+      name: process.env.VUE_APP_TITLE,
+    },
+    user: {
+      entry: "./src/pages/user/main.js",
+      template: "./public/index.html",
+      fliename: "user.html",
       name: process.env.VUE_APP_TITLE,
     },
   },

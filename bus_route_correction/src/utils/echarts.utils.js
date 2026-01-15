@@ -8,7 +8,7 @@ if (!window.echartsTheme) {
   window.echartsTheme = "default";
 }
 
-const axis3dDack = {
+const axis3dDark = {
   axisLine: {
     lineStyle: {
       color: "#fff",
@@ -98,7 +98,7 @@ export const init = function (dom, opts) {
   echart.setTheme = function (theme) {
     const options = echart.getOption() || {};
     if (options.xAxis3D) {
-      const themeObj = theme === "dark" ? axis3dDack : axis3d;
+      const themeObj = theme === "dark" ? axis3dDark : axis3d;
       setOption.bind(echart)({
         backgroundColor: "transparent",
         xAxis3D: themeObj,
