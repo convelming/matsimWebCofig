@@ -11,7 +11,7 @@
             <textarea class="_content" v-model="newXml" disabled></textarea>
           </div>
         </div> -->
-      <code-diff class="code-diff" :old-string="oldXml" :new-string="newXml" output-format="side-by-side" :context="100"  />
+      <code-diff class="code-diff" :old-string="oldXml" :new-string="newXml" output-format="side-by-side" :context="100" />
     </div>
   </Dialog>
 </template>
@@ -102,7 +102,7 @@ export default {
       padding: 10px;
       border-radius: 5px;
       width: calc(50% - 10px);
-      background-color: #eee;
+      background-color: var(--background-color-light);
     }
   }
   ._title {

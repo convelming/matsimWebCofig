@@ -375,7 +375,7 @@ export default {
           const source = nodeMap.get(indexs[d.source.index]);
           return source.color;
         })
-        .style("mix-blend-mode", "multiply")
+        // .style("mix-blend-mode", "multiply")
         .append("title")
         .text((d) => {
           const source = nodeMap.get(indexs[d.source.index]);
@@ -391,9 +391,10 @@ export default {
           const source = nodeMap.get(indexs[d.index]);
           return source.color;
         })
-        .attr("stroke", "#fff");
+        .attr("stroke", "var(--color-white)");
 
       g.append("text")
+        .attr("fill", "var(--color-black)")
         .attr("text-anchor", "middle")
         .attr("font-size", 30)
         .attr("dy", -3)
@@ -405,10 +406,12 @@ export default {
           return source.name;
         });
 
-      g.append("title").text((d) => {
-        const source = nodeMap.get(indexs[d.index]);
-        return `${source.name} \nowes ${d3.sum(matrix[d.index])} \nis owed ${d3.sum(matrix, (row) => row[d.index])}`;
-      });
+      g.append("title")
+        .attr("fill", "var(--color-black)")
+        .text((d) => {
+          const source = nodeMap.get(indexs[d.index]);
+          return `${source.name} \nowes ${d3.sum(matrix[d.index])} \nis owed ${d3.sum(matrix, (row) => row[d.index])}`;
+        });
       this.chartSrc = svg.node().outerHTML;
     },
     handleExport() {

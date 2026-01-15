@@ -233,7 +233,7 @@ export default {
       position: relative;
       top: 3px;
       cursor: pointer;
-      color: #409eff;
+      color: var(--color-primary);
       font-size: 20px;
     }
   }

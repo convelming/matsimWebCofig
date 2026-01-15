@@ -325,7 +325,7 @@ export default {
       margin: 10px 0;
       .el-icon-refresh-right {
         cursor: pointer;
-        color: #409eff;
+        color: var(--color-primary);
       }
     }
     .form {

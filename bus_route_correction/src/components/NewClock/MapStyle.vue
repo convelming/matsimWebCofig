@@ -75,7 +75,11 @@ export default {
       this.active = i;
 
       document.body.setAttribute("data-theme", this.styleList[i].theme);
-      echarts.setTheme(this.styleList[i].theme);
+      const echartsThemeMap = {
+        light: "default",
+        dark: "dark",
+      };
+      echarts.setTheme(echartsThemeMap[this.styleList[i].theme]);
       this._MapLayer.setTileClass(this.styleList[i].c);
     },
   },

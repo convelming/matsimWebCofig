@@ -244,7 +244,7 @@ export default {
           },
         },
         legend: {
-          top: 10,
+          top: 0,
         },
         grid: [
           {

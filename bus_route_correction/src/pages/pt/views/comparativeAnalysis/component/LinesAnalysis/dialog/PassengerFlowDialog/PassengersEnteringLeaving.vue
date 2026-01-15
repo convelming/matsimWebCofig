@@ -287,7 +287,9 @@ export default {
             return l1.join("<br/>\n");
           },
         },
-        legend: {},
+        legend: {
+          top: 0
+        },
         grid: [
           {
             top: 80,

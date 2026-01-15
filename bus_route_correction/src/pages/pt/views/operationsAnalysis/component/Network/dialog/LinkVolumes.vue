@@ -157,7 +157,9 @@ export default {
             return l1.join("\n");
           },
         },
-        legend: {},
+        legend: {
+          top: 0
+        },
         grid: {
           left: "3%",
           right: "4%",

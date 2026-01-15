@@ -400,10 +400,10 @@ export default {
       padding: 10px;
       box-sizing: border-box;
       width: 25%;
-      border: 1px solid #000;
+      border: 1px solid var(---color-black);
       word-break: break-all;
       &.active {
-        background-color: #e6effb;
+        background-color: var(--background-color-light);
       }
     }
   }
