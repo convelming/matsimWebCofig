@@ -1,14 +1,12 @@
 <!-- add -->
 <template>
-  <el-dialog :title="title" :visible.sync="s_visible" width="600px" @close="handleClose">
+  <el-dialog :title="title" :visible.sync="s_visible" width="600px" @close="handleClose" append-to-body>
     <el-form :model="form" ref="formRef" :rules="rules" label-position="top" :inline="false" size="">
       <el-form-item label="标题：" prop="title">
         <el-input v-model="form.title"></el-input>
       </el-form-item>
       <el-form-item label="内容：" prop="content">
-        <div class="QuillEditor">
-          <QuillEditor contentType="html" ref="QuillEditorRef" theme="snow" />
-        </div>
+        <QuillEditor ref="QuillEditorRef" />
       </el-form-item>
       <el-form-item label="类型：" prop="type">
         <el-select v-model="form.type" placeholder="请选择类型">
@@ -77,17 +75,19 @@ export default {
     visible: {
       handler: function (val) {
         this.s_visible = val;
-        if (val) {
-          this.$nextTick(() => {
-            if (this.fbId == -1) {
-              this.resetForm();
-            } else {
-              this.getDetail();
-            }
-          });
-        }
       },
       immediate: true,
+    },
+    s_visible: {
+      handler: function (val) {
+        if (val) {
+          if (this.fbId == -1) {
+            this.resetForm();
+          } else {
+            this.getDetail();
+          }
+        }
+      },
     },
   },
   data() {
@@ -157,6 +157,7 @@ export default {
   mounted() {},
   methods: {
     handleClose() {
+      this.s_visible = false;
       this.$emit("update:visible", false);
       this.$emit("close");
     },
@@ -170,36 +171,38 @@ export default {
         annexs: [],
         type: this.type || "",
       };
-      this.$refs.QuillEditorRef.setHTML("");
+      this.$refs.QuillEditorRef?.setHTML("");
       this.submiting = false;
-      this.$refs.formRef.resetFields();
+      this.$refs.formRef?.resetFields();
     },
     getDetail() {
       getPosts(this.fbId).then((res) => {
         this.$refs.formRef.resetFields();
-        const cover = res.data.annexs
-          ?.filter((v) => v.type == 0)
-          .map((v) => {
-            return {
-              name: v.name,
-              url: v.url,
-              response: {
-                data: v,
-              },
-            };
-          });
+        const cover =
+          res.data.annexs
+            ?.filter((v) => v.type == 0)
+            .map((v) => {
+              return {
+                name: v.name,
+                url: v.url,
+                response: {
+                  data: v,
+                },
+              };
+            }) || [];
 
-        const annexs = res.data.annexs
-          ?.filter((v) => v.type == 1)
-          .map((v) => {
-            return {
-              name: v.name,
-              url: v.url,
-              response: {
-                data: v,
-              },
-            };
-          });
+        const annexs =
+          res.data.annexs
+            ?.filter((v) => v.type == 1)
+            .map((v) => {
+              return {
+                name: v.name,
+                url: v.url,
+                response: {
+                  data: v,
+                },
+              };
+            }) || [];
         this.form = {
           title: res.data.title,
           author: res.data.author,
