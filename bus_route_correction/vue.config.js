@@ -27,7 +27,7 @@ module.exports = defineConfig({
       "/": {
         ws: false,
         target: `http://192.168.60.231:23105`, // 测试服
-        // target: `http://192.168.31.102:23105`, // 本地调试
+        target: `http://192.168.31.208:23105`, // 本地调试
         // target: `http://localhost:23105`, // 测试服
         changeOrigin: true,
         // pathRewrite: {
@@ -43,7 +43,6 @@ module.exports = defineConfig({
       template: "./public/index.html",
       fliename: "pt.html",
       name: process.env.VUE_APP_TITLE,
-      chunks: ["chunk-vendors", "chunk-common", "pt"],
     },
     index: {
       entry: "./src/pages/index/main.js",

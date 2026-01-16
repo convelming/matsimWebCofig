@@ -10,11 +10,6 @@ const routes = [
     component: () => import(/* webpackChunkName: "feedback_list" */ "./view/list.vue"),
   },
   {
-    path: "/add",
-    name: "add",
-    component: () => import(/* webpackChunkName: "feedback_add" */ "./view/add.vue"),
-  },
-  {
     path: "/detail",
     name: "detail",
     component: () => import(/* webpackChunkName: "feedback_detail" */ "./view/detail.vue"),

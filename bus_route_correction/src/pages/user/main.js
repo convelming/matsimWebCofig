@@ -4,6 +4,7 @@ import ElementUI from "element-ui";
 import language from "@/language/index";
 import router from "./router.js";
 import store from "@/store";
+import "@/components/BeiAnBox/index.js";
 
 import "element-ui/lib/theme-chalk/index.css";
 import "@/assets/css/style.css";

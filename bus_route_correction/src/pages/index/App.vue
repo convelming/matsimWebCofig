@@ -55,6 +55,8 @@
             </div>
           </div>
         </div>
+
+        <BeiAnBox />
       </div>
     </div>
     <!-- 请选择基准MATSIM模型 -->
@@ -487,5 +489,10 @@ body {
 .tabel_dialog .tabel_toolbar {
   display: flex;
   margin-bottom: 10px;
+}
+
+.BeiAnBox {
+  position: absolute;
+  bottom: 0px;
 }
 </style>

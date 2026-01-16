@@ -6,11 +6,14 @@
         <el-option label="简体中文" value="zh-CN" />
         <el-option label="English" value="en-US" />
       </el-select>
+      <el-switch v-model="theme" active-value="dark" active-color="#555" inactive-value="light" @change="handleChangeTheme" />
+
       <!-- <a class="btn_text">资料下载</a>
       <a class="btn_text">注销</a> -->
     </div>
     <div class="login_body">
-      <img class="left" src="@/assets/image/login/登录背景插画.png" />
+      <div class="left dark_hide" src="@/assets/image/user/登录背景插画.png"></div>
+      <!-- <img class="left dark_show" src="@/assets/image/user/登录背景插画.dark.png" /> -->
       <div class="right">
         <div class="login_form_box">
           <el-form class="login_form" :model="loginForm" ref="loginForm" label-position="top">
@@ -44,6 +47,9 @@
                   ><a href="#/register">{{ $l("form_register_text2") }}</a></span
                 >
               </div>
+            </el-form-item>
+            <el-form-item label-width="0">
+              <BeiAnBox class="copy" />
             </el-form-item>
           </el-form>
         </div>
@@ -155,19 +161,24 @@ export default {
       },
       loading: false,
       // 验证码开关
-      captchaEnabled: true,
+      captchaEnabled: false,
       // 注册开关
       register: false,
       redirect: undefined,
+      theme: localStorage.getItem("user-theme") || "light",
     };
   },
   created() {
     this.getCode();
     this.getCookie();
     this.redirect = decodeURIComponent(getUrlParams(window.location.href).redirect || "/pt.html#/");
-    console.log(this.redirect);
+    this.handleChangeTheme(this.theme);
   },
   methods: {
+    handleChangeTheme(theme) {
+      localStorage.setItem("user-theme", theme);
+      document.body.setAttribute("data-theme", theme);
+    },
     handleChangeLanguage(lan) {
       this.setLanguage(lan);
     },
@@ -224,14 +235,28 @@ export default {
 
 <style lang="scss">
 .login {
+  --left-back: url("@/assets/image/user/登录背景插画.png");
+  --left-back-color: #f1f5fc;
+  --background-color-base: #ffffff;
+
+  --right-back-color: var(--background-color-base);
+
   overflow: hidden;
   width: 100vw;
   height: 100vh;
   color: var(--color-text-primary);
+  background-color: var(--background-color-base);
 }
+
+[data-theme="dark"] .login {
+  --left-back: url("@/assets/image/user/登录背景插画.dark.png");
+  --left-back-color: #121a31;
+  --background-color-base: #000000;
+}
+
 .login_header {
   height: 64px;
-  background: var(--color-white);
+  background: var(--background-color-base);
   box-shadow: var(--box-shadow);
   border-radius: 0px 0px 0px 0px;
   display: flex;
@@ -265,16 +290,17 @@ export default {
   display: flex;
   align-items: stretch;
 }
+
 .login_body .left {
   width: 0;
   flex: 1;
   display: block;
-  object-fit: contain;
-  background-color: #f1f5fc;
 
-  background-color: var(--background-color-light);
-
-  // filter: var(--image-filter-invert10);
+  background-image: var(--left-back);
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: var(--left-back-color);
 }
 
 .login_body .right {
@@ -285,7 +311,7 @@ export default {
   max-width: 600px;
   min-width: 400px;
 
-  background-color: var(--color-white);
+  background-color: var(--right-back-color);
 
   display: flex;
   flex-direction: column;
@@ -362,14 +388,8 @@ export default {
 }
 
 .copy {
-  text-align: center;
-  margin-top: 40px;
   font-weight: 400;
   font-size: 12px;
-  color: var(--color-info);
-  line-height: 20px;
-}
-.copy a {
-  color: var(--color-primary);
+  --color-white: var(--color-text-primary);
 }
 </style>

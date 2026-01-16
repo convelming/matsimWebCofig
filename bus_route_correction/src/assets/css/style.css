@@ -22,8 +22,21 @@ a {
   color: var(--color-text-primary);
 }
 
-input::placeholder{
+input::placeholder {
   color: var(--color-text-placeholder) !important;
+}
+
+.ba_box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 30px;
+  gap: 15px;
+}
+.ba_box a {
+  text-decoration: underline;
+  color: #fff;
+  font-size: 14px;
 }
 
 @font-face {

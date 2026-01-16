@@ -45,7 +45,7 @@ export class SubwayMotionLayer extends Layer {
     this.modelSize = opt.modelSize || this.modelSize;
 
     this.modelPool = new ModelPool({
-      Subway: "/models/Subway.gltf",
+      Subway: "/static/models/Subway.gltf",
     });
 
     this.busGroup = new THREE.Group();

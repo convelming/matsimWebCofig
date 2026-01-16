@@ -29,7 +29,7 @@ export class CarLayer extends Layer {
     this.modelSize = opt.modelSize || this.modelSize;
 
     this.modelPool = new ModelPool({
-      SUV: "/models/SUV.gltf",
+      SUV: "/static/models/SUV.gltf",
     })
 
     this.carGroup = new THREE.Group();

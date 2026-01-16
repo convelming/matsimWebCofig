@@ -78,6 +78,7 @@
             </template>
           </div>
         </VueSeamlessScroll>
+        <BeiAnBox />
       </div>
     </div>
   </div>
@@ -203,7 +204,7 @@ body {
   height: 100vh;
   background-color: #666;
 }
-.language{
+.language {
   color: #fff;
 }
 .nav {
@@ -367,6 +368,7 @@ body {
       line-height: 20px;
     }
   }
+
 }
 .typewriter {
   position: absolute;

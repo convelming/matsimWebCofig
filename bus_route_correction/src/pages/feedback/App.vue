@@ -14,7 +14,7 @@ body {
 #app {
   width: 100vw;
   min-height: 100vh;
-  background-color: #F5F5FA;
+  background-color: var(--background-color-base);
   overflow: visible;
 }
 </style>

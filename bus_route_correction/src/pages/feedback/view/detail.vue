@@ -1,8 +1,8 @@
 <!-- detail -->
 <template>
-  <div class="detail">
+  <div class="detail" v-loading="loading">
     <div class="box1">
-      反馈 > <span class="end">{{ detail.type }}</span>
+      <a href="#/">列表</a> > <span class="end">{{ feedback_type[detail.type] }}</span>
     </div>
     <div class="title">{{ detail.title }}</div>
     <div class="info">
@@ -16,7 +16,8 @@
 </template>
 
 <script>
-import { addPosts, commentPosts, listPostsComment,getPosts } from "@/api/feedback";
+import { addPosts, commentPosts, listPostsComment, getPosts } from "@/api/feedback";
+import { feedback_type } from "./add.vue";
 export default {
   name: "detail",
   props: {},
@@ -26,18 +27,37 @@ export default {
   data() {
     return {
       detail: {},
+      feedback_type: feedback_type,
+      loading: false,
     };
   },
-  created() {},
+  beforeRouteUpdate() {
+    this.getDetail();
+  },
+  created() {
+    this.getDetail();
+  },
   mounted() {},
-  methods: {},
+  methods: {
+    getDetail() {
+      this.loading = true;
+      getPosts(this.$route.query.id)
+        .then((res) => {
+          console.log(res);
+          this.detail = res.data;
+        })
+        .finally(() => {
+          this.loading = false;
+        });
+    },
+  },
 };
 </script>
 
 <style lang="scss" scoped>
 .detail {
   box-sizing: border-box;
-  background-color: #fff;
+  background-color: var(--color-white);
   max-width: 1200px;
   min-height: 100vh;
   margin: 0 auto;
@@ -48,10 +68,15 @@ export default {
 
   .box1 {
     font-size: 14px;
-    color: #999;
     padding-bottom: 10px;
     .end {
-      color: #2c3e50;
+      color: var(--color-text-primary);
+    }
+    a {
+      color: var(--color-text-regular);
+      &:hover {
+        color: var(--color-primary);
+      }
     }
   }
   .title {
@@ -60,7 +85,7 @@ export default {
   }
   .info {
     font-size: 12px;
-    color: #999999;
+    color:  var(--color-text-secondary);
     line-height: 12px;
     display: flex;
     gap: 30px;

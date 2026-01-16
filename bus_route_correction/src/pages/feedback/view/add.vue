@@ -1,7 +1,6 @@
 <!-- add -->
 <template>
-  <div class="add">
-    <div class="title">{{ id ? "修改" : "添加" }}反馈</div>
+  <el-dialog :title="title" :visible.sync="s_visible" width="600px" @close="handleClose">
     <el-form :model="form" ref="formRef" :rules="rules" label-position="top" :inline="false" size="">
       <el-form-item label="标题：" prop="title">
         <el-input v-model="form.title"></el-input>
@@ -30,63 +29,71 @@
           </div>
           <div class="upload__tip">支持pdf/word/ppt/excl格式，文件大小不超过10Mb</div>
         </el-upload>
-      </el-form-item> -->
+      </el-form-item>
       <el-form-item label="时间：" prop="date">
         <el-date-picker v-model="form.date" type="datetime" placeholder="选择日期" value-format="YYYY-MM-DD HH:mm:ss"></el-date-picker>
       </el-form-item>
       <el-form-item label="作者：" prop="author">
         <el-input style="width: 220px" v-model="form.author"></el-input>
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item>
         <el-button type="primary" @click="onSubmit">提交</el-button>
       </el-form-item>
     </el-form>
-  </div>
+  </el-dialog>
 </template>
 
 <script>
 import QuillEditor from "@/components/QuillEditor.vue";
 import { addPosts } from "@/api/feedback";
+import { Promise } from "core-js";
 export const feedback_type = {
   0: "BUG",
   1: "建议",
 };
 export default {
   name: "add",
+  props: {
+    visible: Boolean,
+    fbId: {
+      type: [String, Number],
+      default: -1,
+    },
+    type: [String, Number],
+  },
   components: {
     QuillEditor,
   },
   computed: {
-    QuillEditorRef() {
-      return this.$refs.QuillEditorRef;
-    },
-    formRef() {
-      return this.$refs.formRef;
-    },
-  },
-  watch: {
-    visible: function (val) {
-      if (val) {
-        if (this.id == -1) {
-          this.resetForm();
-        } else {
-          this.getDetail();
-        }
+    title() {
+      if (this.fbId == -1) {
+        return "添加";
+      } else {
+        return "修改";
       }
     },
   },
-  data() {
-    const params = Object(
-      {
-        type: 0,
-        id: null,
+  watch: {
+    visible: {
+      handler: function (val) {
+        this.s_visible = val;
+        if (val) {
+          this.$nextTick(() => {
+            if (this.fbId == -1) {
+              this.resetForm();
+            } else {
+              this.getDetail();
+            }
+          });
+        }
       },
-      this.$route.params
-    );
+      immediate: true,
+    },
+  },
+  data() {
     return {
-      id: params.id,
-      type: params.type,
       feedback_type: feedback_type,
+      s_visible: false,
 
       submiting: false,
       form: {
@@ -150,8 +157,8 @@ export default {
   mounted() {},
   methods: {
     handleClose() {
-      emit("update:visible", false);
-      emit("close");
+      this.$emit("update:visible", false);
+      this.$emit("close");
     },
     resetForm() {
       this.form = {
@@ -161,12 +168,14 @@ export default {
         content: "",
         cover: [],
         annexs: [],
+        type: this.type || "",
       };
-      this.QuillEditorRef.setHTML("");
+      this.$refs.QuillEditorRef.setHTML("");
+      this.submiting = false;
       this.$refs.formRef.resetFields();
     },
     getDetail() {
-      newsDetail(props.id).then((res) => {
+      getPosts(this.fbId).then((res) => {
         this.$refs.formRef.resetFields();
         const cover = res.data.annexs
           ?.filter((v) => v.type == 0)
@@ -199,37 +208,41 @@ export default {
           cover: cover,
           annexs: annexs,
         };
-        this.QuillEditorRef.setHTML(res.data.content);
+        this.$refs.QuillEditorRef.setHTML(res.data.content);
       });
     },
     onSubmit() {
       this.submiting = true;
-      this.form.content = this.QuillEditorRef.getHTML();
+      this.form.content = this.$refs.QuillEditorRef.getHTML();
       this.$refs.formRef
         .validate()
-        .then(() => {
-          const _form = {
-            title: this.form.title,
-            content: this.form.content,
-            annexs: [...this.form.annexs.map((v) => v.response.data), ...this.form.cover.map((v) => v.response.data)],
-            date: this.form.date,
-            author: this.form.author,
-            type: props.type,
-          };
-          if (props.id == -1) {
-            return newsAdd(_form);
+        .then((value) => {
+          if (value) {
+            const _form = {
+              title: this.form.title,
+              content: this.form.content,
+              annexs: [...this.form.annexs.map((v) => v.response.data), ...this.form.cover.map((v) => v.response.data)],
+              date: this.form.date,
+              author: this.form.author,
+              type: this.form.type,
+            };
+            if (this.fbId == -1) {
+              return addPosts(_form).then((res) => {
+                this.$message.success("添加成功");
+                handleClose();
+                this.$emit("submited", _form.type);
+              });
+            } else {
+              _form.id = this.fbId;
+              return updatePosts(_form).then((res) => {
+                this.$message.success("修改成功");
+                handleClose();
+                this.$emit("submited", _form.type);
+              });
+            }
           } else {
-            _form.id = props.id;
-            return newsUpdate(_form);
+            return Promise.reject();
           }
-        })
-        .then(() => {
-          if (props.id == -1) {
-            proxy.$message.success("添加成功");
-          } else {
-            proxy.$message.success("修改成功");
-          }
-          // handleClose()
         })
         .finally(() => {
           this.submiting = false;

@@ -224,7 +224,7 @@ export class NetworkLayer extends Layer {
 
 export class NetworkTile {
   static noodMap = new THREE.TextureLoader().load(require("@/assets/image/point2.png"));
-  static videoIconMap = new THREE.TextureLoader().load(process.env.VUE_APP_PUBLIC_PATH + "icon_traffic/camera-fill.svg");
+  static videoIconMap = new THREE.TextureLoader().load(process.env.VUE_APP_PUBLIC_PATH + "static/icon_traffic/camera-fill.svg");
   static lineMap = new THREE.TextureLoader().load(require("@/assets/image/up2.png"));
 
   _loadNum = 0;

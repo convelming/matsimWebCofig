@@ -12,38 +12,57 @@ import "quill/dist/quill.snow.css"; // 类似于雪地或者高对比度的视�
 
 export default {
   name: "QuillEditor",
-  props: {},
+  props: {
+    placeholder: String,
+  },
   components: {},
   computed: {},
   watch: {},
   data() {
     return {};
   },
-  created() {
-    this._quillEL = document.createElement("div");
-    this._quill = new Quill(_quillEL, {
+  mounted() {
+    this._quillEl = document.createElement("div");
+    this._quill = new Quill(this._quillEl, {
       // debug: "info",
       modules: {
-        // toolbar: true,
+        toolbar: true,
       },
-      placeholder: "Compose an epic...",
+      placeholder: this.placeholder,
       theme: "snow",
     });
-  },
-  mounted() {
-    console.log(this._quill);
+    this._toolbarEl = this._quill.getModule("toolbar")?.container;
+    this.$el.appendChild(this._toolbarEl);
+    this.$el.appendChild(this._quillEl);
   },
   beforeDestroy() {
-    console.log("beforeDestroy", this._quill);
+    this.$el.innerHTML = "";
+    this._toolbarEl = null;
+    this._quillEl = null;
     this._quill = null;
-    this.$el.removeChild();
   },
-  methods: {},
+  methods: {
+    getHTML() {
+      const html = this._quill?.root.innerHTML || "";
+      const htmlStr = html.replace(/<[^>]+>/g, "").replace(/&[^&]+;/g, "");
+      if (!htmlStr) {
+        return "";
+      } else {
+        return html;
+      }
+    },
+    setHTML(html) {
+      if (this._quill) this._quill.root.innerHTML = html;
+    },
+  },
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .QuillEditor {
   line-height: 1;
+  .ql-container {
+    height: 180px;
+  }
 }
 </style>

@@ -264,7 +264,7 @@ export const ICON_LIST = [
   "walk-fill.svg",
   "walk-line.svg",
   "camera.svg",
-].map((v) => process.env.VUE_APP_PUBLIC_PATH + "icon_traffic/" + v);
+].map((v) => process.env.VUE_APP_PUBLIC_PATH + "static/icon_traffic/" + v);
 
 
 

@@ -83,6 +83,8 @@
           <!-- <div class="el-icon-question item_help" @click.stop="showSEHelpDialog = true"></div> -->
         </div>
       </div>
+
+      <BeiAnBox style="margin-top: auto;"/>
     </div>
     <OAHelpDialog class="item_help" :visible.sync="showOAHelpDialog" />
     <PAHelpDialog class="item_help" :visible.sync="showPAHelpDialog" />
@@ -827,13 +829,16 @@ export default {
 
 .root {
   width: 100%;
+  height: 100%;
   min-width: 1600px;
+  display: flex;
+  flex-direction: column;
 }
 
 .module {
   width: 1500px;
   margin: 0 auto;
-  height: 80px;
+  height: 60px;
   display: flex;
   justify-content: flex-end;
   align-items: center;
@@ -867,7 +872,7 @@ export default {
 
 .list {
   width: 1600px;
-  margin: auto;
+  margin: 0 auto;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
