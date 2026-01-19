@@ -9,7 +9,7 @@
 export default {
   data() {
     return {
-      img: require("@/assets/helpImages/systemEvaluation/image3.gif"),
+      img: (window.VUE_APP_EXTERNAL_FILE_PATH + "/ptHelpImages/systemEvaluation/image3.gif"),
     };
   },
 };

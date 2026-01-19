@@ -9,7 +9,7 @@
 export default {
   data() {
     return {
-      img: require("@/assets/helpImages/planAdjustment/video1.gif"),
+      img: (window.VUE_APP_EXTERNAL_FILE_PATH + "/ptHelpImages/planAdjustment/video1.gif"),
     };
   },
 };

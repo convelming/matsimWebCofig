@@ -97,8 +97,8 @@
         </el-table-column>
         <el-table-column :label="$l('操作')" width="250">
           <template slot-scope="{ row }">
-            <el-button v-if="row.runStatus == '已运行' && row.loadStatus == '已加载'" type="primary" size="mini" @click="handleOperationsAnalysisToDetail(row.name)">{{ $l("查看") }}</el-button>
-            <el-button v-if="!row.noLoad" type="warning" size="mini" :loading="row.loadStatus == '加载中'" @click="handleOperationsAnalysisLoad(row.name)">{{ $l("加载") }}</el-button>
+            <el-button v-if="row.runStatus == '已运行' && row.loadStatus == '已加载'" type="primary" size="mini" @click="handleOperationsAnalysisToDetail(row)">{{ $l("查看") }}</el-button>
+            <el-button v-if="!row.noLoad" type="warning" size="mini" :loading="row.loadStatus == '加载中'" @click="handleOperationsAnalysisLoad(row)">{{ $l("加载") }}</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -283,10 +283,14 @@ export default {
     },
     getDefaultDataSource() {
       return this.$store.dispatch("getDefaultBase").then((res) => {
-        const [database, datasource] = res.data.name.split("/");
-        res.data.dataBase = database;
-        res.data.dataSource = datasource;
-        this.defaultDataSource = res.data;
+        try {
+          const [database, datasource] = res.data.name.split("/");
+          res.data.dataBase = database;
+          res.data.dataSource = datasource;
+          this.defaultDataSource = res.data;
+        } catch (error) {
+          this.defaultDataSource = {};
+        }
       });
     },
     handleOperationsAnalysisLoad(row) {
@@ -312,8 +316,8 @@ export default {
       this.dataBaseDialog.dataBase = row.name;
     },
     handleChangeDataBase() {
-      this.dataBase = this.dataBaseDialog.dataBase;
-      this.handleGetDateSourceList(this.dataBase);
+      this.$store.dispatch("setDataBase", this.dataBaseDialog.dataBase);
+      this.$store.dispatch("getDataSourceList", this.dataBaseDialog.dataBase);
       const itemKey = this.dataBaseDialog.itemKey;
       this.dataBaseDialog.dataBase = "";
       this.dataBaseDialog.itemKey = "";
@@ -369,7 +373,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
 .back {
   box-sizing: border-box;
   width: 100vw;

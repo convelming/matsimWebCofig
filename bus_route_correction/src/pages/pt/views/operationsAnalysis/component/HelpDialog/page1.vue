@@ -13,12 +13,13 @@
   },
 }
 </language>
-  
+
 <script>
 export default {
   data() {
     return {
-      img: require("@/assets/helpImages/opAndca/activities.gif"),
+      img: (window.VUE_APP_EXTERNAL_FILE_PATH + "/ptHelpImages/opAndca/activities.gif"),
+      // img: (window.VUE_APP_EXTERNAL_FILE_PATH + "/ptHelpImages/opAndca/activities.gif"),
     };
   },
 };

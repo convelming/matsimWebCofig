@@ -96,7 +96,7 @@ export class RouteListLayer extends Layer {
 
     // 加载无人机模型
     // 用于优化渲染性能的模型
-    new STLLoader().load(process.env.VUE_APP_BASE_API + "/static/models/无人机.stl", (geometry) => {
+    new STLLoader().load(window.VUE_APP_EXTERNAL_FILE_PATH + "/models/无人机.stl", (geometry) => {
       const m4 = new THREE.Matrix4().makeScale(1, 1, 1);
       m4.multiply(new THREE.Matrix4().makeRotationZ(Math.PI / 2));
       m4.multiply(new THREE.Matrix4().makeRotationX(-Math.PI / 2));
@@ -105,7 +105,7 @@ export class RouteListLayer extends Layer {
       this.initUAV();
     });
     // 用于螺旋桨旋转的模型
-    new GLTFLoader().load(process.env.VUE_APP_BASE_API + "/static/models/无人机.glb", (gltf) => {
+    new GLTFLoader().load(window.VUE_APP_EXTERNAL_FILE_PATH + "/models/无人机.glb", (gltf) => {
       gltf.lxjs = [];
       gltf.scene.traverse((child) => {
         if (child.isMesh) {

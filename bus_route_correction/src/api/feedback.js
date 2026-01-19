@@ -31,7 +31,7 @@ export function addPosts(params) {
   return request({
     url: `/matsim/posts`,
     method: "put",
-    params: params,
+    data: params,
   });
 }
 
@@ -50,7 +50,7 @@ export function commentPosts(params) {
   return request({
     url: `/matsim/posts/comment`,
     method: "put",
-    params: params,
+    data: params,
   });
 }
 

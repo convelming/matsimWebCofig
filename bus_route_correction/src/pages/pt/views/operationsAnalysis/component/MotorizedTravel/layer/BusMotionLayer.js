@@ -45,7 +45,7 @@ export class BusMotionLayer extends Layer {
     this.modelSize = opt.modelSize || this.modelSize;
 
     this.modelPool = new ModelPool({
-      Bus: "/static/models/Bus.gltf",
+      Bus: window.VUE_APP_EXTERNAL_FILE_PATH + "/models/Bus.gltf",
     });
 
     this.busGroup = new THREE.Group();

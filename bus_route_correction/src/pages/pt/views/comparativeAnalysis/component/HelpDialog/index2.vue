@@ -32,7 +32,8 @@ export default {
   data() {
     return {
       s_visible: false,
-      img: require("@/assets/helpImages/opAndca/matsimVisPTopt.gif"),
+      img: (window.VUE_APP_EXTERNAL_FILE_PATH + "/ptHelpImages/opAndca/matsimVisPTopt.gif"),
+      // img: (window.VUE_APP_EXTERNAL_FILE_PATH + "/ptHelpImages/opAndca/matsimVisPTopt.gif"),
     };
   },
   watch: {

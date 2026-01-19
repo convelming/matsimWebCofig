@@ -32,7 +32,7 @@
         :pager-count="7"
       />
     </template>
-    <AddFeedback :visible.sync="showAdd" v-bind="addProps" @submited="getList" />
+    <AddFeedback :visible.sync="showAdd" v-bind="addProps" @submited="handleAddSuccess" />
 
     <BeiAnBox style="--color-white: var(--color-text-primary)" />
   </div>
@@ -104,6 +104,12 @@ export default {
         type: this.activeName,
         fbId: -1,
       };
+    },
+    handleAddSuccess() {
+      this.showAdd = false;
+      for (const index in this.tabList) {
+        this.getList(index);
+      }
     },
   },
 };

@@ -18,7 +18,8 @@
 export default {
   data() {
     return {
-      img: require("@/assets/helpImages/opAndca/facilities.gif"),
+      img: (window.VUE_APP_EXTERNAL_FILE_PATH + "/ptHelpImages/opAndca/facilities.gif"),
+      // img: (window.VUE_APP_EXTERNAL_FILE_PATH + "/ptHelpImages/opAndca/facilities.gif"),
     };
   },
 };

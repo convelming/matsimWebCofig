@@ -35,7 +35,7 @@ export class CarTravelLayer extends Layer {
     this.modelSize = opt.modelSize || this.modelSize;
 
     this.modelPool = new ModelPool({
-      SUV: "/static/models/SUV.gltf",
+      SUV: window.VUE_APP_EXTERNAL_FILE_PATH + "/models/SUV.gltf",
     });
 
     this.carGroup = new THREE.Group();

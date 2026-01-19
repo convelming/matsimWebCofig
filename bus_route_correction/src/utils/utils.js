@@ -3,15 +3,15 @@
  * @param {*} params  参数
  */
 export function tansParams(params) {
-  let result = ''
+  let result = "";
   for (const propName of Object.keys(params)) {
     const value = params[propName];
     var part = encodeURIComponent(propName) + "=";
-    if (value !== null && typeof (value) !== "undefined") {
-      if (typeof value === 'object') {
+    if (value !== null && typeof value !== "undefined") {
+      if (typeof value === "object") {
         for (const key of Object.keys(value)) {
-          if (value[key] !== null && typeof (value[key]) !== 'undefined') {
-            let params = propName + '[' + key + ']';
+          if (value[key] !== null && typeof value[key] !== "undefined") {
+            let params = propName + "[" + key + "]";
             var subPart = encodeURIComponent(params) + "=";
             result += subPart + encodeURIComponent(value[key]) + "&";
           }
@@ -21,9 +21,8 @@ export function tansParams(params) {
       }
     }
   }
-  return result
+  return result;
 }
-
 
 export const formatTime = (date) => {
   const year = date.getFullYear();
@@ -74,7 +73,7 @@ export function JsonParse(string, defaultValue = null) {
   }
 }
 
-export function copyText(textValue = "", success = () => { }, error = () => { }) {
+export function copyText(textValue = "", success = () => {}, error = () => {}) {
   let textarea = null;
   try {
     // 动态创建 textarea 标签
@@ -124,18 +123,17 @@ export function selectFile(accept = "*/*") {
 }
 
 function export_csv(list, name) {
-  const newList = list.map(res => res.join(','))
-  const data = newList.join(',\n')
+  const newList = list.map((res) => res.join(","));
+  const data = newList.join(",\n");
   // “\ufeff” BOM头
-  var uri = 'data:text/csv;charset=utf-8,\ufeff' + encodeURIComponent(data);
+  var uri = "data:text/csv;charset=utf-8,\ufeff" + encodeURIComponent(data);
   var downloadLink = document.createElement("a");
   downloadLink.href = uri;
-  downloadLink.download = (name + ".csv") || "temp.csv";
+  downloadLink.download = name + ".csv" || "temp.csv";
   document.body.appendChild(downloadLink);
   downloadLink.click();
   document.body.removeChild(downloadLink);
 }
-
 
 export const COLOR_LIST = [
   // ["#65b581", "#84ba72", "#a3bf62", "#c1c453", "#e0c943", "#ffce34", "#ffb93d", "#fea445", "#fe904e", "#fd7b56", "#fd665f"],
@@ -159,7 +157,6 @@ export const COLOR_LIST = [
   ["rgb(211, 240, 246)", "rgb(186, 233, 242)", "rgb(163, 225, 238)", "rgb(119, 207, 229)", "rgb(97, 199, 224)", "rgb(30, 169, 207)"],
   ["rgb(209, 227, 243)", "rgb(185, 211, 237)", "rgb(161, 197, 229)", "rgb(108, 165, 215)", "rgb(78, 145, 207)", "rgb(18, 108, 191)"],
 ];
-
 
 export const ICON_LIST = [
   "point2.png",
@@ -264,9 +261,7 @@ export const ICON_LIST = [
   "walk-fill.svg",
   "walk-line.svg",
   "camera.svg",
-].map((v) => process.env.VUE_APP_PUBLIC_PATH + "static/icon_traffic/" + v);
-
-
+].map((v) => window.VUE_APP_EXTERNAL_FILE_PATH + "/icon_traffic/" + v);
 
 //string转file
 export function stringToFile(str, filename) {

@@ -27,7 +27,7 @@ module.exports = defineConfig({
       "/": {
         ws: false,
         target: `http://192.168.60.231:23105`, // 测试服
-        target: `http://192.168.31.208:23105`, // 本地调试
+        target: `http://192.168.28.43:23105`, // 本地调试
         // target: `http://localhost:23105`, // 测试服
         changeOrigin: true,
         // pathRewrite: {
@@ -42,31 +42,36 @@ module.exports = defineConfig({
       entry: "./src/pages/pt/main.js",
       template: "./public/index.html",
       fliename: "pt.html",
-      name: process.env.VUE_APP_TITLE,
+      name: "pt",
+      title: process.env.VUE_APP_TITLE,
     },
     index: {
       entry: "./src/pages/index/main.js",
       template: "./public/index.html",
       fliename: "index.html",
-      name: process.env.VUE_APP_TITLE,
+      name: "index",
+      title: process.env.VUE_APP_TITLE,
     },
     home: {
       entry: "./src/pages/home/main.js",
       template: "./public/index.html",
       fliename: "home.html",
-      name: process.env.VUE_APP_TITLE,
+      name: "home",
+      title: process.env.VUE_APP_TITLE,
     },
     feedback: {
       entry: "./src/pages/feedback/main.js",
       template: "./public/index.html",
       fliename: "feedback.html",
-      name: process.env.VUE_APP_TITLE,
+      name: "feedback",
+      title: process.env.VUE_APP_TITLE,
     },
     user: {
       entry: "./src/pages/user/main.js",
       template: "./public/index.html",
       fliename: "user.html",
-      name: process.env.VUE_APP_TITLE,
+      name: "user",
+      title: process.env.VUE_APP_TITLE,
     },
   },
   css: {
