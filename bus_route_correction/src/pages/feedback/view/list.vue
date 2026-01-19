@@ -14,7 +14,7 @@
           <div class="info">
             <!-- <div class="text1"><i class="el-icon-warning-outline"></i> 待办</div> -->
             <div class="text1"><i class="el-icon-user"></i> {{ item2.userName }}</div>
-            <div class="text1"><i class="el-icon-chat-line-square"></i> {{ item2.msgNum }}</div>
+            <!-- <div class="text1"><i class="el-icon-chat-line-square"></i> {{ item2.msgNum }}</div> -->
             <div class="text1 time"><i class="el-icon-time"></i> {{ $moment(item2.date).format("YYYY-MM-DD HH:mm") }}</div>
           </div>
         </a>

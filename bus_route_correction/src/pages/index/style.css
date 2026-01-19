@@ -1,0 +1,15 @@
+html,
+body {
+  overflow: hidden;
+
+  --background-color-base: #f5f7fa;
+  --background-color-light: #eef2fd;
+  --background-color-lighter: #d2d6e5;
+  --background-color-extra-light: #ccd4ea;
+}
+
+#app {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}

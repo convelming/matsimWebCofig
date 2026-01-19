@@ -8,13 +8,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: var(--color-text-primary);
-  overflow: hidden;
-}
-
-#app {
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
+  overflow-x: hidden;
 }
 
 a {
@@ -33,6 +27,7 @@ input::placeholder {
   height: 30px;
   gap: 15px;
 }
+
 .ba_box a {
   text-decoration: underline;
   color: #fff;
