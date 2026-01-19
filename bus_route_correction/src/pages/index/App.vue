@@ -296,8 +296,8 @@ export default {
     handleOperationsAnalysisLoad(row) {
       return this.$store.dispatch("loadDataSource", row);
     },
-    handleOperationsAnalysisToDetail(name) {
-      const [database, datasource] = name.split("/");
+    handleOperationsAnalysisToDetail(row) {
+      const [database, datasource] = row.name.split("/");
       const href = `/pt.html#/operationsAnalysis/${database}/${datasource}`;
       window.open(href, "_blank");
     },
