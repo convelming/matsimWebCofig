@@ -46,7 +46,7 @@
                 <span class="dian" style="background-color: #e6a23c" v-else-if="defaultDataSource.loadStatus == '加载中'"></span>
                 <span class="dian" style="background-color: #909399" v-else-if="defaultDataSource.loadStatus == '未加载'"></span>
               </div>
-              <el-button type="primary" size="small" @click="handleOperationsAnalysisToDetail(defaultDataSource.name)">{{ $l("进入页面") }}</el-button>
+              <el-button type="primary" size="small" @click="handleOperationsAnalysisToDetail(defaultDataSource)">{{ $l("进入页面") }}</el-button>
             </div>
             <div class="footer" v-else>
               <div class="defaultDataSource" @click="handleClickItem('operationsAnalysis')">
