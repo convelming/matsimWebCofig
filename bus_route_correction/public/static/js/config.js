@@ -29,9 +29,9 @@ MAP_LAYER_STYLE = [
   {
     style_name: "drak blue",
     theme: "dark",
-    getUrl: function() {
+    getUrl: function () {
       return `http://192.168.60.234:8081/styles/DRAKBlue/512/${this.zoom}/${this.row}/${this.col}.png`;
-    }
+    },
   },
   {
     style_name: "POSITRON",
@@ -40,7 +40,7 @@ MAP_LAYER_STYLE = [
       return `http://192.168.60.231:23334/osm/Positron/${this.zoom}/${this.row}/${this.col}.png`;
     },
   },
- {
+  {
     style_name: "Bing地图",
     background: `#0a4173`,
     theme: "dark",
@@ -92,18 +92,18 @@ MAP_LAYER_STYLE = [
       return `http://192.168.60.231:23334/osm/OSMBroght/${this.zoom}/${this.row}/${this.col}.png`;
     },
   },
-//  {
-//    style_name: "LIBERTY",
-//    getUrl: function () {
-//      return `http://192.168.60.231:23334/osm/liberty/${this.zoom}/${this.row}/${this.col}.png`;
-//    },
-//  },
-//  {
-//    style_name: "MAPBOX",
-//    getUrl: function () {
-//      return `https://api.mapbox.com/styles/v1/convel/ck8frzi262yko1invkvbif5aw/tiles/512/${this.zoom}/${this.row}/${this.col}@2x?access_token=pk.eyJ1Ijoic2t1bjE2IiwiYSI6ImNsNmN6bDAxaDAwbmozam55bjBrZWVybTUifQ.vg3pEDwpnUgxmJMmeB8nGQ`;
-//    },
-//  }, 
+  //  {
+  //    style_name: "LIBERTY",
+  //    getUrl: function () {
+  //      return `http://192.168.60.231:23334/osm/liberty/${this.zoom}/${this.row}/${this.col}.png`;
+  //    },
+  //  },
+  //  {
+  //    style_name: "MAPBOX",
+  //    getUrl: function () {
+  //      return `https://api.mapbox.com/styles/v1/convel/ck8frzi262yko1invkvbif5aw/tiles/512/${this.zoom}/${this.row}/${this.col}@2x?access_token=pk.eyJ1Ijoic2t1bjE2IiwiYSI6ImNsNmN6bDAxaDAwbmozam55bjBrZWVybTUifQ.vg3pEDwpnUgxmJMmeB8nGQ`;
+  //    },
+  //  },
   {
     style_name: "argisServer",
     theme: "light",
@@ -125,20 +125,22 @@ MAP_LAYER_STYLE = [
   //     return `http://192.168.60.231:23334/baidu/satellite/${this.zoom}/${this.row}/${this.col}.jpg`;
   //   },
   // },
-//  {
-//    style_name: "Arcgis",
-//    background: `#0a4173`,
-//    getUrl: function () {
-//      const { x, y, zoom } = this;
-//      const width = EARTH_RADIUS / Math.pow(2, zoom);
-//      const bbox = `${x - width},${y - width},${x + width},${y + width}`;
-//      const bboxSR = "3857";
-//      const imageSR = "3857";
+  //  {
+  //    style_name: "Arcgis",
+  //    background: `#0a4173`,
+  //    getUrl: function () {
+  //      const { x, y, zoom } = this;
+  //      const width = EARTH_RADIUS / Math.pow(2, zoom);
+  //      const bbox = `${x - width},${y - width},${x + width},${y + width}`;
+  //      const bboxSR = "3857";
+  //      const imageSR = "3857";
 
-//      return `http://192.168.60.232:9195/mserver/arcgis/rest/services/csjt/%E5%B9%BF%E4%B8%9C%E7%9C%81wgs/MapServer/export?dpi=96&transparent=true&format=png8&layers=show:0,1,2,3&bbox=${bbox}&f=image&bboxSR=${bboxSR}&imageSR=${imageSR}`;
-//    },
-//  },
+  //      return `http://192.168.60.232:9195/mserver/arcgis/rest/services/csjt/%E5%B9%BF%E4%B8%9C%E7%9C%81wgs/MapServer/export?dpi=96&transparent=true&format=png8&layers=show:0,1,2,3&bbox=${bbox}&f=image&bboxSR=${bboxSR}&imageSR=${imageSR}`;
+  //    },
+  //  },
 ];
+
+VUE_APP_EXTERNAL_FILE_PATH = "./static/external";
 
 // geojson地图坐标系转换配置
 try {
