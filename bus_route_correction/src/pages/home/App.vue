@@ -13,13 +13,15 @@
             <el-dropdown-item command="en-US" :disabled="page_language == 'en-US'">English</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
-
-        <a href="http://192.168.60.231:23105/pt.html#/" class="icon" target="_blank">
-          <img src="@/assets/image/home/菜单.svg?url" alt="" />
-        </a>
-        <a class="icon">
-          <img src="@/assets/image/home/搜索.svg?url" alt="" />
-        </a>
+        <el-dropdown class="language" @command="openPage" placement="top-start" trigger="click">
+          <img class="icon" src="@/assets/image/home/菜单.svg?url" alt="" />
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item command="user.html">登录</el-dropdown-item>
+            <el-dropdown-item command="pt.html">建模平台</el-dropdown-item>
+            <el-dropdown-item command="index.html">可视化平台</el-dropdown-item>
+            <el-dropdown-item command="feedback.html">反馈与建议</el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
       </div>
       <video class="video" src="@/assets/image/home/53941bcfa09e859cc89db3753af9fb78.mp4" autoplay muted @timeupdate="handleTimeupdate"></video>
       <Typewriter :lines="tpyelines" :speed="200" />
@@ -27,8 +29,8 @@
         <div class="bodyer_item one" v-show="playTime > 2000">
           <img src="@/assets/image/home/科研建设.svg?url" alt="" class="icon" />
           <div class="text_box">
-            <div class="text1">科研建设</div>
-            <div class="text2">275+</div>
+            <div class="text1">拖拽式建模</div>
+            <!-- <div class="text2">275+</div> -->
           </div>
           <div class="_box">
             <div class="d1"></div>
@@ -38,10 +40,10 @@
       </transition>
       <transition name="el-zoom-in-bottom">
         <div class="bodyer_item two" v-show="playTime > 4000">
-          <img src="@/assets/image/home/获奖项目.svg?url" alt="" class="icon" />
+          <img src="@/assets/image/home/项目.svg?url" alt="" class="icon" />
           <div class="text_box">
-            <div class="text1">获奖项目</div>
-            <div class="text2">144项</div>
+            <div class="text1">多模型集成</div>
+            <!-- <div class="text2">144项</div> -->
           </div>
 
           <div class="_box">
@@ -52,10 +54,24 @@
       </transition>
       <transition name="el-zoom-in-bottom">
         <div class="bodyer_item three" v-show="playTime > 6000">
+          <img src="@/assets/image/home/github.svg?url" alt="" class="icon" />
+          <div class="text_box">
+            <div class="text1">开源可扩展</div>
+            <!-- <div class="text2">93%</div> -->
+          </div>
+
+          <div class="_box">
+            <div class="d1"></div>
+            <div class="d2"></div>
+          </div>
+        </div>
+      </transition>
+      <transition name="el-zoom-in-bottom">
+        <div class="bodyer_item four" v-show="playTime > 8000">
           <img src="@/assets/image/home/比例.svg?url" alt="" class="icon" />
           <div class="text_box">
-            <div class="text1">研究生比例</div>
-            <div class="text2">93%</div>
+            <div class="text1">低使用门槛</div>
+            <!-- <div class="text2">93%</div> -->
           </div>
 
           <div class="_box">
@@ -169,6 +185,9 @@ export default {
     changeLanguage(lan) {
       this.$setLanguage(lan);
     },
+    openPage(url) {
+      window.open(url);
+    },
     handleTimeupdate(e) {
       // playTime.value = e.timeStamp
     },
@@ -215,6 +234,9 @@ export default {
       height: 100%;
     }
   }
+  .module_menu {
+    cursor: pointer;
+  }
 }
 .video {
   display: block;
@@ -227,6 +249,8 @@ export default {
   display: flex;
   align-items: center;
   gap: 12px;
+
+  transform: translateX(-50%);
   .icon {
     display: block;
     width: 60px;
@@ -290,11 +314,15 @@ export default {
   }
   &.two {
     top: 45vh;
-    left: 50vw;
+    left: 40vw;
   }
   &.three {
     top: 35vh;
-    left: 75vw;
+    left: 60vw;
+  }
+  &.four {
+    top: 45vh;
+    left: 80vw;
   }
 }
 
@@ -347,7 +375,6 @@ export default {
       line-height: 20px;
     }
   }
-
 }
 .typewriter {
   position: absolute;
