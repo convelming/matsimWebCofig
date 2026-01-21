@@ -589,7 +589,7 @@ ui.custom.console = {
         alert(data.info);
         var fileName = data.data;
         ui.parts.form.element.setData(this.formId, this.key, fileName);
-      } else if (data && data.success != true) alert(data.errMsg);
+      } else if (data && data.success != true) alert(data.errMsg || data.info);
       else alert("上传异常!");
     },
   },

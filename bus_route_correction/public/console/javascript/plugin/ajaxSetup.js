@@ -12,7 +12,7 @@ $(function () {
       xhr.setRequestHeader("Authorization", "Bearer " + getCookie("Admin-Token"));
     },
     complete: function (xhr, status) {
-      if (xhr.status == 401 || xhr.responseJSON.code == 401) {
+      if (xhr.status == 401 || (!!xhr.responseJSON && xhr.responseJSON.code == 401)) {
         alert("登录已过期，请重新登录");
         location.href = "/user.html?redirect=" + encodeURIComponent(location.href);
       }
