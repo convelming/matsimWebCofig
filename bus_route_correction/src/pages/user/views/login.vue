@@ -172,6 +172,7 @@ export default {
     this.getCode();
     this.getCookie();
     this.redirect = decodeURIComponent(getUrlParams(window.location.href).redirect || "/pt.html#/");
+    console.log(this.redirect);
     this.handleChangeTheme(this.theme);
   },
   methods: {
@@ -358,7 +359,7 @@ export default {
 }
 .code_box .login-code-img {
   display: block;
-  width: 35%;
+  height: 40px;
 }
 
 .login_form .submit_button {

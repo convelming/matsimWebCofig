@@ -84,7 +84,7 @@
         </div>
       </div>
 
-      <BeiAnBox style="margin-top: auto;"/>
+      <BeiAnBox style="margin-top: auto" />
     </div>
     <OAHelpDialog class="item_help" :visible.sync="showOAHelpDialog" />
     <PAHelpDialog class="item_help" :visible.sync="showPAHelpDialog" />
@@ -637,13 +637,25 @@ export default {
           this.handleShowComparativeAnalysisDialog();
           break;
         case "systemEvaluation":
-          window.open("http://192.168.60.231:23334/kepler.gl.html", "_blank");
+          {
+            let url = window.SystemEvaluation_url;
+            if (!url) url = "http://192.168.60.231:23334/kepler.gl.html";
+            window.open(url, "_blank");
+          }url
           break;
         case "MATSim":
-          window.open("http://192.168.60.231:23103/static/login/loginPage.html", "_blank");
+          {
+            let url = window.MATSim_url;
+            if (!url) url = process.env.VUE_APP_PUBLIC_PATH + "console/console.html";
+            window.open(url, "_blank");
+          }
           break;
         case "ActivitySim":
-          window.open("https://populationold-shrb5fb86gswhl6bseu3we.streamlit.app/ ", "_blank");
+          {
+            let url = window.ActivitySim_url;
+            if (!url) url = "https://populationold-shrb5fb86gswhl6bseu3we.streamlit.app/";
+            window.open(url, "_blank");
+          }
           break;
       }
     },
