@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import { ICON_LIST } from "@/utils/utils";
+import { getICONLIST } from "@/utils/utils";
 
 export default {
   props: {
@@ -18,7 +18,7 @@ export default {
     },
     iconList: {
       type: Array,
-      default: () => ICON_LIST,
+      default: getICONLIST,
     },
   },
   watch: {

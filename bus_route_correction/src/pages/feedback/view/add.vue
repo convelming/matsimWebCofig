@@ -1,6 +1,6 @@
 <!-- add -->
 <template>
-  <el-dialog :title="title" :visible.sync="s_visible" width="600px" @close="handleClose" append-to-body>
+  <el-dialog :title="title" :visible.sync="s_visible" width="1000px" @close="handleClose" append-to-body :close-on-click-modal="false" :before-close="handleBeforeClose">
     <el-form :model="form" ref="formRef" :rules="rules" label-position="top" :inline="false" size="">
       <el-form-item label="标题：" prop="title">
         <el-input v-model="form.title"></el-input>
@@ -232,14 +232,14 @@ export default {
             if (this.fbId == -1) {
               return addPosts(_form).then((res) => {
                 this.$message.success("添加成功");
-                handleClose();
+                this.handleClose();
                 this.$emit("submited", _form.type);
               });
             } else {
               _form.id = this.fbId;
               return updatePosts(_form).then((res) => {
                 this.$message.success("修改成功");
-                handleClose();
+                this.handleClose();
                 this.$emit("submited", _form.type);
               });
             }
@@ -250,6 +250,19 @@ export default {
         .finally(() => {
           this.submiting = false;
         });
+    },
+    async handleBeforeClose(done) {
+      const content = this.$refs.QuillEditorRef.getHTML();
+      if (content) {
+        await this.$confirm("有内容尚未保存，确定要关闭吗？", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        });
+        done();
+      } else {
+        done();
+      }
     },
   },
 };

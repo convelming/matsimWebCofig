@@ -1,6 +1,6 @@
 import Vue from "vue";
 import App from "./App.vue";
-import store from "@/store";
+import store from "./store.js";
 import ElementUI from "element-ui";
 import language from "@/language/index";
 import "@/components/BeiAnBox/index.js";

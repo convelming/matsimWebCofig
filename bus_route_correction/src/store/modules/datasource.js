@@ -1,5 +1,15 @@
 import { getDefaultBase, getAllBase, getAllScheme, loadScheme, runMatsim, addScheme, saveScheme, delScheme, copyScheme } from "@/api/database";
 
+const DataBaseKey = "DataBaseKey";
+export function getDataBase() {
+  return sessionStorage.getItem(DataBaseKey);
+}
+
+const DataSourceKey = "DataSourceKey";
+export function getDataSource() {
+  return sessionStorage.getItem(DataSourceKey);
+}
+
 const datasource = {
   state: {
     dataBase: "",
@@ -13,6 +23,7 @@ const datasource = {
 
   mutations: {
     SET_DATA_BASE(state, dataBase) {
+      sessionStorage.setItem(DataBaseKey, dataBase);
       state.dataBase = dataBase;
     },
     SET_DATA_BASE_LIST(state, dataBaseList) {
@@ -23,6 +34,7 @@ const datasource = {
     },
 
     SET_DATA_SOURCE(state, dataSource) {
+      sessionStorage.setItem(DataSourceKey, dataSource);
       state.dataSource = dataSource;
     },
     SET_DATA_SOURCE_LIST(state, dataSourceList) {
@@ -75,7 +87,7 @@ const datasource = {
         const res = await getAllBase();
         commit(
           "SET_DATA_BASE_LIST",
-          res.data.map((v) => ({ name: v }))
+          res.data.map((v) => ({ name: v })),
         );
         commit("SET_DATA_BASE_LIST_LOADING", false);
       } catch (error) {

@@ -252,7 +252,7 @@
 </language>
 
 <script>
-import { ICON_LIST, COLOR_LIST } from "@/utils/utils";
+import { getICONLIST, COLOR_LIST } from "@/utils/utils";
 import { GeoJSONLayer, LINE_STYLE } from "../layer/GeoJSONLayer";
 import GeoJSONVisualMap from "../component/GeoJSONVisualMap.vue";
 import GeoJSONLayerWorker from "../worker/GeoJSONLayer.worker";
@@ -299,7 +299,7 @@ export default {
 
       pointSize: 1000,
       pointColor: "#ffa500",
-      pointIcon: ICON_LIST[0],
+      pointIcon: getICONLIST()[0],
       pointValue: "",
       pointColors: 0,
       pointOpacity: 1,

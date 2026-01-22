@@ -38,56 +38,65 @@ module.exports = defineConfig({
       },
     },
   },
-
   pages: {
     pt: {
-      entry: "./src/pages/pt/main.js",
+      entry: "src/pages/pt/main.js",
       template: "./public/index.html",
       fliename: "pt.html",
       name: "pt",
       title: process.env.VUE_APP_TITLE,
     },
     index: {
-      entry: "./src/pages/index/main.js",
+      entry: "src/pages/index/main.js",
       template: "./public/index.html",
       fliename: "index.html",
       name: "index",
       title: process.env.VUE_APP_TITLE,
     },
     home: {
-      entry: "./src/pages/home/main.js",
+      entry: "src/pages/home/main.js",
       template: "./public/index.html",
       fliename: "home.html",
       name: "home",
       title: process.env.VUE_APP_TITLE,
     },
     feedback: {
-      entry: "./src/pages/feedback/main.js",
+      entry: "src/pages/feedback/main.js",
       template: "./public/index.html",
       fliename: "feedback.html",
       name: "feedback",
       title: process.env.VUE_APP_TITLE,
     },
     user: {
-      entry: "./src/pages/user/main.js",
+      entry: "src/pages/user/main.js",
       template: "./public/index.html",
       fliename: "user.html",
       name: "user",
       title: process.env.VUE_APP_TITLE,
     },
-  },
-  css: {
-    // 配置css预处理器
-    // loaderOptions: {
-    //   scss: {
-    //     additionalData: `@import "@/assets/css/element.variables.scss";`,
-    //   },
+    // admin: {
+    //   entry: "src/pages/admin/main.js",
+    //   template: "./public/index.html",
+    //   fliename: "admin.html",
+    //   name: "admin",
+    //   title: process.env.VUE_APP_TITLE,
     // },
   },
   configureWebpack: {
     externals: {
       // "proj4": "^2.9.0",
       proj4: "proj4",
+    },
+    resolve: {
+      alias: {
+        "@": path.resolve(__dirname, "src"),
+        "@pt": path.resolve(__dirname, "src/pages/pt"),
+        "@index": path.resolve(__dirname, "src/pages/index"),
+        "@home": path.resolve(__dirname, "src/pages/home"),
+        "@user": path.resolve(__dirname, "src/pages/user"),
+        "@admin": path.resolve(__dirname, "src/pages/admin"),
+        "@assets": path.resolve(__dirname, "src/assets"),
+      },
     },
   },
   chainWebpack: (config) => {
@@ -102,7 +111,20 @@ module.exports = defineConfig({
       .rule("language")
       .resourceQuery(/blockType=language/)
       .use("language")
-      .loader(require.resolve("./src/language/loader.js"));
+      .loader(path.resolve("src/language/loader.js"));
+    // set svg-sprite-loader
+    config.module.rule("svg").exclude.add(path.resolve("src/assets/icons")).end();
+    config.module
+      .rule("icons")
+      .test(/\.svg$/)
+      .include.add(path.resolve("src/assets/icons"))
+      .end()
+      .use("svg-sprite-loader")
+      .loader("svg-sprite-loader")
+      .options({
+        symbolId: "icon-[name]",
+      })
+      .end();
     if (process.env.NODE_ENV === "production") {
       config.optimization.minimizer = [
         new TerserPlugin({

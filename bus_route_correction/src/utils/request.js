@@ -1,6 +1,6 @@
 import axios from "axios";
 import { Notification, MessageBox, Message, Loading } from "element-ui";
-import store from "@/store";
+import { getDataSource } from "@/store/modules/datasource";
 import { getToken } from "@/utils/auth";
 import { tansParams, blobValidate } from "@/utils/utils";
 import cache from "./cache";
@@ -33,9 +33,8 @@ service.interceptors.request.use(
       headers["Content-Language"] = encodeURIComponent(language.page_language);
     }
 
-    // 是否需要防止数据重复提交
     if (!config.isNoBatasource) {
-      headers["Datasource"] = encodeURIComponent(store.getters.dataSource);
+      headers["Datasource"] = encodeURIComponent(getDataSource());
     }
 
     headers["Uuid"] = guid();
@@ -90,7 +89,7 @@ service.interceptors.request.use(
   },
   (error) => {
     Promise.reject(error);
-  }
+  },
 );
 
 // 响应拦截器
@@ -139,7 +138,7 @@ service.interceptors.response.use(
     }
     if (!error.config.noMsg) Message.error(message);
     return Promise.reject(error);
-  }
+  },
 );
 
 export default service;

@@ -2,7 +2,14 @@
 <template>
   <div class="detail" v-loading="loading">
     <div class="box1">
-      <a href="#/">列表</a> > <span class="end">{{ feedback_type[detail.type] }}</span>
+      <div>
+        <a href="#/">列表</a> > <span class="end">{{ feedback_type[detail.type] }}</span>
+      </div>
+      <div class="btn_list">
+        <el-button type="warning" size="small" @click="">状态</el-button>
+        <el-button type="primary" size="small" @click="">编辑</el-button>
+        <el-button type="danger" size="small" @click="">删除</el-button>
+      </div>
     </div>
     <div class="title_box">{{ detail.title }}</div>
     <div class="info_box">
@@ -14,38 +21,12 @@
     </div>
     <div class="edit_box">
       <el-input type="textarea" :rows="5" v-model="detail.huifu" placeholder="请输入评论内容"> </el-input>
-      <el-button type="primary" size="small" @click="handleSubmitComment()">发送评论</el-button>
+      <el-button type="primary" @click="handleSubmitComment(-1)">发送评论</el-button>
     </div>
     <div class="comment_box">
       <div class="title">评论</div>
       <div class="comment_list">
-        <div class="comment_item" v-for="item1 in list">
-          <div class="name">{{ item1.userName || "匿名" }}</div>
-          <div class="content">{{ item1.content }}</div>
-          <div class="info">
-            <span class="hf" @click="huiFuId == item1.id ? (huiFuId = '') : (huiFuId = item1.id)"><i class="el-icon-chat-line-square"></i> 回复</span>
-            <span class="time"><i class="el-icon-time"></i> {{ $moment(item1.dateTime).format("YYYY-MM-DD HH:mm") }}</span>
-          </div>
-          <div class="edit_box" v-if="huiFuId == item1.id">
-            <el-input type="textarea" :rows="3" v-model="item1.huifu" placeholder="请输入回复内容"> </el-input>
-            <el-button type="primary" size="small" @click="handleSubmitComment(item1)">发送回复</el-button>
-          </div>
-          <div class="children" v-if="item1.children.length">
-            <template v-for="item2 in item1.children">
-              <div class="c_item" v-for="item3 in item2">
-                <div class="c_info">
-                  <span class="c_name">{{ item3.userName || "匿名" }}</span>
-                  <span class="c_time"><i class="el-icon-time"></i> {{ $moment(item3.dateTime).format("YYYY-MM-DD HH:mm") }}</span>
-                </div>
-                <div class="c_content">{{ item3.content }}</div>
-              </div>
-            </template>
-            <div class="more" v-if="item1.hasMore" @click="nextCommentChildren(item1)">
-              <i class="el-icon-arrow-down"></i>
-              <span>查看更多</span>
-            </div>
-          </div>
-        </div>
+        <CommentItem v-for="(item1, index1) in list" :key="item1.id" :detail="item1" :postsId="$route.query.id" :replyId="item1.id"></CommentItem>
       </div>
 
       <el-pagination class="pagination" @size-change="getComments()" @current-change="getComments()" :current-page.sync="params.pageNum" :page-size="params.pageSize" layout="total,  prev, pager, next, jumper" :total="total" :pager-count="7" />
@@ -56,10 +37,13 @@
 <script>
 import { addPosts, commentPosts, listPostsComment, getPosts } from "@/api/feedback";
 import { feedback_type } from "./add.vue";
+import CommentItem from "../components/CommentItem.vue";
 export default {
   name: "detail",
   props: {},
-  components: {},
+  components: {
+    CommentItem,
+  },
   computed: {},
   watch: {},
   data() {
@@ -110,33 +94,34 @@ export default {
         postsId: this.$route.query.id,
         ...this.params,
       }).then((res) => {
-        res.records.forEach((res) => {
-          res.huifu = "";
-          res.total = 0;
-          res.children = [];
-          res.hasMore = false;
-          res.params = {
+        res.records.forEach((v, i) => {
+          v.huifu = "";
+          v.total = 0;
+          v.children = [];
+          v.hasMore = false;
+          v.params = {
             pageNum: 0,
             pageSize: 5,
             postsId: this.$route.query.id,
-            replyId: res.id,
+            replyId: v.id,
           };
-          this.nextCommentChildren(res);
         });
         this.list = res.records;
         this.total = res.total;
       });
     },
-    nextCommentChildren(item) {
+    nextCommentChildren(i) {
+      const item = this.list[i];
       item.params.pageNum += 1;
       return listPostsComment(item.params).then((res) => {
-        item.children[item.params.pageNum - 1] = res.records;
-        this.$set(item, "children", item.children)
+        item.children.push(res.records);
+        this.$set(item, "children", item.children);
         item.hasMore = res.total > item.params.pageNum * item.params.pageSize;
         item.total = res.total;
       });
     },
-    handleSubmitComment(item) {
+    handleSubmitComment(i) {
+      const item = this.list[i];
       const params = {
         postsId: this.$route.query.id,
       };
@@ -147,16 +132,17 @@ export default {
         params.content = this.detail.huifu;
       }
       return commentPosts(params).then((res) => {
-        if (!item) {
-          this.detail.huifu = "";
-          this.getComments();
-        } else {
+        if (item) {
           this.huiFuId = -1;
           let pageNum = item.params.pageNum;
           item.params.pageNum = 0;
+          this.$set(item, "children", []);
           for (let index = 0; index < pageNum; index++) {
             this.nextCommentChildren(item);
           }
+        } else {
+          this.detail.huifu = "";
+          this.getComments();
         }
       });
     },
@@ -177,6 +163,9 @@ export default {
   gap: 30px;
 
   .box1 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     font-size: 14px;
     padding-bottom: 10px;
     .end {
@@ -188,10 +177,13 @@ export default {
         color: var(--color-primary);
       }
     }
+    .btn_list {
+    }
   }
   .title_box {
     font-size: 32px;
     line-height: 32px;
+    font-weight: bold;
   }
   .info_box {
     font-size: 12px;
@@ -234,72 +226,6 @@ export default {
     }
     .comment_list {
       .comment_item {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        padding: 10px 0;
-        border-bottom: 1px solid var(--border-color-base);
-        .name {
-          font-size: 14px;
-          color: var(--color-primary);
-        }
-        .content {
-          font-size: 14px;
-        }
-        .info {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          font-size: 12px;
-          color: var(--color-text-secondary);
-          .hf {
-            cursor: pointer;
-          }
-        }
-
-        .edit_box {
-          margin-left: 40px;
-        }
-        .children {
-          display: flex;
-          flex-direction: column;
-          gap: 10px;
-          margin-left: 40px;
-          padding: 10px 15px;
-          border-radius: 10px;
-          background-color: var(--background-color-light);
-          .c_item {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-            border-bottom: 1px solid var(--border-color-base);
-            padding-bottom: 5px;
-            .c_info {
-              display: flex;
-              align-items: center;
-              justify-content: space-between;
-              gap: 10px;
-              font-size: 12px;
-              color: var(--color-text-secondary);
-              .c_name {
-                // color: var(--color-text-primary);
-              }
-            }
-            .c_content {
-              font-size: 12px;
-            }
-          }
-          .more {
-            cursor: pointer;
-            display: flex;
-            gap: 5px;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            color: var(--color-primary);
-            font-size: 12px;
-          }
-        }
       }
     }
     .pagination {

@@ -109,7 +109,7 @@
 </language>
 
 <script>
-import { ICON_LIST, COLOR_LIST } from "@/utils/utils";
+import { getICONLIST, COLOR_LIST } from "@/utils/utils";
 import { GeoJSONLayer, LINE_STYLE } from "../layer/GeoJSONLayer2";
 import GeoJSONVisualMap from "../component/GeoJSONVisualMap2.vue";
 import GeoJSONLayerWorker from "../worker/GeoJSONLayer.worker";
@@ -162,7 +162,7 @@ export default {
         pointSize: 1000,
         pointColor: "#ffa500",
         pointOpacity: 1,
-        pointIcon: ICON_LIST[0],
+        pointIcon: getICONLIST()[0],
         pointColorBar: {
           valueKey: "",
           valueType: "",
@@ -314,7 +314,7 @@ export default {
           polygonSettingType: this.polygonSettingType,
           polygonSettingForm: this.polygonSettingForm,
           showPolygonVisualMap: this.showPolygonVisualMap,
-        })
+        }),
       );
     },
     handleLocateToTheCenter() {

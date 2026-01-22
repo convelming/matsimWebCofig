@@ -24,7 +24,7 @@
 </language>
 
 <script>
-import { ICON_LIST, COLOR_LIST } from "@/utils/utils";
+import { getICONLIST, COLOR_LIST } from "@/utils/utils";
 import { LINE_STYLE } from "../layer/GeoJSONLayer2";
 export default {
   name: "HeatMap",
@@ -57,7 +57,7 @@ export default {
             strokeColor: "#ff0000",
             strokeStyle: LINE_STYLE.SOLID,
             opacity: 1,
-            icon: ICON_LIST[0],
+            icon: getICONLIST()[0],
             ...(this.form || {}),
           };
         }

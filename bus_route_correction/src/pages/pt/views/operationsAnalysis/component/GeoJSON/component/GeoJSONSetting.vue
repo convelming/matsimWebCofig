@@ -187,7 +187,7 @@
 
 <script>
 import * as THREE from "three";
-import { ICON_LIST } from "@/utils/utils";
+import { getICONLIST } from "@/utils/utils";
 import { LINE_STYLE } from "../layer/GeoJSONLayer2";
 import { ColorBar2D } from "@/mymap/utils/ColorBar2D.v2";
 export default {
@@ -308,7 +308,7 @@ export default {
           slider: 0,
           color: "#EE6666",
           select: "",
-          icon: ICON_LIST[0],
+          icon: getICONLIST()[0],
           lineStyle: LINE_STYLE.SOLID,
           colorBar: {
             valueKey: "",
@@ -426,12 +426,11 @@ export default {
           });
         }
       }
-      
+
       this.$set(item, "data", list);
       this.handleChangeImage(lItem);
     },
     handleDeleteColorBarItem(lItem, index) {
-
       const item = this.s_form[lItem.name];
       item.data.splice(index, 1);
       this.handleChangeImage(lItem);
