@@ -41,16 +41,16 @@ export const constantRoutes = [
       }
     ]
   },
-  {
-    path: '/login',
-    component: () => import(/* webpackChunkName: "admin_login" */ '@admin/views/login'),
-    hidden: true
-  },
-  {
-    path: '/register',
-    component: () => import(/* webpackChunkName: "admin_register" */ '@admin/views/register'),
-    hidden: true
-  },
+  // {
+  //   path: '/login',
+  //   component: () => import(/* webpackChunkName: "admin_login" */ '@admin/views/login'),
+  //   hidden: true
+  // },
+  // {
+  //   path: '/register',
+  //   component: () => import(/* webpackChunkName: "admin_register" */ '@admin/views/register'),
+  //   hidden: true
+  // },
   {
     path: '/404',
     component: () => import(/* webpackChunkName: "admin_404" */ '@admin/views/error/404'),
