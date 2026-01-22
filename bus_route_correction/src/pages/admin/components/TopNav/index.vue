@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import { constantRoutes } from "@/router";
+import { constantRoutes } from "@admin/router";
 import { isHttp } from "@/utils/validate";
 
 // 隐藏侧边栏路由

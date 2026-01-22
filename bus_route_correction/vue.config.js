@@ -46,18 +46,18 @@ module.exports = defineConfig({
       name: "pt",
       title: process.env.VUE_APP_TITLE,
     },
+    pt_index: {
+      entry: "src/pages/pt_index/main.js",
+      template: "./public/index.html",
+      fliename: "pt_index.html",
+      name: "pt_index",
+      title: process.env.VUE_APP_TITLE,
+    },
     index: {
       entry: "src/pages/index/main.js",
       template: "./public/index.html",
       fliename: "index.html",
       name: "index",
-      title: process.env.VUE_APP_TITLE,
-    },
-    home: {
-      entry: "src/pages/home/main.js",
-      template: "./public/index.html",
-      fliename: "home.html",
-      name: "home",
       title: process.env.VUE_APP_TITLE,
     },
     feedback: {
@@ -74,13 +74,13 @@ module.exports = defineConfig({
       name: "user",
       title: process.env.VUE_APP_TITLE,
     },
-    // admin: {
-    //   entry: "src/pages/admin/main.js",
-    //   template: "./public/index.html",
-    //   fliename: "admin.html",
-    //   name: "admin",
-    //   title: process.env.VUE_APP_TITLE,
-    // },
+    admin: {
+      entry: "src/pages/admin/main.js",
+      template: "./public/index.html",
+      fliename: "admin.html",
+      name: "admin",
+      title: process.env.VUE_APP_TITLE,
+    },
   },
   configureWebpack: {
     externals: {
@@ -91,8 +91,8 @@ module.exports = defineConfig({
       alias: {
         "@": path.resolve(__dirname, "src"),
         "@pt": path.resolve(__dirname, "src/pages/pt"),
+        "@pt_index": path.resolve(__dirname, "src/pages/pt_index"),
         "@index": path.resolve(__dirname, "src/pages/index"),
-        "@home": path.resolve(__dirname, "src/pages/home"),
         "@user": path.resolve(__dirname, "src/pages/user"),
         "@admin": path.resolve(__dirname, "src/pages/admin"),
         "@assets": path.resolve(__dirname, "src/assets"),

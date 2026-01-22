@@ -572,7 +572,6 @@
 </template>
 
 <script>
-import { isArray } from 'util'
 import draggable from 'vuedraggable'
 import TreeNodeDialog from './TreeNodeDialog'
 import { isNumberStr } from '@/utils/index'
@@ -794,7 +793,7 @@ export default {
       return val
     },
     onDefaultValueInput(str) {
-      if (isArray(this.activeData.defaultValue)) {
+      if (Array.isArray(this.activeData.defaultValue)) {
         // 数组
         this.$set(
           this.activeData,

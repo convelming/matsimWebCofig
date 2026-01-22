@@ -1,5 +1,5 @@
 import router from './router.js'
-import store from './store.js'
+import store from '@admin/store'
 import { Message } from 'element-ui'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'

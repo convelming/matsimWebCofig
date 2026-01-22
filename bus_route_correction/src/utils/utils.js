@@ -285,3 +285,12 @@ export function fileToString(file) {
     };
   });
 }
+
+
+export function resolvePath(base, ...paths) {
+  return [base, ...paths]
+    .map((part) => part.replace(/(^\/+|\/+$)/g, '')) // 去掉首尾斜杠
+    .filter(Boolean) // 过滤空字符串
+    .join('/')
+    .replace(/^([^/])/, '/$1'); // 确保以 / 开头（可选）
+}

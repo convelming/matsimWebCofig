@@ -7,7 +7,7 @@ const routes = [
   {
     path: "",
     name: "index",
-    component: () => import(/* webpackChunkName: "pt_index" */ "./views/index.vue"),
+    component: () => import(/* webpackChunkName: "pt_home" */ "./views/index.vue"),
   },
   {
     // 线路方案调整

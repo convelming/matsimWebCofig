@@ -8,14 +8,14 @@ import '@admin/styles/element-variables.scss'
 import '@admin/styles/index.scss' // global css
 import '@admin/styles/ruoyi.scss' // ruoyi css
 import App from './App'
-import store from './store'
+import store from './store/index.js'
 import router from './router.js'
 import directive from '@/directive' // directive
 import plugins from '@/plugins' // plugins
 import { download } from '@/utils/request'
 
 import '@/assets/icons' // icon
-import '@/permission' // permission control
+import '@admin/permission' // permission control
 import { getDicts } from "@/api/system/dict/data";
 import { getConfigKey } from "@/api/system/config";
 import { parseTime, resetForm, addDateRange, selectDictLabel, selectDictLabels, handleTree } from "@/utils/ruoyi";

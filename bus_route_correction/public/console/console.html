@@ -56,9 +56,13 @@
 
   <script type="text/javascript " src="./javascript/intro/jquery.cookie.js"></script>
   <script type="text/javascript" src="./javascript/intro/intro.js"></script>
-
   <script type="text/javascript">
     $(function () {
+      // 获取用户信息，检查是否登录
+      $.ajax({
+        url: "/getInfo",
+        type: "get",
+      });
       //这个变量可以用来存取版本号， 系统更新时候改变相应值
       cur_val = 1;
       // //判断函数所接收变量的长度
