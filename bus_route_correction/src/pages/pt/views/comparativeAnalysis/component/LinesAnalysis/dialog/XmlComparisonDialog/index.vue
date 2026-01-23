@@ -102,7 +102,7 @@ export default {
       padding: 10px;
       border-radius: 5px;
       width: calc(50% - 10px);
-      background-color: var(--background-color-light);
+      background-color: var(--background-color-base);
     }
   }
   ._title {

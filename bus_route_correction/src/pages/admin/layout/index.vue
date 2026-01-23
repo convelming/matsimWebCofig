@@ -20,7 +20,7 @@ import RightPanel from '@admin/components/RightPanel'
 import { AppMain, Navbar, Settings, Sidebar, TagsView } from './components'
 import ResizeMixin from './mixin/ResizeHandler'
 import { mapState } from 'vuex'
-import variables from '@/assets/styles/variables.scss'
+import variables from '@admin/styles/variables.scss'
 
 export default {
   name: 'Layout',
@@ -63,8 +63,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  @import "~@/assets/styles/mixin.scss";
-  @import "~@/assets/styles/variables.scss";
+  @import "~@admin/styles/mixin.scss";
+  @import "~@admin/styles/variables.scss";
 
   .app-wrapper {
     @include clearfix;

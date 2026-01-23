@@ -403,7 +403,7 @@ export default {
       border: 1px solid var(---color-black);
       word-break: break-all;
       &.active {
-        background-color: var(--background-color-light);
+        background-color: var(--background-color-base);
       }
     }
   }

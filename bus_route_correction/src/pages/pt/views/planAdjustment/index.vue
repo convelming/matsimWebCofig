@@ -990,7 +990,7 @@ export default {
   }
 
   .tr_list {
-    background-color: var(--background-color-light);
+    background-color: var(--background-color-base);
     border: 1px solid #ccc;
     border-radius: 8px;
     user-select: none;
