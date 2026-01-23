@@ -132,11 +132,11 @@
   },
   "form_submit": {
     "zh-CN":"注 册",
-    "en-US":"Login",
+    "en-US":"Register",
   },
   "form_submitting": {
     "zh-CN":"注 册 中...",
-    "en-US":"Logging in..",
+    "en-US":"Registering ...",
   },
   "form_forgetPasswork": {
     "zh-CN":"忘记密码？",
