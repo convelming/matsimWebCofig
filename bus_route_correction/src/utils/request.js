@@ -119,8 +119,10 @@ service.interceptors.response.use(
       }
       return Promise.reject({ message: "无效的会话，或者会话已过期，请重新登录。", config: res.config });
     } else if (code === 500) {
+      if (!res.config.noMsg) Message.error(msg);
       return Promise.reject({ message: msg, config: res.config });
     } else if (code !== 200) {
+      if (!res.config.noMsg) Message.error(msg);
       return Promise.reject({ message: msg, config: res.config });
     } else {
       return res.data;

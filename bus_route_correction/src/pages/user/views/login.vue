@@ -181,7 +181,7 @@ export default {
       document.body.setAttribute("data-theme", theme);
     },
     handleChangeLanguage(lan) {
-      this.setLanguage(lan);
+      this.$setLanguage(lan);
     },
     getCode() {
       getCodeImg().then((res) => {
