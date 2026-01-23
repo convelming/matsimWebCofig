@@ -1,7 +1,7 @@
 <template>
   <div class="login">
     <div class="login_header">
-      <div class="title">{{ $l("header_title") }}</div>
+      <a class="title" href="/">{{ $l("header_title") }}</a>
       <el-select class="select" v-model="page_language" size="mini" @change="handleChangeLanguage">
         <el-option label="简体中文" value="zh-CN" />
         <el-option label="English" value="en-US" />
@@ -41,7 +41,7 @@
             </el-form-item>
             <el-form-item label-width="0">
               <div class="register_box">
-                <a class="sendEmail" href="#/forgetPasswork">{{ $l("form_forgetPasswork") }}</a>
+                <a class="sendEmail" @click="handleForgetPasswork">{{ $l("form_forgetPasswork") }}</a>
                 <span class="register"
                   ><span>{{ $l("form_register_text1") }}</span
                   ><a href="#/register">{{ $l("form_register_text2") }}</a></span
@@ -228,6 +228,12 @@ export default {
               }
             });
         }
+      });
+    },
+    handleForgetPasswork() {
+      this.$alert("请联系管理员重置密码", "忘记密码", {
+        confirmButtonText: "确定",
+        type: "warning",
       });
     },
   },

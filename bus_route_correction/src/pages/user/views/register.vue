@@ -1,7 +1,7 @@
 <template>
   <div class="login">
     <div class="login_header">
-      <div class="title">{{ $l("header_title") }}</div>
+      <a class="title" href="/">{{ $l("header_title") }}</a>
       <el-select class="select" v-model="page_language" size="mini" @change="handleChangeLanguage">
         <el-option label="简体中文" value="zh-CN" />
         <el-option label="English" value="en-US" />
