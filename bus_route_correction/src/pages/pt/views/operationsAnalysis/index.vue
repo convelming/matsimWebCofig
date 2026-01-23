@@ -130,6 +130,7 @@ export default {
   width: 100vw;
   height: 100vh;
   overflow: hidden;
+  background-color: var(--background-color-base);
 
   .grid_root {
     width: 100vw;
@@ -139,6 +140,7 @@ export default {
   .map_box {
     position: relative;
     z-index: 20;
+    background-color: var(--background-color-base);
   }
 
   .form {
