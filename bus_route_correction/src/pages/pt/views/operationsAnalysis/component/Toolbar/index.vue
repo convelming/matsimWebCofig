@@ -12,6 +12,7 @@
         <div class="item" :id="Parking.id" :class="{ active: activeModel === Parking.id }" @click="handleActiveModel(Parking.id)">{{ $l(Parking.name) }}</div>
         <div class="item" :id="TrafficRegionAnalysis.id" :class="{ active: activeModel === TrafficRegionAnalysis.id }" @click="handleActiveModel(TrafficRegionAnalysis.id)">{{ $l(TrafficRegionAnalysis.name) }}</div>
         <div class="item" :id="RoutePlanning.id" :class="{ active: activeModel === RoutePlanning.id }" @click="handleActiveModel(RoutePlanning.id)">{{ $l(RoutePlanning.name) }}</div>
+        <div class="item" :id="CityUpdateArea.id" :class="{ active: activeModel === CityUpdateArea.id }" @click="handleActiveModel(CityUpdateArea.id)">{{ $l(CityUpdateArea.name) }}</div>
       </div>
       <div class="btn el-icon-caret-right" @click="handleScroll(150)"></div>
     </div>
@@ -64,6 +65,9 @@
     <div class="toolbar-bodyer" v-show="activeModel === RoutePlanning.id">
       <RoutePlanningList ref="RoutePlanningItem" />
     </div>
+    <div class="toolbar-bodyer" v-show="activeModel === CityUpdateArea.id">
+      <CUAToolbar ref="CityUpdateAreaItem" :activeName.sync="CityUpdateArea.activeName" :show="activeModel === CityUpdateArea.id" />
+    </div>
   </div>
 </template>
 
@@ -113,6 +117,10 @@
     "zh-CN": "航路自动划设",
     "en-US": "Route Planning"
   },
+  "城市更新区域分析":{
+    "zh-CN": "城市更新区域分析",
+    "en-US": "城市更新区域分析"
+  },
 }
 </language>
 
@@ -154,6 +162,8 @@ import MultiplePathsDetail from "../TrafficRegionAnalysis/toolbar/MultiplePathsD
 import SinglePathDetail from "../TrafficRegionAnalysis/toolbar/SinglePathDetail.vue";
 // 航路自动划设
 import RoutePlanningList from "../RoutePlanning/toolbar/RoutePlanningList.vue";
+// 城市更新区域分析
+import CUAToolbar from "../CityUpdateArea/toolbar/index.vue";
 
 export default {
   name: "Toolbar",
@@ -193,6 +203,8 @@ export default {
     SinglePathDetail,
 
     RoutePlanningList,
+
+    CUAToolbar,
   },
   inject: ["rootVue"],
   data() {
@@ -269,36 +281,24 @@ export default {
         params: {},
         list: [],
         activeName: "",
-        // list: [
-        //   {
-        //     type: "SinglePathDetail",
-        //     data: {
-        //       uuid: "38e4047c-7a67-4c49-9e3b-cb40a22d8bd3",
-        //       singlePathDetail: {
-        //         shape: [
-        //           [12634435.302642914, 2645511.8325935453],
-        //           [12633846.75084994, 2642668.8241874496],
-        //           [12637717.231729725, 2642559.094078857],
-        //           [12637846.913390191, 2646010.6062060306],
-        //           [12634435.302642914, 2645511.8325935453],
-        //         ],
-        //         holes: [],
-        //         type: "link",
-        //       },
-        //     },
-        //     name: "38e4047c-7a67-4c49-9e3b-cb40a22d8bd3",
-        //   },
-        // ],
-        // activeName: "38e4047c-7a67-4c49-9e3b-cb40a22d8bd3",
       },
       RoutePlanning: {
         id: "RoutePlanning",
         name: "航路自动划设",
-        components: ["RoutePlanningList", "RoutePlanningList"],
+        components: ["RoutePlanningList"],
         sreach: {},
         params: {},
         list: [],
         activeName: "",
+      },
+      CityUpdateArea: {
+        id: "CityUpdateArea",
+        name: "城市更新区域分析",
+        components: ["CUAToolbar"],
+        sreach: {},
+        params: {},
+        list: [],
+        activeName: "相似片区搜索",
       },
       modelMap: {
         RouteDetail: "PublicTransit",
@@ -328,8 +328,10 @@ export default {
         SinglePathDetail: "TrafficRegionAnalysis",
 
         RoutePlanningList: "RoutePlanning",
+
+        CUAToolbar: "CityUpdateArea",
       },
-      activeModel: this.isDev ? "RoutePlanning" : "PublicTransit",
+      activeModel: this.isDev ? "CityUpdateArea" : "PublicTransit",
       activeName: "",
       list: [],
     };
@@ -407,6 +409,13 @@ export default {
         this.$set(this.RoutePlanning, "params", RoutePlanningToolbar.params || {});
         this.$set(this.RoutePlanning, "activeName", RoutePlanningToolbar.activeName || "");
         this.$set(this.RoutePlanning, "list", RoutePlanningToolbar.list || []);
+      }
+      {
+        const CityUpdateAreaToolbar = config.CityUpdateAreaToolbar || {};
+        this.$set(this.CityUpdateArea, "sreach", CityUpdateAreaToolbar.sreach || {});
+        this.$set(this.CityUpdateArea, "params", CityUpdateAreaToolbar.params || {});
+        this.$set(this.CityUpdateArea, "activeName", CityUpdateAreaToolbar.activeName || "");
+        this.$set(this.CityUpdateArea, "list", CityUpdateAreaToolbar.list || []);
       }
       {
         try {
@@ -586,6 +595,25 @@ export default {
           list: list,
         };
       }
+      {
+        const list = [];
+        const refs = this.$refs["CityUpdateAreaToolbarItem"];
+        for (const item of this.CityUpdateArea.list) {
+          const ref = refs.find((v) => v.name == item.name);
+          list.push({
+            type: item.type,
+            name: item.name,
+            data: JSON.parse(JSON.stringify(item.data)),
+            config: await ref.exportConfig(),
+          });
+        }
+        config.CityUpdateAreaToolbar = {
+          sreach: this.CityUpdateArea.sreach,
+          params: this.CityUpdateArea.params,
+          activeName: this.CityUpdateArea.activeName,
+          list: list,
+        };
+      }
 
       {
         const list = [];
@@ -612,6 +640,10 @@ export default {
       let activeName = "";
       let list = obj.list;
       switch (type) {
+        case "CUAToolbar": {
+          activeName = data.name;
+          break;
+        }
         case "BuildDetail":
         case "SelectBuildAnalysis":
 

@@ -121,4 +121,9 @@ export default {
     uavSize: 3,
   },
   RoutePlanningToolbar: { sreach: {}, params: {}, activeName: "", list: [] },
+
+  
+  cityUpdateAreaConfig: {
+  },
+  CityUpdateAreaToolbar: { sreach: {}, params: {}, activeName: "", list: [] },
 };

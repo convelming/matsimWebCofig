@@ -8,12 +8,15 @@ import CarTravel from "./component/CarTravel/index.vue";
 import Parking from "./component/Parking/index.vue";
 import TrafficRegionAnalysis from "./component/TrafficRegionAnalysis/index.vue";
 import RoutePlanning from "./component/RoutePlanning/index.vue";
+import CityUpdateArea from "./component/CityUpdateArea/index.vue";
 
 import NewClock from "@/components/NewClock/index.vue";
 
 import { MyMap, MapLayer, DEFAULT_MAP_LAYER_STYLE, MAP_LAYER_STYLE } from "@/mymap/index.js";
 import { getTimeInterval, getCenterZoom } from "@/api/index.js";
 import { guid } from "@/utils/utils.js";
+
+import * as echarts from "@/utils/echarts.utils";
 
 export default {
   components: {
@@ -27,6 +30,7 @@ export default {
     Parking,
     TrafficRegionAnalysis,
     RoutePlanning,
+    CityUpdateArea,
 
     NewClock,
   },
@@ -68,6 +72,9 @@ export default {
 
       showLayerRoutePlanning: false,
       lock2DRoutePlanning: false,
+
+      showLayerCityUpdateArea: false,
+      lock2DCityUpdateArea: false,
 
       showStopToolbar: true,
       showLeftToolbar: true,
@@ -261,6 +268,13 @@ export default {
       //   this._Map.setZoom(14);
       // }
 
+      document.body.setAttribute("data-theme", DEFAULT_MAP_LAYER_STYLE.theme);
+      const echartsThemeMap = {
+        light: "default",
+        dark: "dark",
+      };
+      echarts.setTheme(echartsThemeMap[DEFAULT_MAP_LAYER_STYLE.theme]);
+
       this._MapLayer = new MapLayer({ tileClass: DEFAULT_MAP_LAYER_STYLE, zIndex: -1 });
       this._Map.addLayer(this._MapLayer);
     },
@@ -439,6 +453,15 @@ export default {
         this.$refs.Toolbar.add("MultiplePathsDetail", {
           uuid: uuid,
           multiplePathsDetail: multiplePathsDetail,
+        });
+        this.showStopToolbar = true;
+      }
+    },
+    handleShowCUAToolbar({ uuid, name }) {
+      if (this.$refs.Toolbar) {
+        this.$refs.Toolbar.add("CUAToolbar", {
+          uuid: uuid,
+          name: name,
         });
         this.showStopToolbar = true;
       }

@@ -1,5 +1,6 @@
 import defaultConfig from "./defaultConfig.js";
 import { MAP_LAYER_STYLE } from "@/mymap/index.js";
+import * as echarts from "@/utils/echarts.utils";
 
 export default {
   data() {
@@ -27,6 +28,12 @@ export default {
       this._Map.setPitchAndRotation(config.pitch, config.rotation);
       let map_style = MAP_LAYER_STYLE.find((v) => v.style_name == config.map_style_name);
       if (map_style) {
+        document.body.setAttribute("data-theme", map_style.theme);
+        const echartsThemeMap = {
+          light: "default",
+          dark: "dark",
+        };
+        echarts.setTheme(echartsThemeMap[map_style.theme]);
         this._MapLayer.setTileClass(map_style);
       }
       this.activeNames = config.activeNames;
