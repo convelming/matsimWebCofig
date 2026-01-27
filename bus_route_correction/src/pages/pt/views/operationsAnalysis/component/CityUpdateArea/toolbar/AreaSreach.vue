@@ -77,7 +77,9 @@
 <script>
 import MySlider from "../component/MySlider.vue";
 import AreaFromItem from "../component/AreaFromItem.vue";
-import { GeoJSONLayer } from "../../GeoJSON/layer/GeoJSONLayer2";
+import { GeoJSONLayer, parserGeoJSON } from "../../GeoJSON/layer/GeoJSONLayer2";
+import data from "./line2.json";
+
 export default {
   name: "AreaSreach",
   inject: ["rootVue"],
@@ -139,15 +141,23 @@ export default {
     };
   },
   created() {
-    this._GeoJSONLayer = new GeoJSONLayer();
+    this._GeoJSONLayer = new GeoJSONLayer({
+      lineAutoWidth: 2,
+    });
+    parserGeoJSON(JSON.stringify(data)).then((res) => {
+      this._GeoJSONLayer.setGeoJsonData(res);
+    });
   },
   mounted() {},
   befforDestroy() {
     // this._PolygonSelectLayer.dispose();
   },
   methods: {
-    handleEnable() {},
+    handleEnable() {
+      this._Map.addLayer(this._GeoJSONLayer);
+    },
     handleDisable() {
+      this._GeoJSONLayer.removeFromParent();
       this.handleCloseDetailForm();
     },
     handleSelectionChange() {},

@@ -376,13 +376,10 @@ class GeoJSONParser {
 
 onmessage = function (e) {
   try {
-    // const decode = new TextDecoder();
-    // const str = decode.decode(e.data.json);
-    // const parser = new GeoJSONParser(JSON.parse(str), e.data.options);
-
     const decode = new TextDecoder();
-    const str = decode.decode(e.data);
-    const parser = new GeoJSONParser(JSON.parse(str));
+    const str = decode.decode(e.data.json);
+    const parser = new GeoJSONParser(JSON.parse(str), e.data.options);
+
     this.postMessage(
       {
         range: parser.range,

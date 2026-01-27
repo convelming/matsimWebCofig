@@ -110,7 +110,7 @@
 
 <script>
 import { getICONLIST, COLOR_LIST } from "@/utils/utils";
-import { GeoJSONLayer, LINE_STYLE } from "../layer/GeoJSONLayer2";
+import { GeoJSONLayer, LINE_STYLE, parserGeoJSON } from "../layer/GeoJSONLayer2";
 import GeoJSONVisualMap from "../component/GeoJSONVisualMap2.vue";
 import GeoJSONLayerWorker from "../worker/GeoJSONLayer2.worker";
 import GeoJSONSetting from "../component/GeoJSONSetting.vue";
@@ -234,51 +234,83 @@ export default {
     });
   },
   mounted() {
-    const worker = new GeoJSONLayerWorker();
-    worker.onmessage = (event) => {      
-      const { range, center, pointArray, lineArray, polygonArray, propertiesListArray, propertiesLabelsArray, geomListArray } = event.data;
+    // const worker = new GeoJSONLayerWorker();
+    // worker.onmessage = (event) => {
+    //   const { range, center, pointArray, lineArray, polygonArray, propertiesListArray, propertiesLabelsArray, geomListArray } = event.data;
 
-      const textDecoder = new TextDecoder();
-      const propertiesLabels = JSON.parse(textDecoder.decode(propertiesLabelsArray));
-      const propertiesList = JSON.parse(textDecoder.decode(propertiesListArray));
-      const geomList = JSON.parse(textDecoder.decode(geomListArray));
+    //   const textDecoder = new TextDecoder();
+    //   const propertiesLabels = JSON.parse(textDecoder.decode(propertiesLabelsArray));
+    //   const propertiesList = JSON.parse(textDecoder.decode(propertiesListArray));
+    //   const geomList = JSON.parse(textDecoder.decode(geomListArray));
 
-      // 其他组件需要用到这个数据 不能删除
-      this.$set(this.GeoJSON, "propertiesLabels", propertiesLabels);
-      this.$set(this.GeoJSON, "center", center);
-      this._GeoJSONLayer.setGeoJsonData({ range, center, pointArray, lineArray, polygonArray, propertiesList, propertiesLabels, geomList })
+    //   // 其他组件需要用到这个数据 不能删除
+    //   this.$set(this.GeoJSON, "propertiesLabels", propertiesLabels);
+    //   this.$set(this.GeoJSON, "center", center);
+    //   this._GeoJSONLayer.setGeoJsonData({ range, center, pointArray, lineArray, polygonArray, propertiesList, propertiesLabels, geomList });
 
-      this.hasPoint = !!pointArray.length;
-      this.hasLine = !!lineArray.length;
-      this.hasPolygon = !!polygonArray.length;
-      
-      this._propertiesLabels = propertiesLabels;
+    //   this.hasPoint = !!pointArray.length;
+    //   this.hasLine = !!lineArray.length;
+    //   this.hasPolygon = !!polygonArray.length;
 
-      this.handleChangePointSettingType("Single Symbol", false);
-      this.handleChangeLineSettingType("Single Symbol", false);
-      this.handleChangePolygonSettingType("Single Symbol", false);
-      this.$nextTick(() => {
-        if (this.GeoJSON.config) {
-          this.initByConfig(this.GeoJSON.config);
-        } else {
-          this.$refs.pointSetting && this.$refs.pointSetting.handleConfirm();
-          this.$refs.lineSetting && this.$refs.lineSetting.handleConfirm();
-          this.$refs.polygonSetting && this.$refs.polygonSetting.handleConfirm();
-        }
-      });
-      worker.terminate();
-    };
-    worker.addEventListener("error", (error) => {
-      console.log(error);
-      worker.terminate();
-    });
-    this._worker = worker;
+    //   this._propertiesLabels = propertiesLabels;
+
+    //   this.handleChangePointSettingType("Single Symbol", false);
+    //   this.handleChangeLineSettingType("Single Symbol", false);
+    //   this.handleChangePolygonSettingType("Single Symbol", false);
+    //   this.$nextTick(() => {
+    //     if (this.GeoJSON.config) {
+    //       this.initByConfig(this.GeoJSON.config);
+    //     } else {
+    //       this.$refs.pointSetting && this.$refs.pointSetting.handleConfirm();
+    //       this.$refs.lineSetting && this.$refs.lineSetting.handleConfirm();
+    //       this.$refs.polygonSetting && this.$refs.polygonSetting.handleConfirm();
+    //     }
+    //   });
+    //   worker.terminate();
+    // };
+    // worker.addEventListener("error", (error) => {
+    //   console.log(error);
+    //   worker.terminate();
+    // });
+    // this._worker = worker;
+
+    // let reader = new FileReader();
+    // reader.readAsArrayBuffer(this.GeoJSON._file);
+    // reader.onload = () => {
+    //   const array = new Int8Array(reader.result);
+    //   worker.postMessage(array, [array.buffer]);
+    // };
 
     let reader = new FileReader();
-    reader.readAsArrayBuffer(this.GeoJSON._file);
+    reader.readAsText(this.GeoJSON._file);
     reader.onload = () => {
-      const array = new Int8Array(reader.result);
-      worker.postMessage(array, [array.buffer]);
+      parserGeoJSON(reader.result, {}).then((geojson) => {
+        const { center, propertiesLabels, pointArray, lineArray, polygonArray } = geojson;
+
+        // 其他组件需要用到这个数据 不能删除
+        this.$set(this.GeoJSON, "propertiesLabels", propertiesLabels);
+        this.$set(this.GeoJSON, "center", center);
+        this._GeoJSONLayer.setGeoJsonData(geojson);
+
+        this.hasPoint = !!pointArray.length;
+        this.hasLine = !!lineArray.length;
+        this.hasPolygon = !!polygonArray.length;
+
+        this._propertiesLabels = propertiesLabels;
+
+        this.handleChangePointSettingType("Single Symbol", false);
+        this.handleChangeLineSettingType("Single Symbol", false);
+        this.handleChangePolygonSettingType("Single Symbol", false);
+        this.$nextTick(() => {
+          if (this.GeoJSON.config) {
+            this.initByConfig(this.GeoJSON.config);
+          } else {
+            this.$refs.pointSetting && this.$refs.pointSetting.handleConfirm();
+            this.$refs.lineSetting && this.$refs.lineSetting.handleConfirm();
+            this.$refs.polygonSetting && this.$refs.polygonSetting.handleConfirm();
+          }
+        });
+      });
     };
   },
   beforeDestroy() {
