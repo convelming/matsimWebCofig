@@ -112,7 +112,7 @@
 import { getICONLIST, COLOR_LIST } from "@/utils/utils";
 import { GeoJSONLayer, LINE_STYLE } from "../layer/GeoJSONLayer2";
 import GeoJSONVisualMap from "../component/GeoJSONVisualMap2.vue";
-import GeoJSONLayerWorker from "../worker/GeoJSONLayer.worker";
+import GeoJSONLayerWorker from "../worker/GeoJSONLayer2.worker";
 import GeoJSONSetting from "../component/GeoJSONSetting.vue";
 
 export default {
@@ -235,24 +235,24 @@ export default {
   },
   mounted() {
     const worker = new GeoJSONLayerWorker();
-    worker.onmessage = (event) => {
-      const { center, pointArray, lineArray, polygonArray, propertiesLabels, propertiesLabelsArray } = event.data;
+    worker.onmessage = (event) => {      
+      const { range, center, pointArray, lineArray, polygonArray, propertiesListArray, propertiesLabelsArray, geomListArray } = event.data;
+
+      const textDecoder = new TextDecoder();
+      const propertiesLabels = JSON.parse(textDecoder.decode(propertiesLabelsArray));
+      const propertiesList = JSON.parse(textDecoder.decode(propertiesListArray));
+      const geomList = JSON.parse(textDecoder.decode(geomListArray));
 
       // 其他组件需要用到这个数据 不能删除
       this.$set(this.GeoJSON, "propertiesLabels", propertiesLabels);
       this.$set(this.GeoJSON, "center", center);
-      this._GeoJSONLayer.setCenter(center);
-      this._GeoJSONLayer.setPointArray(pointArray);
-      this._GeoJSONLayer.setLineArray(lineArray);
-      this._GeoJSONLayer.setPolygonArray(polygonArray);
+      this._GeoJSONLayer.setGeoJsonData({ range, center, pointArray, lineArray, polygonArray, propertiesList, propertiesLabels, geomList })
 
       this.hasPoint = !!pointArray.length;
       this.hasLine = !!lineArray.length;
       this.hasPolygon = !!polygonArray.length;
-
-      const textDecoder = new TextDecoder();
-      this._propertiesLabels = JSON.parse(textDecoder.decode(propertiesLabelsArray));
-      this._GeoJSONLayer.setPropertiesLabels(this._propertiesLabels);
+      
+      this._propertiesLabels = propertiesLabels;
 
       this.handleChangePointSettingType("Single Symbol", false);
       this.handleChangeLineSettingType("Single Symbol", false);

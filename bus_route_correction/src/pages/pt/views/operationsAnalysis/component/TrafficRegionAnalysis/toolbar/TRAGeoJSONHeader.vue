@@ -32,7 +32,7 @@
 
 <script>
 import { LINE_STYLE } from "../../GeoJSON/layer/GeoJSONLayer2";
-import GeoJSONLayerWorker from "../../GeoJSON/worker/GeoJSONLayer.worker";
+import GeoJSONLayerWorker from "../../GeoJSON/worker/GeoJSONLayer2.worker";
 import GeoJSONVisualMap from "../../GeoJSON/component/GeoJSONVisualMap.vue";
 
 import { guid, COLOR_LIST } from "@/utils/utils";

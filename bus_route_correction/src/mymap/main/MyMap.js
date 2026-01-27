@@ -767,22 +767,57 @@ export class MyMap extends EventListener {
 
   // 渲染循环
   animation() {
+    if (this.isDisposed) return;
     this.beforeRender();
     this.render();
     this.afterRender();
     // this.stats.update();
-    window.requestAnimationFrame(this.animation.bind(this));
+    window.requestAnimationFrame(() => {
+      this.animation();
+      for (let i = 0, l = this._nextFrameFunList.length; i < l; i++) {
+        try {
+          const fun = this._nextFrameFunList[i];
+          fun();
+        } catch (error) {
+          console.log(error);
+        }
+      }
+      this._nextFrameFunList.length = 0;
+    });
+  }
+
+  _nextFrameFunList = [];
+  nextFrame(fun) {
+    this._nextFrameFunList.push(fun);
   }
 
   // 销毁地图，释放内存
   dispose() {
+    this.isDisposed = true;
     // TODO
     const layers = [...this.layers];
     for (const layer of layers) {
       this.removeLayer(layer);
       layer.dispose();
     }
+    // 清空场景和相机
+    this.scene.clear();
+    this.world.clear();
+    this.pickLayerScene.clear();
+    this.pickLayerWorld.clear();
+
+    // 清空渲染器和其DOM元素
+    this.rootDoc.removeChild(this.renderer.domElement);
+    this.renderer.domElement = null;
+    this.renderer.forceContextLoss();
+    this.renderer.dispose();
+
+    // 清空渲染器和其DOM元素
+    this.rootDoc.removeChild(this.css2dRenderer.domElement);
+    this.css2dRenderer.domElement = null;
+    this.css2dRenderer.dispose();
   }
+
 
   // 设置相机到观察点的距离
   setCameraHeight(height, noChangeZoom) {

@@ -3,7 +3,6 @@ import { Layer, MAP_EVENT } from "@/mymap/index.js";
 import { EPSG4526ToMercator } from "@/mymap/utils/LngLatUtils.js";
 
 import GeoJSONLayerWorker from "../../GeoJSON/worker/GeoJSONLayer.worker";
-import { GeoJSONPolygonListGeometry, GeoJSONPolygonMaterial } from "../../GeoJSON/layer/GeoJSONLayer2.js";
 
 import GeoJSON from "./AirSpacePolygon_100.js";
 
