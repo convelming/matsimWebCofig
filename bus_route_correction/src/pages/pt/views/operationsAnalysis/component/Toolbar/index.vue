@@ -298,7 +298,7 @@ export default {
         sreach: {},
         params: {},
         list: [],
-        activeName: "相似片区搜索",
+        activeName: undefined,
       },
       modelMap: {
         RouteDetail: "PublicTransit",

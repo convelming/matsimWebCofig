@@ -2,19 +2,19 @@
 <template>
   <div class="AreaSreach">
     <div class="sreach_box">
-      <el-date-picker v-model="query.year" size="small" type="year" placeholder="选择年" value-format="yyyy" />
-      <el-button type="primary" size="small" @click="">确认</el-button>
+      <el-date-picker v-model="query.year" size="small" type="year" :placeholder="$l('选择年')" value-format="yyyy" />
+      <el-button type="primary" size="small" @click="">{{ $l("搜索") }}</el-button>
     </div>
     <AutoSize style="height: 20%">
       <template slot-scope="{ width, height }">
         <el-table class="small" :data="list" border :height="height" @selection-change="handleSelectionChange">
           <el-table-column type="selection" width="40" />
           <el-table-column :label="$l('名称')" prop="name"> </el-table-column>
-          <el-table-column width="50">
+          <!-- <el-table-column width="50">
             <template>
               <el-button type="text" size="small" icon="el-icon-edit" @click=""></el-button>
             </template>
-          </el-table-column>
+          </el-table-column> -->
         </el-table>
       </template>
     </AutoSize>
@@ -33,34 +33,51 @@
           <el-table-column :label="$l('名称')" prop="name"> </el-table-column>
           <el-table-column :label="$l('相似度')" prop="name"> </el-table-column>
           <el-table-column width="50">
-            <template>
-              <el-button type="text" size="small" icon="el-icon-view" @click=""></el-button>
+            <template slot-scope="{ row }">
+              <el-button type="text" size="small" icon="el-icon-view" @click="handleOpenDetailForm(row)"></el-button>
             </template>
           </el-table-column>
         </el-table>
       </template>
     </AutoSize>
 
-    <Dialog class="AreaSreach_Dialog" ref="dialog" :title="$l('')" hideMinimize :visible="showDetailForm" @close="handleCloseDetailForm" keepRight right="330" top="100" width="450px">
-      <div class="scroll_box">
+    <Dialog class="AreaSreach_Dialog" ref="dialog" :title="detailForm.name" hideMinimize :visible.sync="showDetailForm" @close="handleCloseDetailForm" keepRight right="330" top="100" width="450px">
+      <el-scrollbar wrap-class="scroll_box">
         <div class="AreaSreach_form">
-          <div class="item">
-            <div class="row">
-              <div class="text1"></div>
-              <el-input-number v-model="detailForm.value" size="small" label="" :min="20" :max="80" :step="1" :controls="false" @change=""> </el-input-number>
-            </div>
-            <div class="row">
-              <MySlider v-model="detailForm.value" :step="1"></MySlider>
-            </div>
-          </div>
+          <div class="title">总体情况</div>
+          <AreaFromItem :label="$l('总开发强度')" v-model="detailForm.value" class="item" disabled :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <AreaFromItem :label="$l('总出行产生量')" v-model="detailForm.value" class="item" disabled :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <div class="title">{{ $l("出行结构") }}</div>
+          <AreaFromItem :label="$l('小汽车')" v-model="detailForm.value" class="item" disabled :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <AreaFromItem :label="$l('轨道交通')" v-model="detailForm.value" class="item" disabled :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <AreaFromItem :label="$l('慢行')" v-model="detailForm.value" class="item" disabled :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <AreaFromItem :label="$l('其他')" v-model="detailForm.value" class="item" disabled :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <div class="title">{{ $l("业态开发强度") }}</div>
+          <AreaFromItem :label="$l('住宅开发强度')" v-model="detailForm.value" class="item" disabled :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <AreaFromItem :label="$l('办公开发强度')" v-model="detailForm.value" class="item" disabled :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <AreaFromItem :label="$l('商业开发强度')" v-model="detailForm.value" class="item" disabled :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <AreaFromItem :label="$l('工业开发强度')" v-model="detailForm.value" class="item" disabled :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <div class="title">{{ $l("交通设施") }}</div>
+          <AreaFromItem :label="$l('地铁站数')" v-model="detailForm.value" class="item" disabled :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <AreaFromItem :label="$l('公交首末站数')" v-model="detailForm.value" class="item" disabled :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <AreaFromItem :label="$l('公交中间站数')" v-model="detailForm.value" class="item" disabled :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <AreaFromItem :label="$l('主干路及以上长度')" v-model="detailForm.value" class="item" disabled :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <AreaFromItem :label="$l('次干路及以下长度')" v-model="detailForm.value" class="item" disabled :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <div class="title">{{ $l("特殊地点") }}</div>
+          <AreaFromItem :label="$l('医院数')" v-model="detailForm.value" class="item" disabled :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <AreaFromItem :label="$l('运动场数')" v-model="detailForm.value" class="item" disabled :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <AreaFromItem :label="$l('高中数')" v-model="detailForm.value" class="item" disabled :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <AreaFromItem :label="$l('大学数')" v-model="detailForm.value" class="item" disabled :start="0" :end="100" :min="20" :max="80" :step="1" />
         </div>
-      </div>
+      </el-scrollbar>
     </Dialog>
   </div>
 </template>
 
 <script>
-import MySlider from "./MySlider.vue";
+import MySlider from "../component/MySlider.vue";
+import AreaFromItem from "../component/AreaFromItem.vue";
+import { GeoJSONLayer } from "../../GeoJSON/layer/GeoJSONLayer2";
 export default {
   name: "AreaSreach",
   inject: ["rootVue"],
@@ -72,6 +89,7 @@ export default {
   },
   components: {
     MySlider,
+    AreaFromItem,
   },
   computed: {
     _Map() {
@@ -90,7 +108,7 @@ export default {
             } else {
               this.handleDisable();
             }
-          }, 500);
+          }, 200);
         });
       },
       immediate: true,
@@ -113,19 +131,32 @@ export default {
         },
       ],
 
-      showDetailForm: true,
-      detailForm: {},
+      showDetailForm: false,
+      detailForm: {
+        name: "区域1",
+        value: 50,
+      },
     };
   },
-  created() {},
+  created() {
+    this._GeoJSONLayer = new GeoJSONLayer();
+  },
   mounted() {},
   befforDestroy() {
     // this._PolygonSelectLayer.dispose();
   },
   methods: {
     handleEnable() {},
-    handleDisable() {},
+    handleDisable() {
+      this.handleCloseDetailForm();
+    },
     handleSelectionChange() {},
+    handleOpenDetailForm(row) {
+      this.showDetailForm = true;
+    },
+    handleCloseDetailForm() {
+      this.showDetailForm = false;
+    },
   },
 };
 </script>
@@ -146,10 +177,31 @@ export default {
 }
 .AreaSreach_Dialog {
   height: calc(100vh - 130px);
-  .scroll_box {
+  // ::v-deep {
+  //   .bodyer {
+  //     height: 100%;
+  //     overflow-x: hidden;
+  //     overflow-y: auto;
+  //   }
+  // }
+  .el-scrollbar {
     height: 100%;
+  }
+  ::v-deep .scroll_box {
     overflow-x: hidden;
     overflow-y: auto;
+  }
+  .AreaSreach_form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    .title {
+      font-size: 18px;
+      font-weight: 500;
+    }
+    .item {
+      padding: 0 10px;
+    }
   }
 }
 </style>
