@@ -218,7 +218,7 @@ export default {
     });
   },
   mounted() {},
-  befforDestroy() {
+  beforeDestroy() {
     // this._PolygonSelectLayer.dispose();
   },
   methods: {

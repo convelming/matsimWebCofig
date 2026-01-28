@@ -124,6 +124,11 @@ export class PolygonSelectLayer extends Layer {
     this.handleStateChange();
   }
 
+  setPath(path) {
+    this.path = path;
+    this.update();
+  }
+
   update() {
     const [cx, cy] = this.center;
     const path = this.path.map(([x, y]) => new THREE.Vector2(x - cx, y - cy));

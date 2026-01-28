@@ -42,7 +42,7 @@ export default {
   },
   created() {},
   mounted() {},
-  befforDestroy() {
+  beforeDestroy() {
     // this._PolygonSelectLayer.dispose();
   },
   methods: {

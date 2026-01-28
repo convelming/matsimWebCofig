@@ -14,7 +14,7 @@
         </el-table>
       </template>
     </AutoSize>
-    <Dialog class="AreaList_Dialog" ref="dialog" :title="$l('')" hideMinimize :visible="showAddForm" @close="handleCloseAddForm" keepRight right="330" top="100" width="450px">
+    <Dialog class="AreaList_Dialog" ref="dialog" :title="$l('')" hideMinimize :visible="showAddForm" @close="handleCloseAddForm" keepRight right="330" top="100" width="500px">
       <el-form :model="addForm" ref="addForm" :rules="addRules" label-width="120px" :inline="false" size="small">
         <el-form-item :label="$l('区域选定方式')">
           <el-radio-group v-model="addForm.type" @change="">
@@ -27,11 +27,20 @@
             <el-button v-if="!addForm.xyarr || !addForm.xyarr.length" type="primary" size="mini" @click="handlePlayPolygonSelect()">{{ $l("开始圈定") }}</el-button>
             <el-button v-else type="primary" size="mini" @click="handleReplayPolygonSelect()">{{ $l("重新圈定") }}</el-button>
           </template>
+
           <template v-if="selectState != POLYGON_SELECT_STATE_KEY.NOT_STARTED">
             <el-button type="primary" size="mini" @click="handleReplayPolygonSelect()">{{ $l("重新圈定") }}</el-button>
             <el-button type="primary" size="mini" @click="handleStopPolygonSelect()">{{ $l("结束圈定") }}</el-button>
           </template>
-          <div v-if="addForm.xyarr && addForm.xyarr">{{ JSON.parse(addForm.xyarr) }}</div>
+          <el-table class="small" v-if="addForm.xyarr && addForm.xyarr.length" :data="addForm.xyarr" border stripe>
+            <el-table-column type="index" width="50"></el-table-column>
+            <el-table-column>
+              <span slot-scope="{ row }">{{ row }}</span>
+            </el-table-column>
+            <el-table-column width="50">
+              <el-button slot-scope="{ row, $index }" v-if="addForm.xyarr.length - 1 > $index" type="text" size="small" icon="el-icon-delete" style="color: var(--color-danger); padding: 0" @click="handleRemoveXY($index)"></el-button>
+            </el-table-column>
+          </el-table>
         </el-form-item>
         <el-form-item :label="$l('上传GeoJSON')" v-show="addForm.type == '2'">
           <el-button type="primary" @click="handleSelectFile">{{ $l("选择文件") }}</el-button>
@@ -118,14 +127,14 @@ export default {
             const path = res.data.path;
             path[path.length] = [...path[0]];
             this.handleStopPolygonSelect();
-            this.addForm.xyarr = path;
+            this.addForm.xyarr = path.map((v) => [Number(Number(v[0]).toFixed(2)), Number(Number(v[1]).toFixed(2))]);
           }
         },
       },
     });
   },
   mounted() {},
-  befforDestroy() {
+  beforeDestroy() {
     this._PolygonSelectLayer.dispose();
   },
   methods: {
@@ -181,6 +190,20 @@ export default {
       this.addForm.file = await selectFile(".geojson");
     },
     handleSubmit() {},
+    handleRemoveXY(index) {
+      if (this.addForm.xyarr.length <= 4) {
+        return this.$message.error("至少保留3个点");
+      }
+      this.addForm.xyarr.splice(index, 1);
+      
+      if(index === 0){
+       const start = this.addForm.xyarr[0];
+       const end = this.addForm.xyarr[this.addForm.xyarr.length - 1];
+       end[0] = start[0]; 
+       end[1] = start[1]; 
+      }
+      this._PolygonSelectLayer.setPath(this.addForm.xyarr);
+    },
   },
 };
 </script>
