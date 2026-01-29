@@ -4,6 +4,10 @@
     <Dialog class="Step3_Dialog" ref="dialog" :title="$l('方案结果')" hideMinimize :visible="s_visible" @close="handleClose" keepRight right="330" top="100" width="450px">
       <div class="Step3_box">
         <div class="btn_box">
+          <div class="text1" style="width: 100%;">原始方案</div>
+          <el-button type="primary" size="small" @click="">{{ $l("查看") }}</el-button>
+        </div>
+        <div class="btn_box">
           <el-button type="primary" size="small" @click="handleOpenAddLineForm()">{{ $l("方案调整") }}</el-button>
         </div>
         <AutoSize style="height: 400px">
@@ -21,10 +25,10 @@
             </el-table>
           </template>
         </AutoSize>
-        <div class="btn_box">
+        <!-- <div class="btn_box">
           <el-button type="primary" size="small" @click="handleNext">{{ $l("搜索最优方案") }}</el-button>
           <el-button type="info" size="small" @click="handlePrev">{{ $l("上一步") }}</el-button>
-        </div>
+        </div> -->
       </div>
     </Dialog>
     <Dialog class="Step3_Adjust_Dialog" ref="dialog" :title="$l('方案调整')" hideMinimize :visible.sync="showAdjust" @close="handleCloseAdjust" keepRight right="330" top="100" width="450px">
@@ -125,6 +129,9 @@ export default {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    .text1{
+      font-size: 14px;
+    }
     .title {
       font-size: 18px;
       font-weight: 500;
@@ -135,6 +142,7 @@ export default {
 
     .btn_box {
       display: flex;
+      align-items: center;
       .el-button {
         flex: 1;
       }

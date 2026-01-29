@@ -28,12 +28,11 @@
     <AutoSize class="flex-h">
       <template slot-scope="{ width, height }">
         <el-table class="small" :data="list" border :height="height" @selection-change="handleSelectionChange">
-          <el-table-column type="selection" width="40" />
           <el-table-column :label="$l('名称')" prop="name"> </el-table-column>
           <el-table-column :label="$l('操作')" width="90">
             <div slot-scope="{ row, $index }" class="cz_btn">
               <!-- <el-button type="text" size="small" icon="el-icon-view" @click=""></el-button> -->
-              <el-button type="text" size="small" icon="el-icon-edit" @click="handleOpenAddLineForm(row)"></el-button>
+              <el-button type="text" size="small" icon="el-icon-edit" @click="handleOpenAddAnalysis(row)"></el-button>
               <el-button type="text" size="small" icon="el-icon-delete" style="color: var(--color-danger)" @click=""></el-button>
             </div>
           </el-table-column>
@@ -132,14 +131,17 @@ export default {
       this.handleCloseDetailForm();
     },
     handleOpenAddAnalysis(row) {
+      if (row) {
+        this.addAnalysisSpet = 3;
+      } else {
+        this.addAnalysisSpet = 1;
+      }
       this.showAddAnalysis = true;
     },
     handleCloseAddAnalysis() {
       this.showAddAnalysis = false;
     },
-    handleSelectionChange(){
-      
-    }
+    handleSelectionChange() {},
   },
 };
 </script>

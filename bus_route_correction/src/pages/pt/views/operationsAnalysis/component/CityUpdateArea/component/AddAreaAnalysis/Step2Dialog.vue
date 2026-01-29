@@ -22,7 +22,7 @@
           </template>
         </AutoSize>
         <div class="btn_box">
-          <el-button type="primary" size="small" @click="handleNext">{{ $l("下一步") }}</el-button>
+          <el-button type="primary" size="small" @click="handleNext">{{ $l("搜索最优方案") }}</el-button>
           <el-button type="info" size="small" @click="handlePrev">{{ $l("上一步") }}</el-button>
         </div>
       </div>
@@ -30,7 +30,9 @@
     <Dialog class="Step2_AddLine_Dialog" ref="dialog" :title="$l('添加限制路段')" hideMinimize :visible.sync="showAddLine" @close="handleCloseAddLine" keepRight right="330" top="100" width="450px">
       <el-scrollbar wrap-class="scroll_box">
         <el-form :model="addLineForm" ref="addLineForm" :rules="addLineRules" label-width="120px" :inline="false" size="small">
-          <el-form-item :label="$l('选择路段')"> </el-form-item>
+          <el-form-item :label="$l('选择路段')">
+            <el-button type="primary" size="default" @click="">开始点选</el-button>
+          </el-form-item>
           <el-form-item :label="$l('LOS限制值')">
             <el-input-number v-model="addLineForm.value1" :controls="true" controls-position="both" />
           </el-form-item>
