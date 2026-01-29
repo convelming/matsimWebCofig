@@ -453,18 +453,6 @@ window.ui = (function (parts, modules, pages, build, common, config) {
             var fileTabName = tabName + fileNameSuffix;
             var filePathTabName = tabName + filePathNameSuffix;
             $("input[name='" + filePathTabName + "']").val($("#" + fileTabName).val());
-
-            // Support per-field "onChecked" callback (used by PopulationSim to read CSV headers/validate, etc.).
-            var curr = formData["part" + id];
-            if (curr) {
-              var currElement = curr.elements["element" + key];
-              if (currElement && currElement.onChecked) {
-                if (!currElement.formId) currElement.formId = id;
-                var fileDom = $("#" + fileTabName);
-                var file = fileDom[0] && fileDom[0].files ? fileDom[0].files[0] : null;
-                common.callFu(window.ui, currElement.onChecked, { file: file, formId: id, key: key }, currElement);
-              }
-            }
           },
           browse: function (id, key) {
             var tabName = elementIdPrefix + id + "_" + key + fileNameSuffix;
@@ -475,23 +463,6 @@ window.ui = (function (parts, modules, pages, build, common, config) {
             if (curr) {
               var currElement = curr.elements["element" + key];
               if (currElement) {
-                // PopulationSim seed_input: must pass validation before upload.
-                if (id === "seed_input") {
-                  var passName = elementIdPrefix + id + "_seedValidationPassed";
-                  var passVal = $("input[name='" + passName + "']").val();
-                  if (passVal !== "true") {
-                    try {
-                      if (window.ui && ui.custom && ui.custom.console && ui.custom.console.call && ui.custom.console.call.validateSeedInputFiles) {
-                        ui.custom.console.call.validateSeedInputFiles(id);
-                      }
-                      if (window.ui && ui.custom && ui.custom.console && ui.custom.console.call && ui.custom.console.call.showSeedInputValidationError) {
-                        ui.custom.console.call.showSeedInputValidationError(id, "错误：校验未通过，无法上传。请先确保界面显示“校验成功”。");
-                      }
-                    } catch (e) {}
-                    return;
-                  }
-                }
-
                 if (!fileKey) fileKey = key;
                 var tabName = elementIdPrefix + id + "_" + key + fileNameSuffix;
                 var fileDom = $("#" + tabName);
@@ -1979,8 +1950,7 @@ window.ui = (function (parts, modules, pages, build, common, config) {
             toolsElements.push(toolElement);
           }
 
-          // Allow a bar to suppress the divider line after it (used to group related tools).
-          if (toolsBarsIndex != toolsBars.length - 1 && toolBar.noDivideAfter !== true) {
+          if (toolsBarsIndex != toolsBars.length - 1) {
             toolsElements.push(buildUtil.tags.brConfig[0]);
             toolsElements.push({ name: "div", properties: { class: "p-divide-line" }, text: "" });
           }

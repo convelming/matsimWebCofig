@@ -1,0 +1,274 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>快速开始 &mdash; PopulationSim 20260127 documentation</title>
+      <link rel="stylesheet" href="_static/theme_overrides.css" type="text/css" />
+
+  
+      <script src="_static/documentation_options.js?v=5fb27d19"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Application &amp; Configuration 应用 &amp; 配置" href="application_configuration.html" />
+    <link rel="prev" title="Introduction 简介" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            PopulationSim
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">快速开始</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id2">安装</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#activitysim">ActivitySim</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id4">运行示例</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#example-calm">Example_calm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-calm-mp">Example_calm_mp</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-calm-repop">Example_calm_repop</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-survey-weighting">Example_survey_weighting</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="application_configuration.html">Application &amp; Configuration 应用 &amp; 配置</a></li>
+<li class="toctree-l1"><a class="reference internal" href="validation.html">Validation of Results 结果验证</a></li>
+<li class="toctree-l1"><a class="reference internal" href="software.html">Software Implementation 软件应用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="docs.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PopulationSim</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">快速开始</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/getting_started.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="getting-started">
+<span id="id1"></span><h1>快速开始<a class="headerlink" href="#getting-started" title="Link to this heading">¶</a></h1>
+<p>本页面介绍如何使用提供的示例来安装并运行 PopulationSim。</p>
+<section id="id2">
+<h2>安装<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
+<ol class="arabic simple">
+<li><p>建议为你的系统安装并使用 <em>conda</em> 包管理器。
+一种简单的方式是使用 <a class="reference external" href="https://www.anaconda.com/distribution/">Anaconda 64bit Python 3</a>，
+不过你应当查阅该产品的 <a class="reference external" href="https://www.anaconda.com/terms-of-service">服务条款</a>
+并确认自己符合使用条件（截至 2021 年夏季，员工规模超过 200 人的企业和政府机构
+不符合免费使用资格）。如果你更倾向于完全免费的开源 <em>conda</em> 工具，
+可以下载并安装适合的 <a class="reference external" href="https://github.com/conda-forge/miniforge#miniforge3">Miniforge</a>。</p></li>
+<li><p>如果你在防火墙之后访问互联网，则需要配置代理服务器。
+为此，请在 Anaconda 安装目录（例如 <code class="docutils literal notranslate"><span class="pre">C:\ProgramData\Anaconda3</span></code>）
+中创建一个 .condarc 文件，例如：</p></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">proxy_servers</span><span class="p">:</span>
+  <span class="n">http</span><span class="p">:</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">myproxy</span><span class="o">.</span><span class="n">org</span><span class="p">:</span><span class="mi">8080</span>
+  <span class="n">https</span><span class="p">:</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">myproxy</span><span class="o">.</span><span class="n">org</span><span class="p">:</span><span class="mi">8080</span>
+<span class="n">ssl_verify</span><span class="p">:</span> <span class="n">false</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p>创建并激活一个 Anaconda 环境（本质上是为本项目单独创建的一个 Python 环境）</p></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">create</span> <span class="o">-</span><span class="n">n</span> <span class="n">popsim</span> <span class="n">python</span><span class="o">=</span><span class="mf">3.8</span>
+
+<span class="c1"># Windows</span>
+<span class="n">activate</span> <span class="n">popsim</span>
+
+<span class="c1"># Mac</span>
+<span class="n">conda</span> <span class="n">activate</span> <span class="n">popsim</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="4">
+<li><p>在已激活的 conda Python 环境中获取并安装 PopulationSim 包：</p></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># 为了与 activitysim 保持一致性，最好使用 conda 版本的 pytables</span>
+<span class="n">conda</span> <span class="n">install</span> <span class="n">pytables</span>
+
+<span class="n">pip</span> <span class="n">install</span> <span class="n">populationsim</span>
+</pre></div>
+</div>
+<section id="activitysim">
+<span id="id3"></span><h3>ActivitySim<a class="headerlink" href="#activitysim" title="Link to this heading">¶</a></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>PopulationSim 是一个 64 位 Python 3 库，使用了大量科学计算生态中的软件包，
+其中最主要的是 <a class="reference external" href="http://pandas.pydata.org">pandas</a>
+和 <a class="reference external" href="http://numpy.org">numpy</a>。此外，它在很大程度上依赖于
+<a class="reference external" href="https://activitysim.github.io">ActivitySim</a> 包。</p>
+<p>获取科学 Python 安装环境的推荐方式是安装 64 位 Anaconda，
+其中包含了 ActivitySim 所依赖的许多库，以及一些方便的
+Python 安装管理工具。</p>
+<p>关于 Anaconda 和 ActivitySim 的更多信息，
+请参阅 ActivitySim 的 <a class="reference external" href="https://activitysim.github.io/activitysim/gettingstarted.html">快速开始</a> 指南。</p>
+</div>
+</section>
+</section>
+<section id="id4">
+<h2>运行示例<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h2>
+<p>PopulationSim 提供了四个运行示例，其中三个使用的是
+美国俄勒冈州 Corvallis–Albany–Lebanon 建模区域（CALM）的数据，
+另一个使用的是加拿大不列颠哥伦比亚省大温哥华地区的数据。</p>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="#example-calm">example_calm</a> 示例运行 PopulationSim，
+以单进程方式为整个建模区域生成合成人口。</p></li>
+<li><p><a class="reference internal" href="#example-calm-mp">example_calm_mp</a> 示例以
+<a class="reference external" href="http://docs.python.org/3/library/multiprocessing.html">多进程</a>
+方式运行 PopulationSim，
+通过在你的计算机上使用多个处理器同时进行平衡计算，
+为整个建模区域生成合成人口，从而缩短运行时间。</p></li>
+<li><p><a class="reference internal" href="#example-calm-repop">example_calm_repop</a> 示例以 <em>repop</em> 模式运行 PopulationSim，
+用于更新区域中某一小部分的合成人口。</p></li>
+<li><p><a class="reference internal" href="#example-survey-weighting">example_survey_weighting</a> 示例用于生成家庭出行调查的最终权重。
+有关 PopulationSim 配置的更多信息，请参见
+<strong>应用与配置（Application &amp; Configuration）</strong> 章节。</p></li>
+</ol>
+<section id="example-calm">
+<h3>Example_calm<a class="headerlink" href="#example-calm" title="Link to this heading">¶</a></h3>
+<p>按照以下步骤运行 <strong>example_calm</strong> 示例配置：</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>在 example_calm 文件夹中打开命令提示符</p></li>
+<li><p>运行以下命令：</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">activate</span> <span class="n">popsim</span>
+<span class="n">python</span> <span class="n">run_populationsim</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>查看 <em>output</em> 文件夹中的输出结果</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="example-calm-mp">
+<h3>Example_calm_mp<a class="headerlink" href="#example-calm-mp" title="Link to this heading">¶</a></h3>
+<p>按照以下步骤运行 <strong>example_calm_mp</strong> 多进程示例配置：</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>在 example_calm 文件夹中打开命令提示符</p></li>
+<li><p>在 <code class="docutils literal notranslate"><span class="pre">configs_mp\setting.yaml</span></code> 中，将 <code class="docutils literal notranslate"><span class="pre">num_processes:</span> <span class="pre">2</span></code>
+设置为适合你计算机的处理器数量</p></li>
+<li><p>运行以下命令：</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">activate</span> <span class="n">popsim</span>
+<span class="n">python</span> <span class="n">run_populationsim</span><span class="o">.</span><span class="n">py</span> <span class="o">-</span><span class="n">c</span> <span class="n">configs_mp</span> <span class="o">-</span><span class="n">c</span> <span class="n">configs</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>查看 <em>output</em> 文件夹中的输出结果</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="example-calm-repop">
+<h3>Example_calm_repop<a class="headerlink" href="#example-calm-repop" title="Link to this heading">¶</a></h3>
+<p>repop 配置需要基准运行的输出结果。
+因此，在运行 repop 配置之前，必须先运行基础配置。
+按照以下步骤运行 <strong>example_calm_repop</strong> 示例配置：</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>将 example_calm\output 目录中的 <strong>pipeline.h5</strong> 文件
+复制到 example_calm_repop\output 目录中
+（所有 PopulationSim 文件均存储在 pipeline.h5 文件中）</p></li>
+<li><p>在 example_calm_repop 文件夹中打开命令提示符</p></li>
+<li><p>运行以下命令：</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">activate</span> <span class="n">popsim</span>
+<span class="n">python</span> <span class="n">run_populationsim</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>查看 <em>output</em> 文件夹中的输出结果</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="example-survey-weighting">
+<h3>Example_survey_weighting<a class="headerlink" href="#example-survey-weighting" title="Link to this heading">¶</a></h3>
+<p>按照以下步骤运行 <strong>example_survey_weighting</strong> 示例配置：</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>在 example_survey_weighting 文件夹中打开命令提示符</p></li>
+<li><p>运行以下命令：</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">activate</span> <span class="n">popsim</span>
+<span class="n">python</span> <span class="n">run_populationsim</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>查看 <em>output</em> 文件夹中的输出结果</p></li>
+</ul>
+</div></blockquote>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Introduction 简介" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="application_configuration.html" class="btn btn-neutral float-right" title="Application &amp; Configuration 应用 &amp; 配置" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright contributing authors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

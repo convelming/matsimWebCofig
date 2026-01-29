@@ -15,35 +15,12 @@ ui.custom.console = {
         var tool = tools[toolsIndex];
         tool.call = {};
         // TODO 控制台菜单点击逻辑是根据位置写死的
-        // barsIndex:
-        // 0-1: 原有可拖拽模块
-        // 2: PopulationSim 标题（不交互）
-        // 3: PopulationSim 模块（可拖拽）
-        // 4: 原有“案例/交通数据/ATLAS”（点击打开）
-        // 5: 原有“help/BUG”（点击跳转）
         if (barsIndex <= 1) {
           tool.drag = true;
           tool.call.drag = {};
           tool.call.drag.fn = ui.custom.console.call.leftToolClick;
           tool.call.drag.params = tool;
         } else if (barsIndex == 2) {
-          // PopulationSim title bar: no drag/click.
-          // Keep tool.call empty so it does not affect existing behavior.
-        } else if (barsIndex == 3) {
-          // PopulationSim bar is draggable by default, but allow specific tools to be click-only
-          // by setting `noDrag: true` (e.g. help button).
-          if (tool.noDrag === true || tool.drag === false) {
-            tool.call.click = {};
-            if (tool.linkTo) tool.call.click.fn = ui.custom.console.call.linkTo;
-            else tool.call.click.fn = ui.custom.console.call.loadClick;
-            tool.call.click.params = tool;
-          } else {
-            tool.drag = true;
-            tool.call.drag = {};
-            tool.call.drag.fn = ui.custom.console.call.leftToolClick;
-            tool.call.drag.params = tool;
-          }
-        } else if (barsIndex == 4) {
           tool.call.click = {};
           if (tool.linkTo) {
             tool.call.click.fn = ui.custom.console.call.linkTo;
@@ -51,7 +28,7 @@ ui.custom.console = {
             tool.call.click.fn = ui.custom.console.call.loadClick;
           }
           tool.call.click.params = tool;
-        } else if (barsIndex >= 5) {
+        } else if (barsIndex == 3) {
           tool.call.click = {};
           tool.call.click.fn = ui.custom.console.call.linkTo;
           tool.call.click.params = tool;
@@ -536,9 +513,6 @@ ui.custom.console = {
       // 打开弹窗回调函数
       var formId = this.params.other.formId;
       var shapeId = this.params.other.shapeId;
-      // Keep a stable reference to the currently-bound shape, even if the window is rebuilt later.
-      ui.custom.console.call._lastShapeIdByForm = ui.custom.console.call._lastShapeIdByForm || {};
-      if (formId && shapeId) ui.custom.console.call._lastShapeIdByForm[formId] = shapeId;
       if (formId != "saveConsole") ui.parts.form.initData(formId);
       if (shapeId) {
         var shapeConfig = ui.parts.drawBoard.shape.getConfig(ui.custom.console.id, shapeId);
@@ -547,21 +521,6 @@ ui.custom.console = {
           ui.parts.form.setData(formId, other);
         }
       }
-
-      // PopulationSim: init dynamic forms/validation when opening windows.
-      if (formId == "geo_control") {
-        var boundShapeId = ui.custom.console.call.getFormShapeId(formId);
-        var headers = ui.custom.console.call.getGeoControlGeoLevels(boundShapeId);
-        ui.custom.console.call.updateGeoControlForm(headers, true);
-        ui.custom.console.call.setGeoControlLevels(headers);
-        ui.custom.console.call.validateGeoControlNumHh(formId);
-      }
-      if (formId == "total_control") {
-        ui.custom.console.call.initTotalControlRows(formId);
-        ui.custom.console.call.validateTotalControlConfig(formId);
-      }
-      if (formId == "seed_input") ui.custom.console.call.validateSeedInputFiles(formId);
-      if (formId == "pop_run") ui.custom.console.call.initPopRunForm(formId);
     },
     form: {
       saveConsole: function (params) {
@@ -589,37 +548,6 @@ ui.custom.console = {
               if (data.data.id) ui.custom.console.saveId = data.data.id;
               ui.custom.console.saveName = result.data.name;
               console.log("data", data);
-              // PopulationSim: after Java workspace save succeeds, commit Python temp files to the same workspace.
-              // This is an additive async call; failures must NOT affect the original save flow.
-              try {
-                if (typeof popsimUrl === "function") {
-                  $.ajax({
-                    type: "POST",
-                    url: popsimUrl("/popsim/commit"),
-                    dataType: "json",
-                    contentType: "application/json",
-                    data: JSON.stringify({ workspaceName: result.data.name }),
-                    success: function (resp) {
-                      if (resp && resp.success === false) {
-                        console.warn("PopulationSim commit failed:", resp.errMsg || resp.info || resp);
-                      } else if (resp && resp.info) {
-                        console.log("PopulationSim commit:", resp.info);
-                      }
-                    },
-                    error: function (xhr) {
-                      try {
-                        console.warn("PopulationSim commit request failed:", xhr && xhr.status, xhr && xhr.responseText);
-                      } catch (e) {
-                        console.warn("PopulationSim commit request failed");
-                      }
-                    },
-                  });
-                } else {
-                  console.warn("PopulationSim commit skipped: popsimUrl is not defined");
-                }
-              } catch (e) {
-                console.warn("PopulationSim commit exception:", e);
-              }
               if (callType && callType != null && callType != "") {
                 //console.log("-call:", callType, callParams);
                 if (callType == "run") ui.custom.console.call.topToolClick.start({ url: callParams });
@@ -653,47 +581,6 @@ ui.custom.console = {
       help: function (params) {
         var formId = params.windowId;
         ui.parts.form.showHelp(formId, "auto");
-      },
-      fastExampleDownload: function (params) {
-        var formId = params && params.windowId ? params.windowId : "pop_fastexmaple";
-        var result = ui.parts.form.verifyData(formId);
-        if (!result || !result.total) {
-          ui.custom.console.call.showFastExampleValidationMsg(formId, "错误：请先完成必填项后再下载。");
-          return;
-        }
-
-        ui.custom.console.call.hideFastExampleValidationMsg(formId);
-
-        var data = result.data || {};
-        var payload = {
-          city: data.fastCity || "",
-          year: data.fastYear || "",
-          scope: data.fastScope || "",
-          district: data.fastDistrict || "",
-          areaFile: (data.fastAreaFile || "").toString().replace(/^.*[\\/]/, ""),
-        };
-
-        var safeCity = (payload.city || "city").toString().replace(/[^a-zA-Z0-9_-]+/g, "_");
-        var safeYear = (payload.year || "year").toString().replace(/[^a-zA-Z0-9_-]+/g, "_");
-        var fileName = "pop_fast_example_" + safeCity + "_" + safeYear + ".json";
-
-        try {
-          var blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
-          var url = URL.createObjectURL(blob);
-          var a = document.createElement("a");
-          a.href = url;
-          a.download = fileName;
-          document.body.appendChild(a);
-          a.click();
-          a.remove();
-          setTimeout(function () {
-            try {
-              URL.revokeObjectURL(url);
-            } catch (e) {}
-          }, 0);
-        } catch (e) {
-          alert("下载失败，请检查浏览器权限或稍后重试。");
-        }
       },
     },
     upload: function (data) {
