@@ -4,7 +4,9 @@
     <div class="row">
       <el-checkbox v-if="checkBox" class="text1" v-model="s_check" :indeterminate="false" @change="$emit('update:check', $event)">{{ label }}</el-checkbox>
       <div v-else class="text1">{{ label }}</div>
-      <el-input-number v-model="s_value" size="mini" label="" :min="this.min" :max="this.max" :step="this.step" :controls="false" :disabled="disabled" @change="$emit('input', $event)"> </el-input-number>
+      <el-input v-if="input" v-model="s_value" placeholder="" size="mini" @change="$emit('input', $event)"></el-input>
+      <el-input-number v-else-if="inputNumber" v-model="s_value" size="mini" label="" :min="this.min" :max="this.max" :step="this.step" :controls="false" :disabled="disabled" @change="$emit('input', $event)"> </el-input-number>
+      <el-input-number v-else v-model="s_value" size="mini" label="" :min="this.min" :max="this.max" :step="this.step" :controls="false" :disabled="disabled" @change="$emit('input', $event)"> </el-input-number>
     </div>
     <div class="row" v-if="slider">
       <div class="MySlider el-slider">
@@ -27,6 +29,14 @@ export default {
     label: {
       type: String,
       default: "",
+    },
+    input: {
+      type: Boolean,
+      default: false,
+    },
+    inputNumber: {
+      type: Boolean,
+      default: false,
     },
     checkBox: {
       type: Boolean,
@@ -117,6 +127,13 @@ export default {
       width: 0;
       flex: 1;
       font-size: 14px;
+    }
+    .el-input,
+    .el-input-number {
+      width: 120px;
+      ::v-deep input {
+        text-align: center;
+      }
     }
     .MySlider {
       width: 100%;

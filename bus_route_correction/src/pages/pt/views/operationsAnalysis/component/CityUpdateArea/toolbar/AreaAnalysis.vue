@@ -5,139 +5,51 @@
       <el-date-picker v-model="query.year" size="small" type="year" :placeholder="$l('选择年')" value-format="yyyy" />
       <el-button type="primary" size="small" @click="">{{ $l("搜索") }}</el-button>
     </div>
-    <template v-if="!qrDetail">
-      <AutoSize style="height: 20%">
-        <template slot-scope="{ width, height }">
-          <el-table class="small" :data="list" border :height="height" @selection-change="handleSelectionChange">
-            <el-table-column type="selection" width="40" />
-            <el-table-column :label="$l('名称')" prop="name"> </el-table-column>
-            <el-table-column :label="$l('状态')" prop="name">
-              <div slot-scope="{ row, $index }" class="tag-list">
-                <el-tag v-if="$index / 2 == 0" size="small" effect="dark">{{ $l("已搜索相似区域") }}</el-tag>
-                <el-tag v-if="$index / 2 == 0" size="small" effect="dark">{{ $l("已确认基本情况") }}</el-tag>
-                <el-tag v-if="$index / 2 == 1" size="small" effect="dark" type="warning">{{ $l("未搜索相似区域") }}</el-tag>
-                <el-tag v-if="$index / 2 == 1" size="small" effect="dark" type="warning">{{ $l("未确认基本情况") }}</el-tag>
-              </div>
-            </el-table-column>
-          </el-table>
-        </template>
-      </AutoSize>
-      <div class="btn_box">
-        <el-button type="primary" size="small" @click="qrDetail = true">{{ $l("确认") }}</el-button>
-        <!-- <el-button type="info" size="small" @click="">取消</el-button> -->
-      </div>
-    </template>
-    <template v-if="qrDetail">
-      <div class="title">{{ $l("区域详情") }}</div>
-      <el-descriptions class="margin-top" title="" :column="2" size="mini" border>
-        <el-descriptions-item :label="$l('用户名')">kooriookami</el-descriptions-item>
-        <el-descriptions-item :label="$l('手机号')"> 18100000000 </el-descriptions-item>
-        <el-descriptions-item :label="$l('居住地')"> 苏州市 </el-descriptions-item>
-        <el-descriptions-item :label="$l('学校')"> <el-tag size="small">学校</el-tag> </el-descriptions-item>
-        <el-descriptions-item :label="$l('联系地址')"> 江苏省苏州市吴中区吴中大道 1188 号 </el-descriptions-item>
-      </el-descriptions>
-      <div class="btn_box" v-if="!isQR">
-        <el-button type="primary" size="small" @click="handleOpenDetailForm">{{ $l("基本情况确认") }}</el-button>
-      </div>
-      <div class="btn_box" v-else>
-        <el-button type="primary" size="small" @click="handleOpenDetailForm">{{ $l("基本情况") }}</el-button>
-      </div>
-    </template>
-    <template v-if="isQR">
-      <div class="btn_box">
-        <el-button type="primary" size="small" @click="handleOpenAddLineForm()">{{ $l("添加限制路段") }}</el-button>
-      </div>
-      <AutoSize style="height: 20%">
-        <template slot-scope="{ width, height }">
-          <el-table class="small" :data="list" border :height="height" @selection-change="handleSelectionChange">
-            <el-table-column type="selection" width="40" />
-            <el-table-column :label="$l('名称')" prop="name"> </el-table-column>
-            <el-table-column :label="$l('操作')" width="90">
-              <div slot-scope="{ row, $index }" class="cz_btn">
-                <!-- <el-button type="text" size="small" icon="el-icon-view" @click=""></el-button> -->
-                <el-button type="text" size="small" icon="el-icon-edit" @click="handleOpenAddLineForm(row)"></el-button>
-                <el-button type="text" size="small" icon="el-icon-delete" style="color: var(--color-danger)" @click=""></el-button>
-              </div>
-            </el-table-column>
-          </el-table>
-        </template>
-      </AutoSize>
-      <div class="btn_box">
-        <el-button type="primary" size="small" @click="qrDetail = true">{{ $l("搜索最优方案") }}</el-button>
-      </div>
-    </template>
-
-    <Dialog class="AreaAnalysis_Dialog" ref="dialog" :title="detailFormTitle" hideMinimize :visible.sync="showDetailForm" @close="handleCloseDetailForm" keepRight right="330" top="100" width="450px">
-      <el-scrollbar wrap-class="scroll_box">
-        <div class="AreaAnalysis_form">
-          <div class="title">总体情况</div>
-          <AreaFromItem :label="$l('总开发强度')" v-model="detailForm.value" class="item" :disabled="isQR" checkBox slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('总出行产生量')" v-model="detailForm.value" class="item" :disabled="isQR" :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <div class="title">{{ $l("出行结构") }}</div>
-          <AreaFromItem :label="$l('小汽车')" v-model="detailForm.value" class="item" :disabled="isQR" checkBox slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('轨道交通')" v-model="detailForm.value" class="item" :disabled="isQR" checkBox slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('慢行')" v-model="detailForm.value" class="item" :disabled="isQR" checkBox slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('其他')" v-model="detailForm.value" class="item" :disabled="isQR" checkBox slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <div class="title">{{ $l("业态开发强度") }}</div>
-          <AreaFromItem :label="$l('住宅开发强度')" v-model="detailForm.value" class="item" :disabled="isQR" checkBox slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('办公开发强度')" v-model="detailForm.value" class="item" :disabled="isQR" checkBox slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('商业开发强度')" v-model="detailForm.value" class="item" :disabled="isQR" checkBox slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('工业开发强度')" v-model="detailForm.value" class="item" :disabled="isQR" checkBox slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <div class="title">{{ $l("交通设施") }}</div>
-          <AreaFromItem :label="$l('地铁站数')" v-model="detailForm.value" class="item" :disabled="isQR" checkBox slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('公交首末站数')" v-model="detailForm.value" class="item" :disabled="isQR" checkBox slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('公交中间站数')" v-model="detailForm.value" class="item" :disabled="isQR" checkBox slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('主干路及以上长度')" v-model="detailForm.value" class="item" :disabled="isQR" checkBox slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('次干路及以下长度')" v-model="detailForm.value" class="item" :disabled="isQR" checkBox slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <div class="title">{{ $l("特殊地点") }}</div>
-          <AreaFromItem :label="$l('医院数')" v-model="detailForm.value" class="item" :disabled="isQR" checkBox slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('运动场数')" v-model="detailForm.value" class="item" :disabled="isQR" checkBox slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('高中数')" v-model="detailForm.value" class="item" :disabled="isQR" checkBox slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('大学数')" v-model="detailForm.value" class="item" :disabled="isQR" checkBox slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-
-          <div class="btn_box">
-            <el-button
-              type="primary"
-              size="small"
-              @click="
-                handleCloseDetailForm();
-                isQR = true;
-              "
-              >{{ $l("确认") }}</el-button
-            >
-            <el-button type="info" size="small" @click="handleCloseDetailForm">{{ $l("取消") }}</el-button>
-          </div>
-        </div>
-      </el-scrollbar>
-    </Dialog>
-
-    <Dialog class="AreaAnalysis_addLine_Dialog" ref="dialog" :title="addLineFormTitle" hideMinimize :visible.sync="showAddLineForm" @close="handleCloseAddLineForm" keepRight right="330" top="100" width="450px">
-      <el-scrollbar wrap-class="scroll_box">
-        <el-form :model="addLineForm" ref="addLineForm" :rules="rules" label-width="120px" :inline="false" size="small">
-          <el-form-item :label="$l('选择路段')">
-            <el-input v-model="addLineForm.name" placeholder="" />
-          </el-form-item>
-          <el-form-item :label="$l('LOS限制值')">
-            <el-input-number v-model="addLineForm.value1" :controls="true" controls-position="both" />
-          </el-form-item>
-          <el-form-item :label="$l('LOS限制时段')">
-            <el-input v-model="addLineForm.value2" placeholder="" />
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="">{{ $l("确定") }}</el-button>
-            <el-button @click="handleCloseAddLineForm">{{ $l("取消") }}</el-button>
-          </el-form-item>
-        </el-form>
-      </el-scrollbar>
-    </Dialog>
+    <AutoSize style="height: 40%">
+      <template slot-scope="{ width, height }">
+        <el-table class="small" :data="list" border :height="height" @selection-change="handleSelectionChange">
+          <el-table-column type="selection" width="40" />
+          <el-table-column :label="$l('名称')" prop="name"> </el-table-column>
+          <el-table-column :label="$l('状态')" prop="name">
+            <div slot-scope="{ row, $index }" class="tag-list">
+              <el-tag v-if="$index / 2 == 0" size="small" effect="dark">{{ $l("已搜索相似区域") }}</el-tag>
+              <el-tag v-if="$index / 2 == 0" size="small" effect="dark">{{ $l("已确认基本情况") }}</el-tag>
+              <el-tag v-if="$index / 2 == 1" size="small" effect="dark" type="warning">{{ $l("未搜索相似区域") }}</el-tag>
+              <el-tag v-if="$index / 2 == 1" size="small" effect="dark" type="warning">{{ $l("未确认基本情况") }}</el-tag>
+            </div>
+          </el-table-column>
+        </el-table>
+      </template>
+    </AutoSize>
+    <div class="title">{{ $l("方案列表") }}</div>
+    <div class="btn_box">
+      <el-button type="primary" size="small" @click="handleOpenAddAnalysis()">{{ $l("添加方案") }}</el-button>
+    </div>
+    <AutoSize class="flex-h">
+      <template slot-scope="{ width, height }">
+        <el-table class="small" :data="list" border :height="height" @selection-change="handleSelectionChange">
+          <el-table-column type="selection" width="40" />
+          <el-table-column :label="$l('名称')" prop="name"> </el-table-column>
+          <el-table-column :label="$l('操作')" width="90">
+            <div slot-scope="{ row, $index }" class="cz_btn">
+              <!-- <el-button type="text" size="small" icon="el-icon-view" @click=""></el-button> -->
+              <el-button type="text" size="small" icon="el-icon-edit" @click="handleOpenAddLineForm(row)"></el-button>
+              <el-button type="text" size="small" icon="el-icon-delete" style="color: var(--color-danger)" @click=""></el-button>
+            </div>
+          </el-table-column>
+        </el-table>
+      </template>
+    </AutoSize>
+    <AddAreaAnalysis :visible.sync="showAddAnalysis" :step="addAnalysisSpet" />
   </div>
 </template>
 
 <script>
 import MySlider from "../component/MySlider.vue";
-import AreaFromItem from "../component/AreaFromItem.vue";
+import AddAreaAnalysis from "../component/AddAreaAnalysis/index.vue";
 import { GeoJSONLayer, parserGeoJSON } from "../../GeoJSON/layer/GeoJSONLayer2";
 import data from "./line2.json";
+
 export default {
   name: "AreaSreach",
   inject: ["rootVue"],
@@ -149,7 +61,7 @@ export default {
   },
   components: {
     MySlider,
-    AreaFromItem,
+    AddAreaAnalysis,
   },
   computed: {
     _Map() {
@@ -190,20 +102,10 @@ export default {
           name: "区域3",
         },
       ],
-
-      qrDetail: false,
-      isQR: false,
-
-      showDetailForm: false,
-      detailFormTitle: "",
-      detailForm: {
-        name: "区域1",
-        value: 50,
-      },
-
-      showAddLineForm: false,
-      addLineFormTitle: "",
-      addLineForm: {
+      showAddAnalysis: false,
+      addAnalysisSpet: 1,
+      addAnalysisFormTitle: "",
+      addAnalysisForm: {
         value1: 0,
         value2: "",
       },
@@ -229,24 +131,15 @@ export default {
       this._GeoJSONLayer.removeFromParent();
       this.handleCloseDetailForm();
     },
-    handleSelectionChange() {},
-    handleOpenDetailForm(row) {
-      this.showDetailForm = true;
+    handleOpenAddAnalysis(row) {
+      this.showAddAnalysis = true;
     },
-    handleCloseDetailForm() {
-      this.showDetailForm = false;
+    handleCloseAddAnalysis() {
+      this.showAddAnalysis = false;
     },
-    handleOpenAddLineForm(row) {
-      if (row) {
-        this.addLineFormTitle = this.$l("编辑限制路段");
-      } else {
-        this.addLineFormTitle = this.$l("添加限制路段");
-      }
-      this.showAddLineForm = true;
-    },
-    handleCloseAddLineForm() {
-      this.showAddLineForm = false;
-    },
+    handleSelectionChange(){
+      
+    }
   },
 };
 </script>
