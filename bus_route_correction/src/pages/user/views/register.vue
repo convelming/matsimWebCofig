@@ -30,7 +30,7 @@
               <el-input v-model="registerForm.confirmPassword" :placeholder="$l('form_confirmPassword_placeholder')" auto-complete="off" type="password"></el-input>
             </el-form-item>
             <el-form-item :label="$l('form_email_label')" prop="email">
-              <el-input v-model="registerForm.email" :placeholder="$l('form_email_placeholder')" auto-complete="off" type="password"></el-input>
+              <el-input v-model="registerForm.email" :placeholder="$l('form_email_placeholder')" auto-complete="off" type="email"></el-input>
             </el-form-item>
             <el-form-item :label="$l('form_code_label')" prop="code" v-if="captchaEnabled">
               <div class="code_box">

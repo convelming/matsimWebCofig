@@ -18,14 +18,10 @@
         </el-table>
       </template>
     </AutoSize>
-    <div class="title">{{ $l("区域详情") }}</div>
-    <el-descriptions class="margin-top" title="" :column="2" size="mini" border>
-      <el-descriptions-item :label="$l('用户名')">kooriookami</el-descriptions-item>
-      <el-descriptions-item :label="$l('手机号')"> 18100000000 </el-descriptions-item>
-      <el-descriptions-item :label="$l('居住地')"> 苏州市 </el-descriptions-item>
-      <el-descriptions-item :label="$l('学校')"> <el-tag size="small">学校</el-tag> </el-descriptions-item>
-      <el-descriptions-item :label="$l('联系地址')"> 江苏省苏州市吴中区吴中大道 1188 号 </el-descriptions-item>
-    </el-descriptions>
+    <div class="title_box">
+      <div class="title">{{ $l("区域详情") }}</div>
+      <el-button type="primary" size="small" @click="handleOpenDetailForm()">{{ $l("点击查看") }}</el-button>
+    </div>
     <div class="title">{{ $l("相似区域列表") }}</div>
     <AutoSize class="flex-h">
       <template slot-scope="{ width, height }">
@@ -45,29 +41,29 @@
       <el-scrollbar wrap-class="scroll_box">
         <div class="AreaSreach_form">
           <div class="title">总体情况</div>
-          <AreaFromItem :label="$l('总开发强度')" v-model="detailForm.value" class="item" disabled :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('总出行产生量')" v-model="detailForm.value" class="item" disabled :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <AreaFromItem :label="$l('总开发强度')" v-model="detailForm.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <AreaFromItem :label="$l('总出行产生量')" v-model="detailForm.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
           <div class="title">{{ $l("出行结构") }}</div>
-          <AreaFromItem :label="$l('小汽车')" v-model="detailForm.value" class="item" disabled :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('轨道交通')" v-model="detailForm.value" class="item" disabled :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('慢行')" v-model="detailForm.value" class="item" disabled :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('其他')" v-model="detailForm.value" class="item" disabled :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <AreaFromItem :label="$l('小汽车')" v-model="detailForm.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <AreaFromItem :label="$l('轨道交通')" v-model="detailForm.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <AreaFromItem :label="$l('慢行')" v-model="detailForm.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <AreaFromItem :label="$l('其他')" v-model="detailForm.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
           <div class="title">{{ $l("业态开发强度") }}</div>
-          <AreaFromItem :label="$l('住宅开发强度')" v-model="detailForm.value" class="item" disabled :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('办公开发强度')" v-model="detailForm.value" class="item" disabled :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('商业开发强度')" v-model="detailForm.value" class="item" disabled :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('工业开发强度')" v-model="detailForm.value" class="item" disabled :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <AreaFromItem :label="$l('住宅开发强度')" v-model="detailForm.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <AreaFromItem :label="$l('办公开发强度')" v-model="detailForm.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <AreaFromItem :label="$l('商业开发强度')" v-model="detailForm.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <AreaFromItem :label="$l('工业开发强度')" v-model="detailForm.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
           <div class="title">{{ $l("交通设施") }}</div>
-          <AreaFromItem :label="$l('地铁站数')" v-model="detailForm.value" class="item" disabled :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('公交首末站数')" v-model="detailForm.value" class="item" disabled :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('公交中间站数')" v-model="detailForm.value" class="item" disabled :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('主干路及以上长度')" v-model="detailForm.value" class="item" disabled :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('次干路及以下长度')" v-model="detailForm.value" class="item" disabled :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <AreaFromItem :label="$l('地铁站数')" v-model="detailForm.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <AreaFromItem :label="$l('公交首末站数')" v-model="detailForm.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <AreaFromItem :label="$l('公交中间站数')" v-model="detailForm.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <AreaFromItem :label="$l('主干路及以上长度')" v-model="detailForm.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <AreaFromItem :label="$l('次干路及以下长度')" v-model="detailForm.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
           <div class="title">{{ $l("特殊地点") }}</div>
-          <AreaFromItem :label="$l('医院数')" v-model="detailForm.value" class="item" disabled :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('运动场数')" v-model="detailForm.value" class="item" disabled :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('高中数')" v-model="detailForm.value" class="item" disabled :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('大学数')" v-model="detailForm.value" class="item" disabled :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <AreaFromItem :label="$l('医院数')" v-model="detailForm.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <AreaFromItem :label="$l('运动场数')" v-model="detailForm.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <AreaFromItem :label="$l('高中数')" v-model="detailForm.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <AreaFromItem :label="$l('大学数')" v-model="detailForm.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
         </div>
       </el-scrollbar>
     </Dialog>
@@ -182,6 +178,14 @@ export default {
     gap: 10px;
     .el-select {
       width: 100%;
+    }
+  }
+
+  .title_box {
+    display: flex;
+    align-items: center;
+    .title {
+      flex: 1;
     }
   }
 }
