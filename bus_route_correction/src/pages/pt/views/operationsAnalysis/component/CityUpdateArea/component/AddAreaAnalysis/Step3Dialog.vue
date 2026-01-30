@@ -8,7 +8,7 @@
           <el-button type="primary" size="small" @click="">{{ $l("查看") }}</el-button>
         </div>
         <div class="btn_box">
-          <el-button type="primary" size="small" @click="handleOpenAddLineForm()">{{ $l("方案调整") }}</el-button>
+          <el-button type="primary" size="small" @click="handleOpenAdjust">{{ $l("方案调整") }}</el-button>
         </div>
         <AutoSize style="height: 400px">
           <template slot-scope="{ width, height }">
@@ -18,7 +18,7 @@
               <el-table-column :label="$l('操作')" width="90">
                 <div slot-scope="{ row, $index }" class="cz_btn">
                   <!-- <el-button type="text" size="small" icon="el-icon-view" @click=""></el-button> -->
-                  <el-button type="text" size="small" icon="el-icon-edit" @click="handleOpenAddLineForm(row)"></el-button>
+                  <el-button type="text" size="small" icon="el-icon-edit" @click="handleOpenAdjust(row)"></el-button>
                   <el-button type="text" size="small" icon="el-icon-delete" style="color: var(--color-danger)" @click=""></el-button>
                 </div>
               </el-table-column>
@@ -32,7 +32,7 @@
       </div>
     </Dialog>
     <Dialog class="Step3_Adjust_Dialog" ref="dialog" :title="$l('方案调整')" hideMinimize :visible.sync="showAdjust" @close="handleCloseAdjust" keepRight right="330" top="100" width="450px">
-      <el-scrollbar wrap-class="scroll_box ">
+      <!-- <el-scrollbar wrap-class="scroll_box "> -->
         <div class="Step3_Adjust_box">
           <div class="title">{{ $l("总体情况") }}</div>
           <AreaFromItem :label="$l('方案名称')" v-model="adjustForm.value" class="item" input :start="0" :end="100" :min="20" :max="80" :step="1" />
@@ -48,7 +48,7 @@
             <el-button type="info" size="small" @click="handleCloseAdjust">{{ $l("取消") }}</el-button>
           </div>
         </div>
-      </el-scrollbar>
+      <!-- </el-scrollbar> -->
     </Dialog>
   </div>
 </template>
@@ -108,14 +108,17 @@ export default {
       this.$emit("prev");
     },
     handleSelectionChange() {},
-    handleCloseAdjust() {},
+    handleOpenAdjust(){
+      this.showAdjust = true;
+    },
+    handleCloseAdjust() {
+      this.showAdjust = false;
+    },
   },
 };
 </script>
 
 <style lang="scss" scoped>
-.Step3_Dialog {
-}
 .Step3_Dialog {
   .el-scrollbar {
     height: 100%;
@@ -150,6 +153,7 @@ export default {
   }
 }
 .Step3_Adjust_Dialog {
+  // height: calc(100vh - 130px);
   .el-scrollbar {
     height: 100%;
   }
@@ -161,7 +165,7 @@ export default {
   .Step3_Adjust_box {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 20px;
     .title {
       font-size: 18px;
       font-weight: 500;

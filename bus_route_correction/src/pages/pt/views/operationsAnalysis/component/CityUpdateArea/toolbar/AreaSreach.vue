@@ -1,37 +1,35 @@
 <!-- AreaSreach 相似片区搜索 -->
 <template>
   <div class="AreaSreach">
-    <div class="sreach_box">
-      <el-date-picker v-model="query.year" size="small" type="year" :placeholder="$l('选择年')" value-format="yyyy" />
-      <el-button type="primary" size="small" @click="">{{ $l("搜索") }}</el-button>
-    </div>
+    <el-date-picker class="block" v-model="query.year" size="small" type="year" :placeholder="$l('选择年')" value-format="yyyy" />
     <AutoSize style="height: 20%">
       <template slot-scope="{ width, height }">
         <el-table class="small" :data="list" border :height="height" @selection-change="handleSelectionChange">
           <el-table-column type="selection" width="40" />
           <el-table-column :label="$l('名称')" prop="name"> </el-table-column>
-          <!-- <el-table-column width="50">
-            <template>
-              <el-button type="text" size="small" icon="el-icon-edit" @click=""></el-button>
-            </template>
-          </el-table-column> -->
+          <el-table-column :label="$l('状态')" prop="name" width="75">
+            <div slot-scope="{ row, $index }" class="tag-list">
+              <el-tag v-if="$index / 2 == 0" size="small" effect="dark">{{ $l("已搜索") }}</el-tag>
+              <el-tag v-else size="small" effect="dark" type="warning">{{ $l("未搜索") }}</el-tag>
+            </div>
+          </el-table-column>
         </el-table>
       </template>
     </AutoSize>
-    <div class="title_box">
-      <div class="title">{{ $l("区域详情") }}</div>
-      <el-button type="primary" size="small" @click="handleOpenDetailForm()">{{ $l("点击查看") }}</el-button>
-    </div>
-    <div class="title">{{ $l("相似区域列表") }}</div>
+    <el-button class="block" type="primary" size="small" @click="">{{ $l("搜索相似区域") }}</el-button>
+    <div class="title">{{ $l("搜索结果") }}</div>
+    <el-button type="primary" size="small" @click="handleOpenDetailForm()">{{ $l("点击查看区域详情") }}</el-button>
     <AutoSize class="flex-h">
       <template slot-scope="{ width, height }">
         <el-table class="small" :data="list" border :height="height">
-          <el-table-column :label="$l('名称')" prop="name"> </el-table-column>
-          <el-table-column :label="$l('相似度')" prop="name"> </el-table-column>
-          <el-table-column width="50">
-            <template slot-scope="{ row }">
-              <el-button type="text" size="small" icon="el-icon-view" @click="handleOpenDetailForm(row)"></el-button>
-            </template>
+          <el-table-column :label="$l('相似区域列表')" prop="name">
+            <el-table-column :label="$l('名称')" prop="name"> </el-table-column>
+            <el-table-column :label="$l('相似度')" prop="name"> </el-table-column>
+            <el-table-column width="50">
+              <template slot-scope="{ row }">
+                <el-button type="text" size="small" icon="el-icon-view" @click="handleOpenDetailForm(row)"></el-button>
+              </template>
+            </el-table-column>
           </el-table-column>
         </el-table>
       </template>
@@ -173,11 +171,17 @@ export default {
   flex-direction: column;
   padding: 10px;
   gap: 10px;
-  .sreach_box {
+  .block {
+    display: block;
+    width: 100%;
+  }
+
+  .tag-list {
     display: flex;
-    gap: 10px;
-    .el-select {
-      width: 100%;
+    flex-wrap: wrap;
+    gap: 5px;
+    .el-tag {
+      color: var(--color-white);
     }
   }
 

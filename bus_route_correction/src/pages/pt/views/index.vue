@@ -646,7 +646,7 @@ export default {
         case "MATSim":
           {
             let url = window.MATSim_url;
-            if (!url) url = process.env.VUE_APP_PUBLIC_PATH + "console/console.html";
+            if (!url) url = "../console/console.html";
             window.open(url, "_blank");
           }
           break;

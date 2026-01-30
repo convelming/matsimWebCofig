@@ -23,13 +23,13 @@
           </el-dropdown-menu>
         </el-dropdown> -->
         <a class="module_menu" href="./user.html">登录</a>
-        <a class="module_menu" href="./console/console.html">建模</a>
+        <a class="module_menu" href="../console/console.html">建模</a>
         <a class="module_menu" href="./pt.html">可视化</a>
         <!-- <a class="icon" href="feedback.html">反馈与建议</a> -->
       </div>
       <video class="video" src="@/assets/image/home/53941bcfa09e859cc89db3753af9fb78.mp4" autoplay muted @timeupdate="handleTimeupdate"></video>
       <Typewriter :lines="tpyelines" :speed="100" />
-      <a class="bodyer_item one" href="./console/console.html">
+      <a class="bodyer_item one" href="../console/console.html">
         <img src="@/assets/image/home/科研建设.svg?url" alt="" class="icon" />
         <div class="text_box">
           <div class="text1">拖拽式建模</div>

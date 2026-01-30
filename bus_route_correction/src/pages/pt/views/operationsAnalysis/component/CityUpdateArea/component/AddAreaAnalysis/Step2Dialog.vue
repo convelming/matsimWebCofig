@@ -40,7 +40,7 @@
             <el-input v-model="addLineForm.value2" placeholder="" />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="">{{ $l("确定") }}</el-button>
+            <el-button type="primary" @click="handleCloseAddLine">{{ $l("确定") }}</el-button>
             <el-button @click="handleCloseAddLine">{{ $l("取消") }}</el-button>
           </el-form-item>
         </el-form>
