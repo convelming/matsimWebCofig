@@ -171,7 +171,7 @@ export default {
   created() {
     this.getCode();
     this.getCookie();
-    this.redirect = decodeURIComponent(getUrlParams(window.location.href).redirect || "/vue/pt.html#/");
+    this.redirect = decodeURIComponent(getUrlParams(window.location.href).redirect || `${process.env.VUE_APP_PUBLIC_PATH}/pt.html#/`);
     console.log(this.redirect);
     this.handleChangeTheme(this.theme);
   },

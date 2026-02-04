@@ -53,7 +53,8 @@ router.beforeEach((to, from, next) => {
       next()
     } else {
       // next(`/login?redirect=${encodeURIComponent(to.fullPath)}`) // 否则全部重定向到登录页
-      location.href = "/vue/user.html/#/?redirect=" + encodeURIComponent(location.href);
+      
+      location.href = `${process.env.VUE_APP_PUBLIC_PATH}/user.html/#/?redirect=${encodeURIComponent(location.href)}`;
       NProgress.done()
     }
   }

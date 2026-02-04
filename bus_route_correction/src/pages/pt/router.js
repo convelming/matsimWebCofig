@@ -21,12 +21,12 @@ const routes = [
     name: "operationsAnalysis",
     component: () => import(/* webpackChunkName: "pt_operationsAnalysis" */ "./views/operationsAnalysis/index.vue"),
   },
-  {
-    // 公交运行分析配置
-    path: "/operationsAnalysis/config/:database/:datasource",
-    name: "operationsAnalysisConfig",
-    component: () => import(/* webpackChunkName: "pt_operationsAnalysisConfig" */ "./views/operationsAnalysis/config/index.vue"),
-  },
+  // {
+  //   // 公交运行分析配置
+  //   path: "/operationsAnalysis/config/:database/:datasource",
+  //   name: "operationsAnalysisConfig",
+  //   component: () => import(/* webpackChunkName: "pt_operationsAnalysisConfig" */ "./views/operationsAnalysis/config/index.vue"),
+  // },
   {
     // 公交运行分析配置
     path: "/operationsAnalysis/config2/:database/:datasource",

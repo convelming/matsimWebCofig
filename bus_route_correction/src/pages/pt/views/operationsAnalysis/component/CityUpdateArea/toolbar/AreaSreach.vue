@@ -1,11 +1,11 @@
 <!-- AreaSreach 相似片区搜索 -->
 <template>
   <div class="AreaSreach">
-    <!-- <el-select class="block" v-model="year" size="small" :placeholder="$l('选择年份')" @change="getList">
+    <!-- <el-select class="block" v-model="year" size="small" :placeholder="$l('选择年份')" @change="handleChangeYear">
       <el-option label="2026" value="2026"> </el-option>
     </el-select> -->
-    <el-date-picker class="block" v-model="year" size="small" type="year" :placeholder="$l('选择年份')" value-format="yyyy" @change="getList" />
-    <AutoSize style="height: 20%">
+    <el-date-picker class="block" v-model="year" size="small" type="year" :placeholder="$l('选择年份')" value-format="yyyy" @change="handleChangeYear" />
+    <AutoSize style="height: 30%">
       <template slot-scope="{ width, height }">
         <el-table ref="table" class="small" :data="list" border :height="height" @select="handleSelectionChange">
           <el-table-column type="selection" width="40" />
@@ -13,63 +13,63 @@
           <el-table-column :label="$l('状态')" prop="name" width="75">
             <div slot-scope="{ row, $index }" class="tag-list">
               <!-- 0未生成，1生成中，2以生成，3生成失败 -->
-              <el-tag v-if="row.status == 0" size="small" effect="dark">{{ $l("未搜索") }}</el-tag>
-              <el-tag v-if="row.status == 1" size="small" effect="dark">{{ $l("搜索中") }}</el-tag>
-              <el-tag v-if="row.status == 2" size="small" effect="dark">{{ $l("已搜索") }}</el-tag>
-              <el-tag v-if="row.status == 3" size="small" effect="dark">{{ $l("搜索失败") }}</el-tag>
+              <el-tag v-if="row.status == 0" size="small" effect="dark" type="warning">{{ $l("未搜索") }}</el-tag>
+              <el-tag v-if="row.status == 1" size="small" effect="dark" type="info">{{ $l("搜索中") }}</el-tag>
+              <el-tag v-if="row.status == 2" size="small" effect="dark" type="success">{{ $l("已搜索") }}</el-tag>
+              <el-tag v-if="row.status == 3" size="small" effect="dark" type="danger">{{ $l("搜索失败") }}</el-tag>
             </div>
           </el-table-column>
         </el-table>
       </template>
     </AutoSize>
     <Pagination @size-change="getList" @current-change="getList" :current-page.sync="pageNum" :page-size="pageSize" :total="total" :pager-count="5" layout="total, prev, pager, next"> </Pagination>
-
-    <el-button class="block" type="primary" size="small" @click="">{{ $l("搜索相似区域") }}</el-button>
-    <div class="title">{{ $l("搜索结果") }}</div>
-    <el-button type="primary" size="small" @click="handleOpenDetailForm()">{{ $l("点击查看区域详情") }}</el-button>
-    <AutoSize class="flex-h">
-      <template slot-scope="{ width, height }">
-        <el-table class="small" :data="list" border :height="height">
-          <el-table-column :label="$l('相似区域列表')" prop="name">
-            <el-table-column :label="$l('名称')" prop="name"> </el-table-column>
-            <el-table-column :label="$l('相似度')" prop="name"> </el-table-column>
-            <el-table-column width="50">
-              <template slot-scope="{ row }">
-                <el-button type="text" size="small" icon="el-icon-view" @click="handleOpenDetailForm(row)"></el-button>
-              </template>
+    <el-button v-if="areaDetail && (areaDetail.status == 0 || areaDetail.status == 3)" class="block" type="primary" size="small" @click="handleSreachLikeList">{{ $l("搜索相似区域") }}</el-button>
+    <template v-if="areaDetail && areaDetail.status == 2">
+      <div class="title">{{ $l("搜索结果") }}</div>
+      <el-button type="primary" size="small" @click="handleOpenDialog(areaParam)">{{ $l("点击查看区域详情") }}</el-button>
+      <AutoSize class="flex-h">
+        <template slot-scope="{ width, height }">
+          <el-table class="small" :data="likeList" border :height="height">
+            <el-table-column :label="$l('相似区域列表')" prop="name">
+              <el-table-column :label="$l('名称')" prop="name"> </el-table-column>
+              <el-table-column :label="$l('相似度')" prop="name"> </el-table-column>
+              <el-table-column width="50">
+                <template slot-scope="{ row }">
+                  <el-button type="text" size="small" icon="el-icon-view" @click="handleOpenDetailForm(row)"></el-button>
+                </template>
+              </el-table-column>
             </el-table-column>
-          </el-table-column>
-        </el-table>
-      </template>
-    </AutoSize>
-
-    <Dialog class="AreaSreach_Dialog" ref="dialog" :title="detailForm.name" hideMinimize :visible.sync="showDetailForm" @close="handleCloseDetailForm" keepRight right="330" top="100" width="450px">
-      <el-scrollbar wrap-class="scroll_box">
+          </el-table>
+        </template>
+      </AutoSize>
+    </template>
+    <Dialog class="AreaSreach_Dialog" ref="dialog" title="" hideMinimize :visible.sync="showDialog" @close="handleCloseDialog" keepRight right="330" top="100" width="450px">
+      <el-scrollbar wrap-class="scroll_box" v-if="dialogDetail">
         <div class="AreaSreach_form">
           <div class="title">总体情况</div>
-          <AreaFromItem :label="$l('总开发强度')" v-model="detailForm.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('总出行产生量')" v-model="detailForm.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <AreaFromItem :label="$l('总开发强度')" v-model="dialogDetail.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <AreaFromItem :label="$l('总出行产生量')" v-model="dialogDetail.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
           <div class="title">{{ $l("出行结构") }}</div>
-          <AreaFromItem :label="$l('小汽车')" v-model="detailForm.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('轨道交通')" v-model="detailForm.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('慢行')" v-model="detailForm.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('其他')" v-model="detailForm.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <AreaFromItem :label="$l('小汽车')" v-model="dialogDetail.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <AreaFromItem :label="$l('轨道交通')" v-model="dialogDetail.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <AreaFromItem :label="$l('慢行')" v-model="dialogDetail.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <AreaFromItem :label="$l('其他')" v-model="dialogDetail.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
           <div class="title">{{ $l("业态开发强度") }}</div>
-          <AreaFromItem :label="$l('住宅开发强度')" v-model="detailForm.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('办公开发强度')" v-model="detailForm.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('商业开发强度')" v-model="detailForm.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('工业开发强度')" v-model="detailForm.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <AreaFromItem :label="$l('住宅开发强度')" v-model="dialogDetail.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <AreaFromItem :label="$l('办公开发强度')" v-model="dialogDetail.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <AreaFromItem :label="$l('商业开发强度')" v-model="dialogDetail.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <AreaFromItem :label="$l('工业开发强度')" v-model="dialogDetail.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
           <div class="title">{{ $l("交通设施") }}</div>
-          <AreaFromItem :label="$l('地铁站数')" v-model="detailForm.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('公交首末站数')" v-model="detailForm.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('公交中间站数')" v-model="detailForm.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('主干路及以上长度')" v-model="detailForm.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('次干路及以下长度')" v-model="detailForm.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <AreaFromItem :label="$l('地铁站数')" v-model="dialogDetail.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <AreaFromItem :label="$l('公交首末站数')" v-model="dialogDetail.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <AreaFromItem :label="$l('公交中间站数')" v-model="dialogDetail.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <AreaFromItem :label="$l('主干路及以上长度')" v-model="dialogDetail.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <AreaFromItem :label="$l('次干路及以下长度')" v-model="dialogDetail.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
           <div class="title">{{ $l("特殊地点") }}</div>
-          <AreaFromItem :label="$l('医院数')" v-model="detailForm.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('运动场数')" v-model="detailForm.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('高中数')" v-model="detailForm.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('大学数')" v-model="detailForm.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <AreaFromItem :label="$l('医院数')" v-model="dialogDetail.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <AreaFromItem :label="$l('运动场数')" v-model="dialogDetail.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <AreaFromItem :label="$l('高中数')" v-model="dialogDetail.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <AreaFromItem :label="$l('大学数')" v-model="dialogDetail.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
         </div>
       </el-scrollbar>
     </Dialog>
@@ -80,9 +80,18 @@
 import MySlider from "../component/MySlider.vue";
 import AreaFromItem from "../component/AreaFromItem.vue";
 import { GeoJSONLayer, parserGeoJSON } from "../../GeoJSON/layer/GeoJSONLayer2";
-import data from "./line2.json";
 
-import { CUA_yearAreaList } from "@/api/index";
+import { CUA_yearAreaList, CUA_downloadGeojson, CUA_searchSimilarCUAArea } from "@/api/index";
+import { guid } from "@/utils/index2";
+
+function boldToText(bold) {
+  return new Promise((resolve) => {
+    const r = new FileReader();
+    r.readAsText(res.data);
+    r.onload = () => resolve(r.result);
+    r.onerror = () => resolve("");
+  });
+}
 
 export default {
   name: "AreaSreach",
@@ -128,11 +137,11 @@ export default {
       total: 0,
       list: [],
 
-      showDetailForm: false,
-      detailForm: {
-        name: "区域1",
-        value: 50,
-      },
+      areaDetail: null,
+      areaParam: null,
+      likeList: [],
+      showDialog: false,
+      dialogDetail: null,
     };
   },
   created() {
@@ -148,15 +157,72 @@ export default {
     // this._PolygonSelectLayer.dispose();
   },
   methods: {
+    handleChangeYear() {
+      this.handleInitLike();
+      this.getList();
+    },
     getList() {
       CUA_yearAreaList({
         year: this.year,
         pageSize: this.pageSize,
         pageNum: this.pageNum,
       }).then((res) => {
+        res.records.forEach((v) => {
+          v.m_id = guid();
+        });
         this.list = res.records;
         this.total = res.total;
       });
+    },
+    handleInitLike() {
+      this.areaDetail = null;
+      this.areaParam = null;
+      this.likeList = [];
+      this.showDialog = false;
+      this.dialogDetail = {};
+    },
+    handleGetLike(row) {
+      if (row.resultJsonPath) {
+        // 获取相似区域列表
+        CUA_downloadGeojson({
+          path: row.resultJsonPath,
+        })
+          .then((res) => boldToText(res.data))
+          .then((res) => parserGeoJSON(res))
+          .then((res) => {
+            console.log(res);
+          });
+      } else {
+      }
+    },
+    handleSelectionChange(selection, row) {
+      this.$refs.table.clearSelection();
+      if (this.areaDetail?.m_id != row.m_id) {
+        this.areaDetail = row;
+        this.$refs.table.toggleRowSelection(row, true);
+        this.handleInitLike();
+        this.handleGetLike(this.areaDetail);
+      } else {
+        this.handleInitLike();
+      }
+    },
+    handleSreachLikeList() {
+      if (this.areaDetail) {
+        CUA_searchSimilarCUAArea({
+          year: this.year,
+          areaId: this.areaDetail.areaId,
+        }).then((res) => {
+          this.likeList = res;
+          this.getList();
+        });
+      }
+    },
+    handleOpenDialog(row) {
+      this.dialogDetail = row;
+      this.showDetailForm = true;
+    },
+    handleCloseDialog() {
+      this.showDetailForm = false;
     },
     handleEnable() {
       this.getList();
@@ -164,18 +230,7 @@ export default {
     },
     handleDisable() {
       this._GeoJSONLayer.removeFromParent();
-      this.handleCloseDetailForm();
-    },
-    handleSelectionChange(selection, row) {
-      console.log(selection, row);
-      
-      this.$refs.table;
-    },
-    handleOpenDetailForm(row) {
-      this.showDetailForm = true;
-    },
-    handleCloseDetailForm() {
-      this.showDetailForm = false;
+      this.handleCloseDialog();
     },
   },
 };
@@ -209,7 +264,7 @@ export default {
     }
   }
 
-  ::v-deep th.el-table-column--selection .el-checkbox{
+  ::v-deep th.el-table-column--selection .el-checkbox {
     display: none;
   }
 }

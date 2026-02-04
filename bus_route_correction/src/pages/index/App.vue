@@ -12,9 +12,9 @@
             <el-dropdown-item command="en-US" :disabled="page_language == 'en-US'">English</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
-        <a class="module_menu" href="/vue/user.html">登录</a>
+        <a class="module_menu" :href="`${process.env.VUE_APP_PUBLIC_PATH}/user.html`">登录</a>
         <a class="module_menu" href="/console/console.html">建模</a>
-        <a class="module_menu" href="/vue/pt.html">可视化</a>
+        <a class="module_menu" :href="`${process.env.VUE_APP_PUBLIC_PATH}/pt.html`">可视化</a>
       </div>
       <video class="video" src="@/assets/image/home/53941bcfa09e859cc89db3753af9fb78.mp4" autoplay muted @timeupdate="handleTimeupdate"></video>
       <Typewriter :lines="tpyelines" :speed="100" />
@@ -31,7 +31,7 @@
           <div class="d2"></div>
         </div>
       </a>
-      <a class="bodyer_item two" href="/vue/pt.html">
+      <a class="bodyer_item two" :href="`${process.env.VUE_APP_PUBLIC_PATH}/pt.html`">
         <img src="@/assets/image/home/项目.svg?url" alt="" class="icon" />
         <div class="text_box">
           <div class="text1">MATSim可视化</div>
@@ -59,7 +59,7 @@
           <div class="d2"></div>
         </div>
       </a>
-      <a class="bodyer_item four" href="/vue/feedback.html">
+      <a class="bodyer_item four" :href="`${process.env.VUE_APP_PUBLIC_PATH}/feedback.html`">
         <img src="@/assets/image/home/比例.svg?url" alt="" class="icon" />
         <div class="text_box">
           <div class="text1">意见和建议</div>
