@@ -9,27 +9,16 @@
           <div class="module_menu">{{ { "zh-CN": "中文（简体）", "en-US": "English" }[page_language] }}<i class="el-icon-arrow-down el-icon--right"></i></div>
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item command="zh-CN" :disabled="page_language == 'zh-CN'">中文（简体）</el-dropdown-item>
-            <!-- <el-dropdown-item command="zh_MO" :disabled="page_language == 'zh-MO'">中文（繁體）</el-dropdown-item> -->
             <el-dropdown-item command="en-US" :disabled="page_language == 'en-US'">English</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
-        <!-- <el-dropdown class="language" @command="openPage" placement="top-start" trigger="click">
-          <img class="icon" src="@/assets/image/home/菜单.svg?url" alt="" />
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item command="user.html">登录</el-dropdown-item>
-            <el-dropdown-item command="pt.html">建模平台</el-dropdown-item>
-            <el-dropdown-item command="index.html">可视化平台</el-dropdown-item>
-            <el-dropdown-item command="feedback.html">反馈与建议</el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown> -->
-        <a class="module_menu" href="./user.html">登录</a>
-        <a class="module_menu" href="../console/console.html">建模</a>
-        <a class="module_menu" href="./pt.html">可视化</a>
-        <!-- <a class="icon" href="feedback.html">反馈与建议</a> -->
+        <a class="module_menu" href="/vue/user.html">登录</a>
+        <a class="module_menu" href="/console/console.html">建模</a>
+        <a class="module_menu" href="/vue/pt.html">可视化</a>
       </div>
       <video class="video" src="@/assets/image/home/53941bcfa09e859cc89db3753af9fb78.mp4" autoplay muted @timeupdate="handleTimeupdate"></video>
       <Typewriter :lines="tpyelines" :speed="100" />
-      <a class="bodyer_item one" href="../console/console.html">
+      <a class="bodyer_item one" href="/console/console.html">
         <img src="@/assets/image/home/科研建设.svg?url" alt="" class="icon" />
         <div class="text_box">
           <div class="text1">拖拽式建模</div>
@@ -42,7 +31,7 @@
           <div class="d2"></div>
         </div>
       </a>
-      <a class="bodyer_item two" href="./pt.html">
+      <a class="bodyer_item two" href="/vue/pt.html">
         <img src="@/assets/image/home/项目.svg?url" alt="" class="icon" />
         <div class="text_box">
           <div class="text1">MATSim可视化</div>
@@ -56,7 +45,7 @@
           <div class="d2"></div>
         </div>
       </a>
-      <a class="bodyer_item three" href="./simhelp/index.html">
+      <a class="bodyer_item three" href="/simhelp/index.html">
         <img src="@/assets/image/home/github.svg?url" alt="" class="icon" />
         <div class="text_box">
           <div class="text1">帮助文档</div>
@@ -70,7 +59,7 @@
           <div class="d2"></div>
         </div>
       </a>
-      <a class="bodyer_item four" href="./feedback.html">
+      <a class="bodyer_item four" href="/vue/feedback.html">
         <img src="@/assets/image/home/比例.svg?url" alt="" class="icon" />
         <div class="text_box">
           <div class="text1">意见和建议</div>

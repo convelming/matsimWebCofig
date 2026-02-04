@@ -638,22 +638,20 @@ export default {
           break;
         case "systemEvaluation":
           {
-            let url = window.SystemEvaluation_url;
-            if (!url) url = "http://192.168.60.231:23334/kepler.gl.html";
+            let url = "http://192.168.60.231:23334/kepler.gl.html";
             window.open(url, "_blank");
-          }url
+          }
+          url;
           break;
         case "MATSim":
           {
-            let url = window.MATSim_url;
-            if (!url) url = "../console/console.html";
+            let url = "/console/console.html";
             window.open(url, "_blank");
           }
           break;
         case "ActivitySim":
           {
-            let url = window.ActivitySim_url;
-            if (!url) url = "https://populationold-shrb5fb86gswhl6bseu3we.streamlit.app/";
+            let url = "https://populationold-shrb5fb86gswhl6bseu3we.streamlit.app/";
             window.open(url, "_blank");
           }
           break;

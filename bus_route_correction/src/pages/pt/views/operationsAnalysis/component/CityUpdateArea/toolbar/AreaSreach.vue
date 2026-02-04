@@ -1,21 +1,29 @@
 <!-- AreaSreach 相似片区搜索 -->
 <template>
   <div class="AreaSreach">
-    <el-date-picker class="block" v-model="query.year" size="small" type="year" :placeholder="$l('选择年')" value-format="yyyy" />
+    <!-- <el-select class="block" v-model="year" size="small" :placeholder="$l('选择年份')" @change="getList">
+      <el-option label="2026" value="2026"> </el-option>
+    </el-select> -->
+    <el-date-picker class="block" v-model="year" size="small" type="year" :placeholder="$l('选择年份')" value-format="yyyy" @change="getList" />
     <AutoSize style="height: 20%">
       <template slot-scope="{ width, height }">
-        <el-table class="small" :data="list" border :height="height" @selection-change="handleSelectionChange">
+        <el-table ref="table" class="small" :data="list" border :height="height" @select="handleSelectionChange">
           <el-table-column type="selection" width="40" />
           <el-table-column :label="$l('名称')" prop="name"> </el-table-column>
           <el-table-column :label="$l('状态')" prop="name" width="75">
             <div slot-scope="{ row, $index }" class="tag-list">
-              <el-tag v-if="$index / 2 == 0" size="small" effect="dark">{{ $l("已搜索") }}</el-tag>
-              <el-tag v-else size="small" effect="dark" type="warning">{{ $l("未搜索") }}</el-tag>
+              <!-- 0未生成，1生成中，2以生成，3生成失败 -->
+              <el-tag v-if="row.status == 0" size="small" effect="dark">{{ $l("未搜索") }}</el-tag>
+              <el-tag v-if="row.status == 1" size="small" effect="dark">{{ $l("搜索中") }}</el-tag>
+              <el-tag v-if="row.status == 2" size="small" effect="dark">{{ $l("已搜索") }}</el-tag>
+              <el-tag v-if="row.status == 3" size="small" effect="dark">{{ $l("搜索失败") }}</el-tag>
             </div>
           </el-table-column>
         </el-table>
       </template>
     </AutoSize>
+    <Pagination @size-change="getList" @current-change="getList" :current-page.sync="pageNum" :page-size="pageSize" :total="total" :pager-count="5" layout="total, prev, pager, next"> </Pagination>
+
     <el-button class="block" type="primary" size="small" @click="">{{ $l("搜索相似区域") }}</el-button>
     <div class="title">{{ $l("搜索结果") }}</div>
     <el-button type="primary" size="small" @click="handleOpenDetailForm()">{{ $l("点击查看区域详情") }}</el-button>
@@ -74,6 +82,8 @@ import AreaFromItem from "../component/AreaFromItem.vue";
 import { GeoJSONLayer, parserGeoJSON } from "../../GeoJSON/layer/GeoJSONLayer2";
 import data from "./line2.json";
 
+import { CUA_yearAreaList } from "@/api/index";
+
 export default {
   name: "AreaSreach",
   inject: ["rootVue"],
@@ -112,20 +122,11 @@ export default {
   },
   data() {
     return {
-      query: {
-        year: new Date().getFullYear().toString(),
-      },
-      list: [
-        {
-          name: "区域1",
-        },
-        {
-          name: "区域2",
-        },
-        {
-          name: "区域3",
-        },
-      ],
+      year: new Date().getFullYear().toString(),
+      pageNum: 1,
+      pageSize: 10,
+      total: 0,
+      list: [],
 
       showDetailForm: false,
       detailForm: {
@@ -138,23 +139,38 @@ export default {
     this._GeoJSONLayer = new GeoJSONLayer({
       lineAutoWidth: 2,
     });
-    parserGeoJSON(JSON.stringify(data)).then((res) => {
-      this._GeoJSONLayer.setGeoJsonData(res);
-    });
+    // parserGeoJSON(JSON.stringify(data)).then((res) => {
+    //   this._GeoJSONLayer.setGeoJsonData(res);
+    // });
   },
   mounted() {},
   beforeDestroy() {
     // this._PolygonSelectLayer.dispose();
   },
   methods: {
+    getList() {
+      CUA_yearAreaList({
+        year: this.year,
+        pageSize: this.pageSize,
+        pageNum: this.pageNum,
+      }).then((res) => {
+        this.list = res.records;
+        this.total = res.total;
+      });
+    },
     handleEnable() {
+      this.getList();
       this._Map.addLayer(this._GeoJSONLayer);
     },
     handleDisable() {
       this._GeoJSONLayer.removeFromParent();
       this.handleCloseDetailForm();
     },
-    handleSelectionChange() {},
+    handleSelectionChange(selection, row) {
+      console.log(selection, row);
+      
+      this.$refs.table;
+    },
     handleOpenDetailForm(row) {
       this.showDetailForm = true;
     },
@@ -191,6 +207,10 @@ export default {
     .title {
       flex: 1;
     }
+  }
+
+  ::v-deep th.el-table-column--selection .el-checkbox{
+    display: none;
   }
 }
 .AreaSreach_Dialog {

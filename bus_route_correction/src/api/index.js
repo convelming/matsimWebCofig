@@ -1032,7 +1032,6 @@ export function getUploadLines(data) {
   });
 }
 
-
 // 新增空轨起降点
 // POST /pt/uam/add
 // 接口ID：386379230
@@ -1045,7 +1044,6 @@ export function addUam(data) {
   });
 }
 
-
 // 删除空轨起降点
 // DELETE /pt/uam/delete/{id}
 // 接口ID：386398372
@@ -1056,7 +1054,6 @@ export function deleteUam(id) {
     method: "delete",
   });
 }
-
 
 // 空轨起降点列表
 // GET /pt/uam/list
@@ -1069,7 +1066,6 @@ export function listUam(params) {
     params: params,
   });
 }
-
 
 // 生成空轨路径
 // POST /pt/uam/genRoute
@@ -1118,11 +1114,132 @@ export function allTrack(params) {
   });
 }
 
+// 新增区域
+// POST /pt/cityUpdateArea/addArea
+// 接口ID：413816262
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-413816262
+export function CUA_addArea(data) {
+  return request({
+    url: `/pt/cityUpdateArea/addArea`,
+    method: "post",
+    data: data,
+  });
+}
 
+// 搜索相似区域
+// GET /pt/cityUpdateArea/searchSimilarArea
+// 接口ID：413822654
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-413822654
+export function CUA_searchSimilarCUAArea(params) {
+  return request({
+    url: `/pt/cityUpdateArea/searchSimilarArea`,
+    method: "get",
+    params: params,
+  });
+}
 
+// 下载生成的geojson文件
+// GET /pt/cityUpdateArea/downloadGeojson
+// 接口ID：413859409
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-413859409
+export function CUA_downloadGeojson(params) {
+  return request({
+    url: `/pt/cityUpdateArea/downloadGeojson`,
+    method: "get",
+    params: params,
+    responseType: "blob",
+  });
+}
 
+// 区域列表
+// GET /pt/cityUpdateArea/areaPage
+// 接口ID：415016093
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-415016093
+export function CUA_areaList(params) {
+  return request({
+    url: `/pt/cityUpdateArea/areaPage`,
+    method: "get",
+    params: params,
+  });
+}
 
+// 年份搜索相似区域列表
+// GET /pt/cityUpdateArea/yearAreaList
+// 接口ID：413884335
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-413884335
+export function CUA_yearAreaList(params) {
+  return request({
+    url: `/pt/cityUpdateArea/yearAreaList`,
+    method: "get",
+    params: params,
+  });
+}
 
+// 新增方案
+// POST /pt/cityUpdateArea/addPlan
+// 接口ID：414362574
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-414362574
+export function CUA_addPlan(data) {
+  return request({
+    url: `/pt/cityUpdateArea/addPlan`,
+    method: "post",
+    data: data,
+  });
+}
 
+// 搜索最优方案
+// POST /pt/cityUpdateArea/searchBestPlan
+// 接口ID：414391534
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-414391534
+export function CUA_searchBestPlan(data) {
+  return request({
+    url: `/pt/cityUpdateArea/searchBestPlan`,
+    method: "post",
+    data: data,
+  });
+}
 
+// 方案列表
+// GET /pt/cityUpdateArea/planPage
+// 接口ID：414440742
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-414440742
+export function CUA_planPage(params) {
+  return request({
+    url: `/pt/cityUpdateArea/planPage`,
+    method: "get",
+    params: params,
+  });
+}
 
+// 删除方案
+// DELETE /pt/cityUpdateArea/deletePlan/{id}
+// 接口ID：414448618
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-414448618
+export function CUA_deletePlan(id) {
+  return request({
+    url: `/pt/cityUpdateArea/deletePlan/${id}`,
+    method: "delete",
+  });
+}
+
+// 删除区域
+// DELETE /pt/cityUpdateArea/deleteArea/{id}
+// 接口ID：414454571
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-414454571
+export function CUA_deleteArea(id) {
+  return request({
+    url: `/pt/cityUpdateArea/deleteArea/${id}`,
+    method: "delete",
+  });
+}
+
+// 删除相似搜索结果
+// DELETE /pt/cityUpdateArea/deleteAnalyze/{id}
+// 接口ID：414455184
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-414455184
+export function CUA_deleteAnalyze(id) {
+  return request({
+    url: `/pt/cityUpdateArea/deleteAnalyze/${id}`,
+    method: "delete",
+  });
+}

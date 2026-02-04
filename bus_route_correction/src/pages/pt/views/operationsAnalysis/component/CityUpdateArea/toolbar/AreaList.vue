@@ -7,15 +7,20 @@
         <el-table class="small" :data="list" border :height="height">
           <el-table-column :label="$l('名称')" prop="name"> </el-table-column>
           <el-table-column width="50">
-            <template>
-              <el-button type="text" size="small" icon="el-icon-edit" @click=""></el-button>
+            <template slot-scope="{ row }">
+              <el-button style="color: red" type="text" size="small" icon="el-icon-delete" @click="handleDelete(row)"></el-button>
             </template>
           </el-table-column>
         </el-table>
       </template>
     </AutoSize>
+    <Pagination @size-change="getList" @current-change="getList" :current-page.sync="pageNum" :page-size="pageSize" :total="total" :pager-count="5" layout="total, prev, pager, next"> </Pagination>
+
     <Dialog class="AreaList_Dialog" ref="dialog" :title="$l('')" hideMinimize :visible="showAddForm" @close="handleCloseAddForm" keepRight right="330" top="100" width="500px">
       <el-form :model="addForm" ref="addForm" :rules="addRules" label-width="120px" :inline="false" size="small">
+        <el-form-item :label="$l('区域名称')">
+          <el-input v-model="addForm.name"></el-input>
+        </el-form-item>
         <el-form-item :label="$l('区域选定方式')">
           <el-radio-group v-model="addForm.type" @change="">
             <el-radio-button label="1">{{ $l("地图圈定") }}</el-radio-button>
@@ -27,7 +32,6 @@
             <el-button v-if="!addForm.xyarr || !addForm.xyarr.length" type="primary" size="mini" @click="handlePlayPolygonSelect()">{{ $l("开始圈定") }}</el-button>
             <el-button v-else type="primary" size="mini" @click="handleReplayPolygonSelect()">{{ $l("重新圈定") }}</el-button>
           </template>
-
           <template v-if="selectState != POLYGON_SELECT_STATE_KEY.NOT_STARTED">
             <el-button type="primary" size="mini" @click="handleReplayPolygonSelect()">{{ $l("重新圈定") }}</el-button>
             <el-button type="primary" size="mini" @click="handleStopPolygonSelect()">{{ $l("结束圈定") }}</el-button>
@@ -44,10 +48,15 @@
         </el-form-item>
         <el-form-item :label="$l('上传GeoJSON')" v-show="addForm.type == '2'">
           <el-button type="primary" @click="handleSelectFile">{{ $l("选择文件") }}</el-button>
-          <div class="file" v-if="addForm.file">
-            <div class="file_name">{{ addForm.file.name }}</div>
-            <el-button type="text" @click="addForm.file = null" icon="el-icon-close"></el-button>
-          </div>
+          <el-table class="small" v-if="addForm.xyarr && addForm.xyarr.length" :data="addForm.xyarr" border stripe>
+            <el-table-column type="index" width="50"></el-table-column>
+            <el-table-column>
+              <span slot-scope="{ row }">{{ row }}</span>
+            </el-table-column>
+            <el-table-column width="50">
+              <el-button slot-scope="{ row, $index }" v-if="addForm.xyarr.length - 1 > $index" type="text" size="small" icon="el-icon-delete" style="color: var(--color-danger); padding: 0" @click="handleRemoveXY($index)"></el-button>
+            </el-table-column>
+          </el-table>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleSubmit">{{ $l("立即创建") }}</el-button>
@@ -61,6 +70,9 @@
 <script>
 import { PolygonSelectLayer, POLYGON_SELECT_STATE_KEY, POLYGON_SELECT_EVENT } from "../layer/PolygonSelectLayer";
 import { selectFile } from "@/utils/utils";
+
+import { CUA_addArea, CUA_areaList, CUA_deleteArea } from "@/api/index";
+import { parserGeoJSON } from "../../GeoJSON/layer/GeoJSONLayer2";
 
 export default {
   name: "AreaList",
@@ -100,20 +112,16 @@ export default {
       selectState: POLYGON_SELECT_STATE_KEY.NOT_STARTED,
       POLYGON_SELECT_EVENT,
       POLYGON_SELECT_STATE_KEY,
-      list: [
-        {
-          name: "区域1",
-        },
-        {
-          name: "区域2",
-        },
-        {
-          name: "区域3",
-        },
-      ],
+      list: [],
+      pageSize: 20,
+      pageNum: 1,
+      total: 0,
 
       showAddForm: false,
-      addForm: {},
+      addForm: {
+        name: "",
+        xyarr: null,
+      },
       addRules: {},
     };
   },
@@ -138,7 +146,17 @@ export default {
     this._PolygonSelectLayer.dispose();
   },
   methods: {
+    getList() {
+      CUA_areaList({
+        pageSize: this.pageSize,
+        pageNum: this.pageNum,
+      }).then((res) => {
+        this.list = res.records;
+        this.total = res.total;
+      });
+    },
     handleEnable() {
+      this.getList();
       this._Map.addLayer(this._PolygonSelectLayer);
     },
     handleDisable() {
@@ -187,20 +205,82 @@ export default {
       this.handleStopPolygonSelect(true);
     },
     async handleSelectFile() {
-      this.addForm.file = await selectFile(".geojson");
+      const file = await selectFile(".geojson");
+      let reader = new FileReader();
+      reader.readAsText(this.GeoJSON._file);
+
+      reader.onload = () => {
+        parserGeoJSON(reader.result, { noProperties: true, noGeomList: true }).then((geojson) => {
+          const { polygonArray } = geojson;
+          let shape = [];
+          for (let index = 0, l = polygonArray.length, num = 0, dataSize = polygonArray[0]; index < l; index += 1 + dataSize, dataSize = polygonArray[index]) {
+            const array = polygonArray.slice(index + 1, index + 1 + dataSize);
+            const value = array[0];
+            const shapeArray = array.slice(1);
+
+            for (let j = 0, l = shapeArray.length, size = shapeArray[0]; j < l; j += 1 + size, size = shapeArray[j]) {
+              const v = shapeArray.slice(j + 1, j + 1 + size);
+              const points = [];
+              for (let k = 0, l3 = v.length / 2; k < l3; k++) {
+                points[points.length] = [v[k * 2 + 0], v[k * 2 + 1]];
+              }
+              shape.push(points);
+            }
+            break;
+          }
+          const path = shape[0];
+          if (path && path.length > 2) {
+            const start = shape[0];
+            const end = shape[shape.length - 1];
+            if (start[0] != end[0] || start[1] != end[1]) {
+              path[path.length] = [...end];
+            }
+            this.addForm.xyarr = path;
+            this._PolygonSelectLayer.setPath(this.addForm.xyarr);
+          } else {
+            if (path.length < 3) return this.$message.error("区域范围节点不能少于3个");
+            this.addForm.xyarr = [];
+            this._PolygonSelectLayer.setPath(this.addForm.xyarr);
+          }
+        });
+      };
     },
-    handleSubmit() {},
+    handleSubmit() {
+      CUA_addArea({
+        name: this.addForm.name,
+        area: JSON.stringify(this.addForm.xyarr),
+      }).then((res) => {
+        this.handleCloseAddForm();
+        this.handleStopPolygonSelect(true);
+        this.getList();
+      });
+    },
+    handleDelete(row) {
+      this.$confirm(this.$l("是否确认删除区域：") + row.name + "?", this.$l("警告"), {
+        confirmButtonText: this.$l("确定"),
+        cancelButtonText: this.$l("取消"),
+        type: "warning",
+      })
+        .then(function () {
+          return CUA_deleteArea(row.id);
+        })
+        .then(() => {
+          this.getList();
+          this.$message.success("删除成功");
+        })
+        .catch(() => {});
+    },
     handleRemoveXY(index) {
       if (this.addForm.xyarr.length <= 4) {
         return this.$message.error("至少保留3个点");
       }
       this.addForm.xyarr.splice(index, 1);
-      
-      if(index === 0){
-       const start = this.addForm.xyarr[0];
-       const end = this.addForm.xyarr[this.addForm.xyarr.length - 1];
-       end[0] = start[0]; 
-       end[1] = start[1]; 
+
+      if (index === 0) {
+        const start = this.addForm.xyarr[0];
+        const end = this.addForm.xyarr[this.addForm.xyarr.length - 1];
+        end[0] = start[0];
+        end[1] = start[1];
       }
       this._PolygonSelectLayer.setPath(this.addForm.xyarr);
     },

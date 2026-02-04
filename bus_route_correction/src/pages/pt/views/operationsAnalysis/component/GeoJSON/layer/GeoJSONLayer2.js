@@ -133,6 +133,7 @@ export class ColorBar2D {
   }
 }
 
+// { noProperties: true, noGeomList: true }
 export function parserGeoJSON(text, options = {}) {
   // const timeKey = "parserGeoJSON_" + new Date().getTime();
   // console.time(timeKey);
