@@ -503,3 +503,12 @@ Number.prototype.ceil = function (n = 0) {
     a = Math.ceil(this * m);
   return Number(a / m);
 }
+
+export function boldToText(bold) {
+  return new Promise((resolve) => {
+    const r = new FileReader();
+    r.readAsText(bold);
+    r.onload = () => resolve(r.result);
+    r.onerror = () => resolve("");
+  });
+}

@@ -1,34 +1,13 @@
 <!-- Step1_Dialog -->
 <template>
   <Dialog class="Step1_Dialog" ref="dialog" :title="$l('基本情况确认')" hideMinimize :visible="s_visible" @close="handleClose" keepRight right="330" top="100" width="450px">
-    <div class="Step1_box">
-      <el-scrollbar wrap-class="scroll_box ">
+    <div class="Step1_box" v-loading="loading" element-loading-background="rgb(from var(--color-white) r g b / 0.8)">
+      <el-scrollbar wrap-class="scroll_box">
         <div class="scroll_body">
-          <div class="title">{{ $l("总体情况") }}</div>
-          <AreaFromItem :label="$l('方案名称')" v-model="s_value.value" class="item" input :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('总开发强度')" v-model="s_value.value" class="item" inputNumber slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('总出行产生量')" v-model="s_value.value" class="item" inputNumber slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <div class="title">{{ $l("出行结构") }}</div>
-          <AreaFromItem :label="$l('小汽车')" v-model="s_value.value" class="item" checkBox slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('轨道交通')" v-model="s_value.value" class="item" checkBox slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('慢行')" v-model="s_value.value" class="item" checkBox slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('其他')" v-model="s_value.value" class="item" checkBox slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <div class="title">{{ $l("业态开发强度") }}</div>
-          <AreaFromItem :label="$l('住宅开发强度')" v-model="s_value.value" class="item" checkBox slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('办公开发强度')" v-model="s_value.value" class="item" checkBox slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('商业开发强度')" v-model="s_value.value" class="item" checkBox slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('工业开发强度')" v-model="s_value.value" class="item" checkBox slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <div class="title">{{ $l("交通设施") }}</div>
-          <AreaFromItem :label="$l('地铁站数')" v-model="s_value.value" class="item" checkBox slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('公交首末站数')" v-model="s_value.value" class="item" checkBox slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('公交中间站数')" v-model="s_value.value" class="item" checkBox slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('主干路及以上长度')" v-model="s_value.value" class="item" checkBox slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('次干路及以下长度')" v-model="s_value.value" class="item" checkBox slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <div class="title">{{ $l("特殊地点") }}</div>
-          <AreaFromItem :label="$l('医院数')" v-model="s_value.value" class="item" checkBox slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('运动场数')" v-model="s_value.value" class="item" checkBox slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('高中数')" v-model="s_value.value" class="item" checkBox slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('大学数')" v-model="s_value.value" class="item" checkBox slider :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <template v-for="item in areaParam">
+            <div class="title" v-if="item.type == 'title'">{{ $l(item.label) }}</div>
+            <AreaFromItem v-if="item.type == 'item'" :label="$l(item.label)" v-bind="item" @update:value="item.value = $event" @update:check="item.check = $event" />
+          </template>
         </div>
       </el-scrollbar>
       <div class="btn_box">
@@ -41,6 +20,37 @@
 
 <script>
 import AreaFromItem from "../AreaFromItem.vue";
+import { parserGeoJSON } from "../../../GeoJSON/layer/GeoJSONLayer2";
+
+import { CUA_downloadGeojson } from "@/api/index";
+import { boldToText } from "@/utils/index2";
+
+const dialogList = [
+  { type: "title", label: "总体情况" },
+  { type: "item", label: "总开发强度", key: "总开发强度", start: 0, end: -1, step: 0.001, disabled: true, slider: true, inputNumber: true },
+  { type: "item", label: "平均容积率", key: "平均容积率", start: 0, end: -1, step: 0.001, disabled: true, slider: true, inputNumber: true },
+  { type: "title", label: "出行结构" },
+  { type: "item", label: "小汽车占比", key: "小汽车占比", start: 0, end: 1, step: 0.001, slider: true, inputNumber: true, checkBox: true },
+  { type: "item", label: "轨道交通占比", key: "轨道交通占比", start: 0, end: 1, step: 0.001, slider: true, inputNumber: true, checkBox: true },
+  { type: "item", label: "公交占比", key: "公交占比", start: 0, end: 1, step: 0.001, slider: true, inputNumber: true, checkBox: true },
+  { type: "item", label: "慢行占比", key: "慢行占比", start: 0, end: 1, step: 0.001, slider: true, inputNumber: true, checkBox: true },
+  { type: "title", label: "业态开发强度" },
+  { type: "item", label: "居住开发强度", key: "居住开发强度", start: 0, end: -1, step: 0.001, slider: true, inputNumber: true, checkBox: true },
+  { type: "item", label: "办公开发强度", key: "办公开发强度", start: 0, end: -1, step: 0.001, slider: true, inputNumber: true, checkBox: true },
+  { type: "item", label: "商业开发强度", key: "商业开发强度", start: 0, end: -1, step: 0.001, slider: true, inputNumber: true, checkBox: true },
+  { type: "item", label: "工业开发强度", key: "工业开发强度", start: 0, end: -1, step: 0.001, slider: true, inputNumber: true, checkBox: true },
+  { type: "title", label: "交通设施" },
+  { type: "item", label: "地铁站点数", key: "地铁站点数", start: 0, end: -1, slider: true, inputNumber: true, checkBox: true },
+  { type: "item", label: "公交站点数", key: "公交站点数", start: 0, end: -1, step: 1, slider: true, inputNumber: true, checkBox: true },
+  { type: "item", label: "主干路及以上长度", key: "主干路及以上长度", start: 0, end: -1, step: 1, slider: true, inputNumber: true, checkBox: true },
+  { type: "item", label: "次干路及以下长度", key: "次干路及以下长度", start: 0, end: -1, step: 1, slider: true, inputNumber: true, checkBox: true },
+  { type: "title", label: "特殊地点" },
+  { type: "item", label: "医疗设施数", key: "医疗设施数", start: 0, end: -1, step: 1, slider: true, inputNumber: true, checkBox: true },
+  { type: "item", label: "教育设施数", key: "教育设施数", start: 0, end: -1, step: 1, slider: true, inputNumber: true, checkBox: true },
+  { type: "item", label: "文化设施数", key: "文化设施数", start: 0, end: -1, step: 1, slider: true, inputNumber: true, checkBox: true },
+  { type: "item", label: "政府设施数", key: "政府设施数", start: 0, end: -1, step: 1, slider: true, inputNumber: true, checkBox: true },
+];
+
 export default {
   name: "Step1_Dialog",
   props: {
@@ -48,11 +58,9 @@ export default {
       type: Boolean,
       default: false,
     },
-    value: {
-      type: Object,
-      default: () => {
-        return {};
-      },
+    resultJsonPath: {
+      type: String,
+      default: "",
     },
   },
   components: { AreaFromItem },
@@ -62,18 +70,17 @@ export default {
     },
   },
   watch: {
-    visible: {
+    uid: {
       handler(val) {
-        if (val) {
-          this.s_value = JSON.parse(JSON.stringify(this.value));
-        }
+        this.init();
       },
       immediate: true,
     },
   },
   data() {
     return {
-      s_value: {},
+      loading: false,
+      areaParam: [],
     };
   },
   created() {},
@@ -84,11 +91,54 @@ export default {
       this.$emit("close");
     },
     handleNext() {
-      this.$emit("update:value", this.s_value);
-      this.$emit("next");
+      const value = this.areaParam
+        .filter((v) => v.type == "item")
+        .map((v) => {
+          return {
+            key: v.key,
+            value: v.value,
+            avg: v.avg,
+            check: v.check,
+          };
+        });
+      this.$emit("next", value);
     },
     handlePrev() {
       this.$emit("prev");
+    },
+    init() {
+      if (this.resultJsonPath) {
+        this.loading = true;
+        // 获取相似区域列表
+        CUA_downloadGeojson({
+          path: this.resultJsonPath,
+        })
+          .then((res) => boldToText(res.data))
+          .then((res) => parserGeoJSON(res))
+          .then((res) => {
+            const areaParam = JSON.parse(JSON.stringify(dialogList));
+            areaParam.forEach((item) => {
+              const prop = res.propertiesLabels[item.key];
+              if (prop && item.type == "item") {
+                const list = prop.values.slice(1);
+                item.min = Number(Math.min(...list).toFixed(4));
+                item.max = Number(Math.max(...list).toFixed(4));
+                item.value = Number(Number(list.reduce((a, b) => a + b, 0) / list.length).toFixed(4));
+                item.avg = item.value;
+                if (item.end == -1) {
+                  item.end = Math.ceil(item.max * 1.5);
+                }
+                item.check = false;
+              }
+            });
+            this.areaParam = areaParam;
+          })
+          .finally((err) => {
+            this.loading = false;
+          });
+      } else {
+        this.areaParam = [];
+      }
     },
   },
 };

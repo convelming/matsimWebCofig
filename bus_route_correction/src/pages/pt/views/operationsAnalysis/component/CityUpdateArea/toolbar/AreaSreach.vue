@@ -61,32 +61,23 @@ import MySlider from "../component/MySlider.vue";
 import AreaFromItem from "../component/AreaFromItem.vue";
 import { GeoJSONLayer, parserGeoJSON, LINE_STYLE } from "../../GeoJSON/layer/GeoJSONLayer2";
 
-import { CUA_yearAreaList, CUA_downloadGeojson, CUA_searchSimilarCUAArea } from "@/api/index";
-import { guid } from "@/utils/index2";
-
-function boldToText(bold) {
-  return new Promise((resolve) => {
-    const r = new FileReader();
-    r.readAsText(bold);
-    r.onload = () => resolve(r.result);
-    r.onerror = () => resolve("");
-  });
-}
+import { CUA_yearAreaList, CUA_downloadGeojson, CUA_searchSimilarCUAArea, CUA_roadGeoJSONByYear } from "@/api/index";
+import { guid, boldToText } from "@/utils/index2";
 
 const dialogList = [
   { type: "title", label: "总体情况" },
-  { type: "item", label: "总开发强度", key: "总开发强度", start: 0, end: -1, step: 0.1 },
-  { type: "item", label: "平均容积率", key: "平均容积率", start: 0, end: -1, step: 0.1 },
+  { type: "item", label: "总开发强度", key: "总开发强度", start: 0, end: -1, step: 0.001 },
+  { type: "item", label: "平均容积率", key: "平均容积率", start: 0, end: -1, step: 0.001 },
   { type: "title", label: "出行结构" },
-  { type: "item", label: "小汽车占比", key: "小汽车占比", start: 0, end: 1, step: 0.01 },
-  { type: "item", label: "轨道交通占比", key: "轨道交通占比", start: 0, end: 1, step: 0.01 },
-  { type: "item", label: "公交占比", key: "公交占比", start: 0, end: 1, step: 0.01 },
-  { type: "item", label: "慢行占比", key: "慢行占比", start: 0, end: 1, step: 0.01 },
+  { type: "item", label: "小汽车占比", key: "小汽车占比", start: 0, end: 1, step: 0.001 },
+  { type: "item", label: "轨道交通占比", key: "轨道交通占比", start: 0, end: 1, step: 0.001 },
+  { type: "item", label: "公交占比", key: "公交占比", start: 0, end: 1, step: 0.001 },
+  { type: "item", label: "慢行占比", key: "慢行占比", start: 0, end: 1, step: 0.001 },
   { type: "title", label: "业态开发强度" },
-  { type: "item", label: "居住开发强度", key: "居住开发强度", start: 0, end: -1, step: 0.1 },
-  { type: "item", label: "办公开发强度", key: "办公开发强度", start: 0, end: -1, step: 0.1 },
-  { type: "item", label: "商业开发强度", key: "商业开发强度", start: 0, end: -1, step: 0.1 },
-  { type: "item", label: "工业开发强度", key: "工业开发强度", start: 0, end: -1, step: 0.1 },
+  { type: "item", label: "居住开发强度", key: "居住开发强度", start: 0, end: -1, step: 0.001 },
+  { type: "item", label: "办公开发强度", key: "办公开发强度", start: 0, end: -1, step: 0.001 },
+  { type: "item", label: "商业开发强度", key: "商业开发强度", start: 0, end: -1, step: 0.001 },
+  { type: "item", label: "工业开发强度", key: "工业开发强度", start: 0, end: -1, step: 0.001 },
   { type: "title", label: "交通设施" },
   { type: "item", label: "地铁站点数", key: "地铁站点数", start: 0, end: -1 },
   { type: "item", label: "公交站点数", key: "公交站点数", start: 0, end: -1, step: 1 },
@@ -150,17 +141,14 @@ export default {
       showDialog: false,
       dialogTitle: "",
       dialogDetail: null,
-      showLike: false,
     };
   },
   created() {
     this._GeoJSONLayer_road = new GeoJSONLayer({
-      lineAutoWidth: 2,
-      polygonBorderStyle: LINE_STYLE.NONE,
+      lineAutoWidth: 1,
     });
     this._GeoJSONLayer_like = new GeoJSONLayer({
-      lineAutoWidth: 2,
-      polygonBorderStyle: LINE_STYLE.NONE,
+      polygonBorderAutoWidth: 0.5,
     });
   },
   mounted() {},
@@ -172,6 +160,16 @@ export default {
     handleChangeYear() {
       this.handleInitLike();
       this.getList();
+      CUA_roadGeoJSONByYear(this.year)
+        .then((res) => {
+          console.log(res);
+          return res;
+        })
+        .then((res) => boldToText(res.data))
+        .then((res) => parserGeoJSON(res))
+        .then((res) => {
+          this._GeoJSONLayer_road.setGeoJsonData(res);
+        });
     },
     getList() {
       CUA_yearAreaList({
@@ -192,7 +190,8 @@ export default {
       this.areaParam = null;
       this.likeList = [];
       this.showDialog = false;
-      this.dialogDetail = {};
+      this.dialogTitle = "";
+      this.dialogDetail = null;
     },
     handleGetLike(row) {
       if (row.resultJsonPath) {
@@ -295,14 +294,15 @@ export default {
       this.showDialog = false;
     },
     handleEnable() {
-      this.getList();
+      this.handleChangeYear();
       this._Map.addLayer(this._GeoJSONLayer_road);
       this._Map.addLayer(this._GeoJSONLayer_like);
     },
     handleDisable() {
       this._GeoJSONLayer_road.removeFromParent();
       this._GeoJSONLayer_like.removeFromParent();
-      this.handleCloseDialog();
+      this.handleInitLike();
+      this.$refs.table.clearSelection();
     },
   },
 };

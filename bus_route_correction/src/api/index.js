@@ -1243,3 +1243,16 @@ export function CUA_deleteAnalyze(id) {
     method: "delete",
   });
 }
+
+
+// 获取年份路网
+// GET /pt/cityUpdateArea/road/{year}
+// 接口ID：415044613
+// 接口地址：https://app.apifox.com/link/project/3709845/apis/api-415044613
+export function CUA_roadGeoJSONByYear(year) {
+  return request({
+    url: `/pt/cityUpdateArea/road/${year}`,
+    method: "get",
+    responseType: "blob",
+  });
+}

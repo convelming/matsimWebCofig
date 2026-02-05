@@ -24,7 +24,7 @@
     </AutoSize>
     <Pagination @size-change="getList" @current-change="getList" :current-page.sync="pageNum" :page-size="pageSize" :total="total" :pager-count="5" layout="total, prev, pager, next"> </Pagination>
     <template v-if="areaDetail">
-      <div class="title">{{ $l("方案列表") }}</div>
+      <div class="title">{{ areaDetail.name }} -- {{ $l("方案列表") }}</div>
       <el-button class="block" type="primary" size="small" @click="handleOpenAddAnalysis()">{{ $l("添加方案") }}</el-button>
       <AutoSize class="flex-h">
         <template slot-scope="{ width, height }">
@@ -42,7 +42,7 @@
       </AutoSize>
       <Pagination @size-change="getList" @current-change="getList" :current-page.sync="pageNum" :page-size="pageSize" :total="total" :pager-count="5" layout="total, prev, pager, next"> </Pagination>
 
-      <AddAreaAnalysis :visible.sync="showAddAnalysis" :step="addAnalysisSpet" />
+      <AddAreaAnalysis :visible.sync="showAddAnalysis" :step="addAnalysisSpet" :detail="areaDetail" :year="year" />
     </template>
   </div>
 </template>
@@ -51,10 +51,9 @@
 import MySlider from "../component/MySlider.vue";
 import AddAreaAnalysis from "../component/AddAreaAnalysis/index.vue";
 import { GeoJSONLayer, parserGeoJSON } from "../../GeoJSON/layer/GeoJSONLayer2";
-import data from "./line2.json";
 
-import { CUA_yearAreaList, CUA_downloadGeojson, CUA_planPage } from "@/api/index";
-import { guid } from "@/utils/index2";
+import { CUA_yearAreaList, CUA_downloadGeojson, CUA_planPage, CUA_roadGeoJSONByYear } from "@/api/index";
+import { guid, boldToText } from "@/utils/index2";
 
 export default {
   name: "AreaSreach",
@@ -117,29 +116,38 @@ export default {
     };
   },
   created() {
-    this._GeoJSONLayer = new GeoJSONLayer({
-      lineAutoWidth: 2,
+    this._GeoJSONLayer_road = new GeoJSONLayer({
+      lineAutoWidth: 1,
     });
-    parserGeoJSON(JSON.stringify(data)).then((res) => {
-      this._GeoJSONLayer.setGeoJsonData(res);
+    this._GeoJSONLayer_anal = new GeoJSONLayer({
+      polygonBorderAutoWidth: 0.5,
     });
-    this.getList();
   },
   mounted() {},
   beforeDestroy() {
-    // this._PolygonSelectLayer.dispose();
+    this._GeoJSONLayer_road.dispose();
+    this._GeoJSONLayer_anal.dispose();
   },
   methods: {
     handleChangeYear() {
       this.handleInitAnalysis();
       this.getList();
+      CUA_roadGeoJSONByYear(this.year)
+        .then((res) => {
+          console.log(res);
+          return res;
+        })
+        .then((res) => boldToText(res.data))
+        .then((res) => parserGeoJSON(res))
+        .then((res) => {
+          this._GeoJSONLayer_road.setGeoJsonData(res);
+        });
     },
     getList() {
       CUA_yearAreaList({
         year: this.year,
         pageSize: this.pageSize,
         pageNum: this.pageNum,
-        status: 2,
       }).then((res) => {
         res.records.forEach((v) => {
           v.m_id = guid();
@@ -149,11 +157,14 @@ export default {
       });
     },
     handleSelectionChange(selection, row) {
+      const oldArea = this.areaDetail;
+
+      this.handleInitAnalysis();
       this.$refs.table.clearSelection();
-      if (this.areaDetail?.m_id != row.m_id) {
+
+      if (oldArea?.m_id != row.m_id) {
         this.$refs.table.toggleRowSelection(row, true);
         this.areaDetail = row;
-        this.handleInitAnalysis();
         this.getAnalysisList(row);
       } else {
         this.handleInitAnalysis();
@@ -167,9 +178,9 @@ export default {
       this.a_total = 0;
       this.a_list = [];
     },
-    getAnalysisList() {
+    getAnalysisList(row) {
       CUA_planPage({
-        areaAnalyzeId: this.areaDetail.id,
+        areaAnalyzeId: row.id,
         pageSize: this.a_pageSize,
         pageNum: this.a_pageNum,
       }).then((res) => {
@@ -185,19 +196,26 @@ export default {
         this.addAnalysisSpet = 3;
       } else {
         this.addAnalysisSpet = 1;
+        this._GeoJSONLayer_road.removeFromParent();
       }
       this.showAddAnalysis = true;
     },
     handleCloseAddAnalysis() {
+      if (this._Map) {
+        this._Map.addLayer(this._GeoJSONLayer_road);
+      }
       this.showAddAnalysis = false;
     },
 
     handleEnable() {
-      this._Map.addLayer(this._GeoJSONLayer);
+      this.handleChangeYear();
+      this._Map.addLayer(this._GeoJSONLayer_road);
+      this._Map.addLayer(this._GeoJSONLayer_anal);
     },
     handleDisable() {
-      this._GeoJSONLayer.removeFromParent();
-      // this.handleCloseDetailForm();
+      this._GeoJSONLayer_road.removeFromParent();
+      this._GeoJSONLayer_anal.removeFromParent();
+      this.handleCloseAddAnalysis();
     },
   },
 };
@@ -229,6 +247,10 @@ export default {
       padding: 0;
       margin: 0;
     }
+  }
+
+  ::v-deep th.el-table-column--selection .el-checkbox {
+    display: none;
   }
 }
 .AreaAnalysis_Dialog {

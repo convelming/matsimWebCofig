@@ -29,7 +29,7 @@ export default {
     },
     activeName: {
       type: String,
-      default: "相似片区搜索",
+      default: "片区承载力分析",
     },
   },
   components: {
