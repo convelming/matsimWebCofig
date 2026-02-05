@@ -26,7 +26,7 @@
     <el-button v-if="!!areaDetail && (areaDetail.status == 0 || areaDetail.status == 3)" class="block" type="primary" size="small" @click="handleSreachLikeList">{{ $l("搜索相似区域") }}</el-button>
     <template v-if="!!areaDetail && areaDetail.status == 2">
       <div class="title">{{ $l("搜索结果") }}</div>
-      <el-button type="primary" size="small" @click="handleOpenDialog(areaParam)">{{ $l("点击查看区域详情") }}</el-button>
+      <el-button type="primary" size="small" @click="handleOpenDialog('区域详情', areaParam)">{{ $l("点击查看区域详情") }}</el-button>
       <AutoSize class="flex-h">
         <template slot-scope="{ width, height }">
           <el-table class="small" :data="likeList" border :height="height">
@@ -35,7 +35,7 @@
               <el-table-column :label="$l('相似度')" prop="p_like"> </el-table-column>
               <el-table-column width="50">
                 <template slot-scope="{ row }">
-                  <el-button type="text" size="small" icon="el-icon-view" @click="handleOpenDetailForm(row)"></el-button>
+                  <el-button type="text" size="small" icon="el-icon-view" @click="handleOpenDialog(`相似区域详情：${row.m_name}`, row.param)"></el-button>
                 </template>
               </el-table-column>
             </el-table-column>
@@ -43,33 +43,13 @@
         </template>
       </AutoSize>
     </template>
-    <Dialog class="AreaSreach_Dialog" ref="dialog" title="" hideMinimize :visible.sync="showDialog" @close="handleCloseDialog" keepRight right="330" top="100" width="450px">
+    <Dialog class="AreaSreach_Dialog" ref="dialog" :title="dialogTitle" hideMinimize :visible.sync="showDialog" @close="handleCloseDialog" keepRight right="330" top="100" width="450px">
       <el-scrollbar wrap-class="scroll_box" v-if="dialogDetail">
         <div class="AreaSreach_form">
-          <div class="title">总体情况</div>
-          <AreaFromItem :label="$l('总开发强度')" v-model="dialogDetail.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('总出行产生量')" v-model="dialogDetail.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <div class="title">{{ $l("出行结构") }}</div>
-          <AreaFromItem :label="$l('小汽车')" v-model="dialogDetail.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('轨道交通')" v-model="dialogDetail.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('慢行')" v-model="dialogDetail.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('其他')" v-model="dialogDetail.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <div class="title">{{ $l("业态开发强度") }}</div>
-          <AreaFromItem :label="$l('住宅开发强度')" v-model="dialogDetail.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('办公开发强度')" v-model="dialogDetail.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('商业开发强度')" v-model="dialogDetail.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('工业开发强度')" v-model="dialogDetail.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <div class="title">{{ $l("交通设施") }}</div>
-          <AreaFromItem :label="$l('地铁站数')" v-model="dialogDetail.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('公交首末站数')" v-model="dialogDetail.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('公交中间站数')" v-model="dialogDetail.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('主干路及以上长度')" v-model="dialogDetail.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('次干路及以下长度')" v-model="dialogDetail.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <div class="title">{{ $l("特殊地点") }}</div>
-          <AreaFromItem :label="$l('医院数')" v-model="dialogDetail.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('运动场数')" v-model="dialogDetail.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('高中数')" v-model="dialogDetail.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
-          <AreaFromItem :label="$l('大学数')" v-model="dialogDetail.value" class="item" disabled slider :start="0" :end="100" :min="20" :max="80" :step="1" />
+          <template v-for="item in dialogDetail">
+            <div class="title" v-if="item.type == 'title'">{{ $l(item.label) }}</div>
+            <AreaFromItem v-if="item.type == 'item'" :label="$l(item.label)" v-bind="item" />
+          </template>
         </div>
       </el-scrollbar>
     </Dialog>
@@ -92,6 +72,32 @@ function boldToText(bold) {
     r.onerror = () => resolve("");
   });
 }
+
+const dialogList = [
+  { type: "title", label: "总体情况" },
+  { type: "item", label: "总开发强度", key: "总开发强度", start: 0, end: -1, step: 0.1 },
+  { type: "item", label: "平均容积率", key: "平均容积率", start: 0, end: -1, step: 0.1 },
+  { type: "title", label: "出行结构" },
+  { type: "item", label: "小汽车占比", key: "小汽车占比", start: 0, end: 1, step: 0.01 },
+  { type: "item", label: "轨道交通占比", key: "轨道交通占比", start: 0, end: 1, step: 0.01 },
+  { type: "item", label: "公交占比", key: "公交占比", start: 0, end: 1, step: 0.01 },
+  { type: "item", label: "慢行占比", key: "慢行占比", start: 0, end: 1, step: 0.01 },
+  { type: "title", label: "业态开发强度" },
+  { type: "item", label: "居住开发强度", key: "居住开发强度", start: 0, end: -1, step: 0.1 },
+  { type: "item", label: "办公开发强度", key: "办公开发强度", start: 0, end: -1, step: 0.1 },
+  { type: "item", label: "商业开发强度", key: "商业开发强度", start: 0, end: -1, step: 0.1 },
+  { type: "item", label: "工业开发强度", key: "工业开发强度", start: 0, end: -1, step: 0.1 },
+  { type: "title", label: "交通设施" },
+  { type: "item", label: "地铁站点数", key: "地铁站点数", start: 0, end: -1 },
+  { type: "item", label: "公交站点数", key: "公交站点数", start: 0, end: -1, step: 1 },
+  { type: "item", label: "主干路及以上长度", key: "主干路及以上长度", start: 0, end: -1, step: 1 },
+  { type: "item", label: "次干路及以下长度", key: "次干路及以下长度", start: 0, end: -1, step: 1 },
+  { type: "title", label: "特殊地点" },
+  { type: "item", label: "医疗设施数", key: "医疗设施数", start: 0, end: -1, step: 1 },
+  { type: "item", label: "教育设施数", key: "教育设施数", start: 0, end: -1, step: 1 },
+  { type: "item", label: "文化设施数", key: "文化设施数", start: 0, end: -1, step: 1 },
+  { type: "item", label: "政府设施数", key: "政府设施数", start: 0, end: -1, step: 1 },
+];
 
 export default {
   name: "AreaSreach",
@@ -140,8 +146,11 @@ export default {
       areaDetail: null,
       areaParam: null,
       likeList: [],
+
       showDialog: false,
+      dialogTitle: "",
       dialogDetail: null,
+      showLike: false,
     };
   },
   created() {
@@ -194,26 +203,49 @@ export default {
           .then((res) => boldToText(res.data))
           .then((res) => parserGeoJSON(res))
           .then((res) => {
-            const areaParam = {};
-            Object.values(res.propertiesLabels)
-              .filter((v) => v.type == "Number")
-              .forEach((v) => {
-                const list = v.values.slice(1);
-                const sum = list.reduce((acc, num) => acc + num, 0);
-                areaParam[v.name] = {
-                  min: Math.min(...list),
-                  max: Math.max(...list),
-                  value: sum / list.length,
-                };
-              });
+            console.log(res.propertiesLabels);
+
+            const areaParam = JSON.parse(JSON.stringify(dialogList));
+            areaParam.forEach((item) => {
+              const prop = res.propertiesLabels[item.key];
+              if (prop && item.type == "item") {
+                const list = prop.values.slice(1);
+                item.min = Number(Math.min(...list).toFixed(4));
+                item.max = Number(Math.max(...list).toFixed(4));
+                item.value = Number(Number(list.reduce((a, b) => a + b, 0) / list.length).toFixed(4));
+                if (item.end == -1) {
+                  item.end = Math.ceil(item.max * 1.5);
+                }
+                item.disabled = true;
+                item.slider = true;
+                item.input = false;
+                item.inputNumber = false;
+              }
+            });
+            this.areaParam = areaParam;
+
             this.likeList = res.propertiesList.slice(1).map((v, i) => {
               const index = i + 1;
               const { br, tl } = res.geomList[index];
-              const param = {};
-              Object.keys(v).forEach((key) => {
-                param[key] = {
-                  value: v[key],
-                };
+              const param = JSON.parse(JSON.stringify(dialogList));
+              param.forEach((item) => {
+                if (item.type == "item") {
+                  const prop = res.propertiesLabels[item.key];
+                  if (prop) {
+                    const list = prop.values.slice(1);
+                    item.min = Number(Math.min(...list).toFixed(4));
+                    item.max = Number(Math.max(...list).toFixed(4));
+                    if (item.end == -1) {
+                      item.end = Math.ceil(item.max * 1.5);
+                    }
+                  }
+
+                  item.value = Number(Number(v[item.key]).toFixed(4));
+                  item.disabled = true;
+                  item.slider = true;
+                  item.input = false;
+                  item.inputNumber = false;
+                }
               });
               const item = {
                 m_name: `区域${index}`,
@@ -254,12 +286,13 @@ export default {
         });
       }
     },
-    handleOpenDialog(row) {
+    handleOpenDialog(title, row) {
+      this.dialogTitle = title;
       this.dialogDetail = row;
-      this.showDetailForm = true;
+      this.showDialog = true;
     },
     handleCloseDialog() {
-      this.showDetailForm = false;
+      this.showDialog = false;
     },
     handleEnable() {
       this.getList();

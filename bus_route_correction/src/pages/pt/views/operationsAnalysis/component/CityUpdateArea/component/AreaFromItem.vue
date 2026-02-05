@@ -5,18 +5,18 @@
       <el-checkbox v-if="checkBox" class="text1" v-model="s_check" :indeterminate="false" @change="$emit('update:check', $event)">{{ label }}</el-checkbox>
       <div v-else class="text1">{{ label }}</div>
       <el-input v-if="input" v-model="s_value" placeholder="" size="mini" @change="$emit('input', $event)"></el-input>
-      <el-input-number v-else-if="inputNumber" v-model="s_value" size="mini" label="" :min="this.min" :max="this.max" :step="this.step" :controls="false" :disabled="disabled" @change="$emit('input', $event)"> </el-input-number>
-      <el-input-number v-else v-model="s_value" size="mini" label="" :min="this.min" :max="this.max" :step="this.step" :controls="false" :disabled="disabled" @change="$emit('input', $event)"> </el-input-number>
+      <el-input-number v-else-if="inputNumber" v-model="s_value" size="mini" label="" :min="min" :max="max" :step="step" :controls="false" :disabled="disabled" @change="$emit('input', $event)"> </el-input-number>
+      <div v-else>{{ s_value }}</div>
     </div>
-    <div class="row" v-if="slider">
+    <div class="row" v-if="slider" style="padding: 1em">
       <div class="MySlider el-slider">
         <div class="runway">
           <div class="el-slider__marks">
-            <div class="el-slider__marks-text" style="left: 0%; transform: translateX(50%)">{{ this.start }}</div>
-            <div class="el-slider__marks-text" style="left: 100%; transform: translateX(-100%)">{{ this.end }}</div>
+            <div v-if="start != min" class="el-slider__marks-text" style="left: 0%" :title="start">{{ start }}</div>
+            <div v-if="end != max" class="el-slider__marks-text" style="left: 100%" :title="end">{{ end }}</div>
           </div>
         </div>
-        <el-slider :style="s_style" v-model="s_value" :marks="marks" :min="this.min" :max="this.max" :step="this.step" :disabled="disabled" @input="$emit('input', $event)"></el-slider>
+        <el-slider :style="s_style" v-model="s_value" :marks="marks" :min="min" :max="max" :step="step" :disabled="disabled" @input="$emit('input', $event)"></el-slider>
       </div>
     </div>
   </div>

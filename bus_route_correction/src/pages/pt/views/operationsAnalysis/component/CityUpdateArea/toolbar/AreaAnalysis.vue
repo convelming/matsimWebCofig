@@ -197,7 +197,7 @@ export default {
     },
     handleDisable() {
       this._GeoJSONLayer.removeFromParent();
-      this.handleCloseDetailForm();
+      // this.handleCloseDetailForm();
     },
   },
 };
