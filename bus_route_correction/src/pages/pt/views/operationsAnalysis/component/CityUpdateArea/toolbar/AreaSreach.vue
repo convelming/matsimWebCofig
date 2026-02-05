@@ -23,16 +23,16 @@
       </template>
     </AutoSize>
     <Pagination @size-change="getList" @current-change="getList" :current-page.sync="pageNum" :page-size="pageSize" :total="total" :pager-count="5" layout="total, prev, pager, next"> </Pagination>
-    <el-button v-if="areaDetail && (areaDetail.status == 0 || areaDetail.status == 3)" class="block" type="primary" size="small" @click="handleSreachLikeList">{{ $l("搜索相似区域") }}</el-button>
-    <template v-if="areaDetail && areaDetail.status == 2">
+    <el-button v-if="!!areaDetail && (areaDetail.status == 0 || areaDetail.status == 3)" class="block" type="primary" size="small" @click="handleSreachLikeList">{{ $l("搜索相似区域") }}</el-button>
+    <template v-if="!!areaDetail && areaDetail.status == 2">
       <div class="title">{{ $l("搜索结果") }}</div>
       <el-button type="primary" size="small" @click="handleOpenDialog(areaParam)">{{ $l("点击查看区域详情") }}</el-button>
       <AutoSize class="flex-h">
         <template slot-scope="{ width, height }">
           <el-table class="small" :data="likeList" border :height="height">
             <el-table-column :label="$l('相似区域列表')" prop="name">
-              <el-table-column :label="$l('名称')" prop="name"> </el-table-column>
-              <el-table-column :label="$l('相似度')" prop="name"> </el-table-column>
+              <el-table-column :label="$l('名称')" prop="m_name"> </el-table-column>
+              <el-table-column :label="$l('相似度')" prop="p_like"> </el-table-column>
               <el-table-column width="50">
                 <template slot-scope="{ row }">
                   <el-button type="text" size="small" icon="el-icon-view" @click="handleOpenDetailForm(row)"></el-button>
@@ -79,7 +79,7 @@
 <script>
 import MySlider from "../component/MySlider.vue";
 import AreaFromItem from "../component/AreaFromItem.vue";
-import { GeoJSONLayer, parserGeoJSON } from "../../GeoJSON/layer/GeoJSONLayer2";
+import { GeoJSONLayer, parserGeoJSON, LINE_STYLE } from "../../GeoJSON/layer/GeoJSONLayer2";
 
 import { CUA_yearAreaList, CUA_downloadGeojson, CUA_searchSimilarCUAArea } from "@/api/index";
 import { guid } from "@/utils/index2";
@@ -87,7 +87,7 @@ import { guid } from "@/utils/index2";
 function boldToText(bold) {
   return new Promise((resolve) => {
     const r = new FileReader();
-    r.readAsText(res.data);
+    r.readAsText(bold);
     r.onload = () => resolve(r.result);
     r.onerror = () => resolve("");
   });
@@ -145,16 +145,19 @@ export default {
     };
   },
   created() {
-    this._GeoJSONLayer = new GeoJSONLayer({
+    this._GeoJSONLayer_road = new GeoJSONLayer({
       lineAutoWidth: 2,
+      polygonBorderStyle: LINE_STYLE.NONE,
     });
-    // parserGeoJSON(JSON.stringify(data)).then((res) => {
-    //   this._GeoJSONLayer.setGeoJsonData(res);
-    // });
+    this._GeoJSONLayer_like = new GeoJSONLayer({
+      lineAutoWidth: 2,
+      polygonBorderStyle: LINE_STYLE.NONE,
+    });
   },
   mounted() {},
   beforeDestroy() {
-    // this._PolygonSelectLayer.dispose();
+    this._GeoJSONLayer_road.dispose();
+    this._GeoJSONLayer_like.dispose();
   },
   methods: {
     handleChangeYear() {
@@ -175,6 +178,7 @@ export default {
       });
     },
     handleInitLike() {
+      this._GeoJSONLayer_like.clearScene();
       this.areaDetail = null;
       this.areaParam = null;
       this.likeList = [];
@@ -190,18 +194,50 @@ export default {
           .then((res) => boldToText(res.data))
           .then((res) => parserGeoJSON(res))
           .then((res) => {
-            console.log(res);
+            const areaParam = {};
+            Object.values(res.propertiesLabels)
+              .filter((v) => v.type == "Number")
+              .forEach((v) => {
+                const list = v.values.slice(1);
+                const sum = list.reduce((acc, num) => acc + num, 0);
+                areaParam[v.name] = {
+                  min: Math.min(...list),
+                  max: Math.max(...list),
+                  value: sum / list.length,
+                };
+              });
+            this.likeList = res.propertiesList.slice(1).map((v, i) => {
+              const index = i + 1;
+              const { br, tl } = res.geomList[index];
+              const param = {};
+              Object.keys(v).forEach((key) => {
+                param[key] = {
+                  value: v[key],
+                };
+              });
+              const item = {
+                m_name: `区域${index}`,
+                p_like: Number(v["相似度"] * 100).toFixed(2) + "%",
+                center: [(tl.x + br.x) / 2, (tl.y + br.y) / 2],
+                param: param,
+              };
+              return item;
+            });
+            this._GeoJSONLayer_like.setGeoJsonData(res);
           });
       } else {
       }
     },
     handleSelectionChange(selection, row) {
+      const oldArea = this.areaDetail;
+
+      this.handleInitLike();
       this.$refs.table.clearSelection();
-      if (this.areaDetail?.m_id != row.m_id) {
-        this.areaDetail = row;
+
+      if (oldArea?.m_id != row.m_id) {
         this.$refs.table.toggleRowSelection(row, true);
-        this.handleInitLike();
-        this.handleGetLike(this.areaDetail);
+        this.areaDetail = row;
+        this.handleGetLike(row);
       } else {
         this.handleInitLike();
       }
@@ -214,6 +250,7 @@ export default {
         }).then((res) => {
           this.likeList = res;
           this.getList();
+          this.handleInitLike();
         });
       }
     },
@@ -226,10 +263,12 @@ export default {
     },
     handleEnable() {
       this.getList();
-      this._Map.addLayer(this._GeoJSONLayer);
+      this._Map.addLayer(this._GeoJSONLayer_road);
+      this._Map.addLayer(this._GeoJSONLayer_like);
     },
     handleDisable() {
-      this._GeoJSONLayer.removeFromParent();
+      this._GeoJSONLayer_road.removeFromParent();
+      this._GeoJSONLayer_like.removeFromParent();
       this.handleCloseDialog();
     },
   },

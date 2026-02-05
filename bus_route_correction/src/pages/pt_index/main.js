@@ -16,8 +16,7 @@ Vue.use(ElementUI);
 Vue.use(language);
 
 Vue.config.productionTip = false;
-
-Vue.prototype.isDev = process.env.NODE_ENV === "development";
+Vue.prototype.env = process.env || {};
 
 new Vue({
   // router,

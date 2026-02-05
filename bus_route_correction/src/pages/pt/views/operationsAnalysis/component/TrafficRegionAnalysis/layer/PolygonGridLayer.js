@@ -10,7 +10,7 @@ let font = null;
 function getFont() {
   if (font) return Promise.resolve(font);
   return new Promise((resolve, reject) => {
-    new FontLoader().load(process.env.VUE_APP_PUBLIC_PATH + "static/fonts/MiSans VF_Regular.json", resolve, undefined, reject);
+    new FontLoader().load(env.VUE_APP_PUBLIC_PATH + "static/fonts/MiSans VF_Regular.json", resolve, undefined, reject);
   });
 }
 

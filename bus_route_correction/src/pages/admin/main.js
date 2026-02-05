@@ -77,6 +77,7 @@ Vue.use(Element, {
 })
 
 Vue.config.productionTip = false
+Vue.prototype.env = process.env || {};
 
 new Vue({
   el: '#app',
