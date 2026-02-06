@@ -117,6 +117,7 @@ export default {
   },
   data() {
     return {
+      env: process.env,
       playTime: 10000,
       footer_list: new Array(3)
         .fill([

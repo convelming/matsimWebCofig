@@ -18,7 +18,6 @@ Vue.use(language);
 Vue.prototype.$moment = moment;
 
 Vue.config.productionTip = false;
-Vue.prototype.env = process.env || {};
 
 new Vue({
   router,

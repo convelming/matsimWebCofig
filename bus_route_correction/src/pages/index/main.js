@@ -14,7 +14,6 @@ Vue.use(ElementUI);
 Vue.use(language);
 
 Vue.config.productionTip = false;
-Vue.prototype.env = process.env || {};
 
 new Vue({
   render: (h) => h(App),
