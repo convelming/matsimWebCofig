@@ -4,8 +4,8 @@
     <div class="row">
       <el-checkbox v-if="checkBox" class="text1" v-model="s_check" :indeterminate="false" @change="$emit('update:check', $event)">{{ label }}</el-checkbox>
       <div v-else class="text1">{{ label }}</div>
-      <el-input v-if="input" v-model="s_value" placeholder="" size="mini" @change="$emit('input', $event)"></el-input>
-      <el-input-number v-else-if="inputNumber" v-model="s_value" size="mini" label="" :min="min" :max="max" :step="step" :controls="false" :disabled="disabled" @change="$emit('input', $event)"> </el-input-number>
+      <el-input v-if="input" v-model="s_value" placeholder="" size="mini" @input="handleInput"></el-input>
+      <el-input-number v-else-if="inputNumber" v-model="s_value" size="mini" label="" :min="min" :max="max" :step="step" :controls="false" :disabled="disabled" @change="handleInput"> </el-input-number>
       <div v-else>{{ s_value }}</div>
     </div>
     <div class="row" v-if="slider" style="padding: 0 1em">
@@ -16,7 +16,7 @@
             <div v-if="end != max" class="el-slider__marks-text" style="left: 100%" :title="end">{{ end }}</div>
           </div>
         </div>
-        <el-slider :style="s_style" v-model="s_value" :marks="marks" :min="min" :max="max" :step="step" :disabled="disabled" @input="$emit('input', $event)"></el-slider>
+        <el-slider :style="s_style" v-model="s_value" :marks="marks" :min="min" :max="max" :step="step" :disabled="disabled" @input="handleInput"></el-slider>
       </div>
     </div>
   </div>
@@ -71,7 +71,7 @@ export default {
       default: false,
     },
     value: {
-      type: Number,
+      type: [Number, String],
       default: 50,
     },
     check: {
@@ -113,7 +113,12 @@ export default {
   },
   created() {},
   mounted() {},
-  methods: {},
+  methods: {
+    handleInput(val) {
+      this.$emit("input", val);
+      this.$emit("update:value", val);
+    },
+  },
 };
 </script>
 

@@ -331,7 +331,7 @@ export default {
 
         CUAToolbar: "CityUpdateArea",
       },
-      activeModel: this.env.NODE_ENV === "development" ? "CityUpdateArea" : "PublicTransit",
+      activeModel: process.env.NODE_ENV === "development" ? "CityUpdateArea" : "PublicTransit",
       activeName: "",
       list: [],
     };

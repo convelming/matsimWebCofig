@@ -23,8 +23,8 @@
           </template>
         </AutoSize>
         <div class="btn_box">
-          <el-button type="primary" size="small" @click="handleNext">{{ $l("搜索最优方案") }}</el-button>
           <el-button type="info" size="small" @click="handlePrev">{{ $l("上一步") }}</el-button>
+          <el-button type="primary" size="small" @click="handleNext">{{ $l("搜索最优方案") }}</el-button>
         </div>
       </div>
     </Dialog>

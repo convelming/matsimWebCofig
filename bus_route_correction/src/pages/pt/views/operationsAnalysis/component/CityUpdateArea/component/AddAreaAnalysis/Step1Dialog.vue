@@ -5,14 +5,15 @@
       <el-scrollbar wrap-class="scroll_box">
         <div class="scroll_body">
           <template v-for="item in areaParam">
-            <div class="title" v-if="item.type == 'title'">{{ $l(item.label) }}</div>
+            <el-divider v-if="item.type == 'title'" content-position="left">{{ $l(item.label) }}</el-divider>
+            <!-- <div class="title" v-if="item.type == 'title'">{{ $l(item.label) }}</div> -->
             <AreaFromItem v-if="item.type == 'item'" :label="$l(item.label)" v-bind="item" @update:value="item.value = $event" @update:check="item.check = $event" />
           </template>
         </div>
       </el-scrollbar>
       <div class="btn_box">
-        <el-button type="primary" size="small" @click="handleNext">{{ $l("下一步") }}</el-button>
         <el-button type="info" size="small" @click="handlePrev">{{ $l("取消") }}</el-button>
+        <el-button type="primary" size="small" @click="handleNext">{{ $l("下一步") }}</el-button>
       </div>
     </div>
   </Dialog>
@@ -26,6 +27,7 @@ import { CUA_downloadGeojson } from "@/api/index";
 import { boldToText } from "@/utils/index2";
 
 const dialogList = [
+  { type: "item", label: "方案名称", key: "方案名称", disabled: false, slider: false, inputNumber: false, input: true, value: "", avg: 0, check: true },
   { type: "title", label: "总体情况" },
   { type: "item", label: "总开发强度", key: "总开发强度", start: 0, end: -1, step: 0.001, disabled: true, slider: true, inputNumber: true },
   { type: "item", label: "平均容积率", key: "平均容积率", start: 0, end: -1, step: 0.001, disabled: true, slider: true, inputNumber: true },

@@ -1,9 +1,10 @@
-importScripts("/static/js/proj4.js");
+importScripts(process.env.BASE_URL + "/static/js/proj4.js");
 try {
-  importScripts("/pt/main2/getJsConfig/config.js");
+  importScripts(process.env.VUE_APP_BASE_API + "/pt/main2/getJsConfig/config.js");
 } catch (error) {
-  importScripts("/static/js/config.js");
+  importScripts(process.env.BASE_URL + "/static/js/config.js");
 }
+
 
 class GeoJSONParser {
   // static DEFAULT_CRS = { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3857" } };
@@ -257,6 +258,6 @@ onmessage = function (e) {
       polygonArray: parser.polygonArray,
       propertiesListArray: parser.propertiesListArray,
     },
-    [parser.pointArray.buffer, parser.lineArray.buffer, parser.polygonArray.buffer, parser.propertiesListArray.buffer, parser.propertiesLabelsArray.buffer]
+    [parser.pointArray.buffer, parser.lineArray.buffer, parser.polygonArray.buffer, parser.propertiesListArray.buffer, parser.propertiesLabelsArray.buffer],
   );
 };

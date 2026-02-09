@@ -4,7 +4,10 @@
     <!-- <el-select class="block" v-model="year" size="small" :placeholder="$l('选择年份')" @change="handleChangeYear">
       <el-option label="2026" value="2026"> </el-option>
     </el-select> -->
-    <el-date-picker class="block" v-model="year" size="small" type="year" :placeholder="$l('选择年份')" value-format="yyyy" @change="handleChangeYear" />
+    <div class="flex-box">
+      <el-date-picker class="block" v-model="year" size="small" type="year" :placeholder="$l('选择年份')" value-format="yyyy" @change="handleChangeYear" />
+      <el-button type="primary" size="small" @click="handleRefresh()" icon="el-icon-refresh-right"></el-button>
+    </div>
     <AutoSize style="height: 30%">
       <template slot-scope="{ width, height }">
         <el-table ref="table" class="small" :data="list" border :height="height" @select="handleSelectionChange">
@@ -25,7 +28,10 @@
     <Pagination @size-change="getList" @current-change="getList" :current-page.sync="pageNum" :page-size="pageSize" :total="total" :pager-count="5" layout="total, prev, pager, next"> </Pagination>
     <el-button v-if="!!areaDetail && (areaDetail.status == 0 || areaDetail.status == 3)" class="block" type="primary" size="small" @click="handleSreachLikeList">{{ $l("搜索相似区域") }}</el-button>
     <template v-if="!!areaDetail && areaDetail.status == 2">
-      <div class="title">{{ $l("搜索结果") }}</div>
+      <div class="flex-box">
+        <div class="title block">{{ $l("搜索结果") }}</div>
+        <el-button type="primary" size="small" @click="handleRefreshLike()" icon="el-icon-refresh-right"></el-button>
+      </div>
       <el-button type="primary" size="small" @click="handleOpenDialog('区域详情', areaParam)">{{ $l("点击查看区域详情") }}</el-button>
       <AutoSize class="flex-h">
         <template slot-scope="{ width, height }">
@@ -171,8 +177,17 @@ export default {
           this._GeoJSONLayer_road.setGeoJsonData(res);
         });
     },
+    handleRefresh() {
+      this.getList().then((res) => {
+        const row = this.list.find((v) => v.areaId == this.areaDetail.areaId);
+        this.handleSelectionChange(true, row);
+      });
+    },
+    handleRefreshLike() {
+      this.handleGetLike();
+    },
     getList() {
-      CUA_yearAreaList({
+      return CUA_yearAreaList({
         year: this.year,
         pageSize: this.pageSize,
         pageNum: this.pageNum,
@@ -193,7 +208,8 @@ export default {
       this.dialogTitle = "";
       this.dialogDetail = null;
     },
-    handleGetLike(row) {
+    handleGetLike() {
+      const row = this.areaDetail;
       if (row.resultJsonPath) {
         // 获取相似区域列表
         CUA_downloadGeojson({
@@ -268,7 +284,7 @@ export default {
       if (oldArea?.m_id != row.m_id) {
         this.$refs.table.toggleRowSelection(row, true);
         this.areaDetail = row;
-        this.handleGetLike(row);
+        this.handleGetLike();
       } else {
         this.handleInitLike();
       }
@@ -314,6 +330,11 @@ export default {
   flex-direction: column;
   padding: 10px;
   gap: 10px;
+  .flex-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
   .block {
     display: block;
     width: 100%;

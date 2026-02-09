@@ -3,7 +3,7 @@ EARTH_RADIUS = 20037508.3427892;
 console.log("使用外部配置的config.js");
 
 // 地图默认样式序号，如果地图样式列表中没有这个样式，则默认序号为0的样式
-DEFAULT_MAP_LAYER_STYLE_INDEX = 0;
+DEFAULT_MAP_LAYER_STYLE_INDEX = 3;
 
 // 地图样式列表
 // {

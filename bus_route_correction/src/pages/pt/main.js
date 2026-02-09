@@ -13,6 +13,7 @@ import "./style.scss";
 
 import Pagination from "@/components/Pagination.vue";
 import Dialog from "@/components/Dialog.vue";
+import DialogRight from "@/components/DialogRight.vue";
 import TimeRangeSlider from "@/components/TimeRangeSlider.vue";
 import TimeSlider from "@/components/TimeSlider.vue";
 import RouteSelect from "@/components/RouteSelect.vue";
@@ -28,6 +29,7 @@ import AutoSize from "@/components/AutoSize.vue";
 
 Vue.component("Pagination", Pagination);
 Vue.component("Dialog", Dialog);
+Vue.component("DialogRight", DialogRight);
 Vue.component("TimeRangeSlider", TimeRangeSlider);
 Vue.component("TimeSlider", TimeSlider);
 Vue.component("RouteSelect", RouteSelect);
