@@ -55,9 +55,9 @@
           </el-table>
         </template>
       </AutoSize>
-      <Pagination @size-change="getList" @current-change="getList" :current-page.sync="pageNum" :page-size="pageSize" :total="total" :pager-count="5" layout="total, prev, pager, next"> </Pagination>
+      <Pagination @size-change="getAnalysisList" @current-change="getAnalysisList" :current-page.sync="a_pageNum" :page-size="a_pageSize" :total="a_total" :pager-count="5" layout="total, prev, pager, next"> </Pagination>
 
-      <AddAreaAnalysis :visible.sync="showAddAnalysis" :detail="areaDetail" :year="year" @success="handleOpenAnalysisDetail" @close="handleCloseAddAnalysis" />
+      <AddAreaAnalysis :visible.sync="showAddAnalysis" :detail="areaDetail" :year="year" @success="handleSuccessAddAnalysis" @close="handleCloseAddAnalysis" />
       <AnalysisDetail :visible.sync="showAnalysisDetail" :analysis="analysisDetail" :resultJsonPath="areaDetail.resultJsonPath" @close="handleCloseAnalysisDetail" />
     </template>
   </div>
@@ -216,6 +216,11 @@ export default {
     handleOpenAddAnalysis() {
       this._GeoJSONLayer_road.removeFromParent();
       this.showAddAnalysis = true;
+    },
+    handleSuccessAddAnalysis(value) {
+      this.handleCloseAddAnalysis();
+      this.handleRefreshAnalysis();
+      this.handleOpenAnalysisDetail(value);
     },
     handleCloseAddAnalysis() {
       if (this._Map) {

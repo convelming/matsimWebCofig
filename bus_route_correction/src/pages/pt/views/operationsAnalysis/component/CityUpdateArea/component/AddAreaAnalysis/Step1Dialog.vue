@@ -47,6 +47,7 @@ const dialogList = [
   { type: "item", label: "主干路及以上长度", key: "主干路及以上长度", start: 0, end: -1, step: 1, slider: true, inputNumber: true, checkBox: true },
   { type: "item", label: "次干路及以下长度", key: "次干路及以下长度", start: 0, end: -1, step: 1, slider: true, inputNumber: true, checkBox: true },
   { type: "title", label: "特殊地点" },
+  { type: "item", label: "体育设施数", key: "体育设施数", start: 0, end: -1, step: 1, slider: true, inputNumber: true, checkBox: true },
   { type: "item", label: "医疗设施数", key: "医疗设施数", start: 0, end: -1, step: 1, slider: true, inputNumber: true, checkBox: true },
   { type: "item", label: "教育设施数", key: "教育设施数", start: 0, end: -1, step: 1, slider: true, inputNumber: true, checkBox: true },
   { type: "item", label: "文化设施数", key: "文化设施数", start: 0, end: -1, step: 1, slider: true, inputNumber: true, checkBox: true },

@@ -81,7 +81,9 @@ export default {
       });
       CUA_searchBestPlan(query)
         .then((res) => {
-          this.$emit("success", res);
+          console.log(res);
+
+          this.$emit("success", res.data);
         })
         .finally(() => loading.close());
     },
