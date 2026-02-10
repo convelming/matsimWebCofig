@@ -29,7 +29,7 @@ module.exports = defineConfig({
     proxy: {
       "/": {
         ws: false,
-        target: `http://192.168.152.22:23105`, // 本地调试
+        target: `http://192.168.152.15:23105`, // 本地调试
         // target: `http://8.134.248.231:23105`, // 阿里云服务器
         changeOrigin: true,
         // pathRewrite: {

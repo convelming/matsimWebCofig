@@ -141,6 +141,7 @@ export default {
     this._chart = echarts.init(this.$refs.chart);
   },
   beforeDestroy() {
+    this._chart.dispose();
     this._GeoJSONLayer_road.dispose();
   },
   methods: {
@@ -249,6 +250,7 @@ export default {
           ],
         };
       } catch (error) {
+        console.log(error);
         return {};
       }
     },

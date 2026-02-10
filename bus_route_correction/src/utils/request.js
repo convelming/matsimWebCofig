@@ -110,7 +110,7 @@ service.interceptors.response.use(
           .then(() => {
             isRelogin.show = false;
             store.dispatch("LogOut").then(() => {
-              location.href = `${process.env.VUE_APP_PUBLIC_PATH}/user.html/#/?redirect=${encodeURIComponent(location.href)}`;
+              location.href = `${process.env.VUE_APP_PUBLIC_PATH}user.html/#/?redirect=${encodeURIComponent(location.href)}`;
             });
           })
           .catch(() => {

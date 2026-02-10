@@ -552,12 +552,12 @@ const ptk_list = [
   },
   {
     title: 'Matsim可视化',
-    path: 'http://192.168.60.231:23105/',
+    path: 'http://192.168.60.231:23105/vue/pt_index.html#/',
     icon: new URL('@/assets/images/icon_visualization.svg?url', import.meta.url),
   },
   {
     title: '公交优化',
-    path: 'http://192.168.60.231:23105/pt.html#/',
+    path: 'http://192.168.60.231:23105/vue/pt.html#/',
     icon: new URL('@/assets/images/icon_bus.svg?url', import.meta.url),
   },
   {

@@ -3,7 +3,7 @@
   <div class="home">
     <div class="nav">
       <img src="@/assets/image/home/logo2.svg?url" alt="" class="logo" />
-      <a  href="http://192.168.60.231:23105/pt.html#/" class="icon" target="_blank">
+      <a  href="http://192.168.60.231:23105/vue/pt.html#/" class="icon" target="_blank">
         <img src="@/assets/image/home/菜单.svg?url" alt="" />
       </a>
       <!-- <a class="icon">

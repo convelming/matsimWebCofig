@@ -32,16 +32,18 @@
         <div class="title block">{{ $l("搜索结果") }}</div>
         <el-button type="primary" size="small" @click="handleRefreshLike()" icon="el-icon-refresh-right"></el-button>
       </div>
-      <el-button type="primary" size="small" @click="handleOpenDialog('区域详情', areaParam)">{{ $l("点击查看区域详情") }}</el-button>
+      <el-button type="primary" size="small" @click="handleOpenDialog('区域详情', areaParam, undefined)">{{ $l("点击查看区域详情") }}</el-button>
       <AutoSize class="flex-h">
         <template slot-scope="{ width, height }">
           <el-table class="small" :data="likeList" border :height="height">
             <el-table-column :label="$l('相似区域列表')" prop="name">
-              <el-table-column :label="$l('名称')" prop="m_name"> </el-table-column>
+              <el-table-column :label="$l('名称')" prop="m_name">
+                <div slot-scope="{ row, $index }" :style="{ color: colorBar[$index]?.color }">{{ row.m_name }}</div>
+              </el-table-column>
               <el-table-column :label="$l('相似度')" prop="p_like"> </el-table-column>
               <el-table-column width="50">
                 <template slot-scope="{ row }">
-                  <el-button type="text" size="small" icon="el-icon-view" @click="handleOpenDialog(`相似区域详情：${row.m_name}`, row.param)"></el-button>
+                  <el-button type="text" size="small" icon="el-icon-view" @click="handleOpenDialog(`相似区域详情：${row.m_name}`, row.param, row.center)"></el-button>
                 </template>
               </el-table-column>
             </el-table-column>
@@ -65,7 +67,11 @@
 <script>
 import MySlider from "../component/MySlider.vue";
 import AreaFromItem from "../component/AreaFromItem.vue";
+
+import { PolygonSelectLayer, POLYGON_SELECT_STATE_KEY, POLYGON_SELECT_EVENT } from "../layer/PolygonSelectLayer";
 import { GeoJSONLayer, parserGeoJSON, LINE_STYLE } from "../../GeoJSON/layer/GeoJSONLayer2";
+import { GeoJSONLabelLayer } from "../layer/GeoJSONLabelLayer";
+import { getColorBarByPropertie } from "../../GeoJSON/layer/ColorBar2DUtil.js";
 
 import { CUA_yearAreaList, CUA_downloadGeojson, CUA_searchSimilarCUAArea, CUA_roadGeoJSONByYear } from "@/api/index";
 import { guid, boldToText } from "@/utils/index2";
@@ -96,6 +102,27 @@ const dialogList = [
   { type: "item", label: "文化设施数", key: "文化设施数", start: 0, end: -1, step: 1 },
   { type: "item", label: "政府设施数", key: "政府设施数", start: 0, end: -1, step: 1 },
 ];
+
+const pos = {
+  type: "String",
+  name: "name",
+  map: {
+    区域1: 1,
+    区域2: 2,
+    区域3: 3,
+    区域4: 4,
+    区域5: 5,
+    区域6: 6,
+    区域7: 7,
+    区域8: 8,
+    区域9: 9,
+    区域10: 10,
+  },
+  min: 0,
+  max: 10,
+  values: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+};
+const colorBar = getColorBarByPropertie(pos, { colorList: ["#91cc75", "#fac858", "#ee6666", "#73c0de", "#3ba272", "#fc8452", "#9a60b4", "#ea7ccc", "#fff", "#aaa"] });
 
 export default {
   name: "AreaSreach",
@@ -148,9 +175,14 @@ export default {
       showDialog: false,
       dialogTitle: "",
       dialogDetail: null,
+      colorBar: colorBar,
     };
   },
   created() {
+    this._PolygonSelectLayer = new PolygonSelectLayer({
+      zIndex: 200,
+    });
+    this._GeoJSONLabelLayer_like = new GeoJSONLabelLayer({ zIndex: 10000 });
     this._GeoJSONLayer_road = new GeoJSONLayer({
       lineAutoWidth: 1,
     });
@@ -160,6 +192,8 @@ export default {
   },
   mounted() {},
   beforeDestroy() {
+    this._PolygonSelectLayer.dispose();
+    this._GeoJSONLabelLayer_like.dispose();
     this._GeoJSONLayer_road.dispose();
     this._GeoJSONLayer_like.dispose();
   },
@@ -201,6 +235,7 @@ export default {
       });
     },
     handleInitLike() {
+      this._PolygonSelectLayer.setPath([]);
       this._GeoJSONLayer_like.clearScene();
       this.areaDetail = null;
       this.areaParam = null;
@@ -211,6 +246,7 @@ export default {
     },
     handleGetLike() {
       const row = this.areaDetail;
+      this._PolygonSelectLayer.setPath(JSON.parse(row.area || "[]"));
       if (row.resultJsonPath) {
         // 获取相似区域列表
         CUA_downloadGeojson({
@@ -219,8 +255,9 @@ export default {
           .then((res) => boldToText(res.data))
           .then((res) => parserGeoJSON(res))
           .then((res) => {
-            console.log(res.propertiesLabels);
+            console.log(res);
 
+            const [cx, cy] = res.center;
             const areaParam = JSON.parse(JSON.stringify(dialogList));
             areaParam.forEach((item) => {
               const prop = res.propertiesLabels[item.key];
@@ -239,7 +276,6 @@ export default {
               }
             });
             this.areaParam = areaParam;
-
             this.likeList = res.propertiesList.slice(1).map((v, i) => {
               const index = i + 1;
               const { br, tl } = res.geomList[index];
@@ -266,12 +302,19 @@ export default {
               const item = {
                 m_name: `区域${index}`,
                 p_like: Number(v["相似度"] * 100).toFixed(2) + "%",
-                center: [(tl.x + br.x) / 2, (tl.y + br.y) / 2],
                 param: param,
+
+                center: [(tl.x + br.x) / 2 + cx, (tl.y + br.y) / 2 + cy],
               };
+              item.label = `${item.m_name}-相似度：${item.p_like}`;
               return item;
             });
+            this._GeoJSONLabelLayer_like.setData(this.likeList);
+
+            res.propertiesLabels.name = pos;
             this._GeoJSONLayer_like.setGeoJsonData(res);
+            this._GeoJSONLayer_like.setPolygonValue("name");
+            this._GeoJSONLayer_like.setPolygonColorBar(colorBar);
           });
       } else {
       }
@@ -302,9 +345,10 @@ export default {
         });
       }
     },
-    handleOpenDialog(title, row) {
+    handleOpenDialog(title, param, center) {
       this.dialogTitle = title;
-      this.dialogDetail = row;
+      this.dialogDetail = param;
+      if (this._Map && center) this._Map.setCenter(center);
       this.showDialog = true;
     },
     handleCloseDialog() {
@@ -312,10 +356,14 @@ export default {
     },
     handleEnable() {
       this.handleChangeYear();
+      this._Map.addLayer(this._PolygonSelectLayer);
+      this._Map.addLayer(this._GeoJSONLabelLayer_like);
       this._Map.addLayer(this._GeoJSONLayer_road);
       this._Map.addLayer(this._GeoJSONLayer_like);
     },
     handleDisable() {
+      this._PolygonSelectLayer.removeFromParent();
+      this._GeoJSONLabelLayer_like.removeFromParent();
       this._GeoJSONLayer_road.removeFromParent();
       this._GeoJSONLayer_like.removeFromParent();
       this.handleInitLike();

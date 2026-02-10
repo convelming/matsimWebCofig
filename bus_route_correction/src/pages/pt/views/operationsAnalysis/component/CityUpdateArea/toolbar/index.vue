@@ -29,7 +29,7 @@ export default {
     },
     activeName: {
       type: String,
-      default: "片区承载力分析",
+      default: "研究区域",
     },
   },
   components: {

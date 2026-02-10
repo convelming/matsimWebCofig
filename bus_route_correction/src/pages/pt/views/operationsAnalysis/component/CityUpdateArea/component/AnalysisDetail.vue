@@ -1,17 +1,17 @@
 <!-- Step3Dialog -->
 <template>
-  <div v-if="analysis">
-    <Dialog class="Step3_Dialog" ref="dialog" :title="analysis.name" hideMinimize :visible="s_visible" @close="handleClose" keepRight right="330" top="100" width="450px">
+  <div>
+    <Dialog class="Step3_Dialog" ref="dialog" :title="analysis?.name" hideMinimize :visible="s_visible" @close="handleClose" keepRight right="330" top="100" width="450px">
       <div class="Step3_box" v-loading="loading" element-loading-background="rgb(from var(--color-white) r g b / 0.8)">
         <div class="btn_box">
           <div class="text1 btn_box" style="width: 100%">
             <span>{{ $l("方案结果") }}</span>
-            <el-tag v-if="analysis.status == 0" size="small" effect="dark" type="warning">{{ $l("未生成") }}</el-tag>
-            <el-tag v-if="analysis.status == 1" size="small" effect="dark" type="info">{{ $l("生成中") }}</el-tag>
-            <el-tag v-if="analysis.status == 2" size="small" effect="dark" type="success">{{ $l("已生成") }}</el-tag>
-            <el-tag v-if="analysis.status == 3" size="small" effect="dark" type="danger">{{ $l("生成失败") }}</el-tag>
+            <el-tag v-if="analysis?.status == 0" size="small" effect="dark" type="warning">{{ $l("未生成") }}</el-tag>
+            <el-tag v-if="analysis?.status == 1" size="small" effect="dark" type="info">{{ $l("生成中") }}</el-tag>
+            <el-tag v-if="analysis?.status == 2" size="small" effect="dark" type="success">{{ $l("已生成") }}</el-tag>
+            <el-tag v-if="analysis?.status == 3" size="small" effect="dark" type="danger">{{ $l("生成失败") }}</el-tag>
           </div>
-          <el-button style="width: 60px; flex: none" type="primary" size="small" :disabled="analysis.status != 2" @click="getGetJSON(analysis)">{{ $l("查看") }}</el-button>
+          <el-button style="width: 60px; flex: none" type="primary" size="small" :disabled="analysis?.status != 2" @click="getGetJSON(analysis)" :loading="loadingGeoJSON">{{ $l("查看") }}</el-button>
         </div>
         <div class="btn_box">
           <el-button type="primary" size="small" @click="handleOpenAdjust(analysis)">{{ $l("方案调整") }}</el-button>
@@ -32,7 +32,7 @@
               </el-table-column>
               <el-table-column :label="$l('操作')" width="90">
                 <div slot-scope="{ row, $index }" class="cz_btn">
-                  <el-button type="text" size="small" icon="el-icon-view" :disabled="row.status != 2" @click="getGetJSON(row)"></el-button>
+                  <el-button type="text" size="small" icon="el-icon-view" :disabled="row.status != 2" @click="getGetJSON(row)" :loading="loadingGeoJSON"></el-button>
                   <!-- <el-button type="text" size="small" icon="el-icon-edit" @click="handleOpenAdjust(row)"></el-button> -->
                   <el-button type="text" size="small" icon="el-icon-delete" style="color: var(--color-danger)" @click="handleDeleteAnalysis(row)"></el-button>
                 </div>
@@ -65,13 +65,19 @@
         </div>
       </div>
     </Dialog>
+    <Dialog class="Step3_Chart_Dialog" ref="dialog" hideMinimize :visible.sync="showChart" @close="handleCloseChart" keepRight right="330" top="100" width="450px">
+      <div v-if="showChart" ref="chart" class="chart"></div>
+    </Dialog>
   </div>
 </template>
 
 <script>
+import * as echarts from "@/utils/echarts.utils";
 import AreaFromItem from "./AreaFromItem.vue";
 
 import { GeoJSONLayer, parserGeoJSON } from "../../GeoJSON/layer/GeoJSONLayer2";
+import { getColorBarByPropertie } from "../../GeoJSON/layer/ColorBar2DUtil.js";
+import { MAP_EVENT } from "@/mymap";
 
 import { CUA_downloadGeojson, CUA_planPage, CUA_deletePlan, CUA_addPlan } from "@/api/index";
 import { guid, boldToText } from "@/utils/index2";
@@ -118,12 +124,15 @@ export default {
     },
     analysis: {
       type: Object,
+      default: () => {
+        return {};
+      },
     },
   },
   components: { AreaFromItem },
   computed: {
     s_visible() {
-      return this.visible && !this.showAdjust;
+      return this.visible && !this.showAdjust && !this.showChart;
     },
     _Map() {
       return this.rootVue._Map;
@@ -135,18 +144,11 @@ export default {
         if (this.visible) {
           this.init();
         }
-
-        this.$nextTick(() => {
-          this._interval = setInterval(() => {
-            if (!this._Map) return;
-            clearInterval(this._interval);
-            if (this.visible) {
-              this._Map.addLayer(this._GeoJSONLayer_road);
-            } else {
-              this._GeoJSONLayer_road.removeFromParent();
-            }
-          }, 500);
-        });
+        if (this.visible) {
+          this._Map.addLayer(this._GeoJSONLayer_road);
+        } else {
+          this._GeoJSONLayer_road.removeFromParent();
+        }
       },
     },
     analysis: {
@@ -161,6 +163,7 @@ export default {
   },
   data() {
     return {
+      loadingGeoJSON: false,
       loading: false,
       pageNum: 1,
       pageSize: 10,
@@ -171,17 +174,37 @@ export default {
       showAdjust: false,
       adjustForm: {},
       adjustParam: [],
+
+      showChart: false,
+      chartProp: null,
     };
   },
   created() {
     this._GeoJSONLayer_road = new GeoJSONLayer({
       lineAutoWidth: 1,
+      event: {
+        [MAP_EVENT.HANDLE_PICK_LEFT]: (e) => {
+          console.log(JSON.stringify(this.chartProp));
+          this.chartProp = e.data.prop;
+          this.showChart = true;
+          this.$nextTick(() => {
+            if (!this._chart) this._chart = echarts.init(this.$refs.chart);
+            const option = this.getChartOption();
+            this._chart.setOption(option, true);
+            this._chart.resize();
+          });
+        },
+      },
     });
     if (this.visible) {
       this.init();
     }
   },
-  mounted() {},
+  mounted() {
+    if (this.visible && this._Map) {
+      this._Map.addLayer(this._GeoJSONLayer_road);
+    }
+  },
   beforeDestroy() {
     this._GeoJSONLayer_road.dispose();
   },
@@ -197,15 +220,20 @@ export default {
       this.$emit("close");
     },
     getGetJSON(row) {
+      this.loadingGeoJSON = true;
+      this._GeoJSONLayer_road.clearScene();
       return CUA_downloadGeojson({
         path: row.roadJsonPath,
       })
         .then((res) => boldToText(res.data))
         .then((res) => parserGeoJSON(res))
         .then((res) => {
-          console.log(res);
-
           this._GeoJSONLayer_road.setGeoJsonData(res);
+          this._GeoJSONLayer_road.setLineValue("8_vc");
+          this._GeoJSONLayer_road.setLineColorBar(getColorBarByPropertie(res.propertiesLabels["8_vc"], { toFixed: 3, colorList: ["#67c23a", "#B50404"] }));
+        })
+        .finally(() => {
+          this.loadingGeoJSON = false;
         });
     },
     getAnalysisList() {
@@ -316,6 +344,48 @@ export default {
         })
         .finally(() => loading.close());
     },
+    handleCloseChart() {
+      this._chart?.dispose();
+      this.showChart = false;
+    },
+    getChartOption() {
+      try {
+        return {
+          title: {
+            text: "VC比",
+            left: "center",
+            top: 0,
+          },
+          tooltip: {
+            trigger: "axis",
+          },
+          grid: {
+            top: 40,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            containLabel: true,
+          },
+          xAxis: {
+            type: "category",
+            data: Array.from({ length: 24 }, (_, i) => i + 1),
+          },
+          yAxis: {
+            type: "value",
+          },
+          series: [
+            {
+              data: Array.from({ length: 24 }, (_, i) => Number(this.chartProp[`${i}_vc`] || 0)),
+              type: "line",
+              smooth: true,
+            },
+          ],
+        };
+      } catch (error) {
+        console.log(error);
+        return {};
+      }
+    },
   },
 };
 </script>
@@ -392,5 +462,10 @@ export default {
       }
     }
   }
+}
+
+.chart {
+  width: 100%;
+  height: 300px;
 }
 </style>

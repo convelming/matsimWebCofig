@@ -298,7 +298,7 @@ export default {
     },
     handleOperationsAnalysisToDetail(row) {
       const [database, datasource] = row.name.split("/");
-      const href = `${process.env.VUE_APP_PUBLIC_PATH}/pt.html#/operationsAnalysis/${database}/${datasource}`;
+      const href = `${process.env.VUE_APP_PUBLIC_PATH}pt.html#/operationsAnalysis/${database}/${datasource}`;
       window.open(href, "_blank");
     },
     handleGetDataBaseList() {

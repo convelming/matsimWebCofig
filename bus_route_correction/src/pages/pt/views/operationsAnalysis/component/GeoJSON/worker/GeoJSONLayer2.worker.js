@@ -1,8 +1,8 @@
-importScripts(process.env.BASE_URL + "/static/js/proj4.js");
+importScripts(process.env.VUE_APP_PUBLIC_PATH + "static/js/proj4.js");
 try {
   importScripts(process.env.VUE_APP_BASE_API + "/pt/main2/getJsConfig/config.js");
 } catch (error) {
-  importScripts(process.env.BASE_URL + "/static/js/config.js");
+  importScripts(process.env.VUE_APP_PUBLIC_PATH + "static/js/config.js");
 }
 
 const showLog = false;

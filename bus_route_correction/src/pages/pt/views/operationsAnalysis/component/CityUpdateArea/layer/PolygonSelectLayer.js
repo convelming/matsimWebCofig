@@ -125,6 +125,8 @@ export class PolygonSelectLayer extends Layer {
   }
 
   setPath(path) {
+    this.center = path[0] || [0, 0];
+    this.movePoint = path[0] || [0, 0];
     this.path = path;
     this.update();
   }
@@ -188,8 +190,10 @@ export class PolygonSelectLayer extends Layer {
     this.geometry2.needsUpdate = true;
     this.geometry2.computeBoundingSphere();
 
-    const [x, y] = this.map.WebMercatorToCanvasXY(...this.center);
-    this.mesh1.position.set(x, y, 0);
-    this.mesh2.position.set(x, y, 0);
+    if (this.map) {
+      const [x, y] = this.map.WebMercatorToCanvasXY(...this.center);
+      this.mesh1.position.set(x, y, 0);
+      this.mesh2.position.set(x, y, 0);
+    }
   }
 }

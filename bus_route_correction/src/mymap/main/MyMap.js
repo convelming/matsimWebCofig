@@ -180,15 +180,15 @@ export class MyMap extends EventListener {
   // 比例尺 m:px
   get plottingScale() {
     try {
-      const height = this.cameraHeight
-      const { far, fov } = this.camera
-      const width1 = height / (Math.cos((Math.PI * fov) / 180) * 2) * 2
-      const width2 = this.rootDoc.offsetWidth
-      const scale = width1 / width2
+      // const height = this.cameraHeight
+      // const { far, fov } = this.camera
+      // const width1 = height / (Math.cos((Math.PI * fov) / 180) * 2) * 2
+      // const width2 = this.rootDoc.offsetWidth
+      // const scale = width1 / width2
       // const [x1, y1] = this.WindowXYToCanvasXY(0, 0)
       // const [x2, y2] = this.WindowXYToCanvasXY(0, 30)
       // const scale = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)) / 30
-      return scale
+      return this.cameraHeight / 500
     } catch (error) {
       return 1
     }

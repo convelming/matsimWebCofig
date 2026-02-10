@@ -7,7 +7,7 @@
 
     <a class="button" :href="`http://192.168.60.234:8088/`" target="_blank">OSM 地图样式配置</a>
     <a class="button" :href="`http://192.168.60.234:8081/`" target="_blank">OSM TileServer</a>
-    <a class="button" :href="`http://192.168.60.231:23105/pt.html#/operationsAnalysis/%E5%B9%BF%E5%B7%9E/nscard0920`" target="_blank">matsim 航路自动划设</a>
+    <a class="button" :href="`http://192.168.60.231:23105/vue/pt.html#/operationsAnalysis/%E5%B9%BF%E5%B7%9E/nscard0920`" target="_blank">matsim 航路自动划设</a>
   </div> -->
   <div class="bodyer">
     <div class="title">
@@ -25,7 +25,7 @@
               大屏动态集成了运行容量（航线数、空域分层占比）、环境（实时天气与风向）、流量（各型无人机作业数量、高峰热力图）等核心数据。在三维地理信息底图上，叠加了结构化航路网、禁限飞区与建筑物，实现了无人机实时位置与直播视频流的同屏融合显示。
             </div>
           </a>
-          <a class="item item1_2" target="_blank" href="http://192.168.60.231:23105/pt.html#/operationsAnalysis/%E6%B5%B7%E7%8F%A0/%E6%88%98%E7%95%A5%E8%AF%BE%E9%A2%98demo2" style="background-color: yellowgreen">
+          <a class="item item1_2" target="_blank" href="http://192.168.60.231:23105/vue/pt.html#/operationsAnalysis/%E6%B5%B7%E7%8F%A0/%E6%88%98%E7%95%A5%E8%AF%BE%E9%A2%98demo2" style="background-color: yellowgreen">
             <img class="item_icon" src="./image/数据底座.png" />
             <div class="item_title">海珠战略课题demo</div>
             <div class="item_detail">
@@ -35,7 +35,7 @@
         </div>
         <div class="groud4">
           <div class="groud_title">航线划设</div>
-          <a class="item item1_2" target="_blank" href="http://192.168.60.231:23105/pt.html#/operationsAnalysis/%E5%B9%BF%E5%B7%9E/nscard0920" style="background-color: #f0704b">
+          <a class="item item1_2" target="_blank" href="http://192.168.60.231:23105/vue/pt.html#/operationsAnalysis/%E5%B9%BF%E5%B7%9E/nscard0920" style="background-color: #f0704b">
             <img class="item_icon" src="./image/数据底座.png" />
             <div class="item_title">MATSim 航路自动划设</div>
             <div class="item_detail">以matsim可视化平台为基础，通过导入或设定起降点位置，自动生成满足效率与容量约束的初始航路网络。</div>
