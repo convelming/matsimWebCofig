@@ -256,7 +256,8 @@ export default {
         // minPitch: -90,
       });
       this._Map.cameraControls.enableRotate = true;
-      this._MapLayer = new MapLayer({ tileClass: MAP_LAYER_STYLE[MAP_LAYER_STYLE.length - 1], zIndex: -1 });
+      // this._MapLayer = new MapLayer({ tileClass: MAP_LAYER_STYLE[MAP_LAYER_STYLE.length - 1], zIndex: -1 });
+      this._MapLayer = new MapLayer({ tileClass: MAP_LAYER_STYLE[0], zIndex: -1 });
       this._Map.addLayer(this._MapLayer);
 
       this._LineLayer = new LineLayer({});

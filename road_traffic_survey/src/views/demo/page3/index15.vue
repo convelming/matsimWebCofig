@@ -241,7 +241,8 @@ export default {
         // center: [12598360.73, 2640607.15],
       });
 
-      this._MapLayer = new MapLayer({ tileClass: MAP_LAYER_STYLE[MAP_LAYER_STYLE.length - 1], zIndex: -1 });
+      // this._MapLayer = new MapLayer({ tileClass: MAP_LAYER_STYLE[MAP_LAYER_STYLE.length - 1], zIndex: -1 });
+      this._MapLayer = new MapLayer({ tileClass: MAP_LAYER_STYLE[0], zIndex: -1 });
       this._Map.addLayer(this._MapLayer);
 
       this._TestLayer = new TestLayer({ height: this.height });
