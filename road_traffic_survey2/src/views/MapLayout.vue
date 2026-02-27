@@ -3,19 +3,19 @@
   <div class="MapLayout">
     <div class="header">
       <div class="title">交通数据采集应用平台</div>
-      <MButton class="menu_item" activeClass="active" :to="{ name: 'home' }" type="router">
+      <MButton class="menu_item" activeClass="active" :to="{ name: 'home' }" type="router" :record="false">
         <TabHome class="icon" />
         <span class="text">首页</span>
       </MButton>
-      <MButton class="menu_item" activeClass="active" :to="{ name: 'upload' }" type="router">
+      <MButton class="menu_item" activeClass="active" :to="{ name: 'upload' }" type="router" :record="false">
         <TabUpload class="icon" />
         <span class="text">数据上传</span>
       </MButton>
-      <MButton class="menu_item" activeClass="active" :to="{ name: 'download' }" type="router">
+      <MButton class="menu_item" activeClass="active" :to="{ name: 'download' }" type="router" :record="false">
         <TabDownload class="icon" />
         <span class="text">数据下载</span>
       </MButton>
-      <MButton class="menu_item" path="http://192.168.60.231:23105/vue/feedback.html#/" type="a">
+      <MButton class="menu_item" path="http://192.168.60.231:23105/vue/feedback.html#/" type="a" :record="false">
         <TabFeedback class="icon" />
         <span class="text">问题反馈</span>
       </MButton>
@@ -166,6 +166,7 @@ onUnmounted(() => {
     .menu_list {
     }
     :deep(.menu_item) {
+      cursor: pointer;
       width: 128px;
       height: 60px;
       display: flex;

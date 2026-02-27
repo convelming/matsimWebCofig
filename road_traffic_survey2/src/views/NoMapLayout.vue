@@ -14,16 +14,34 @@
     <div class="header">
       <div class="max_box">
         <div class="menu1">
-          <MButton class="menu_item" activeClass="active" :to="{ name: 'home' }" type="router">
+          <MButton
+            class="menu_item"
+            activeClass="active"
+            :to="{ name: 'home' }"
+            type="router"
+            :record="false"
+          >
             <!-- <img class="icon" src="@/assets/images/tab_home_nor.svg" alt="" /> -->
             <TabHome class="icon" />
             <span class="text">首页</span>
           </MButton>
-          <MButton class="menu_item" activeClass="active" :to="{ name: 'upload' }" type="router">
+          <MButton
+            class="menu_item"
+            activeClass="active"
+            :to="{ name: 'upload' }"
+            type="router"
+            :record="false"
+          >
             <TabUpload class="icon" />
             <span class="text">数据上传</span>
           </MButton>
-          <MButton class="menu_item" activeClass="active" :to="{ name: 'download' }" type="router">
+          <MButton
+            class="menu_item"
+            activeClass="active"
+            :to="{ name: 'download' }"
+            type="router"
+            :record="false"
+          >
             <TabDownload class="icon" />
             <span class="text">数据下载</span>
           </MButton>
@@ -31,6 +49,7 @@
             class="menu_item"
             path="http://192.168.60.231:23105/vue/feedback.html#/"
             activeClass="active"
+            :record="false"
           >
             <TabQuestion class="icon" />
             <span class="text">问题反馈</span>

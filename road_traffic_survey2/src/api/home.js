@@ -91,3 +91,42 @@ export function newsAnnexBatchDownload(ids) {
     method: 'get',
   })
 }
+
+// pdf添加水印
+// POST /pdf/watermark
+// 接口ID：420209794
+// 接口地址：https://app.apifox.com/link/project/3532778/apis/api-420209794
+export function pdfWatermark(data) {
+  return request({
+    url: '/pdf/watermark',
+    method: 'post',
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+    responseType: 'blob',
+    data: data,
+  })
+}
+
+// 点击链接
+// POST /indexHotLink/click
+// 接口ID：420240906
+// 接口地址：https://app.apifox.com/link/project/3532778/apis/api-420240906
+export function indexHotLinkClick(data) {
+  return request({
+    url: '/indexHotLink/click',
+    method: 'post',
+    data: data,
+  })
+}
+
+// 获取热点链接
+// GET /indexHotLink/hotLinks
+// 接口ID：420241272
+// 接口地址：https://app.apifox.com/link/project/3532778/apis/api-420241272
+export function indexHotLinkHotLinks() {
+  return request({
+    url: '/indexHotLink/hotLinks',
+    method: 'get',
+  })
+}

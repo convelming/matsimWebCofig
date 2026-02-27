@@ -75,6 +75,16 @@
       <!-- 平台库 -->
     </div>
     <div class="center">
+      <div class="box2 card">
+        <div class="row">
+          <div class="label">热门功能</div>
+          <div class="value">
+            <template v-for="(v1, i1) in rm_list">
+              <MButton v-bind="v1.params" class="btn" />
+            </template>
+          </div>
+        </div>
+      </div>
       <div class="box1 card">
         <div class="title_box">
           <div class="title">
@@ -299,7 +309,7 @@
 <script setup>
 import AddNews from './News/AddNews.vue'
 import MButton from '@/components/MButton.vue'
-import { newsList, newsDelete } from '@/api/home.js'
+import { newsList, newsDelete, indexHotLinkHotLinks } from '@/api/home.js'
 
 import { Setting, Delete, Edit } from '@element-plus/icons-vue'
 
@@ -315,10 +325,23 @@ import IconDQK from '@/assets/images/Home/icon_diqu.svg'
 
 import IconBQ from '@/assets/images/Home/biaoqian.svg'
 import IconSC from '@/assets/images/Home/update.svg'
+import { onUnmounted } from 'vue'
 
 const VITE_APP_BASE_API = import.meta.env.VITE_APP_BASE_API
 const { proxy } = getCurrentInstance()
 
+/************************ 热门功能 ************************/
+const rm_list = ref([])
+function getRMList() {
+  indexHotLinkHotLinks().then((res) => {
+    res.data.forEach((e) => {
+      e.params = JSON.parse(e.link)
+    })
+    rm_list.value = res.data
+  })
+}
+const rm_timer = setInterval(getRMList, 1000 * 60)
+getRMList()
 /************************ 新闻 ************************/
 const showAddNews = ref(false)
 const editNewsId = ref(-1)
@@ -464,8 +487,8 @@ const mxk_list = [
   {
     title: 'PDF加水印',
     path: '',
-    msg: '请下载exe文件进行使用，若有疑问请联系肖健和',
-    type: '',
+    msg: '',
+    type: 'pdf',
   },
   {
     title: '网站二维码生成器',
@@ -734,6 +757,10 @@ const dqk_list = [
     type: 'message',
   },
 ]
+
+onUnmounted(() => {
+  clearInterval(rm_timer)
+})
 </script>
 
 <style lang="scss" scoped>
@@ -971,6 +998,42 @@ const dqk_list = [
               color: #247ce7;
             }
           }
+        }
+      }
+    }
+
+    .box2 {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      padding: 15px 20px;
+
+      .row {
+        width: 100%;
+        display: flex;
+        gap: 10px;
+        line-height: 20px;
+        .label {
+          font-weight: bold;
+          font-size: 14px;
+          flex-grow: 0;
+          &::before {
+            content: '';
+            display: inline-block;
+            margin-right: 8px;
+            width: 3px;
+            height: 12px;
+            background: #12b385;
+            border-radius: 6px 6px 6px 6px;
+          }
+        }
+        .value {
+          width: 0;
+          flex: 1;
+          display: flex;
+          flex-wrap: wrap;
+          gap: 12px;
         }
       }
     }

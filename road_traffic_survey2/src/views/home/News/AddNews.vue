@@ -242,7 +242,7 @@ function onSubmit() {
       } else {
         proxy.$message.success('修改成功')
       }
-      // handleClose()
+      handleClose()
     })
     .finally(() => {
       submiting.value = false

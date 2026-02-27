@@ -21,6 +21,9 @@
                 :class="{ active: isActive }"
               />
             </template>
+            <template v-if="!v1.children.length">
+              <el-empty description="功能研发中，敬请期待"></el-empty>
+            </template>
             <template v-for="(v2, i2) in v1.children">
               <div class="collapse_item" @click="handleClick(v1, v2)">{{ v2.title }}</div>
             </template>
@@ -44,7 +47,13 @@ import UploadImage from './UploadImage/index.vue'
 import { NetworkLayer } from '@/utils/MapLayer/NetworkLayer'
 
 const showMenu = computed(() => {
-  return !showLinkFlow.value && !showIntersectionFlow.value && !showUploadVideo.value && !showUploadImage.value && true
+  return (
+    !showLinkFlow.value &&
+    !showIntersectionFlow.value &&
+    !showUploadVideo.value &&
+    !showUploadImage.value &&
+    true
+  )
 })
 const showLinkFlow = ref(false)
 const showIntersectionFlow = ref(false)

@@ -7,12 +7,12 @@
     :top="80"
     :left="80"
     width="365px"
-    hideClose
     :visible="showMain"
     @close="handleClose"
   >
     <el-scrollbar class="flex-scrollbar">
-      <div class="UploadVideo_body">
+      <el-empty description="功能研发中，敬请期待"></el-empty>
+      <!-- <div class="UploadVideo_body">
         <img src="@/assets/images/close.svg?url" class="close_btn" @click.stop="handleClose" />
         <div class="title1">请选择上传视频：</div>
 
@@ -52,11 +52,11 @@
             </el-form>
           </el-collapse-item>
         </el-collapse>
-      </div>
+      </div> -->
     </el-scrollbar>
   </MDialog>
 
-  <Sreach v-model:visible="showSreach" />
+  <!-- <Sreach v-model:visible="showSreach" />
   <Upload v-model:visible="showUpload" />
 
   <VideoPreview
@@ -64,7 +64,7 @@
     :videoData="videoData"
     url-key="b_url"
     @delete="handleDeleteImage"
-  />
+  /> -->
 </template>
 
 <script setup>

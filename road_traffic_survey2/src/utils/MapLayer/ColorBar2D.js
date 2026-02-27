@@ -70,7 +70,7 @@ export class ColorBar2D {
         }
       }
     }
-    console.log(this.list, this.canvas.toDataURL('image/png'))
+    // console.log(this.list, this.canvas.toDataURL('image/png'))
     this.texture.needsUpdate = true
   }
 }
