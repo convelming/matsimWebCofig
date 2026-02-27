@@ -10,6 +10,11 @@ const routes = [
     component: () => import(/* webpackChunkName: "pt_home" */ "./views/index.vue"),
   },
   {
+    path: "/index2",
+    name: "index2",
+    component: () => import(/* webpackChunkName: "pt_home" */ "./views/index2.vue"),
+  },
+  {
     // 线路方案调整
     path: "/planAdjustment/:database/:datasource",
     name: "planAdjustment",

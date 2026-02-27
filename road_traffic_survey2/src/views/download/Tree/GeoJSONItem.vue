@@ -24,10 +24,10 @@
       <div class="GeoJSONParams_body">
         <el-collapse class="collapse" v-model="activeNames" expand-icon-position="left">
           <!-- ******************************* PointSetting ******************************* -->
-          <el-collapse-item title="PointSetting" name="PointSetting" v-if="hasPoint">
+          <el-collapse-item title="点样式" name="PointSetting" v-if="hasPoint">
             <template #title>
               <el-checkbox v-model="geojsonParams.showPoints" @click.stop></el-checkbox>
-              <span>PointSetting</span>
+              <span>点样式</span>
             </template>
 
             <el-form
@@ -37,21 +37,34 @@
               :inline="false"
               label-position="left"
             >
-              <el-form-item label="Opacity" prop="pointOpacity">
+              <el-form-item label="透明度" prop="pointOpacity">
                 <el-slider v-model="geojsonParams.pointOpacity" :min="0" :max="1" :step="0.1" />
               </el-form-item>
-              <el-form-item label="Size" prop="pointAutoSize">
+              <el-form-item label="点大小" prop="pointAutoSize">
                 <el-input-number v-model="geojsonParams.pointAutoSize" :min="0" :step="0.1" />
               </el-form-item>
               <el-divider content-position="left"></el-divider>
-              <el-form-item label="ColorType" prop="pointColorType">
+              <el-form-item label="图例">
+                <el-switch
+                  v-model="showPointVM"
+                  :active-value="true"
+                  :inactive-value="false"
+                  @change=""
+                >
+                </el-switch>
+              </el-form-item>
+              <el-form-item label="图例标题">
+                <el-input v-model="titlePointVM"></el-input>
+              </el-form-item>
+              <el-divider content-position="left"></el-divider>
+              <el-form-item label="颜色渲染模式" prop="pointColorType">
                 <el-radio-group v-model="geojsonParams.pointColorType">
                   <el-radio-button label="color">单一颜色</el-radio-button>
                   <el-radio-button label="colorBar">分区颜色</el-radio-button>
                 </el-radio-group>
               </el-form-item>
               <el-form-item
-                label="Color"
+                label="颜色"
                 prop="pointColor"
                 v-if="geojsonParams.pointColorType === 'color'"
               >
@@ -60,7 +73,7 @@
               </el-form-item>
               <template v-if="geojsonParams.pointColorType === 'colorBar'">
                 <!-- <el-form-item label="Icon" prop="pointIcon"></el-form-item> -->
-                <el-form-item label="Value" prop="pointValue">
+                <el-form-item label="分区属性" prop="pointValue">
                   <el-select
                     v-model="geojsonParams.pointValue"
                     placeholder="请选择"
@@ -70,19 +83,19 @@
                     <el-option
                       v-for="(item, value) in properties"
                       :key="value"
-                      :label="item.name"
+                      :label="`${item.name}(${PType[item.type]})`"
                       :value="value"
                     />
                   </el-select>
                 </el-form-item>
                 <template v-if="pointColorBarParams.type == 'Number'">
-                  <el-form-item label="分区模式">
+                  <el-form-item label="自动分区模式">
                     <el-select style="width: 150px" v-model="pointColorBarParams.model" @change="">
                       <el-option label="Equal Count" value="count" />
                       <el-option label="Equal Interval" value="interval" />
                     </el-select>
                   </el-form-item>
-                  <el-form-item label="分区数">
+                  <el-form-item label="自动分区数">
                     <el-input-number
                       v-model="pointColorBarParams.modelClass"
                       :min="1"
@@ -93,7 +106,7 @@
                   <el-form-item label="">
                     <div class="color_bar">
                       <el-button type="primary" @click="handleAutoGetColorBar('point')"
-                        >自动生成</el-button
+                        >自动生成颜色分区</el-button
                       >
                       <el-scrollbar style="width: 100%" height="220px">
                         <div class="color_bar">
@@ -140,7 +153,8 @@
                         >
                           <el-checkbox v-model="row.use" />
                           <el-color-picker v-model="row.color" />
-                          <el-input class="label" v-model="row.label"></el-input>
+                          <div class="label">{{ row.label }}</div>
+                          <!-- <el-input class="label" v-model="row.label" title="图例名称"></el-input> -->
                         </div>
                       </div>
                     </el-scrollbar>
@@ -150,10 +164,10 @@
             </el-form>
           </el-collapse-item>
           <!-- ******************************* LineSetting ******************************* -->
-          <el-collapse-item title="LineSetting" name="LineSetting" v-if="hasLine">
+          <el-collapse-item title="线样式" name="LineSetting" v-if="hasLine">
             <template #title>
               <el-checkbox v-model="geojsonParams.showLines" @click.stop></el-checkbox>
-              <span>LineSetting</span>
+              <span>线样式</span>
             </template>
 
             <el-form
@@ -163,13 +177,13 @@
               :inline="false"
               label-position="left"
             >
-              <el-form-item label="Opacity" prop="lineOpacity">
+              <el-form-item label="透明度" prop="lineOpacity">
                 <el-slider v-model="geojsonParams.lineOpacity" :min="0" :max="1" :step="0.1" />
               </el-form-item>
-              <el-form-item label="Width" prop="lineAutoWidth">
+              <el-form-item label="线宽" prop="lineAutoWidth">
                 <el-input-number v-model="geojsonParams.lineAutoWidth" :min="0" :step="0.1" />
               </el-form-item>
-              <el-form-item label="Offset" prop="lineOffset">
+              <el-form-item label="线偏移" prop="lineOffset">
                 <el-input-number v-model="geojsonParams.lineOffset" :min="0" :step="0.1" />
               </el-form-item>
               <!-- <el-form-item label="WidthStyle" prop="lineWidthStyle">
@@ -185,23 +199,35 @@
               <el-form-item label="Animation" prop="lineAnimation">
                 <el-input-number v-model="geojsonParams.lineAnimation" :min="0" :step="0.1" />
               </el-form-item> -->
-              <el-form-item label="Style" prop="lineStyle">
+              <el-form-item label="显示样式" prop="lineStyle">
                 <el-radio-group v-model="geojsonParams.lineStyle">
                   <el-radio-button :label="LINE_STYLE.NONE">不显示</el-radio-button>
                   <el-radio-button :label="LINE_STYLE.SOLID">实线</el-radio-button>
                   <el-radio-button :label="LINE_STYLE.DASHED">虚线</el-radio-button>
                 </el-radio-group>
               </el-form-item>
-
               <el-divider content-position="left"></el-divider>
-              <el-form-item label="ColorType" prop="lineColorType">
+              <el-form-item label="图例">
+                <el-switch
+                  v-model="showLineVM"
+                  :active-value="true"
+                  :inactive-value="false"
+                  @change=""
+                >
+                </el-switch>
+              </el-form-item>
+              <el-form-item label="图例标题">
+                <el-input v-model="titleLineVM"></el-input>
+              </el-form-item>
+              <el-divider content-position="left"></el-divider>
+              <el-form-item label="颜色渲染模式" prop="lineColorType">
                 <el-radio-group v-model="geojsonParams.lineColorType">
                   <el-radio-button label="color">单一颜色</el-radio-button>
                   <el-radio-button label="colorBar">分区颜色</el-radio-button>
                 </el-radio-group>
               </el-form-item>
               <el-form-item
-                label="Color"
+                label="颜色"
                 prop="lineColor"
                 v-if="geojsonParams.lineColorType === 'color'"
               >
@@ -209,7 +235,7 @@
                 <span style="margin-left: 10px">{{ geojsonParams.lineColor }}</span>
               </el-form-item>
               <template v-if="geojsonParams.lineColorType === 'colorBar'">
-                <el-form-item label="Value" prop="lineValue">
+                <el-form-item label="分区属性" prop="lineValue">
                   <el-select
                     v-model="geojsonParams.lineValue"
                     placeholder="请选择"
@@ -219,19 +245,19 @@
                     <el-option
                       v-for="(item, value) in properties"
                       :key="value"
-                      :label="item.name"
+                      :label="`${item.name}(${PType[item.type]})`"
                       :value="value"
                     />
                   </el-select>
                 </el-form-item>
                 <template v-if="lineColorBarParams.type == 'Number'">
-                  <el-form-item label="分区模式">
+                  <el-form-item label="自动分区模式">
                     <el-select style="width: 150px" v-model="lineColorBarParams.model" @change="">
                       <el-option label="Equal Count" value="count" />
                       <el-option label="Equal Interval" value="interval" />
                     </el-select>
                   </el-form-item>
-                  <el-form-item label="分区数">
+                  <el-form-item label="自动分区数">
                     <el-input-number
                       v-model="lineColorBarParams.modelClass"
                       :min="1"
@@ -242,7 +268,7 @@
                   <el-form-item label="">
                     <div class="color_bar">
                       <el-button type="primary" @click="handleAutoGetColorBar('line')"
-                        >自动生成</el-button
+                        >自动生成颜色分区</el-button
                       >
                       <el-scrollbar style="width: 100%" height="220px">
                         <div class="color_bar">
@@ -289,7 +315,8 @@
                         >
                           <el-checkbox v-model="row.use" />
                           <el-color-picker v-model="row.color" />
-                          <el-input class="label" v-model="row.label"></el-input>
+                          <div class="label">{{ row.label }}</div>
+                          <!-- <el-input class="label" v-model="row.label" title="图例名称"></el-input> -->
                         </div>
                       </div>
                     </el-scrollbar>
@@ -299,10 +326,10 @@
             </el-form>
           </el-collapse-item>
           <!-- ******************************* PolygonSetting ******************************* -->
-          <el-collapse-item title="PolygonSetting" name="PolygonSetting" v-if="hasPolygon">
+          <el-collapse-item title="面样式" name="PolygonSetting" v-if="hasPolygon">
             <template #title>
               <el-checkbox v-model="geojsonParams.showPolygons" @click.stop></el-checkbox>
-              <span>PolygonSetting</span>
+              <span>面样式</span>
             </template>
 
             <el-form
@@ -312,18 +339,18 @@
               :inline="false"
               label-position="left"
             >
-              <el-form-item label="Opacity" prop="polygonOpacity">
+              <el-form-item label="透明度" prop="polygonOpacity">
                 <el-slider v-model="geojsonParams.polygonOpacity" :min="0" :max="1" :step="0.1" />
               </el-form-item>
               <el-divider content-position="left"></el-divider>
-              <el-form-item label="BorderStyle" prop="polygonBorderStyle">
+              <el-form-item label="边框样式" prop="polygonBorderStyle">
                 <el-radio-group v-model="geojsonParams.polygonBorderStyle">
                   <el-radio-button :label="LINE_STYLE.NONE">不显示</el-radio-button>
                   <el-radio-button :label="LINE_STYLE.SOLID">实线</el-radio-button>
                   <el-radio-button :label="LINE_STYLE.DASHED">虚线</el-radio-button>
                 </el-radio-group>
               </el-form-item>
-              <el-form-item label="BorderOpacity" prop="polygonBorderOpacity">
+              <el-form-item label="边框透明度" prop="polygonBorderOpacity">
                 <el-slider
                   v-model="geojsonParams.polygonBorderOpacity"
                   :min="0"
@@ -331,7 +358,7 @@
                   :step="0.1"
                 />
               </el-form-item>
-              <el-form-item label="BorderWidth" prop="polygonBorderAutoWidth">
+              <el-form-item label="边框宽度" prop="polygonBorderAutoWidth">
                 <el-slider
                   v-model="geojsonParams.polygonBorderAutoWidth"
                   :min="0"
@@ -339,9 +366,22 @@
                   :step="0.1"
                 />
               </el-form-item>
-              <el-form-item label="BorderColor" prop="polygonBorderColor">
+              <el-form-item label="边框颜色" prop="polygonBorderColor">
                 <el-color-picker v-model="geojsonParams.polygonBorderColor" />
                 <span style="margin-left: 10px">{{ geojsonParams.polygonBorderColor }}</span>
+              </el-form-item>
+              <el-divider content-position="left"></el-divider>
+              <el-form-item label="图例">
+                <el-switch
+                  v-model="showPolygonVM"
+                  :active-value="true"
+                  :inactive-value="false"
+                  @change=""
+                >
+                </el-switch>
+              </el-form-item>
+              <el-form-item label="图例标题">
+                <el-input v-model="titlePolygonVM"></el-input>
               </el-form-item>
               <el-divider content-position="left"></el-divider>
               <!-- <el-form-item label="Value3D" prop="polygonValue3D">
@@ -361,14 +401,14 @@
               </el-form-item>
               <el-form-item label="Scale3D" prop="polygonScale3D"></el-form-item>
               <el-divider content-position="left"></el-divider> -->
-              <el-form-item label="ColorType" prop="polygonColorType">
+              <el-form-item label="颜色渲染模式" prop="polygonColorType">
                 <el-radio-group v-model="geojsonParams.polygonColorType">
                   <el-radio-button label="color">单一颜色</el-radio-button>
                   <el-radio-button label="colorBar">分区颜色</el-radio-button>
                 </el-radio-group>
               </el-form-item>
               <el-form-item
-                label="Color"
+                label="颜色"
                 prop="polygonColor"
                 v-if="geojsonParams.polygonColorType === 'color'"
               >
@@ -377,7 +417,7 @@
               </el-form-item>
               <template v-if="geojsonParams.polygonColorType === 'colorBar'">
                 <!-- <el-form-item label="Icon" prop="polygonIcon"></el-form-item> -->
-                <el-form-item label="Value" prop="polygonValue">
+                <el-form-item label="分区属性" prop="polygonValue">
                   <el-select
                     v-model="geojsonParams.polygonValue"
                     placeholder="请选择"
@@ -387,13 +427,13 @@
                     <el-option
                       v-for="(item, value) in properties"
                       :key="value"
-                      :label="item.name"
+                      :label="`${item.name}(${PType[item.type]})`"
                       :value="value"
                     />
                   </el-select>
                 </el-form-item>
                 <template v-if="polygonColorBarParams.type == 'Number'">
-                  <el-form-item label="分区模式">
+                  <el-form-item label="自动分区模式">
                     <el-select
                       style="width: 150px"
                       v-model="polygonColorBarParams.model"
@@ -403,7 +443,7 @@
                       <el-option label="Equal Interval" value="interval" />
                     </el-select>
                   </el-form-item>
-                  <el-form-item label="分区数">
+                  <el-form-item label="自动分区数">
                     <el-input-number
                       v-model="polygonColorBarParams.modelClass"
                       :min="1"
@@ -414,7 +454,7 @@
                   <el-form-item label="">
                     <div class="color_bar">
                       <el-button type="primary" @click="handleAutoGetColorBar('polygon')"
-                        >自动生成</el-button
+                        >自动生成颜色分区</el-button
                       >
                       <el-scrollbar style="width: 100%" height="220px">
                         <div class="color_bar">
@@ -461,7 +501,8 @@
                         >
                           <el-checkbox v-model="row.use" />
                           <el-color-picker v-model="row.color" />
-                          <el-input class="label" v-model="row.label"></el-input>
+                          <div class="label">{{ row.label }}</div>
+                          <!-- <el-input class="label" v-model="row.label" title="图例名称"></el-input> -->
                         </div>
                       </div>
                     </el-scrollbar>
@@ -474,13 +515,34 @@
       </div>
     </el-scrollbar>
     <div class="GeoJSONParams_footer">
+      <el-button @click="handleResetConfig">重置</el-button>
       <el-button @click="handleImportConfig">加载配置</el-button>
-      <el-button type="primary" @click="handleExportConfig">保存配置</el-button>
+      <el-button type="primary" @click="handleExportConfig">下载配置文件</el-button>
     </div>
   </MDialog>
+
+  <GeoJSONVM
+    v-model:visible="showPointVM"
+    v-model:title="titlePointVM"
+    :list="geojsonParams.pointColorBar"
+    :type="pointColorBarParams.type"
+  />
+  <GeoJSONVM
+    v-model:visible="showLineVM"
+    :title="titleLineVM"
+    :list="geojsonParams.lineColorBar"
+    :type="lineColorBarParams.type"
+  />
+  <GeoJSONVM
+    v-model:visible="showPolygonVM"
+    v-model:title="titlePolygonVM"
+    :list="geojsonParams.polygonColorBar"
+    :type="polygonColorBarParams.type"
+  />
 </template>
 
 <script setup name="GeoJSONItem">
+import GeoJSONVM from './GeoJSONVM.vue'
 import { initCheck } from './mixins'
 import { Setting, Download, Loading, Delete, Plus } from '@element-plus/icons-vue'
 import {
@@ -494,7 +556,13 @@ import { getColorBarByPropertie } from '@/utils/MapLayer/ColorBar2DUtil'
 import { injectSync, addWatch, selectFile, fileToString, stringToFile } from '@/utils/index'
 
 import { saveAs } from 'file-saver'
+import { toRaw } from 'vue'
 
+const NumberColorBarKey = '_self_Number_self_'
+const PType = {
+  Number: '数值',
+  String: '类别',
+}
 const { proxy } = getCurrentInstance()
 const emit = defineEmits(['check-change'])
 const props = defineProps({
@@ -537,6 +605,16 @@ const properties = ref([])
 const pointColorBarParams = ref({})
 const lineColorBarParams = ref({})
 const polygonColorBarParams = ref({})
+const showPointVM = ref(false)
+const titlePointVM = ref('')
+const showLineVM = ref(false)
+const titleLineVM = ref('')
+const showPolygonVM = ref(false)
+const titlePolygonVM = ref('')
+
+let pointColorBarMap = {}
+let lineColorBarMap = {}
+let polygonColorBarMap = {}
 
 const watchShowDialog = addWatch(showDialog, (val) => {
   if (val) showGeoJSONParams.value++
@@ -549,111 +627,6 @@ addWatch(
   },
   {
     deep: true,
-  },
-)
-addWatch(
-  () => geojsonParams.value.pointValue,
-  () => {
-    try {
-      const data = properties.value[geojsonParams.value.pointValue]
-      if (data.type == 'Number') {
-        pointColorBarParams.value = {
-          type: 'Number',
-          model: 'count', // count interval
-          modelClass: 5,
-          labelRule: undefined, // null || undefined 使用`${min} ~ ${max}` en 使用字母顺序
-          toFixed: 2,
-          colorList: ['#FEE0D2', '#B50404'],
-        }
-      } else if (data.type == 'String') {
-        pointColorBarParams.value = {
-          type: 'String',
-          colorList: [
-            '#91cc75',
-            '#fac858',
-            '#ee6666',
-            '#73c0de',
-            '#3ba272',
-            '#fc8452',
-            '#9a60b4',
-            '#ea7ccc',
-          ],
-        }
-      }
-      geojsonParams.value.pointColorBar = getColorBarByPropertie(data, pointColorBarParams.value)
-    } catch (error) {
-      pointColorBarParams.value = {}
-    }
-  },
-)
-addWatch(
-  () => geojsonParams.value.lineValue,
-  () => {
-    try {
-      const data = properties.value[geojsonParams.value.lineValue]
-      if (data.type == 'Number') {
-        lineColorBarParams.value = {
-          type: 'Number',
-          model: 'count', // count interval
-          modelClass: 5,
-          labelRule: undefined, // null || undefined 使用`${min} ~ ${max}` en 使用字母顺序
-          toFixed: 2,
-          colorList: ['#FEE0D2', '#B50404'],
-        }
-      } else if (data.type == 'String') {
-        lineColorBarParams.value = {
-          type: 'String',
-          colorList: [
-            '#91cc75',
-            '#fac858',
-            '#ee6666',
-            '#73c0de',
-            '#3ba272',
-            '#fc8452',
-            '#9a60b4',
-            '#ea7ccc',
-          ],
-        }
-      }
-      geojsonParams.value.lineColorBar = getColorBarByPropertie(data, lineColorBarParams.value)
-    } catch (error) {
-      lineColorBarParams.value = {}
-    }
-  },
-)
-addWatch(
-  () => geojsonParams.value.polygonValue,
-  () => {
-    try {
-      const data = properties.value[geojsonParams.value.polygonValue]
-      if (data.type == 'Number') {
-        polygonColorBarParams.value = {
-          type: 'Number',
-          model: 'count', // count interval
-          modelClass: 5,
-          labelRule: undefined, // null || undefined 使用`${min} ~ ${max}` en 使用字母顺序
-          toFixed: 2,
-          colorList: ['#FEE0D2', '#B50404'],
-        }
-      } else if (data.type == 'String') {
-        polygonColorBarParams.value = {
-          type: 'String',
-          colorList: [
-            '#91cc75',
-            '#fac858',
-            '#ee6666',
-            '#73c0de',
-            '#3ba272',
-            '#fc8452',
-            '#9a60b4',
-            '#ea7ccc',
-          ],
-        }
-      }
-      handleAutoGetColorBar('polygon')
-    } catch (error) {
-      polygonColorBarParams.value = {}
-    }
   },
 )
 
@@ -677,56 +650,169 @@ function handleDownload() {
   document.body.removeChild(el)
 }
 
+function handleChangePointValue(val, old) {
+  try {
+    const oldData = properties.value[old]
+    if (oldData && oldData.type == 'Number') {
+      pointColorBarMap[NumberColorBarKey] = toRaw(geojsonParams.value.pointColorBar)
+    } else if (oldData && oldData.type == 'Number') {
+      pointColorBarMap[oldData.name] = toRaw(geojsonParams.value.pointColorBar)
+    }
+
+    const data = properties.value[val]
+    if (data && data.type == 'Number') {
+      pointColorBarParams.value = {
+        type: 'Number',
+        model: 'count', // count interval
+        modelClass: 5,
+        labelRule: undefined, // null || undefined 使用`${min} ~ ${max}` en 使用字母顺序
+        toFixed: 2,
+        colorList: ['#FEE0D2', '#B50404'],
+      }
+      geojsonParams.value.pointColorBar =
+        pointColorBarMap[NumberColorBarKey] ||
+        getColorBarByPropertie(data, pointColorBarParams.value)
+    } else if (data && data.type == 'String') {
+      pointColorBarParams.value = {
+        type: 'String',
+        colorList: [
+          '#91cc75',
+          '#fac858',
+          '#ee6666',
+          '#73c0de',
+          '#3ba272',
+          '#fc8452',
+          '#9a60b4',
+          '#ea7ccc',
+        ],
+      }
+      geojsonParams.value.pointColorBar =
+        pointColorBarMap[data.name] || getColorBarByPropertie(data, pointColorBarParams.value)
+    }
+  } catch (error) {
+    pointColorBarParams.value = {}
+  }
+}
+function handleChangeLineValue(val, old) {
+  try {
+    const oldData = properties.value[old]
+    if (oldData && oldData.type == 'Number') {
+      lineColorBarMap[NumberColorBarKey] = toRaw(geojsonParams.value.lineColorBar)
+    } else if (oldData && oldData.type == 'Number') {
+      lineColorBarMap[oldData.name] = toRaw(geojsonParams.value.lineColorBar)
+    }
+
+    const data = properties.value[val]
+    if (data && data.type == 'Number') {
+      lineColorBarParams.value = {
+        type: 'Number',
+        model: 'count', // count interval
+        modelClass: 5,
+        labelRule: undefined, // null || undefined 使用`${min} ~ ${max}` en 使用字母顺序
+        toFixed: 2,
+        colorList: ['#FEE0D2', '#B50404'],
+      }
+      geojsonParams.value.lineColorBar =
+        lineColorBarMap[NumberColorBarKey] || getColorBarByPropertie(data, lineColorBarParams.value)
+    } else if (data && data.type == 'String') {
+      lineColorBarParams.value = {
+        type: 'String',
+        colorList: [
+          '#91cc75',
+          '#fac858',
+          '#ee6666',
+          '#73c0de',
+          '#3ba272',
+          '#fc8452',
+          '#9a60b4',
+          '#ea7ccc',
+        ],
+      }
+      geojsonParams.value.lineColorBar =
+        lineColorBarMap[data.name] || getColorBarByPropertie(data, lineColorBarParams.value)
+    }
+  } catch (error) {
+    lineColorBarParams.value = {}
+  }
+}
+function handleChangePolygonValue(val, old) {
+  try {
+    const oldData = properties.value[old]
+    if (oldData && oldData.type == 'Number') {
+      polygonColorBarMap[NumberColorBarKey] = toRaw(geojsonParams.value.polygonColorBar)
+    } else if (oldData && oldData.type == 'Number') {
+      polygonColorBarMap[oldData.name] = toRaw(geojsonParams.value.polygonColorBar)
+    }
+
+    const data = properties.value[val]
+    if (data && data.type == 'Number') {
+      polygonColorBarParams.value = {
+        type: 'Number',
+        model: 'count', // count interval
+        modelClass: 5,
+        labelRule: undefined, // null || undefined 使用`${min} ~ ${max}` en 使用字母顺序
+        toFixed: 2,
+        colorList: ['#FEE0D2', '#B50404'],
+      }
+      geojsonParams.value.polygonColorBar =
+        polygonColorBarMap[NumberColorBarKey] ||
+        getColorBarByPropertie(data, polygonColorBarParams.value)
+    } else if (data && data.type == 'String') {
+      polygonColorBarParams.value = {
+        type: 'String',
+        colorList: [
+          '#91cc75',
+          '#fac858',
+          '#ee6666',
+          '#73c0de',
+          '#3ba272',
+          '#fc8452',
+          '#9a60b4',
+          '#ea7ccc',
+        ],
+      }
+      geojsonParams.value.polygonColorBar =
+        polygonColorBarMap[data.name] || getColorBarByPropertie(data, polygonColorBarParams.value)
+    }
+  } catch (error) {
+    polygonColorBarParams.value = {}
+  }
+}
+
 async function loadData() {
   if (loading.value) return
   loading.value = true
-  fetch(props.path)
-    .then((res) => res.text())
-    .then((str) => parserGeoJSON(str))
-    .then((json) => {
-      hasPoint.value = json.pointArray.length > 0
-      hasLine.value = json.lineArray.length > 0
-      hasPolygon.value = json.polygonArray.length > 0
-      properties.value = json.propertiesLabels
-      console.log(json)
 
-      _GeoJSONLayer.setGeoJsonData(json)
-      loaded.value = true
-      loading.value = false
-    })
-    .catch((error) => {
-      console.log(error)
-      loaded.value = false
-      loading.value = false
-    })
-  fetch(props.config)
-    .then((res) => res.json())
-    .then((configJson) => {
-      if (configJson.geojsonParams) geojsonParams.value = configJson.geojsonParams
-      if (configJson.pointColorBarParams) pointColorBarParams.value = configJson.pointColorBarParams
-      if (configJson.lineColorBarParams) lineColorBarParams.value = configJson.lineColorBarParams
-      if (configJson.polygonColorBarParams)
-        polygonColorBarParams.value = configJson.polygonColorBarParams
-    })
+  Promise.all([
+    fetch(props.path)
+      .then((res) => res.text())
+      .then((str) => parserGeoJSON(str, { noGeomList: true }))
+      .then((json) => {
+        hasPoint.value = json.pointArray.length > 0
+        hasLine.value = json.lineArray.length > 0
+        hasPolygon.value = json.polygonArray.length > 0
+        properties.value = json.propertiesLabels
+        _GeoJSONLayer.setGeoJsonData(json)
+        loaded.value = true
+        loading.value = false
+      })
+      .catch((error) => {
+        console.log(error)
+        loaded.value = false
+        loading.value = false
+      }),
 
-  // try {
-  //   const res = await fetch(props.path)
-  //   const data = await res.text()
-  //   const json = await parserGeoJSON(data)
-  //   hasPoint.value = json.pointArray.length > 0
-  //   hasLine.value = json.lineArray.length > 0
-  //   hasPolygon.value = json.polygonArray.length > 0
-  //   properties.value = json.propertiesLabels
-  //   console.log(json)
-
-  //   _GeoJSONLayer.setGeoJsonData(json)
-  //   loaded.value = true
-  //   loading.value = false
-  // } catch (error) {
-  //   console.log(error)
-  //   loaded.value = false
-  //   loading.value = false
-  // }
+    fetch(props.config)
+      .then((res) => res.json())
+      .then(handleSetConfig)
+      .catch((error) => {
+        console.log(error)
+      }),
+  ]).finally(() => {
+    addWatch(() => geojsonParams.value.pointValue, handleChangePointValue)
+    addWatch(() => geojsonParams.value.lineValue, handleChangeLineValue)
+    addWatch(() => geojsonParams.value.polygonValue, handleChangePolygonValue)
+  })
 }
 function handleAutoGetColorBar(key) {
   try {
@@ -850,21 +936,37 @@ function handleAddStringColorBar(key) {
 function handleImportConfig() {
   selectFile()
     .then((file) => fileToString(file))
-    .then((configJsonStr) => {
-      const configJson = JSON.parse(configJsonStr)
-      if (configJson.geojsonParams) geojsonParams.value = configJson.geojsonParams
-      if (configJson.pointColorBarParams) pointColorBarParams.value = configJson.pointColorBarParams
-      if (configJson.lineColorBarParams) lineColorBarParams.value = configJson.lineColorBarParams
-      if (configJson.polygonColorBarParams)
-        polygonColorBarParams.value = configJson.polygonColorBarParams
-    })
+    .then((configJsonStr) => JSON.parse(configJsonStr))
+    .then(handleSetConfig)
 }
 function handleExportConfig() {
+  const pointData = properties.value[geojsonParams.value.pointValue]
+  if (pointData && pointData.type == 'Number') {
+    pointColorBarMap[NumberColorBarKey] = toRaw(geojsonParams.value.pointColorBar)
+  } else if (pointData && pointData.type == 'Number') {
+    pointColorBarMap[pointData.name] = toRaw(geojsonParams.value.pointColorBar)
+  }
+  const lineData = properties.value[geojsonParams.value.lineValue]
+  if (lineData && lineData.type == 'Number') {
+    lineColorBarMap[NumberColorBarKey] = toRaw(geojsonParams.value.lineColorBar)
+  } else if (lineData && lineData.type == 'Number') {
+    lineColorBarMap[lineData.name] = toRaw(geojsonParams.value.lineColorBar)
+  }
+  const polygonData = properties.value[geojsonParams.value.polygonValue]
+  if (polygonData && polygonData.type == 'Number') {
+    polygonColorBarMap[NumberColorBarKey] = toRaw(geojsonParams.value.polygonColorBar)
+  } else if (polygonData && polygonData.type == 'Number') {
+    polygonColorBarMap[polygonData.name] = toRaw(geojsonParams.value.polygonColorBar)
+  }
+
   const config = {
     geojsonParams: geojsonParams.value,
     pointColorBarParams: pointColorBarParams.value,
     lineColorBarParams: lineColorBarParams.value,
     polygonColorBarParams: polygonColorBarParams.value,
+    pointColorBarMap: pointColorBarMap,
+    lineColorBarMap: lineColorBarMap,
+    polygonColorBarMap: polygonColorBarMap,
   }
   const blob = new Blob([JSON.stringify(config)], { type: 'application/json' })
   const link = document.createElement('a')
@@ -874,6 +976,34 @@ function handleExportConfig() {
   link.download = `${fileName}.config.json`
   link.click()
   URL.revokeObjectURL(link.href)
+}
+
+function handleResetConfig() {
+  fetch(props.config)
+    .then((res) => res.json())
+    .then(handleSetConfig)
+    .catch((error) => {
+      geojsonParams.value = {
+        ...getGeoJSONLayerParams(),
+        // ******************** 点 ******************** //
+        pointColorType: 'color',
+        // ******************** 线 ******************** //
+        lineColorType: 'color',
+        // ******************** 面 ******************** //
+        polygonColorType: 'color',
+      }
+    })
+}
+
+function handleSetConfig(configJson) {
+  if (configJson.geojsonParams) geojsonParams.value = configJson.geojsonParams
+  if (configJson.pointColorBarParams) pointColorBarParams.value = configJson.pointColorBarParams
+  if (configJson.lineColorBarParams) lineColorBarParams.value = configJson.lineColorBarParams
+  if (configJson.polygonColorBarParams)
+    polygonColorBarParams.value = configJson.polygonColorBarParams
+  if (configJson.pointColorBarMap) pointColorBarMap = configJson.pointColorBarMap
+  if (configJson.lineColorBarMap) lineColorBarMap = configJson.lineColorBarMap
+  if (configJson.polygonColorBarMap) polygonColorBarMap = configJson.polygonColorBarMap
 }
 
 injectSync('MapRef').then((map) => {
@@ -921,9 +1051,9 @@ defineExpose({
   }
 }
 .GeoJSONParams_footer {
-  padding: 0 20px 20px 20px;
+  padding: 10px 20px 20px 20px;
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
   align-items: center;
 }
 
@@ -951,5 +1081,8 @@ defineExpose({
       }
     }
   }
+}
+
+.GeoJSONVM {
 }
 </style>

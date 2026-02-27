@@ -217,7 +217,8 @@ export default {
       });
       try {
         const config = await this.rootVue.getConfig();
-        const fileName = `${configName}_${moment().format("YYYYMMDDHHmmss")}`;
+        // const fileName = `${configName}_${moment().format("YYYYMMDDHHmmss")}`;
+        const fileName = "城市更新_20260226154158"
         const file = stringToFile(JSON.stringify(config), fileName);
         await saveUserCfg(fileName, file);
         this.$message.success(this.$l("saveSuccess"));

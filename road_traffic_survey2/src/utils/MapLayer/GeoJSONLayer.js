@@ -191,6 +191,7 @@ export class GeoJSONLayer extends Layer {
     this.setPolygonColorBar(params.polygonColorBar)
     this.setPolygonValue3D(params.polygonValue3D)
     this.setPolygonScale3D(params.polygonScale3D)
+    this.on(MAP_EVENT.UPDATE_CAMERA_HEIGHT)
   }
 
   // ******************** 点 ******************** //
@@ -735,7 +736,10 @@ export class GeoJSONLayer extends Layer {
     if (data.layerId == this.id && !!this.propertiesList && !!this.geomList) {
       const pickId = data.pickColor;
       const properties = this.propertiesList[data.pickColor] || {};
-      const geom = this.geomList[data.pickColor] || {};
+      const geom = this.geomList[data.pickColor] || {
+        br:{x:0,y:0},
+        tl:{x:0,y:0}
+      };
 
       const geomBc = [(geom.br.x + geom.tl.x) / 2 + this.center[0], geom.br.y + this.center[1]];
       return JSON.parse(

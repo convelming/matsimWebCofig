@@ -3,6 +3,7 @@
 node_modules
 /static
 /dist
+/bus_route_correction_dist
 /src/assets/data
 /public/data
 

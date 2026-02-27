@@ -14,13 +14,17 @@
         <div class="row" v-for="(v1, i1) in sjk_list" :key="i1">
           <div class="label">{{ v1.title }}</div>
           <div class="value">
-            <a
-              :href="`#/download?open=${v1.title},${v2.defOpen || v2.title}`"
-              class="btn"
-              v-for="(v2, i2) in v1.children"
-              :key="i2"
-              >{{ v2.title }}</a
-            >
+            <template v-for="(v2, i2) in v1.children">
+              <MButton
+                class="btn"
+                type="router"
+                :to="{
+                  name: 'download',
+                  query: { open: `${v1.title},${v2.defOpen || v2.title}` },
+                }"
+                :title="v2.title"
+              />
+            </template>
           </div>
         </div>
       </div>
@@ -35,9 +39,9 @@
         </div>
       </div>
       <div class="box2">
-        <a class="btn" href="#/" target="_blank" v-for="(v1, i1) in mxk_list" :key="i1">{{
-          v1.title
-        }}</a>
+        <template v-for="(v1, i1) in mxk_list">
+          <MButton v-bind="v1" class="btn" />
+        </template>
       </div>
       <!-- 模型库 -->
 
@@ -50,9 +54,9 @@
         </div>
       </div>
       <div class="box2">
-        <a class="btn" :href="v1.path" target="_blank" v-for="(v1, i1) in alk_list" :key="i1">{{
-          v1.title
-        }}</a>
+        <template v-for="(v1, i1) in alk_list">
+          <MButton v-bind="v1" class="btn" />
+        </template>
       </div>
       <!-- 案例库 -->
       <!-- 平台库 -->
@@ -64,9 +68,9 @@
         </div>
       </div>
       <div class="box2">
-        <a class="btn" :href="v1.path" target="_blank" v-for="(v1, i1) in ptk_list" :key="i1">{{
-          v1.title
-        }}</a>
+        <template v-for="(v1, i1) in ptk_list">
+          <MButton v-bind="v1" class="btn" />
+        </template>
       </div>
       <!-- 平台库 -->
     </div>
@@ -208,9 +212,9 @@
         </div>
       </div>
       <div class="box2">
-        <a class="btn" :href="v1.path" target="_blank" v-for="(v1, i1) in zyk_list" :key="i1">{{
-          v1.title
-        }}</a>
+        <template v-for="(v1, i1) in zyk_list">
+          <MButton v-bind="v1" class="btn" />
+        </template>
       </div>
       <!-- 资源库 -->
 
@@ -223,9 +227,9 @@
         </div>
       </div>
       <div class="box2">
-        <a class="btn" :href="v1.path" target="_blank" v-for="(v1, i1) in xck_list" :key="i1">{{
-          v1.title
-        }}</a>
+        <template v-for="(v1, i1) in xck_list">
+          <MButton v-bind="v1" class="btn" />
+        </template>
       </div>
       <!-- 宣传库 -->
 
@@ -238,9 +242,9 @@
         </div>
       </div>
       <div class="box2">
-        <a class="btn" :href="v1.path" target="_blank" v-for="(v1, i1) in zsk_list" :key="i1">{{
-          v1.title
-        }}</a>
+        <template v-for="(v1, i1) in zsk_list">
+          <MButton v-bind="v1" class="btn" />
+        </template>
       </div>
       <!-- 知识库 -->
 
@@ -253,9 +257,9 @@
         </div>
       </div>
       <div class="box2">
-        <a class="btn" :href="v1.path" target="_blank" v-for="(v1, i1) in zywj_list" :key="i1">{{
-          v1.title
-        }}</a>
+        <template v-for="(v1, i1) in zywj_list">
+          <MButton v-bind="v1" class="btn" />
+        </template>
       </div>
       <!-- 总院文件 -->
 
@@ -268,9 +272,9 @@
         </div>
       </div>
       <div class="box2">
-        <a class="btn" :href="v1.path" target="_blank" v-for="(v1, i1) in dqk_list" :key="i1">{{
-          v1.title
-        }}</a>
+        <template v-for="(v1, i1) in dqk_list">
+          <MButton v-bind="v1" class="btn" />
+        </template>
       </div>
       <!-- 地区库 -->
     </div>
@@ -294,6 +298,7 @@
 
 <script setup>
 import AddNews from './News/AddNews.vue'
+import MButton from '@/components/MButton.vue'
 import { newsList, newsDelete } from '@/api/home.js'
 
 import { Setting, Delete, Edit } from '@element-plus/icons-vue'
@@ -354,7 +359,7 @@ updateNews()
 
 function handleShowAddNews(row) {
   addNewsTitle.value = !row ? '添加新闻' : '编辑新闻'
-  editNewsId.value = row.id
+  editNewsId.value = row?.id || -1
   showAddNews.value = true
 }
 function handleDeleteNews(row) {
@@ -395,7 +400,7 @@ function updateNotice() {
 updateNotice()
 function handleShowAddNotice(row) {
   addNoticeTitle.value = !row ? '添加通知' : '编辑通知'
-  editNoticeId.value = row.id
+  editNoticeId.value = row?.id || -1
   showAddNotice.value = true
 }
 function handleDeleteNotice(row) {
@@ -422,126 +427,200 @@ fetch(import.meta.env.VITE_APP_PUBLIC_PATH + 'download_menu.json')
   .then((tree) => {
     sjk_list.value = tree
   })
+/************************ iframe 弹窗 ************************/
+const showIframe = ref(false)
+const dataIframe = ref({})
+function handleCilckIframe(item) {
+  dataIframe.value = item
+  showIframe.value = true
+}
 
 /************************ 模型库 ************************/
 const mxk_list = [
   {
-    title: '道路路况',
-    path: '',
+    title: '视频识别',
+    path: 'http://192.168.60.231:8085/模型库/视频识别',
+    msg: '文件夹下为原始代码供学习使用，具体功能使用请联系肖健和',
+    type: 'iframe',
   },
   {
-    title: 'PTAL',
-    path: '',
+    title: '地址名转坐标',
+    path: 'http://192.168.60.231:8085/模型库/地址名转坐标',
+    msg: '文件夹下为原始代码供学习使用，具体功能使用请联系肖健和',
+    type: 'iframe',
   },
   {
-    title: '道路可达性',
-    path: '',
-  },
-  {
-    title: '交评仿真',
-    path: '',
+    title: '道路路况下载',
+    path: 'http://192.168.60.231:8085/模型库/道路路况下载',
+    msg: '请下载exe文件进行使用，若有疑问请联系肖健和',
+    type: 'iframe',
   },
   {
     title: '高德地图下载',
-    path: '',
+    path: 'http://192.168.60.231:8085/模型库/高德地图下载',
+    msg: '请下载exe文件进行使用，若有疑问请联系肖健和',
+    type: 'iframe',
   },
   {
     title: 'PDF加水印',
     path: '',
+    msg: '请下载exe文件进行使用，若有疑问请联系肖健和',
+    type: '',
+  },
+  {
+    title: '网站二维码生成器',
+    path: 'http://192.168.60.231:8085/模型库/网站二维码生成器',
+    msg: '请下载exe文件进行使用，若有疑问请联系肖健和',
+    type: 'iframe',
+  },
+  {
+    title: '视频转GIF动图',
+    path: 'http://192.168.60.231:8085/模型库/视频转GIF动图',
+    msg: '请下载exe文件进行使用，若有疑问请联系肖健和',
+    type: 'iframe',
+  },
+  {
+    title: '道路可达性',
+    path: '',
+    msg: '请到该网站使用https://classic-maps.openrouteservice.org/directions?n1=49.414321&n2=8.692245&n3=13&b=0&c=0&k1=en-US&k2=km',
+    type: 'iframe',
+  },
+  {
+    title: '交评现状图绘制',
+    path: 'http://192.168.60.231:23104/#/index2',
+    type: 'a',
+  },
+  {
+    title: '公交自动发车排班',
+    path: 'http://192.168.60.231:8085/模型库/公交自动发车排班',
+    msg: '请下载exe文件进行使用，若有疑问请联系肖健和',
+    type: 'iframe',
   },
   {
     title: '人工数车助手',
-    path: '',
+    path: 'http://192.168.60.231:23104/keyPressed.html',
+    type: 'a',
   },
 ]
+/************************ 知识库 ************************/
 const zsk_list = [
   {
     title: '国家标准规范',
     path: 'http://192.168.60.231:8085/知识库/国家标准规范/',
+    type: 'a',
   },
   {
     title: '广州交通年鉴',
     path: 'http://192.168.60.231:8085/知识库/广州交通年鉴/',
+    type: 'a',
   },
   {
     title: '总院流程文件',
     path: 'http://192.168.60.231:8085/知识库/总院流程文件/',
+    type: 'a',
   },
   {
     title: '物流相关政策',
     path: 'http://192.168.60.231:8085/知识库/物流相关政策/',
+    type: 'a',
   },
   {
     title: '低空相关政策',
     path: 'http://192.168.60.231:8085/知识库/低空相关政策/',
+    type: 'a',
   },
   {
     title: '公交相关政策',
     path: 'http://192.168.60.231:8085/知识库/公交相关政策/',
+    type: 'a',
+  },
+  {
+    title: '网约车相关政策',
+    path: 'http://192.168.60.231:8085/知识库/网约车相关政策/',
+    type: 'a',
+  },
+  {
+    title: '非机动车相关政策',
+    path: 'http://192.168.60.231:8085/知识库/非机动车相关政策/',
+    type: 'a',
   },
 ]
 const zyk_list = [
   {
     title: '密码狗租借台',
     path: 'https://doc.weixin.qq.com/smartsheet/s3_AH8AwwajAB82Xowv0CiRpSNLSzdOs?scode=APwA6gfEAA0WkqjoUeAbUANgb6AHE&tab=lvruym&viewId=vXJ7Dv',
+    type: 'a',
   },
   {
     title: '效率工具推荐',
     path: 'https://doc.weixin.qq.com/smartsheet/s3_AH8AwwajAB81VRWMidLTjynEfcoh3?scode=APwA6gfEAA01FipaXnAbUANgb6AHE&tab=q979lj&viewId=vukaF8',
+    type: 'a',
   },
   {
     title: '网络资源账号',
     path: 'https://doc.weixin.qq.com/sheet/e3_ACIAFAaBAAsM7pwuaBRSyS5gO0dH5?scode=APwA6gfEAA0ZP18PaFAbUANgb6AHE&tab=000001',
+    type: 'a',
   },
   {
     title: '部门专家库',
     path: 'https://doc.weixin.qq.com/sheet/e3_ACIAFAaBAAsjSNSuMCYQjy1MF50wd?scode=APwA6gfEAA0hBfJy6hAbUANgb6AHE&tab=000001',
+    type: 'a',
   },
   {
     title: '行业期刊',
     path: 'https://doc.weixin.qq.com/sheet/e3_ACIAFAaBAAsc1vaY1hhTbSBSeG7AC?scode=APwA6gfEAA01rv8LfWAbUANgb6AHE&tab=000001',
+    type: 'a',
   },
 ]
 const xck_list = [
   {
     title: '宣传手册',
     path: 'http://192.168.60.231:8085/宣传库/宣传手册/',
+    type: 'a',
   },
   {
     title: '宣传视频',
     path: 'http://192.168.60.231:8085/宣传库/宣传视频/',
+    type: 'a',
   },
   {
     title: '活动风采',
     path: 'http://192.168.60.231:8085/宣传库/活动风采/',
+    type: 'a',
   },
 ]
 const alk_list = [
   {
     title: '优秀项目',
     path: 'http://192.168.60.231:8085/案例库/优秀项目/',
+    type: 'a',
   },
   {
     title: '优秀汇报',
     path: 'http://192.168.60.231:8085/案例库/优秀汇报/',
+    type: 'a',
   },
   {
     title: '技术沙龙',
     path: 'http://192.168.60.231:8085/案例库/技术沙龙/',
+    type: 'a',
   },
 ]
 const zywj_list = [
   {
     title: '规章制度',
     path: 'https://oa.gzpi.com.cn:999/km/doc/index.jsp?j_module=true#j_path=%2FdocCategory&docCategory=163a49828b46c70875de4e9419eb77ed',
+    type: 'a',
   },
   {
     title: '工作文件',
     path: 'https://oa.gzpi.com.cn:999/km/doc/index.jsp?j_module=true#j_path=%2FdocCategory&docCategory=163a49cec675e94fd618ed845f3bc862',
+    type: 'a',
   },
   {
     title: '资质证书',
     path: 'https://oa.gzpi.com.cn:999/km/doc/index.jsp?j_module=true#j_path=%2FdocCategory&docCategory=163a4a1a6532d42ab1024e54c7a9ccaf',
+    type: 'a',
   },
 ]
 const ptk_list = [
@@ -549,72 +628,110 @@ const ptk_list = [
     title: '本地大模型',
     path: 'http://192.168.60.234:8080/',
     icon: new URL('@/assets/images/icon_chip.svg?url', import.meta.url),
+    type: 'a',
   },
   {
     title: 'Matsim可视化',
     path: 'http://192.168.60.231:23105/vue/pt_index.html#/',
     icon: new URL('@/assets/images/icon_visualization.svg?url', import.meta.url),
+    type: 'a',
   },
   {
     title: '公交优化',
     path: 'http://192.168.60.231:23105/vue/pt.html#/',
     icon: new URL('@/assets/images/icon_bus.svg?url', import.meta.url),
+    type: 'a',
   },
   {
     title: '总院时空数据云',
     path: 'http://192.168.10.124/gzpi/user/login',
     icon: new URL('@/assets/images/icon_cloud.svg?url', import.meta.url),
+    type: 'a',
   },
   {
     title: '黄埔交通数字化',
     path: 'http://192.168.60.231:8080/index.html',
     icon: new URL('@/assets/images/icon_number.svg?url', import.meta.url),
+    type: 'a',
   },
 ]
 const dqk_list = [
   {
     title: '越秀',
-    path: 'http://192.168.60.231:8085/地区库/越秀/',
+    // path: 'http://192.168.60.231:8085/地区库/越秀/',
+    path: '',
+    msg: '数据收集中，暂无数据',
+    type: 'message',
   },
   {
     title: '天河',
-    path: 'http://192.168.60.231:8085/地区库/天河/',
+    // path: 'http://192.168.60.231:8085/地区库/天河/',
+    path: '',
+    msg: '数据收集中，暂无数据',
+    type: 'message',
   },
   {
     title: '黄埔',
-    path: 'http://192.168.60.231:8085/地区库/黄埔/',
+    // path: 'http://192.168.60.231:8085/地区库/黄埔/',
+    path: '',
+    msg: '数据收集中，暂无数据',
+    type: 'message',
   },
   {
     title: '南沙',
-    path: 'http://192.168.60.231:8085/地区库/南沙/',
+    // path: 'http://192.168.60.231:8085/地区库/南沙/',
+    path: '',
+    msg: '数据收集中，暂无数据',
+    type: 'message',
   },
   {
     title: '白云',
-    path: 'http://192.168.60.231:8085/地区库/白云/',
+    // path: 'http://192.168.60.231:8085/地区库/白云/',
+    path: '',
+    msg: '数据收集中，暂无数据',
+    type: 'message',
   },
   {
     title: '海珠',
-    path: 'http://192.168.60.231:8085/地区库/海珠/',
+    // path: 'http://192.168.60.231:8085/地区库/海珠/',
+    path: '',
+    msg: '数据收集中，暂无数据',
+    type: 'message',
   },
   {
     title: '荔湾',
-    path: 'http://192.168.60.231:8085/地区库/荔湾/',
+    // path: 'http://192.168.60.231:8085/地区库/荔湾/',
+    path: '',
+    msg: '数据收集中，暂无数据',
+    type: 'message',
   },
   {
     title: '番禺',
-    path: 'http://192.168.60.231:8085/地区库/番禺/',
+    // path: 'http://192.168.60.231:8085/地区库/番禺/',
+    path: '',
+    msg: '数据收集中，暂无数据',
+    type: 'message',
   },
   {
     title: '增城',
-    path: 'http://192.168.60.231:8085/地区库/增城/',
+    // path: 'http://192.168.60.231:8085/地区库/增城/',
+    path: '',
+    msg: '数据收集中，暂无数据',
+    type: 'message',
   },
   {
     title: '花都',
-    path: 'http://192.168.60.231:8085/地区库/花都/',
+    // path: 'http://192.168.60.231:8085/地区库/花都/',
+    path: '',
+    msg: '数据收集中，暂无数据',
+    type: 'message',
   },
   {
     title: '从化',
-    path: 'http://192.168.60.231:8085/地区库/从化/',
+    // path: 'http://192.168.60.231:8085/地区库/从化/',
+    path: '',
+    msg: '数据收集中，暂无数据',
+    type: 'message',
   },
 ]
 </script>
@@ -718,11 +835,8 @@ const dqk_list = [
           }
         }
         .btn {
-          cursor: pointer;
           display: flex;
           align-items: center;
-          font-weight: 400;
-          font-size: 14px;
           color: #30b690;
           gap: 4px;
           .icon2 {
@@ -813,10 +927,6 @@ const dqk_list = [
             overflow-wrap: break-word; /* 新版写法，推荐使用 */
           }
         }
-
-        .btn {
-          cursor: pointer;
-        }
       }
 
       .row2 {
@@ -862,9 +972,6 @@ const dqk_list = [
             }
           }
         }
-        .btn {
-          cursor: pointer;
-        }
       }
     }
   }
@@ -887,6 +994,8 @@ const dqk_list = [
         gap: 10px;
         line-height: 20px;
         .label {
+          font-weight: bold;
+          font-size: 14px;
           flex-grow: 0;
           &::before {
             content: '';
@@ -904,13 +1013,6 @@ const dqk_list = [
           display: flex;
           flex-wrap: wrap;
           gap: 12px;
-          .btn {
-            font-weight: 400;
-            font-size: 14px;
-            &:hover {
-              color: #247ce7;
-            }
-          }
         }
       }
     }
@@ -923,14 +1025,15 @@ const dqk_list = [
       border-radius: 8px;
       gap: 16px 24px;
       flex-wrap: wrap;
-      .btn {
-        cursor: pointer;
-        font-weight: 400;
-        font-size: 14px;
-        &:hover {
-          color: #247ce7;
-        }
-      }
+    }
+  }
+
+  :deep(.btn) {
+    cursor: pointer;
+    font-weight: 400;
+    font-size: 14px;
+    &:hover {
+      color: #247ce7;
     }
   }
 }

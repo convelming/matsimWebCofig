@@ -11,6 +11,8 @@ export default {
   methods: {
     initByConfig(config) {
       config = Object.assign({}, defaultConfig, config);
+      console.log(config);
+      
 
       this.showStopToolbar = config.showStopToolbar;
       this.showLeftToolbar = config.showLeftToolbar;

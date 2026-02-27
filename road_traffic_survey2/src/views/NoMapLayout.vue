@@ -14,29 +14,38 @@
     <div class="header">
       <div class="max_box">
         <div class="menu1">
-          <RouterLink class="menu_item" activeClass="active" :to="{ name: 'home' }">
+          <MButton class="menu_item" activeClass="active" :to="{ name: 'home' }" type="router">
             <!-- <img class="icon" src="@/assets/images/tab_home_nor.svg" alt="" /> -->
             <TabHome class="icon" />
             <span class="text">首页</span>
-          </RouterLink>
-          <RouterLink class="menu_item" activeClass="active" :to="{ name: 'upload' }">
+          </MButton>
+          <MButton class="menu_item" activeClass="active" :to="{ name: 'upload' }" type="router">
             <TabUpload class="icon" />
             <span class="text">数据上传</span>
-          </RouterLink>
-          <RouterLink class="menu_item" activeClass="active" :to="{ name: 'download' }">
+          </MButton>
+          <MButton class="menu_item" activeClass="active" :to="{ name: 'download' }" type="router">
             <TabDownload class="icon" />
             <span class="text">数据下载</span>
-          </RouterLink>
-          <RouterLink class="menu_item" activeClass="active" :to="{ name: 'feedback' }">
+          </MButton>
+          <MButton
+            class="menu_item"
+            path="http://192.168.60.231:23105/vue/feedback.html#/"
+            activeClass="active"
+          >
             <TabQuestion class="icon" />
             <span class="text">问题反馈</span>
-          </RouterLink>
-          <RouterLink class="menu_item" activeClass="active" :to="{ name: 'feedback' }">
+          </MButton>
+          <MButton
+            class="menu_item"
+            path="http://192.168.60.231:23105/vue/index.html#/"
+            activeClass="active"
+            type="a"
+          >
             <TabWeb class="icon" />
             <span class="text">研究院官网</span>
-          </RouterLink>
+          </MButton>
         </div>
-        <div class="menu2">
+        <!-- <div class="menu2">
           <div class="btn">帮助</div>
           <a
             class="btn"
@@ -46,7 +55,7 @@
           >
           <div class="btn">日志</div>
           <div class="btn">视频</div>
-        </div>
+        </div> -->
       </div>
     </div>
     <RouterView />
@@ -54,6 +63,7 @@
 </template>
 
 <script setup>
+import MButton from '@/components/MButton.vue'
 import Logo from '@/assets/images/Home/logo.svg'
 import TabHome from '@/assets/images/Home/icon_home2.svg'
 import TabUpload from '@/assets/images/Home/icon_dateup1.svg'
@@ -90,7 +100,7 @@ onBeforeRouteUpdate((to, from) => {
   .menu1 {
     display: flex;
     gap: 42px;
-    .menu_item {
+    :deep(.menu_item) {
       cursor: pointer;
       height: 60px;
       display: flex;

@@ -202,8 +202,8 @@ export default {
     },
     handleSubmitAddLine() {
       // 暂时只支持传一个限制路段
-      // this.list.push(this.addLineForm);
-      this.list = [this.addLineForm];
+      this.list.push(this.addLineForm);
+      // this.list = [this.addLineForm];
       this.addLineForm = {};
       this.showAddLine = false;
     },

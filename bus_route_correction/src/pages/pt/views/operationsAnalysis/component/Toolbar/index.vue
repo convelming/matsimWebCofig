@@ -298,7 +298,7 @@ export default {
         sreach: {},
         params: {},
         list: [],
-        activeName: undefined,
+        activeName: "研究区域",
       },
       modelMap: {
         RouteDetail: "PublicTransit",
@@ -353,7 +353,9 @@ export default {
   beforeDestroy() {},
   methods: {
     initByConfig(config) {
-      this.activeName = config.toolbarActiveName || "PublicTransit";
+      this.$nextTick(() => {
+        this.handleActiveModel(config.toolbarActiveName || "PublicTransit");
+      });
       {
         const Activity3DToolbar = config.Activity3DToolbar || {};
         this.$set(this.Activity3D, "sreach", Activity3DToolbar.sreach || {});
@@ -414,7 +416,7 @@ export default {
         const CityUpdateAreaToolbar = config.CityUpdateAreaToolbar || {};
         this.$set(this.CityUpdateArea, "sreach", CityUpdateAreaToolbar.sreach || {});
         this.$set(this.CityUpdateArea, "params", CityUpdateAreaToolbar.params || {});
-        this.$set(this.CityUpdateArea, "activeName", CityUpdateAreaToolbar.activeName || "");
+        this.$set(this.CityUpdateArea, "activeName", CityUpdateAreaToolbar.activeName || undefined);
         this.$set(this.CityUpdateArea, "list", CityUpdateAreaToolbar.list || []);
       }
       {
@@ -435,8 +437,9 @@ export default {
     },
     async exportConfig() {
       const config = {
-        toolbarActiveName: this.activeName,
+        toolbarActiveName: this.activeModel,
       };
+
       {
         const list = [];
         const refs = this.$refs["Activity3DItem"];

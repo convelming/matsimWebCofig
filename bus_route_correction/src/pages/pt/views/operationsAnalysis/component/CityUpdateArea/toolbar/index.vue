@@ -8,9 +8,9 @@
       <div class="item" :class="{ active: activeName == '地块承载力分析' }" @click="$emit('update:activeName', '地块承载力分析')">{{ $l("地块承载力分析") }}</div>
     </div>
     <AreaList class="tabs_body" v-show="activeName == '研究区域'" :show="show && activeName == '研究区域'" />
-    <AreaSreach class="tabs_body" v-show="activeName == '相似片区搜索'"  :show="show && activeName == '相似片区搜索'" />
-    <AreaAnalysis class="tabs_body" v-show="activeName == '片区承载力分析'"  :show="show && activeName == '片区承载力分析'" />
-    <PlotAnalysis class="tabs_body" v-show="activeName == '地块承载力分析'"  :show="show && activeName == '地块承载力分析'" />
+    <AreaSreach class="tabs_body" v-show="activeName == '相似片区搜索'" :show="show && activeName == '相似片区搜索'" />
+    <AreaAnalysis class="tabs_body" v-show="activeName == '片区承载力分析'" :show="show && activeName == '片区承载力分析'" />
+    <PlotAnalysis class="tabs_body" v-show="activeName == '地块承载力分析'" :show="show && activeName == '地块承载力分析'" />
   </div>
 </template>
 
@@ -23,7 +23,7 @@ import PlotAnalysis from "./PlotAnalysis.vue";
 export default {
   name: "CUAToolbar",
   props: {
-    show:{
+    show: {
       type: Boolean,
       default: false,
     },

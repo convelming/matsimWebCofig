@@ -3,41 +3,42 @@
   <div class="MapLayout">
     <div class="header">
       <div class="title">交通数据采集应用平台</div>
-      <RouterLink class="menu_item" activeClass="active" :to="{ name: 'home' }">
+      <MButton class="menu_item" activeClass="active" :to="{ name: 'home' }" type="router">
         <TabHome class="icon" />
         <span class="text">首页</span>
-      </RouterLink>
-      <RouterLink class="menu_item" activeClass="active" :to="{ name: 'upload' }">
+      </MButton>
+      <MButton class="menu_item" activeClass="active" :to="{ name: 'upload' }" type="router">
         <TabUpload class="icon" />
         <span class="text">数据上传</span>
-      </RouterLink>
-      <RouterLink class="menu_item" activeClass="active" :to="{ name: 'download' }">
+      </MButton>
+      <MButton class="menu_item" activeClass="active" :to="{ name: 'download' }" type="router">
         <TabDownload class="icon" />
         <span class="text">数据下载</span>
-      </RouterLink>
-      <RouterLink class="menu_item" activeClass="active" :to="{ name: 'feedback' }">
+      </MButton>
+      <MButton class="menu_item" path="http://192.168.60.231:23105/vue/feedback.html#/" type="a">
         <TabFeedback class="icon" />
         <span class="text">问题反馈</span>
-      </RouterLink>
+      </MButton>
     </div>
     <div class="bottom">
       <div class="left">
-        <div class="btn">
+        <MButton class="btn" @click="ElMessage.warning('功能研发中，敬请期待')">
           <BtnIcon1 class="icon" src="@/assets/images/容器@2x.png" alt="" />
-        </div>
-        <a
+        </MButton>
+        <!-- <a
           class="btn"
           href="https://doc.weixin.qq.com/sheet/e3_AdQA8Aa_ADMt1qh97LkSHer6ALqI2?scode=APwA6gfEAA0aeGdABPAdQA8Aa_ADM&tab=BB08J2"
           target="_blank"
-        >
+        > -->
+        <MButton class="btn" path="http://192.168.60.231:23105/vue/feedback.html#/" type="a">
           <BtnIcon2 class="icon" src="@/assets/images/容器@2x(1).png" alt="" />
-        </a>
-        <div class="btn">
+        </MButton>
+        <MButton class="btn" @click="ElMessage.warning('功能研发中，敬请期待')">
           <BtnIcon3 class="icon" src="@/assets/images/容器@2x(2).png" alt="" />
-        </div>
-        <div class="btn">
+        </MButton>
+        <MButton class="btn" @click="ElMessage.warning('功能研发中，敬请期待')">
           <BtnIcon4 class="icon" src="@/assets/images/容器@2x(3).png" alt="" />
-        </div>
+        </MButton>
       </div>
       <div class="right" id="page" :style="scaleStyle">
         <div id="mapRoot" v-show="showMap"></div>
@@ -61,6 +62,7 @@ import {
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 
+import MButton from '@/components/MButton.vue'
 import TabHome from '@/assets/images/MapLayout/home.svg'
 import TabUpload from '@/assets/images/MapLayout/upload.svg'
 import TabDownload from '@/assets/images/MapLayout/download.svg'
@@ -70,6 +72,7 @@ import BtnIcon1 from '@/assets/images/MapLayout/icon1.svg'
 import BtnIcon2 from '@/assets/images/MapLayout/icon2.svg'
 import BtnIcon3 from '@/assets/images/MapLayout/icon3.svg'
 import BtnIcon4 from '@/assets/images/MapLayout/icon4.svg'
+import { ElMessage } from 'element-plus'
 
 const route = useRoute()
 
@@ -111,7 +114,8 @@ onMounted(() => {
   //   const _MapLayer = new MapLayer({ tileClass: tileClass, zIndex: -1 })
   //   _Map.addLayer(_MapLayer)
   // })
-  const res = { msg: 'http://192.168.60.234:8081/styles/OSM%20Liberty/512/${z}/${x}/${y}.png' }
+  // const res = { msg: 'http://192.168.60.234:8081/styles/OSM%20Liberty/512/${z}/${x}/${y}.png' }
+  const res = { msg: 'http://192.168.60.231:23334/osm/LightBlue/${z}/${x}/${y}.png' }
   const getUrl = eval(`(z,x,y) => \`${res.msg}\``)
   const tileClass = MapStyleFactory({
     style_name: 'Arcgis',
@@ -161,7 +165,7 @@ onUnmounted(() => {
     }
     .menu_list {
     }
-    .menu_item {
+    :deep(.menu_item) {
       width: 128px;
       height: 60px;
       display: flex;
@@ -184,7 +188,7 @@ onUnmounted(() => {
           transform: translateX(-50%);
         }
         .icon {
-          :deep(.fill) {
+          .fill {
             fill: #41b997;
           }
         }
@@ -193,7 +197,7 @@ onUnmounted(() => {
         width: 24px;
         height: 24px;
         display: block;
-        :deep(.fill) {
+        .fill {
           fill: #7e8c88;
         }
       }
@@ -221,7 +225,7 @@ onUnmounted(() => {
       align-items: center;
       padding: 30px 0;
       gap: 20px;
-      .btn {
+      :deep(.btn) {
         cursor: pointer;
         width: 24px;
         height: 24px;
