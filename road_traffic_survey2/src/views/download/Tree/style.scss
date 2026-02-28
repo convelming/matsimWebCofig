@@ -36,7 +36,8 @@
       width: 0;
       flex: 1;
     }
-    .icon_right {
+    .el-icon :hover {
+      color: var(--el-color-success);
     }
   }
 }

@@ -204,7 +204,7 @@ export class MyMap extends EventListener {
   get plottingScale() {
     try {
       const tileSize = (EARTH_RADIUS * 2) / Math.pow(2, this.zoom)
-      
+
       return tileSize / 512
     } catch (error) {
       return 1
@@ -917,10 +917,10 @@ export class MyMap extends EventListener {
 
   // 设置地图中心点
   setCenter(center) {
-    if (JSON.stringify(this.center) != JSON.stringify(center)) {
-      this.center = center
-      this.on(MAP_EVENT.UPDATE_CENTER)
-    }
+    if (JSON.stringify(this.center) == JSON.stringify(center)) return
+    if (Number.isNaN(Number(center[0])) || Number.isNaN(Number(center[1]))) return
+    this.center = center
+    this.on(MAP_EVENT.UPDATE_CENTER)
   }
 
   // 根据WebMercator坐标数组设置最佳缩放层级和中心点

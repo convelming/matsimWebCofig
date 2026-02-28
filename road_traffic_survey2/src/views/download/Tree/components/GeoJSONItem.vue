@@ -1,10 +1,11 @@
 <!-- TreeItem -->
 <template>
-  <div class="TreeItem GeoJSONItem">
+  <div class="TreeItem GeoJSONItem" v-bind="$attrs">
     <div class="content">
       <el-checkbox v-model="check" :indeterminate="indeterminate" @change="handleChangeCheck" />
       <div class="text">{{ title }}</div>
-      <el-icon v-if="!!download" size="20px" @click="handleDownload"><Download /></el-icon>
+      <el-icon v-if="!!download" size="20px" @click="downloadFile(download)"><Download /></el-icon>
+      <el-icon v-if="loaded" size="20px" @click="handleSetCenterAndZoom"><Aim /></el-icon>
       <el-icon v-if="loaded" size="20px" @click="showDialog = true"><Setting /></el-icon>
       <el-icon v-if="loading" size="20px" class="is-loading"><Loading /></el-icon>
     </div>
@@ -543,8 +544,8 @@
 
 <script setup name="GeoJSONItem">
 import GeoJSONVM from './GeoJSONVM.vue'
-import { initCheck } from './mixins'
-import { Setting, Download, Loading, Delete, Plus } from '@element-plus/icons-vue'
+import { initCheck, initRange } from '../mixins'
+import { Setting, Download, Loading, Delete, Plus, Aim } from '@element-plus/icons-vue'
 import {
   GeoJSONLayer,
   getGeoJSONLayerParams,
@@ -553,7 +554,15 @@ import {
   LINE_WIDTH_STYLE,
 } from '@/utils/MapLayer/GeoJSONLayer'
 import { getColorBarByPropertie } from '@/utils/MapLayer/ColorBar2DUtil'
-import { injectSync, addWatch, selectFile, fileToString, stringToFile } from '@/utils/index'
+import {
+  injectSync,
+  addWatch,
+  selectFile,
+  fileToString,
+  stringToFile,
+  downloadFile,
+  guid,
+} from '@/utils/index'
 
 import { saveAs } from 'file-saver'
 import { toRaw } from 'vue'
@@ -564,7 +573,7 @@ const PType = {
   String: '类别',
 }
 const { proxy } = getCurrentInstance()
-const emit = defineEmits(['check-change'])
+const emit = defineEmits(['check-change', 'update-range'])
 const props = defineProps({
   id: String,
   title: String,
@@ -578,6 +587,10 @@ const props = defineProps({
 
 const { check, indeterminate, getCheck, setCheck, handleChangeCheck } = initCheck(
   { emit },
+  props.check,
+)
+const { range, getRange, handleSetCenterAndZoom } = initRange(
+  { emit, check, indeterminate },
   props.check,
 )
 
@@ -596,8 +609,6 @@ const _GeoJSONLayer = new GeoJSONLayer(geojsonParams.value)
 const activeNames = ref(['PointSetting', 'LineSetting', 'PolygonSetting'])
 const loaded = ref(false)
 const loading = ref(false)
-const showGeoJSONParams = inject('showGeoJSONParams')
-const showDialog = ref(false)
 const hasPoint = ref(false)
 const hasLine = ref(false)
 const hasPolygon = ref(false)
@@ -616,10 +627,14 @@ let pointColorBarMap = {}
 let lineColorBarMap = {}
 let polygonColorBarMap = {}
 
+const id = guid()
+const showDialog = ref(false)
+const showGeoJSONParams = inject('showGeoJSONParams')
 const watchShowDialog = addWatch(showDialog, (val) => {
-  if (val) showGeoJSONParams.value++
-  else showGeoJSONParams.value--
+  if (val) showGeoJSONParams.value[id] = true
+  else showGeoJSONParams.value[id] = false
 })
+
 addWatch(
   geojsonParams,
   (val) => {
@@ -634,21 +649,8 @@ const watchCheck = addWatch(check, (val) => {
   if (_Map && val) _Map.addLayer(_GeoJSONLayer)
   else _GeoJSONLayer.removeFromParent()
   if (val && !loaded.value) loadData()
+  if (val && loaded.value) handleSetCenterAndZoom()
 })
-
-function handleDownload() {
-  const url = props.download
-  const el = document.createElement('a')
-  // 获取文件后缀
-  const ext = url.split('.').pop()
-  el.style = 'position: absolute; left: -9999px;'
-  el.href = url
-  el.download = props.title + '.' + ext
-
-  document.body.appendChild(el)
-  el.click()
-  document.body.removeChild(el)
-}
 
 function handleChangePointValue(val, old) {
   try {
@@ -793,6 +795,12 @@ async function loadData() {
         hasPolygon.value = json.polygonArray.length > 0
         properties.value = json.propertiesLabels
         _GeoJSONLayer.setGeoJsonData(json)
+
+        range.value = [
+          [json.range.maxx, json.range.maxy],
+          [json.range.minx, json.range.miny],
+        ]
+        handleSetCenterAndZoom()
         loaded.value = true
         loading.value = false
       })
@@ -1012,16 +1020,17 @@ injectSync('MapRef').then((map) => {
 })
 
 onUnmounted(() => {
-  watchShowDialog.callback(!showDialog.value)
+  watchShowDialog.callback(false)
   _GeoJSONLayer.dispose()
 })
 defineExpose({
   getCheck,
   setCheck,
+  getRange,
 })
 </script>
 
-<style lang="scss" scoped src="./style.scss" />
+<style lang="scss" scoped src="../style.scss" />
 
 <style lang="scss" scoped>
 .flex-scrollbar {
@@ -1031,9 +1040,6 @@ defineExpose({
 .GeoJSONItem {
   .content {
     padding-left: 20px;
-    .el-icon :hover {
-      color: var(--el-color-success);
-    }
   }
 }
 .GeoJSONParams_body {

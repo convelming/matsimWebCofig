@@ -49,6 +49,7 @@
             class="menu_item"
             path="http://192.168.60.231:23105/vue/feedback.html#/"
             activeClass="active"
+            type="a"
             :record="false"
           >
             <TabQuestion class="icon" />
@@ -56,7 +57,7 @@
           </MButton>
           <MButton
             class="menu_item"
-            path="http://192.168.60.231:23105/vue/index.html#/"
+            path="http://192.168.60.231:8087"
             activeClass="active"
             type="a"
           >

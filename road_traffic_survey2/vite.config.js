@@ -41,8 +41,8 @@ export default defineConfig({
     proxy: {
       // https://cn.vitejs.dev/config/#server-proxy
       '/dev-api': {
-        // target: `http://192.168.60.231:23104`, // 测试服
-        target: `http://192.168.152.19:23104`, // 测试服
+        target: `http://192.168.60.231:23104`, // 测试服
+        // target: `http://192.168.152.19:23104`, // 测试服
         changeOrigin: true,
         rewrite: (p) => p.replace(/^\/dev-api/, ''),
       },

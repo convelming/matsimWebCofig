@@ -15,15 +15,7 @@
           <div class="label">{{ v1.title }}</div>
           <div class="value">
             <template v-for="(v2, i2) in v1.children">
-              <MButton
-                class="btn"
-                type="router"
-                :to="{
-                  name: 'download',
-                  query: { open: `${v1.title},${v2.defOpen || v2.title}` },
-                }"
-                :title="v2.title"
-              />
+              <MButton v-bind="v2" class="btn" />
             </template>
           </div>
         </div>
@@ -444,19 +436,196 @@ function handleDeleteNotice(row) {
 }
 
 /************************ 数据库 ************************/
-const sjk_list = ref([])
-fetch(import.meta.env.VITE_APP_PUBLIC_PATH + 'download_menu.json')
-  .then((res) => res.json())
-  .then((tree) => {
-    sjk_list.value = tree
-  })
-/************************ iframe 弹窗 ************************/
-const showIframe = ref(false)
-const dataIframe = ref({})
-function handleCilckIframe(item) {
-  dataIframe.value = item
-  showIframe.value = true
-}
+// const sjk_list = ref([])
+// fetch(import.meta.env.VITE_APP_PUBLIC_PATH + 'download_menu.json')
+//   .then((res) => res.json())
+//   .then((tree) => {
+//     sjk_list.value = tree
+//   })
+const sjk_list = [
+  {
+    title: '公共交通',
+    children: [
+      {
+        title: 'PTAL',
+        type: 'router',
+        to: {
+          name: 'download',
+          query: { open: `公共交通,PTAL,越秀` },
+        },
+      },
+      {
+        title: '地铁线网',
+        type: 'router',
+        to: {
+          name: 'download',
+          query: { open: `公共交通,地铁线网` },
+        },
+      },
+      {
+        title: '常规公交线网',
+        type: 'router',
+        to: {
+          name: 'download',
+          query: { open: `公共交通,常规公交线网` },
+        },
+      },
+      {
+        title: '铁路线网',
+        type: 'router',
+        to: {
+          name: 'download',
+          query: { open: `公共交通` },
+        },
+      },
+    ],
+  },
+  {
+    title: '城市底座',
+    children: [
+      {
+        title: '区划边界',
+        type: 'router',
+        to: {
+          name: 'download',
+          query: { open: `城市底座,区划边界,行政边界_广州_区级` },
+        },
+      },
+      {
+        title: '城市用地',
+        type: 'router',
+        to: {
+          name: 'download',
+          query: { open: `城市底座,城市用地,现状用地` },
+        },
+      },
+      {
+        title: '建筑白膜',
+        type: 'router',
+        to: {
+          name: 'download',
+          query: { open: `城市底座,建筑白膜` },
+        },
+      },
+    ],
+  },
+  {
+    title: '职住通勤',
+    children: [
+      {
+        title: '高德通勤',
+        type: 'router',
+        to: {
+          name: 'download',
+          query: { open: `职住通勤,高德通勤` },
+        },
+      },
+      {
+        title: '普查人口',
+        type: 'router',
+        to: {
+          name: 'download',
+          query: { open: `职住通勤,普查人口` },
+        },
+      },
+    ],
+  },
+  {
+    title: '设施场所',
+    children: [
+      {
+        title: '企业地址',
+        type: 'router',
+        to: {
+          name: 'download',
+          query: { open: `设施场所,企业地址` },
+        },
+      },
+      {
+        title: 'A级景区',
+        type: 'router',
+        to: {
+          name: 'download',
+          query: { open: `设施场所,A级景区` },
+        },
+      },
+      {
+        title: '医疗卫生机构',
+        type: 'router',
+        to: {
+          name: 'download',
+          query: { open: `设施场所,医疗卫生机构` },
+        },
+      },
+      {
+        title: '星级酒店',
+        type: 'router',
+        to: {
+          name: 'download',
+          query: { open: `设施场所,星级酒店` },
+        },
+      },
+      {
+        title: '高速服务区',
+        type: 'router',
+        to: {
+          name: 'download',
+          query: { open: `设施场所,高速服务区` },
+        },
+      },
+    ],
+  },
+  {
+    title: '货运物流',
+    children: [
+      {
+        title: '货车轨迹',
+        type: 'router',
+        to: {
+          name: 'download',
+          query: { open: `货运物流,货车轨迹` },
+        },
+      },
+      {
+        title: '末端物流网点',
+        type: 'router',
+        to: {
+          name: 'download',
+          query: { open: `货运物流,末端物流网点` },
+        },
+      },
+    ],
+  },
+  {
+    title: '道路交通',
+    children: [
+      {
+        title: 'OSM路网',
+        type: 'router',
+        to: {
+          name: 'download',
+          query: { open: `道路交通,城市路网,OSM路网,2025年` },
+        },
+      },
+      {
+        title: '四维图新导航级路网',
+        type: 'router',
+        to: {
+          name: 'download',
+          query: { open: `道路交通,城市路网,四维图新导航级路网` },
+        },
+      },
+      {
+        title: '路况态势',
+        type: 'router',
+        to: {
+          name: 'download',
+          query: { open: `道路交通,路况态势` },
+        },
+      },
+    ],
+  },
+]
 
 /************************ 模型库 ************************/
 const mxk_list = [

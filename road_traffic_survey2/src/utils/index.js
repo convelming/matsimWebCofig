@@ -650,6 +650,16 @@ export function copyText(textValue = '', success = () => {}, error = () => {}) {
   }
 }
 
+import { saveAs } from 'file-saver'
+export function downloadFile(url, options = {}) {
+  fetch(url, options)
+    .then((res) => res.blob())
+    .then((blob) => {
+      const fileName = options.fileName || url.split('/').pop().split('.')[0]
+      saveAs(blob, fileName)
+    })
+}
+
 export function selectFile(accept = '*/*') {
   return new Promise((resolve) => {
     const input = document.createElement('input')

@@ -35,7 +35,7 @@
   <LinkFlow v-model:visible="showLinkFlow" />
   <IntersectionFlow v-model:visible="showIntersectionFlow" />
   <UploadVideo v-model:visible="showUploadVideo" />
-  <UploadImage v-model:visible="showUploadImage" />
+  <UploadImage v-model:visible="showUploadImage" visibleLayer />
 </template>
 
 <script setup>

@@ -40,7 +40,7 @@
         />
 
         <div class="checkbox">
-          <el-checkbox v-model="showLayer" @change="">
+          <el-checkbox v-model="showLayer" @change="emit('upload:visibleLayer', $event)">
             <span class="text1">显示图标</span>
             <span class="text2">(已上传数据点位)</span>
           </el-checkbox>
@@ -71,7 +71,7 @@
 
 <script setup>
 import * as API from '@/api/index'
-import { injectSync, addWatch } from '@/utils/index'
+import { injectSync, addWatch, deepClone } from '@/utils/index'
 
 import { MAP_EVENT } from '@/mymap/index.js'
 import { NetworkLayer } from '@/utils/MapLayer/NetworkLayer'
@@ -84,9 +84,13 @@ import AddIntersection from './AddIntersection.vue'
 import AEIntersectionFlow from './AEIntersectionFlow.vue'
 
 let _Map = null
-const emit = defineEmits(['update:visible', 'close'])
+const emit = defineEmits(['update:visible', 'update:visibleLayer', 'close'])
 const props = defineProps({
   visible: {
+    type: Boolean,
+    default: false,
+  },
+  visibleLayer: {
     type: Boolean,
     default: false,
   },
@@ -100,7 +104,10 @@ const intersectionData = reactive({
   name: '',
   loading: false,
 })
-const showLayer = ref(true)
+
+let loaded = false
+const loading = ref(false)
+const showLayer = ref(props.visibleLayer)
 const activeNames = ref(['显示设置'])
 
 const showMain = computed(() => {
@@ -131,23 +138,30 @@ const _IntersectionListLayer = new IntersectionListLayer({
   },
 })
 
-const _NetworkLayer = inject('_NetworkLayer').value
+const _NetworkLayer = inject('_NetworkLayer')?.value
+
 const watchWayWidth = addWatch(wayWidth, (val) => {
   _NetworkLayer.setValues({ lineWidth: val })
 })
 
-const watchVisible = addWatch(
-  () => props.visible,
+const watchProps = addWatch(
+  props,
   (val) => {
-    if (val) {
+    if (val.visibleLayer) showLayer.value = true
+    if (val.visible || val.visibleLayer) {
+      getIntersectionList2()
       handleQuery()
       watchWayWidth.callback(wayWidth.value)
-      watchShowLayer.callback(showLayer.value)
+
       _Map.addLayer(_NetworkLayer)
+      watchShowLayer.callback(showLayer.value)
     } else {
       _Map.removeLayer(_NetworkLayer)
       _Map.removeLayer(_IntersectionListLayer)
     }
+  },
+  {
+    deep: true,
   },
 )
 const watchShowLayer = addWatch(showLayer, (val) => {
@@ -195,11 +209,13 @@ async function getIntersectionList() {
   }
 }
 async function getIntersectionList2() {
+  if (loaded) return
   const res1 = await API.intersectionList({
     pageSize: 999999999,
     pageNum: 1,
   })
   _IntersectionListLayer.setData(res1.data.data)
+  loaded = true
 }
 function handleAdd() {
   showAddIntersection.value = true
@@ -214,16 +230,13 @@ function handleEdit(row) {
   showAEIntersectionFlow.value = true
 }
 
-onMounted(() => {
-  getIntersectionList2()
-})
 onUnmounted(() => {
   _IntersectionListLayer.dispose()
 })
 
 injectSync('MapRef').then((map) => {
   _Map = map.value
-  watchVisible.callback(props.visible)
+  watchProps.callback(props.visible)
 })
 </script>
 

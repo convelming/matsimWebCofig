@@ -1,6 +1,6 @@
 <!-- FolderItem -->
 <template>
-  <div class="TreeItem FolderItem">
+  <div class="TreeItem FolderItem" v-bind="$attrs">
     <div class="content" v-if="!hideTitle" @click="s_open = !s_open">
       <icon_tri_nor class="icon_left" :class="{ active: s_open }" />
       <el-checkbox
@@ -10,15 +10,19 @@
         @change="handleCheckAllChange"
       />
       <div class="text">{{ title }}</div>
+      <el-icon v-if="range.length > 0" size="20px" @click.stop="handleSetCenterAndZoom"
+        ><Aim
+      /></el-icon>
     </div>
     <el-collapse-transition>
       <div class="children" :class="{ hideTitle }" v-show="s_open">
         <template v-for="item in children">
           <component
-            :is="componentMap[item.type] || 'DefaultItem'"
+            :is="componentMap[item.type] || DefaultItem"
             ref="itemRef"
             v-bind="item"
             @check-change="handleChangeCheck"
+            @update-range="handleUpdateRange"
           />
         </template>
       </div>
@@ -27,15 +31,31 @@
 </template>
 
 <script setup name="FolderItem">
+import { Aim } from '@element-plus/icons-vue'
 import icon_tri_nor from '@/assets/images/icon_tri_nor.svg'
+
+import DefaultItem from './DefaultItem.vue'
 import FolderItem from './FolderItem.vue'
 import FileItem from './FileItem.vue'
 import GeoJSONItem from './GeoJSONItem.vue'
+import LinkFlowItem from './LinkFlowItem.vue'
+import IntersectionFlowItem from './IntersectionFlowItem.vue'
+import UploadImageItem from './UploadImageItem.vue'
+import PDFItem from './PDFItem.vue'
+import TXTItem from './TXTItem.vue'
+
+import { initCheck, initRange } from '../mixins'
+import { TreeItemEnum } from '../index.js'
 
 const componentMap = {
-  folder: FolderItem,
-  file: FileItem,
-  geojson: GeoJSONItem,
+  [TreeItemEnum.folder]: FolderItem,
+  [TreeItemEnum.file]: FileItem,
+  [TreeItemEnum.geojson]: GeoJSONItem,
+  [TreeItemEnum.upload_image]: UploadImageItem,
+  [TreeItemEnum.upload_link_flow]: LinkFlowItem,
+  [TreeItemEnum.upload_intersection_flow]: IntersectionFlowItem,
+  [TreeItemEnum.pdf]: PDFItem,
+  [TreeItemEnum.txt]: TXTItem,
 }
 
 const props = defineProps({
@@ -48,16 +68,24 @@ const props = defineProps({
   open: Boolean,
 })
 
-const emit = defineEmits(['check-change'])
+const emit = defineEmits(['check-change', 'update-range'])
 
 const s_open = ref(props.open)
 
 const checkAll = ref(false)
 const indeterminate = ref(false)
 
+const { range, getRange, handleSetCenterAndZoom } = initRange(
+  { emit, check: checkAll, indeterminate },
+  props.check,
+)
+
 const itemRef = ref(null)
 function getCheck() {
-  const values = itemRef.value?.map((v) => v.getCheck()) || []
+  const values =
+    itemRef.value?.map((v) => {
+      return v.getCheck()
+    }) || []
 
   let hasChecked = false
   let hasUnchecked = false
@@ -92,13 +120,24 @@ function handleCheckAllChange() {
   emit('check-change', getCheck())
 }
 
+function handleUpdateRange() {
+  const values = itemRef.value?.map((v) => v.getRange()) || []
+  range.value = values
+    .filter((v) => v.range.length > 0 && v.check)
+    .map((v) => v.range)
+    .flat(1)
+  if (range.value.length > 0) handleSetCenterAndZoom()
+  emit('update-range')
+}
+
 defineExpose({
   getCheck,
   setCheck,
+  getRange,
 })
 </script>
 
-<style lang="scss" scoped src="./style.scss" />
+<style lang="scss" scoped src="../style.scss" />
 
 <style lang="scss" scoped>
 .FolderItem {
@@ -106,6 +145,15 @@ defineExpose({
     padding-left: 10px;
     &.hideTitle {
       padding-left: 0;
+    }
+  }
+
+  .content {
+    .el-icon {
+      cursor: pointer;
+      &:hover {
+        color: var(--el-color-success);
+      }
     }
   }
 }

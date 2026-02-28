@@ -26,7 +26,7 @@
           <div class="text">请在地图点击路段</div>
         </div>
         <div class="checkbox">
-          <el-checkbox v-model="showLayer" @change="">
+          <el-checkbox v-model="showLayer" @change="emit('upload:visibleLayer', $event)">
             <span class="text1">显示图标</span>
             <span class="text2">(已上传数据点位)</span>
           </el-checkbox>
@@ -92,19 +92,25 @@ import { LinkLayer } from '@/utils/MapLayer/LinkLayer'
 import { LinkStatsLayer } from '@/utils/MapLayer/LinkStatsLayer'
 import { computed, inject } from 'vue'
 
-const emit = defineEmits(['update:visible', 'close'])
+const emit = defineEmits(['update:visible', 'update:visibleLayer', 'close'])
 const props = defineProps({
   visible: {
     type: Boolean,
     default: false,
   },
+  visibleLayer: {
+    type: Boolean,
+    default: false,
+  },
   proId: {
-    type: Number,
+    type: [Number, String],
     default: 0,
   },
 })
 
-const showLayer = ref(false)
+let loaded = false
+const loading = ref(false)
+const showLayer = ref(props.visibleLayer)
 const activeNames = ref(['显示设置'])
 
 const typeColorOptions = ref({
@@ -120,6 +126,7 @@ const twoWayOffset = ref(10)
 const selectRouteId = ref(null)
 
 const showLinkDetail = computed(() => {
+  if (linkDetailData.visible) emit('update:visible', true)
   return linkDetailData.visible
 })
 
@@ -134,7 +141,8 @@ const linkDetailData = reactive({
 })
 
 let _Map = null
-const _NetworkLayer = inject('_NetworkLayer').value
+const _NetworkLayer = inject('_NetworkLayer')?.value
+
 const _NetworkLayerEventId = _NetworkLayer.addEventListener(MAP_EVENT.HANDLE_PICK_LEFT, (res1) => {
   linkDetailData.visible = selectRouteId.value == res1.data.id
   linkDetailData.linkId = null
@@ -175,24 +183,28 @@ const _LinkStatsLayer = new LinkStatsLayer({
   },
 })
 
-const watchVisible = addWatch(
-  () => props.visible,
+const watchProps = addWatch(
+  props,
   (val) => {
-    console.log(val)
-    if (val) {
+    if (val.visibleLayer) showLayer.value = true
+    if (val.visible || val.visibleLayer) {
+      if (!loaded) handleLoadMaker()
       _NetworkLayer.resumeEventListener(MAP_EVENT.HANDLE_PICK_LEFT, _NetworkLayerEventId)
       watchWayWidth.callback(wayWidth.value)
 
-      _Map.addLayer(_LinkLayer)
       _Map.addLayer(_NetworkLayer)
+      _Map.addLayer(_LinkLayer)
       watchShowLayer.callback(showLayer.value)
     } else {
       _NetworkLayer.stopEventListener(MAP_EVENT.HANDLE_PICK_LEFT, _NetworkLayerEventId)
 
-      _Map.removeLayer(_LinkLayer)
       _Map.removeLayer(_NetworkLayer)
+      _Map.removeLayer(_LinkLayer)
       _Map.removeLayer(_LinkStatsLayer)
     }
+  },
+  {
+    deep: true,
   },
 )
 const watchShowLayer = addWatch(showLayer, (val) => {
@@ -202,6 +214,8 @@ const watchShowLayer = addWatch(showLayer, (val) => {
     _Map.removeLayer(_LinkStatsLayer)
   }
 })
+
+// 监听GeoJSON绘制产生
 const watchTwoWayOffset = addWatch(twoWayOffset, (val) => {
   _LinkLayer.setValues({ twoWayOffset: val })
 })
@@ -214,11 +228,31 @@ const watchTypeColorOptions = addWatch(typeColorOptions, (val) => {
   _LinkStatsLayer.setColors(val)
 })
 
-function handleClose() {
-  emit('update:visible', false)
-  emit('close')
+// 加载数据
+function handleLoadMaker() {
+  loading.value = true
+  API.queryAllMaker({})
+    .then((res) => {
+      _LinkStatsLayer.setData(res.data)
+      loaded = true
+    })
+    .finally(() => {
+      loading.value = false
+    })
+}
+
+// 路段流量有数据更新
+function linkFlowUpdateData() {
+  handleLoadMaker()
+  if (selectRouteId.value) {
+    getMatsimLink(selectRouteId.value).then((res) => {
+      _LinkLayer.setData(res.data, _LinkLayer.selectId)
+    })
+  }
 }
 function handleCloseLinkDetail() {
+  console.log('handleCloseLinkDetail')
+
   linkDetailData.visible = false
   linkDetailData.linkId = null
   _LinkLayer.setSelectId(null)
@@ -231,19 +265,18 @@ function handleMoveToRoute({ value }) {
     console.log(zoom, center, res.data)
 
     _Map.setCenter(center)
-    _Map.setZoom(zoom - 1)
+    _Map.setZoom(zoom)
 
     _LinkLayer.setData(res.data)
-  })
-}
-function handleLoadMaker() {
-  API.queryAllMaker({}).then((res) => {
-    _LinkStatsLayer.setData(res.data)
   })
 }
 function handleClickLink(data) {
   linkDetailData.visible = true
   linkDetailData.linkId = data.id
+
+  // let { zoom, center } = _Map.getFitZoomAndCenter([data.fromxy, data.toxy])
+  // _Map.setCenter(center)
+  // _Map.setZoom(zoom)
 
   const { clientWidth, clientHeight } = _Map.rootDoc
   const [x1, y1] = _Map.WindowXYToWebMercator(clientWidth / 3, clientHeight / 2)
@@ -254,6 +287,7 @@ function handleClickLink(data) {
     (data.fromxy[1] + data.toxy[1]) / 2,
   ]
   _Map.setCenter(center)
+
   _LinkLayer.setSelectId(data.id)
 }
 function handleMoveToLink({ value, item }) {
@@ -278,18 +312,12 @@ function handleMoveToLink({ value, item }) {
     }
   })
 }
-function linkFlowUpdateData() {
-  handleLoadMaker()
-  if (selectRouteId.value) {
-    getMatsimLink(selectRouteId.value).then((res) => {
-      _LinkLayer.setData(res.data, _LinkLayer.selectId)
-    })
-  }
-}
 
-onMounted(() => {
-  handleLoadMaker()
-})
+// 关闭弹窗
+function handleClose() {
+  emit('update:visible', false)
+  emit('close')
+}
 onUnmounted(() => {
   _LinkLayer.dispose()
   _LinkStatsLayer.dispose()
@@ -297,7 +325,7 @@ onUnmounted(() => {
 
 injectSync('MapRef').then((map) => {
   _Map = map.value
-  watchVisible.callback(props.visible)
+  watchProps.callback(props)
 })
 </script>
 

@@ -15,12 +15,7 @@ export class ImageListLayer extends Layer {
     this.hColor = new THREE.Color(opt.hColor || '#67C23A')
     this.icon = opt.icon || new URL('@/assets/images/image.svg?url', import.meta.url).href
 
-    this.texture = new THREE.TextureLoader().load(
-      this.icon,
-      console.log,
-      console.log,
-      console.error,
-    )
+    this.texture = new THREE.TextureLoader().load(this.icon)
     this.geometry = new THREE.BufferGeometry()
 
     this.material = new THREE.PointsMaterial({

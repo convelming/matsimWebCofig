@@ -24,7 +24,7 @@
           </el-form-item>
         </el-form>
         <div class="checkbox">
-          <el-checkbox v-model="showLayer" @change="">
+          <el-checkbox v-model="showLayer" @change="emit('upload:visibleLayer', $event)">
             <span class="text1">显示图标</span>
             <span class="text2">(已上传数据点位)</span>
           </el-checkbox>
@@ -78,9 +78,13 @@ import Upload from './Upload.vue'
 import ImagePreview from './ImagePreview.vue'
 
 let _Map = null
-const emit = defineEmits(['update:visible', 'close'])
+const emit = defineEmits(['update:visible', 'update:visibleLayer', 'close'])
 const props = defineProps({
   visible: {
+    type: Boolean,
+    default: false,
+  },
+  visibleLayer: {
     type: Boolean,
     default: false,
   },
@@ -89,7 +93,7 @@ const props = defineProps({
 const showMain = computed(() => {
   return !showUpload.value && !showSreach.value && props.visible
 })
-const showLayer = ref(true)
+const showLayer = ref(props.visibleLayer)
 const showUpload = ref(false)
 const showSreach = ref(false)
 const showPreview = ref(false)
@@ -115,7 +119,8 @@ const _ImageListLayer = new ImageListLayer({
 const watchProps = addWatch(
   props,
   (val) => {
-    if (val.visible) {
+    if (val.visibleLayer) showLayer.value = val.visibleLayer
+    if (val.visible || val.visibleLayer) {
       handleLoadImageList()
       watchShowLayer.callback(showLayer.value)
     } else {

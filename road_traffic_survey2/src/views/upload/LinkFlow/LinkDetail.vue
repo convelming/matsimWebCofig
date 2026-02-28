@@ -228,11 +228,11 @@ const props = defineProps({
     default: false,
   },
   linkId: {
-    type: Number,
+    type: [Number, String],
     default: 92619,
   },
   proId: {
-    type: Number,
+    type: [Number, String],
     default: 0,
   },
 })
@@ -481,8 +481,6 @@ function handleMoveToRoute({ value }) {
     let { zoom, center } = _Map.getFitZoomAndCenter(res.data[0].map((v) => v.fromxy))
     _Map.setCenter(center)
     _Map.setZoom(zoom - 1)
-
-    _LinkLayer.setData(res.data)
   })
 }
 function handleEditInfo() {
