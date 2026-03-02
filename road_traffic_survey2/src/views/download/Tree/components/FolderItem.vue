@@ -43,6 +43,7 @@ import IntersectionFlowItem from './IntersectionFlowItem.vue'
 import UploadImageItem from './UploadImageItem.vue'
 import PDFItem from './PDFItem.vue'
 import TXTItem from './TXTItem.vue'
+import IframeItem from './IframeItem.vue'
 
 import { initCheck, initRange } from '../mixins'
 import { TreeItemEnum } from '../index.js'
@@ -51,11 +52,13 @@ const componentMap = {
   [TreeItemEnum.folder]: FolderItem,
   [TreeItemEnum.file]: FileItem,
   [TreeItemEnum.geojson]: GeoJSONItem,
+  [TreeItemEnum.pdf]: PDFItem,
+  [TreeItemEnum.txt]: TXTItem,
+  [TreeItemEnum.iframe]: IframeItem,
+  
   [TreeItemEnum.upload_image]: UploadImageItem,
   [TreeItemEnum.upload_link_flow]: LinkFlowItem,
   [TreeItemEnum.upload_intersection_flow]: IntersectionFlowItem,
-  [TreeItemEnum.pdf]: PDFItem,
-  [TreeItemEnum.txt]: TXTItem,
 }
 
 const props = defineProps({

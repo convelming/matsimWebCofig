@@ -5,6 +5,7 @@ export const TreeItemEnum = {
   folder: 'folder',
   file: 'file',
   geojson: 'geojson',
+  iframe: 'iframe',
   pdf: 'pdf',
   txt: 'txt',
   
