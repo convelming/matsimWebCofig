@@ -258,6 +258,7 @@ const _MapLayer = new MapLayer({
   zIndex: 100,
   opacity: mapLayerOpacity.value,
 })
+
 const _NetworkLayer = new NetworkLayer({ zIndex: 200, lineWidth: 5, color: '#409EFF' })
 injectSync('_NetworkData').then((res) => {
   _NetworkLayer.setData(res.value)

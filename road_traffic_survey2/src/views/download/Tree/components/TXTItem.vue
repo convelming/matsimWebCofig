@@ -55,29 +55,27 @@ const { range, getRange, handleSetCenterAndZoom } = initRange(
   props.check,
 )
 
-let msg = ''
 const watchCheck = addWatch(
   check,
   (val) => {
-    if (val && msg) {
-      ElMessageBox.confirm(msg, {
-        title: props.title,
-      }).finally(() => {
-        check.value = false
-        handleChangeCheck()
-      })
+    if (val) {
+      fetch(props.path)
+        .then((res) => res.text())
+        .then((text) =>
+          ElMessageBox.confirm(text, {
+            title: props.title,
+          }),
+        )
+        .finally(() => {
+          check.value = false
+          handleChangeCheck()
+        })
     }
   },
   {
     immediate: true,
   },
 )
-fetch(props.path)
-  .then((res) => res.text())
-  .then((text) => {
-    msg = text
-    watchCheck.callback(check.value)
-  })
 
 onUnmounted(() => {
   watchShowDialog.callback(false)

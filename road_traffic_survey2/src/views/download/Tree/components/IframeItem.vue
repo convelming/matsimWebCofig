@@ -18,12 +18,12 @@
     @update:model-value="((check = $event), handleChangeCheck())"
     width="80vw"
   >
-    <div style="color: red" v-if="msg">{{ msg }}</div>
-    <div class="btn_list">
+    <div style="color: red; font-size: 18px" v-if="msg">{{ msg }}</div>
+    <!-- <div class="btn_list">
       <el-button type="primary" @click=""></el-button>
       <el-button type="primary" @click=""></el-button>
       <el-button type="primary" @click=""></el-button>
-    </div>
+    </div> -->
     <el-auto-resizer style="width: 100%; height: calc(100vh - 300px)">
       <template #default="{ height, width }">
         <iframe v-if="check" style="border: 0" :width="width" :height="height" :src="path">
@@ -45,6 +45,7 @@ import {
   guid,
 } from '@/utils/index'
 import { Setting, Download, Loading, Delete, Plus, Aim } from '@element-plus/icons-vue'
+import { watch } from 'vue'
 
 const emit = defineEmits(['check-change'])
 const props = defineProps({
@@ -75,11 +76,18 @@ const { range, getRange, handleSetCenterAndZoom } = initRange(
 )
 
 const msg = ref('')
-fetch(props.msgPath)
-  .then((res) => res.text())
-  .then((text) => {
-    msg.value = text
-  })
+watch(
+  () => check.value,
+  (val) => {
+    if (val) {
+      fetch(props.msgPath)
+        .then((res) => res.text())
+        .then((text) => {
+          msg.value = text
+        })
+    }
+  },
+)
 
 onUnmounted(() => {
   watchShowDialog.callback(false)

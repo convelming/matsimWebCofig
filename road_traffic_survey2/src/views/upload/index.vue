@@ -120,16 +120,13 @@ const menuList = [
   },
 ]
 
-const _NetworkLayer = shallowRef(new NetworkLayer({ zIndex: 10, lineWidth: 10 }))
 const _NetworkData = shallowRef(null)
 API.getGeomjson({
   selectAll: true,
 }).then((res) => {
-  _NetworkLayer.value.setData(res.data)
   _NetworkData.value = res.data
 })
 
-provide('_NetworkLayer', _NetworkLayer)
 provide('_NetworkData', _NetworkData)
 
 function handleClick(v1, v2) {

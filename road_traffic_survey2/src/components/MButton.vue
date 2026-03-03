@@ -6,7 +6,7 @@
   </a>
 
   <el-dialog v-model="showIframe" width="900px" v-if="type == 'iframe'">
-    <div style="color: red" v-if="msg">{{ msg }}</div>
+    <div style="color: red; font-size: 18px" v-if="msg">{{ msg }}</div>
     <el-auto-resizer style="width: 100%; height: calc(100vh - 300px)">
       <template #default="{ height, width }">
         <iframe v-if="showIframe" style="border: 0" :width="width" :height="height" :src="path">

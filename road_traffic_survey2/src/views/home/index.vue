@@ -225,7 +225,7 @@
         <IconSCK class="icon" />
         <div class="text_box">
           <div class="text1">宣传库</div>
-          <div class="text2">道路交通模型数据图片下载</div>
+          <div class="text2">院内风采快速了解</div>
         </div>
       </div>
       <div class="box2">
@@ -621,6 +621,35 @@ const sjk_list = [
         to: {
           name: 'download',
           query: { open: `道路交通,路况态势` },
+        },
+      },
+    ],
+  },
+  {
+    title: '交通调查',
+    children: [
+      {
+        title: '拍照图片',
+        type: 'router',
+        to: {
+          name: 'download',
+          query: { open: `拍照图片` },
+        },
+      },
+      {
+        title: '路段流量',
+        type: 'router',
+        to: {
+          name: 'download',
+          query: { open: `人工数车,路段流量` },
+        },
+      },
+      {
+        title: '交叉口流量',
+        type: 'router',
+        to: {
+          name: 'download',
+          query: { open: `人工数车,交叉口流量` },
         },
       },
     ],

@@ -523,20 +523,26 @@
   </MDialog>
 
   <GeoJSONVM
-    v-model:visible="showPointVM"
-    v-model:title="titlePointVM"
+    v-if="hasPoint"
+    :visible="showPointVM && check"
+    @update:visible="showPointVM = $event"
+    :title="titlePointVM"
     :list="geojsonParams.pointColorBar"
     :type="pointColorBarParams.type"
   />
   <GeoJSONVM
-    v-model:visible="showLineVM"
+    v-if="hasLine"
+    :visible="showLineVM && check"
+    @update:visible="showLineVM = $event"
     :title="titleLineVM"
     :list="geojsonParams.lineColorBar"
     :type="lineColorBarParams.type"
   />
   <GeoJSONVM
-    v-model:visible="showPolygonVM"
-    v-model:title="titlePolygonVM"
+    v-if="hasPolygon"
+    :visible="showPolygonVM && check"
+    @update:visible="showPolygonVM = $event"
+    :title="titlePolygonVM"
     :list="geojsonParams.polygonColorBar"
     :type="polygonColorBarParams.type"
   />
@@ -616,6 +622,7 @@ const properties = ref([])
 const pointColorBarParams = ref({})
 const lineColorBarParams = ref({})
 const polygonColorBarParams = ref({})
+
 const showPointVM = ref(false)
 const titlePointVM = ref('')
 const showLineVM = ref(false)
@@ -793,6 +800,12 @@ async function loadData() {
         hasPoint.value = json.pointArray.length > 0
         hasLine.value = json.lineArray.length > 0
         hasPolygon.value = json.polygonArray.length > 0
+
+        const fileName = props.path.split('/').pop().split('.')[0]
+        titlePointVM.value = fileName
+        titleLineVM.value = fileName
+        titlePolygonVM.value = fileName
+
         properties.value = json.propertiesLabels
         _GeoJSONLayer.setGeoJsonData(json)
 
@@ -1000,6 +1013,9 @@ function handleResetConfig() {
         // ******************** 面 ******************** //
         polygonColorType: 'color',
       }
+      pointColorBarMap = {}
+      lineColorBarMap = {}
+      polygonColorBarMap = {}
     })
 }
 
@@ -1012,6 +1028,10 @@ function handleSetConfig(configJson) {
   if (configJson.pointColorBarMap) pointColorBarMap = configJson.pointColorBarMap
   if (configJson.lineColorBarMap) lineColorBarMap = configJson.lineColorBarMap
   if (configJson.polygonColorBarMap) polygonColorBarMap = configJson.polygonColorBarMap
+
+  showPointVM.value = configJson.geojsonParams.pointColorType == 'colorBar'
+  showLineVM.value = configJson.geojsonParams.lineColorType == 'colorBar'
+  showPolygonVM.value = configJson.geojsonParams.polygonColorType == 'colorBar'
 }
 
 injectSync('MapRef').then((map) => {

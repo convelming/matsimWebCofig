@@ -126,7 +126,6 @@ const twoWayOffset = ref(10)
 const selectRouteId = ref(null)
 
 const showLinkDetail = computed(() => {
-  if (linkDetailData.visible) emit('update:visible', true)
   return linkDetailData.visible
 })
 
@@ -141,9 +140,13 @@ const linkDetailData = reactive({
 })
 
 let _Map = null
-const _NetworkLayer = inject('_NetworkLayer')?.value
 
-const _NetworkLayerEventId = _NetworkLayer.addEventListener(MAP_EVENT.HANDLE_PICK_LEFT, (res1) => {
+const _NetworkLayer = new NetworkLayer({ zIndex: 10, lineWidth: 10 })
+injectSync('_NetworkData').then((res) => {
+  _NetworkLayer.setData(res.value)
+})
+
+_NetworkLayer.addEventListener(MAP_EVENT.HANDLE_PICK_LEFT, (res1) => {
   linkDetailData.visible = selectRouteId.value == res1.data.id
   linkDetailData.linkId = null
   selectRouteId.value = res1.data.id
@@ -155,7 +158,6 @@ const _NetworkLayerEventId = _NetworkLayer.addEventListener(MAP_EVENT.HANDLE_PIC
     _LinkLayer.setData(null)
   }
 })
-_NetworkLayer.stopEventListener(MAP_EVENT.HANDLE_PICK_LEFT, _NetworkLayerEventId)
 
 const _LinkLayer = new LinkLayer({
   zIndex: 30,
@@ -189,14 +191,12 @@ const watchProps = addWatch(
     if (val.visibleLayer) showLayer.value = true
     if (val.visible || val.visibleLayer) {
       if (!loaded) handleLoadMaker()
-      _NetworkLayer.resumeEventListener(MAP_EVENT.HANDLE_PICK_LEFT, _NetworkLayerEventId)
       watchWayWidth.callback(wayWidth.value)
 
       _Map.addLayer(_NetworkLayer)
       _Map.addLayer(_LinkLayer)
       watchShowLayer.callback(showLayer.value)
     } else {
-      _NetworkLayer.stopEventListener(MAP_EVENT.HANDLE_PICK_LEFT, _NetworkLayerEventId)
 
       _Map.removeLayer(_NetworkLayer)
       _Map.removeLayer(_LinkLayer)
@@ -319,6 +319,7 @@ function handleClose() {
   emit('close')
 }
 onUnmounted(() => {
+  _NetworkLayer.dispose()
   _LinkLayer.dispose()
   _LinkStatsLayer.dispose()
 })

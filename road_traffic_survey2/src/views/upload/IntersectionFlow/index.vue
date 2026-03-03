@@ -138,7 +138,10 @@ const _IntersectionListLayer = new IntersectionListLayer({
   },
 })
 
-const _NetworkLayer = inject('_NetworkLayer')?.value
+const _NetworkLayer = new NetworkLayer({ zIndex: 10, lineWidth: 10 })
+injectSync('_NetworkData').then((res) => {
+  _NetworkLayer.setData(res.value)
+})
 
 const watchWayWidth = addWatch(wayWidth, (val) => {
   _NetworkLayer.setValues({ lineWidth: val })
@@ -231,12 +234,13 @@ function handleEdit(row) {
 }
 
 onUnmounted(() => {
+  _NetworkLayer.dispose()
   _IntersectionListLayer.dispose()
 })
 
 injectSync('MapRef').then((map) => {
   _Map = map.value
-  watchProps.callback(props.visible)
+  watchProps.callback(props)
 })
 </script>
 

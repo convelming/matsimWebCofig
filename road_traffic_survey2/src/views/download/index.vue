@@ -94,16 +94,13 @@ fetch(import.meta.env.VITE_APP_PUBLIC_PATH + 'download_menu.json')
     menuList.value = tree
   })
 
-const _NetworkLayer = shallowRef(new NetworkLayer({ zIndex: 10, lineWidth: 10 }))
 const _NetworkData = shallowRef(null)
 API.getGeomjson({
   selectAll: true,
 }).then((res) => {
-  _NetworkLayer.value.setData(res.data)
   _NetworkData.value = res.data
 })
 
-provide('_NetworkLayer', _NetworkLayer)
 provide('_NetworkData', _NetworkData)
 
 function handleCurrentChange(data, node) {
