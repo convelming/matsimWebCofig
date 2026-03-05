@@ -12,7 +12,12 @@ const routes = [
   {
     path: "/index2",
     name: "index2",
-    component: () => import(/* webpackChunkName: "pt_home" */ "./views/index2.vue"),
+    component: () => import(/* webpackChunkName: "pt_home2" */ "./views/index2.vue"),
+  },
+  {
+    path: "/index3",
+    name: "index3",
+    component: () => import(/* webpackChunkName: "pt_home3" */ "./views/index3.vue"),
   },
   {
     // 线路方案调整
@@ -54,6 +59,15 @@ const routes = [
     path: "/demo/page1",
     name: "demopage1",
     component: () => import(/* webpackChunkName: "pt_demo" */ "./views/demo/page1/index.vue"),
+  },
+  {
+    path: "/404",
+    name: "404",
+    component: () => import(/* webpackChunkName: "pt_404" */ "@admin/views/error/404.vue"),
+  },
+  {
+    path: "*",
+    redirect: "/404",
   },
 ];
 

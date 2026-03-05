@@ -24,6 +24,15 @@ const routes = [
     name: "forgetPasswork",
     component: () => import(/* webpackChunkName: "user_forgetPasswork" */ "./views/forgetPasswork.vue"),
   },
+  {
+    path: "/404",
+    name: "404",
+    component: () => import(/* webpackChunkName: "pt_404" */ "@admin/views/error/404.vue"),
+  },
+  {
+    path: "*",
+    redirect: "/404",
+  },
 ];
 
 const router = new VueRouter({

@@ -15,7 +15,7 @@
         <img class="logo" src="@/assets/image/favicon.png" alt="" />
         <div style="display: flex; flex-direction: column; gap: 8px; align-items: flex-start">
           <div style="font-size: 30px; line-height: 30px">ATLAS</div>
-          <div style="font-size: 12px; line-height: 12px; font-weight: 400"><strong>A</strong>ctivity-based <strong>T</strong>ransportation & <strong>L</strong>and-use <strong>A</strong>gent <strong>S</strong>ystem</div>
+          <div style="font-size: 12px; line-height: 12px; font-weight: 4a00"><strong>A</strong>ctivity-based <strong>T</strong>ransportation & <strong>L</strong>and-use <strong>A</strong>gent <strong>S</strong>ystem</div>
           <div style="font-size: 55px; line-height: 55px">多智能体城市交通建模平台</div>
           <!-- <span>{{ $l("ATLAS多智能体城市交通建模平台") }}</span> -->
         </div>
@@ -31,7 +31,7 @@
           </div>
           <div class="el-icon-question item_help" @click.stop="showOAHelpDialog = true"></div>
         </div>
-        <div @click="handleClickItem('planAdjustment')" class="item" style="background-color: #f0704b">
+        <!-- <div @click="handleClickItem('planAdjustment')" class="item" style="background-color: #f0704b">
           <div class="item_title">
             <img class="item_icon" src="@/assets/image/修改or意见.svg" />
             <span>{{ $l("线路方案调整") }}</span>
@@ -40,8 +40,19 @@
             {{ $l("按照一定的策略新建或调整公交线路，站点，发车信息，实时更新线路信息。") }}
           </div>
           <div class="el-icon-question item_help" @click.stop="showPAHelpDialog = true"></div>
+        </div> -->
+        <div @click="handleClickItem('MATSim')" class="item" style="background-color: #474ba6">
+          <div class="item_title">
+            <img class="item_icon" src="@/assets/image/道路交通.png" />
+            <img class="item_icon" style="width: 0; flex: 1; object-fit: contain" src="@/assets/image/MATSim.png" />
+            <!-- <span>{{ $l("MATSim onLine 场景建模") }}</span> -->
+          </div>
+          <div class="item_detail">
+            {{ $l("MATSim onLine 场景建模") }}
+          </div>
+          <!-- <div class="el-icon-question item_help" @click.stop="showSEHelpDialog = true"></div> -->
         </div>
-        <div @click="handleClickItem('comparativeAnalysis')" class="item" style="background-color: #52b3ba">
+        <!-- <div @click="handleClickItem('comparativeAnalysis')" class="item" style="background-color: #52b3ba">
           <div class="item_title">
             <img class="item_icon" src="@/assets/image/比幅对比_1.svg" />
             <span>{{ $l("方案对比分析") }}</span>
@@ -50,7 +61,7 @@
             {{ $l("根据调整优化的线路方案，呈现城市居民在线路调整后的反应，并将对比结果可视化呈现。") }}
           </div>
           <div class="el-icon-question item_help" @click.stop="showCAHelpDialog = true"></div>
-        </div>
+        </div> -->
         <div @click="handleClickItem('systemEvaluation')" class="item" style="background-color: #0070c0">
           <div class="item_title">
             <img class="item_icon" src="@/assets/image/评估.svg" />
@@ -60,6 +71,16 @@
             {{ $l("公交系统总体运行评估包括可达性。") }}
           </div>
           <div class="el-icon-question item_help" @click.stop="showSEHelpDialog = true"></div>
+        </div>
+        <div @click="handleClickItem('ActivitySim')" class="item" style="background-color: green">
+          <div class="item_title">
+            <img class="item_icon" style="object-fit: contain" src="@/assets/image/Activity2.png" />
+            <!-- <span>{{ $l("ActivitySim_title") }}</span> -->
+          </div>
+          <div class="item_detail">
+            {{ $l("ActivitySim_detail") }}
+          </div>
+          <!-- <div class="el-icon-question item_help" @click.stop="showSEHelpDialog = true"></div> -->
         </div>
       </div>
 

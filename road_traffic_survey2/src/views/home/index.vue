@@ -26,7 +26,7 @@
       <div class="title_box">
         <IconMXK class="icon" />
         <div class="text_box">
-          <div class="text1">模型库</div>
+          <div class="text1">工具库</div>
           <div class="text2">道路交通模型数据图片下载</div>
         </div>
       </div>
@@ -444,6 +444,114 @@ function handleDeleteNotice(row) {
 //   })
 const sjk_list = [
   {
+    title: '城市底座',
+    children: [
+      {
+        title: '区划边界',
+        type: 'router',
+        to: {
+          name: 'download',
+          query: { open: `城市底座,区划边界,行政边界_广州_区级` },
+        },
+      },
+      {
+        title: '城市用地',
+        type: 'router',
+        to: {
+          name: 'download',
+          query: { open: `城市底座,城市用地,现状用地` },
+        },
+      },
+      {
+        title: '建筑白膜',
+        type: 'router',
+        to: {
+          name: 'download',
+          query: { open: `城市底座,建筑白膜` },
+        },
+      },
+    ],
+  },
+  {
+    title: '交通调查',
+    children: [
+      {
+        title: '拍照图片',
+        type: 'router',
+        to: {
+          name: 'download',
+          query: { open: `拍照图片` },
+        },
+      },
+      {
+        title: '路段流量',
+        type: 'router',
+        to: {
+          name: 'download',
+          query: { open: `人工数车,路段流量` },
+        },
+      },
+      {
+        title: '交叉口流量',
+        type: 'router',
+        to: {
+          name: 'download',
+          query: { open: `人工数车,交叉口流量` },
+        },
+      },
+    ],
+  },
+  {
+    title: '职住通勤',
+    children: [
+      {
+        title: '高德通勤',
+        type: 'router',
+        to: {
+          name: 'download',
+          query: { open: `职住通勤,高德通勤` },
+        },
+      },
+      {
+        title: '普查人口',
+        type: 'router',
+        to: {
+          name: 'download',
+          query: { open: `职住通勤,普查人口` },
+        },
+      },
+    ],
+  },
+  {
+    title: '道路交通',
+    children: [
+      {
+        title: 'OSM路网',
+        type: 'router',
+        to: {
+          name: 'download',
+          query: { open: `道路交通,城市路网,OSM路网,2025年` },
+        },
+      },
+      {
+        title: '四维图新导航级路网',
+        type: 'router',
+        to: {
+          name: 'download',
+          query: { open: `道路交通,城市路网,四维图新导航级路网` },
+        },
+      },
+      {
+        title: '路况态势',
+        type: 'router',
+        to: {
+          name: 'download',
+          query: { open: `道路交通,路况态势` },
+        },
+      },
+    ],
+  },
+  {
     title: '公共交通',
     children: [
       {
@@ -481,51 +589,22 @@ const sjk_list = [
     ],
   },
   {
-    title: '城市底座',
+    title: '货运物流',
     children: [
       {
-        title: '区划边界',
+        title: '货车轨迹',
         type: 'router',
         to: {
           name: 'download',
-          query: { open: `城市底座,区划边界,行政边界_广州_区级` },
+          query: { open: `货运物流,货车轨迹` },
         },
       },
       {
-        title: '城市用地',
+        title: '末端物流网点',
         type: 'router',
         to: {
           name: 'download',
-          query: { open: `城市底座,城市用地,现状用地` },
-        },
-      },
-      {
-        title: '建筑白膜',
-        type: 'router',
-        to: {
-          name: 'download',
-          query: { open: `城市底座,建筑白膜` },
-        },
-      },
-    ],
-  },
-  {
-    title: '职住通勤',
-    children: [
-      {
-        title: '高德通勤',
-        type: 'router',
-        to: {
-          name: 'download',
-          query: { open: `职住通勤,高德通勤` },
-        },
-      },
-      {
-        title: '普查人口',
-        type: 'router',
-        to: {
-          name: 'download',
-          query: { open: `职住通勤,普查人口` },
+          query: { open: `货运物流,末端物流网点` },
         },
       },
     ],
@@ -571,85 +650,6 @@ const sjk_list = [
         to: {
           name: 'download',
           query: { open: `设施场所,高速服务区` },
-        },
-      },
-    ],
-  },
-  {
-    title: '货运物流',
-    children: [
-      {
-        title: '货车轨迹',
-        type: 'router',
-        to: {
-          name: 'download',
-          query: { open: `货运物流,货车轨迹` },
-        },
-      },
-      {
-        title: '末端物流网点',
-        type: 'router',
-        to: {
-          name: 'download',
-          query: { open: `货运物流,末端物流网点` },
-        },
-      },
-    ],
-  },
-  {
-    title: '道路交通',
-    children: [
-      {
-        title: 'OSM路网',
-        type: 'router',
-        to: {
-          name: 'download',
-          query: { open: `道路交通,城市路网,OSM路网,2025年` },
-        },
-      },
-      {
-        title: '四维图新导航级路网',
-        type: 'router',
-        to: {
-          name: 'download',
-          query: { open: `道路交通,城市路网,四维图新导航级路网` },
-        },
-      },
-      {
-        title: '路况态势',
-        type: 'router',
-        to: {
-          name: 'download',
-          query: { open: `道路交通,路况态势` },
-        },
-      },
-    ],
-  },
-  {
-    title: '交通调查',
-    children: [
-      {
-        title: '拍照图片',
-        type: 'router',
-        to: {
-          name: 'download',
-          query: { open: `拍照图片` },
-        },
-      },
-      {
-        title: '路段流量',
-        type: 'router',
-        to: {
-          name: 'download',
-          query: { open: `人工数车,路段流量` },
-        },
-      },
-      {
-        title: '交叉口流量',
-        type: 'router',
-        to: {
-          name: 'download',
-          query: { open: `人工数车,交叉口流量` },
         },
       },
     ],
@@ -879,80 +879,91 @@ const ptk_list = [
 const dqk_list = [
   {
     title: '越秀',
-    // path: 'http://192.168.60.231:8085/地区库/越秀/',
-    path: '',
-    msg: '数据收集中，暂无数据',
-    type: 'message',
+    path: 'http://192.168.60.231:8085/地区库/越秀/',
+    type: 'a',
+    // path: '',
+    // msg: '数据收集中，暂无数据',
+    // type: 'message',
   },
   {
     title: '天河',
-    // path: 'http://192.168.60.231:8085/地区库/天河/',
-    path: '',
-    msg: '数据收集中，暂无数据',
-    type: 'message',
+    path: 'http://192.168.60.231:8085/地区库/天河/',
+    type: 'a',
+    // path: '',
+    // msg: '数据收集中，暂无数据',
+    // type: 'message',
   },
   {
     title: '黄埔',
-    // path: 'http://192.168.60.231:8085/地区库/黄埔/',
-    path: '',
-    msg: '数据收集中，暂无数据',
-    type: 'message',
+    path: 'http://192.168.60.231:8085/地区库/黄埔/',
+    type: 'a',
+    // path: '',
+    // msg: '数据收集中，暂无数据',
+    // type: 'message',
   },
   {
     title: '南沙',
-    // path: 'http://192.168.60.231:8085/地区库/南沙/',
-    path: '',
-    msg: '数据收集中，暂无数据',
-    type: 'message',
+    path: 'http://192.168.60.231:8085/地区库/南沙/',
+    type: 'a',
+    // path: '',
+    // msg: '数据收集中，暂无数据',
+    // type: 'message',
   },
   {
     title: '白云',
-    // path: 'http://192.168.60.231:8085/地区库/白云/',
-    path: '',
-    msg: '数据收集中，暂无数据',
-    type: 'message',
+    path: 'http://192.168.60.231:8085/地区库/白云/',
+    type: 'a',
+    // path: '',
+    // msg: '数据收集中，暂无数据',
+    // type: 'message',
   },
   {
     title: '海珠',
-    // path: 'http://192.168.60.231:8085/地区库/海珠/',
-    path: '',
-    msg: '数据收集中，暂无数据',
-    type: 'message',
+    path: 'http://192.168.60.231:8085/地区库/海珠/',
+    type: 'a',
+    // path: '',
+    // msg: '数据收集中，暂无数据',
+    // type: 'message',
   },
   {
     title: '荔湾',
-    // path: 'http://192.168.60.231:8085/地区库/荔湾/',
-    path: '',
-    msg: '数据收集中，暂无数据',
-    type: 'message',
+    path: 'http://192.168.60.231:8085/地区库/荔湾/',
+    type: 'a',
+    // path: '',
+    // msg: '数据收集中，暂无数据',
+    // type: 'message',
   },
   {
     title: '番禺',
-    // path: 'http://192.168.60.231:8085/地区库/番禺/',
-    path: '',
-    msg: '数据收集中，暂无数据',
-    type: 'message',
+    path: 'http://192.168.60.231:8085/地区库/番禺/',
+    type: 'a',
+    // path: '',
+    // msg: '数据收集中，暂无数据',
+    // type: 'message',
   },
   {
     title: '增城',
-    // path: 'http://192.168.60.231:8085/地区库/增城/',
-    path: '',
-    msg: '数据收集中，暂无数据',
-    type: 'message',
+    path: 'http://192.168.60.231:8085/地区库/增城/',
+    type: 'a',
+    // path: '',
+    // msg: '数据收集中，暂无数据',
+    // type: 'message',
   },
   {
     title: '花都',
-    // path: 'http://192.168.60.231:8085/地区库/花都/',
-    path: '',
-    msg: '数据收集中，暂无数据',
-    type: 'message',
+    path: 'http://192.168.60.231:8085/地区库/花都/',
+    type: 'a',
+    // path: '',
+    // msg: '数据收集中，暂无数据',
+    // type: 'message',
   },
   {
     title: '从化',
-    // path: 'http://192.168.60.231:8085/地区库/从化/',
-    path: '',
-    msg: '数据收集中，暂无数据',
-    type: 'message',
+    path: 'http://192.168.60.231:8085/地区库/从化/',
+    type: 'a',
+    // path: '',
+    // msg: '数据收集中，暂无数据',
+    // type: 'message',
   },
 ]
 
