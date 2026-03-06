@@ -31,28 +31,6 @@ const showMenu = computed(() => {
 const showGeoJSONParams = ref({})
 provide('showGeoJSONParams', showGeoJSONParams)
 
-const s_menuList = [
-  {
-    title: '拍照图片',
-    type: TreeItemEnum.upload_image,
-  },
-  {
-    title: '人工数车',
-    type: TreeItemEnum.folder,
-    children: [
-      {
-        title: '路段流量',
-        type: TreeItemEnum.upload_link_flow,
-      },
-      {
-        title: '交叉口流量',
-        type: TreeItemEnum.upload_intersection_flow,
-      },
-    ],
-  },
-]
-const r_menuList = ref([])
-
 const menuList = ref([])
 
 fetch(import.meta.env.VITE_APP_PUBLIC_PATH + 'download_menu.json')
@@ -65,7 +43,7 @@ fetch(import.meta.env.VITE_APP_PUBLIC_PATH + 'download_menu.json')
       .map((v) => v.split(',') || [])
       .flat(2)
       .filter((v) => !!v)
-    const tree = [...data, ...s_menuList]
+    const tree = [...data]
     const list = [...tree]
     while (list.length) {
       const item = list.shift()

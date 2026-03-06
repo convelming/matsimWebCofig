@@ -83,7 +83,7 @@ export const MAP_EVENT = {
 
 export const MAP_ZOOM_RANGE = {
   BASE: 18,
-  MIN: 5,
+  MIN: 2,
   MAX: 22,
 }
 
@@ -924,7 +924,8 @@ export class MyMap extends EventListener {
   }
 
   // 根据WebMercator坐标数组设置最佳缩放层级和中心点
-  setFitZoomAndCenterByPoints(list) {
+  setFitZoomAndCenterByPoints(_list) {
+    const list = _list.filter((item) => !!item[0] && !!item[1])
     const { height, center, zoom } = this.getFitZoomAndCenter(list)
     this.setCenter(center)
     this.setZoom(zoom)
@@ -936,7 +937,8 @@ export class MyMap extends EventListener {
   }
 
   // 获取最佳缩放层级和中心点
-  getFitZoomAndCenter(list) {
+  getFitZoomAndCenter(_list) {
+    const list = _list.filter((item) => !!item[0] && !!item[1])
     if (list.length == 0) {
       return {
         height: this.cameraHeight,

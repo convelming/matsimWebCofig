@@ -154,11 +154,18 @@ class GeoJSONParser {
       const list = [];
       for (const { propertiesKey, geometry } of pointList) {
         for (const [x, y] of geometry) {
-          list.push(x, y, propertiesKey);
+          
+          list[list.length] = x
+          list[list.length] = y
+          list[list.length] = propertiesKey
+          // list.push(x, y, propertiesKey);
 
           const geom = geomList[propertiesKey];
 
-          geom.pointArray.push(x, y, propertiesKey);
+          geom.pointArray[geom.pointArray.length] = x
+          geom.pointArray[geom.pointArray.length] = y
+          geom.pointArray[geom.pointArray.length] = propertiesKey
+          // geom.pointArray.push(x, y, propertiesKey);
 
           geom.tl.x = Math.min(geom.tl.x, x);
           geom.tl.y = Math.max(geom.tl.y, y);
@@ -181,15 +188,22 @@ class GeoJSONParser {
       for (const { propertiesKey, geometry } of lineList) {
         for (const line of geometry) {
           const l = line.flat();
-          list.push(l.length + 1);
-          list.push(propertiesKey);
-          list.push(...l);
+          list[list.length] = l.length + 1
+          list[list.length] = propertiesKey
+          l.forEach(v=>list[list.length] = v)
+          // list.push(l.length + 1);
+          // list.push(propertiesKey);
+          // list.push(...l);
 
           const geom = geomList[propertiesKey];
 
-          geom.lineArray.push(l.length + 1);
-          geom.lineArray.push(propertiesKey);
-          geom.lineArray.push(...l);
+          
+          geom.lineArray[geom.lineArray.length] = l.length + 1
+          geom.lineArray[geom.lineArray.length] = propertiesKey
+          l.forEach(v=>geom.lineArray[geom.lineArray.length] = v)
+          // geom.lineArray.push(l.length + 1);
+          // geom.lineArray.push(propertiesKey);
+          // geom.lineArray.push(...l);
 
           const xl = l.filter((v, i) => i % 3 == 0);
           const yl = l.filter((v, i) => i % 3 == 1);
@@ -217,8 +231,10 @@ class GeoJSONParser {
           const geom = geomList[propertiesKey];
           for (const shape of polygon) {
             const l = shape.flat();
-            shapeList.push(l.length);
-            shapeList.push(...l);
+            shapeList[shapeList.length] = l.length;
+            l.forEach(v => shapeList[shapeList.length] = v)
+            // shapeList.push(l.length);
+            // shapeList.push(...l);
 
             const xl = l.filter((v, i) => i % 2 == 0);
             const yl = l.filter((v, i) => i % 2 == 1);
@@ -227,13 +243,19 @@ class GeoJSONParser {
             geom.br.x = Math.max(...xl, geom.br.x);
             geom.br.y = Math.min(...yl, geom.br.y);
           }
-          list.push(shapeList.length + 1);
-          list.push(propertiesKey);
-          list.push(...shapeList);
+          list[list.length] = shapeList.length + 1
+          list[list.length] = propertiesKey
+          shapeList.forEach(v => list[list.length] = v)
+          // list.push(shapeList.length + 1);
+          // list.push(propertiesKey);
+          // list.push(...shapeList);
 
-          geom.polygonArray.push(shapeList.length + 1);
-          geom.polygonArray.push(propertiesKey);
-          geom.polygonArray.push(...shapeList);
+          geom.polygonArray[geom.polygonArray.length] = shapeList.length + 1;
+          geom.polygonArray[geom.polygonArray.length] = propertiesKey;
+          shapeList.forEach(v => geom.polygonArray[geom.polygonArray.length] = v)
+          // geom.polygonArray.push(shapeList.length + 1);
+          // geom.polygonArray.push(propertiesKey);
+          // geom.polygonArray.push(...shapeList);
         }
       }
       this.polygonArray = new Float64Array(list);

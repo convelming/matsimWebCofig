@@ -481,7 +481,7 @@ const sjk_list = [
         type: 'router',
         to: {
           name: 'download',
-          query: { open: `拍照图片` },
+          query: { open: `交通调查,拍照图片` },
         },
       },
       {
@@ -489,7 +489,7 @@ const sjk_list = [
         type: 'router',
         to: {
           name: 'download',
-          query: { open: `人工数车,路段流量` },
+          query: { open: `交通调查,路段流量` },
         },
       },
       {
@@ -497,7 +497,7 @@ const sjk_list = [
         type: 'router',
         to: {
           name: 'download',
-          query: { open: `人工数车,交叉口流量` },
+          query: { open: `交通调查,交叉口流量` },
         },
       },
     ],

@@ -793,7 +793,7 @@ async function loadData() {
   loading.value = true
 
   Promise.all([
-    fetch(props.path)
+    fetch(`${props.path}?time=${new Date().getTime()}`)
       .then((res) => res.text())
       .then((str) => parserGeoJSON(str, { noGeomList: true }))
       .then((json) => {
@@ -823,7 +823,7 @@ async function loadData() {
         loading.value = false
       }),
 
-    fetch(props.config)
+    fetch(`${props.config}?time=${new Date().getTime()}`)
       .then((res) => res.json())
       .then(handleSetConfig)
       .catch((error) => {
