@@ -217,8 +217,8 @@ export default {
       });
       try {
         const config = await this.rootVue.getConfig();
-        // const fileName = `${configName}_${moment().format("YYYYMMDDHHmmss")}`;
-        const fileName = "城市更新_20260226154158"
+        const fileName = `${configName}_${moment().format("YYYYMMDDHHmmss")}`;
+        // const fileName = "城市更新_20260226154158"
         const file = stringToFile(JSON.stringify(config), fileName);
         await saveUserCfg(fileName, file);
         this.$message.success(this.$l("saveSuccess"));
@@ -260,9 +260,9 @@ export default {
       });
       try {
         const res = await removeUserCfg({ fileName: configName });
+        this.getConfigList();
         this.rootVue.initByConfig(res);
         this.$message.success(this.$l("removeSuccess"));
-        this.getConfigList();
       } catch (error) {
         console.error(error);
         // this.$message.success(error.msg);

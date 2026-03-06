@@ -37,20 +37,6 @@
       </div>
       <!-- 模型库 -->
 
-      <!-- 案例库 -->
-      <div class="title_box">
-        <IconALK class="icon" />
-        <div class="text_box">
-          <div class="text1">案例库</div>
-          <div class="text2">优秀项目快速了解</div>
-        </div>
-      </div>
-      <div class="box2">
-        <template v-for="(v1, i1) in alk_list">
-          <MButton v-bind="v1" class="btn" />
-        </template>
-      </div>
-      <!-- 案例库 -->
       <!-- 平台库 -->
       <div class="title_box">
         <IconPTK class="icon" />
@@ -250,20 +236,20 @@
       </div>
       <!-- 知识库 -->
 
-      <!-- 总院文件 -->
+      <!-- 案例库 -->
       <div class="title_box">
-        <IconZYWJ class="icon" />
+        <IconALK class="icon" />
         <div class="text_box">
-          <div class="text1">总院文件</div>
-          <div class="text2">总院资讯快速了解</div>
+          <div class="text1">案例库</div>
+          <div class="text2">优秀项目快速了解</div>
         </div>
       </div>
       <div class="box2">
-        <template v-for="(v1, i1) in zywj_list">
+        <template v-for="(v1, i1) in alk_list">
           <MButton v-bind="v1" class="btn" />
         </template>
       </div>
-      <!-- 总院文件 -->
+      <!-- 案例库 -->
 
       <!-- 地区库 -->
       <div class="title_box">
@@ -279,6 +265,21 @@
         </template>
       </div>
       <!-- 地区库 -->
+
+      <!-- 总院文件 -->
+      <div class="title_box">
+        <IconZYWJ class="icon" />
+        <div class="text_box">
+          <div class="text1">总院文件</div>
+          <div class="text2">总院资讯快速了解</div>
+        </div>
+      </div>
+      <div class="box2">
+        <template v-for="(v1, i1) in zywj_list">
+          <MButton v-bind="v1" class="btn" />
+        </template>
+      </div>
+      <!-- 总院文件 -->
     </div>
   </div>
 

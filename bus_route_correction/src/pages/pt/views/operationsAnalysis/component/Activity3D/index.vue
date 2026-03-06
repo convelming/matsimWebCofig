@@ -215,6 +215,7 @@ export default {
       return {
         showLayer: this.s_showLayer,
         lock2D: this.lock2D,
+        
         color: this.color,
         scale: this.scale,
         maxNum: this.maxNum,

@@ -327,6 +327,9 @@ export default {
     },
     async exportConfig() {
       return {
+        showLayer: this.s_showLayer,
+        lock2D: this.lock2D,
+
         showPoint: this.showPoint,
         pointColor: this.pointColor,
         pointSize: this.pointSize,

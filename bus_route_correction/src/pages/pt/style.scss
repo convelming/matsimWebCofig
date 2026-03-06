@@ -270,6 +270,25 @@ body {
 
   .el-collapse-item__title {
     width: calc(100% - 32px);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    .item_title {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-wrap: nowrap;
+    }
+
+    .item_icon {
+      width: 18px;
+      height: 18px;
+      margin-right: 7px;
+      filter: var(--image-filter-invert8);
+      &.active {
+        filter: var(--image-no-filter);
+      }
+    }
     .checkbox {
       width: 100%;
       display: flex;
@@ -286,22 +305,6 @@ body {
         font-size: 16px;
         font-weight: 500;
         line-height: 18px;
-
-        .item_title {
-          overflow: hidden;
-          text-overflow: ellipsis;
-          text-wrap: nowrap;
-        }
-
-        .item_icon {
-          width: 18px;
-          height: 18px;
-          margin-right: 7px;
-          filter: var(--image-filter-invert8);
-          &.active {
-            filter: var(--image-no-filter);
-          }
-        }
       }
     }
   }

@@ -8,7 +8,7 @@
       <el-input-number v-else-if="inputNumber" v-model="s_value" size="mini" label="" :min="min" :max="max" :step="step" :controls="false" :disabled="disabled" @change="handleInput"> </el-input-number>
       <div v-else>{{ s_value }}</div>
     </div>
-    <div class="row" v-if="slider" style="padding: 0 1em">
+    <div class="row" v-if="slider" style="padding: 0 1em 20px 1em">
       <div class="MySlider el-slider">
         <div class="runway">
           <div class="el-slider__marks">

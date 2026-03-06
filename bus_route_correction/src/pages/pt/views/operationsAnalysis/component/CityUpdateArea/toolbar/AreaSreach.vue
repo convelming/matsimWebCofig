@@ -52,14 +52,32 @@
       </AutoSize>
     </template>
     <Dialog class="AreaSreach_Dialog" ref="dialog" :title="dialogTitle" hideMinimize :visible.sync="showDialog" @close="handleCloseDialog" keepRight right="330" top="100" width="450px">
-      <el-scrollbar wrap-class="scroll_box" v-if="dialogDetail">
+      <!-- <el-scrollbar wrap-class="scroll_box" v-if="dialogDetail">
         <div class="AreaSreach_form">
           <template v-for="item in dialogDetail">
             <div class="title" v-if="item.type == 'title'">{{ $l(item.label) }}</div>
             <AreaFromItem v-if="item.type == 'item'" :label="$l(item.label)" v-bind="item" />
           </template>
         </div>
-      </el-scrollbar>
+      </el-scrollbar> -->
+      <div class="AreaSreach_Dialog_box">
+        <el-scrollbar wrap-class="scroll_box" v-if="dialogDetail">
+          <el-collapse v-model="activeNames" style="width: 100%">
+            <el-collapse-item class="my_collapse_item" :name="item.label" v-for="item in dialogDetail">
+              <div class="el-collapse-item__title" slot="title">
+                <el-checkbox class="checkbox" :value="getCheckAll(item)" @input="handleCheckAll(item, $event)" :indeterminate="getIndeterminate(item)" style="width: auto"></el-checkbox>
+                <span class="item_title">{{ item.label }}</span>
+              </div>
+              <div class="my_collapse_item_body">
+                <div v-if="item.label == '业态开发强度'" style="text-align: right">合计：{{ computedTotal(item) }}</div>
+                <template v-for="item2 in item.children">
+                  <AreaFromItem :label="$l(item2.label)" v-bind="item2" @update:value="item2.value = $event" @update:check="item2.check = $event" />
+                </template>
+              </div>
+            </el-collapse-item>
+          </el-collapse>
+        </el-scrollbar>
+      </div>
     </Dialog>
   </div>
 </template>
@@ -77,30 +95,55 @@ import { CUA_yearAreaList, CUA_downloadGeojson, CUA_searchSimilarCUAArea, CUA_ro
 import { guid, boldToText } from "@/utils/index2";
 
 const dialogList = [
-  { type: "title", label: "总体情况" },
-  { type: "item", label: "总开发强度", key: "总开发强度", start: 0, end: -1, step: 0.001 },
-  { type: "item", label: "平均容积率", key: "平均容积率", start: 0, end: -1, step: 0.001 },
-  { type: "title", label: "出行结构" },
-  { type: "item", label: "小汽车占比", key: "小汽车占比", start: 0, end: 1, step: 0.001 },
-  { type: "item", label: "轨道交通占比", key: "轨道交通占比", start: 0, end: 1, step: 0.001 },
-  { type: "item", label: "公交占比", key: "公交占比", start: 0, end: 1, step: 0.001 },
-  { type: "item", label: "慢行占比", key: "慢行占比", start: 0, end: 1, step: 0.001 },
-  { type: "title", label: "业态开发强度" },
-  { type: "item", label: "居住开发强度", key: "居住开发强度", start: 0, end: -1, step: 0.001 },
-  { type: "item", label: "办公开发强度", key: "办公开发强度", start: 0, end: -1, step: 0.001 },
-  { type: "item", label: "商业开发强度", key: "商业开发强度", start: 0, end: -1, step: 0.001 },
-  { type: "item", label: "工业开发强度", key: "工业开发强度", start: 0, end: -1, step: 0.001 },
-  { type: "title", label: "交通设施" },
-  { type: "item", label: "地铁站点数", key: "地铁站点数", start: 0, end: -1 },
-  { type: "item", label: "公交站点数", key: "公交站点数", start: 0, end: -1, step: 1 },
-  { type: "item", label: "主干路及以上长度", key: "主干路及以上长度", start: 0, end: -1, step: 1 },
-  { type: "item", label: "次干路及以下长度", key: "次干路及以下长度", start: 0, end: -1, step: 1 },
-  { type: "title", label: "特殊地点" },
-  { type: "item", label: "体育设施数", key: "体育设施数", start: 0, end: -1, step: 1 },
-  { type: "item", label: "医疗设施数", key: "医疗设施数", start: 0, end: -1, step: 1 },
-  { type: "item", label: "教育设施数", key: "教育设施数", start: 0, end: -1, step: 1 },
-  { type: "item", label: "文化设施数", key: "文化设施数", start: 0, end: -1, step: 1 },
-  { type: "item", label: "政府设施数", key: "政府设施数", start: 0, end: -1, step: 1 },
+  {
+    type: "title",
+    label: "总体情况",
+    children: [
+      { type: "item", label: "总开发强度", key: "总开发强度", start: 0, end: -1, step: 0.001 },
+      { type: "item", label: "平均容积率", key: "平均容积率", start: 0, end: -1, step: 0.001 },
+    ],
+  },
+  {
+    type: "title",
+    label: "业态开发强度",
+    children: [
+      { type: "item", label: "居住开发强度", key: "居住开发强度", start: 0, end: -1, step: 0.001, checkBox: true },
+      { type: "item", label: "办公开发强度", key: "办公开发强度", start: 0, end: -1, step: 0.001, checkBox: true },
+      { type: "item", label: "商业开发强度", key: "商业开发强度", start: 0, end: -1, step: 0.001, checkBox: true },
+      { type: "item", label: "工业开发强度", key: "工业开发强度", start: 0, end: -1, step: 0.001, checkBox: true },
+    ],
+  },
+  {
+    type: "title",
+    label: "出行结构",
+    children: [
+      { type: "item", label: "小汽车占比", key: "小汽车占比", start: 0, end: 1, step: 0.001 },
+      { type: "item", label: "轨道交通占比", key: "轨道交通占比", start: 0, end: 1, step: 0.001 },
+      { type: "item", label: "公交占比", key: "公交占比", start: 0, end: 1, step: 0.001 },
+      { type: "item", label: "慢行占比", key: "慢行占比", start: 0, end: 1, step: 0.001 },
+    ],
+  },
+  {
+    type: "title",
+    label: "交通设施",
+    children: [
+      { type: "item", label: "地铁站点数", key: "地铁站点数", start: 0, end: -1 },
+      { type: "item", label: "公交站点数", key: "公交站点数", start: 0, end: -1, step: 1 },
+      { type: "item", label: "主干路及以上长度", key: "主干路及以上长度", start: 0, end: -1, step: 1 },
+      { type: "item", label: "次干路及以下长度", key: "次干路及以下长度", start: 0, end: -1, step: 1 },
+    ],
+  },
+  {
+    type: "title",
+    label: "特殊地点",
+    children: [
+      { type: "item", label: "体育设施数", key: "体育设施数", start: 0, end: -1, step: 1 },
+      { type: "item", label: "医疗设施数", key: "医疗设施数", start: 0, end: -1, step: 1 },
+      { type: "item", label: "教育设施数", key: "教育设施数", start: 0, end: -1, step: 1 },
+      { type: "item", label: "文化设施数", key: "文化设施数", start: 0, end: -1, step: 1 },
+      { type: "item", label: "政府设施数", key: "政府设施数", start: 0, end: -1, step: 1 },
+    ],
+  },
 ];
 
 const pos = {
@@ -176,6 +219,8 @@ export default {
       dialogTitle: "",
       dialogDetail: null,
       colorBar: colorBar,
+
+      activeNames: ["基本信息", "总体情况", "业态开发强度", "出行结构", "交通设施", "特殊地点"],
     };
   },
   created() {
@@ -259,7 +304,8 @@ export default {
 
             const [cx, cy] = res.center;
             const areaParam = JSON.parse(JSON.stringify(dialogList));
-            areaParam.forEach((item) => {
+            const children = areaParam.map((v) => v.children).flat();
+            children.forEach((item) => {
               const prop = res.propertiesLabels[item.key];
               if (prop && item.type == "item") {
                 const list = prop.values.slice(1);
@@ -276,11 +322,13 @@ export default {
               }
             });
             this.areaParam = areaParam;
+
             this.likeList = res.propertiesList.slice(1).map((v, i) => {
               const index = i + 1;
               const { br, tl } = res.geomList[index];
               const param = JSON.parse(JSON.stringify(dialogList));
-              param.forEach((item) => {
+              const children = param.map((v) => v.children).flat();
+              children.forEach((item) => {
                 if (item.type == "item") {
                   const prop = res.propertiesLabels[item.key];
                   if (prop) {
@@ -369,6 +417,20 @@ export default {
       this.handleInitLike();
       this.$refs.table.clearSelection();
     },
+    handleCheckAll(item, $event) {
+      for (const item2 of item.children) {
+        this.$set(item2, "check", $event);
+      }
+    },
+    getCheckAll(item) {
+      return item.children.some((v) => v.check);
+    },
+    getIndeterminate(item) {
+      return !item.children.every((v) => v.check) && item.children.some((v) => v.check);
+    },
+    computedTotal(item) {
+      return item.children.filter((v) => v.check).reduce((a, c) => a + c.value, 0);
+    },
   },
 };
 </script>
@@ -410,32 +472,49 @@ export default {
     display: none;
   }
 }
+
 .AreaSreach_Dialog {
   height: calc(100vh - 130px);
-  // ::v-deep {
-  //   .bodyer {
-  //     height: 100%;
-  //     overflow-x: hidden;
-  //     overflow-y: auto;
-  //   }
-  // }
-  .el-scrollbar {
+  .AreaSreach_Dialog_box {
     height: 100%;
-  }
-  ::v-deep .scroll_box {
-    overflow-x: hidden;
-    overflow-y: auto;
-  }
-  .AreaSreach_form {
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    .title {
-      font-size: 18px;
-      font-weight: 500;
+    gap: 10px;
+    :deep .my_collapse_item .el-collapse-item__content {
+      border: 0;
+      padding: 0;
     }
-    .item {
-      padding: 0 10px;
+    ::v-deep .scroll_box {
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+    .my_collapse_item {
+      padding: 0;
+    }
+    .my_collapse_item_title {
+      padding-left: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .my_collapse_item_body {
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      .title {
+        font-size: 18px;
+        font-weight: 500;
+      }
+      .item {
+        padding: 0 10px;
+      }
+    }
+    .btn_box {
+      display: flex;
+      .el-button {
+        flex: 1;
+      }
     }
   }
 }

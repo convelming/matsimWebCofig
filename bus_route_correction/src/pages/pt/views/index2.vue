@@ -861,18 +861,17 @@ export default {
 
 .list {
   width: 1600px;
+  height: 0;
+  flex: 1;
   margin: 0 auto;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  /* margin: -10px; */
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 300px);
   gap: 40px;
+  overflow-y: auto;
 }
 .item {
   position: relative;
-  // width: 550px;
-  width: 45%;
-  height: 300px;
   display: block;
   text-decoration: none;
   box-sizing: border-box;

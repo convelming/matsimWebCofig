@@ -18,7 +18,7 @@ export default defineConfig({
   ],
   base: '/',
   build: {
-    outDir: fileURLToPath(new URL('./dist', import.meta.url)),
+    outDir: fileURLToPath(new URL('./road_traffic_survey2', import.meta.url)),
     emptyOutDir: true,
   },
   resolve: {

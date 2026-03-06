@@ -185,6 +185,7 @@ export default {
       return {
         showLayer: this.s_showLayer,
         lock2D: this.lock2D,
+        
         lockSelectVehicle: this.lockSelectVehicle,
         showBus3DLayer: this.showBus3DLayer,
         showSubway3DLayer: this.showSubway3DLayer,

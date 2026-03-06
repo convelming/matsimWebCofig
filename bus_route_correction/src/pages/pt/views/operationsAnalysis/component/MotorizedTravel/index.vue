@@ -236,6 +236,7 @@ export default {
       return {
         showLayer: this.s_showLayer,
         lock2D: this.lock2D,
+        
         maxVehicleNum: this.maxVehicleNum,
         modelSize: this.modelSize,
         showBus3DLayer: this.showBus3DLayer,

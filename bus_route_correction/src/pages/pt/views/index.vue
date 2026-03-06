@@ -882,18 +882,16 @@ export default {
 
 .list {
   width: 1600px;
+  height: 0;
+  flex: 1;
   margin: 0 auto;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  /* margin: -10px; */
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 1fr);
   gap: 40px;
 }
 .item {
   position: relative;
-  // width: 550px;
-  width: 30%;
-  height: 300px;
   display: block;
   text-decoration: none;
   box-sizing: border-box;

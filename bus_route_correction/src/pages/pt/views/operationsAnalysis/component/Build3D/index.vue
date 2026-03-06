@@ -135,6 +135,7 @@ export default {
       return {
         showLayer: this.s_showLayer,
         lock2D: this.lock2D,
+        
         buildColor: this.buildColor,
         buildOpacity: this.buildOpacity,
       };

@@ -333,21 +333,19 @@ export default {
     },
 
     async exportConfig() {
-      return JSON.parse(
-        JSON.stringify({
-          pointSettingType: this.pointSettingType,
-          pointSettingForm: this.pointSettingForm,
-          showPointVisualMap: this.showPointVisualMap,
+      return {
+        pointSettingType: this.pointSettingType,
+        pointSettingForm: this.pointSettingForm,
+        showPointVisualMap: this.showPointVisualMap,
 
-          lineSettingType: this.lineSettingType,
-          lineSettingForm: this.lineSettingForm,
-          showLineVisualMap: this.showLineVisualMap,
+        lineSettingType: this.lineSettingType,
+        lineSettingForm: this.lineSettingForm,
+        showLineVisualMap: this.showLineVisualMap,
 
-          polygonSettingType: this.polygonSettingType,
-          polygonSettingForm: this.polygonSettingForm,
-          showPolygonVisualMap: this.showPolygonVisualMap,
-        }),
-      );
+        polygonSettingType: this.polygonSettingType,
+        polygonSettingForm: this.polygonSettingForm,
+        showPolygonVisualMap: this.showPolygonVisualMap,
+      };
     },
     handleLocateToTheCenter() {
       if (this._Map) {

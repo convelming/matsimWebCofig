@@ -11,11 +11,11 @@
             <el-tag v-if="analysis?.status == 2" size="small" effect="dark" type="success">{{ $l("已生成") }}</el-tag>
             <el-tag v-if="analysis?.status == 3" size="small" effect="dark" type="danger">{{ $l("生成失败") }}</el-tag>
           </div>
-          <el-button style="width: 60px; flex: none" type="primary" size="small" :disabled="analysis?.status != 2" @click="getGetJSON(analysis)" :loading="loadingGeoJSON">{{ $l("查看") }}</el-button>
+          <el-button style="width: 90px; flex: none" type="primary" size="small" :disabled="analysis?.status != 2" @click="handleShowDetail1(analysis)" :loading="loadingGeoJSON">{{ $l("查看") }}</el-button>
         </div>
         <div class="btn_box">
           <el-button type="primary" size="small" @click="handleOpenAdjust(analysis)">{{ $l("方案调整") }}</el-button>
-          <el-button style="width: 60px; flex: none" type="primary" size="small" @click="getAnalysisList()" icon="el-icon-refresh-right"></el-button>
+          <el-button style="width: 90px; flex: none" type="primary" size="small" @click="getAnalysisList()" icon="el-icon-refresh-right"></el-button>
         </div>
         <AutoSize style="height: 400px">
           <template slot-scope="{ width, height }">
@@ -32,7 +32,7 @@
               </el-table-column>
               <el-table-column :label="$l('操作')" width="90">
                 <div slot-scope="{ row, $index }" class="cz_btn">
-                  <el-button type="text" size="small" icon="el-icon-view" :disabled="row.status != 2" @click="getGetJSON(row)" :loading="loadingGeoJSON"></el-button>
+                  <el-button type="text" size="small" icon="el-icon-view" :disabled="row.status != 2" @click="handleShowDetail(row)" :loading="loadingGeoJSON"></el-button>
                   <!-- <el-button type="text" size="small" icon="el-icon-edit" @click="handleOpenAdjust(row)"></el-button> -->
                   <el-button type="text" size="small" icon="el-icon-delete" style="color: var(--color-danger)" @click="handleDeleteAnalysis(row)"></el-button>
                 </div>
@@ -51,13 +51,20 @@
     <Dialog class="Step3_Adjust_Dialog" ref="dialog" :title="$l('方案调整')" hideMinimize :visible.sync="showAdjust" @close="handleCloseAdjust" keepRight right="330" top="100" width="450px">
       <div class="Step3_Adjust_box">
         <el-scrollbar wrap-class="scroll_box">
-          <div class="scroll_body">
-            <template v-for="item in adjustParam">
-              <el-divider v-if="item.type == 'title'" content-position="left">{{ $l(item.label) }}</el-divider>
-              <!-- <div class="title" v-if="item.type == 'title'">{{ $l(item.label) }}</div> -->
-              <AreaFromItem v-if="item.type == 'item'" :label="$l(item.label)" v-bind="item" @update:value="item.value = $event" @update:check="item.check = $event" />
-            </template>
-          </div>
+          <el-collapse v-model="activeNames" style="width: 100%">
+            <el-collapse-item class="my_collapse_item" :name="item.label" v-for="item in adjustParam">
+              <div class="el-collapse-item__title" slot="title">
+                <el-checkbox class="checkbox" :value="getCheckAll(item)" @input="handleCheckAll(item, $event)" :indeterminate="getIndeterminate(item)" style="width: auto"></el-checkbox>
+                <span class="item_title">{{ item.label }}</span>
+              </div>
+              <div class="my_collapse_item_body">
+                <div v-if="item.label == '业态开发强度'" style="text-align: right">合计：{{ computedTotal(item) }}</div>
+                <template v-for="item2 in item.children">
+                  <AreaFromItem :label="$l(item2.label)" v-bind="item2" @update:value="item2.value = $event" @update:check="item2.check = $event" />
+                </template>
+              </div>
+            </el-collapse-item>
+          </el-collapse>
         </el-scrollbar>
         <div class="btn_box">
           <el-button type="primary" size="small" @click="handleSubmitAbjust">{{ $l("确认") }}</el-button>
@@ -67,6 +74,26 @@
     </Dialog>
     <Dialog class="Step3_Chart_Dialog" ref="dialog" hideMinimize :visible.sync="showChart" @close="handleCloseChart" keepRight right="330" top="100" width="450px">
       <div v-if="showChart" ref="chart" class="chart"></div>
+    </Dialog>
+    <Dialog class="Step3_Adjust_Dialog" ref="dialog" hideMinimize :visible.sync="showDetail" @close="handleCloseDetail" keepRight right="330" top="100" width="450px">
+      <div class="Step3_Adjust_box">
+        <el-scrollbar wrap-class="scroll_box">
+          <el-collapse v-model="activeNames" style="width: 100%">
+            <el-collapse-item class="my_collapse_item" :name="item.label" v-for="item in detailParam">
+              <div class="el-collapse-item__title" slot="title">
+                <el-checkbox class="checkbox" :value="getCheckAll(item)" @input="handleCheckAll(item, $event)" :indeterminate="getIndeterminate(item)" style="width: auto"></el-checkbox>
+                <span class="item_title">{{ item.label }}</span>
+              </div>
+              <div class="my_collapse_item_body">
+                <div v-if="item.label == '业态开发强度'" style="text-align: right">合计：{{ computedTotal(item) }}</div>
+                <template v-for="item2 in item.children">
+                  <AreaFromItem :label="$l(item2.label)" v-bind="item2" @update:value="item2.value = $event" @update:check="item2.check = $event" />
+                </template>
+              </div>
+            </el-collapse-item>
+          </el-collapse>
+        </el-scrollbar>
+      </div>
     </Dialog>
   </div>
 </template>
@@ -83,31 +110,51 @@ import { CUA_downloadGeojson, CUA_planPage, CUA_deletePlan, CUA_addPlan } from "
 import { guid, boldToText } from "@/utils/index2";
 
 const dialogList = [
-  { type: "item", label: "方案名称", key: "方案名称", disabled: false, slider: false, inputNumber: false, input: true, value: "", avg: "", check: true },
-  { type: "title", label: "总体情况" },
-  { type: "item", label: "总开发强度", key: "总开发强度", start: 0, end: -1, step: 0.001, disabled: true, slider: true, inputNumber: true },
-  { type: "item", label: "平均容积率", key: "平均容积率", start: 0, end: -1, step: 0.001, disabled: true, slider: true, inputNumber: true },
-  { type: "title", label: "出行结构" },
-  { type: "item", label: "小汽车占比", key: "小汽车占比", start: 0, end: 1, step: 0.001, slider: true, inputNumber: true, checkBox: true },
-  { type: "item", label: "轨道交通占比", key: "轨道交通占比", start: 0, end: 1, step: 0.001, slider: true, inputNumber: true, checkBox: true },
-  { type: "item", label: "公交占比", key: "公交占比", start: 0, end: 1, step: 0.001, slider: true, inputNumber: true, checkBox: true },
-  { type: "item", label: "慢行占比", key: "慢行占比", start: 0, end: 1, step: 0.001, slider: true, inputNumber: true, checkBox: true },
-  { type: "title", label: "业态开发强度" },
-  { type: "item", label: "居住开发强度", key: "居住开发强度", start: 0, end: -1, step: 0.001, slider: true, inputNumber: true, checkBox: true },
-  { type: "item", label: "办公开发强度", key: "办公开发强度", start: 0, end: -1, step: 0.001, slider: true, inputNumber: true, checkBox: true },
-  { type: "item", label: "商业开发强度", key: "商业开发强度", start: 0, end: -1, step: 0.001, slider: true, inputNumber: true, checkBox: true },
-  { type: "item", label: "工业开发强度", key: "工业开发强度", start: 0, end: -1, step: 0.001, slider: true, inputNumber: true, checkBox: true },
-  { type: "title", label: "交通设施" },
-  { type: "item", label: "地铁站点数", key: "地铁站点数", start: 0, end: -1, slider: true, inputNumber: true, checkBox: true },
-  { type: "item", label: "公交站点数", key: "公交站点数", start: 0, end: -1, step: 1, slider: true, inputNumber: true, checkBox: true },
-  { type: "item", label: "主干路及以上长度", key: "主干路及以上长度", start: 0, end: -1, step: 1, slider: true, inputNumber: true, checkBox: true },
-  { type: "item", label: "次干路及以下长度", key: "次干路及以下长度", start: 0, end: -1, step: 1, slider: true, inputNumber: true, checkBox: true },
-  { type: "title", label: "特殊地点" },
-  { type: "item", label: "体育设施数", key: "体育设施数", start: 0, end: -1, step: 1, slider: true, inputNumber: true, checkBox: true },
-  { type: "item", label: "医疗设施数", key: "医疗设施数", start: 0, end: -1, step: 1, slider: true, inputNumber: true, checkBox: true },
-  { type: "item", label: "教育设施数", key: "教育设施数", start: 0, end: -1, step: 1, slider: true, inputNumber: true, checkBox: true },
-  { type: "item", label: "文化设施数", key: "文化设施数", start: 0, end: -1, step: 1, slider: true, inputNumber: true, checkBox: true },
-  { type: "item", label: "政府设施数", key: "政府设施数", start: 0, end: -1, step: 1, slider: true, inputNumber: true, checkBox: true },
+  { label: "基本信息", children: [{ type: "item", label: "方案名称", key: "方案名称", disabled: false, slider: false, inputNumber: false, input: true, value: "", avg: "", check: false }] },
+  {
+    label: "总体情况",
+    children: [
+      { type: "item", label: "总开发强度", key: "总开发强度", start: 0, end: -1, step: 0.001, disabled: true, slider: true, inputNumber: true },
+      { type: "item", label: "平均容积率", key: "平均容积率", start: 0, end: -1, step: 0.001, disabled: true, slider: true, inputNumber: true },
+    ],
+  },
+  {
+    label: "业态开发强度",
+    children: [
+      { type: "item", label: "居住开发强度", key: "居住开发强度", start: 0, end: -1, step: 0.001, slider: true, inputNumber: true, checkBox: true },
+      { type: "item", label: "办公开发强度", key: "办公开发强度", start: 0, end: -1, step: 0.001, slider: true, inputNumber: true, checkBox: true },
+      { type: "item", label: "商业开发强度", key: "商业开发强度", start: 0, end: -1, step: 0.001, slider: true, inputNumber: true, checkBox: true },
+      { type: "item", label: "工业开发强度", key: "工业开发强度", start: 0, end: -1, step: 0.001, slider: true, inputNumber: true, checkBox: true },
+    ],
+  },
+  {
+    label: "出行结构",
+    children: [
+      { type: "item", label: "小汽车占比", key: "小汽车占比", start: 0, end: 1, step: 0.001, slider: true, inputNumber: true, checkBox: true },
+      { type: "item", label: "轨道交通占比", key: "轨道交通占比", start: 0, end: 1, step: 0.001, slider: true, inputNumber: true, checkBox: true },
+      { type: "item", label: "公交占比", key: "公交占比", start: 0, end: 1, step: 0.001, slider: true, inputNumber: true, checkBox: true },
+      { type: "item", label: "慢行占比", key: "慢行占比", start: 0, end: 1, step: 0.001, slider: true, inputNumber: true, checkBox: true },
+    ],
+  },
+  {
+    label: "交通设施",
+    children: [
+      { type: "item", label: "地铁站点数", key: "地铁站点数", start: 0, end: -1, slider: true, inputNumber: true, checkBox: true },
+      { type: "item", label: "公交站点数", key: "公交站点数", start: 0, end: -1, step: 1, slider: true, inputNumber: true, checkBox: true },
+      { type: "item", label: "主干路及以上长度", key: "主干路及以上长度", start: 0, end: -1, step: 1, slider: true, inputNumber: true, checkBox: true },
+      { type: "item", label: "次干路及以下长度", key: "次干路及以下长度", start: 0, end: -1, step: 1, slider: true, inputNumber: true, checkBox: true },
+    ],
+  },
+  {
+    label: "特殊地点",
+    children: [
+      { type: "item", label: "体育设施数", key: "体育设施数", start: 0, end: -1, step: 1, slider: true, inputNumber: true, checkBox: true },
+      { type: "item", label: "医疗设施数", key: "医疗设施数", start: 0, end: -1, step: 1, slider: true, inputNumber: true, checkBox: true },
+      { type: "item", label: "教育设施数", key: "教育设施数", start: 0, end: -1, step: 1, slider: true, inputNumber: true, checkBox: true },
+      { type: "item", label: "文化设施数", key: "文化设施数", start: 0, end: -1, step: 1, slider: true, inputNumber: true, checkBox: true },
+      { type: "item", label: "政府设施数", key: "政府设施数", start: 0, end: -1, step: 1, slider: true, inputNumber: true, checkBox: true },
+    ],
+  },
 ];
 
 export default {
@@ -132,7 +179,7 @@ export default {
   components: { AreaFromItem },
   computed: {
     s_visible() {
-      return this.visible && !this.showAdjust && !this.showChart;
+      return this.visible && !this.showAdjust && !this.showChart && !this.showDetail;
     },
     _Map() {
       return this.rootVue._Map;
@@ -177,6 +224,11 @@ export default {
 
       showChart: false,
       chartProp: null,
+
+      showDetail: false,
+      detailParam: [],
+
+      activeNames: ["基本信息", "总体情况", "业态开发强度", "出行结构", "交通设施", "特殊地点"],
     };
   },
   created() {
@@ -211,7 +263,7 @@ export default {
   methods: {
     init() {
       this.loading = true;
-      Promise.all([this.getAnalysisList(), this.getGetJSON(this.analysis), this.getResultJsonPath()]).finally(() => {
+      Promise.all([this.getAnalysisList(), this.getGetJSON(this.analysis), this.getResultJsonPath()]).finally((res) => {
         this.loading = false;
       });
     },
@@ -231,6 +283,7 @@ export default {
           this._GeoJSONLayer_road.setGeoJsonData(res);
           this._GeoJSONLayer_road.setLineValue("8_vc");
           this._GeoJSONLayer_road.setLineColorBar(getColorBarByPropertie(res.propertiesLabels["8_vc"], { toFixed: 3, colorList: ["#67c23a", "#B50404"] }));
+          return res;
         })
         .finally(() => {
           this.loadingGeoJSON = false;
@@ -259,7 +312,8 @@ export default {
         .then((res) => parserGeoJSON(res))
         .then((res) => {
           const areaParam = JSON.parse(JSON.stringify(dialogList));
-          areaParam.forEach((item) => {
+          const children = areaParam.map((v) => v.children).flat();
+          children.forEach((item) => {
             const prop = res.propertiesLabels[item.key];
             if (item.key != "方案名称" && prop && item.type == "item") {
               const list = prop.values.slice(1);
@@ -297,7 +351,8 @@ export default {
       const bastValue = Object.fromEntries(form.bastValue.map((v) => [v.key, v.value]));
       const areaParam = JSON.parse(JSON.stringify(this.areaParam));
 
-      areaParam.forEach((item) => {
+      const children = areaParam.map((v) => v.children).flat();
+      children.forEach((item) => {
         if (item.key != "方案名称" && item.type == "item") {
           item.value = Number(Number(bastValue[item.key] || item.value).toFixed(4));
           item.avg = Number(Number(bastValue[item.key] || item.avg).toFixed(4));
@@ -319,7 +374,8 @@ export default {
         name: name,
         args: JSON.stringify({
           params: this.adjustParam
-            .filter((v) => v.type == "item")
+            .map((v) => v.children)
+            .flat()
             .map((v) => {
               return {
                 key: v.key,
@@ -386,6 +442,72 @@ export default {
         return {};
       }
     },
+    handleShowDetail1(row) {
+      const form = JSON.parse(JSON.stringify(row));
+
+      const bastValue = Object.fromEntries(Array(JSON.parse(form.bastValue)).map((v) => [v.key, v.value]));
+      const areaParam = JSON.parse(JSON.stringify(this.areaParam));
+
+      const children = areaParam.map((v) => v.children).flat();
+      children.forEach((item) => {
+        item.slider = false;
+        item.input = false;
+        item.inputNumber = false;
+        if (item.key == "方案名称") {
+          item.value = row.name;
+        }
+        if (item.key != "方案名称" && item.type == "item") {
+          item.value = Number(Number(bastValue[item.key] || item.value).toFixed(4));
+          item.avg = Number(Number(bastValue[item.key] || item.avg).toFixed(4));
+        }
+      });
+
+      this.getGetJSON(row);
+      this.detailParam = areaParam;
+      this.showDetail = true;
+    },
+    handleShowDetail(row) {
+      const form = JSON.parse(JSON.stringify(row));
+
+      const bastValue = Object.fromEntries(Array(JSON.parse(form.args)).map((v) => [v.key, v.value]));
+      const areaParam = JSON.parse(JSON.stringify(this.areaParam));
+
+      const children = areaParam.map((v) => v.children).flat();
+      children.forEach((item) => {
+        item.slider = false;
+        item.input = false;
+        item.inputNumber = false;
+        if (item.key == "方案名称") {
+          item.value = row.name;
+        }
+        if (item.key != "方案名称" && item.type == "item") {
+          item.value = Number(Number(bastValue[item.key] || item.value).toFixed(4));
+          item.avg = Number(Number(bastValue[item.key] || item.avg).toFixed(4));
+        }
+      });
+
+      this.getGetJSON(row);
+      this.detailParam = areaParam;
+      this.showDetail = true;
+    },
+    handleCloseDetail() {
+      this.getGetJSON(analysis);
+      this.showDetail = false;
+    },
+    handleCheckAll(item, $event) {
+      for (const item2 of item.children) {
+        this.$set(item2, "check", $event);
+      }
+    },
+    getCheckAll(item) {
+      return item.children.some((v) => v.check);
+    },
+    getIndeterminate(item) {
+      return !item.children.every((v) => v.check) && item.children.some((v) => v.check);
+    },
+    computedTotal(item) {
+      return item.children.filter((v) => v.check).reduce((a, c) => a + c.value, 0);
+    },
   },
 };
 </script>
@@ -393,6 +515,7 @@ export default {
 <style lang="scss" scoped>
 .Step3_Dialog {
   .el-scrollbar {
+    width: 100%;
     height: 100%;
   }
   ::v-deep .scroll_box {
@@ -433,19 +556,28 @@ export default {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    .el-scrollbar {
-      flex: 1;
-      height: 0;
+    :deep .my_collapse_item .el-collapse-item__content {
+      border: 0;
+      padding: 0;
     }
     ::v-deep .scroll_box {
       overflow-x: hidden;
       overflow-y: auto;
     }
-
-    .scroll_body {
+    .my_collapse_item {
+      padding: 0;
+    }
+    .my_collapse_item_title {
+      padding-left: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .my_collapse_item_body {
+      padding: 10px;
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 10px;
       .title {
         font-size: 18px;
         font-weight: 500;
@@ -454,7 +586,6 @@ export default {
         padding: 0 10px;
       }
     }
-
     .btn_box {
       display: flex;
       .el-button {

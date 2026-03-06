@@ -62,7 +62,7 @@
           </div>
           <div class="el-icon-question item_help" @click.stop="showCAHelpDialog = true"></div>
         </div> -->
-        <div @click="handleClickItem('systemEvaluation')" class="item" style="background-color: #0070c0">
+        <!-- <div @click="handleClickItem('systemEvaluation')" class="item" style="background-color: #0070c0">
           <div class="item_title">
             <img class="item_icon" src="@/assets/image/评估.svg" />
             <span>{{ $l("公交系统评估") }}</span>
@@ -71,7 +71,7 @@
             {{ $l("公交系统总体运行评估包括可达性。") }}
           </div>
           <div class="el-icon-question item_help" @click.stop="showSEHelpDialog = true"></div>
-        </div>
+        </div> -->
         <div @click="handleClickItem('ActivitySim')" class="item" style="background-color: green">
           <div class="item_title">
             <img class="item_icon" style="object-fit: contain" src="@/assets/image/Activity2.png" />
@@ -882,18 +882,17 @@ export default {
 
 .list {
   width: 1600px;
+  height: 0;
+  flex: 1;
   margin: 0 auto;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  /* margin: -10px; */
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 300px);
   gap: 40px;
+  overflow-y: auto;
 }
 .item {
   position: relative;
-  // width: 550px;
-  width: 45%;
-  height: 300px;
   display: block;
   text-decoration: none;
   box-sizing: border-box;
