@@ -17,7 +17,7 @@
             <img src="@/assets/image/kycg/容器.svg?url" alt="" class="icon" />
             <div class="text1">项目获奖</div>
             <div class="text2">
-              <span>144</span>
+              <span>114</span>
               <span class="text3">项</span>
             </div>
           </div>
@@ -31,21 +31,21 @@
           <div class="item">
             <div class="text1">国家及部级奖</div>
             <div class="text2">
-              <span>19</span>
+              <span>34</span>
               <span class="text3">项</span>
             </div>
           </div>
           <div class="item">
             <div class="text1">国家及部级奖</div>
             <div class="text2">
-              <span>19</span>
+              <span>61</span>
               <span class="text3">项</span>
             </div>
           </div>
           <div class="item">
             <div class="text1">国家及部级奖</div>
             <div class="text2">
-              <span>19</span>
+              <span>21</span>
               <span class="text3">项</span>
             </div>
           </div>
@@ -59,10 +59,10 @@
           <el-auto-resizer class="list">
             <template #default="{ height, width }">
               <el-scrollbar :width="width" :height="height">
-                <div class="item" v-for="value in 6">
-                  <div class="time">2024年</div>
-                  <div class="title">广东省优秀城市规划设计项目三等奖</div>
-                  <div class="detail">《国土空间规划背景下的揭阳市点状交通设施城乡融合规划》</div>
+                <div class="item" v-for="value in list1">
+                  <div class="time">{{ value.time }}</div>
+                  <div class="title">{{ value.title }}</div>
+                  <div class="detail">{{ value.detail }}</div>
                 </div>
               </el-scrollbar>
             </template>
@@ -159,6 +159,70 @@
 <script setup>
 import MHeader from '@/components/MHeader.vue'
 import MFooter from '@/components/MFooter.vue'
+
+const list1 = [
+  {
+    time: '2024年',
+    title: '广东省优秀城市规划设计项目三等奖',
+    detail: '《国土空间规划背景下的揭阳市点状交通设施城乡融合规划》',
+  },
+  {
+    time: '2024年',
+    title: '中国物流与采购联合会科技进步奖三等奖',
+    detail: '《广州市“十四五”现代物流枢纽及产业发展土地利用规划》',
+  },
+  {
+    time: '2024年',
+    title: '广东省智能交通协会科学技术奖一等奖',
+    detail: '《交通与城市协同发展视角下公交数字化治理关键技术及应用》',
+  },
+  {
+    time: '2024年',
+    title: '广东省优秀城市规划设计项目二等奖',
+    detail: '《揭阳市临空经济区详细规划》',
+  },
+  {
+    time: '2024年',
+    title: '广东省静态交通行业科技创新奖',
+    detail: '《面向空间效能提升的城市停车数字治理关键技术及应用》',
+  },
+  {
+    time: '2024年',
+    title: '广东省工程勘察设计行业协会科学技术奖二等奖',
+    detail: '《站城融合背景下大型铁路客运枢纽一体化设计技术体系》',
+  },
+  {
+    time: '2024年',
+    title: '广东省优秀城市规划设计项目二等奖',
+    detail: '《超大型铁路客运枢纽（广州白云站）全流程交通规划设计咨询》',
+  },
+  {
+    time: '2024年',
+    title: '中国交通运输协会科技进步奖二等奖',
+    detail: '《数据驱动的城市交通精细化规划设计关键技术与应用》',
+  },
+  {
+    time: '2023年',
+    title: '广州市优秀城市规划设计项目一等奖',
+    detail: '《广州市重点地区交通精细化规划与智慧治理方法研究》',
+  },
+  {
+    time: '2023年',
+    title: '中国智能交通协会科技进步奖二等奖',
+    detail: '《数-模驱动的复杂交通节点组织智能化设计关键技术与应用》',
+  },
+  {
+    time: '2023年',
+    title: '中国交通运输协会科技进步奖一等奖',
+    detail: '《大规模城市交通系统中观建模仿真技术及工程应用》',
+  },
+  {
+    time: '2022年',
+    title: '全国交通运输与物流创新成果特等奖',
+    detail: '《广州交通物流融合发展规划》',
+  },
+  { time: '2022年', title: '广东省优秀城乡规划设计二等奖', detail: '《广州交通物流融合发展规划》' },
+]
 </script>
 
 <style lang="scss" scoped>

@@ -52,5 +52,13 @@ const router = createRouter({
     }
   },
 })
+// router.beforeEach((to, from) => {
+//   if (to.meta.redirect) {
+//     location.replace(to.meta.redirect)
+//     // window.location.href = to.meta.redirect
+//     // return false
+//   }
+//   return true
+// })
 
 export default router

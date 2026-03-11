@@ -10,23 +10,14 @@
     </div>
     <div class="box2" id="rsgzpi">
       <div class="left">
-        <div class="text1">认识GZPI</div>
-        <div class="text2">创造更美好的人居环境</div>
+        <div class="text1">认识城市交通科学研究院</div>
         <div class="text3">
-          城市交通科学研究院是广州市城市规划勘测设计研究院（GZP I）
-          的一支重要特色化专业团队，下设智慧交通研究所、轨道与 TOD 规
-          划设计所、交通规划设计所、低空经济研究中心 4 个二级所。围绕“交 通
-          +”形成数据驱动的城市交通精细化治理规划与设计、站城融合导
-          向下轨道与枢纽一体化设计、低空经济全链条整体解决方案、交通物 流 - 产业 -
-          空间协同一体规划设计四大特色产品。团队秉承“创新、
-          跨界、融合、共赢”理念，以“为政府和市场提供城市智慧交通全体
-          系、全链条解决方案”为愿景，不断创新深化“交通 +”全链条核心
-          技术和产品，致力于建设成为粤港澳大湾区技术领先、特色
+          城市交通科学研究院是广州市城市规划勘测设计研究院（GZPI）的一支重要特色化专业团队，团队秉承“创新、跨界、融合、共赢”理念，以“为政府和市场提供城市智慧交通全体系、全链条解决方案”为愿景，以不断创新深化“交通+”全链条核心技术和产品为抓手，目标是建设成为粤港澳大湾区技术领先、特色鲜明的一流交通创新团队，打造成为GZPI重要的高端专业智库、行业引领标杆和产品研发策源地。
         </div>
         <img class="img" src="@/assets/image/bygk/2.svg" alt="" />
         <div class="sj_box" id="rcjg">
           <div class="item">
-            <div class="text1">93%</div>
+            <div class="text1">90%</div>
             <div class="text2">研究生占比</div>
           </div>
           <div class="line"></div>
@@ -41,7 +32,7 @@
           </div>
           <div class="line"></div>
           <div class="item">
-            <div class="text1">27%</div>
+            <div class="text1">32%</div>
             <div class="text2">副高以上占比</div>
           </div>
         </div>

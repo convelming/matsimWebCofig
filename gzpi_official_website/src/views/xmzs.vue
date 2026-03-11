@@ -67,7 +67,7 @@
       <div class="list">
         <div class="item" v-for="item in list4">
           <div class="img_box">
-            <el-image class="img" :src="item.img" fit="cover" :lazy="true"></el-image>
+            <el-image class="img" :src="item.img" :fit="item.fil || cover" :lazy="true"></el-image>
           </div>
           <div class="text">
             <div class="title">{{ item.title }}</div>
@@ -90,105 +90,84 @@ import MFooter from '@/components/MFooter.vue'
 
 const list1 = [
   {
-    title: '广州综合交通枢纽总体规划（2016-2030年）',
-    content:
-      '广州是我国涵盖海、陆、空各种运输方式的典型枢纽代表，是全国三大综合交通枢纽之一，主要基础设施包括广州白云国际机场、广州港、铁路枢纽',
-    img: new URL('@/assets/image/xmzs/矩形 3.jpg', import.meta.url).href,
+    title: '广州综合交通枢纽总体规划(2016-2030年)',
+    content: '',
+    img: new URL('@/assets/image/xmzs/1.png', import.meta.url).href,
   },
   {
     title: '东莞市区综合交通规划(2008-2020)',
-    content:
-      '广州是我国涵盖海、陆、空各种运输方式的典型枢纽代表，是全国三大综合交通枢纽之一，主要基础设施包括广州白云国际机场、广州港、铁路枢纽...',
-    img: new URL('@/assets/image/xmzs/矩形 3(1).jpg', import.meta.url).href,
+    content: '',
+    img: new URL('@/assets/image/xmzs/2.png', import.meta.url).href,
   },
   {
     title: '遵义市中心城区全流程综合交通及建设规划',
-    content:
-      '广州是我国涵盖海、陆、空各种运输方式的典型枢纽代表，是全国三大综合交通枢纽之一，主要基础设施包括广州白云国际机场、广州港、铁路枢纽...',
-    img: new URL('@/assets/image/xmzs/矩形 3(2).jpg', import.meta.url).href,
+    content: '',
+    img: new URL('@/assets/image/xmzs/3.png', import.meta.url).href,
   },
   {
     title: '广州南沙新区综合交通体系规划',
-    content:
-      '广州是我国涵盖海、陆、空各种运输方式的典型枢纽代表，是全国三大综合交通枢纽之一，主要基础设施包括广州白云国际机场、广州港、铁路枢纽...',
-    img: new URL('@/assets/image/xmzs/矩形 3(3).jpg', import.meta.url).href,
-  },
-  {
-    title: '广州综合交通枢纽总体规划（2016-2030年）',
-    content:
-      '广州是我国涵盖海、陆、空各种运输方式的典型枢纽代表，是全国三大综合交通枢纽之一，主要基础设施包括广州白云国际机场、广州港、铁路枢纽...',
-    img: new URL('@/assets/image/xmzs/矩形 3(4).jpg', import.meta.url).href,
-  },
-  {
-    title: '广州综合交通枢纽总体规划（2016-2030年）',
-    content:
-      '广州是我国涵盖海、陆、空各种运输方式的典型枢纽代表，是全国三大综合交通枢纽之一，主要基础设施包括广州白云国际机场、广州港、铁路枢纽...',
-    img: new URL('@/assets/image/xmzs/矩形 3(5).jpg', import.meta.url).href,
+    content: '',
+    img: new URL('@/assets/image/xmzs/4.png', import.meta.url).href,
   },
 ]
 
 const list2 = [
   {
-    title: '广州交通数字治理平台',
+    title: '广州市多智能体城市交通仿真平台',
     time: '2025-09-12',
-    img: new URL('@/assets/image/xmzs/矩形 3(6).jpg', import.meta.url).href,
+    img: new URL('@/assets/image/xmzs/5.png', import.meta.url).href,
   },
   {
-    title: '智慧城市建设背景下的未来街道',
+    title: '科学城拥堵片区动态评估优化及交通数字治理平台',
     time: '2025-09-12',
-    img: new URL('@/assets/image/xmzs/矩形 3(7).jpg', import.meta.url).href,
+    img: new URL('@/assets/image/xmzs/6.png', import.meta.url).href,
+  },
+  {
+    title: '广州市白云湖大道智慧道路工程建设方案',
+    time: '2025-09-12',
+    img: new URL('@/assets/image/xmzs/7.png', import.meta.url).href,
+  },
+  {
+    title: '黄埔区停车数字治理及示范片区提升方案',
+    time: '2025-09-12',
+    img: new URL('@/assets/image/xmzs/8.png', import.meta.url).href,
   },
 ]
 
 const list3 = [
   {
-    title: '广州71个轨道枢纽TOD规划布局图',
-    content:
-      '广州是我国涵盖海、陆、空各种运输方式的典型枢纽代表，是全国三大综合交通枢纽之一，主要基础设施包括广州白云国际机场、广州港、铁路枢纽',
-    img: new URL('@/assets/image/xmzs/矩形 3(8).jpg', import.meta.url).href,
+    title: '广州铁路客运枢纽概念方案及周边土地综合开发规划研究',
+    content: '',
+    img: new URL('@/assets/image/xmzs/9.png', import.meta.url).href,
   },
   {
-    title: '广州市交通物流融合发展规划',
-    content:
-      '广州是我国涵盖海、陆、空各种运输方式的典型枢纽代表，是全国三大综合交通枢纽之一，主要基础设施包括广州白云国际机场、广州港、铁路枢纽...',
-    img: new URL('@/assets/image/xmzs/矩形 3(9).jpg', import.meta.url).href,
+    title: '广州铁路枢纽物流基地多式联运概念方案及周边地区规划',
+    content: '',
+    img: new URL('@/assets/image/xmzs/10.png', import.meta.url).href,
   },
   {
-    title: '白云站综合交通枢纽全流程规划设计咨询',
-    content:
-      '广州是我国涵盖海、陆、空各种运输方式的典型枢纽代表，是全国三大综合交通枢纽之一，主要基础设施包括广州白云国际机场、广州港、铁路枢纽...',
-    img: new URL('@/assets/image/xmzs/矩形 3(10).jpg', import.meta.url).href,
+    title: '广州交通物流融合发展规划',
+    content: '',
+    img: new URL('@/assets/image/xmzs/11.png', import.meta.url).href,
   },
   {
-    title: '南沙站综合交通枢纽全流程规划设计咨询',
-    content:
-      '广州是我国涵盖海、陆、空各种运输方式的典型枢纽代表，是全国三大综合交通枢纽之一，主要基础设施包括广州白云国际机场、广州港、铁路枢纽...',
-    img: new URL('@/assets/image/xmzs/矩形 3(11).jpg', import.meta.url).href,
-  },
-  {
-    title: '南沙站综合交通枢纽全流程规划设计咨询',
-    content:
-      '广州是我国涵盖海、陆、空各种运输方式的典型枢纽代表，是全国三大综合交通枢纽之一，主要基础设施包括广州白云国际机场、广州港、铁路枢纽...',
-    img: new URL('@/assets/image/xmzs/矩形 3(12).jpg', import.meta.url).href,
-  },
-  {
-    title: '南沙站综合交通枢纽全流程规划设计咨询',
-    content:
-      '广州是我国涵盖海、陆、空各种运输方式的典型枢纽代表，是全国三大综合交通枢纽之一，主要基础设施包括广州白云国际机场、广州港、铁路枢纽...',
-    img: new URL('@/assets/image/xmzs/矩形 3(13).jpg', import.meta.url).href,
+    title: '粤东城际揭阳段TOD总体策划与站点周边综合开发规划',
+    content: '',
+    img: new URL('@/assets/image/xmzs/12.png', import.meta.url).href,
   },
 ]
 
 const list4 = [
   {
-    title: '广州交通数字治理平台',
+    title: '基于空天地一体的低空智能网联（广州）基础设施关键技术研发',
     time: '2025-09-12',
-    img: new URL('@/assets/image/xmzs/矩形 3(15).jpg', import.meta.url).href,
+    img: new URL('@/assets/image/xmzs/13.png', import.meta.url).href,
+    fil: 'contain',
   },
   {
-    title: '智慧城市建设背景下的未来街道',
+    title: '广州市多智能体低空仿真平台',
     time: '2025-09-12',
-    img: new URL('@/assets/image/xmzs/矩形 3(14).jpg', import.meta.url).href,
+    img: new URL('@/assets/image/xmzs/14.png', import.meta.url).href,
   },
 ]
 </script>
@@ -240,7 +219,7 @@ const list4 = [
     flex-wrap: wrap;
     gap: 40px;
     .item {
-      width: calc((100% - 40px * 2) / 3 - 1px);
+      width: calc((100% - 40px * 2) / 2 - 1px);
       border-radius: 16px;
       overflow: hidden;
       background-color: #fff;
@@ -260,10 +239,13 @@ const list4 = [
       }
       .text {
         padding: 30px;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
         .title {
           font-weight: 500;
           font-size: 24px;
-          margin-bottom: 18px;
+
           // 一行文字
           overflow: hidden;
           text-overflow: ellipsis;
@@ -334,6 +316,7 @@ const list4 = [
       .text {
         padding: 30px 0 20px 0;
         border-bottom: 2px solid #eee;
+
         .title {
           font-weight: 500;
           font-size: 24px;

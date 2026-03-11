@@ -36,7 +36,7 @@ const btn_list = [
 
 <style lang="scss" scoped>
 .MHeader {
-  position: fixed;
+  position: sticky;
   z-index: 1000;
   top: 0;
   left: 0;
@@ -44,7 +44,8 @@ const btn_list = [
 
   padding: 0 min(6.5vw, 120px);
   height: 120px;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0) 100%);
+  // background: linear-gradient(180deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0) 100%);
+  background: #353535;
 
   display: flex;
   justify-content: space-between;

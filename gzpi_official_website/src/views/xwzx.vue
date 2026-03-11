@@ -12,19 +12,28 @@
       <div class="title1">Campus News</div>
       <div class="title2">院内新闻</div>
       <div class="list">
-        <div class="item" v-for="item in list1">
+        <div class="item" v-for="item in news_list">
           <div class="img_box">
             <el-image class="img" :src="item.img" fit="cover" :lazy="true"></el-image>
           </div>
           <div class="text">
             <div class="time">{{ item.time }}</div>
             <div class="title">{{ item.title }}</div>
-            <div class="content">{{ item.content }}</div>
+            <div class="content">{{ item.content_text }}</div>
           </div>
         </div>
       </div>
+      <el-pagination
+        style="padding-top: 50px;justify-content: center;"
+        @current-change="updateNews"
+        v-model:currentPage="news_params.pageNum"
+        :page-size="news_params.pageSize"
+        layout="prev, pager, next, total"
+        :total="news_total"
+        :pager-count="5"
+      />
     </div>
-    <div class="box3">
+    <!-- <div class="box3">
       <div class="title1">Notification</div>
       <div class="title2">消息通知</div>
       <div class="list">
@@ -34,7 +43,7 @@
           <div class="content">{{ item.content }}</div>
         </div>
       </div>
-    </div>
+    </div> -->
     <MFooter />
   </div>
 </template>
@@ -42,39 +51,59 @@
 <script setup>
 import MHeader from '@/components/MHeader.vue'
 import MFooter from '@/components/MFooter.vue'
+import { newsList, newsDelete, indexHotLinkHotLinks } from '@/api/home.js'
 
-const list1 = [
-  {
-    title: '广州综合交通枢纽总体规划（2016-2030年）',
-    time: '2025-09-05',
-    content:
-      '广州是我国涵盖海、陆、空各种运输方式的典型枢纽代表，是全国三大综合交通枢纽之一，主要基础设施包括广州白云国际机场、广州港、铁路枢纽',
-    img: new URL('@/assets/image/xwzx/矩形 6084.jpg', import.meta.url).href,
-  },
-  {
-    title: '东莞市区综合交通规划(2008-2020)',
-    time: '2025-09-05',
-    content:
-      '广州是我国涵盖海、陆、空各种运输方式的典型枢纽代表，是全国三大综合交通枢纽之一，主要基础设施包括广州白云国际机场、广州港、铁路枢纽...',
-    img: new URL('@/assets/image/xwzx/矩形 6084(1).jpg', import.meta.url).href,
-  },
-  {
-    title: '遵义市中心城区全流程综合交通及建设规划',
-    time: '2025-09-05',
-    content:
-      '广州是我国涵盖海、陆、空各种运输方式的典型枢纽代表，是全国三大综合交通枢纽之一，主要基础设施包括广州白云国际机场、广州港、铁路枢纽...',
-    img: new URL('@/assets/image/xwzx/矩形 6084(2).jpg', import.meta.url).href,
-  },
-  {
-    title: '广州南沙新区综合交通体系规划',
-    time: '2025-09-05',
-    content:
-      '广州是我国涵盖海、陆、空各种运输方式的典型枢纽代表，是全国三大综合交通枢纽之一，主要基础设施包括广州白云国际机场、广州港、铁路枢纽...',
-    img: new URL('@/assets/image/xwzx/矩形 6084(3).jpg', import.meta.url).href,
-  },
-]
+/************************ 新闻 ************************/
+const showAddNews = ref(false)
+const editNewsId = ref(-1)
+const addNewsTitle = ref('添加新闻')
+const showEditNews = ref(false)
+const news_params = ref({
+  pageNum: 1,
+  pageSize: 6,
+  type: 0,
+})
+const news_total = ref(0)
+const news_list = ref([])
+function updateNews() {
+  newsList(news_params.value).then((res) => {
+    res.data.data.forEach((item) => {
+      item.content_text =
+        item.content
+          ?.replace(/<[^>]+>/g, '')
+          .replace(/&[^&]+;/g, '')
+          .substring(0, 200) || ''
+      item.img = import.meta.env.VITE_APP_BASE_API + item.annexs.find((v) => v.type == 0)?.url
+    })
+    console.log(res.data.data)
 
+    news_list.value = res.data.data
+    news_total.value = res.data.total
+  })
+}
+updateNews()
 
+function handleShowAddNews(row) {
+  addNewsTitle.value = !row ? '添加新闻' : '编辑新闻'
+  editNewsId.value = row?.id || -1
+  showAddNews.value = true
+}
+function handleDeleteNews(row) {
+  proxy
+    .$confirm('是否删除新闻——' + row.title + '？', '提示', {
+      confirmButtonText: '删除',
+      cancelButtonText: '取消',
+      type: 'error',
+    })
+    .then(function () {
+      return newsDelete(row.id)
+    })
+    .then(() => {
+      proxy.$message.success('删除成功')
+      updateNews()
+    })
+    .catch(() => {})
+}
 </script>
 
 <style lang="scss" scoped>
