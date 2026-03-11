@@ -12,7 +12,12 @@
       <div class="title1">Campus News</div>
       <div class="title2">院内新闻</div>
       <div class="list">
-        <div class="item" v-for="item in news_list">
+        <a
+          class="item"
+          v-for="item in news_list"
+          :href="`http://192.168.60.231:8086/#/news/detail?id=${item.id}`"
+          target="_blank"
+        >
           <div class="img_box">
             <el-image class="img" :src="item.img" fit="cover" :lazy="true"></el-image>
           </div>
@@ -21,10 +26,10 @@
             <div class="title">{{ item.title }}</div>
             <div class="content">{{ item.content_text }}</div>
           </div>
-        </div>
+        </a>
       </div>
       <el-pagination
-        style="padding-top: 50px;justify-content: center;"
+        style="padding-top: 50px; justify-content: center"
         @current-change="updateNews"
         v-model:currentPage="news_params.pageNum"
         :page-size="news_params.pageSize"
@@ -158,6 +163,8 @@ function handleDeleteNews(row) {
       width: calc((100% - 40px * 1) / 2 - 1px);
       overflow: hidden;
       background-color: #fff;
+      text-decoration: none;
+      color: #1a1a1a;
       .img_box {
         position: relative;
         width: 100%;
