@@ -23,7 +23,7 @@
               range-separator="至"
               start-placeholder="开始日期"
               end-placeholder="结束日期"
-              value-format="yyyy-MM-dd HH:mm:ss"
+              value-format="YYYY-MM-DD HH:mm:ss"
             >
             </el-date-picker>
           </el-form-item>
@@ -624,10 +624,10 @@ function handleEdit(row) {
 function handleSave() {
   formRef.value.validate((valid) => {
     if (valid) {
-      const form = JSON.parse(JSON.stringify(form.value))
-      form.count = form.car + form.van + form.bus + form.truck
-      if (form.id != undefined) {
-        API.crossroadsUpdateStats(form)
+      const _form = JSON.parse(JSON.stringify(form.value))
+      _form.count = _form.car + _form.van + _form.bus + _form.truck
+      if (_form.id != undefined) {
+        API.crossroadsUpdateStats(_form)
           .then((response) => {
             props.$message.success('修改成功')
             open.value = false
@@ -637,7 +637,7 @@ function handleSave() {
             handleDraw()
           })
       } else {
-        API.crossroadsInsertStats(form)
+        API.crossroadsInsertStats(_form)
           .then((response) => {
             props.$message.success('新增成功')
             open.value = false

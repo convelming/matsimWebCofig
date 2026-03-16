@@ -508,8 +508,8 @@ function handleReverse() {
 function handleUpdateLink() {
   infoformRef.value.validate((valid) => {
     if (valid) {
-      let from = JSON.parse(JSON.stringify(infoForm.value))
-      API.matsimLinkUpdate(from).then((response) => {
+      let _infoForm = JSON.parse(JSON.stringify(infoForm.value))
+      API.matsimLinkUpdate(_infoForm).then((response) => {
         proxy.$message.success('修改成功')
         infoEdit.value = false
         getDetail()
@@ -520,8 +520,8 @@ function handleUpdateLink() {
 function handleUpdateInWay() {
   infoformRef.value.validate((valid) => {
     if (valid) {
-      let from = JSON.parse(JSON.stringify(infoForm.value))
-      API.matsimLinkUpdateInWay(from).then((response) => {
+      let _infoForm = JSON.parse(JSON.stringify(infoForm.value))
+      API.matsimLinkUpdateInWay(_infoForm).then((response) => {
         // $message.success('修改成功')
         infoEdit.value = false
         getDetail()

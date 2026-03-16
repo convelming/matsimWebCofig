@@ -282,6 +282,7 @@ export default {
     handleInitLike() {
       this._PolygonSelectLayer.setPath([]);
       this._GeoJSONLayer_like.clearScene();
+      this._GeoJSONLabelLayer_like.clearScene();
       this.areaDetail = null;
       this.areaParam = null;
       this.likeList = [];

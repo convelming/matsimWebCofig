@@ -110,13 +110,13 @@ function handleChangeSelectState(value) {
 function handleSubmit() {
   formRef.value.validate((valid) => {
     if (valid) {
-      const form = {
+      const _form = {
         x: form.center[0], // 开始时间
         y: form.center[1], // 结束时间
         name: form.name, // 备注
       }
       saving.value = true
-      intersectionInsert(form)
+      API.intersectionInsert(_form)
         .then((res) => {
           emit('submited', res.data)
           saving.value = false

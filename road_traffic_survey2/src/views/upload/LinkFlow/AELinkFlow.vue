@@ -23,7 +23,7 @@
           label-position="left"
         >
           <!-- <el-form-item label="调查时间" prop="timeList">
-          <el-date-picker v-model="form.timeList" type="datetimerange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd HH:mm:ss" />
+          <el-date-picker v-model="form.timeList" type="datetimerange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="YYYY-MM-DD HH:mm:ss" />
           <div style="color: red">注意: 请输入实际调查起止时间，时长需准确</div>
         </el-form-item> -->
           <el-form-item label="调查日期" prop="date">
@@ -300,18 +300,18 @@ function handleComputePCUH() {
 function handleSubmit() {
   formRef.value.validate((valid) => {
     if (valid) {
-      const form = JSON.parse(JSON.stringify(this.form))
-      form.beginTime = form.date + ' ' + (form.time < 10 ? '0' + form.time : form.time) + ':00:00'
-      form.endTime =
-        form.date + ' ' + (form.time < 9 ? '0' + (form.time + 1) : form.time + 1) + ':00:00'
-      if (form.id != undefined) {
-        API.statsUpdate(form).then((response) => {
+      const _form = JSON.parse(JSON.stringify(this.form))
+      _form.beginTime = _form.date + ' ' + (_form.time < 10 ? '0' + _form.time : _form.time) + ':00:00'
+      _form.endTime =
+        _form.date + ' ' + (_form.time < 9 ? '0' + (_form.time + 1) : _form.time + 1) + ':00:00'
+      if (_form.id != undefined) {
+        API.statsUpdate(_form).then((response) => {
           proxy.$message.success('修改成功')
           emit('updateData')
           handleClose()
         })
       } else {
-        API.statsInsert(form).then((response) => {
+        API.statsInsert(_form).then((response) => {
           proxy.$message.success('新增成功')
           emit('updateData')
           handleClose()

@@ -154,7 +154,7 @@ function handleSubmit() {
       stats.endTime =
         stats.date + ' ' + (stats.time < 9 ? '0' + (stats.time + 1) : stats.time + 1) + ':00:00'
       const linkIds = form.value.list.map((item) => item.links.map((item2) => item2.id)).flat(2)
-      statsReinstated({ stats, linkIds })
+      API.statsReinstated({ stats, linkIds })
         .then((res) => {
           proxy.$message.success('复用成功')
           handleStopPolygonSelect(true)

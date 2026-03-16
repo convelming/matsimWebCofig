@@ -236,7 +236,7 @@ function handleDeleteDir(row) {
       type: 'warning',
     })
     .then(function () {
-      mappictureDeleteByPath({
+      API.mappictureDeleteByPath({
         path: row.path,
       })
         .then(() => {

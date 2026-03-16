@@ -2,34 +2,14 @@
 <template>
   <div class="MFooter">
     <div class="f_box1">
-      <img src="@/assets/image/footer/logo2.svg?url" alt="" class="logo" />
-      <!-- <div class="link_box">
-        <div class="item">
-          <a class="title">本院概括</a>
-          <a class="link">本院介绍</a>
-          <a class="link">人才结构</a>
-          <a class="link">组织架构</a>
+      <!-- <img src="@/assets/image/footer/logo2.svg?url" alt="" class="logo" /> -->
+      <div class="f_logo_box">
+        <img src="@/assets/favicon.png" alt="" class="icon" />
+        <div>
+          <div class="text1">城市交通科学研究院</div>
+          <div class="text2">INSTITUTE OF URBAN TRANSPORT SCIENCES</div>
         </div>
-        <div class="item">
-          <a class="title">项目展示</a>
-          <a class="link">城市综合交通规划</a>
-          <a class="link">枢纽与物流</a>
-          <a class="link">智慧交通</a>
-          <a class="link">低空经济</a>
-        </div>
-        <div class="item">
-          <a class="title">科研成果</a>
-          <a class="link">项目获奖</a>
-          <a class="link">集体荣誉</a>
-          <a class="link">科研建设</a>
-        </div>
-        <div class="item">
-          <a class="title">加入我们</a>
-          <a class="link">校园招聘</a>
-          <a class="link">社会招聘</a>
-          <a class="link">招聘答疑</a>
-        </div>
-      </div> -->
+      </div>
       <div class="link_box">
         <div class="item" v-for="item1 in list">
           <a :class="item2.class" :href="item2.link" v-for="item2 in item1">{{ item2.text }}</a>
@@ -40,9 +20,7 @@
         <div class="text">扫码关注公众号</div>
       </div>
     </div>
-    <div class="f_copy">
-      广州市城市规划勘测设计研究院 版权所有粤ICP备12054983号-1公网安备44060402002904号
-    </div>
+    <div class="f_copy">城市交通科学研究院 版权所有粤ICP备12054983号-1公网安备44060402002904号</div>
   </div>
 </template>
 
@@ -95,6 +73,26 @@ const list = [
 
     display: flex;
     align-items: flex-start;
+
+    .f_logo_box {
+      display: flex;
+      align-items: center;
+      color: #fff;
+      .icon {
+        width: 60px;
+        height: 60px;
+        margin-right: 15px;
+      }
+      .text1 {
+        font-size: 24px;
+        margin-bottom: 5px;
+      }
+      .text2 {
+        transform-origin: left;
+        scale: 0.9;
+        font-size: 12px;
+      }
+    }
     .logo {
       display: block;
       height: 80px;

@@ -20,7 +20,7 @@
             range-separator="至"
             start-placeholder="开始日期"
             end-placeholder="结束日期"
-            value-format="yyyy-MM-dd HH:mm:ss"
+            value-format="YYYY-MM-DD HH:mm:ss"
           >
           </el-date-picker>
         </el-form-item>
@@ -132,7 +132,7 @@ function handleUploadAnnex(response, file, fileList) {
 function handleSubmit() {
   formRef.value.validate((valid) => {
     if (valid) {
-      const form = {
+      const _form = {
         intersectionId: detail.value.id,
         beginTime: form.value.date[0], // 开始时间
         endTime: form.value.date[1], // 结束时间
@@ -151,7 +151,7 @@ function handleSubmit() {
         remark: form.value.remark, // 备注
       }
       saving.value = true
-      API.crossroadsInsert(form)
+      API.crossroadsInsert(_form)
         .then((res) => {
           emit('submited', res.data)
           saving.value = false

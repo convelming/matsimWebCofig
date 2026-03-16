@@ -93,6 +93,8 @@ const props = defineProps({
 const showMain = computed(() => {
   return !showUpload.value && !showSreach.value && props.visible
 })
+console.log(props.visibleLayer);
+
 const showLayer = ref(props.visibleLayer)
 const showUpload = ref(false)
 const showSreach = ref(false)

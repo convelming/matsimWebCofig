@@ -1,7 +1,14 @@
 <!-- MHeader -->
 <template>
   <div class="MHeader">
-    <img src="@/assets/image/header/logo2.svg?url" alt="" class="logo" />
+    <!-- <img src="@/assets/image/header/logo2.svg?url" alt="" class="logo" /> -->
+    <div class="h_logo_box">
+      <img src="@/assets/favicon.png" alt="" class="icon" />
+      <div>
+        <div class="text1">城市交通科学研究院</div>
+        <div class="text2">INSTITUTE OF URBAN TRANSPORT SCIENCES</div>
+      </div>
+    </div>
     <div class="btn_box">
       <a
         v-for="item in btn_list"
@@ -53,6 +60,26 @@ const btn_list = [
 
   gap: 24px;
 
+  .h_logo_box {
+    display: flex;
+    align-items: center;
+    color: #fff;
+    text-wrap: nowrap;
+    .icon {
+      width: 60px;
+      height: 60px;
+      margin-right: 15px;
+    }
+    .text1 {
+      font-size: 24px;
+      margin-bottom: 5px;
+    }
+    .text2 {
+      transform-origin: left;
+      scale: 0.9;
+      font-size: 12px;
+    }
+  }
   .logo {
     display: block;
     height: 62px;

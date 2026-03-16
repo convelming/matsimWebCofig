@@ -2,8 +2,15 @@
 <template>
   <div class="home">
     <div class="nav">
-      <img src="@/assets/image/home/logo2.svg?url" alt="" class="logo" />
-      <a  href="http://192.168.60.231:23105/vue/pt.html#/" class="icon" target="_blank">
+      <!-- <img src="@/assets/image/home/logo2.svg?url" alt="" class="logo" /> -->
+      <div class="logo_box">
+        <img src="@/assets/favicon.png" alt="" class="icon" />
+        <div>
+          <div class="text1">城市交通科学研究院</div>
+          <div class="text2">INSTITUTE OF URBAN TRANSPORT SCIENCES</div>
+        </div>
+      </div>
+      <a href="http://192.168.60.231:23105/vue/pt.html#/" class="icon" target="_blank">
         <img src="@/assets/image/home/菜单.svg?url" alt="" />
       </a>
       <!-- <a class="icon">
@@ -170,6 +177,27 @@ function handleTimeupdate(e) {
     height: 40px;
     margin-right: auto;
     cursor: pointer;
+  }
+
+  .logo_box {
+    margin-right: auto;
+    display: flex;
+    align-items: center;
+    color: #fff;
+    .icon {
+      width: 45px;
+      height: 45px;
+      margin-right: 15px;
+    }
+    .text1 {
+      font-size: 20px;
+      margin-bottom: 3px;
+    }
+    .text2 {
+      transform-origin: left;
+      scale: 0.75;
+      font-size: 12px;
+    }
   }
   .icon {
     display: block;

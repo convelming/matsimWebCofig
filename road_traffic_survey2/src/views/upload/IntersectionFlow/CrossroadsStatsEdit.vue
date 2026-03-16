@@ -334,16 +334,16 @@ function handleEdit(row) {
 function handleSave() {
   formRef.value.validate((valid) => {
     if (valid) {
-      const form = JSON.parse(JSON.stringify(form.value))
-      form.count = form.car + form.van + form.bus + form.truck
-      if (form.id != undefined) {
-        API.crossroadsUpdateStats(form).then((response) => {
+      const _form = JSON.parse(JSON.stringify(form.value))
+      _form.count = _form.car + _form.van + _form.bus + _form.truck
+      if (_form.id != undefined) {
+        API.crossroadsUpdateStats(_form).then((response) => {
           this.$message.success('修改成功')
           open.value = false
           this.getCrossroadsCorssStatsTable()
         })
       } else {
-        API.crossroadsInsertStats(form).then((response) => {
+        API.crossroadsInsertStats(_form).then((response) => {
           this.$message.success('新增成功')
           open.value = false
           this.getCrossroadsCorssStatsTable()

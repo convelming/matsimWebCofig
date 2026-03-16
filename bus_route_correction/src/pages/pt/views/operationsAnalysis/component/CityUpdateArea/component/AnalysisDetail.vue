@@ -367,23 +367,21 @@ export default {
       this.showAdjust = false;
     },
     handleSubmitAbjust() {
-      const name = this.adjustParam.find((v) => v.key == "方案名称")?.value;
+      const params = this.adjustParam.map((v) => v.children).flat();
+      const name = params.find((v) => v.key == "方案名称")?.value;
       const query = {
         parentId: this.adjustForm.id,
         areaAnalyzeId: this.adjustForm.areaAnalyzeId,
         name: name,
         args: JSON.stringify({
-          params: this.adjustParam
-            .map((v) => v.children)
-            .flat()
-            .map((v) => {
-              return {
-                key: v.key,
-                value: v.value,
-                avg: v.avg,
-                check: v.check,
-              };
-            }),
+          params: params.map((v) => {
+            return {
+              key: v.key,
+              value: v.value,
+              avg: v.avg,
+              check: v.check,
+            };
+          }),
           links: JSON.parse(this.analysis.args).links,
         }),
       };
@@ -445,7 +443,7 @@ export default {
     handleShowDetail1(row) {
       const form = JSON.parse(JSON.stringify(row));
 
-      const bastValue = Object.fromEntries(Array(JSON.parse(form.bastValue)).map((v) => [v.key, v.value]));
+      const bastValue = Object.fromEntries(JSON.parse(form.bastValue).map((v) => [v.key, v.value]));
       const areaParam = JSON.parse(JSON.stringify(this.areaParam));
 
       const children = areaParam.map((v) => v.children).flat();
@@ -469,7 +467,8 @@ export default {
     handleShowDetail(row) {
       const form = JSON.parse(JSON.stringify(row));
 
-      const bastValue = Object.fromEntries(Array(JSON.parse(form.args)).map((v) => [v.key, v.value]));
+      const params = JSON.parse(form.args).params;
+      const bastValue = Object.fromEntries(params.map((v) => [v.key, v.value]));
       const areaParam = JSON.parse(JSON.stringify(this.areaParam));
 
       const children = areaParam.map((v) => v.children).flat();
@@ -486,6 +485,8 @@ export default {
         }
       });
 
+      console.log(JSON.parse(form.args));
+      console.log(areaParam);
       this.getGetJSON(row);
       this.detailParam = areaParam;
       this.showDetail = true;
