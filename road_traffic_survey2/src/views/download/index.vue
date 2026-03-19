@@ -33,21 +33,7 @@ provide('showGeoJSONParams', showGeoJSONParams)
 
 const menuList = ref([])
 
-new Promise((resolve, reject) => {
-  fetch(import.meta.env.VITE_APP_PUBLIC_PATH + 'download_menu.json' + '?t=' + Date.now())
-    .then((res) => {
-      resolve(res)
-    })
-    .catch(() => {
-      fetch(import.meta.env.VITE_APP_PUBLIC_PATH + 'download_menu.local.json' + '?t=' + Date.now())
-        .then((res) => {
-          resolve(res)
-        })
-        .catch(() => {
-          reject()
-        })
-    })
-})
+fetch('http://192.168.60.231:8085/download_menu.json?t=' + Date.now())
   .then((res) => res.json())
   .then((data) => {
     const checkList = String(route.query.open || '')
