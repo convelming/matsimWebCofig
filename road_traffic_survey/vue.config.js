@@ -17,23 +17,20 @@ module.exports = defineConfig({
   parallel: false,
   devServer: {
     client: {
-      overlay: false
+      overlay: false,
     },
     proxy: {
-      "/": {
+      [process.env.VUE_APP_BASE_API]: {
         ws: false,
-        // target: `http://192.168.31.134:23104`, // 本地调试
         target: `http://192.168.60.231:23104`, // 测试服
-        // target: `http://192.168.31.104:23104`, // 本地调试
         changeOrigin: true,
-        // pathRewrite: {
-        //   "/": "/",
-        // },
+        pathRewrite: {
+          [process.env.VUE_APP_BASE_API]: "",
+        },
       },
     },
   },
-  css: {
-  },
+  css: {},
   chainWebpack: (config) => {
     config.plugin("html").tap((args) => {
       args[0].title = process.env.VUE_APP_TITLE || "";

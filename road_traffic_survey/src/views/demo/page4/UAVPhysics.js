@@ -48,7 +48,7 @@ export default function (threeBox) {
   function getUAVMesh() {
     return new Promise((resolve, reject) =>
       new GLTFLoader().load(
-        process.env.VUE_APP_BASE_API + "/models/无人机.glb",
+        process.env.VUE_APP_PUBLIC_PATH+ "/models/无人机.glb",
         (gltf) => {
           let lxjs = [];
           const material = new THREE.MeshPhongMaterial({

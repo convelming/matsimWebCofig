@@ -229,23 +229,23 @@ export default {
         this._Birds.render();
       });
 
-      new OBJLoader().load(process.env.VUE_APP_BASE_API + "/models/Bus.obj", (object) => {
+      new OBJLoader().load(process.env.VUE_APP_PUBLIC_PATH+ "/models/Bus.obj", (object) => {
         console.log(object);
         this._Map.world.add(object);
       });
 
-      // new STLLoader().load(process.env.VUE_APP_BASE_API + "/models/Bus.stl", (geometry) => {
+      // new STLLoader().load(process.env.VUE_APP_PUBLIC_PATH+ "/models/Bus.stl", (geometry) => {
       //   const m4 = new THREE.Matrix4().makeScale(1000, 1000, 1000);
       //   // m4.multiply(new THREE.Matrix4().makeRotationZ(Math.PI / 2));
       //   // m4.multiply(new THREE.Matrix4().makeRotationX(-Math.PI / 2));
       //   geometry.applyMatrix4(m4);
       //   console.log(geometry);
         
-      //   const mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ color: "#275994", map: new THREE.TextureLoader().load(process.env.VUE_APP_BASE_API + "/models/Bus.png") }));
+      //   const mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ color: "#275994", map: new THREE.TextureLoader().load(process.env.VUE_APP_PUBLIC_PATH+ "/models/Bus.png") }));
       //   this._Map.world.add(mesh);
       // });
 
-      // new STLLoader().load(process.env.VUE_APP_BASE_API + "/models/无人机2.stl", (geometry) => {
+      // new STLLoader().load(process.env.VUE_APP_PUBLIC_PATH+ "/models/无人机2.stl", (geometry) => {
       //   const m4 = new THREE.Matrix4().makeScale(1, 1, 1);
       //   // m4.multiply(new THREE.Matrix4().makeRotationZ(Math.PI / 2));
       //   m4.multiply(new THREE.Matrix4().makeRotationX(-Math.PI / 2));
@@ -256,7 +256,7 @@ export default {
       // const ma1 = new THREE.MeshStandardMaterial({ color: "#275994" });
       // const ma2 = new THREE.MeshStandardMaterial({ color: "#999", wireframe: true, wireframeLinewidth: 2 });
 
-      // new GLTFLoader().load(process.env.VUE_APP_BASE_API + "/models/无人机.glb", (gltf) => {
+      // new GLTFLoader().load(process.env.VUE_APP_PUBLIC_PATH+ "/models/无人机.glb", (gltf) => {
       //   gltf.lxjs = [];
       //   gltf.birds = new Birds(this._Map.renderer);
       //   gltf.scene.add(gltf.birds);

@@ -38,7 +38,7 @@ export class UAVLayer extends Layer {
     var cube = new THREE.Mesh(geometry, material2);
     this.group.add(cube);
 
-    loader.load(process.env.VUE_APP_BASE_API + "/models/无人机.stl", (geometry) => {
+    loader.load(process.env.VUE_APP_PUBLIC_PATH+ "/models/无人机.stl", (geometry) => {
       const m4 = new THREE.Matrix4().makeScale(0.05, 0.05, 0.05);
       geometry.applyMatrix4(m4);
       const mesh = new THREE.Mesh(geometry, new THREE.MeshNormalMaterial());

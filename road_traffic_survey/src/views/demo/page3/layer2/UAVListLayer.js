@@ -38,7 +38,7 @@ export class UAVListLayer extends Layer {
     this.UAVMesh1 = new THREE.InstancedMesh(this.UAVGeometry, this.UAVMaterial1, 1);
     this.UAVMesh2 = new THREE.InstancedMesh(this.UAVGeometry, this.UAVMaterial2, 1);
 
-    loader.load(process.env.VUE_APP_BASE_API + "/models/无人机.stl", (geometry) => {
+    loader.load(process.env.VUE_APP_PUBLIC_PATH+ "/models/无人机.stl", (geometry) => {
       const m4 = new THREE.Matrix4().makeScale(1, 1, 1);
       m4.multiply(new THREE.Matrix4().makeRotationZ(-Math.PI / 2));
       geometry.applyMatrix4(m4);

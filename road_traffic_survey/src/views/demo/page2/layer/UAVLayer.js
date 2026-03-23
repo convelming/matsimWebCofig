@@ -27,7 +27,7 @@ export class UAVLayer extends Layer {
     this.UAVScene = new THREE.Group();
     this.UAVScene.add(this.UAVMesh);
 
-    loader.load(process.env.VUE_APP_BASE_API + "/models/无人机.stl", (geometry) => {
+    loader.load(process.env.VUE_APP_PUBLIC_PATH+ "/models/无人机.stl", (geometry) => {
       this.UAVScene.remove(this.UAVMesh);
       this.UAVMesh = new THREE.Mesh(geometry, new THREE.MeshNormalMaterial());
       this.UAVMesh.scale.set(1, 1, 1);

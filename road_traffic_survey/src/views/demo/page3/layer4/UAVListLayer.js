@@ -46,7 +46,7 @@ export class UAVListLayer extends Layer {
     this.UAVMesh1 = new THREE.InstancedMesh(this.UAVGeometry, this.UAVMaterial1, 1);
     this.UAVMesh2 = new THREE.InstancedMesh(this.UAVGeometry, this.UAVMaterial2, 1);
 
-    new STLLoader().load(process.env.VUE_APP_BASE_API + "/models/无人机2.stl", (geometry) => {
+    new STLLoader().load(process.env.VUE_APP_PUBLIC_PATH+ "/models/无人机2.stl", (geometry) => {
       const m4 = new THREE.Matrix4().makeScale(1, 1, 1);
       m4.multiply(new THREE.Matrix4().makeRotationZ(Math.PI / 2));
       m4.multiply(new THREE.Matrix4().makeRotationX(-Math.PI / 2));
@@ -107,7 +107,7 @@ export class UAVListLayer extends Layer {
       }, 1000 / 120);
     }).observe(this.rootDoc);
 
-    new GLTFLoader().load(process.env.VUE_APP_BASE_API + "/models/无人机.glb", (gltf) => {
+    new GLTFLoader().load(process.env.VUE_APP_PUBLIC_PATH+ "/models/无人机.glb", (gltf) => {
       gltf.lxjs = [];
       // gltf.birds = new Birds(this.renderer);
       // gltf.scene.add(gltf.birds);

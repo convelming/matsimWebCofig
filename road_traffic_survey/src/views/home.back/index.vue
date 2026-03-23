@@ -1,12 +1,9 @@
 <template>
   <div class="root">
-    <div id="mapRoot">
-      <div class="MapLayerMenu">
-        <div class="MapLayer_menu" :class="{ hide: !showStyleMenu }" :style="`width: ${styleList.length * 50 + 30}px`">
-          <div class="open_hide_btn" @click="showStyleMenu = !showStyleMenu"></div>
-          <img class="item" :class="{ active: styleActive == i }" v-for="(v, i) in styleList" :src="v.url" :title="v.style_name" :key="i" @click="handleChangeStyle(i)" />
-        </div>
-      </div>
+    <div id="mapRoot"></div>
+    <div class="MapLayer_menu" :class="{ hide: !showStyleMenu }" :style="`width: ${styleList.length * 50 + 30}px`">
+      <div class="open_hide_btn" @click="showStyleMenu = !showStyleMenu"></div>
+      <img class="item" :class="{ active: styleActive == i }" v-for="(v, i) in styleList" :src="v.url" :title="v.style_name" :key="i" @click="handleChangeStyle(i)" />
     </div>
     <Dialog :visible="showSetting" hideMinimize hideClose width="400px">
       <div class="setting_box">
@@ -155,7 +152,7 @@
 </template>
 
 <script>
-import { MyMap, MAP_EVENT, MAP_ZOOM_RANGE, MAP_LAYER_STYLE,DEFAULT_MAP_LAYER_STYLE, MapLayer } from "@/mymap/index.js";
+import { MyMap, MAP_EVENT, MAP_ZOOM_RANGE, MAP_LAYER_STYLE, DEFAULT_MAP_LAYER_STYLE, MapLayer } from "@/mymap/index.js";
 import { WGS84ToMercator } from "@/mymap/utils/LngLatUtils";
 
 import { FrameSelectLayer, FRAME_SELECT_STATE_KEY, FRAME_SELECT_EVENT } from "./layer/FrameSelectLayer";
@@ -822,71 +819,70 @@ export default {
     height: 100%;
     z-index: 10;
     overflow: hidden;
+  }
+  .MapLayer_menu {
+    position: absolute;
+    z-index: 10000;
+    bottom: 20px;
+    right: 20px;
+    height: 50px;
+    width: 330px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    background: #00000038;
+    transition: width 0.3s;
+    border-radius: 5px;
+    box-shadow: 0 0px 15px rgba(255, 255, 255, 0.8);
 
-    .MapLayer_menu {
-      position: absolute;
-      z-index: 10000;
-      bottom: 20px;
-      right: 20px;
-      height: 50px;
-      width: 330px;
-      display: flex;
-      align-items: center;
-      overflow: hidden;
-      background: #00000038;
-      transition: width 0.3s;
-      border-radius: 5px;
-      box-shadow: 0 0px 15px rgba(255, 255, 255, 0.8);
-
-      &.hide {
-        width: 20px !important;
-        .open_hide_btn {
-          transform: rotate(0);
-        }
-      }
+    &.hide {
+      width: 20px !important;
       .open_hide_btn {
-        position: relative;
-        cursor: pointer;
-        display: block;
-        height: 100%;
-        width: 20px;
-        flex-shrink: 0;
-        color: #fff;
-        font-weight: bold;
-        transition: transform 0.3s;
-        transform: rotate(180deg);
-        &::before,
-        &::after {
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          content: "";
-          display: block;
-          border-left: 2px solid #fff;
-          border-bottom: 2px solid #fff;
-          width: 8px;
-          height: 8px;
-          transform: translate(0, -50%) rotate(45deg);
-        }
-        &::before {
-          left: 5px;
-        }
-        &::after {
-          left: 10px;
-        }
+        transform: rotate(0);
       }
-      .item {
-        box-sizing: border-box;
-        cursor: pointer;
+    }
+    .open_hide_btn {
+      position: relative;
+      cursor: pointer;
+      display: block;
+      height: 100%;
+      width: 20px;
+      flex-shrink: 0;
+      color: #fff;
+      font-weight: bold;
+      transition: transform 0.3s;
+      transform: rotate(180deg);
+      &::before,
+      &::after {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        content: "";
         display: block;
-        height: 40px;
-        width: 40px;
-        margin-left: 10px;
-        border-radius: 5px;
-        border: 2px solid transparent;
-        &.active {
-          border-color: #409eff;
-        }
+        border-left: 2px solid #fff;
+        border-bottom: 2px solid #fff;
+        width: 8px;
+        height: 8px;
+        transform: translate(0, -50%) rotate(45deg);
+      }
+      &::before {
+        left: 5px;
+      }
+      &::after {
+        left: 10px;
+      }
+    }
+    .item {
+      box-sizing: border-box;
+      cursor: pointer;
+      display: block;
+      height: 40px;
+      width: 40px;
+      margin-left: 10px;
+      border-radius: 5px;
+      border: 2px solid transparent;
+      &.active {
+        border-color: #409eff;
       }
     }
   }

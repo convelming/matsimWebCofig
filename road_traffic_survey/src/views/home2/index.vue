@@ -587,9 +587,9 @@ export default {
     import("@/assets/json/guangzhou2.json").then((res) => {
       this._GuangZhouLayer.setData(res.default);
     });
-    import("@/assets/json/huangpu2.json").then((res) => {
-      this._HuangPuLayer.setData(res.default);
-    });
+    // import("@/assets/json/huangpu2.json").then((res) => {
+    //   this._HuangPuLayer.setData(res.default);
+    // });
   },
   methods: {
     // ****************************** 地图及图层初始化 -- start

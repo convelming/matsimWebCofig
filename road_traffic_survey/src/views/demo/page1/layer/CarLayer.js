@@ -34,9 +34,9 @@ export class CarLayer extends Layer {
     this.modelSize = opt.modelSize || this.modelSize;
 
     this.modelPool = new ModelPool({
-      SUV: process.env.VUE_APP_BASE_API + "models/SUV.glb",
-      truck_truck: process.env.VUE_APP_BASE_API + "models/Van.glb",
-      veh_passenger: process.env.VUE_APP_BASE_API + "models/SUV.glb",
+      SUV: process.env.VUE_APP_PUBLIC_PATH+ "/models/SUV.glb",
+      truck_truck: process.env.VUE_APP_PUBLIC_PATH+ "/models/Van.glb",
+      veh_passenger: process.env.VUE_APP_PUBLIC_PATH+ "/models/SUV.glb",
     })
 
     this.carGroup = new THREE.Group();

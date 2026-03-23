@@ -376,7 +376,7 @@ export default {
       // }, 1000 / 60);
     },
     addUAV() {
-      new GLTFLoader().load(process.env.VUE_APP_BASE_API + "/models/无人机.glb", (gltf) => {
+      new GLTFLoader().load(process.env.VUE_APP_PUBLIC_PATH+ "/models/无人机.glb", (gltf) => {
         let lxjs = [];
         const material = new THREE.MeshPhongMaterial({
           color: 0xff0000,
@@ -431,7 +431,7 @@ export default {
         });
       });
 
-      // new STLLoader().load(process.env.VUE_APP_BASE_API + "/models/无人机.stl", (geometry) => {
+      // new STLLoader().load(process.env.VUE_APP_PUBLIC_PATH+ "/models/无人机.stl", (geometry) => {
       //   const m4 = new THREE.Matrix4().makeScale(this.boxSize / 200, this.boxSize / 200, this.boxSize / 200);
       //   m4.multiply(new THREE.Matrix4().makeRotationZ(-Math.PI / 2));
       //   geometry.applyMatrix4(m4);
