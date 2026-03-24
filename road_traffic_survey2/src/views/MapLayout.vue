@@ -3,19 +3,42 @@
   <div class="MapLayout">
     <div class="header">
       <div class="title">交通数据采集应用平台</div>
-      <MButton class="menu_item" activeClass="active" :to="{ name: 'home' }" type="router" :record="false">
+      <MButton
+        class="menu_item"
+        activeClass="active"
+        :to="{ name: 'home' }"
+        type="router"
+        :record="false"
+      >
         <TabHome class="icon" />
         <span class="text">首页</span>
       </MButton>
-      <MButton class="menu_item" activeClass="active" :to="{ name: 'upload' }" type="router" :record="false">
+      <MButton
+        class="menu_item"
+        activeClass="active"
+        :to="{ name: 'upload' }"
+        type="router"
+        :record="false"
+      >
         <TabUpload class="icon" />
         <span class="text">数据上传</span>
       </MButton>
-      <MButton class="menu_item" activeClass="active" :to="{ name: 'download' }" type="router" :record="false">
+      <MButton
+        class="menu_item"
+        activeClass="active"
+        :to="{ name: 'download' }"
+        type="router"
+        :record="false"
+      >
         <TabDownload class="icon" />
         <span class="text">数据下载</span>
       </MButton>
-      <MButton class="menu_item" path="http://192.168.60.231:23105/vue/feedback.html#/" type="a" :record="false">
+      <MButton
+        class="menu_item"
+        path="http://192.168.60.231:23105/vue/feedback.html#/"
+        type="a"
+        :record="false"
+      >
         <TabFeedback class="icon" />
         <span class="text">问题反馈</span>
       </MButton>
@@ -49,16 +72,7 @@
 </template>
 
 <script setup>
-import {
-  MyMap,
-  MAP_EVENT,
-  MAP_ZOOM_RANGE,
-  MAP_LAYER_STYLE,
-  DEFAULT_MAP_LAYER_STYLE,
-  MOUSE_BUTTONS,
-  MapLayer,
-  MapStyleFactory,
-} from '@/mymap/index.js'
+import { MyMap, MOUSE_BUTTONS, MapLayer } from '@/mymap/index.js'
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 
@@ -100,33 +114,8 @@ onMounted(() => {
     // center:  [12633548, 2651418],
     // zoom: 11.628,
   })
-  // https://t0.dynamic.tiles.ditu.live.com/comp/ch/1321222210103?mkt=zh-CN,en-US&ur=cn&it=G,L&jp=0&og=1&sv=9.27&n=t&o=webp,95&cstl=s23&st=bld|v:0
-  // _Map.enableRotate = true;
-  // getConfigKey('sys.maptile.serve').then((res) => {
-  //   const getUrl = eval(`(z,x,y) => \`${res.msg}\``)
-  //   const tileClass = MapStyleFactory({
-  //     style_name: 'Arcgis',
-  //     background: '#CCE7F9',
-  //     getUrl: function () {
-  //       return getUrl(this.zoom, this.row, this.col)
-  //     },
-  //   })
-  //   const _MapLayer = new MapLayer({ tileClass: tileClass, zIndex: -1 })
-  //   _Map.addLayer(_MapLayer)
-  // })
-  // const res = { msg: 'http://192.168.60.234:8081/styles/OSM%20Liberty/512/${z}/${x}/${y}.png' }
-  const res = { msg: 'http://192.168.60.231:23334/osm/LightBlue/${z}/${x}/${y}.png' }
-  const getUrl = eval(`(z,x,y) => \`${res.msg}\``)
-  const tileClass = MapStyleFactory({
-    style_name: 'Arcgis',
-    background: '#CCE7F9',
-    getUrl: function () {
-      return getUrl(this.zoom, this.row, this.col)
-    },
-  })
-  const _MapLayer = new MapLayer({ tileClass: tileClass, zIndex: -1 })
+  const _MapLayer = new MapLayer({ zIndex: -1 })
   _Map.addLayer(_MapLayer)
-
   MapRef.value = _Map
 
   ro.observe(document.getElementById('page'))

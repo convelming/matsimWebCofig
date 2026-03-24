@@ -36,6 +36,7 @@
   <IntersectionFlow v-model:visible="showIntersectionFlow" />
   <UploadVideo v-model:visible="showUploadVideo" />
   <UploadImage v-model:visible="showUploadImage" />
+  <CTProject v-model:visible="showCTProject" />
 </template>
 
 <script setup>
@@ -44,7 +45,10 @@ import LinkFlow from './LinkFlow/index.vue'
 import IntersectionFlow from './IntersectionFlow/index.vue'
 import UploadVideo from './UploadVideo/index.vue'
 import UploadImage from './UploadImage/index.vue'
-import { NetworkLayer } from '@/utils/MapLayer/NetworkLayer'
+
+import CTProject from './CTProject/index.vue'
+
+import { ElMessage } from 'element-plus'
 
 const showMenu = computed(() => {
   return (
@@ -52,6 +56,7 @@ const showMenu = computed(() => {
     !showIntersectionFlow.value &&
     !showUploadVideo.value &&
     !showUploadImage.value &&
+    !showCTProject.value &&
     true
   )
 })
@@ -59,6 +64,8 @@ const showLinkFlow = ref(false)
 const showIntersectionFlow = ref(false)
 const showUploadVideo = ref(false)
 const showUploadImage = ref(false)
+const showCTProject = ref(false)
+
 const activeNames = ref([])
 const menuList = [
   {
@@ -118,6 +125,16 @@ const menuList = [
     title: '栅格文件',
     children: [],
   },
+  {
+    name: '7',
+    title: '交评道路运行现状出图',
+    children: [
+      {
+        name: '7-1',
+        title: '开始出图',
+      },
+    ],
+  },
 ]
 
 const _NetworkData = shallowRef(null)
@@ -138,12 +155,13 @@ function handleClick(v1, v2) {
     showUploadVideo.value = true
   } else if (v2.title == '仅图片') {
     showUploadImage.value = true
+  } else if (v2.name == '7-1') {
+    showCTProject.value = true
+  } else {
+    ElMessage.warning('功能研发中，敬请期待')
   }
 }
 
-onUnmounted(() => {
-  _NetworkLayer.value.dispose()
-})
 </script>
 
 <style lang="scss" scoped>

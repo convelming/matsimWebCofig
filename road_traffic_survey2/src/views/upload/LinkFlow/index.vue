@@ -141,8 +141,12 @@ const linkDetailData = reactive({
 
 let _Map = null
 
+
+
 const _NetworkLayer = new NetworkLayer({ zIndex: 10, lineWidth: 10 })
 injectSync('_NetworkData').then((res) => {
+  console.log(res.value);
+  
   _NetworkLayer.setData(res.value)
 })
 

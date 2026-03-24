@@ -157,7 +157,7 @@
 </template>
 
 <script setup>
-import { MyMap, MAP_EVENT, MAP_LAYER_STYLE, MapLayer } from '@/mymap/index.js'
+import { MyMap, MAP_EVENT, MapLayer } from '@/mymap/index.js'
 import { MercatorToWGS84, WGS84ToMercator } from '@/mymap/utils/LngLatUtils'
 
 import { DrawLineLayer } from '@/utils/MapLayer/DrawLineLayer'
@@ -254,7 +254,6 @@ addWatch(mapLayerOpacity, (val) => {
 })
 
 const _MapLayer = new MapLayer({
-  tileClass: MAP_LAYER_STYLE[0],
   zIndex: 100,
   opacity: mapLayerOpacity.value,
 })
