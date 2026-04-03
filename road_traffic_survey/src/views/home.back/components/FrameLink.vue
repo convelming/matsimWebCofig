@@ -233,9 +233,16 @@ export default {
       })
         .then(() => {
           this.exportAllLoading = true;
-          return statsExport({
-            xyarr: this.xyarr,
-          });
+
+          let queryParams = JSON.parse(JSON.stringify(this.queryParams));
+          queryParams.xyarr = this.xyarr;
+          if (this.dateRange && this.dateRange[0] && this.dateRange[1]) {
+            queryParams.beginTime = this.dateRange[0];
+            queryParams.endTime = this.dateRange[1];
+          }
+          delete queryParams.pageNum;
+          delete queryParams.pageSize;
+          return statsExport(queryParams);
         })
         .then((response) => {
           const blobUrl = window.URL.createObjectURL(response.data);
