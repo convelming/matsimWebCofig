@@ -1,0 +1,15 @@
+@function fs($px) {
+  @return calc($px * var(--fs-scale));
+}
+
+@function sy($size) {
+  @return calc($size * var(--scaleY));
+}
+
+@function sx($size) {
+  @return calc($size * var(--scaleX));
+}
+
+@function sc($size) {
+  @return calc($size * var(--scale));
+}

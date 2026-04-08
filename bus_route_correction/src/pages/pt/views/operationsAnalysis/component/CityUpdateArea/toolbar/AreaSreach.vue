@@ -63,14 +63,14 @@
       <div class="AreaSreach_Dialog_box">
         <el-scrollbar wrap-class="scroll_box" v-if="dialogDetail">
           <el-collapse v-model="activeNames" style="width: 100%">
-            <el-collapse-item class="my_collapse_item" :name="item.label" v-for="item in dialogDetail">
+            <el-collapse-item class="my_collapse_item" :name="item.label" v-for="(item, key) in dialogDetail" :key="key">
               <div class="el-collapse-item__title" slot="title">
                 <el-checkbox class="checkbox" :value="getCheckAll(item)" @input="handleCheckAll(item, $event)" :indeterminate="getIndeterminate(item)" style="width: auto"></el-checkbox>
                 <span class="item_title">{{ item.label }}</span>
               </div>
               <div class="my_collapse_item_body">
                 <div v-if="item.label == '业态开发强度'" style="text-align: right">合计：{{ computedTotal(item) }}</div>
-                <template v-for="item2 in item.children">
+                <template v-for="(item2, key2) in item.children">
                   <AreaFromItem :label="$l(item2.label)" v-bind="item2" @update:value="item2.value = $event" @update:check="item2.check = $event" />
                 </template>
               </div>

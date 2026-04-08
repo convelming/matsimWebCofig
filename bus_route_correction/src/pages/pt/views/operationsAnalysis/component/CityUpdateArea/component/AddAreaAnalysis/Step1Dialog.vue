@@ -4,7 +4,7 @@
     <div class="Step1_box" v-loading="loading" element-loading-background="rgb(from var(--color-white) r g b / 0.8)">
       <el-scrollbar wrap-class="scroll_box">
         <el-collapse v-model="activeNames" style="width: 100%">
-          <el-collapse-item class="my_collapse_item" :name="item.label" v-for="item in areaParam">
+          <el-collapse-item class="my_collapse_item" :name="item.label" v-for="(item, key) in areaParam" :key="key">
             <div class="el-collapse-item__title" slot="title">
               <el-checkbox class="checkbox" :value="getCheckAll(item)" @input="handleCheckAll(item, $event)" :indeterminate="getIndeterminate(item)" style="width: auto"></el-checkbox>
               <span class="item_title">{{ item.label }}</span>

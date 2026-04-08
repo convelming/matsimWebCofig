@@ -52,7 +52,7 @@
       <div class="Step3_Adjust_box">
         <el-scrollbar wrap-class="scroll_box">
           <el-collapse v-model="activeNames" style="width: 100%">
-            <el-collapse-item class="my_collapse_item" :name="item.label" v-for="item in adjustParam">
+            <el-collapse-item class="my_collapse_item" :name="item.label" v-for="(item, key) in adjustParam" :key="key">
               <div class="el-collapse-item__title" slot="title">
                 <el-checkbox class="checkbox" :value="getCheckAll(item)" @input="handleCheckAll(item, $event)" :indeterminate="getIndeterminate(item)" style="width: auto"></el-checkbox>
                 <span class="item_title">{{ item.label }}</span>
@@ -79,7 +79,7 @@
       <div class="Step3_Adjust_box">
         <el-scrollbar wrap-class="scroll_box">
           <el-collapse v-model="activeNames" style="width: 100%">
-            <el-collapse-item class="my_collapse_item" :name="item.label" v-for="item in detailParam">
+            <el-collapse-item class="my_collapse_item" :name="item.label" v-for="(item, key) in detailParam" :key="key">
               <div class="el-collapse-item__title" slot="title">
                 <el-checkbox class="checkbox" :value="getCheckAll(item)" @input="handleCheckAll(item, $event)" :indeterminate="getIndeterminate(item)" style="width: auto"></el-checkbox>
                 <span class="item_title">{{ item.label }}</span>
