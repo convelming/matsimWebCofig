@@ -40,7 +40,7 @@ export class OSMTileUtils {
     const row = OSMTileUtils.xToRow(mapCenterX, zoom);
     const col = OSMTileUtils.yToCol(mapCenterY, zoom);
     const tileSize = OSMTileUtils.getTileSize(zoom);
-    const radius = Math.ceil(width / tileSize[0]);
+    const radius = Math.ceil(width / tileSize);
 
     const max_row_col = Math.pow(2, zoom);
     const min_row_col = 0;

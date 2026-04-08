@@ -1,4 +1,7 @@
-import proj4 from "proj4";
+// import proj4 from 'proj4'
+// proj4.defs("EPSG:4526", "+proj=tmerc +lat_0=0 +lon_0=114 +k=1 +x_0=38500000 +y_0=0 +ellps=GRS80 +units=m +no_defs");
+// proj4.defs("EPSG:4547", "+proj=tmerc +lat_0=0 +lon_0=114 +k=1 +x_0=500000 +y_0=0 +ellps=GRS80 +units=m +no_defs +type=crs");
+// proj4.defs("urn:ogc:def:crs:OGC:1.3:CRS84", proj4.defs("EPSG:4326"));
 
 export const EARTH_RADIUS = 20037508.3427892;
 
@@ -11,59 +14,60 @@ export const EARTH_RADIUS = 20037508.3427892;
 
 /**
  * EPSG:4526转Web墨卡托
- * @param {*} lng
- * @param {*} lat
- * @returns
+ * @param {*} lng 
+ * @param {*} lat 
+ * @returns 
  */
 export function EPSG4526ToMercator(lng, lat) {
-  return proj4("EPSG:4526", "EPSG:3857", [Number(lng), Number(lat)]).map((v) => Number(Number(v).toFixed(2)));
+  return proj4("EPSG:4526", "EPSG:3857", [Number(lng), Number(lat)]).map(v => Number(Number(v).toFixed(2)));
 }
+
 
 /**
  * EPSG:4526转WGS84
- * @param {*} lng
- * @param {*} lat
- * @returns
+ * @param {*} lng 
+ * @param {*} lat 
+ * @returns 
  */
 export function EPSG4526ToWGS84(lng, lat) {
-  return proj4("EPSG:4526", "EPSG:4326", [Number(lng), Number(lat)]).map((v) => Number(Number(v).toFixed(6)));
+  return proj4("EPSG:4526", "EPSG:4326", [Number(lng), Number(lat)]).map(v => Number(Number(v).toFixed(6)));
 }
 
 /**
  * WGS84转EPSG:4526
- * @param {*} lng
- * @param {*} lat
- * @returns
+ * @param {*} lng 
+ * @param {*} lat 
+ * @returns 
  */
 export function WGS84ToEPSG4526(lng, lat) {
-  return proj4("EPSG:4326", "EPSG:4526", [Number(lng), Number(lat)]).map((v) => Number(Number(v).toFixed(2)));
+  return proj4("EPSG:4326", "EPSG:4526", [Number(lng), Number(lat)]).map(v => Number(Number(v).toFixed(2)));
 }
 
 /**
  * Web墨卡托转WGS84
- * @param {*} lng
- * @param {*} lat
- * @returns
+ * @param {*} lng 
+ * @param {*} lat 
+ * @returns 
  */
 export function MercatorToWGS84(lng, lat) {
-  return proj4("EPSG:3857", "EPSG:4326", [Number(lng), Number(lat)]).map((v) => Number(Number(v).toFixed(6)));
+  return proj4("EPSG:3857", "EPSG:4326", [Number(lng), Number(lat)]).map(v => Number(Number(v).toFixed(6)));
 }
 
 /**
  * WGS84转Web墨卡托
- * @param {*} lng
- * @param {*} lat
- * @returns
+ * @param {*} lng 
+ * @param {*} lat 
+ * @returns 
  */
 export function WGS84ToMercator(lng, lat) {
-  return proj4("EPSG:4326", "EPSG:3857", [Number(lng), Number(lat)]).map((v) => Number(Number(v).toFixed(2)));
+  return proj4("EPSG:4326", "EPSG:3857", [Number(lng), Number(lat)]).map(v => Number(Number(v).toFixed(2)));
 }
 
 /**
  * WGS84转画布坐标
- * @param {*} x
- * @param {*} y
- * @returns
+ * @param {*} x 
+ * @param {*} y 
+ * @returns 
  */
 export function WGS84ToCanvasXY(lon, lat, zoom) {
   return [lon, lat, zoom];

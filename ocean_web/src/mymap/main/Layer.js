@@ -14,25 +14,31 @@ export class Layer extends EventListener {
   zIndex = 0;
   pickColorNum = 0;
 
-  set visible(visible) {
-    this._visible = !!visible;
-    !!visible ? this.show() : this.hide();
+  set usePick(usePick) {
+    this._usePick = !!usePick;
+    if (usePick) {
+      try {
+        this.map.pickLayerWorld.add(this.pickLayerScene);
+      } catch {}
+    } else {
+      if (this.pickLayerScene) this.pickLayerScene.removeFromParent();
+    }
   }
 
-  get visible() {
-    return this._visible;
+  get usePick() {
+    return this._usePick;
   }
 
   get isDisposed() {
     return this._isDisposed;
   }
 
-  constructor({ zIndex = 0, visible = true, event } = {}) {
+  constructor({ zIndex = 0, usePick = true, event } = {}) {
     super({ event });
     this.id = parseInt(Math.random() * 255 * 255 * 255).toString(16);
     this.zIndex = zIndex;
-    this.visible = visible;
     this.pickColorNum = 0;
+    this.usePick = usePick;
 
     this.scene = new THREE.Group();
     this.scene.renderOrder = this.zIndex;
@@ -59,15 +65,14 @@ export class Layer extends EventListener {
     // });
   }
 
-
   // 设置图层的显示层级
   setZIndex(zIndex) {
     this.zIndex = zIndex;
-    this.scene.renderOrder = this.zIndex;
+    // this.scene.renderOrder = this.zIndex;
     this.scene.position.z = this.zIndex / 100;
-    this.pickLayerScene.renderOrder = this.zIndex;
+    // this.pickLayerScene.renderOrder = this.zIndex;
     this.pickLayerScene.position.z = this.zIndex / 100;
-    this.pickLayerScene.renderOrder = this.zIndex;
+    // this.pickLayerScene.renderOrder = this.zIndex;
     this.pickMeshScene.position.z = this.zIndex / 100;
   }
 
@@ -90,7 +95,8 @@ export class Layer extends EventListener {
     if (this.map) this.removeFromParent();
     this.map = map;
     this.setPickLayerColor(this.map.getPickLayerColor());
-    this.visible = this._visible;
+    if (this.map.world) this.map.world.add(this.scene);
+    if (this.map.pickLayerWorld && this.usePick) this.map.pickLayerWorld.add(this.pickLayerScene);
   }
 
   // 地图中移除回调
@@ -108,12 +114,12 @@ export class Layer extends EventListener {
     }
   }
 
-  beforeRender() { }
+  beforeRender() {}
 
-  afterRender() { }
+  afterRender() {}
 
   // 渲染
-  render() { }
+  render() {}
 
   // 事件回调
   on(type, data) {
@@ -144,28 +150,9 @@ export class Layer extends EventListener {
     if (this.pickMeshScene) this.pickMeshScene.remove(...this.pickMeshScene.children);
   }
 
-  // 隐藏
-  hide() {
-    this._visible = false;
-    if (this.scene) this.scene.removeFromParent();
-    if (this.pickLayerScene) this.pickLayerScene.removeFromParent();
-    if (this.pickMeshScene) this.pickMeshScene.removeFromParent();
-  }
-
-  // 显示
-  show() {
-    this._visible = true;
-    if (this.map) {
-      if (this.map.world) this.map.world.add(this.scene);
-      if (this.map.pickLayerWorld) this.map.pickLayerWorld.add(this.pickLayerScene);
-      if (this.map.pickMeshWorld) this.map.pickMeshWorld.add(this.pickMeshScene);
-    }
-  }
-
   dispose() {
     this.removeFromParent();
     this._isDisposed = true;
     // TODO
   }
-
 }

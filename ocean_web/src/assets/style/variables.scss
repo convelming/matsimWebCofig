@@ -1,0 +1,289 @@
+// 主色
+$main-color: #005bdb;
+
+//纯白色
+$white-color: #fff;
+
+//纯黑色
+$black-color: #000;
+
+//-------------------------------------------------------------------------
+
+//中性色
+//标题文字
+$title-font-color: #333333;
+
+//次一级文字
+$sub-title-font-color: #555555;
+
+//次二级提示文字
+$sub-sub-title-font-color: #888888;
+
+//输入提示/只读文字
+$type-tips-readonly-font-color: #cccccc;
+
+//边框线/分割线
+$border-color: #e0e0e0;
+
+//只读背景
+$readonly-bg-color: #f3f3f3;
+
+//页面背景
+$page-bg-color: #e4e9f0;
+
+//-------------------------------------------------------------------------
+
+//辅助色
+//未开始
+$unstart-color: #86909c;
+
+//未开始（背景颜色/tag）
+$unstart-bg-color: #86909c28;
+
+//进行中
+$in-progress-color: #005bdb;
+
+//进行中（背景颜色/tag）
+$in-progress-bg-color: #005bdb28;
+
+//成功/已完成
+$success-complete-color: #00b42a;
+$success-completed-color: #00baadff;
+
+//成功/已完成（背景颜色/tag）
+$success-complete-bg-color: #00b42a28;
+$success-completed-bg-color: #00baad28;
+
+//警告
+$warning-color: #ff8d1a;
+
+//警告（背景颜色/tag）
+$warning-bg-color: #ff8d1a28;
+
+//失败
+$fail-color: #d43030;
+
+//失败（背景颜色/tag）
+$fail-bg-color: #d4303028;
+
+//-------------------------------------------------------------------------
+
+//扩展色
+//扩展色 蓝 主色
+$extend-color-blue: #005bdb;
+
+//扩展色 蓝 主色（背景颜色/tag）
+$extend-color-bg-blue: #005bdb28;
+
+//扩展色 淡蓝
+$extend-color-light-blue: #2a82e4;
+
+//扩展色 淡蓝（背景颜色/tag）
+$extend-color-bg-light-blue: #2a82e428;
+
+//扩展色 天蓝
+$extend-color-sky-blue: #1890ff;
+
+//扩展色 天蓝（背景颜色/tag）
+$extend-color-bg-sky-blue: #1890ff28;
+
+//扩展色 深红
+$extend-color-deep-red: #d43030;
+
+//扩展色 深红（背景颜色/tag）
+$extend-color-bg-deep-red: #d4303028;
+
+//扩展色 橘红
+$extend-color-orange-red: #ff5733;
+
+//扩展色 橘红（背景颜色/tag）
+$extend-color-bg-orange-red: #ff573328;
+
+//扩展色 橙
+$extend-color-orange: #ff8d1a;
+
+//扩展色 橙（背景颜色/tag）
+$extend-color-bg-orange: #ff8d1a28;
+
+//扩展色 淡橙
+$extend-color-light-orange: #ffc300;
+
+//扩展色 淡橙（背景颜色/tag）
+$extend-color-bg-light-orange: #ffc30028;
+
+//扩展色 黄
+$extend-color-yellow: #fce40d;
+
+//扩展色 黄（背景颜色/tag）
+$extend-color-bg-yellow: #fce40d28;
+
+//扩展色 绿
+$extend-color-green: #00b42a;
+
+//扩展色 绿（背景颜色/tag）
+$extend-color-bg-green: #00b42a28;
+
+//扩展色 青
+$extend-color-cyan: #00baad;
+
+//扩展色 青（背景颜色/tag）
+$extend-color-bg-cyan: #00baad28;
+
+//扩展色 薄荷绿
+$extend-color-mint-green: #38e98c;
+
+//扩展色 薄荷绿（背景颜色/tag）
+$extend-color-bg-mint-green: #38e98c28;
+
+//扩展色 灿绿
+$extend-color-bright-green: #7bc616;
+
+//扩展色 灿绿（背景颜色/tag）
+$extend-color-bg-bright-green: #7bc61628;
+
+//扩展色 蓝紫
+$extend-color-blue-purple: #7948ea;
+
+//扩展色 蓝紫（背景颜色/tag）
+$extend-color-bg-blue-purple: #7948ea28;
+
+//扩展色 紫
+$extend-color-purple: #ac33c1;
+
+//扩展色 紫（背景颜色/tag）
+$extend-color-bg-purple: #ac33c128;
+
+//扩展色 灰
+$extend-color-gray: #86909c;
+
+//扩展色 灰（背景颜色/tag）
+$extend-color-bg-gray: #86909c28;
+
+//-------------------------------------------------------------------------
+
+//渐变色
+//渐变色 蓝 主色
+$gradient-color-blue: linear-gradient(to right, $main-color, #005bdb0f);
+
+//渐变色 绿
+$gradient-color-green: linear-gradient(to right, #00b42aff, #00b42a0f);
+
+//渐变色 橙
+$gradient-color-orange: linear-gradient(to right, #ff8d1aff, #ff8d1a0f);
+
+//渐变色 深红
+$gradient-color-deep-red: linear-gradient(to right, #d43030ff, #d430300f);
+
+//渐变色 淡橙
+$gradient-color-light-orange: linear-gradient(to right, #ffc300ff, #ffc3000f);
+
+//渐变色 黄
+$gradient-color-yellow: linear-gradient(to right, #fce40dff, #fce40d0f);
+
+//渐变色 青
+$gradient-color-cyan: linear-gradient(to right, #00baadff, #00baad0f);
+
+//渐变色 薄荷绿
+$gradient-color-mint-green: linear-gradient(to right, #38e98cff, #38e98c0f);
+
+//渐变色 灿绿
+$gradient-color-bright-green: linear-gradient(to right, #7bc616ff, #7bc6160f);
+
+//渐变色 蓝紫
+$gradient-color-blue-purple: linear-gradient(to right, #7948eaff, #7948ea0f);
+
+//渐变色 紫
+$gradient-color-purple: linear-gradient(to right, #ac33c1ff, #ac33c10f);
+
+//渐变色 灰
+$gradient-color-gray: linear-gradient(to right, #86909cff, #86909c0f);
+
+//-------------------------------------------------------------------------
+
+//布局颜色
+//一级菜单激活背景色
+$primary-menu-active-bg-color: #f0f6ff;
+
+//数据卡片/二级菜单tab切换/工具栏/资源图层/图例按钮等背景色
+$card-bg-color: linear-gradient(to bottom, #ebf3ffff, #ffffffff);
+
+//数据卡片/二级菜单tab切换/工具栏/资源图层/图例按钮等边框色
+$card-border-color: #fff;
+
+//数据卡片/二级菜单tab切换/工具栏/资源图层/图例按钮等阴影色
+$card-shadow-color: #0f427d;
+
+//弹框标题背景色
+$modal-title-bg-color: linear-gradient(to right, rgba($main-color, 0.12), #ffffff00);
+
+//四级菜单背景色
+$fourth-menu-bg-color: rgba($main-color, 0.08);
+
+//四级菜单背景色激活
+$fourth-menu-bg-color-active: linear-gradient(to bottom, rgba($main-color, 1), #498ae6ff);
+
+//图片列表颜色
+$img-list-color: linear-gradient(90deg, rgba($main-color, 0.8) 0%, rgba($main-color, 0.15) 100%);
+
+//图层树色调
+$layer-tree-color: #a5a5a5;
+
+//-------------------------------------------------------------------------
+
+//字号
+//页面大标题
+$page-title-font-size: 36px;
+
+//一级标题
+$title-font-size: 20px;
+
+//二级标题
+$sub-title-font-size: 18px;
+
+//三级标题
+$sub-sub-title-font-size: 16px;
+
+//正文
+$content-font-size: 14px;
+
+//次要、辅助文字
+$secondary-font-size: 12px;
+
+//-------------------------------------------------------------------------
+
+//备份 数据面板/图表数据颜色选择
+//配色一
+//默认色板：若数据项>5，按照以下色值，从上至下按顺序选择填色
+$chart-data-panel-one-1: $extend-color-blue;
+
+$chart-data-panel-one-2: $extend-color-cyan;
+
+$chart-data-panel-one-3: $extend-color-orange;
+
+$chart-data-panel-one-4: $extend-color-deep-red;
+
+$chart-data-panel-one-5: $extend-color-light-orange;
+
+$chart-data-panel-one-6: $extend-color-blue-purple;
+
+$chart-data-panel-one-7: $extend-color-gray;
+
+//配色二
+//默认色板：若数据项>5，按照以下色值，从上至下按顺序选择填色
+$chart-data-panel-two-1: $extend-color-blue;
+
+$chart-data-panel-two-2: $extend-color-orange;
+
+$chart-data-panel-two-3: $extend-color-light-orange;
+
+$chart-data-panel-two-4: #01de96;
+
+$chart-data-panel-two-5: $extend-color-bright-green;
+
+$chart-data-panel-two-6: $extend-color-purple;
+
+$chart-data-panel-two-7: $extend-color-deep-red;
+
+:export {
+  mainColor: $main-color;
+}

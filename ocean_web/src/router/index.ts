@@ -6,12 +6,20 @@ const router = createRouter({
     {
       path: '/',
       name: 'index',
-      redirect: '/routeplan',
+      redirect: '/routeplan/index',
     },
     {
       path: '/routeplan',
-      name: 'routeplan',
-      component: () => import('@/views/routeplan/index.vue'),
+      name: 'routeplan_layout',
+      redirect: '/routeplan/index',
+      component: () => import('@/views/MapLayout.vue'),
+      children: [
+        {
+          path: 'index',
+          name: 'routeplan_index',
+          component: () => import('@/views/routeplan/index.vue'),
+        },
+      ],
     },
   ],
 })

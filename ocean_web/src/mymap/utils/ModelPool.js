@@ -1,5 +1,6 @@
 
-import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js"; 
+import * as THREE from "three";
 
 // 模型池
 export class ModelPool {
@@ -18,6 +19,8 @@ export class ModelPool {
           loader.load(
             url,
             (gltf) => {
+              // gltf.scene.add(new THREE.AxesHelper(1000));
+              gltf.scene.userData.name = name;
               resolve([name, gltf.scene]);
             },
             null,
@@ -45,9 +48,9 @@ export class ModelPool {
   }
 
   // 回收模型
-  still(name, model) {
+  still(model) {
     try {
-      const list = this.modelPool.get(name);
+      const list = this.modelPool.get(model.userData.name);
       list[list.length] = model;
       return 1;
     } catch (error) {

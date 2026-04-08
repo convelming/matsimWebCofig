@@ -12,11 +12,6 @@ const BLOOM_PARAMS = {
   threshold: 0,
 };
 
-export const SCENE_MAP = {
-  ENTIRE_SCENE: 0, // 全景图层
-  BLOOM_SCENE: 1, // 泛光图层
-};
-
 export class BloomComposer {
   constructor(renderer, scene, camera, bloomParams) {
     const _bloomParams = Object.assign({}, BLOOM_PARAMS, bloomParams);
@@ -70,7 +65,7 @@ export class BloomComposer {
           void main() {
             vec4 bloomColor = texture2D( bloomTexture, vUv );
             vec4 baseColor = texture2D( baseTexture, vUv );
-            float length = length(bloomColor.rgb) / 1.42;
+            float length = length(bloomColor.rgb);
             length = length * length * 0.7;
             bloomColor = vec4(length) * bloomColor;
             baseColor = vec4(1.0 - length) * baseColor;
