@@ -5,6 +5,7 @@ import SpriteText from "./SpriteText.js";
 
 const textureLoader = new THREE.TextureLoader();
 
+// 站点列表
 export class PointListLayer extends Layer {
   name = "PointListLayer";
 

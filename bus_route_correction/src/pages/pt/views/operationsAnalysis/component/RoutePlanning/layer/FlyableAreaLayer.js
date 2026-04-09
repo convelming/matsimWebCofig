@@ -5,7 +5,7 @@ import { EPSG4526ToMercator } from "@/mymap/utils/LngLatUtils.js";
 import GeoJSONLayerWorker from "../../GeoJSON/worker/GeoJSONLayer.worker";
 
 import GeoJSON from "./AirSpacePolygon_100.js";
-
+// 飞行区域
 export class FlyableAreaLayer extends Layer {
   polygonMeshList = [];
   center = [0, 0];

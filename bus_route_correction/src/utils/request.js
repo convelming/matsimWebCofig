@@ -1,7 +1,7 @@
 import axios from "axios";
 import { Notification, MessageBox, Message, Loading } from "element-ui";
 import { getDataSource } from "@/store/modules/datasource";
-import { getToken } from "@/utils/auth";
+import { getToken, removeToken } from "@/utils/auth";
 import { tansParams, blobValidate } from "@/utils/utils";
 import cache from "./cache";
 // import { saveAs } from "file-saver";
@@ -106,14 +106,13 @@ service.interceptors.response.use(
     if (code === 401) {
       if (!isRelogin.show) {
         isRelogin.show = true;
+        removeToken();
         MessageBox.confirm("登录状态已过期，您可以继续留在该页面，或者重新登录", "系统提示", { confirmButtonText: "重新登录", cancelButtonText: "取消", type: "warning" })
           .then(() => {
             isRelogin.show = false;
-            store.dispatch("LogOut").then(() => {
-              location.href = `${process.env.VUE_APP_PUBLIC_PATH}user.html#/?redirect=${encodeURIComponent(location.href)}`;
-            });
+            location.href = `${process.env.VUE_APP_PUBLIC_PATH}user.html#/?redirect=${encodeURIComponent(location.href)}`;
           })
-          .catch(() => {
+          .catch((error) => {
             isRelogin.show = false;
           });
       }

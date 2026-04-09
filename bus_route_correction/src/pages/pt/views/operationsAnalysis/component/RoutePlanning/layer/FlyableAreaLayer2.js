@@ -4,6 +4,7 @@ import { EPSG4526ToMercator } from "@/mymap/utils/LngLatUtils.js";
 
 import data from "./AirSpaceCube_100.js";
 
+// 飞行区域
 export class FlyableAreaLayer extends Layer {
   constructor(opt) {
     super(opt);

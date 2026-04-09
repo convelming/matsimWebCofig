@@ -11,7 +11,6 @@ import { MyMap, MOUSE_BUTTONS, MapLayer } from '@/mymap/index.js'
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 
-
 import { ElMessage } from 'element-plus'
 
 const route = useRoute()
@@ -48,6 +47,7 @@ onMounted(() => {
     // 科学城中心点和缩放
     // center:  [12633548, 2651418],
     // zoom: 11.628,
+    enableRotate: true,
   })
   const _MapLayer = new MapLayer({ zIndex: -1 })
   _Map.addLayer(_MapLayer)

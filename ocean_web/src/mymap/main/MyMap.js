@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 THREE.ColorManagement.enabled = true
 // 引入轨道控制器扩展库OrbitControls.js
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
+import { OrbitControls,MapControls  } from 'three/addons/controls/OrbitControls.js'
 //引入性能监视器stats.js
 import Stats from 'three/addons/libs/stats.module.js'
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer'
@@ -606,7 +606,7 @@ export class MyMap extends EventListener {
   // 添加地图摄像机控制器
   initCameraControls() {
     // 设置相机控件轨道控制器OrbitControls
-    this.cameraControls = new OrbitControls(this.camera, this.rootDoc)
+    this.cameraControls = new MapControls(this.camera, this.rootDoc)
     // 启用或禁用摄像机水平或垂直旋转。默认值为true。
     this.cameraControls.enableRotate = this._enableRotate
     // 启用或禁用摄像机平移，默认为true。

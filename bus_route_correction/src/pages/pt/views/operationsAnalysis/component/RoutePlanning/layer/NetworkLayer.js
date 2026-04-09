@@ -7,6 +7,7 @@ import { guid } from "@/utils/utils";
 const BUILD_ZOOM = 12;
 const EARTH_RADIUS = 20037508.3427892;
 
+// 空网
 export class NetworkLayer extends Layer {
   _noLoadTileList = [];
   colors = ColorBar2DColors;

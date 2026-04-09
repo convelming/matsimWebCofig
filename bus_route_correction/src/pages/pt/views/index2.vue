@@ -563,6 +563,8 @@ export default {
     },
   },
   created() {
+    this.$store.dispatch('GetInfo')
+    
     document.body.setAttribute("data-theme", "light");
     console.log("index created");
     const dataBase = this.$route.params.base;
