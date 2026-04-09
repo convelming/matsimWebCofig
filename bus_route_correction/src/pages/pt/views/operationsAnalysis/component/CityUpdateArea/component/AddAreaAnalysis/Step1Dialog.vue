@@ -33,6 +33,11 @@ import { parserGeoJSON } from "../../../GeoJSON/layer/GeoJSONLayer2";
 import { CUA_downloadGeojson } from "@/api/index";
 import { boldToText } from "@/utils/index2";
 
+const defaultConfig = {
+  slider: true,
+  inputNumber: true,
+  checkBox: true,
+};
 const dialogList = [
   { label: "基本信息", children: [{ type: "item", label: "方案名称", key: "方案名称", disabled: false, slider: false, inputNumber: false, input: true, value: "", avg: 0, check: false }] },
   {
@@ -44,44 +49,57 @@ const dialogList = [
     ],
   },
   {
-    type: "title",
     label: "业态开发强度",
     children: [
-      { type: "item", label: "居住开发强度", key: "居住开发强度", start: 0, end: -1, step: 0.001, slider: true, inputNumber: true, checkBox: true },
-      { type: "item", label: "办公开发强度", key: "办公开发强度", start: 0, end: -1, step: 0.001, slider: true, inputNumber: true, checkBox: true },
-      { type: "item", label: "商业开发强度", key: "商业开发强度", start: 0, end: -1, step: 0.001, slider: true, inputNumber: true, checkBox: true },
-      { type: "item", label: "工业开发强度", key: "工业开发强度", start: 0, end: -1, step: 0.001, slider: true, inputNumber: true, checkBox: true },
+      { type: "item", label: "居住开发强度", key: "居住开发强度", start: 0, end: -1, step: 0.001, ...defaultConfig },
+      { type: "item", label: "办公开发强度", key: "办公开发强度", start: 0, end: -1, step: 0.001, ...defaultConfig },
+      { type: "item", label: "商业开发强度", key: "商业开发强度", start: 0, end: -1, step: 0.001, ...defaultConfig },
+      { type: "item", label: "工业开发强度", key: "工业开发强度", start: 0, end: -1, step: 0.001, ...defaultConfig },
     ],
   },
   {
-    type: "title",
     label: "出行结构",
     children: [
-      { type: "item", label: "小汽车占比", key: "小汽车占比", start: 0, end: 1, step: 0.001, slider: true, inputNumber: true, checkBox: true },
-      { type: "item", label: "轨道交通占比", key: "轨道交通占比", start: 0, end: 1, step: 0.001, slider: true, inputNumber: true, checkBox: true },
-      { type: "item", label: "公交占比", key: "公交占比", start: 0, end: 1, step: 0.001, slider: true, inputNumber: true, checkBox: true },
-      { type: "item", label: "慢行占比", key: "慢行占比", start: 0, end: 1, step: 0.001, slider: true, inputNumber: true, checkBox: true },
+      { type: "item", label: "小汽车占比", key: "小汽车占比", start: 0, end: 1, step: 0.001, ...defaultConfig },
+      { type: "item", label: "轨道交通占比", key: "轨道交通占比", start: 0, end: 1, step: 0.001, ...defaultConfig },
+      { type: "item", label: "公交占比", key: "公交占比", start: 0, end: 1, step: 0.001, ...defaultConfig },
+      { type: "item", label: "慢行占比", key: "慢行占比", start: 0, end: 1, step: 0.001, ...defaultConfig },
     ],
   },
   {
-    type: "title",
+    label: "用地面积",
+    children: [
+      { type: "item", label: "居住用地", key: "居住用地", start: 0, end: -1, ...defaultConfig },
+      { type: "item", label: "工业用地", key: "工业用地", start: 0, end: -1, ...defaultConfig },
+      { type: "item", label: "商业服务用地", key: "商业服务用地", start: 0, end: -1, ...defaultConfig },
+      { type: "item", label: "商务办公用地", key: "商务办公用地", start: 0, end: -1, ...defaultConfig },
+      { type: "item", label: "交通用地", key: "交通用地", start: 0, end: -1, ...defaultConfig },
+      { type: "item", label: "公共管理和服务用地", key: "公共管理和服务用地", start: 0, end: -1, ...defaultConfig },
+    ],
+  },
+  {
     label: "交通设施",
     children: [
-      { type: "item", label: "地铁站点数", key: "地铁站点数", start: 0, end: -1, slider: true, inputNumber: true, checkBox: true },
-      { type: "item", label: "公交站点数", key: "公交站点数", start: 0, end: -1, step: 1, slider: true, inputNumber: true, checkBox: true },
-      { type: "item", label: "主干路及以上长度", key: "主干路及以上长度", start: 0, end: -1, step: 1, slider: true, inputNumber: true, checkBox: true },
-      { type: "item", label: "次干路及以下长度", key: "次干路及以下长度", start: 0, end: -1, step: 1, slider: true, inputNumber: true, checkBox: true },
+      { type: "item", label: "地铁站点数", key: "地铁站点数", start: 0, end: -1, step: 1, ...defaultConfig },
+      { type: "item", label: "公交站点数", key: "公交站点数", start: 0, end: -1, step: 1, ...defaultConfig },
     ],
   },
   {
-    type: "title",
     label: "特殊地点",
     children: [
-      { type: "item", label: "体育设施数", key: "体育设施数", start: 0, end: -1, step: 1, slider: true, inputNumber: true, checkBox: true },
-      { type: "item", label: "医疗设施数", key: "医疗设施数", start: 0, end: -1, step: 1, slider: true, inputNumber: true, checkBox: true },
-      { type: "item", label: "教育设施数", key: "教育设施数", start: 0, end: -1, step: 1, slider: true, inputNumber: true, checkBox: true },
-      { type: "item", label: "文化设施数", key: "文化设施数", start: 0, end: -1, step: 1, slider: true, inputNumber: true, checkBox: true },
-      { type: "item", label: "政府设施数", key: "政府设施数", start: 0, end: -1, step: 1, slider: true, inputNumber: true, checkBox: true },
+      { type: "item", label: "医疗机构", key: "医疗机构", start: 0, end: -1, step: 1, ...defaultConfig },
+      { type: "item", label: "商业设施", key: "商业设施", start: 0, end: -1, step: 1, ...defaultConfig },
+      { type: "item", label: "教育", key: "教育", start: 0, end: -1, step: 1, ...defaultConfig },
+      { type: "item", label: "政府及管理机构", key: "政府及管理机构", start: 0, end: -1, step: 1, ...defaultConfig },
+      { type: "item", label: "运动场馆", key: "运动场馆", start: 0, end: -1, step: 1, ...defaultConfig },
+      { type: "item", label: "风景名胜", key: "风景名胜", start: 0, end: -1, step: 1, ...defaultConfig },
+      { type: "item", label: "大型园区", key: "大型园区", start: 0, end: -1, step: 1, ...defaultConfig },
+      { type: "item", label: "社会保障机构", key: "社会保障机构", start: 0, end: -1, step: 1, ...defaultConfig },
+      { type: "item", label: "科研机构", key: "科研机构", start: 0, end: -1, step: 1, ...defaultConfig },
+      { type: "item", label: "文化、媒体", key: "文化、媒体", start: 0, end: -1, step: 1, ...defaultConfig },
+      { type: "item", label: "公安机关", key: "公安机关", start: 0, end: -1, step: 1, ...defaultConfig },
+      { type: "item", label: "宗教", key: "宗教", start: 0, end: -1, step: 1, ...defaultConfig },
+      { type: "item", label: "休闲度假", key: "休闲度假", start: 0, end: -1, step: 1, ...defaultConfig },
     ],
   },
 ];
