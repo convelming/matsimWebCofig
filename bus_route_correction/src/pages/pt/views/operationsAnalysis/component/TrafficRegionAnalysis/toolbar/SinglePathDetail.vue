@@ -109,15 +109,6 @@
                 <GeoJSONVisualMap v-show="showOriginVisualMap && showOriginLayer" :list="originConfigForm.colorBar.data" />
               </div>
             </div>
-            <div class="setting_item">
-              <div class="setting_item_label">{{ $l("按时段显示") }}</div>
-              <div class="setting_item_value">
-                <el-switch v-model="originUseTimeRange" :active-value="true" :inactive-value="false" @change="" />
-              </div>
-            </div>
-            <div class="setting_item" v-if="originUseTimeRange">
-              <TimeRangeSlider v-model="originTimeRange" />
-            </div>
           </div>
         </div>
         <div class="form_item">
@@ -298,7 +289,7 @@
     "en-US": "Color"
   },
   "Visual map":{
-    "zh-CN": "Visual map",
+    "zh-CN": "图例",
     "en-US": "Visual map"
   },
   "线宽":{
@@ -569,9 +560,9 @@ export default {
       showLinkFlowLayer: false,
       showLinkFlowAllArea: false,
       showLinkFlowAllTracks: false,
-      linkFlowUseTimeRange: false,
+      linkFlowUseTimeRange: true,
       linkFlowTimeRange: [0, 24 * 60 * 60],
-      showLineFlowVisualMap: false,
+      showLineFlowVisualMap: true,
       showLineFlowConfig: false,
       lineFlowConfigForm: {
         height: 30,
@@ -622,9 +613,9 @@ export default {
       openOriginSetting: false,
       originLoading: false,
       showOriginLayer: false,
-      originUseTimeRange: false,
+      originUseTimeRange: true,
       originTimeRange: [0, 24 * 60 * 60],
-      showOriginVisualMap: false,
+      showOriginVisualMap: true,
       showOriginConfig: false,
       originSize: GRID_STEP,
       originConfigForm: {
@@ -670,9 +661,9 @@ export default {
       openDestinationsSetting: false,
       destinationsLoading: false,
       showDestinationsLayer: false,
-      destinationsUseTimeRange: false,
+      destinationsUseTimeRange: true,
       destinationsTimeRange: [0, 24 * 60 * 60],
-      showDestinationsVisualMap: false,
+      showDestinationsVisualMap: true,
       showDestinationsConfig: false,
       destinationsSize: GRID_STEP,
       destinationsConfigForm: {
@@ -724,7 +715,7 @@ export default {
       openAccessibilitySetting: false,
       accessibilityLoading: false,
       showAccessibilityLayer: false,
-      showAccessibilityVisualMap: false,
+      showAccessibilityVisualMap: true,
       showAccessibilityConfig: false,
       accessibilityConfigForm: {
         opacity: 0.5,
@@ -912,7 +903,6 @@ export default {
   },
   methods: {
     initByConfig(config) {
-
       for (const key in config) {
         this[key] = config[key];
       }
@@ -989,7 +979,7 @@ export default {
 
           showAccessibilityVisualMap: this.showAccessibilityVisualMap,
           accessibilityConfigForm: this.accessibilityConfigForm,
-        })
+        }),
       );
     },
     // *********************** 其他 *********************** //

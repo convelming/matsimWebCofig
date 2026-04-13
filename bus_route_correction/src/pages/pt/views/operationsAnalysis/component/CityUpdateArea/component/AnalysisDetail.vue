@@ -1,7 +1,7 @@
 <!-- Step3Dialog -->
 <template>
   <div>
-    <Dialog class="Step3_Dialog" ref="dialog" :title="analysis?.name" hideMinimize :visible="s_visible" @close="handleClose" keepRight right="330" top="100" width="450px">
+    <DialogRight class="Step3_Dialog" ref="dialog" :title="analysis?.name" hideMinimize :visible="s_visible" @close="handleClose" keepRight right="330" top="100" width="450px">
       <div class="Step3_box" v-loading="loading" element-loading-background="rgb(from var(--color-white) r g b / 0.8)">
         <div class="btn_box">
           <div class="text1 btn_box" style="width: 100%">
@@ -40,15 +40,15 @@
             </el-table>
           </template>
         </AutoSize>
-        <Pagination @size-change="getAnalysisList" @current-change="getAnalysisList" :current-page.sync="pageNum" :page-size="pageSize" :total="total" :pager-count="5" layout="total, prev, pager, next"> </Pagination>
+        <Pagination @pagination="getAnalysisList" :page.sync="pageNum" :limit="pageSize" :total="total" :pager-count="5" layout="total, prev, pager, next"> </Pagination>
 
         <!-- <div class="btn_box">
           <el-button type="primary" size="small" @click="handleNext">{{ $l("搜索最优方案") }}</el-button>
           <el-button type="info" size="small" @click="handlePrev">{{ $l("上一步") }}</el-button>
         </div> -->
       </div>
-    </Dialog>
-    <Dialog class="Step3_Adjust_Dialog" ref="dialog" :title="$l('方案调整')" hideMinimize :visible.sync="showAdjust" @close="handleCloseAdjust" keepRight right="330" top="100" width="450px">
+    </DialogRight>
+    <DialogRight class="Step3_Adjust_Dialog" ref="dialog" :title="$l('方案调整')" hideMinimize :visible.sync="showAdjust" @close="handleCloseAdjust" keepRight right="330" top="100" width="450px">
       <div class="Step3_Adjust_box">
         <el-scrollbar wrap-class="scroll_box">
           <el-collapse v-model="activeNames" style="width: 100%">
@@ -71,11 +71,11 @@
           <el-button type="info" size="small" @click="handleCloseAdjust">{{ $l("取消") }}</el-button>
         </div>
       </div>
-    </Dialog>
-    <Dialog class="Step3_Chart_Dialog" ref="dialog" hideMinimize :visible.sync="showChart" @close="handleCloseChart" keepRight right="330" top="100" width="450px">
+    </DialogRight>
+    <DialogRight class="Step3_Chart_Dialog" ref="dialog" hideMinimize :visible.sync="showChart" @close="handleCloseChart" keepRight right="330" top="100" width="450px">
       <div v-if="showChart" ref="chart" class="chart"></div>
-    </Dialog>
-    <Dialog class="Step3_Adjust_Dialog" ref="dialog" hideMinimize :visible.sync="showDetail" @close="handleCloseDetail" keepRight right="330" top="100" width="450px">
+    </DialogRight>
+    <DialogRight class="Step3_Adjust_Dialog" ref="dialog" hideMinimize :visible.sync="showDetail" @close="handleCloseDetail" keepRight right="330" top="100" width="450px">
       <div class="Step3_Adjust_box">
         <el-scrollbar wrap-class="scroll_box">
           <el-collapse v-model="activeNames" style="width: 100%">
@@ -94,7 +94,7 @@
           </el-collapse>
         </el-scrollbar>
       </div>
-    </Dialog>
+    </DialogRight>
   </div>
 </template>
 
@@ -110,10 +110,75 @@ import { CUA_downloadGeojson, CUA_planPage, CUA_deletePlan, CUA_addPlan } from "
 import { guid, boldToText } from "@/utils/index2";
 
 const defaultConfig = {
+  check: false,
   slider: true,
   inputNumber: true,
   checkBox: true,
 };
+// const dialogList = [
+//   { label: "基本信息", children: [{ type: "item", label: "方案名称", key: "方案名称", disabled: false, slider: false, inputNumber: false, input: true, value: "", avg: "", check: false }] },
+//   {
+//     label: "总体情况",
+//     children: [
+//       { type: "item", label: "总开发强度", key: "总开发强度", start: 0, end: -1, step: 0.001, disabled: true, slider: true, inputNumber: true },
+//       { type: "item", label: "平均容积率", key: "平均容积率", start: 0, end: -1, step: 0.001, disabled: true, slider: true, inputNumber: true },
+//     ],
+//   },
+//   {
+//     label: "业态开发强度",
+//     children: [
+//       { type: "item", label: "居住开发强度", key: "居住开发强度", start: 0, end: -1, step: 0.001, ...defaultConfig },
+//       { type: "item", label: "办公开发强度", key: "办公开发强度", start: 0, end: -1, step: 0.001, ...defaultConfig },
+//       { type: "item", label: "商业开发强度", key: "商业开发强度", start: 0, end: -1, step: 0.001, ...defaultConfig },
+//       { type: "item", label: "工业开发强度", key: "工业开发强度", start: 0, end: -1, step: 0.001, ...defaultConfig },
+//     ],
+//   },
+//   {
+//     label: "出行结构",
+//     children: [
+//       { type: "item", label: "小汽车占比", key: "小汽车占比", start: 0, end: 1, step: 0.001, ...defaultConfig },
+//       { type: "item", label: "轨道交通占比", key: "轨道交通占比", start: 0, end: 1, step: 0.001, ...defaultConfig },
+//       { type: "item", label: "公交占比", key: "公交占比", start: 0, end: 1, step: 0.001, ...defaultConfig },
+//       { type: "item", label: "慢行占比", key: "慢行占比", start: 0, end: 1, step: 0.001, ...defaultConfig },
+//     ],
+//   },
+//   {
+//     label: "用地面积",
+//     children: [
+//       { type: "item", label: "居住用地", key: "居住用地", start: 0, end: -1, ...defaultConfig },
+//       { type: "item", label: "工业用地", key: "工业用地", start: 0, end: -1, ...defaultConfig },
+//       { type: "item", label: "商业服务用地", key: "商业服务用地", start: 0, end: -1, ...defaultConfig },
+//       { type: "item", label: "商务办公用地", key: "商务办公用地", start: 0, end: -1, ...defaultConfig },
+//       { type: "item", label: "交通用地", key: "交通用地", start: 0, end: -1, ...defaultConfig },
+//       { type: "item", label: "公共管理和服务用地", key: "公共管理和服务用地", start: 0, end: -1, ...defaultConfig },
+//     ],
+//   },
+//   {
+//     label: "交通设施",
+//     children: [
+//       { type: "item", label: "地铁站点数", key: "地铁站点数", start: 0, end: -1, step: 1, ...defaultConfig },
+//       { type: "item", label: "公交站点数", key: "公交站点数", start: 0, end: -1, step: 1, ...defaultConfig },
+//     ],
+//   },
+//   {
+//     label: "特殊地点",
+//     children: [
+//       { type: "item", label: "医疗机构", key: "医疗机构", start: 0, end: -1, step: 1, ...defaultConfig },
+//       { type: "item", label: "商业设施", key: "商业设施", start: 0, end: -1, step: 1, ...defaultConfig },
+//       { type: "item", label: "教育", key: "教育", start: 0, end: -1, step: 1, ...defaultConfig },
+//       { type: "item", label: "政府及管理机构", key: "政府及管理机构", start: 0, end: -1, step: 1, ...defaultConfig },
+//       { type: "item", label: "运动场馆", key: "运动场馆", start: 0, end: -1, step: 1, ...defaultConfig },
+//       { type: "item", label: "风景名胜", key: "风景名胜", start: 0, end: -1, step: 1, ...defaultConfig },
+//       { type: "item", label: "大型园区", key: "大型园区", start: 0, end: -1, step: 1, ...defaultConfig },
+//       { type: "item", label: "社会保障机构", key: "社会保障机构", start: 0, end: -1, step: 1, ...defaultConfig },
+//       { type: "item", label: "科研机构", key: "科研机构", start: 0, end: -1, step: 1, ...defaultConfig },
+//       { type: "item", label: "文化、媒体", key: "文化、媒体", start: 0, end: -1, step: 1, ...defaultConfig },
+//       { type: "item", label: "公安机关", key: "公安机关", start: 0, end: -1, step: 1, ...defaultConfig },
+//       { type: "item", label: "宗教", key: "宗教", start: 0, end: -1, step: 1, ...defaultConfig },
+//       { type: "item", label: "休闲度假", key: "休闲度假", start: 0, end: -1, step: 1, ...defaultConfig },
+//     ],
+//   },
+// ];
 const dialogList = [
   { label: "基本信息", children: [{ type: "item", label: "方案名称", key: "方案名称", disabled: false, slider: false, inputNumber: false, input: true, value: "", avg: "", check: false }] },
   {
@@ -126,55 +191,38 @@ const dialogList = [
   {
     label: "业态开发强度",
     children: [
-      { type: "item", label: "居住开发强度", key: "居住开发强度", start: 0, end: -1, step: 0.001, ...defaultConfig },
-      { type: "item", label: "办公开发强度", key: "办公开发强度", start: 0, end: -1, step: 0.001, ...defaultConfig },
-      { type: "item", label: "商业开发强度", key: "商业开发强度", start: 0, end: -1, step: 0.001, ...defaultConfig },
-      { type: "item", label: "工业开发强度", key: "工业开发强度", start: 0, end: -1, step: 0.001, ...defaultConfig },
+      { type: "item", label: "居住开发强度", key: "居住开发强度", start: 0, end: -1, step: 0.001, slider: true, inputNumber: true, checkBox: true },
+      { type: "item", label: "办公开发强度", key: "办公开发强度", start: 0, end: -1, step: 0.001, slider: true, inputNumber: true, checkBox: true },
+      { type: "item", label: "商业开发强度", key: "商业开发强度", start: 0, end: -1, step: 0.001, slider: true, inputNumber: true, checkBox: true },
+      { type: "item", label: "工业开发强度", key: "工业开发强度", start: 0, end: -1, step: 0.001, slider: true, inputNumber: true, checkBox: true },
     ],
   },
   {
     label: "出行结构",
     children: [
-      { type: "item", label: "小汽车占比", key: "小汽车占比", start: 0, end: 1, step: 0.001, ...defaultConfig },
-      { type: "item", label: "轨道交通占比", key: "轨道交通占比", start: 0, end: 1, step: 0.001, ...defaultConfig },
-      { type: "item", label: "公交占比", key: "公交占比", start: 0, end: 1, step: 0.001, ...defaultConfig },
-      { type: "item", label: "慢行占比", key: "慢行占比", start: 0, end: 1, step: 0.001, ...defaultConfig },
-    ],
-  },
-  {
-    label: "用地面积",
-    children: [
-      { type: "item", label: "居住用地", key: "居住用地", start: 0, end: -1, ...defaultConfig },
-      { type: "item", label: "工业用地", key: "工业用地", start: 0, end: -1, ...defaultConfig },
-      { type: "item", label: "商业服务用地", key: "商业服务用地", start: 0, end: -1, ...defaultConfig },
-      { type: "item", label: "商务办公用地", key: "商务办公用地", start: 0, end: -1, ...defaultConfig },
-      { type: "item", label: "交通用地", key: "交通用地", start: 0, end: -1, ...defaultConfig },
-      { type: "item", label: "公共管理和服务用地", key: "公共管理和服务用地", start: 0, end: -1, ...defaultConfig },
+      { type: "item", label: "小汽车占比", key: "小汽车占比", start: 0, end: 1, step: 0.001, slider: true, inputNumber: true, checkBox: true },
+      { type: "item", label: "轨道交通占比", key: "轨道交通占比", start: 0, end: 1, step: 0.001, slider: true, inputNumber: true, checkBox: true },
+      { type: "item", label: "公交占比", key: "公交占比", start: 0, end: 1, step: 0.001, slider: true, inputNumber: true, checkBox: true },
+      { type: "item", label: "慢行占比", key: "慢行占比", start: 0, end: 1, step: 0.001, slider: true, inputNumber: true, checkBox: true },
     ],
   },
   {
     label: "交通设施",
     children: [
-      { type: "item", label: "地铁站点数", key: "地铁站点数", start: 0, end: -1, step: 1, ...defaultConfig },
-      { type: "item", label: "公交站点数", key: "公交站点数", start: 0, end: -1, step: 1, ...defaultConfig },
+      { type: "item", label: "地铁站点数", key: "地铁站点数", start: 0, end: -1, slider: true, inputNumber: true, checkBox: true },
+      { type: "item", label: "公交站点数", key: "公交站点数", start: 0, end: -1, step: 1, slider: true, inputNumber: true, checkBox: true },
+      { type: "item", label: "主干路及以上长度", key: "主干路及以上长度", start: 0, end: -1, step: 1, slider: true, inputNumber: true, checkBox: true },
+      { type: "item", label: "次干路及以下长度", key: "次干路及以下长度", start: 0, end: -1, step: 1, slider: true, inputNumber: true, checkBox: true },
     ],
   },
   {
     label: "特殊地点",
     children: [
-      { type: "item", label: "医疗机构", key: "医疗机构", start: 0, end: -1, step: 1, ...defaultConfig },
-      { type: "item", label: "商业设施", key: "商业设施", start: 0, end: -1, step: 1, ...defaultConfig },
-      { type: "item", label: "教育", key: "教育", start: 0, end: -1, step: 1, ...defaultConfig },
-      { type: "item", label: "政府及管理机构", key: "政府及管理机构", start: 0, end: -1, step: 1, ...defaultConfig },
-      { type: "item", label: "运动场馆", key: "运动场馆", start: 0, end: -1, step: 1, ...defaultConfig },
-      { type: "item", label: "风景名胜", key: "风景名胜", start: 0, end: -1, step: 1, ...defaultConfig },
-      { type: "item", label: "大型园区", key: "大型园区", start: 0, end: -1, step: 1, ...defaultConfig },
-      { type: "item", label: "社会保障机构", key: "社会保障机构", start: 0, end: -1, step: 1, ...defaultConfig },
-      { type: "item", label: "科研机构", key: "科研机构", start: 0, end: -1, step: 1, ...defaultConfig },
-      { type: "item", label: "文化、媒体", key: "文化、媒体", start: 0, end: -1, step: 1, ...defaultConfig },
-      { type: "item", label: "公安机关", key: "公安机关", start: 0, end: -1, step: 1, ...defaultConfig },
-      { type: "item", label: "宗教", key: "宗教", start: 0, end: -1, step: 1, ...defaultConfig },
-      { type: "item", label: "休闲度假", key: "休闲度假", start: 0, end: -1, step: 1, ...defaultConfig },
+      { type: "item", label: "体育设施数", key: "体育设施数", start: 0, end: -1, step: 1, slider: true, inputNumber: true, checkBox: true },
+      { type: "item", label: "医疗设施数", key: "医疗设施数", start: 0, end: -1, step: 1, slider: true, inputNumber: true, checkBox: true },
+      { type: "item", label: "教育设施数", key: "教育设施数", start: 0, end: -1, step: 1, slider: true, inputNumber: true, checkBox: true },
+      { type: "item", label: "文化设施数", key: "文化设施数", start: 0, end: -1, step: 1, slider: true, inputNumber: true, checkBox: true },
+      { type: "item", label: "政府设施数", key: "政府设施数", start: 0, end: -1, step: 1, slider: true, inputNumber: true, checkBox: true },
     ],
   },
 ];

@@ -25,7 +25,7 @@
         </el-table>
       </template>
     </AutoSize>
-    <Pagination @size-change="getList" @current-change="getList" :current-page.sync="pageNum" :page-size="pageSize" :total="total" :pager-count="5" layout="total, prev, pager, next"> </Pagination>
+    <Pagination @pagination="getList" :page.sync="pageNum" :limit="pageSize" :total="total" :pager-count="5" layout="total, prev, pager, next"> </Pagination>
     <template v-if="areaDetail">
       <div class="flex-box">
         <div class="title block">{{ areaDetail.name }} -- {{ $l("方案列表") }}</div>
@@ -55,7 +55,7 @@
           </el-table>
         </template>
       </AutoSize>
-      <Pagination @size-change="getAnalysisList" @current-change="getAnalysisList" :current-page.sync="a_pageNum" :page-size="a_pageSize" :total="a_total" :pager-count="5" layout="total, prev, pager, next"> </Pagination>
+      <Pagination @pagination="getAnalysisList" :page.sync="a_pageNum" :limit="a_pageSize" :total="a_total" :pager-count="5" layout="total, prev, pager, next"> </Pagination>
 
       <AddAreaAnalysis :visible.sync="showAddAnalysis" :detail="areaDetail" :year="year" @success="handleSuccessAddAnalysis" @close="handleCloseAddAnalysis" />
       <AnalysisDetail :visible.sync="showAnalysisDetail" :analysis="analysisDetail" :resultJsonPath="areaDetail.resultJsonPath" @close="handleCloseAnalysisDetail" />

@@ -73,14 +73,14 @@ export default {
   data() {
     return {
       s_top: 0,
-      s_left: 0,
+      s_right: 0,
       s_height: -1,
       s_show: true,
       moveObj: {
         s_top: 0,
-        s_left: 0,
+        s_right: 0,
         top: 0,
-        left: 0,
+        right: 0,
       },
       s_zIndex: zIndex++,
     };
@@ -89,7 +89,7 @@ export default {
     s_style() {
       let style = "";
       style += `top:calc(${this.s_top}px + ${this.moveObj.top || 0}px);`;
-      style += `left:calc(${this.s_left}px + ${this.moveObj.left || 0}px);`;
+      style += `right:calc(${this.s_right}px + ${this.moveObj.right || 0}px);`;
       if (this.width == "auto") {
         style += `width:auto;`;
       } else {
@@ -122,9 +122,9 @@ export default {
       this.toTop();
       this.moveObj = {
         s_top: event.pageY,
-        s_left: event.pageX,
+        s_right: event.pageX,
         top: 0,
-        left: 0,
+        right: 0,
       };
       document.body.addEventListener("mousemove", this.moveing);
       document.body.addEventListener("mouseup", this.endMove);
@@ -132,16 +132,16 @@ export default {
     },
     moveing(event) {
       this.moveObj.top = event.pageY - this.moveObj.s_top;
-      this.moveObj.left = event.pageX - this.moveObj.s_left;
+      this.moveObj.right = this.moveObj.s_right - event.pageX;
     },
     endMove(event) {
       this.s_top += this.moveObj.top;
-      this.s_left += this.moveObj.left;
+      this.s_right += this.moveObj.right;
       this.moveObj = {
         s_top: 0,
-        s_left: 0,
+        s_right: 0,
         top: 0,
-        left: 0,
+        right: 0,
       };
       document.body.removeEventListener("mousemove", this.moveing);
       document.body.removeEventListener("mouseup", this.endMove);
@@ -154,11 +154,11 @@ export default {
         this.$el.style.height = this.resize;
         this.s_top = parseFloat(this.top);
         if (this.keepRight) {
-          this.s_left = window.innerWidth - parseFloat(this.right) - parseFloat(this.$el.clientWidth);
-        } else if (this.left == "center") {
-          this.s_left = (window.innerWidth - parseFloat(this.$el.clientWidth)) / 2;
+          this.s_right = window.innerWidth - parseFloat(this.right) - parseFloat(this.$el.clientWidth);
+        } else if (this.right == "center") {
+          this.s_right = (window.innerWidth - parseFloat(this.$el.clientWidth)) / 2;
         } else {
-          this.s_left = parseFloat(this.left);
+          this.s_right = parseFloat(this.right);
         }
         if (!!this.resize) {
           this.$el.style.height = parseFloat(this.resize) + "px";
@@ -181,9 +181,9 @@ export default {
         }
       }
     },
-    offset(top, left) {
+    offset(top, right) {
       this.s_top += Number(top) || 0;
-      this.s_left += Number(left) || 0;
+      this.s_right += Number(right) || 0;
     },
     toTop() {
       if (this.s_zIndex < zIndex) this.s_zIndex = zIndex++;

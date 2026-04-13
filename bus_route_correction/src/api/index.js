@@ -1256,3 +1256,13 @@ export function CUA_roadGeoJSONByYear(year) {
     responseType: "blob",
   });
 }
+
+
+// landuse.geojson文件地址 /pt/cityUpdateArea/landuse
+export function CUA_landuse() {
+  return request({
+    url: `/pt/cityUpdateArea/landuse`,
+    method: "get",
+    responseType: "blob",
+  });
+}

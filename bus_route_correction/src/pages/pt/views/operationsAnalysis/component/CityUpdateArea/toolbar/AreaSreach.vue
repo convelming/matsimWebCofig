@@ -25,7 +25,7 @@
         </el-table>
       </template>
     </AutoSize>
-    <Pagination @size-change="getList" @current-change="getList" :current-page.sync="pageNum" :page-size="pageSize" :total="total" :pager-count="5" layout="total, prev, pager, next"> </Pagination>
+    <Pagination @pagination="getList" :page.sync="pageNum" :limit="pageSize" :total="total" :pager-count="5" layout="total, prev, pager, next"> </Pagination>
     <el-button v-if="!!areaDetail && (areaDetail.status == 0 || areaDetail.status == 3)" class="block" type="primary" size="small" @click="handleSreachLikeList">{{ $l("搜索相似区域") }}</el-button>
     <template v-if="!!areaDetail && areaDetail.status == 2">
       <div class="flex-box">
@@ -51,7 +51,7 @@
         </template>
       </AutoSize>
     </template>
-    <Dialog class="AreaSreach_Dialog" ref="dialog" :title="dialogTitle" hideMinimize :visible.sync="showDialog" @close="handleCloseDialog" keepRight right="330" top="100" width="450px">
+    <DialogRight class="AreaSreach_Dialog" ref="dialog" :title="dialogTitle" hideMinimize :visible.sync="showDialog" @close="handleCloseDialog" keepRight right="330" top="100" width="450px">
       <!-- <el-scrollbar wrap-class="scroll_box" v-if="dialogDetail">
         <div class="AreaSreach_form">
           <template v-for="item in dialogDetail">
@@ -78,7 +78,7 @@
           </el-collapse>
         </el-scrollbar>
       </div>
-    </Dialog>
+    </DialogRight>
   </div>
 </template>
 
@@ -94,7 +94,12 @@ import { getColorBarByPropertie } from "../../GeoJSON/layer/ColorBar2DUtil.js";
 import { CUA_yearAreaList, CUA_downloadGeojson, CUA_searchSimilarCUAArea, CUA_roadGeoJSONByYear } from "@/api/index";
 import { guid, boldToText } from "@/utils/index2";
 
-const defaultConfig = {};
+const defaultConfig = {
+  disabled: true,
+  slider: true,
+  input: false,
+  inputNumber: false,
+};
 const dialogList = [
   {
     label: "总体情况",
@@ -178,7 +183,7 @@ const pos = {
   max: 10,
   values: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
 };
-const colorBar = getColorBarByPropertie(pos, { colorList: ["#91cc75", "#fac858", "#ee6666", "#73c0de", "#3ba272", "#fc8452", "#9a60b4", "#ea7ccc", "#fff", "#aaa"] });
+const colorBar = getColorBarByPropertie(pos, { colorList: ["#91cc75", "#fac858", "#ee6666", "#73c0de", "#3ba272", "#fc8452", "#9a60b4", "#ea7ccc", "#000", "#999"] });
 
 export default {
   name: "AreaSreach",
@@ -240,7 +245,7 @@ export default {
     this._PolygonSelectLayer = new PolygonSelectLayer({
       zIndex: 200,
     });
-    this._GeoJSONLabelLayer_like = new GeoJSONLabelLayer({ zIndex: 10000 });
+    this._GeoJSONLabelLayer_like = new GeoJSONLabelLayer({ zIndex: 1000 });
     this._GeoJSONLayer_road = new GeoJSONLayer({
       lineAutoWidth: 1,
     });
@@ -329,10 +334,6 @@ export default {
                 if (item.end == -1) {
                   item.end = Math.ceil(item.max * 1.5);
                 }
-                item.disabled = true;
-                item.slider = true;
-                item.input = false;
-                item.inputNumber = false;
               }
             });
             this.areaParam = areaParam;
@@ -355,10 +356,6 @@ export default {
                   }
 
                   item.value = Number(Number(v[item.key]).toFixed(4));
-                  item.disabled = true;
-                  item.slider = true;
-                  item.input = false;
-                  item.inputNumber = false;
                 }
               });
               const item = {

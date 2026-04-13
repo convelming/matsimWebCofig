@@ -1,7 +1,7 @@
 <!-- Step2Dialog -->
 <template>
   <div class="Step2Dialog">
-    <Dialog class="Step2_Dialog" ref="dialog" :title="$l('限制路段确认')" hideMinimize :visible="s_visible" @close="handleClose" keepRight right="330" top="100" width="400px">
+    <DialogRight class="Step2_Dialog" ref="dialog" :title="$l('限制路段确认')" hideMinimize :visible="s_visible" @close="handleClose" keepRight right="330" top="100" width="400px">
       <div class="Step2_box" v-loading="loading" element-loading-background="rgb(from var(--color-white) r g b / 0.8)">
         <div class="btn_box">
           <el-button type="primary" size="small" @click="handleOpenAddLine()">{{ $l("添加限制路段") }}</el-button>
@@ -27,8 +27,8 @@
           <el-button type="primary" size="small" @click="handleNext">{{ $l("搜索最优方案") }}</el-button>
         </div>
       </div>
-    </Dialog>
-    <Dialog class="Step2_AddLine_Dialog" ref="dialog" :title="$l('添加限制路段')" hideMinimize :visible.sync="showAddLine" @close="handleCloseAddLine" keepRight right="330" top="100" width="450px">
+    </DialogRight>
+    <DialogRight class="Step2_AddLine_Dialog" ref="dialog" :title="$l('添加限制路段')" hideMinimize :visible.sync="showAddLine" @close="handleCloseAddLine" keepRight right="330" top="100" width="450px">
       <el-scrollbar wrap-class="scroll_box">
         <el-form :model="addLineForm" ref="addLineForm" :rules="addLineRules" label-width="120px" :inline="false" size="small">
           <el-form-item :label="$l('选择路段')">
@@ -51,7 +51,7 @@
           </el-form-item>
         </el-form>
       </el-scrollbar>
-    </Dialog>
+    </DialogRight>
   </div>
 </template>
 
