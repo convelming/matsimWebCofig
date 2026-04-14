@@ -117,6 +117,8 @@ export class StopsLayer extends Layer {
     super.onAdd(map);
     this.setSize(this.map.cameraHeight / 30);
     this.update();
+    this.on(MAP_EVENT.UPDATE_CENTER, null);
+    this.on(MAP_EVENT.UPDATE_CAMERA_HEIGHT, null);
   }
 
   setSize(size) {

@@ -10,6 +10,9 @@ export function getGeomjson(data) {
     method: "post",
     data: data,
     noMsg: true,
+    headers: {
+      repeatSubmit: false,
+    },
   });
 }
 
@@ -1244,7 +1247,6 @@ export function CUA_deleteAnalyze(id) {
   });
 }
 
-
 // 获取年份路网
 // GET /pt/cityUpdateArea/road/{year}
 // 接口ID：415044613
@@ -1256,7 +1258,6 @@ export function CUA_roadGeoJSONByYear(year) {
     responseType: "blob",
   });
 }
-
 
 // landuse.geojson文件地址 /pt/cityUpdateArea/landuse
 export function CUA_landuse() {

@@ -213,32 +213,43 @@ export default {
   },
   created() {
     this._linkLayer = new BusLinkLayer({
-      zIndex: 7,
+      zIndex: 70,
       color: 0xf56c6c,
-      visible: true,
     });
     this._stopLayer = new BusStopLayer({
-      zIndex: 10,
+      zIndex: 100,
       color: 0x67c23a,
       highStopColor: 0xe6a23c,
-      visible: true,
     });
     this._editLayer = new BusRouteLinkLayer({
-      zIndex: 11,
+      zIndex: 110,
       linkColor: 0xf56c6c,
       stopColor: 0x67c23a,
       middleLinkColor: 0xffffff,
-      visible: false,
+      event: {
+        [MAP_EVENT.HANDLE_PICK_LEFT]: (res) => {
+          this.handleRemoveMiddleLink(res.data);
+        },
+      },
     });
     this._networkLayer = new NetworkLayer({
-      zIndex: 3,
+      zIndex: 30,
       color: 0x409eff,
-      visible: false,
+      event: {
+        [MAP_EVENT.HANDLE_PICK_LEFT]: (res) => {
+          this._networkLineLayer.setData(res.data.id);
+        },
+      },
     });
     this._networkLineLayer = new NetworkLineLayer({
-      zIndex: 4,
+      zIndex: 40,
       color: 0x67c23a,
-      visible: false,
+      event: {
+        [MAP_EVENT.HANDLE_PICK_LEFT]: (res) => {
+          this.handleAddMiddleLink(res.data);
+          this._networkLineLayer.setData();
+        },
+      },
     });
   },
   mounted() {},
@@ -249,7 +260,7 @@ export default {
     this._linkLayer && this._linkLayer.dispose();
     this._stopLayer && this._stopLayer.dispose();
     this._networkLayer && this._networkLayer.dispose();
-    this._networkLayer && this._networkLayer.dispose();
+    this._networkLineLayer && this._networkLineLayer.dispose();
   },
   methods: {
     handleEnable() {
@@ -273,57 +284,38 @@ export default {
         }
       });
 
-      this._Map.addLayer(this._editLayer);
+      // this._Map.addLayer(this._editLayer);
       this._Map.addLayer(this._linkLayer);
       this._Map.addLayer(this._stopLayer);
-      this._Map.addLayer(this._networkLayer);
-      this._Map.addLayer(this._networkLineLayer);
+      // this._Map.addLayer(this._networkLayer);
+      // this._Map.addLayer(this._networkLineLayer);
     },
     handleDisable() {
       this.canSaveStopsRoute = false;
       this.stopsRouteId = null;
       this.stopsRouteForm = null;
-      this._linkLayer.show();
-      this._stopLayer.show();
-      this._editLayer.hide();
-      this._networkLayer.hide();
-      this._networkLineLayer.hide();
 
-      this._editLayer.removeEventListener();
-      this._linkLayer.removeEventListener();
-      this._stopLayer.removeEventListener();
-      this._networkLayer.removeEventListener();
-      this._networkLayer.removeEventListener();
-
-      this._Map.removeLayer(this._editLayer);
-      this._Map.removeLayer(this._linkLayer);
-      this._Map.removeLayer(this._stopLayer);
-      this._Map.removeLayer(this._networkLayer);
-      this._Map.removeLayer(this._networkLineLayer);
+      this._editLayer.removeFromParent();
+      this._linkLayer.removeFromParent();
+      this._stopLayer.removeFromParent();
+      this._networkLayer.removeFromParent();
+      this._networkLineLayer.removeFromParent();
     },
     handleChangeLineWidth() {
-      if (this._networkLayer) {
-        this._networkLayer.setValues({
-          lineWidth: this.lineWidth,
-        });
-      }
-      if (this._networkLineLayer) {
-        this._networkLineLayer.setValues({
-          lineWidth: this.lineWidth,
-        });
-      }
+      this._networkLayer.setValues({
+        lineWidth: this.lineWidth,
+      });
+      this._networkLineLayer.setValues({
+        lineWidth: this.lineWidth,
+      });
     },
     handleChangeLineOffset() {
-      if (this._networkLayer) {
-        this._networkLayer.setValues({
-          lineOffset: this.lineOffset,
-        });
-      }
-      if (this._networkLineLayer) {
-        this._networkLineLayer.setValues({
-          lineOffset: this.lineOffset,
-        });
-      }
+      this._networkLayer.setValues({
+        lineOffset: this.lineOffset,
+      });
+      this._networkLineLayer.setValues({
+        lineOffset: this.lineOffset,
+      });
     },
     handleChangeCenter() {
       const startPoint = this.stopsRouteForm.startStop.coord;
@@ -339,27 +331,15 @@ export default {
       this.canSaveStopsRoute = false;
       this.stopsRouteId = null;
       this.stopsRouteForm = null;
-      if (this._linkLayer) {
-        this._linkLayer.setData(this.transitRoute);
-        this._linkLayer.show();
-      }
-      if (this._stopLayer) {
-        this._stopLayer.setData(this.transitRoute);
-        this._stopLayer.show();
-      }
+      this._linkLayer.setData(this.transitRoute);
+      this._stopLayer.setData(this.transitRoute);
+      this._Map.addLayer(this._linkLayer);
+      this._Map.addLayer(this._stopLayer);
 
-      if (this._editLayer) {
-        this._editLayer.removeEventListener(MAP_EVENT.HANDLE_PICK_LEFT);
-        this._editLayer.hide();
-      }
-      if (this._networkLayer) {
-        this._networkLayer.removeEventListener(MAP_EVENT.HANDLE_PICK_LEFT);
-        this._networkLayer.hide();
-      }
-      if (this._networkLineLayer) {
-        this._networkLineLayer.removeEventListener(MAP_EVENT.HANDLE_PICK_LEFT);
-        this._networkLineLayer.hide();
-      }
+      this._editLayer.removeFromParent();
+      this._networkLayer.removeFromParent();
+      this._networkLineLayer.removeFromParent();
+
       this.rootVue.setFitZoomAndCenterByTransitRoute(this.transitRoute);
     },
     handleChangestopsRouteId(val) {
@@ -370,30 +350,15 @@ export default {
       if (this.stopsRouteForm.route.length == 0) {
         this.handleComputeRoute();
       }
-      this.$nextTick(() => {
-        if (this._linkLayer) this._linkLayer.hide();
-        if (this._stopLayer) this._stopLayer.hide();
-        if (this._editLayer) {
-          this._editLayer.setData(this.stopsRouteForm);
-          this._editLayer.addEventListener(MAP_EVENT.HANDLE_PICK_LEFT, (res) => {
-            this.handleRemoveMiddleLink(res.data);
-          });
-          this._editLayer.show();
-        }
-        if (this._networkLayer) {
-          this._networkLayer.addEventListener(MAP_EVENT.HANDLE_PICK_LEFT, (res) => {
-            this._networkLineLayer.setData(res.data.id);
-          });
-          this._networkLayer.show();
-        }
-        if (this._networkLineLayer) {
-          this._networkLineLayer.addEventListener(MAP_EVENT.HANDLE_PICK_LEFT, (res) => {
-            this.handleAddMiddleLink(res.data);
-            this._networkLineLayer.setData();
-          });
-          this._networkLineLayer.show();
-        }
-      });
+      console.log("handleChangestopsRouteId");
+
+      this._linkLayer.removeFromParent();
+      this._stopLayer.removeFromParent();
+      this._editLayer.setData(this.stopsRouteForm);
+      this._Map.addLayer(this._editLayer);
+      this._Map.addLayer(this._networkLayer);
+      this._Map.addLayer(this._networkLineLayer);
+      this._networkLineLayer.setData(null);
     },
     handleRemoveMiddleLink(link) {
       this.canSaveStopsRoute = false;

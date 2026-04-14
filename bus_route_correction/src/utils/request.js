@@ -77,9 +77,9 @@ service.interceptors.request.use(
         const s_time = sessionObj.time; // 请求时间
         const interval = 1000; // 间隔时间(ms)，小于此时间视为重复提交
         if (s_data === requestObj.data && requestObj.time - s_time < interval && s_url === requestObj.url) {
-          const message = "数据正在处理，请勿重复提交";
+          const message = "数据正在处理，请勿重复提交：" + sessionObj.url;
           console.warn(`[${s_url}]: ` + message);
-          return Promise.reject(new Error(message));
+          return Promise.reject(new Error({ message: message, config: config }));
         } else {
           cache.session.setJSON("sessionObj", requestObj);
         }
@@ -118,10 +118,10 @@ service.interceptors.response.use(
       }
       return Promise.reject({ message: "无效的会话，或者会话已过期，请重新登录。", config: res.config });
     } else if (code === 500) {
-      if (!res.config.noMsg) Message.error(msg);
+      if (!res.config?.noMsg) Message.error(msg);
       return Promise.reject({ message: msg, config: res.config });
     } else if (code !== 200) {
-      if (!res.config.noMsg) Message.error(msg);
+      if (!res.config?.noMsg) Message.error(msg);
       return Promise.reject({ message: msg, config: res.config });
     } else {
       return res.data;
@@ -137,7 +137,7 @@ service.interceptors.response.use(
     } else if (message.includes("Request failed with status code")) {
       message = language.internationalize("请求失败，状态码") + message.substr(message.length - 3);
     }
-    if (!error.config.noMsg) Message.error(message);
+    if (!error.config?.noMsg) Message.error(message);
     return Promise.reject(error);
   },
 );

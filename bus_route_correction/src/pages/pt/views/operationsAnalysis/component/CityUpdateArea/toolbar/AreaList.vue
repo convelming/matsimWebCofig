@@ -21,21 +21,16 @@
       <template slot-scope="{ width, height }">
         <el-scrollbar :style="{ height: height + 'px' }" wrap-style="overflow-x: hidden;">
           <div class="form">
-            <el-button class="block" type="primary" :disabled="!detailDialogDetail.currentGraphs" size="small" @click="handleShowDetailDialog">{{ $l("点击查看区域现状") }}</el-button>
-            <el-button class="block" :type="showLayer_odTarget ? 'info' : 'primary'" :disabled="!detailDialogDetail.odTarget" size="small" @click="showLayer_odTarget = !showLayer_odTarget">{{
-              showLayer_odTarget ? $l("隐藏起点分布") : $l("显示起点分布")
-            }}</el-button>
-            <el-button class="block" :type="showLayer_odSource ? 'info' : 'primary'" :disabled="!detailDialogDetail.odSource" size="small" @click="showLayer_odSource = !showLayer_odSource">{{
-              showLayer_odSource ? $l("隐藏讫点分布") : $l("显示讫点分布")
-            }}</el-button>
-            <el-button class="block" :type="showLayer_landuse ? 'info' : 'primary'" :disabled="!detailDialogDetail.landuse" size="small" @click="showLayer_landuse = !showLayer_landuse">{{
-              showLayer_landuse ? $l("隐藏现状用地") : $l("显示现状用地")
-            }}</el-button>
             <div class="form_item">
               <div class="form_item_header">
-                <el-button v-if="!showLayer_odTarget" class="show_btn" type="primary" size="small" @click="showLayer_odTarget = true">{{ $l("显示起点分布") }}</el-button>
+                <el-button class="block" type="primary" :disabled="!detailDialogDetail.currentGraphs" size="small" @click="handleShowDetailDialog">{{ $l("点击查看区域现状") }}</el-button>
+              </div>
+            </div>
+            <div class="form_item">
+              <div class="form_item_header">
+                <el-button v-if="!showLayer_odTarget" :loading="loading_odTarget" class="show_btn" type="primary" size="small" @click="showLayer_odTarget = true">{{ $l("显示起点分布") }}</el-button>
                 <el-button v-else class="show_btn" type="info" size="small" @click="showLayer_odTarget = false">{{ $l("隐藏起点分布") }}</el-button>
-                <el-button class="open_btn" :icon="openSetting_odTarget ? 'el-icon-caret-top' : 'el-icon-caret-bottom'" type="info" size="small" @click="openSetting_odTarget = !openSetting_odTarget"></el-button>
+                <el-button class="open_btn" :loading="loading_odTarget" :icon="openSetting_odTarget ? 'el-icon-caret-top' : 'el-icon-caret-bottom'" type="info" size="small" @click="openSetting_odTarget = !openSetting_odTarget"></el-button>
               </div>
               <div class="setting_box" v-if="openSetting_odTarget">
                 <div class="setting_item">
@@ -47,25 +42,101 @@
                 <div class="setting_item">
                   <div class="setting_item_label">{{ $l("设置") }}</div>
                   <div class="setting_item_value">
-                    <el-button type="primary" icon="el-icon-setting" @click="showOriginConfig = true" size="mini"></el-button>
-                    <GeoJSONSetting ref="originConfig" :visible.sync="showOriginConfig" :form="originConfigForm" :layout="originConfigLayout" @confirm="handleOriginConfigConfirm" />
+                    <el-button type="primary" icon="el-icon-setting" @click="showConfig_odTarget = true" size="mini"></el-button>
+                    <GeoJSONSetting ref="originConfig" :visible.sync="showConfig_odTarget" :form="configForm_odTarget" :layout="configLayout_odTarget" @confirm="handleConfigConfirm_odTarget" />
                   </div>
                 </div>
                 <div class="setting_item">
                   <div class="setting_item_label">{{ $l("Visual map") }}</div>
                   <div class="setting_item_value">
-                    <el-switch v-model="showOriginVisualMap" :active-value="true" />
-                    <GeoJSONVisualMap v-show="showOriginVisualMap && showOriginLayer" :list="originConfigForm.colorBar.data" />
+                    <el-switch v-model="showVisualMap_odTarget" :active-value="true" />
+                    <GeoJSONVisualMap v-show="showVisualMap_odTarget && showLayer_odTarget" :list="configForm_odTarget.colorBar.data" />
                   </div>
                 </div>
                 <div class="setting_item">
                   <div class="setting_item_label">{{ $l("按时段显示") }}</div>
                   <div class="setting_item_value">
-                    <el-switch v-model="originUseTimeRange" :active-value="true" :inactive-value="false" @change="" />
+                    <el-switch v-model="useTimeRange_odTarget" :active-value="true" :inactive-value="false" @change="" />
                   </div>
                 </div>
-                <div class="setting_item" v-if="originUseTimeRange">
-                  <TimeRangeSlider v-model="originTimeRange" />
+                <div class="setting_item" v-if="useTimeRange_odTarget">
+                  <TimeRangeSlider v-model="timeRange_odTarget" />
+                </div>
+              </div>
+            </div>
+            <div class="form_item">
+              <div class="form_item_header">
+                <el-button v-if="!showLayer_odSource" :loading="loading_odSource" class="show_btn" type="primary" size="small" @click="showLayer_odSource = true">{{ $l("显示讫点分布") }}</el-button>
+                <el-button v-else class="show_btn" type="info" size="small" @click="showLayer_odSource = false">{{ $l("隐藏讫点分布") }}</el-button>
+                <el-button class="open_btn" :loading="loading_odSource" :icon="openSetting_odSource ? 'el-icon-caret-top' : 'el-icon-caret-bottom'" type="info" size="small" @click="openSetting_odSource = !openSetting_odSource"></el-button>
+              </div>
+              <div class="setting_box" v-if="openSetting_odSource">
+                <div class="setting_item">
+                  <div class="setting_item_label">{{ $l("大小") }}</div>
+                  <div class="setting_item_value">
+                    <el-input-number v-model="size_odSource" :min="GRID_STEP" :step="GRID_STEP" step-strictly size="mini" />
+                  </div>
+                </div>
+                <div class="setting_item">
+                  <div class="setting_item_label">{{ $l("设置") }}</div>
+                  <div class="setting_item_value">
+                    <el-button type="primary" icon="el-icon-setting" @click="showConfig_odSource = true" size="mini"></el-button>
+                    <GeoJSONSetting ref="originConfig" :visible.sync="showConfig_odSource" :form="configForm_odSource" :layout="configLayout_odSource" @confirm="handleConfigConfirm_odSource" />
+                  </div>
+                </div>
+                <div class="setting_item">
+                  <div class="setting_item_label">{{ $l("Visual map") }}</div>
+                  <div class="setting_item_value">
+                    <el-switch v-model="showVisualMap_odSource" :active-value="true" />
+                    <GeoJSONVisualMap v-show="showVisualMap_odSource && showLayer_odSource" :list="configForm_odSource.colorBar.data" />
+                  </div>
+                </div>
+                <div class="setting_item">
+                  <div class="setting_item_label">{{ $l("按时段显示") }}</div>
+                  <div class="setting_item_value">
+                    <el-switch v-model="useTimeRange_odSource" :active-value="true" :inactive-value="false" @change="" />
+                  </div>
+                </div>
+                <div class="setting_item" v-if="useTimeRange_odSource">
+                  <TimeRangeSlider v-model="timeRange_odSource" />
+                </div>
+              </div>
+            </div>
+            <div class="form_item">
+              <div class="form_item_header">
+                <el-button v-if="!showLayer_landuse" :loading="loading_landuse" class="show_btn" type="primary" size="small" @click="showLayer_landuse = true">{{ $l("显示现状用地") }}</el-button>
+                <el-button v-else class="show_btn" type="info" size="small" @click="showLayer_landuse = false">{{ $l("隐藏现状用地") }}</el-button>
+                <el-button class="open_btn" :loading="loading_landuse" :icon="openSetting_landuse ? 'el-icon-caret-top' : 'el-icon-caret-bottom'" type="info" size="small" @click="openSetting_landuse = !openSetting_landuse"></el-button>
+              </div>
+              <div class="setting_box" v-if="openSetting_landuse">
+                <div class="setting_item">
+                  <div class="setting_item_label">{{ $l("大小") }}</div>
+                  <div class="setting_item_value">
+                    <el-input-number v-model="size_landuse" :min="GRID_STEP" :step="GRID_STEP" step-strictly size="mini" />
+                  </div>
+                </div>
+                <div class="setting_item">
+                  <div class="setting_item_label">{{ $l("设置") }}</div>
+                  <div class="setting_item_value">
+                    <el-button type="primary" icon="el-icon-setting" @click="showConfig_landuse = true" size="mini"></el-button>
+                    <GeoJSONSetting ref="originConfig" :visible.sync="showConfig_landuse" :form="configForm_landuse" :layout="configLayout_landuse" @confirm="handleConfigConfirm_landuse" />
+                  </div>
+                </div>
+                <div class="setting_item">
+                  <div class="setting_item_label">{{ $l("Visual map") }}</div>
+                  <div class="setting_item_value">
+                    <el-switch v-model="showVisualMap_landuse" :active-value="true" />
+                    <GeoJSONVisualMap v-show="showVisualMap_landuse && showLayer_landuse" :list="configForm_landuse.colorBar.data" />
+                  </div>
+                </div>
+                <div class="setting_item">
+                  <div class="setting_item_label">{{ $l("按时段显示") }}</div>
+                  <div class="setting_item_value">
+                    <el-switch v-model="useTimeRange_landuse" :active-value="true" :inactive-value="false" @change="" />
+                  </div>
+                </div>
+                <div class="setting_item" v-if="useTimeRange_landuse">
+                  <TimeRangeSlider v-model="timeRange_landuse" />
                 </div>
               </div>
             </div>
@@ -160,6 +231,10 @@ import { GeoJSONLayer, parserGeoJSON, LINE_STYLE } from "../../GeoJSON/layer/Geo
 import { getColorBarByPropertie } from "../../GeoJSON/layer/ColorBar2DUtil.js";
 import { guid, boldToText } from "@/utils/index2";
 
+// import { parserGeoJSON as parserGeoJSON2 } from "../../GeoJSON/layer/GeoJSONLayer3";
+
+const GRID_STEP = 100;
+
 const defaultConfig = {
   check: false,
   disabled: true,
@@ -244,6 +319,8 @@ export default {
   components: {
     MySlider,
     AreaFromItem,
+    GeoJSONVisualMap,
+    GeoJSONSetting,
   },
   computed: {
     _Map() {
@@ -315,6 +392,8 @@ export default {
   },
   data() {
     return {
+      GRID_STEP,
+
       selectState: POLYGON_SELECT_STATE_KEY.NOT_STARTED,
       POLYGON_SELECT_EVENT,
       POLYGON_SELECT_STATE_KEY,
@@ -342,6 +421,150 @@ export default {
       showLayer_landuse: false,
 
       activeNames: ["基本信息", "总体情况", "业态开发强度", "出行结构", "交通设施", "特殊地点"],
+
+      openSetting_odTarget: false,
+      loading_odTarget: false,
+      showLayer_odTarget: false,
+      useTimeRange_odTarget: true,
+      timeRange_odTarget: [0, 24 * 60 * 60],
+      showVisualMap_odTarget: true,
+      showConfig_odTarget: false,
+      size_odTarget: GRID_STEP,
+      configForm_odTarget: {
+        opacity: 1,
+        colorBar: {
+          valueKey: "value__Number",
+          valueType: "Number",
+          startColor: "#FEE0D2",
+          endColor: "#99000D",
+          model: "count",
+          modelClass: 5,
+          data: [],
+        },
+      },
+      configLayout_odTarget: [
+        {
+          label: "透明度",
+          en_label: "Opacity",
+          name: "opacity",
+          type: "slider",
+          attrs: { min: 0, max: 1, step: 0.01 },
+        },
+        {
+          label: "颜色",
+          en_label: "color",
+          name: "colorBar",
+          type: "colorBar",
+          options: {
+            value__Number: {
+              type: "Number",
+              name: "value",
+              min: 0,
+              max: 100,
+              values: [],
+            },
+          },
+          attrs: {
+            hideValueKey: true,
+          },
+        },
+      ],
+
+      openSetting_odSource: false,
+      loading_odSource: false,
+      showLayer_odSource: false,
+      useTimeRange_odSource: true,
+      timeRange_odSource: [0, 24 * 60 * 60],
+      showVisualMap_odSource: true,
+      showConfig_odSource: false,
+      size_odSource: GRID_STEP,
+      configForm_odSource: {
+        opacity: 1,
+        colorBar: {
+          valueKey: "value__Number",
+          valueType: "Number",
+          startColor: "#FEE0D2",
+          endColor: "#99000D",
+          model: "count",
+          modelClass: 5,
+          data: [],
+        },
+      },
+      configLayout_odSource: [
+        {
+          label: "透明度",
+          en_label: "Opacity",
+          name: "opacity",
+          type: "slider",
+          attrs: { min: 0, max: 1, step: 0.01 },
+        },
+        {
+          label: "颜色",
+          en_label: "color",
+          name: "colorBar",
+          type: "colorBar",
+          options: {
+            value__Number: {
+              type: "Number",
+              name: "value",
+              min: 0,
+              max: 100,
+              values: [],
+            },
+          },
+          attrs: {
+            hideValueKey: true,
+          },
+        },
+      ],
+
+      openSetting_landuse: false,
+      loading_landuse: false,
+      showLayer_landuse: false,
+      useTimeRange_landuse: true,
+      timeRange_landuse: [0, 24 * 60 * 60],
+      showVisualMap_landuse: true,
+      showConfig_landuse: false,
+      size_landuse: GRID_STEP,
+      configForm_landuse: {
+        opacity: 1,
+        colorBar: {
+          valueKey: "value__Number",
+          valueType: "Number",
+          startColor: "#FEE0D2",
+          endColor: "#99000D",
+          model: "count",
+          modelClass: 5,
+          data: [],
+        },
+      },
+      configLayout_landuse: [
+        {
+          label: "透明度",
+          en_label: "Opacity",
+          name: "opacity",
+          type: "slider",
+          attrs: { min: 0, max: 1, step: 0.01 },
+        },
+        {
+          label: "颜色",
+          en_label: "color",
+          name: "colorBar",
+          type: "colorBar",
+          options: {
+            value__Number: {
+              type: "Number",
+              name: "value",
+              min: 0,
+              max: 100,
+              values: [],
+            },
+          },
+          attrs: {
+            hideValueKey: true,
+          },
+        },
+      ],
     };
   },
   created() {
@@ -368,6 +591,9 @@ export default {
     this._GeoJSONLayer_odSource = new GeoJSONLayer({ zIndex: 320, pointColor: "#91cc75" });
     this._GeoJSONLayer_odTarget = new GeoJSONLayer({ zIndex: 330, pointColor: "#fac858" });
     this._GeoJSONLayer_currentGraphs = new GeoJSONLayer({ zIndex: 340, polygonColor: "#ee6666" });
+    CUA_landuse()
+      .then((res) => boldToText(res.data))
+      .then((res) => parserGeoJSON2(res));
   },
   mounted() {},
   beforeDestroy() {
@@ -553,6 +779,8 @@ export default {
             const res = await CUA_downloadGeojson({ path: this.detailDialogDetail.currentGraphs })
               .then((res) => boldToText(res.data))
               .then((res) => parserGeoJSON(res));
+            console.log("currentGraphs", res);
+
             const [cx, cy] = res.center;
             const areaParam = JSON.parse(JSON.stringify(dialogList));
             const children = areaParam.map((v) => v.children).flat();
@@ -575,31 +803,33 @@ export default {
         // 获取起点json
         (async () => {
           try {
-            if (!this.detailDialogDetail.odSource) throw new Error("没有odSource");
-            const res = await CUA_downloadGeojson({ path: this.detailDialogDetail.odSource })
-              .then((res) => boldToText(res.data))
-              .then((res) => parserGeoJSON(res));
-            this._GeoJSONLayer_odSource.setGeoJsonData(res);
-          } catch (error) {
-            console.log(error);
-            this.showLayer_odSource = false;
-            this.detailDialogDetail.odSource = null;
-            this._GeoJSONLayer_odSource.clearScene();
-          }
-        })();
-        // 获取讫点json
-        (async () => {
-          try {
             if (!this.detailDialogDetail.odTarget) throw new Error("没有odTarget");
             const res = await CUA_downloadGeojson({ path: this.detailDialogDetail.odTarget })
               .then((res) => boldToText(res.data))
               .then((res) => parserGeoJSON(res));
+            console.log("odTarget", res);
             this._GeoJSONLayer_odTarget.setGeoJsonData(res);
           } catch (error) {
             console.log(error);
             this.showLayer_odTarget = false;
             this.detailDialogDetail.odTarget = null;
             this._GeoJSONLayer_odTarget.clearScene();
+          }
+        })();
+        // 获取讫点json
+        (async () => {
+          try {
+            if (!this.detailDialogDetail.odSource) throw new Error("没有odSource");
+            const res = await CUA_downloadGeojson({ path: this.detailDialogDetail.odSource })
+              .then((res) => boldToText(res.data))
+              .then((res) => parserGeoJSON(res));
+            console.log("odSource", res);
+            this._GeoJSONLayer_odSource.setGeoJsonData(res);
+          } catch (error) {
+            console.log(error);
+            this.showLayer_odSource = false;
+            this.detailDialogDetail.odSource = null;
+            this._GeoJSONLayer_odSource.clearScene();
           }
         })();
         // 获取landuse
@@ -610,6 +840,7 @@ export default {
             const res = await CUA_landuse({ id: this.detailDialogDetail.id })
               .then((res) => boldToText(res.data))
               .then((res) => parserGeoJSON(res));
+            console.log("landuse", res);
             // this._GeoJSONLayer_landuse.setGeoJsonData(res);
           } catch (error) {
             console.log(error);
@@ -643,6 +874,27 @@ export default {
     },
     computedTotal(item) {
       return item.children.filter((v) => v.check).reduce((a, c) => a + c.value, 0);
+    },
+    handleConfigConfirm_odTarget(data) {
+      this.originConfigForm = data;
+      const { colorBar, opacity } = data;
+      this._GeoJSONLayer_odTarget.setOpacity(opacity);
+      this._GeoJSONLayer_odTarget.setPointColorBar(colorBar.data);
+      this.showOriginConfig = false;
+    },
+    handleConfigConfirm_odSource(data) {
+      this.originConfigForm = data;
+      const { colorBar, opacity } = data;
+      this._GeoJSONLayer_odSource.setOpacity(opacity);
+      this._GeoJSONLayer_odSource.setPointColorBar(colorBar.data);
+      this.showOriginConfig = false;
+    },
+    handleConfigConfirm_landuse(data) {
+      this.originConfigForm = data;
+      const { colorBar, opacity } = data;
+      this._GeoJSONLayer_landuse.setOpacity(opacity);
+      this._GeoJSONLayer_landuse.setPointColorBar(colorBar.data);
+      this.showOriginConfig = false;
     },
     // ****************************** 区域详情 -- end
   },
@@ -743,13 +995,9 @@ export default {
 
   .form_item {
     width: 100%;
-    & + .form_item {
-      margin-top: 10px;
-    }
   }
   .form_item_header {
     display: flex;
-    margin-bottom: 10px;
     .open_btn {
       width: 44px;
     }
@@ -759,6 +1007,7 @@ export default {
   }
 
   .setting_box {
+    margin-top: 10px;
     width: 100%;
 
     .setting_item {
@@ -769,6 +1018,7 @@ export default {
         margin-top: 10px;
       }
       &_label {
+        font-size: 13px;
         white-space: nowrap;
         flex: 1;
       }

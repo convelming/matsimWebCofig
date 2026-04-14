@@ -526,12 +526,12 @@ export default {
   },
   created() {
     this._linkLayer = new BusLinkLayer({
-      zIndex: 6,
+      zIndex: 60,
       color: 0xf56c6c,
       visible: true,
     });
     this._stopLayer = new BusStopLayer({
-      zIndex: 8,
+      zIndex: 80,
       color: 0x67c23a,
       visible: true,
     });

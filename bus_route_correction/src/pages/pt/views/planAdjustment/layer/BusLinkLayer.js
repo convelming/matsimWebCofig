@@ -48,6 +48,8 @@ export class BusLinkLayer extends Layer {
     super.onAdd(map);
     this.setLineWidth(this.map.cameraHeight / 130);
     this.update();
+    this.on(MAP_EVENT.UPDATE_CENTER, null);
+    this.on(MAP_EVENT.UPDATE_CAMERA_HEIGHT, null);
   }
 
   on(type, data) {
@@ -174,7 +176,7 @@ export class BusLinkLayer extends Layer {
           attribute vec2 startPosition;
           attribute vec2 endPosition;
           varying float vLineLength;
-        `
+        `,
       );
       shader.vertexShader = shader.vertexShader.replace(
         "#include <begin_vertex>",
@@ -210,14 +212,14 @@ export class BusLinkLayer extends Layer {
               transformed = vec3(position.xy + normal * offset / sin(angle), position.z);
             }
           }
-        `
+        `,
       );
       shader.fragmentShader = shader.fragmentShader.replace(
         "#include <common>",
         `
           #include <common>
           varying float vLineLength;
-          `
+          `,
       );
       shader.fragmentShader = shader.fragmentShader.replace(
         "#include <map_fragment>",
@@ -232,7 +234,7 @@ export class BusLinkLayer extends Layer {
                 }
               }
             #endif
-          `
+          `,
       );
       if (usePickColor) {
         shader.vertexShader = shader.vertexShader.replace(
@@ -244,7 +246,7 @@ export class BusLinkLayer extends Layer {
             #elif defined( USE_COLOR )
               vColor = pickColor;
             #endif
-          `
+          `,
         );
       }
     };

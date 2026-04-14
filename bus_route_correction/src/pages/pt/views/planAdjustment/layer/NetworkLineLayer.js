@@ -48,6 +48,8 @@ export class NetworkLineLayer extends Layer {
   onAdd(map) {
     super.onAdd(map);
     this.update();
+    this.on(MAP_EVENT.UPDATE_CENTER, null);
+    this.on(MAP_EVENT.UPDATE_CAMERA_HEIGHT, null);
   }
 
   on(type, data) {

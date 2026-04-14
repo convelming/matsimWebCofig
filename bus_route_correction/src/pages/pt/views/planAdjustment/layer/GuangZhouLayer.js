@@ -56,6 +56,9 @@ export class GuangZhouLayer extends Layer {
       lineWidth: this.map.cameraHeight / 400,
     });
     this.update();
+    
+    this.on(MAP_EVENT.UPDATE_CENTER, null);
+    this.on(MAP_EVENT.UPDATE_CAMERA_HEIGHT, null);
   }
 
   setData(data) {

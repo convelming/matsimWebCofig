@@ -438,6 +438,8 @@ export default {
           },
         },
       });
+      console.log(this._map);
+      
       this._MapLayer = new MapLayer({ tileClass: DEFAULT_MAP_LAYER_STYLE, zIndex: -1 });
       this._map.addLayer(this._MapLayer);
       {
@@ -511,7 +513,7 @@ export default {
         if (route && route.showLayer && showLayer) {
           if (!layer1) {
             layer1 = new BusLinkLayer({
-              zIndex: 6,
+              zIndex: 60,
               color: 0xf56c6c,
               visible: true,
             });
@@ -519,7 +521,7 @@ export default {
           }
           if (!layer2) {
             layer2 = new BusStopLayer({
-              zIndex: 8,
+              zIndex: 80,
               color: 0x67c23a,
               visible: true,
             });

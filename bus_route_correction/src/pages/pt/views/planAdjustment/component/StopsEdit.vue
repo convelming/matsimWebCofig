@@ -232,30 +232,49 @@ export default {
   },
   created() {
     this._linkLayer = new BusLinkLayer({
-      zIndex: 7,
+      zIndex: 70,
       color: 0xf56c6c,
-      visible: true,
     });
     this._stopLayer = new BusStopLayer({
-      zIndex: 10,
+      zIndex: 100,
       color: 0x67c23a,
       highStopColor: 0xe6a23c,
-      visible: true,
     });
     this._networkLayer = new NetworkLayer({
-      zIndex: 3,
+      zIndex: 30,
       color: 0x409eff,
-      visible: false,
+      event: {
+        [MAP_EVENT.HANDLE_PICK_LEFT]: (res) => {
+          this._networkLineLayer.setData(res.data.id);
+        },
+      },
     });
     this._networkLineLayer = new NetworkLineLayer({
-      zIndex: 4,
+      zIndex: 40,
       color: 0x67c23a,
-      visible: false,
+      event: {
+        [MAP_EVENT.HANDLE_PICK_LEFT]: (res) => {
+          this.form.linkId = res.data.id;
+          this.transitRoute.addLinkMap(new Bean.RouteLinkItem(res.data));
+          this.updateLayer();
+          this.handleCloseSelectLink();
+        },
+      },
     });
     this._allStopLayer = new StopsLayer({
-      zIndex: 2,
+      zIndex: 20,
       color: 0x409eff,
-      visible: false,
+      event: {
+        [MAP_EVENT.HANDLE_PICK_LEFT]: (res) => {
+          let stop = new Bean.Stops(res.data);
+          stop.index = this.form.index;
+          stop.id = null;
+          this.form = stop;
+          this.transitRoute.changeStop(stop, this.editIndex);
+          this.updateLayer();
+          this.handleCloseSelectStop();
+        },
+      },
     });
   },
   beforeDestroy() {
@@ -264,7 +283,7 @@ export default {
     this._linkLayer && this._linkLayer.dispose();
     this._stopLayer && this._stopLayer.dispose();
     this._networkLayer && this._networkLayer.dispose();
-    this._networkLayer && this._networkLayer.dispose();
+    this._networkLineLayer && this._networkLineLayer.dispose();
     this._allStopLayer && this._allStopLayer.dispose();
   },
   methods: {
@@ -275,9 +294,9 @@ export default {
 
       this._Map.addLayer(this._linkLayer);
       this._Map.addLayer(this._stopLayer);
-      this._Map.addLayer(this._networkLayer);
-      this._Map.addLayer(this._networkLineLayer);
-      this._Map.addLayer(this._allStopLayer);
+      // this._Map.addLayer(this._networkLayer);
+      // this._Map.addLayer(this._networkLineLayer);
+      // this._Map.addLayer(this._allStopLayer);
 
       this.handleChangeCenter();
       this.updateLayer();
@@ -294,41 +313,27 @@ export default {
       this.handleCloseSelectLink();
       this.handleCloseSelectStop();
 
-      this._linkLayer.show();
-      this._stopLayer.show();
-      this._networkLayer.hide();
-      this._networkLineLayer.hide();
-      this._allStopLayer.hide();
-
-      this._Map.removeLayer(this._linkLayer);
-      this._Map.removeLayer(this._stopLayer);
-      this._Map.removeLayer(this._networkLayer);
-      this._Map.removeLayer(this._networkLineLayer);
-      this._Map.removeLayer(this._allStopLayer);
+      this._linkLayer.removeFromParent();
+      this._stopLayer.removeFromParent();
+      this._networkLayer.removeFromParent();
+      this._networkLineLayer.removeFromParent();
+      this._allStopLayer.removeFromParent();
     },
     handleChangeLineWidth() {
-      if (this._networkLayer) {
-        this._networkLayer.setValues({
-          lineWidth: this.lineWidth,
-        });
-      }
-      if (this._networkLineLayer) {
-        this._networkLineLayer.setValues({
-          lineWidth: this.lineWidth,
-        });
-      }
+      this._networkLayer.setValues({
+        lineWidth: this.lineWidth,
+      });
+      this._networkLineLayer.setValues({
+        lineWidth: this.lineWidth,
+      });
     },
     handleChangeLineOffset() {
-      if (this._networkLayer) {
-        this._networkLayer.setValues({
-          lineOffset: this.lineOffset,
-        });
-      }
-      if (this._networkLineLayer) {
-        this._networkLineLayer.setValues({
-          lineOffset: this.lineOffset,
-        });
-      }
+      this._networkLayer.setValues({
+        lineOffset: this.lineOffset,
+      });
+      this._networkLineLayer.setValues({
+        lineOffset: this.lineOffset,
+      });
     },
     handleChangeCenter(type) {
       // const startPoint = this.transitRoute.startStop.coord;
@@ -341,37 +346,18 @@ export default {
       // });
     },
     handleCloseSelectLink() {
-      if (this._networkLayer) {
-        this._networkLayer.hide();
-        this._networkLayer.removeEventListener(MAP_EVENT.HANDLE_PICK_LEFT, this._networkLayerEventId);
-      }
-      if (this._networkLineLayer) {
-        this._networkLineLayer.hide();
-        this._networkLineLayer.removeEventListener(MAP_EVENT.HANDLE_PICK_LEFT, this._networkLineLayerEventId);
-      }
-      this._networkLayerEventId = null;
-      this._networkLineLayerEventId = null;
+      this._networkLayer.removeFromParent();
+      this._networkLineLayer.removeFromParent();
       this.selectLink = false;
     },
     handleSelectLink() {
       this.handleCloseSelectAddress();
       // this.handleCloseSelectLink();
       this.handleCloseSelectStop();
-      if (this._networkLayer && this._networkLineLayer) {
-        this._networkLayer.show();
-        this._networkLayerEventId = this._networkLayer.addEventListener(MAP_EVENT.HANDLE_PICK_LEFT, (res) => {
-          this._networkLineLayer.setData(res.data.id);
-        });
-        this._networkLineLayer.show();
-        this._networkLineLayer.setData(null);
-        this._networkLineLayerEventId = this._networkLineLayer.addEventListener(MAP_EVENT.HANDLE_PICK_LEFT, (res) => {
-          this.form.linkId = res.data.id;
-          this.transitRoute.addLinkMap(new Bean.RouteLinkItem(res.data));
-          this.updateLayer();
-          this.handleCloseSelectLink();
-        });
-        this.selectLink = true;
-      }
+      this._Map.addLayer(this._networkLayer);
+      this._Map.addLayer(this._networkLineLayer);
+      this._networkLineLayer.setData(null);
+      this.selectLink = true;
     },
     handleCloseSelectAddress() {
       if (this._Map) {
@@ -397,30 +383,14 @@ export default {
       }
     },
     handleCloseSelectStop() {
-      if (this._allStopLayer) {
-        this._allStopLayer.hide();
-        this._allStopLayer.removeEventListener(MAP_EVENT.HANDLE_PICK_LEFT, this._allStopLayerEventId);
-      }
-      this._allStopLayerEventId = null;
+      this._allStopLayer.removeFromParent();
       this.selectStop = false;
     },
     handleSelectStop() {
       this.handleCloseSelectAddress();
       this.handleCloseSelectLink();
-      // this.handleCloseSelectStop();
-      if (this._allStopLayer) {
-        this.selectStop = true;
-        this._allStopLayerEventId = this._allStopLayer.addEventListener(MAP_EVENT.HANDLE_PICK_LEFT, (res) => {
-          let stop = new Bean.Stops(res.data);
-          stop.index = this.form.index;
-          stop.id = null;
-          this.form = stop;
-          this.transitRoute.changeStop(stop, this.editIndex);
-          this.updateLayer();
-          this.handleCloseSelectStop();
-        });
-        this._allStopLayer.show();
-      }
+      this.selectStop = true;
+      this._Map.addLayer(this._allStopLayer);
     },
     handleEdit(index) {
       if (this.editIndex != -1) this.handleCancel();

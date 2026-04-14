@@ -50,7 +50,10 @@ export class NetworkLayer extends Layer {
     getGeomjson({
       selectAll: true,
     }).then((res) => {
+      console.log("getGeomjson", res);
+
       this.worker.onmessage = (event) => {
+
         if (event.data.type === "progress") {
           const { dataList, geometryJson } = event.data.data;
 
@@ -67,8 +70,11 @@ export class NetworkLayer extends Layer {
 
           this._setMeshPosition();
         }
+        console.log("getGeomjson:worker", this.scene.children);
       };
-      this.worker.onerror = (event) => { };
+      this.worker.onerror = (event) => {
+        console.log("getGeomjson:worker:error", event);
+      };
       this.worker.postMessage({ data: res.data, center: this.center });
     });
   }
@@ -97,6 +103,9 @@ export class NetworkLayer extends Layer {
   onAdd(map) {
     super.onAdd(map);
     this._setMeshPosition();
+
+    this.on(MAP_EVENT.UPDATE_CENTER, null);
+    this.on(MAP_EVENT.UPDATE_CAMERA_HEIGHT, null);
   }
 
   dispose() {
@@ -180,18 +189,16 @@ export class NetworkLayer extends Layer {
           attribute float side;
           attribute vec2 startPosition;
           attribute vec2 endPosition;
-        `
+        `,
       );
       shader.vertexShader = shader.vertexShader.replace(
         "#include <begin_vertex>",
         `
           #include <begin_vertex>
-          float lineWidth = ${Number(
-          this.lineWidth + (pickOffset || 0)
-        ).toFixed(2)};
+          float lineWidth = ${Number(this.lineWidth + (pickOffset || 0)).toFixed(2)};
           float offset = lineWidth / 2.0  * side;
           transformed = lineOffset(startPosition, position, endPosition, offset);
-        `
+        `,
       );
       if (usePickColor) {
         shader.vertexShader = shader.vertexShader.replace(
@@ -203,7 +210,7 @@ export class NetworkLayer extends Layer {
             #elif defined( USE_COLOR )
               vColor = pickColor;
             #endif
-          `
+          `,
         );
       }
     };
