@@ -392,6 +392,8 @@ export default {
     },
     handleSaveStopsRoute() {
       this.transitRoute.changeStopsRoute(this.stopsRouteForm);
+      console.log(this.stopsRouteForm.route.map(v=>v.id));
+      console.log(this.transitRoute.toJSON());
       this.$emit("change", this.transitRoute.toJSON());
       this.$message.success(this.$l("保存成功"));
       this.handleReselectStopsRoute();

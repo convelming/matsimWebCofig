@@ -260,11 +260,11 @@ export default {
             type: "radar",
             data: [
               {
-                value: afterList,
+                value: beforeList,
                 name: this.$l("base"),
               },
               {
-                value: beforeList,
+                value: afterList,
                 name: this.$l("contrast"),
               },
             ],

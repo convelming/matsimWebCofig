@@ -193,11 +193,11 @@ export default {
             type: "radar",
             data: [
               {
-                value: afterList,
+                value: beforeList,
                 name: this.$l("基础方案"),
               },
               {
-                value: beforeList,
+                value: afterList,
                 name: this.$l("对比方案"),
               },
             ],

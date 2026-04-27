@@ -170,7 +170,7 @@ export default {
             emphasis: {
               focus: "series",
             },
-            data: afterList,
+            data: beforeList,
           },
           {
             name: this.$l("对比方案"),
@@ -178,7 +178,7 @@ export default {
             emphasis: {
               focus: "series",
             },
-            data: beforeList,
+            data: afterList,
           },
         ],
       };

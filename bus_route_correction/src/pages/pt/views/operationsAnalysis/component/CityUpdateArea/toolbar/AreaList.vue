@@ -593,7 +593,7 @@ export default {
     this._GeoJSONLayer_currentGraphs = new GeoJSONLayer({ zIndex: 340, polygonColor: "#ee6666" });
     CUA_landuse()
       .then((res) => boldToText(res.data))
-      .then((res) => parserGeoJSON2(res));
+      .then((res) => parserGeoJSON(res));
   },
   mounted() {},
   beforeDestroy() {

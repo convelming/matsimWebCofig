@@ -584,7 +584,7 @@ export default {
     },
   },
   created() {
-    this.$store.dispatch('GetInfo')
+    // this.$store.dispatch('GetInfo')
     
     document.body.setAttribute("data-theme", "light");
     console.log("index created");

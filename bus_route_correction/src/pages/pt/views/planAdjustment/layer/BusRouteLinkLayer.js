@@ -6,6 +6,7 @@ import { getTextImage } from "@/mymap/utils/index";
 export class BusRouteLinkLayer extends Layer {
   name = "BusRouteLinkLayer";
   lineWidth = 10;
+  lineOffset = 0;
   size = 33;
   linkColor = new THREE.Color("red");
   stopColor = new THREE.Color("green");
@@ -26,7 +27,7 @@ export class BusRouteLinkLayer extends Layer {
     this.labelMesh = new THREE.Sprite(
       new THREE.SpriteMaterial({
         transparent: true,
-      })
+      }),
     );
     this.labelMesh.center.set(0.5, -0.5);
   }
@@ -36,7 +37,7 @@ export class BusRouteLinkLayer extends Layer {
     this.lineWidth = this.map.cameraHeight / 160;
     this.size = this.map.cameraHeight / 30;
     this.update();
-    
+
     this.on(MAP_EVENT.UPDATE_CENTER, null);
     this.on(MAP_EVENT.UPDATE_CAMERA_HEIGHT, null);
   }
@@ -316,7 +317,7 @@ export class BusRouteLinkLayer extends Layer {
           `
             #include <color_pars_vertex>
             attribute vec3 pickColor;
-          `
+          `,
         );
         shader.vertexShader = shader.vertexShader.replace(
           "#include <color_vertex>",
@@ -327,7 +328,7 @@ export class BusRouteLinkLayer extends Layer {
             #elif defined( USE_COLOR )
               vColor = pickColor;
             #endif
-          `
+          `,
         );
       }
 
@@ -344,7 +345,7 @@ export class BusRouteLinkLayer extends Layer {
               }
             #endif
             #include <output_fragment>
-          `
+          `,
       );
     };
     /**
@@ -378,55 +379,39 @@ export class BusRouteLinkLayer extends Layer {
           #include <common>
 
           attribute vec3 pickColor;
-          attribute float side;
+          attribute vec2 side;
           attribute float lineLength;
-          attribute vec2 startPosition;
-          attribute vec2 endPosition;
+          attribute vec2 position2;
           varying float vLineLength;
-        `
+        `,
       );
       shader.vertexShader = shader.vertexShader.replace(
         "#include <begin_vertex>",
         `
           #include <begin_vertex>
           float lineWidth = ${Number(this.lineWidth).toFixed(2)};
-          float offset = lineWidth / 2.0 * side;
+          float lineOffset = ${Number(this.lineOffset).toFixed(2)};
           vLineLength = lineLength;
 
-          float lenA = length(position.xy - startPosition);
-          float lenB = length(position.xy - endPosition);
+          // 线段
+          vec2 dir = normalize(position.xy - position2.xy) * side.x;
+          // 线段法向量
+          vec2 normal = vec2(-dir.y, dir.x);
+          // 宽度位移
+          vec2 width = normal * lineWidth * side.y;
+          // 线段位移
+          vec2 offset = normal * lineOffset;
+          // 顶点位置
+          transformed = vec3(position.xy + width + offset, position.z);
 
-          if(lenA == 0. && lenB == 0.) {
-            transformed = position;
-          } else {
-            vec2 dirA = normalize(position.xy - startPosition);
-            vec2 dirB = normalize(position.xy - endPosition);
-  
-            if(lenA == 0.) {
-              float angle = PI / 2.0;
-              vec2 normal = vec2(-dirB.y, dirB.x);
-              transformed = vec3(position.xy + normal * offset / sin(angle), position.z);
-            } else if(lenB == 0.) {
-              float angle = PI / 2.0;
-              vec2 normal = vec2(dirA.y, -dirA.x);
-              transformed = vec3(position.xy + normal * offset / sin(angle), position.z);
-            } else {
-              vec2 dir = normalize(dirB - dirA);
-              vec2 normal = vec2(-dir.y, dir.x);
-              float angle = acos(dot(dirB, normal));
-              if(angle < 0.2) angle = 0.2;
-              if(angle > 2.94) angle = 2.94;
-              transformed = vec3(position.xy + normal * offset / sin(angle), position.z);
-            }
-          }
-        `
+        `,
       );
       shader.fragmentShader = shader.fragmentShader.replace(
         "#include <common>",
         `
           #include <common>
           varying float vLineLength;
-          `
+          `,
       );
       shader.fragmentShader = shader.fragmentShader.replace(
         "#include <map_fragment>",
@@ -441,7 +426,7 @@ export class BusRouteLinkLayer extends Layer {
                 }
               }
             #endif
-          `
+          `,
       );
       if (usePickColor) {
         shader.vertexShader = shader.vertexShader.replace(
@@ -453,7 +438,7 @@ export class BusRouteLinkLayer extends Layer {
             #elif defined( USE_COLOR )
               vColor = pickColor;
             #endif
-          `
+          `,
         );
       }
     };
@@ -476,65 +461,63 @@ export class BusRouteLinkLayer extends Layer {
 
   getLineGeometry(data) {
     const length = data.length;
+    const attrPosition = new THREE.Float32BufferAttribute(length * 4 * 3, 3);
+    const attrPosition2 = new THREE.Float32BufferAttribute(length * 4 * 3, 3);
+    const attrSide = new THREE.Float32BufferAttribute(length * 4 * 2, 2);
+    const attrPickColor = new THREE.Float32BufferAttribute(length * 4 * 3, 3);
+    const attrLength = new THREE.Float32BufferAttribute(length * 4 * 1, 1);
+    const attrUv = new THREE.Float32BufferAttribute(length * 4 * 2, 2);
 
-    const attrPosition = new THREE.BufferAttribute(new Float32Array(length * 4 * 3 + 2 * 3), 3);
-    const attrStartPosition = new THREE.BufferAttribute(new Float32Array(length * 4 * 2 + 2 * 2), 2);
-    const attrEndPosition = new THREE.BufferAttribute(new Float32Array(length * 4 * 2 + 2 * 2), 2);
-    const attrSide = new THREE.BufferAttribute(new Float32Array(length * 4 + 2), 1);
-    const attrIndex = new THREE.BufferAttribute(new Uint16Array(length * 2 * 3 + 6), 1);
-    const attrUv = new THREE.BufferAttribute(new Float32Array(length * 4 * 2 + 2), 2);
-    const attrPickColor = new THREE.BufferAttribute(new Float32Array(length * 4 * 3 + 2 * 3), 3);
-    const attrLength = new THREE.BufferAttribute(new Float32Array(length * 4 + 2), 1);
+    const attrIndex = new THREE.Uint32BufferAttribute(length * 2 * 3 + (length - 1) * 2 * 3, 1);
 
-    for (let index = 0; index < data.length; index++) {
+    let indexOffset = 0;
+    for (let index = 0; index < length - 1; index++) {
+      attrIndex.setX(indexOffset + index * 6, index * 4 + 2);
+      attrIndex.setX(indexOffset + index * 6 + 1, index * 4 + 3);
+      attrIndex.setX(indexOffset + index * 6 + 2, index * 4 + 5);
+
+      attrIndex.setX(indexOffset + index * 6 + 3, index * 4 + 2);
+      attrIndex.setX(indexOffset + index * 6 + 4, index * 4 + 5);
+      attrIndex.setX(indexOffset + index * 6 + 5, index * 4 + 4);
+    }
+    indexOffset = (length - 1) * 2 * 3;
+
+    for (let index = 0; index < length; index++) {
       const link = data[index];
+
       const pickColor = link.pickColor;
       const color = this.color;
 
       const linkFromxy = link.fromCoord;
       const linkToxy = link.toCoord;
 
-      let prevFromxy = link.fromCoord.multiply(2).subtract(link.toCoord);
-      if (data[index - 1]) {
-        const prevLink = data[index - 1];
-        if (prevLink.toCoord.equals(link.fromCoord)) {
-          prevFromxy = prevLink.fromCoord;
-        }
-      }
-      let nextToxy = link.toCoord.multiply(2).subtract(link.fromCoord);
-      if (data[index + 1]) {
-        const nextLink = data[index + 1];
-        if (nextLink.fromCoord.equals(link.toCoord)) {
-          nextToxy = nextLink.toCoord;
-        }
-      }
-
-      // fromNode
       {
-        attrStartPosition.setXY(index * 4, prevFromxy.x, prevFromxy.y);
-        attrStartPosition.setXY(index * 4 + 1, prevFromxy.x, prevFromxy.y);
         attrPosition.setXYZ(index * 4, linkFromxy.x, linkFromxy.y, 0);
         attrPosition.setXYZ(index * 4 + 1, linkFromxy.x, linkFromxy.y, 0);
-        attrEndPosition.setXY(index * 4, linkToxy.x, linkToxy.y);
-        attrEndPosition.setXY(index * 4 + 1, linkToxy.x, linkToxy.y);
-        attrSide.setX(index * 4, 1);
-        attrSide.setX(index * 4 + 1, -1);
+        attrPosition2.setXYZ(index * 4, linkToxy.x, linkToxy.y, 0);
+        attrPosition2.setXYZ(index * 4 + 1, linkToxy.x, linkToxy.y, 0);
+
+        // 线段方向 ， 宽度位移方向
+        attrSide.setXY(index * 4, 1, 0.5);
+        attrSide.setXY(index * 4 + 1, 1, -0.5);
+
         attrLength.setX(index * 4, link.fromLength || 0);
         attrLength.setX(index * 4 + 1, link.fromLength || 0);
 
         attrPickColor.setXYZ(index * 4, pickColor.r, pickColor.g, pickColor.b);
         attrPickColor.setXYZ(index * 4 + 1, pickColor.r, pickColor.g, pickColor.b);
       }
-      // toNode
+
       {
-        attrStartPosition.setXY(index * 4 + 2, linkFromxy.x, linkFromxy.y);
-        attrStartPosition.setXY(index * 4 + 3, linkFromxy.x, linkFromxy.y);
         attrPosition.setXYZ(index * 4 + 2, linkToxy.x, linkToxy.y, 0);
         attrPosition.setXYZ(index * 4 + 3, linkToxy.x, linkToxy.y, 0);
-        attrEndPosition.setXY(index * 4 + 2, nextToxy.x, nextToxy.y);
-        attrEndPosition.setXY(index * 4 + 3, nextToxy.x, nextToxy.y);
-        attrSide.setX(index * 4 + 2, 1);
-        attrSide.setX(index * 4 + 3, -1);
+        attrPosition2.setXYZ(index * 4 + 2, linkFromxy.x, linkFromxy.y, 0);
+        attrPosition2.setXYZ(index * 4 + 3, linkFromxy.x, linkFromxy.y, 0);
+
+        // 线段方向 ， 宽度位移方向
+        attrSide.setXY(index * 4 + 2, -1, 0.5);
+        attrSide.setXY(index * 4 + 3, -1, -0.5);
+
         attrLength.setX(index * 4 + 2, link.toLength || 0);
         attrLength.setX(index * 4 + 3, link.toLength || 0);
 
@@ -547,19 +530,21 @@ export class BusRouteLinkLayer extends Layer {
       attrUv.setXY(index * 4 + 2, 0, 1);
       attrUv.setXY(index * 4 + 3, 1, 1);
 
-      attrIndex.setX(index * 6, index * 4);
-      attrIndex.setX(index * 6 + 1, index * 4 + 1);
-      attrIndex.setX(index * 6 + 2, index * 4 + 3);
-      attrIndex.setX(index * 6 + 3, index * 4);
-      attrIndex.setX(index * 6 + 4, index * 4 + 3);
-      attrIndex.setX(index * 6 + 5, index * 4 + 2);
+      attrIndex.setX(indexOffset + index * 6, index * 4);
+      attrIndex.setX(indexOffset + index * 6 + 1, index * 4 + 1);
+      attrIndex.setX(indexOffset + index * 6 + 2, index * 4 + 3);
+
+      attrIndex.setX(indexOffset + index * 6 + 3, index * 4);
+      attrIndex.setX(indexOffset + index * 6 + 4, index * 4 + 3);
+      attrIndex.setX(indexOffset + index * 6 + 5, index * 4 + 2);
     }
 
     const geometry = new THREE.BufferGeometry();
 
+    console.log(attrPosition, data);
+
     geometry.setAttribute("position", attrPosition);
-    geometry.setAttribute("startPosition", attrStartPosition);
-    geometry.setAttribute("endPosition", attrEndPosition);
+    geometry.setAttribute("position2", attrPosition2);
     geometry.setAttribute("side", attrSide);
     geometry.setAttribute("lineLength", attrLength);
     geometry.setAttribute("uv", attrUv);
