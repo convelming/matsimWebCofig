@@ -50,6 +50,7 @@
 <script>
 import * as echarts from "@/utils/echarts.utils";
 import { travelersCarAvailability } from "@/api/crt.js";
+import { TravelerAttributes_TravelersCarAvailability } from "../../echart_utils";
 
 export default {
   name: "TravelersCarAvailability",
@@ -117,7 +118,7 @@ export default {
     // 更新图表
     updateChart() {
       if (this._chart && this._chartData) {
-        this._chart.setOption(this.getChartOption(this._chartData), true);
+        this._chart.setOption(TravelerAttributes_TravelersCarAvailability(this._chartData, this.$l), true);
         this._chart.resize();
       }
     },

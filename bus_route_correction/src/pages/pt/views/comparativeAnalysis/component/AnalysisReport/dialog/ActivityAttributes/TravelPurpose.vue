@@ -46,6 +46,7 @@
 <script>
 import * as echarts from "@/utils/echarts.utils";
 import { travelPurpose } from "@/api/crt.js";
+import { ActivityAttributes_TravelPurpose } from "../../echart_utils";
 
 export default {
   name: "TravelPurpose",
@@ -113,7 +114,7 @@ export default {
     // 更新图表
     updateChart() {
       if (this._chart && this._chartData) {
-        this._chart.setOption(this.getChartOption(this._chartData), true);
+        this._chart.setOption(ActivityAttributes_TravelPurpose(this._chartData, this.$l), true);
         this._chart.resize();
       }
     },

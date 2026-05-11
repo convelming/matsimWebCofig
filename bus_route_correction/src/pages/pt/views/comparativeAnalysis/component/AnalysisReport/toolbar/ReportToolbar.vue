@@ -1,7 +1,7 @@
 <template>
   <el-collapse-item class="toolbar_item" :name="name">
     <div class="toolbar_item_header" slot="title">
-      <div class="title" style="max-width: 100%;">{{ $l("ReportToolbar") }}</div>
+      <div class="title" style="max-width: 100%">{{ $l("ReportToolbar") }}</div>
     </div>
     <div class="toolbar_item_bodyer">
       <div class="tree_scroll">
@@ -38,7 +38,10 @@
 
 <script>
 import { guid } from "@/utils/utils.js";
-import { changeLines, affectedLines, genReports } from "@/api/contrast";
+import { changeLines, affectedLines, genReports, getReportData, genReports2 } from "@/api/contrast";
+import { residenceTime } from "@/api/crt.js";
+import * as echarts from "@/utils/echarts.utils";
+import * as echart_utils from "../echart_utils";
 
 import Vue from "vue";
 // 活动属性弹窗
@@ -565,7 +568,7 @@ export default {
       }
     },
     // 生成报告
-    handleGenerateAnalysisReport(cb) {
+    _handleGenerateAnalysisReport(cb) {
       if (this.reportLoading) return;
       this.reportLoading = true;
       const changeRouteList = this.$refs.tree
@@ -596,8 +599,212 @@ export default {
           this.reportLoading = false;
         });
     },
+    async handleGenerateAnalysisReport(cb) {
+      // attributeData; // 出行者属性雷达图  TravelAttribute_index
+      // sexData; // 出行者性别雷达图 TravelerAttributes_TravelersSex
+      // modeData; // 出行方式 ActivityAttributes_TravelMode
+      // ageData; // 出行年龄 TravelerAttributes_TravelersAge
+      // purposeData; // 出行目的 ActivityAttributes_TravelPurpose
+      // tree1; // 出行效用决策树  TravelUtilityTree_index
+      // tree2; // 出行变化决策树  TravelVariationTree_index
+      // routeList; // 线路数据
+      // routeInfo; // 线路信息
+      // routeInfo.data; // 客流信息 PassengerFlow_PassengersEnteringLeaving
+      // routeInfo.routeFlowsData; // od客流信息  PassengerFlow_RouteFlows
+      // routeInfo.routeAttributesData; // 线路基础信息 PassengerFlow_RouteAttributes
+      if (this.reportLoading) return;
+      this.reportLoading = true;
+      try {
+        const changeRouteList = this.$refs.tree
+          .getNode("6")
+          .childNodes.filter((v) => v.checked)
+          .map((v) => v.data.id);
+        const { database1, datasource1, database2, datasource2 } = this.$route.params;
+        const chartRes = await getReportData({
+          name1: database1 + "/" + datasource1,
+          name2: database2 + "/" + datasource2,
+          // routeIds: changeRouteList,
+        });
+
+        console.log(chartRes);
+
+        const imageData = {};
+        const imageOptions = {
+          type: "png",
+          pixelRatio: 2,
+          excludeComponents: ["toolbox"],
+        };
+        const _chartDom = document.createElement("div");
+        _chartDom.style = "position:fixed;top:0;left:0; width: 1200px;height: 1200px;";
+        document.body.append(_chartDom);
+        const _chart = echarts.init(_chartDom);
+
+        // 出行者属性雷达图 attributeData
+        const attributeData_options = echart_utils.TravelAttribute_index({ data: chartRes.data.attributeData, keySet: new Set(["2-1", "2-2", "2-3", "2-4", "2-5"]) });
+        attributeData_options.animation = false;
+        _chart.setOption(attributeData_options, true);
+        imageData.attributeData = _chart.getDataURL(imageOptions);
+        downloadBase64(imageData.attributeData, "attributeData.png");
+
+        // 出行者性别雷达图 sexData
+        const sexData_options = echart_utils.TravelerAttributes_TravelersSex(chartRes.data.sexData.data);
+        sexData_options.animation = false;
+        _chart.setOption(sexData_options, true);
+        imageData.sexData = _chart.getDataURL(imageOptions);
+        downloadBase64(imageData.sexData, "attributeData.png");
+
+        // 出行方式 modeData
+        const modeData_options = echart_utils.ActivityAttributes_TravelMode(chartRes.data.modeData);
+        modeData_options.animation = false;
+        _chart.setOption(modeData_options, true);
+        imageData.modeData = _chart.getDataURL(imageOptions);
+        downloadBase64(imageData.modeData, "attributeData.png");
+
+        // 出行年龄 ageData
+        const ageData_options = echart_utils.TravelerAttributes_TravelersAge(chartRes.data.ageData.data);
+        ageData_options.animation = false;
+        _chart.setOption(ageData_options, true);
+        imageData.ageData = _chart.getDataURL(imageOptions);
+        downloadBase64(imageData.ageData, "attributeData.png");
+
+        // 出行目的 purposeData
+        const purposeData_options = echart_utils.ActivityAttributes_TravelPurpose(chartRes.data.purposeData.data);
+        purposeData_options.animation = false;
+        _chart.setOption(purposeData_options, true);
+        imageData.purposeData = _chart.getDataURL(imageOptions);
+        downloadBase64(imageData.purposeData, "attributeData.png");
+
+        // 出行效用决策树 tree1
+        const tree1_options = echart_utils.TravelUtilityTree_index(chartRes.data.tree1);
+        tree1_options.animation = false;
+        _chart.setOption(tree1_options, true);
+        imageData.tree1 = _chart.getDataURL(imageOptions);
+        downloadBase64(imageData.tree1, "attributeData.png");
+
+        // 出行变化决策树 tree2
+        const tree2_options = echart_utils.TravelVariationTree_index(chartRes.data.tree2);
+        tree2_options.animation = false;
+        _chart.setOption(tree2_options, true);
+        imageData.tree2 = _chart.getDataURL(imageOptions);
+        downloadBase64(imageData.tree2, "attributeData.png");
+
+        // 线路数据 routeList
+        imageData.routeList = await Promise.all(
+          chartRes.data.routeList.map(async (v, i) => {
+            const routeInfo = {
+              routeInfo: v.routeInfo,
+            };
+
+            // 客流信息 data
+            const data_options = echart_utils.PassengerFlow_PassengersEnteringLeaving(v);
+            data_options.animation = false;
+            _chart.setOption(data_options, true);
+            routeInfo.data = _chart.getDataURL(imageOptions);
+            downloadBase64(routeInfo.data, `data_${v.routeInfo.routeId}.png`);
+
+            // od客流信息 routeFlowsData
+            const routeFlowsData_options = echart_utils.PassengerFlow_RouteFlows({ ...v.routeFlowsData, routeInfo: v.routeInfo });
+            // routeInfo.routeFlowsData = `data:image/svg+xml;base64,${Encode64(routeFlowsData_options)}`;
+            // routeInfo.routeFlowsData = routeFlowsData_options
+            routeInfo.routeFlowsData = await svgBlobToPng(routeFlowsData_options);
+            downloadBase64(routeInfo.routeFlowsData, `routeFlowsData_${v.routeInfo.routeId}.png`);
+
+            // 线路基础信息 routeAttributesData
+            const routeAttributesData_options = echart_utils.PassengerFlow_RouteAttributes({ ...v.routeAttributesData, routeInfo: v.routeInfo });
+            routeAttributesData_options.animation = false;
+            _chart.setOption(routeAttributesData_options, true);
+            routeInfo.routeAttributesData = _chart.getDataURL(imageOptions);
+            downloadBase64(routeInfo.routeAttributesData, `routeAttributesData_${v.routeInfo.routeId}.png`);
+
+            return routeInfo;
+          }),
+        );
+
+        _chart.dispose();
+        document.body.removeChild(_chartDom);
+        console.log({
+          name1: database1 + "/" + datasource1,
+          name2: database2 + "/" + datasource2,
+          routeIds: changeRouteList,
+          imageData: imageData,
+        });
+        const docxRes = await genReports2({
+          name1: database1 + "/" + datasource1,
+          name2: database2 + "/" + datasource2,
+          routeIds: changeRouteList,
+          imageData: imageData,
+        });
+
+        const a = document.createElement("a");
+        a.href = `/pt/crt/downloadReports/${docxRes.data}`;
+        a.download = docxRes.data;
+        a.style = "position: fixed;top: -100vh;left: -100vw;";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+        typeof cb === "function" && cb(true);
+        this.reportLoading = false;
+      } catch (err) {
+        console.log(err);
+        typeof cb === "function" && cb(false);
+        this.reportLoading = false;
+      }
+    },
   },
 };
+
+/**
+ * 编码base64
+ */
+function Encode64(str) {
+  return btoa(
+    encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function toSolidBytes(match, p1) {
+      return String.fromCharCode("0x" + p1);
+    }),
+  );
+}
+/**
+ * 解码base64
+ */
+function Decode64(str) {
+  return decodeURIComponent(
+    atob(str)
+      .split("")
+      .map(function (c) {
+        return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+      })
+      .join(""),
+  );
+}
+
+function downloadBase64(base64Image, name) {
+  // var link = document.createElement("a");
+  // link.download = name; // 设置下载文件名
+  // link.href = base64Image; // 使用 getDataURL 生成的 Base64 地址
+  // link.click(); // 触发下载
+}
+async function svgBlobToPng(svgText) {
+  const img = new Image();
+  img.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgText)}`;
+  return new Promise((resolve) => {
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      // Set canvas size based on SVG dimensions
+      const { width, height } = img;
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      ctx.scale(dpr, dpr);
+      ctx.drawImage(img, 0, 0);
+      resolve(canvas.toDataURL("image/png"));
+    };
+  });
+}
+// ————————————————
+// 版权声明：本文为CSDN博主「1024小神」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+// 原文链接：https://blog.csdn.net/weixin_44786530/article/details/129127376
 </script>
 
 <style lang="scss" scoped>
@@ -627,7 +834,7 @@ export default {
     .tree_scroll {
       max-height: 50vh;
       overflow-y: scroll;
-      .el-tree{
+      .el-tree {
         background-color: transparent;
       }
     }

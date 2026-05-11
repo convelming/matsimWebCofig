@@ -209,6 +209,7 @@ const defaultParams = {
   // ******************** 线 ******************** //
   showLines: true,
   lineAutoWidth: 0,
+  lineAutoOffset: 0,
   lineWidth: 100,
   lineOffset: 0,
   lineWidthStyle: LINE_WIDTH_STYLE.UNAUTO,
@@ -256,6 +257,7 @@ export class GeoJSONLayer extends Layer {
 
   showLines = true;
   lineAutoWidth = 0;
+  lineAutoOffset = 0;
   lineWidth = 100;
   lineOffset = 0;
   lineWidthStyle = LINE_WIDTH_STYLE.UNAUTO;
@@ -396,16 +398,6 @@ export class GeoJSONLayer extends Layer {
       this.linePMGroup.removeFromParent();
     }
   }
-  setLineOffset(lineOffset) {
-    this.lineOffset = lineOffset;
-
-    this.lineMaterial.uniforms.lineOffset.value = this.lineOffset;
-    this.lineMaterial.needsUpdate = true;
-    this.linePickLayerMaterial.uniforms.lineOffset.value = this.lineOffset;
-    this.linePickLayerMaterial.needsUpdate = true;
-    this.linePickLayerMaterial.uniforms.lineOffset.value = this.lineOffset;
-    this.linePickLayerMaterial.needsUpdate = true;
-  }
   setLineAutoWidth(lineAutoWidth) {
     this.lineAutoWidth = Number(lineAutoWidth || 0);
     if (this.map && this.lineAutoWidth > 0) {
@@ -419,6 +411,19 @@ export class GeoJSONLayer extends Layer {
     }
     this.setLineWidth(this.lineWidth);
   }
+  setLineAutoOffset(lineAutoOffset) {
+    this.lineAutoOffset = Number(lineAutoOffset || 0);
+    if (this.map && this.lineAutoOffset > 0) {
+      const lineOffset = this.lineAutoOffset * this.map.plottingScale;
+      this.lineMaterial.uniforms.lineOffset.value = lineOffset;
+      this.lineMaterial.needsUpdate = true;
+      this.linePickLayerMaterial.uniforms.lineOffset.value = lineOffset;
+      this.linePickLayerMaterial.needsUpdate = true;
+      this.linePickItemMaterial.uniforms.lineOffset.value = lineOffset;
+      this.linePickItemMaterial.needsUpdate = true;
+    }
+    this.setLineOffset(this.lineOffset);
+  }
   setLineWidth(lineWidth) {
     this.lineWidth = lineWidth;
     if (this.lineAutoWidth > 0) return;
@@ -428,6 +433,16 @@ export class GeoJSONLayer extends Layer {
     this.linePickLayerMaterial.needsUpdate = true;
     this.linePickItemMaterial.uniforms.lineWidth.value = this.lineWidth;
     this.linePickItemMaterial.needsUpdate = true;
+  }
+  setLineOffset(lineOffset) {
+    this.lineOffset = lineOffset;
+    if (this.lineAutoOffset > 0) return;
+    this.lineMaterial.uniforms.lineOffset.value = this.lineOffset;
+    this.lineMaterial.needsUpdate = true;
+    this.linePickLayerMaterial.uniforms.lineOffset.value = this.lineOffset;
+    this.linePickLayerMaterial.needsUpdate = true;
+    this.linePickLayerMaterial.uniforms.lineOffset.value = this.lineOffset;
+    this.linePickLayerMaterial.needsUpdate = true;
   }
   setLineWidthStyle(lineWidthStyle) {
     this.lineWidthStyle = lineWidthStyle;
@@ -696,6 +711,7 @@ export class GeoJSONLayer extends Layer {
     this.linePickItemMeshList = [];
 
     this.setLineAutoWidth(params.lineAutoWidth);
+    this.setLineAutoOffset(params.lineAutoOffset);
     this.setShowLines(params.showLines);
     this.setLineOffset(params.lineOffset);
     this.setLineWidth(params.lineWidth);
@@ -790,6 +806,15 @@ export class GeoJSONLayer extends Layer {
           this.linePickLayerMaterial.uniforms.lineWidth.value = lineWidth;
           this.linePickLayerMaterial.needsUpdate = true;
           this.linePickItemMaterial.uniforms.lineWidth.value = lineWidth;
+          this.linePickItemMaterial.needsUpdate = true;
+        }
+        if (this.lineAutoOffset > 0) {
+          const lineOffset = this.lineAutoOffset * this.map.plottingScale;
+          this.lineMaterial.uniforms.lineOffset.value = lineOffset;
+          this.lineMaterial.needsUpdate = true;
+          this.linePickLayerMaterial.uniforms.lineOffset.value = lineOffset;
+          this.linePickLayerMaterial.needsUpdate = true;
+          this.linePickItemMaterial.uniforms.lineOffset.value = lineOffset;
           this.linePickItemMaterial.needsUpdate = true;
         }
         if (this.polygonBorderAutoWidth > 0) {
@@ -1426,6 +1451,7 @@ export class GeoJSONLineListGeometry extends THREE.BufferGeometry {
           attrIndex[attrIndex.length] = indexOffset + 0;
           attrIndex[attrIndex.length] = indexOffset + 3;
           attrIndex[attrIndex.length] = indexOffset + 2;
+          
         }
         indexOffset += 2;
       }
@@ -1557,32 +1583,39 @@ export class GeoJSONLineMaterial extends THREE.Material {
           vLineWidth = lineWidth * p;
         }
 
-        float lenA = length(position.xy - startPosition);
-        float lenB = length(position.xy - endPosition);
+        // float lenA = length(position.xy - startPosition);
+        // float lenB = length(position.xy - endPosition);
 
-        if(lenA == 0. && lenB == 0.) {
-          transformed = position;
-        } else {
-          vec2 dirA = normalize(position.xy - startPosition);
-          vec2 dirB = normalize(position.xy - endPosition);
+        // if(lenA == 0. && lenB == 0.) {
+        //   transformed = position;
+        // } else {
+        //   vec2 dirA = normalize(position.xy - startPosition);
+        //   vec2 dirB = normalize(position.xy - endPosition);
 
-          if(lenA == 0.) {
-            float angle = PI * 0.5;
-            vec2 normal = vec2(-dirB.y, dirB.x);
-            transformed = vec3(position.xy + normal * offset / sin(angle), position.z);
-          } else if(lenB == 0.) {
-            float angle = PI * 0.5;
-            vec2 normal = vec2(dirA.y, -dirA.x);
-            transformed = vec3(position.xy + normal * offset / sin(angle), position.z);
-          } else {
-            vec2 dir = normalize(dirB - dirA);
-            vec2 normal = vec2(-dir.y, dir.x);
-            float angle = mod(acos(dot(dirB, normal)), 3.14);
-            if(angle < 0.2) angle = 0.2;
-            if(angle > 2.94) angle = 2.94;
-            transformed = vec3(position.xy + normal * offset / sin(angle), position.z);
-          }
-        }
+        //   if(lenA == 0.) {
+        //     float angle = PI * 0.5;
+        //     vec2 normal = vec2(-dirB.y, dirB.x);
+        //     transformed = vec3(position.xy + normal * offset / sin(angle), position.z);
+        //   } else if(lenB == 0.) {
+        //     float angle = PI * 0.5;
+        //     vec2 normal = vec2(dirA.y, -dirA.x);
+        //     transformed = vec3(position.xy + normal * offset / sin(angle), position.z);
+        //   } else {
+        //     vec2 dir = normalize(dirB - dirA);
+        //     vec2 normal = vec2(-dir.y, dir.x);
+        //     float angle = mod(acos(dot(dirB, normal)), 3.14);
+        //     if(angle < 0.2) angle = 0.2;
+        //     if(angle > 2.94) angle = 2.94;
+        //     transformed = vec3(position.xy + normal * offset / sin(angle), position.z);
+        //   }
+        // }
+
+        
+        vec2 dirA = normalize(position.xy - startPosition);
+        vec2 dirB = normalize(position.xy - endPosition);
+        vec2 dir = normalize(dirB - dirA);
+        vec2 normal = vec2(-dir.y, dir.x);
+        transformed = vec3(position.xy + normal * offset , position.z);
 
         gl_Position = projectionMatrix * modelViewMatrix * vec4( transformed.xy, transformed.z + p, 1.0 );
 
@@ -2370,32 +2403,38 @@ export class GeoJSONPolygonBorderMaterial extends THREE.Material {
         float offset = lineWidth / 2.0 * side + lineOffset;
         float p = (value - minValue) / (maxValue - minValue) + 0.1;
 
-        float lenA = length(position.xy - startPosition);
-        float lenB = length(position.xy - endPosition);
+        // float lenA = length(position.xy - startPosition);
+        // float lenB = length(position.xy - endPosition);
 
-        if(lenA == 0. && lenB == 0.) {
-          transformed = position;
-        } else {
-          vec2 dirA = normalize(position.xy - startPosition);
-          vec2 dirB = normalize(position.xy - endPosition);
+        // if(lenA == 0. && lenB == 0.) {
+        //   transformed = position;
+        // } else {
+        //   vec2 dirA = normalize(position.xy - startPosition);
+        //   vec2 dirB = normalize(position.xy - endPosition);
 
-          if(lenA == 0.) {
-            float angle = PI / 2.0;
-            vec2 normal = vec2(-dirB.y, dirB.x);
-            transformed = vec3(position.xy + normal * offset / sin(angle), position.z);
-          } else if(lenB == 0.) {
-            float angle = PI / 2.0;
-            vec2 normal = vec2(dirA.y, -dirA.x);
-            transformed = vec3(position.xy + normal * offset / sin(angle), position.z);
-          } else {
-            vec2 dir = normalize(dirB - dirA);
-            vec2 normal = vec2(-dir.y, dir.x);
-            float angle = mod(acos(dot(dirB, normal)), 3.14);
-            if(angle < 0.2) angle = 0.2;
-            if(angle > 2.94) angle = 2.94;
-            transformed = vec3(position.xy + normal * offset / sin(angle), position.z);
-          }
-        }
+        //   if(lenA == 0.) {
+        //     float angle = PI / 2.0;
+        //     vec2 normal = vec2(-dirB.y, dirB.x);
+        //     transformed = vec3(position.xy + normal * offset / sin(angle), position.z);
+        //   } else if(lenB == 0.) {
+        //     float angle = PI / 2.0;
+        //     vec2 normal = vec2(dirA.y, -dirA.x);
+        //     transformed = vec3(position.xy + normal * offset / sin(angle), position.z);
+        //   } else {
+        //     vec2 dir = normalize(dirB - dirA);
+        //     vec2 normal = vec2(-dir.y, dir.x);
+        //     float angle = mod(acos(dot(dirB, normal)), 3.14);
+        //     if(angle < 0.2) angle = 0.2;
+        //     if(angle > 2.94) angle = 2.94;
+        //     transformed = vec3(position.xy + normal * offset / sin(angle), position.z);
+        //   }
+        // }
+                  
+        vec2 dirA = normalize(position.xy - startPosition);
+        vec2 dirB = normalize(position.xy - endPosition);
+        vec2 dir = normalize(dirB - dirA);
+        vec2 normal = vec2(-dir.y, dir.x);
+        transformed = vec3(position.xy + normal * offset , position.z);
           
         #ifdef USE_3D
           float p3D = (value3D - min3DValue) / (max3DValue - min3DValue);

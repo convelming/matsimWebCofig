@@ -108,6 +108,7 @@ import { MAP_EVENT } from "@/mymap";
 
 import { CUA_downloadGeojson, CUA_planPage, CUA_deletePlan, CUA_addPlan } from "@/api/index";
 import { guid, boldToText } from "@/utils/index2";
+import moment from "moment";
 
 const defaultConfig = {
   check: false,
@@ -303,7 +304,7 @@ export default {
   },
   created() {
     this._GeoJSONLayer_road = new GeoJSONLayer({
-      lineAutoWidth: 1,
+      lineAutoWidth: 3,
       event: {
         [MAP_EVENT.HANDLE_PICK_LEFT]: (e) => {
           console.log(JSON.stringify(this.chartProp));
@@ -352,7 +353,9 @@ export default {
         .then((res) => {
           this._GeoJSONLayer_road.setGeoJsonData(res);
           this._GeoJSONLayer_road.setLineValue("8_vc");
-          this._GeoJSONLayer_road.setLineColorBar(getColorBarByPropertie(res.propertiesLabels["8_vc"], { toFixed: 3, colorList: ["#67c23a", "#B50404"] }));
+          const colorList = getColorBarByPropertie(res.propertiesLabels["8_vc"], { toFixed: 3, colorList: ["#67c23a", "#ffff00", "#ffa500", "#B50404"] });
+          console.log(res.propertiesLabels["8_vc"], colorList);
+          this._GeoJSONLayer_road.setLineColorBar(colorList);
           return res;
         })
         .finally(() => {
@@ -423,6 +426,9 @@ export default {
 
       const children = areaParam.map((v) => v.children).flat();
       children.forEach((item) => {
+        if (item.key == "方案名称") {
+          item.value = `方案_${moment().format("YYYYMMDDHHmmss")}`;
+        }
         if (item.key != "方案名称" && item.type == "item") {
           item.value = Number(Number(bastValue[item.key] || item.value).toFixed(4));
           item.avg = Number(Number(bastValue[item.key] || item.avg).toFixed(4));

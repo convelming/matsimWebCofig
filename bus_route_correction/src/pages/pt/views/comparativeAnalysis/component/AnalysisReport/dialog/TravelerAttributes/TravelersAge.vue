@@ -38,6 +38,7 @@
 <script>
 import * as echarts from "@/utils/echarts.utils";
 import { travelersAge } from "@/api/crt.js";
+import { TravelerAttributes_TravelersAge } from "../../echart_utils";
 
 export default {
   name: "TravelersAge",
@@ -105,7 +106,7 @@ export default {
     // 更新图表
     updateChart() {
       if (this._chart && this._chartData) {
-        this._chart.setOption(this.getChartOption(this._chartData), true);
+        this._chart.setOption(TravelerAttributes_TravelersAge(this._chartData, this.$l), true);
         this._chart.resize();
       }
     },

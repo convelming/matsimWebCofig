@@ -32,6 +32,7 @@ import { parserGeoJSON } from "../../../GeoJSON/layer/GeoJSONLayer2";
 
 import { CUA_downloadGeojson } from "@/api/index";
 import { boldToText } from "@/utils/index2";
+import moment from "moment";
 
 const defaultConfig = {
   check: false,
@@ -229,6 +230,9 @@ export default {
             const children = areaParam.map((v) => v.children).flat();
             children.forEach((item) => {
               const prop = res.propertiesLabels[item.key];
+              if (item.key == "方案名称") {
+                item.value = `方案_${moment().format("YYYYMMDDHHmmss")}`;
+              }
               if (prop && item.type == "item") {
                 const list = prop.values.slice(1);
                 item.min = Number(Math.min(...list).toFixed(4));

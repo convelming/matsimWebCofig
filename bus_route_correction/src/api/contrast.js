@@ -167,3 +167,21 @@ export function genReports(data) {
     data: data,
   });
 }
+
+
+// /pt/crt/getReportData
+export function getReportData(data) {
+  return request({
+    url: `/pt/crt/getReportData`,
+    method: "post",
+    data: data,
+  });
+}
+// /pt/crt/genReports2
+export function genReports2(data) {
+  return request({
+    url: `/pt/crt/genReports2`,
+    method: "post",
+    data: data,
+  });
+}

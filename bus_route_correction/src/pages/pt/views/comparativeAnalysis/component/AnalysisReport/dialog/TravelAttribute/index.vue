@@ -66,6 +66,7 @@
 <script>
 import * as echarts from "@/utils/echarts.utils";
 import { travelAttribute } from "@/api/crt.js";
+import { TravelAttribute_index } from "../../echart_utils";
 
 export default {
   name: "TravelAttribute",
@@ -133,7 +134,7 @@ export default {
     // 更新图表
     updateChart() {
       if (this._chart && this._chartData) {
-        this._chart.setOption(this.getChartOption(this._chartData), true);
+        this._chart.setOption(TravelAttribute_index(this._chartData, this.$l), true);
         this._chart.resize();
       }
     },

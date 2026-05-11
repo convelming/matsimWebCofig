@@ -46,6 +46,7 @@
 <script>
 import * as echarts from "@/utils/echarts.utils";
 import { residenceTime } from "@/api/crt.js";
+import { ActivityAttributes_ResidenceTime } from "../../echart_utils";
 
 export default {
   name: "ResidenceTime",
@@ -113,7 +114,7 @@ export default {
     // 更新图表
     updateChart() {
       if (this._chart && this._chartData) {
-        this._chart.setOption(this.getChartOption(this._chartData), true);
+        this._chart.setOption(ActivityAttributes_ResidenceTime(this._chartData, this.$l), true);
         this._chart.resize();
       }
     },
