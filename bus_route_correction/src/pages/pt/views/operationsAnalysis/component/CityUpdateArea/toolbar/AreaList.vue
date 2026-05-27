@@ -32,7 +32,7 @@
                 <el-button v-else class="show_btn" type="info" size="small" @click="showLayer_odTarget = false">{{ $l("隐藏起点分布") }}</el-button>
                 <el-button class="open_btn" :loading="loading_odTarget" :icon="openSetting_odTarget ? 'el-icon-caret-top' : 'el-icon-caret-bottom'" type="info" size="small" @click="openSetting_odTarget = !openSetting_odTarget"></el-button>
               </div>
-              <div class="setting_box" v-if="openSetting_odTarget">
+              <div class="setting_box" v-show="openSetting_odTarget">
                 <div class="setting_item">
                   <div class="setting_item_label">{{ $l("大小") }}</div>
                   <div class="setting_item_value">
@@ -43,7 +43,7 @@
                   <div class="setting_item_label">{{ $l("设置") }}</div>
                   <div class="setting_item_value">
                     <el-button type="primary" icon="el-icon-setting" @click="showConfig_odTarget = true" size="mini"></el-button>
-                    <GeoJSONSetting ref="originConfig" :visible.sync="showConfig_odTarget" :form="configForm_odTarget" :layout="configLayout_odTarget" @confirm="handleConfigConfirm_odTarget" />
+                    <GeoJSONSetting ref="originConfig_odTarget" :visible.sync="showConfig_odTarget" :form="configForm_odTarget" :layout="configLayout_odTarget" @confirm="handleConfigConfirm_odTarget" />
                   </div>
                 </div>
                 <div class="setting_item">
@@ -60,7 +60,7 @@
                   </div>
                 </div>
                 <div class="setting_item" v-if="useTimeRange_odTarget">
-                  <TimeRangeSlider v-model="timeRange_odTarget" />
+                  <TimeRangeSlider :min="0" v-model="timeRange_odTarget" />
                 </div>
               </div>
             </div>
@@ -70,7 +70,7 @@
                 <el-button v-else class="show_btn" type="info" size="small" @click="showLayer_odSource = false">{{ $l("隐藏讫点分布") }}</el-button>
                 <el-button class="open_btn" :loading="loading_odSource" :icon="openSetting_odSource ? 'el-icon-caret-top' : 'el-icon-caret-bottom'" type="info" size="small" @click="openSetting_odSource = !openSetting_odSource"></el-button>
               </div>
-              <div class="setting_box" v-if="openSetting_odSource">
+              <div class="setting_box" v-show="openSetting_odSource">
                 <div class="setting_item">
                   <div class="setting_item_label">{{ $l("大小") }}</div>
                   <div class="setting_item_value">
@@ -81,7 +81,7 @@
                   <div class="setting_item_label">{{ $l("设置") }}</div>
                   <div class="setting_item_value">
                     <el-button type="primary" icon="el-icon-setting" @click="showConfig_odSource = true" size="mini"></el-button>
-                    <GeoJSONSetting ref="originConfig" :visible.sync="showConfig_odSource" :form="configForm_odSource" :layout="configLayout_odSource" @confirm="handleConfigConfirm_odSource" />
+                    <GeoJSONSetting ref="originConfig_odSource" :visible.sync="showConfig_odSource" :form="configForm_odSource" :layout="configLayout_odSource" @confirm="handleConfigConfirm_odSource" />
                   </div>
                 </div>
                 <div class="setting_item">
@@ -98,7 +98,7 @@
                   </div>
                 </div>
                 <div class="setting_item" v-if="useTimeRange_odSource">
-                  <TimeRangeSlider v-model="timeRange_odSource" />
+                  <TimeRangeSlider :min="0" v-model="timeRange_odSource" />
                 </div>
               </div>
             </div>
@@ -108,7 +108,7 @@
                 <el-button v-else class="show_btn" type="info" size="small" @click="showLayer_landuse = false">{{ $l("隐藏现状用地") }}</el-button>
                 <el-button class="open_btn" :loading="loading_landuse" :icon="openSetting_landuse ? 'el-icon-caret-top' : 'el-icon-caret-bottom'" type="info" size="small" @click="openSetting_landuse = !openSetting_landuse"></el-button>
               </div>
-              <div class="setting_box" v-if="openSetting_landuse">
+              <div class="setting_box" v-show="openSetting_landuse">
                 <div class="setting_item">
                   <div class="setting_item_label">{{ $l("大小") }}</div>
                   <div class="setting_item_value">
@@ -119,7 +119,7 @@
                   <div class="setting_item_label">{{ $l("设置") }}</div>
                   <div class="setting_item_value">
                     <el-button type="primary" icon="el-icon-setting" @click="showConfig_landuse = true" size="mini"></el-button>
-                    <GeoJSONSetting ref="originConfig" :visible.sync="showConfig_landuse" :form="configForm_landuse" :layout="configLayout_landuse" @confirm="handleConfigConfirm_landuse" />
+                    <GeoJSONSetting ref="originConfig_landuse" :visible.sync="showConfig_landuse" :form="configForm_landuse" :layout="configLayout_landuse" @confirm="handleConfigConfirm_landuse" />
                   </div>
                 </div>
                 <div class="setting_item">
@@ -136,7 +136,7 @@
                   </div>
                 </div>
                 <div class="setting_item" v-if="useTimeRange_landuse">
-                  <TimeRangeSlider v-model="timeRange_landuse" />
+                  <TimeRangeSlider :min="0" v-model="timeRange_landuse" />
                 </div>
               </div>
             </div>
@@ -232,6 +232,8 @@ import { getColorBarByPropertie } from "../../GeoJSON/layer/ColorBar2DUtil.js";
 import { guid, boldToText } from "@/utils/index2";
 
 // import { parserGeoJSON as parserGeoJSON2 } from "../../GeoJSON/layer/GeoJSONLayer3";
+
+import PointsToGridsWorker from "../worker/PointsToGrids.worker.js";
 
 const GRID_STEP = 100;
 
@@ -362,6 +364,21 @@ export default {
         }
       },
     },
+    size_odTarget: {
+      handler(val) {
+        this._worker_odTarget.postMessage({ size: this.size_odTarget, timeRange: this.useTimeRange_odTarget ? this.timeRange_odTarget : [0, 24 * 60 * 60] });
+      },
+    },
+    useTimeRange_odTarget: {
+      handler(val) {
+        this._worker_odTarget.postMessage({ size: this.size_odTarget, timeRange: this.useTimeRange_odTarget ? this.timeRange_odTarget : [0, 24 * 60 * 60] });
+      },
+    },
+    timeRange_odTarget: {
+      handler(val) {
+        this._worker_odTarget.postMessage({ size: this.size_odTarget, timeRange: this.useTimeRange_odTarget ? this.timeRange_odTarget : [0, 24 * 60 * 60] });
+      },
+    },
     showLayer_odSource: {
       handler(val) {
         if (val && this._Map) {
@@ -369,6 +386,21 @@ export default {
         } else {
           this._GeoJSONLayer_odSource.removeFromParent();
         }
+      },
+    },
+    size_odSource: {
+      handler(val) {
+        this._worker_odSource.postMessage({ size: this.size_odSource, timeRange: this.useTimeRange_odSource ? this.timeRange_odSource : [0, 24 * 60 * 60] });
+      },
+    },
+    useTimeRange_odSource: {
+      handler(val) {
+        this._worker_odSource.postMessage({ size: this.size_odSource, timeRange: this.useTimeRange_odSource ? this.timeRange_odSource : [0, 24 * 60 * 60] });
+      },
+    },
+    timeRange_odSource: {
+      handler(val) {
+        this._worker_odSource.postMessage({ size: this.size_odSource, timeRange: this.useTimeRange_odSource ? this.timeRange_odSource : [0, 24 * 60 * 60] });
       },
     },
     showLayer_landuse: {
@@ -431,12 +463,12 @@ export default {
       showConfig_odTarget: false,
       size_odTarget: GRID_STEP,
       configForm_odTarget: {
-        opacity: 1,
+        opacity: 0.8,
         colorBar: {
-          valueKey: "value__Number",
+          valueKey: "num",
           valueType: "Number",
-          startColor: "#FEE0D2",
-          endColor: "#99000D",
+          startColor: "#ffffff",
+          endColor: "#fac858",
           model: "count",
           modelClass: 5,
           data: [],
@@ -456,7 +488,7 @@ export default {
           name: "colorBar",
           type: "colorBar",
           options: {
-            value__Number: {
+            num: {
               type: "Number",
               name: "value",
               min: 0,
@@ -479,9 +511,9 @@ export default {
       showConfig_odSource: false,
       size_odSource: GRID_STEP,
       configForm_odSource: {
-        opacity: 1,
+        opacity: 0.8,
         colorBar: {
-          valueKey: "value__Number",
+          valueKey: "num",
           valueType: "Number",
           startColor: "#FEE0D2",
           endColor: "#99000D",
@@ -504,7 +536,7 @@ export default {
           name: "colorBar",
           type: "colorBar",
           options: {
-            value__Number: {
+            num: {
               type: "Number",
               name: "value",
               min: 0,
@@ -588,8 +620,46 @@ export default {
     });
 
     this._GeoJSONLayer_landuse = new GeoJSONLayer({ zIndex: 310 });
-    this._GeoJSONLayer_odSource = new GeoJSONLayer({ zIndex: 320, pointColor: "#91cc75" });
-    this._GeoJSONLayer_odTarget = new GeoJSONLayer({ zIndex: 330, pointColor: "#fac858" });
+    this._GeoJSONLayer_odSource = new GeoJSONLayer({ zIndex: 320, pointColor: "#91cc75", polygonOpacity: 0.8, polygonColor: "#91cc75", polygonBorderWidth: 0, polygonBorderAutoWidth: 0 });
+    this._worker_odSource = new PointsToGridsWorker();
+    this._worker_odSource.onmessage = (event) => {
+      const { center, polygonArray, propertiesLabelsArray } = event.data;
+      const propertiesLabels = JSON.parse(new TextDecoder().decode(propertiesLabelsArray));
+      this.configLayout_odSource[1].options = propertiesLabels;
+      this._GeoJSONLayer_odSource.setGeoJsonData({ center, pointArray: [], lineArray: [], polygonArray, propertiesList: [{}], propertiesLabels: propertiesLabels, geomList: [] });
+      this.$nextTick(() => {
+        this.$refs.originConfig_odSource.handleAutogenerate(this.configLayout_odSource[1]);
+        this.$refs.originConfig_odSource.handleConfirm();
+      });
+    };
+    this._worker_odSource.addEventListener("error", (error) => {
+      console.log(error);
+      console.log("_worker_odSource:error");
+      this.showLayer_odSource = false;
+      this.detailDialogDetail.odSource = null;
+      this._GeoJSONLayer_odSource.clearScene();
+    });
+
+    this._GeoJSONLayer_odTarget = new GeoJSONLayer({ zIndex: 330, pointColor: "#fac858", polygonOpacity: 0.8, polygonColor: "#fac858", polygonBorderWidth: 0, polygonBorderAutoWidth: 0 });
+    this._worker_odTarget = new PointsToGridsWorker();
+    this._worker_odTarget.onmessage = (event) => {
+      const { center, polygonArray, propertiesLabelsArray } = event.data;
+      const propertiesLabels = JSON.parse(new TextDecoder().decode(propertiesLabelsArray));
+      this.configLayout_odTarget[1].options = propertiesLabels;
+      this._GeoJSONLayer_odTarget.setGeoJsonData({ center, pointArray: [], lineArray: [], polygonArray, propertiesList: [], propertiesLabels: propertiesLabels, geomList: [] });
+      this.$nextTick(() => {
+        this.$refs.originConfig_odTarget.handleAutogenerate(this.configLayout_odTarget[1]);
+        this.$refs.originConfig_odTarget.handleConfirm();
+      });
+    };
+    this._worker_odTarget.addEventListener("error", (error) => {
+      console.log(error);
+      console.log("_worker_odTarget:error");
+      this.showLayer_odTarget = false;
+      this.detailDialogDetail.odTarget = null;
+      this._GeoJSONLayer_odTarget.clearScene();
+    });
+
     this._GeoJSONLayer_currentGraphs = new GeoJSONLayer({ zIndex: 340, polygonColor: "#ee6666" });
     CUA_landuse()
       .then((res) => boldToText(res.data))
@@ -603,6 +673,8 @@ export default {
     this._GeoJSONLayer_odSource.dispose();
     this._GeoJSONLayer_odTarget.dispose();
     this._GeoJSONLayer_currentGraphs.dispose();
+    this._worker_odSource.terminate();
+    this._worker_odTarget.terminate();
   },
   methods: {
     getList() {
@@ -763,7 +835,6 @@ export default {
     // ****************************** 区域详情 -- start
 
     handleSelectionChange(selection, row) {
-      console.log(selection, row);
       const oldArea = this.detailDialogDetail;
       // this.handleInitLike();
       this.$refs.table.clearSelection();
@@ -779,7 +850,6 @@ export default {
             const res = await CUA_downloadGeojson({ path: this.detailDialogDetail.currentGraphs })
               .then((res) => boldToText(res.data))
               .then((res) => parserGeoJSON(res));
-            console.log("currentGraphs", res);
 
             const [cx, cy] = res.center;
             const areaParam = JSON.parse(JSON.stringify(dialogList));
@@ -804,11 +874,13 @@ export default {
         (async () => {
           try {
             if (!this.detailDialogDetail.odTarget) throw new Error("没有odTarget");
-            const res = await CUA_downloadGeojson({ path: this.detailDialogDetail.odTarget })
+            await CUA_downloadGeojson({ path: this.detailDialogDetail.odTarget })
               .then((res) => boldToText(res.data))
-              .then((res) => parserGeoJSON(res));
-            console.log("odTarget", res);
-            this._GeoJSONLayer_odTarget.setGeoJsonData(res);
+              .then((res) => {
+                let textEncoder = new TextEncoder();
+                const array = new Int8Array(textEncoder.encode(res));
+                this._worker_odTarget.postMessage({ json: array, size: this.size_odTarget, timeRange: this.useTimeRange_odTarget ? this.timeRange_odTarget : [0, 24 * 60 * 60] }, [array.buffer]);
+              });
           } catch (error) {
             console.log(error);
             this.showLayer_odTarget = false;
@@ -820,11 +892,13 @@ export default {
         (async () => {
           try {
             if (!this.detailDialogDetail.odSource) throw new Error("没有odSource");
-            const res = await CUA_downloadGeojson({ path: this.detailDialogDetail.odSource })
+            await CUA_downloadGeojson({ path: this.detailDialogDetail.odSource })
               .then((res) => boldToText(res.data))
-              .then((res) => parserGeoJSON(res));
-            console.log("odSource", res);
-            this._GeoJSONLayer_odSource.setGeoJsonData(res);
+              .then((res) => {
+                let textEncoder = new TextEncoder();
+                const array = new Int8Array(textEncoder.encode(res));
+                this._worker_odSource.postMessage({ json: array, size: this.size_odSource, timeRange: this.useTimeRange_odSource ? this.timeRange_odSource : [0, 24 * 60 * 60] }, [array.buffer]);
+              });
           } catch (error) {
             console.log(error);
             this.showLayer_odSource = false;
@@ -835,12 +909,12 @@ export default {
         // 获取landuse
         (async () => {
           try {
-            this.detailDialogDetail.landuse = "1";
-            // if (!this.detailDialogDetail.landuse) throw new Error("没有获取landuse");
-            const res = await CUA_landuse({ id: this.detailDialogDetail.id })
-              .then((res) => boldToText(res.data))
-              .then((res) => parserGeoJSON(res));
-            console.log("landuse", res);
+            // this.detailDialogDetail.landuse = "1";
+            // // if (!this.detailDialogDetail.landuse) throw new Error("没有获取landuse");
+            // const res = await CUA_landuse({ id: this.detailDialogDetail.id })
+            //   .then((res) => boldToText(res.data))
+            //   .then((res) => parserGeoJSON(res));
+            // console.log("landuse", res);
             // this._GeoJSONLayer_landuse.setGeoJsonData(res);
           } catch (error) {
             console.log(error);
@@ -876,25 +950,27 @@ export default {
       return item.children.filter((v) => v.check).reduce((a, c) => a + c.value, 0);
     },
     handleConfigConfirm_odTarget(data) {
-      this.originConfigForm = data;
+      this.configForm_odTarget = data;
       const { colorBar, opacity } = data;
-      this._GeoJSONLayer_odTarget.setOpacity(opacity);
-      this._GeoJSONLayer_odTarget.setPointColorBar(colorBar.data);
-      this.showOriginConfig = false;
+      this._GeoJSONLayer_odTarget.setPolygonValue(colorBar.valueKey);
+      this._GeoJSONLayer_odTarget.setPolygonOpacity(opacity);
+      this._GeoJSONLayer_odTarget.setPolygonColorBar(colorBar.data);
+      this.showConfig_odTarget = false;
     },
     handleConfigConfirm_odSource(data) {
-      this.originConfigForm = data;
+      this.configForm_odSource = data;
       const { colorBar, opacity } = data;
-      this._GeoJSONLayer_odSource.setOpacity(opacity);
-      this._GeoJSONLayer_odSource.setPointColorBar(colorBar.data);
-      this.showOriginConfig = false;
+      this._GeoJSONLayer_odSource.setPolygonValue(colorBar.valueKey);
+      this._GeoJSONLayer_odSource.setPolygonOpacity(opacity);
+      this._GeoJSONLayer_odSource.setPolygonColorBar(colorBar.data);
+      this.showConfig_odSource = false;
     },
     handleConfigConfirm_landuse(data) {
-      this.originConfigForm = data;
+      this.configForm_landuse = data;
       const { colorBar, opacity } = data;
-      this._GeoJSONLayer_landuse.setOpacity(opacity);
-      this._GeoJSONLayer_landuse.setPointColorBar(colorBar.data);
-      this.showOriginConfig = false;
+      this._GeoJSONLayer_landuse.setPolygonOpacity(opacity);
+      this._GeoJSONLayer_landuse.setPolygonColorBar(colorBar.data);
+      this.showConfig_landuse = false;
     },
     // ****************************** 区域详情 -- end
   },

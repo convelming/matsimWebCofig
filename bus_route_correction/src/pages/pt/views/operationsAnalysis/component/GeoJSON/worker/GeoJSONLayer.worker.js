@@ -5,7 +5,6 @@ try {
   importScripts(process.env.VUE_APP_PUBLIC_PATH + "static/js/config.js");
 }
 
-
 class GeoJSONParser {
   // static DEFAULT_CRS = { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3857" } };
 
@@ -187,7 +186,7 @@ class GeoJSONParser {
     for (let i = 0; i < coordinates.length; i++) {
       let [x, y] = coordinates[i];
       if (this.coordSys !== "EPSG:3857") [x, y] = proj4(this.coordSys, "EPSG:3857", [x, y]);
-      if (!this.center) this.center = [x, y];
+      if (!this.center) this.center = [Math.floor(x), Math.floor(y)];
       x -= this.center[0];
       y -= this.center[1];
       list[list.length] = [x, y];
@@ -204,7 +203,7 @@ class GeoJSONParser {
       for (let j = 0; j < coordinates[i].length; j++) {
         let [x, y] = coordinates[i][j];
         if (this.coordSys !== "EPSG:3857") [x, y] = proj4(this.coordSys, "EPSG:3857", [x, y]);
-        if (!this.center) this.center = [x, y];
+        if (!this.center) this.center = [Math.floor(x), Math.floor(y)];
         x -= this.center[0];
         y -= this.center[1];
         if (j == 0) {
@@ -231,7 +230,7 @@ class GeoJSONParser {
         for (let k = 0; k < coordinates[i][j].length; k++) {
           let [x, y] = coordinates[i][j][k];
           if (this.coordSys !== "EPSG:3857") [x, y] = proj4(this.coordSys, "EPSG:3857", [x, y]);
-          if (!this.center) this.center = [x, y];
+          if (!this.center) this.center = [Math.floor(x), Math.floor(y)];
           x -= this.center[0];
           y -= this.center[1];
           coordinate[j][k] = [x, y];

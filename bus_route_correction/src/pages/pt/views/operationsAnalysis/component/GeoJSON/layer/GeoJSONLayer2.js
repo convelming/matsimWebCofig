@@ -1451,7 +1451,6 @@ export class GeoJSONLineListGeometry extends THREE.BufferGeometry {
           attrIndex[attrIndex.length] = indexOffset + 0;
           attrIndex[attrIndex.length] = indexOffset + 3;
           attrIndex[attrIndex.length] = indexOffset + 2;
-          
         }
         indexOffset += 2;
       }

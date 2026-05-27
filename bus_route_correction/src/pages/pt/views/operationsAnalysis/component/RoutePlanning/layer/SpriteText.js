@@ -270,7 +270,6 @@ export default class extends THREE.Sprite {
     this.texture.needsUpdate = true;
     this._yScale = textHeight / relFactor / 600;
     this._xScale = (this._yScale * canvas.width) / canvas.height;
-    console.log(this._text, this._yScale, this._xScale);
     this.scale.set(this._xScale * this._fontScale, this._yScale * this._fontScale, 0);
   }
 
