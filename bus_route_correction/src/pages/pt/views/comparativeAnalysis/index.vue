@@ -66,7 +66,7 @@ export default {
   mixins: [mixins, configMixins],
   data() {
     return {
-      activeNames: ["LinesAnalysis", "AnalysisReport", "PublicTransit", "MotorizedTravel", "Build3D", "Network", "Activity3D", "GeoJSON", "CarTravel", "Parking", "TrafficRegionAnalysis"],
+      activeNames: ["LinesAnalysis", "AnalysisReport"],
 
       showLayerLinesAnalysis: true,
       lock2DLinesAnalysis: false,

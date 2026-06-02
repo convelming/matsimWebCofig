@@ -60,7 +60,7 @@ export default {
   data() {
     return {
       // activeNames: ["PublicTransit", "MotorizedTravel", "CarTravel", "Build3D", "Network", "Activity3D", "GeoJSON", "Parking", "TrafficRegionAnalysis", "RoutePlanning", "CityUpdateArea"],
-      activeNames: ["CityUpdateArea"],
+      activeNames: [],
     };
   },
   created() {

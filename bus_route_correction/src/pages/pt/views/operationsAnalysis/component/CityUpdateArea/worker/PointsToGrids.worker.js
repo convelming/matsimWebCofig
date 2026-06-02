@@ -35,7 +35,7 @@ onmessage = function (e) {
       try {
         const point = json.features[i];
         const geometry = toEPSG3857(point.geometry.coordinates, coordSys);
-        if (i == 0) center = [Math.floor(geometry[0]), Math.floor(geometry[1])];
+        if (i == 0) center = [Math.floor(geometry[0] / 10000) * 10000, Math.floor(geometry[1] / 10000) * 10000];
         const properties = point.properties;
         if (!pointMap[properties.grid]) {
           pointMap[properties.grid] = {

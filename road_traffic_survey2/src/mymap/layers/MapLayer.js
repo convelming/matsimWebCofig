@@ -317,7 +317,8 @@ export class MapTile {
   }
 
   getUrl() {
-    return `http://192.168.60.234:8081/styles/OSM OpenMapTiles/512/${this.zoom}/${this.row}/${this.col}.png`
+    // return `http://192.168.60.234:8081/styles/OSM OpenMapTiles/512/${this.zoom}/${this.row}/${this.col}.png`
+    return `http://192.168.60.231:23334/osm/Positron/${this.zoom}/${this.row}/${this.col}.png`
   }
 
   constructor(zoom, row, col, size) {
