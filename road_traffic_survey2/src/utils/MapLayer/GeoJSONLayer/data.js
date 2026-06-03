@@ -137,10 +137,10 @@ export class GeoJSONData extends EventListener {
     const { properties } = res.workerData;
     return properties;
   }
-  async propertiesMap(func) {
+  async propertiesMap(data) {
     const res = await this.#postMessageAsync({
       type: "propertiesMap",
-      data: func.toString(),
+      data: data,
     });
     const decode = new TextDecoder();
     const list = JSON.parse(decode.decode(res.workerData));

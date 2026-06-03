@@ -45,9 +45,9 @@
     </div>
     <div class="bottom">
       <div class="left">
-        <MButton class="btn" @click="ElMessage.warning('功能研发中，敬请期待')">
+        <div class="btn" @click="ElMessage.warning('功能研发中，敬请期待')">
           <BtnIcon1 class="icon" src="@/assets/images/容器@2x.png" alt="" />
-        </MButton>
+        </div>
         <!-- <a
           class="btn"
           href="https://doc.weixin.qq.com/sheet/e3_AdQA8Aa_ADMt1qh97LkSHer6ALqI2?scode=APwA6gfEAA0aeGdABPAdQA8Aa_ADM&tab=BB08J2"
@@ -56,12 +56,21 @@
         <MButton class="btn" path="http://192.168.60.231:23105/vue/feedback.html#/" type="a">
           <BtnIcon2 class="icon" src="@/assets/images/容器@2x(1).png" alt="" />
         </MButton>
-        <MButton class="btn" @click="ElMessage.warning('功能研发中，敬请期待')">
+        <div class="btn" @click="ElMessage.warning('功能研发中，敬请期待')">
           <BtnIcon3 class="icon" src="@/assets/images/容器@2x(2).png" alt="" />
-        </MButton>
-        <MButton class="btn" @click="ElMessage.warning('功能研发中，敬请期待')">
-          <BtnIcon4 class="icon" src="@/assets/images/容器@2x(3).png" alt="" />
-        </MButton>
+        </div>
+        <el-dropdown trigger="click" @command="handleShowMapStyle">
+          <div class="btn">
+            <BtnIcon4 class="icon" src="@/assets/images/容器@2x(3).png" alt="" />
+          </div>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item v-for="(_, index) in MapStyleList" :command="index">
+                <span>{{ _.name }}</span>
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
       </div>
       <div class="right" id="page" :style="scaleStyle">
         <div id="mapRoot" v-show="showMap"></div>
@@ -72,7 +81,7 @@
 </template>
 
 <script setup>
-import { MyMap, MOUSE_BUTTONS, MapLayer } from '@/mymap/index.js'
+import { MyMap, MOUSE_BUTTONS, MapLayer, MapTile } from '@/mymap/index.js'
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 
@@ -91,6 +100,35 @@ import { ElMessage } from 'element-plus'
 const route = useRoute()
 
 const MapRef = shallowRef(null)
+const MapStyleList = {
+  none: class extends MapTile {
+    static name = '不显示底图'
+    static background = 0xffffff
+    getUrl() {
+      return ``
+    }
+  },
+  OSMOpenMapTiles: class extends MapTile {
+    static name = 'OSM 默认样式'
+    getUrl() {
+      return `http://192.168.60.234:8081/styles/OSM OpenMapTiles/512/${this.zoom}/${this.row}/${this.col}.png`
+    }
+  },
+  OSMLightBlue: class extends MapTile {
+    static name = 'OSM 浅色样式'
+    getUrl() {
+      return `http://192.168.60.231:23334/osm/LightBlue/${this.zoom}/${this.row}/${this.col}.png`
+    }
+  },
+  OSMDRAKBlue: class extends MapTile {
+    static name = 'OSM 深色样式'
+    getUrl() {
+      return `http://192.168.60.231:23334/osm/DRAKBlue/${this.zoom}/${this.row}/${this.col}.png`
+    }
+  },
+}
+const MapLayerInt = new MapLayer({ tileClass: MapStyleList.OSMLightBlue, zIndex: -1 })
+
 const showMap = ref(true)
 const scaleStyle = ref(1)
 provide('MapRef', MapRef)
@@ -103,6 +141,12 @@ const ro = new ResizeObserver(function (entries) {
   scaleStyle.value = `--scale: ${Math.min(scaleX, scaleY)};--scaleY: ${scaleY};--scaleX: ${scaleX};--fs-scale:1;`
 })
 
+function handleShowMapStyle(value) {
+  console.log(value)
+  MapLayerInt.setTileClass(MapStyleList[value])
+  // ElMessage.warning('功能研发中，敬请期待')
+}
+
 onMounted(() => {
   const _Map = new MyMap({
     rootId: 'mapRoot',
@@ -114,8 +158,7 @@ onMounted(() => {
     // center:  [12633548, 2651418],
     // zoom: 11.628,
   })
-  const _MapLayer = new MapLayer({ zIndex: -1 })
-  _Map.addLayer(_MapLayer)
+  _Map.addLayer(MapLayerInt)
   MapRef.value = _Map
 
   ro.observe(document.getElementById('page'))

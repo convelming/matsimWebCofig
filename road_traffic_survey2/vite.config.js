@@ -8,7 +8,7 @@ import svgLoader from 'vite-svg-loader'
 // https://vite.dev/config/
 export default defineConfig(({ mode, command }) => {
   const env = loadEnv(mode, process.cwd())
-  const { VITE_APP_ENV, VUE_APP_BASE_API } = env
+  const { VITE_APP_ENV, VITE_APP_BASE_API } = env
   return {
     plugins: [
       vue(),
@@ -43,11 +43,11 @@ export default defineConfig(({ mode, command }) => {
       open: true,
       proxy: {
         // https://cn.vitejs.dev/config/#server-proxy
-        [VUE_APP_BASE_API]: {
+        [VITE_APP_BASE_API]: {
           target: `http://192.168.60.231:23104`, // 测试服
           // target: `http://192.168.152.19:23104`, // 测试服
           changeOrigin: true,
-          rewrite: (p) => p.replace(VUE_APP_BASE_API, ''),
+          rewrite: (p) => p.replace(new RegExp(`^${VITE_APP_BASE_API}`), ''),
         },
       },
     },

@@ -157,7 +157,6 @@ export class GeoJSONLineListGeometry extends THREE.BufferGeometry {
       attrSort[attrSort.length] = sortList[index] || 0;
     }
     this.setAttribute("asort", new THREE.Float32BufferAttribute(attrSort, 1));
-    console.log(this);
   }
   updateWidth(widthList, defaultWidth = 10) {
     const attrWidth = new Array();
@@ -166,7 +165,6 @@ export class GeoJSONLineListGeometry extends THREE.BufferGeometry {
       attrWidth[attrWidth.length] = widthList[index] || defaultWidth;
     }
     this.setAttribute("awidth", new THREE.Float32BufferAttribute(attrWidth, 1));
-    console.log(this);
   }
 
   updateOffset(offsetList, defaultOffset = 10) {
@@ -176,7 +174,6 @@ export class GeoJSONLineListGeometry extends THREE.BufferGeometry {
       attrOffset[attrOffset.length] = offsetList[index] || defaultOffset;
     }
     this.setAttribute("aoffset", new THREE.Float32BufferAttribute(attrOffset, 1));
-    console.log(this);
   }
 
   updateColor(colorList, defaultColor = [0, 0, 0]) {
@@ -205,6 +202,7 @@ export class GeoJSONLineMaterial extends THREE.MeshBasicMaterial {
   constructor(argu) {
     const { width = 50, offset = 0, scale = 1, vertexWidths = false, vertexOffsets = false, style = LINE_STYLE.SOLID, usePickColor = false, ...params } = argu || {};
     super(params);
+    this.alphaTest = 0.1;
     // this.wireframe = true;
     // this.side = THREE.DoubleSide;
 
@@ -228,6 +226,7 @@ export class GeoJSONLineMaterial extends THREE.MeshBasicMaterial {
         attribute vec2 side;
         attribute vec3 pickColor;
         attribute vec3 position2;
+        attribute float asort;
         attribute float awidth;
         attribute float aoffset;
         attribute float distance;
@@ -259,7 +258,7 @@ export class GeoJSONLineMaterial extends THREE.MeshBasicMaterial {
           vWidth = _width;
           float _offset = (vertexOffsets ? aoffset : offset) * scale;
           float pointOffset = _width * 0.5 * side.y + _offset;
-          transformed = vec3(position.xy + normal * pointOffset , position.z);
+          transformed = vec3(position.xy + normal * pointOffset , position.z + asort);
         `,
       );
       shader.fragmentShader = shader.fragmentShader.replace(

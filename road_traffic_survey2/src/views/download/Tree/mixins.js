@@ -42,7 +42,6 @@ export function initRange(ctx, defaultValue = []) {
   function handleSetCenterAndZoom() {
     const _range = toRaw(range.value)
     if (_Map) {
-      console.log(_range)
       if (range_timer) clearTimeout(range_timer)
       range_timer = setTimeout(() => {
         _Map.setFitZoomAndCenterByPoints(_range)

@@ -570,6 +570,8 @@ import {
   guid,
 } from '@/utils/index'
 
+import { handleEmitSpatialQuery } from '../../SpatialQuery/mixins.js'
+
 import { saveAs } from 'file-saver'
 import { toRaw } from 'vue'
 
@@ -589,6 +591,7 @@ const props = defineProps({
   path: String,
   download: String,
   config: String,
+  spatialQuery: String,
 })
 
 const { check, indeterminate, getCheck, setCheck, handleChangeCheck } = initCheck(
@@ -598,6 +601,18 @@ const { check, indeterminate, getCheck, setCheck, handleChangeCheck } = initChec
 const { range, getRange, handleSetCenterAndZoom } = initRange(
   { emit, check, indeterminate },
   props.check,
+)
+
+addWatch(
+  check,
+  (val) => {
+    if (val) {
+      handleEmitSpatialQuery(toRaw(props))
+    }
+  },
+  {
+    immediate: true,
+  },
 )
 
 let _Map = null

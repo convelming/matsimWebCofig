@@ -10,11 +10,15 @@
           <img src="@/assets/images/close.svg?url" class="dg_close_btn" @click.stop="close" />
         </div>
         <div class="dg_bodyer">
-          <div class="item" v-for="value in list">
-            <div class="color" :style="{ background: value.color }"></div>
-            <div class="text" v-if="type == 'Number'">{{ `${value.min} ~ ${value.max}` }}</div>
-            <div class="text" v-if="type == 'String'">{{ value.label }}</div>
-          </div>
+          <el-scrollbar class="flex-scrollbar">
+            <div class="list">
+              <div class="item" v-for="value in list">
+                <div class="color" :style="{ background: value.color }"></div>
+                <div class="text" v-if="type == 'Number'">{{ `${value.min} ~ ${value.max}` }}</div>
+                <div class="text" v-if="type == 'String'">{{ value.label }}</div>
+              </div>
+            </div>
+          </el-scrollbar>
         </div>
       </div>
     </transition>
@@ -186,6 +190,7 @@ function toTop() {
       color: #333333;
     }
   }
+
   .dg_bodyer {
     display: flex;
     flex-direction: column;
@@ -196,8 +201,19 @@ function toTop() {
     position: relative;
     background: #fff;
     box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
-    padding: 20px;
-    gap: 10px;
+
+    .flex-scrollbar {
+      max-height: calc(100vh - 200px);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .list {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      padding: 20px;
+    }
     .item {
       display: flex;
       align-items: center;

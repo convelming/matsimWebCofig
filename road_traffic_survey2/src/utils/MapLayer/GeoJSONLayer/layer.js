@@ -3,6 +3,7 @@ import { Layer, MAP_EVENT } from "@/mymap/index.js";
 import { GeoJSONPointListGeometry, GeoJSONPointMaterial } from "./point.js";
 import { GeoJSONLineListGeometry, GeoJSONLineMaterial, LINE_STYLE, LINE_WIDTH_STYLE } from "./line.js";
 import { GeoJSONPolygonListGeometry, GeoJSONPolygonMaterial, GeoJSONPolygonBorderListGeometry } from "./polygon.js";
+import { createSortFunc, isPropertiesMapArgument } from "./utils.js";
 
 const textureLoader = new THREE.TextureLoader();
 
@@ -13,13 +14,13 @@ const defaultParams = {
   showPoint: true,
   pointSize: 20,
   pointColor: "#01ae9c", // ffa500
-  pointIcon: require("./point.svg"), //new URL("./point.svg", import.meta.url).href,
+  pointIcon: new URL("./point.svg", import.meta.url).href,
   pointOpacity: 1,
   // ******************** 线 ******************** //
   showLine: true,
   lineWidth: 10,
   lineOffset: 0,
-  lineStyle: LINE_STYLE.SOLID,
+  lineStyle: LINE_STYLE.DASHED,
   lineColor: "#01ae9c",
   lineOpacity: 1,
   lineAnimation: 0,
@@ -29,9 +30,9 @@ const defaultParams = {
   polygonColor: "#01ae9c",
   polygonOpacity: 1,
   polygonBorderOpacity: 1,
-  polygonBorderWidth: 0,
+  polygonBorderWidth: 10,
   polygonBorderColor: "#fff",
-  polygonBorderStyle: LINE_STYLE.SOLID,
+  polygonBorderStyle: LINE_STYLE.DASHED,
 };
 
 export class GeoJSONLayer extends Layer {
@@ -116,9 +117,10 @@ export class GeoJSONLayer extends Layer {
       this.pointPMGroup.removeFromParent();
     }
   }
-  setPointSort(pointSort = (value, index, list) => index / list.length) {
+  setPointSort(pointSort = createSortFunc()) {
     this.pointSort = pointSort;
     return this.data?.propertiesMap(pointSort).then((list) => {
+      console.log("pointSort", list);
       this.pointMeshList.forEach((mesh) => {
         mesh.geometry.updateSort(list);
       });
@@ -126,7 +128,7 @@ export class GeoJSONLayer extends Layer {
   }
   setPointSize(pointSize) {
     this.pointSize = pointSize;
-    if (pointSize instanceof Function) {
+    if (isPropertiesMapArgument(pointSize)) {
       this.pointMaterial.setValues({ vertexSizes: true });
       this.pointMaterial.needsUpdate = true;
       this.pointPLMaterial.setValues({ vertexSizes: true });
@@ -150,7 +152,7 @@ export class GeoJSONLayer extends Layer {
   }
   setPointColor(pointColor) {
     this.pointColor = pointColor;
-    if (pointColor instanceof Function) {
+    if (isPropertiesMapArgument(pointColor)) {
       this.pointMaterial.setValues({
         vertexColors: true,
         color: "#ffffff",
@@ -218,17 +220,17 @@ export class GeoJSONLayer extends Layer {
       this.linePMGroup.removeFromParent();
     }
   }
-  setLineSort(pointSort = (value, index, list) => index / list.length) {
-    this.pointSort = pointSort;
-    return this.data?.propertiesMap(pointSort).then((list) => {
-      this.pointMeshList.forEach((mesh) => {
+  setLineSort(lineSort = createSortFunc()) {
+    this.lineSort = lineSort;
+    return this.data?.propertiesMap(lineSort).then((list) => {
+      this.lineMeshList.forEach((mesh) => {
         mesh.geometry.updateSort(list);
       });
     });
   }
   setLineWidth(lineWidth) {
     this.lineWidth = lineWidth;
-    if (lineWidth instanceof Function) {
+    if (isPropertiesMapArgument(lineWidth)) {
       this.lineMaterial.setValues({ vertexWidths: true });
       this.lineMaterial.needsUpdate = true;
       this.linePLMaterial.setValues({ vertexWidths: true });
@@ -252,7 +254,7 @@ export class GeoJSONLayer extends Layer {
   }
   setLineOffset(lineOffset) {
     this.lineOffset = lineOffset;
-    if (lineOffset instanceof Function) {
+    if (isPropertiesMapArgument(lineOffset)) {
       this.lineMaterial.setValues({ vertexOffsets: true });
       this.lineMaterial.needsUpdate = true;
       this.linePLMaterial.setValues({ vertexOffsets: true });
@@ -276,7 +278,7 @@ export class GeoJSONLayer extends Layer {
   }
   setLineColor(lineColor) {
     this.lineColor = lineColor;
-    if (lineColor instanceof Function) {
+    if (isPropertiesMapArgument(lineColor)) {
       this.lineMaterial.setValues({
         vertexColors: true,
         color: "#ffffff",
@@ -305,11 +307,11 @@ export class GeoJSONLayer extends Layer {
   setLineStyle(lineStyle) {
     this.lineStyle = lineStyle;
     // 如果线段样式是虚线或不显示时需要把深度写入关闭，否在会遮盖下方的物体
-    if (lineStyle === LINE_STYLE.DASHED || lineStyle === LINE_STYLE.NONE) {
-      this.lineMaterial.depthWrite = false;
-    } else {
-      this.lineMaterial.depthWrite = true;
-    }
+    // if (lineStyle === LINE_STYLE.DASHED || lineStyle === LINE_STYLE.NONE) {
+    //   this.lineMaterial.depthWrite = false;
+    // } else {
+    //   this.lineMaterial.depthWrite = true;
+    // }
     this.lineMaterial.setValues({ style: lineStyle });
     this.lineMaterial.needsUpdate = true;
     this.linePLMaterial.setValues({ style: lineStyle });
@@ -343,9 +345,17 @@ export class GeoJSONLayer extends Layer {
       this.polygonBorderGroup.removeFromParent();
     }
   }
+  setPolygonSort(polygonSort = createSortFunc()) {
+    this.polygonSort = polygonSort;
+    return this.data?.propertiesMap(polygonSort).then((list) => {
+      this.polygonMeshList.forEach((mesh) => {
+        mesh.geometry.updateSort(list);
+      });
+    });
+  }
   setPolygonColor(polygonColor) {
     this.polygonColor = polygonColor;
-    if (polygonColor instanceof Function) {
+    if (isPropertiesMapArgument(polygonColor)) {
       this.polygonMaterial.setValues({
         vertexColors: true,
         color: "#ffffff",
@@ -376,7 +386,7 @@ export class GeoJSONLayer extends Layer {
   }
   setPolygonHeight(polygonHeight) {
     this.polygonHeight = polygonHeight;
-    if (polygonHeight instanceof Function) {
+    if (isPropertiesMapArgument(polygonHeight)) {
       this.polygonMaterial.setValues({
         vertexHeights: true,
         height: 0,
@@ -417,11 +427,11 @@ export class GeoJSONLayer extends Layer {
   setPolygonBorderStyle(polygonBorderStyle) {
     this.polygonBorderStyle = polygonBorderStyle;
     // 如果线段样式是虚线或不显示时需要把深度写入关闭，否在会遮盖下方的物体
-    if (polygonBorderStyle === LINE_STYLE.DASHED || polygonBorderStyle === LINE_STYLE.NONE) {
-      this.polygonBorderMaterial.depthWrite = false;
-    } else {
-      this.polygonBorderMaterial.depthWrite = true;
-    }
+    // if (polygonBorderStyle === LINE_STYLE.DASHED || polygonBorderStyle === LINE_STYLE.NONE) {
+    //   this.polygonBorderMaterial.depthWrite = false;
+    // } else {
+    //   this.polygonBorderMaterial.depthWrite = true;
+    // }
     this.polygonBorderMaterial.setValues({ style: polygonBorderStyle });
     this.polygonBorderMaterial.needsUpdate = true;
   }
@@ -550,17 +560,18 @@ export class GeoJSONLayer extends Layer {
 
   on(type, data) {
     if (type == MAP_EVENT.UPDATE_CAMERA_HEIGHT || type == MAP_EVENT.UPDATE_RENDERER_SIZE) {
-      this.map.nextFrame(() => {
-        if (this.unit == "px") {
-          this.setPointScale(this.map.plottingScale);
-          this.setLineScale(this.map.plottingScale);
-          this.setPolygonBorderScale(this.map.plottingScale);
-        } else if (this.unit == "m") {
-          this.setPointScale(1);
-          this.setLineScale(1);
-          this.setPolygonBorderScale(1);
-        }
-      });
+      // this.map.nextFrame(() => {
+      //   console.log("update camera height");
+      //   if (this.unit == "px") {
+      //     this.setPointScale(this.map.plottingScale);
+      //     this.setLineScale(this.map.plottingScale);
+      //     this.setPolygonBorderScale(this.map.plottingScale);
+      //   } else if (this.unit == "m") {
+      //     this.setPointScale(1);
+      //     this.setLineScale(1);
+      //     this.setPolygonBorderScale(1);
+      //   }
+      // });
     }
     if (type == MAP_EVENT.UPDATE_CENTER) {
       const list = [this.pointMeshList, this.pointPLMeshList, this.pointPMMeshList, this.lineMeshList, this.linePLMeshList, this.linePMMeshList, this.polygonMeshList, this.polygonPLMeshList, this.polygonPMMeshList, this.polygonBorderMeshList];
@@ -607,9 +618,30 @@ export class GeoJSONLayer extends Layer {
     const maxPoint = 100000;
     const pointList = await this.data.getAllPoint();
 
-    for (let i = 0, l = pointList.length; i < l; i += maxPoint) {
-      const list = pointList.slice(i, i + maxPoint);
+    // for (let i = 0, l = pointList.length; i < l; i += maxPoint) {
+    //   const list = pointList.slice(i, i + maxPoint);
 
+    //   const geometry = new GeoJSONPointListGeometry(list);
+
+    //   const mesh = new THREE.Mesh(geometry, this.pointMaterial);
+    //   mesh.position.set(cx, cy, 0.4);
+    //   this.pointMeshList.push(mesh);
+    //   this.pointGroup.add(mesh);
+
+    //   const pickLayerMesh = new THREE.Mesh(geometry, this.pointPLMaterial);
+    //   pickLayerMesh.position.set(cx, cy, 0.4);
+    //   this.pointPLMeshList.push(pickLayerMesh);
+    //   this.pointPLGroup.add(pickLayerMesh);
+
+    //   const pickItemMesh = new THREE.Mesh(geometry, this.pointPMMaterial);
+    //   pickItemMesh.position.set(cx, cy, 0.4);
+    //   this.pointPMMeshList.push(pickItemMesh);
+    //   this.pointPMGroup.add(pickItemMesh);
+
+    //   await new Promise((resolve) => setTimeout(resolve, 0));
+    // }
+    for (const list of pointList) {
+      console.log(list);
       const geometry = new GeoJSONPointListGeometry(list);
 
       const mesh = new THREE.Mesh(geometry, this.pointMaterial);
@@ -661,9 +693,30 @@ export class GeoJSONLayer extends Layer {
     const maxLine = 100000;
     const lineList = await this.data.getAllLine();
 
-    for (let i = 0, l = lineList.length; i < l; i += maxLine) {
-      const list = lineList.slice(i, i + maxLine);
+    // for (let i = 0, l = lineList.length; i < l; i += maxLine) {
+    //   const list = lineList.slice(i, i + maxLine);
 
+    //   const geometry = new GeoJSONLineListGeometry(list);
+
+    //   const mesh = new THREE.Mesh(geometry, this.lineMaterial);
+    //   mesh.position.set(cx, cy, 0.2);
+    //   this.lineMeshList.push(mesh);
+    //   this.lineGroup.add(mesh);
+
+    //   const pickLayerMesh = new THREE.Mesh(geometry, this.linePLMaterial);
+    //   pickLayerMesh.position.set(cx, cy, 0.2);
+    //   this.linePLMeshList.push(pickLayerMesh);
+    //   this.linePLGroup.add(pickLayerMesh);
+
+    //   const pickItemMesh = new THREE.Mesh(geometry, this.linePMMaterial);
+    //   pickItemMesh.position.set(cx, cy, 0.2);
+    //   this.linePMMeshList.push(pickItemMesh);
+    //   this.linePMGroup.add(pickItemMesh);
+
+    //   await new Promise((resolve) => setTimeout(resolve, 0));
+    // }
+
+    for (const list of lineList) {
       const geometry = new GeoJSONLineListGeometry(list);
 
       const mesh = new THREE.Mesh(geometry, this.lineMaterial);
@@ -721,9 +774,37 @@ export class GeoJSONLayer extends Layer {
     const [cx, cy] = this.center;
     const maxPolygon = 100000;
     const polygonList = await this.data.getAllPolygon();
-    for (let i = 0, l = polygonList.length; i < l; i += maxPolygon) {
-      const list = polygonList.slice(i, i + maxPolygon);
+    // for (let i = 0, l = polygonList.length; i < l; i += maxPolygon) {
+    //   const list = polygonList.slice(i, i + maxPolygon);
 
+    //   const geometry = new GeoJSONPolygonListGeometry(list);
+
+    //   const mesh = new THREE.Mesh(geometry, this.polygonMaterial);
+    //   mesh.position.set(cx, cy, 0);
+    //   this.polygonMeshList.push(mesh);
+    //   this.polygonGroup.add(mesh);
+
+    //   const pickLayerMesh = new THREE.Mesh(geometry, this.polygonPLMaterial);
+    //   pickLayerMesh.position.set(cx, cy, 0);
+    //   this.polygonPLMeshList.push(pickLayerMesh);
+    //   this.polygonPLGroup.add(pickLayerMesh);
+
+    //   const pickItemMesh = new THREE.Mesh(geometry, this.polygonPMMaterial);
+    //   pickItemMesh.position.set(cx, cy, 0);
+    //   this.polygonPMMeshList.push(pickItemMesh);
+    //   this.polygonPMGroup.add(pickItemMesh);
+
+    //   const borderGeometry = new GeoJSONPolygonBorderListGeometry(list);
+
+    //   const borderMesh = new THREE.Mesh(borderGeometry, this.polygonBorderMaterial);
+    //   borderMesh.position.set(cx, cy, 0.2);
+    //   this.polygonBorderMeshList.push(borderMesh);
+    //   this.polygonBorderGroup.add(borderMesh);
+
+    //   await new Promise((resolve) => setTimeout(resolve, 0));
+    // }
+
+    for (const list of polygonList) {
       const geometry = new GeoJSONPolygonListGeometry(list);
 
       const mesh = new THREE.Mesh(geometry, this.polygonMaterial);

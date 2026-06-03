@@ -115,8 +115,8 @@ export class GeoJSONPointMaterial extends THREE.MeshBasicMaterial {
     const { size = 50, scale = 1, vertexSizes = false, usePickColor = false, ...params } = argu || {};
     super(params);
     // 解决点叠加时显示不全问题
-    this.alphaTest = 0.2;
-    this.depthWrite = false;
+    this.alphaTest = 0.1;
+    // this.depthWrite = false;
 
     this.size = size;
     this.scale = scale;
@@ -155,21 +155,21 @@ export class GeoJSONPointMaterial extends THREE.MeshBasicMaterial {
           // 1 3 
           float _size = (vertexSizes ? asize : size) * scale;
           if(side == 0.0) {
-            transformed.x = position.x - _size / 2.0;
-            transformed.y = position.y + _size / 2.0;
-            transformed.z = position.z + asort;
+            transformed.x = transformed.x - _size / 2.0;
+            transformed.y = transformed.y + _size / 2.0;
+            transformed.z = transformed.z + asort;
           } else if(side == 1.0) {
-            transformed.x = position.x - _size / 2.0;
-            transformed.y = position.y - _size / 2.0;
-            transformed.z = position.z + asort;
+            transformed.x = transformed.x - _size / 2.0;
+            transformed.y = transformed.y - _size / 2.0;
+            transformed.z = transformed.z + asort;
           } else if(side == 2.0) {
-            transformed.x = position.x + _size / 2.0;
-            transformed.y = position.y + _size / 2.0;
-            transformed.z = position.z;
+            transformed.x = transformed.x + _size / 2.0;
+            transformed.y = transformed.y + _size / 2.0;
+            transformed.z = transformed.z;
           } else if(side == 3.0) {
-            transformed.x = position.x + _size / 2.0;
-            transformed.y = position.y - _size / 2.0;
-            transformed.z = position.z + asort;
+            transformed.x = transformed.x + _size / 2.0;
+            transformed.y = transformed.y - _size / 2.0;
+            transformed.z = transformed.z + asort;
           }
         `,
       );

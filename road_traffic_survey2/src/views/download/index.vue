@@ -15,6 +15,8 @@
       <Tree class="Tree" :children="menuList" open hideTitle />
     </el-scrollbar>
   </MDialog>
+  
+  <SpatialQuery></SpatialQuery>
 </template>
 
 <script setup>
@@ -22,6 +24,7 @@ import * as API from '@/api/index'
 import { computed } from 'vue'
 import Tree, { TreeItemEnum } from './Tree/index.js'
 import { NetworkLayer } from '@/utils/MapLayer/NetworkLayer'
+import SpatialQuery from './SpatialQuery/index.vue'
 
 const route = useRoute()
 const showMenu = computed(() => {
