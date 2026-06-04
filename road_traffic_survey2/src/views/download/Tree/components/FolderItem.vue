@@ -32,7 +32,7 @@
 
 <script setup name="FolderItem">
 import { Aim } from '@element-plus/icons-vue'
-import icon_tri_nor from '@/assets/images/icon_tri_nor.svg'
+import icon_tri_nor from '@/assets/images/icon_tri_nor.svg?component'
 
 import DefaultItem from './DefaultItem.vue'
 import FolderItem from './FolderItem.vue'

@@ -4,8 +4,8 @@
     class="AEIntersectionFlow"
     title="交叉口流量表"
     subTitle="人工数车/ 交叉口流量录入 / 交叉口流量表"
-    :top="80"
-    :left="80"
+    :y="80"
+    :x="80"
     width="800px"
     hideClose
     :visible="showMain"

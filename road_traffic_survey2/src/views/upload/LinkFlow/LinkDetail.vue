@@ -4,8 +4,8 @@
     class="LinkDetail"
     title="Link流量详情"
     subTitle="人工数车 / 路段流量录入 / Link流量详情"
-    :top="80"
-    :left="80"
+    :y="80"
+    :x="80"
     width="798px"
     hideClose
     :visible="showMain"

@@ -4,8 +4,8 @@
     title="交评关键路段流量复用"
     class="CopyFlow"
     :visible="visible"
-    :top="80"
-    :left="80"
+    :y="80"
+    :x="80"
     width="550px"
     @close="handleClose"
   >

@@ -14,7 +14,7 @@ const defaultParams = {
   showPoint: true,
   pointSize: 20,
   pointColor: "#01ae9c", // ffa500
-  pointIcon: new URL("./point.svg", import.meta.url).href,
+  pointIcon: new URL("./point.svg?url", import.meta.url).href,
   pointOpacity: 1,
   // ******************** 线 ******************** //
   showLine: true,

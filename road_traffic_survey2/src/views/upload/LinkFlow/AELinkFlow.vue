@@ -4,8 +4,8 @@
     class="AELinkFlow"
     :title="title"
     :subTitle="`人工数车 / 路段流量录入 / ${title}`"
-    :top="80"
-    :left="80"
+    :y="80"
+    :x="80"
     width="560px"
     hideClose
     :visible="showMain"

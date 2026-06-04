@@ -1,17 +1,12 @@
 <!-- SpatialQuery -->
 <template>
-  <div class="SpatialQuery">SpatialQuery</div>
+  <SelectArea />
 </template>
 
 <script setup>
+import SelectArea from './components/SelectArea.vue'
 import { SpatialQueryEvent } from './mixins.js'
 </script>
 
 <style lang="scss" scoped>
-.SpatialQuery {
-  position: fixed;
-  z-index: 1000;
-  top: 80px;
-  right: 20px;
-}
 </style>

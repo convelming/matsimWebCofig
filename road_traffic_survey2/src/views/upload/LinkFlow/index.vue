@@ -4,8 +4,8 @@
     class="LinkFlow"
     title="路段流量录入"
     subTitle="人工数车/ 路段流量录入"
-    :top="80"
-    :left="80"
+    :y="80"
+    :x="80"
     width="365px"
     hideClose
     :visible="showMain"

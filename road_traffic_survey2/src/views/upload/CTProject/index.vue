@@ -3,8 +3,8 @@
     class="IntersectionFlow"
     title="交评道路运行现状出图"
     subTitle="开始出图"
-    :top="80"
-    :left="80"
+    :y="80"
+    :x="80"
     width="365px"
     hideClose
     :visible="showMain"

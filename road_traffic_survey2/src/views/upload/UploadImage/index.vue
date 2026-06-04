@@ -4,8 +4,8 @@
     class="UploadImage"
     title="拍照图片"
     subTitle="拍照图片 / 仅图片"
-    :top="80"
-    :left="80"
+    :y="80"
+    :x="80"
     width="365px"
     hideClose
     :visible="showMain"

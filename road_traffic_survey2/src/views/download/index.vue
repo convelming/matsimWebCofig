@@ -5,8 +5,8 @@
     class="ImageDialog"
     title="数据下载"
     subTitle="数据下载 /"
-    :top="80"
-    :left="80"
+    :y="80"
+    :x="80"
     width="400px"
     hideClose
     :visible="showMenu"
@@ -15,13 +15,13 @@
       <Tree class="Tree" :children="menuList" open hideTitle />
     </el-scrollbar>
   </MDialog>
-  
+
   <SpatialQuery></SpatialQuery>
 </template>
 
 <script setup>
 import * as API from '@/api/index'
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import Tree, { TreeItemEnum } from './Tree/index.js'
 import { NetworkLayer } from '@/utils/MapLayer/NetworkLayer'
 import SpatialQuery from './SpatialQuery/index.vue'
@@ -34,46 +34,42 @@ const showMenu = computed(() => {
 const showGeoJSONParams = ref({})
 provide('showGeoJSONParams', showGeoJSONParams)
 
-const menuList = ref([])
+const checkList = String(route.query.open || '')
+  .split(';')
+  .filter((v) => !!v)
+const openList = checkList
+  .map((v) => v.split(',') || [])
+  .flat(2)
+  .filter((v) => !!v)
+const tree = [...window.win_download_menu]
+const list = [...tree]
+while (list.length) {
+  const item = list.shift()
+  item.checkKey = item.checkKey || item.title
+  item.check = false
+  item.range = []
+  if (item.children && item.children.length) {
+    item.open = openList.includes(item.title)
+    item.range = []
+    item.children.forEach((item2) => {
+      item2.checkKey = [item.checkKey, item2.title].filter((v) => !!v).join(',')
 
-fetch('http://192.168.60.231:8085/download_menu.json?t=' + Date.now())
-  .then((res) => res.json())
-  .then((data) => {
-    const checkList = String(route.query.open || '')
-      .split(';')
-      .filter((v) => !!v)
-    const openList = checkList
-      .map((v) => v.split(',') || [])
-      .flat(2)
-      .filter((v) => !!v)
-    const tree = [...data]
-    const list = [...tree]
-    while (list.length) {
-      const item = list.shift()
-      item.checkKey = item.checkKey || item.title
-      item.check = false
-      item.range = []
-      if (item.children && item.children.length) {
-        item.open = openList.includes(item.title)
-        item.range = []
-        item.children.forEach((item2) => {
-          item2.checkKey = [item.checkKey, item2.title].filter((v) => !!v).join(',')
-
-          // TODO 不在当前循环判断是否点击，改成在节点判断   节点标题,all 代表节点下的全部都需要勾选
-          if (!item2.children) {
-            item2.check =
-              checkList.includes(item2.checkKey) || checkList.includes(item.checkKey + ',ALL')
-          } else {
-            item2.check = false
-          }
-        })
-        list.push(...item.children)
+      // TODO 不在当前循环判断是否点击，改成在节点判断   节点标题,all 代表节点下的全部都需要勾选
+      if (!item2.children) {
+        item2.check =
+          checkList.includes(item2.checkKey) || checkList.includes(item.checkKey + ',ALL')
       } else {
-        item.check = checkList.includes(item.checkKey)
+        item2.check = false
       }
-    }
-    menuList.value = tree
-  })
+    })
+    list.push(...item.children)
+  } else {
+    item.check = checkList.includes(item.checkKey)
+  }
+}
+
+// menuList.value = tree
+const menuList = ref(tree)
 
 const _NetworkData = shallowRef(null)
 API.getGeomjson({
@@ -90,6 +86,8 @@ function handleCurrentChange(data, node) {
 function handleCheckChange(data, info) {
   console.log(data, info)
 }
+
+onMounted(() => {})
 </script>
 
 <style lang="scss" scoped>

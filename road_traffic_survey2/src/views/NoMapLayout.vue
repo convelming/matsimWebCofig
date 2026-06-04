@@ -21,7 +21,6 @@
             type="router"
             :record="false"
           >
-            <!-- <img class="icon" src="@/assets/images/tab_home_nor.svg" alt="" /> -->
             <TabHome class="icon" />
             <span class="text">首页</span>
           </MButton>
@@ -84,13 +83,13 @@
 
 <script setup>
 import MButton from '@/components/MButton.vue'
-import Logo from '@/assets/images/Home/logo.svg'
-import TabHome from '@/assets/images/Home/icon_home2.svg'
-import TabUpload from '@/assets/images/Home/icon_dateup1.svg'
-import TabDownload from '@/assets/images/Home/icon_download1.svg'
-import TabQuestion from '@/assets/images/Home/icon_question1.svg'
-import TabWeb from '@/assets/images/Home/icon_web1.svg'
-import Sreach from '@/assets/images/Home/搜索.svg'
+import Logo from '@/assets/images/Home/logo.svg?component'
+import TabHome from '@/assets/images/Home/icon_home2.svg?component'
+import TabUpload from '@/assets/images/Home/icon_dateup1.svg?component'
+import TabDownload from '@/assets/images/Home/icon_download1.svg?component'
+import TabQuestion from '@/assets/images/Home/icon_question1.svg?component'
+import TabWeb from '@/assets/images/Home/icon_web1.svg?component'
+import Sreach from '@/assets/images/Home/搜索.svg?component'
 
 import { onBeforeRouteUpdate } from 'vue-router'
 const scrollbarRef = ref(null)

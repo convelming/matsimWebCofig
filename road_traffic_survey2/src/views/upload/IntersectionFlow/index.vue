@@ -4,8 +4,8 @@
     class="IntersectionFlow"
     title="交叉口流量录入"
     subTitle="人工数车/ 交叉口流量录入"
-    :top="80"
-    :left="80"
+    :y="80"
+    :x="80"
     width="365px"
     hideClose
     :visible="showMain"

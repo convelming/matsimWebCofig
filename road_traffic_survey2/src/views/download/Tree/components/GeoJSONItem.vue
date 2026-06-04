@@ -16,8 +16,8 @@
     class="GeoJSONParams"
     title="样式配置"
     :subTitle="`数据下载 / ${title} / 样式配置`"
-    :top="80"
-    :left="80"
+    :y="80"
+    :x="80"
     width="400px"
     v-model:visible="showDialog"
   >
@@ -558,6 +558,7 @@ import {
   parserGeoJSON,
   LINE_STYLE,
   LINE_WIDTH_STYLE,
+  ICON_LIST
 } from '@/utils/MapLayer/GeoJSONLayer'
 import { getColorBarByPropertie } from '@/utils/MapLayer/ColorBar2DUtil'
 import {

@@ -4,8 +4,8 @@
     class="ImageDialog"
     title="查看图片"
     subTitle="数据上传 /"
-    :top="80"
-    :left="80"
+    :y="80"
+    :x="80"
     width="300px"
     hideClose
     :visible="showMenu"

@@ -3,8 +3,8 @@
   <MDialog
     class="VideoInputCrossroads"
     title="视频录入交叉口"
-    :top="80"
-    :left="80"
+    :y="80"
+    :x="80"
     width="500px"
     hideClose
     :visible="visible"

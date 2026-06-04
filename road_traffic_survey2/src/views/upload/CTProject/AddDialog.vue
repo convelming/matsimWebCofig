@@ -3,8 +3,8 @@
   <MDialog
     class="CTPAddDialog"
     title="新建项目"
-    :top="80"
-    :left="80"
+    :y="80"
+    :x="80"
     width="500px"
     hideMinimize
     :visible="visible"

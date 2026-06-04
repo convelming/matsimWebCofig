@@ -86,15 +86,15 @@ import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 
 import MButton from '@/components/MButton.vue'
-import TabHome from '@/assets/images/MapLayout/home.svg'
-import TabUpload from '@/assets/images/MapLayout/upload.svg'
-import TabDownload from '@/assets/images/MapLayout/download.svg'
-import TabFeedback from '@/assets/images/MapLayout/feedback.svg'
+import TabHome from '@/assets/images/MapLayout/home.svg?component'
+import TabUpload from '@/assets/images/MapLayout/upload.svg?component'
+import TabDownload from '@/assets/images/MapLayout/download.svg?component'
+import TabFeedback from '@/assets/images/MapLayout/feedback.svg?component'
 
-import BtnIcon1 from '@/assets/images/MapLayout/icon1.svg'
-import BtnIcon2 from '@/assets/images/MapLayout/icon2.svg'
-import BtnIcon3 from '@/assets/images/MapLayout/icon3.svg'
-import BtnIcon4 from '@/assets/images/MapLayout/icon4.svg'
+import BtnIcon1 from '@/assets/images/MapLayout/icon1.svg?component'
+import BtnIcon2 from '@/assets/images/MapLayout/icon2.svg?component'
+import BtnIcon3 from '@/assets/images/MapLayout/icon3.svg?component'
+import BtnIcon4 from '@/assets/images/MapLayout/icon4.svg?component'
 import { ElMessage } from 'element-plus'
 
 const route = useRoute()

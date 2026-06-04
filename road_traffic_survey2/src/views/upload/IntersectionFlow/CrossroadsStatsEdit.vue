@@ -3,8 +3,8 @@
   <MDialog
     class="CrossroadsStatsEdit"
     title="编辑交叉口流量线"
-    :top="80"
-    :left="80"
+    :y="80"
+    :x="80"
     width="calc(100vw - 100px)"
     hideClose
     :visible="visible"

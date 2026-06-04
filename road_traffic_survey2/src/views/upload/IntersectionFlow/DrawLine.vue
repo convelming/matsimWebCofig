@@ -3,8 +3,8 @@
   <MDialog
     class="DrawLine"
     title="绘制检测线"
-    :top="80"
-    :left="80"
+    :y="80"
+    :x="80"
     width="calc(100vw - 100px)"
     hideClose
     :visible="visible"

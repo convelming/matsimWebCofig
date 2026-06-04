@@ -58,14 +58,18 @@ const props = defineProps({
     default: '',
   },
   // 默认的上边距
-  top: {
+  x: {
     type: [Number, String],
     default: '20',
   },
   // 默认的左边距
-  left: {
+  y: {
     type: [Number, String],
     default: '20',
+  },
+  placement: {
+    type: String, // 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
+    default: 'top-left',
   },
   // 宽度
   width: {
@@ -93,21 +97,29 @@ const watchVisible = watch(
 )
 
 const s_data = reactive({
-  s_top: 0,
-  s_left: 0,
+  s_y: 0,
+  s_x: 0,
   moveObj: {
-    s_top: 0,
-    s_left: 0,
-    top: 0,
-    left: 0,
+    s_y: 0,
+    s_x: 0,
+    y: 0,
+    x: 0,
   },
   s_zIndex: ++window.MDialogData.zIndex,
 })
 
 const s_style = computed(() => {
   let style = ''
-  style += `top:calc(${s_data.s_top}px + ${s_data.moveObj.top || 0}px);`
-  style += `left:calc(${s_data.s_left}px + ${s_data.moveObj.left || 0}px);`
+  if (props.placement.includes('top')) {
+    style += `top:calc(${s_data.s_y}px + ${s_data.moveObj.y || 0}px);`
+  } else if (props.placement.includes('bottom')) {
+    style += `bottom:calc(${s_data.s_y}px + ${s_data.moveObj.y || 0}px);`
+  }
+  if (props.placement.includes('left')) {
+    style += `left:calc(${s_data.s_x}px + ${s_data.moveObj.x || 0}px);`
+  } else if (props.placement.includes('right')) {
+    style += `right:calc(${s_data.s_x}px + ${s_data.moveObj.x || 0}px);`
+  }
   const width = Number(props.width)
   if (width === width) {
     style += `width:${width}px;`
@@ -126,26 +138,34 @@ onMounted(() => {
 
 function startMove(event) {
   toTop()
-  s_data.moveObj.s_top = event.pageY
-  s_data.moveObj.s_left = event.pageX
-  s_data.moveObj.top = 0
-  s_data.moveObj.left = 0
+  s_data.moveObj.s_y = event.pageY
+  s_data.moveObj.s_x = event.pageX
+  s_data.moveObj.y = 0
+  s_data.moveObj.x = 0
   document.body.addEventListener('mousemove', moveing)
   document.body.addEventListener('mouseup', endMove)
   document.body.addEventListener('mouseleave', endMove)
 }
 function moveing(event) {
-  s_data.moveObj.top = event.pageY - s_data.moveObj.s_top
-  s_data.moveObj.left = event.pageX - s_data.moveObj.s_left
+  if (props.placement.includes('top')) {
+    s_data.moveObj.y = event.pageY - s_data.moveObj.s_y
+  } else if (props.placement.includes('bottom')) {
+    s_data.moveObj.y = s_data.moveObj.s_y - event.pageY
+  }
+  if (props.placement.includes('left')) {
+    s_data.moveObj.x = event.pageX - s_data.moveObj.s_x
+  } else if (props.placement.includes('right')) {
+    s_data.moveObj.x = s_data.moveObj.s_x - event.pageX
+  }
 }
 
 function endMove(event) {
-  s_data.s_top += s_data.moveObj.top
-  s_data.s_left += s_data.moveObj.left
-  s_data.moveObj.s_top = 0
-  s_data.moveObj.s_left = 0
-  s_data.moveObj.top = 0
-  s_data.moveObj.left = 0
+  s_data.s_y += s_data.moveObj.y
+  s_data.s_x += s_data.moveObj.x
+  s_data.moveObj.s_y = 0
+  s_data.moveObj.s_x = 0
+  s_data.moveObj.y = 0
+  s_data.moveObj.x = 0
   document.body.removeEventListener('mousemove', moveing)
   document.body.removeEventListener('mouseleave', endMove)
 }
@@ -154,17 +174,17 @@ function open() {
   emit('open')
   nextTick(() => {
     toTop()
-    s_data.s_top = parseFloat(props.top)
-    s_data.s_left = parseFloat(props.left)
+    s_data.s_y = parseFloat(props.y)
+    s_data.s_x = parseFloat(props.x)
   })
 }
 function close() {
   emit('update:visible', false)
   emit('close')
 }
-function offset(top, left) {
-  s_data.s_top += Number(top) || 0
-  s_data.s_left += Number(left) || 0
+function offset(y, x) {
+  s_data.s_y += Number(y) || 0
+  s_data.s_x = Number(x) || 0
 }
 function toTop() {
   if (s_data.s_zIndex < window.MDialogData.zIndex) s_data.s_zIndex = ++window.MDialogData.zIndex

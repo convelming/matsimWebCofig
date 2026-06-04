@@ -1,0 +1,531 @@
+var win_download_menu = [
+  {
+    title: '城市底座',
+    type: 'folder',
+    children: [
+      {
+        title: '区划边界',
+        type: 'folder',
+        children: [
+          {
+            title: '行政边界_省_全国',
+            type: 'geojson',
+            path: 'http://192.168.60.231:8085/数据库/城市底座/区划边界/行政边界_省_全国.geojson',
+            config:
+              'http://192.168.60.231:8085/数据库/城市底座/区划边界/行政边界_省_全国.config.json',
+            download: 'http://192.168.60.231:8085/数据库/城市底座/区划边界/行政边界_省_全国.zip',
+          },
+          {
+            title: '行政边界_广州_区级',
+            type: 'geojson',
+            path: 'http://192.168.60.231:8085/数据库/城市底座/区划边界/行政边界_广州_区级.geojson',
+            config:
+              'http://192.168.60.231:8085/数据库/城市底座/区划边界/行政边界_广州_区级.config.json',
+            download: 'http://192.168.60.231:8085/数据库/城市底座/区划边界/行政边界_广州_区级.zip',
+          },
+          {
+            title: '行政边界_广州_市级',
+            type: 'geojson',
+            path: 'http://192.168.60.231:8085/数据库/城市底座/区划边界/行政边界_广州_市级.geojson',
+            config:
+              'http://192.168.60.231:8085/数据库/城市底座/区划边界/行政边界_广州_市级.config.json',
+            download: 'http://192.168.60.231:8085/数据库/城市底座/区划边界/行政边界_广州_市级.zip',
+          },
+          {
+            title: '行政边界_广州_村级',
+            type: 'geojson',
+            path: 'http://192.168.60.231:8085/数据库/城市底座/区划边界/行政边界_广州_村级.geojson',
+            config:
+              'http://192.168.60.231:8085/数据库/城市底座/区划边界/行政边界_广州_村级.config.json',
+            download: 'http://192.168.60.231:8085/数据库/城市底座/区划边界/行政边界_广州_村级.zip',
+          },
+          {
+            title: '行政边界_从化',
+            type: 'geojson',
+            path: 'http://192.168.60.231:8085/数据库/城市底座/区划边界/行政边界_从化.geojson',
+            config: 'http://192.168.60.231:8085/数据库/城市底座/区划边界/行政边界_从化.config.json',
+            download: 'http://192.168.60.231:8085/数据库/城市底座/区划边界/行政边界_从化.zip',
+          },
+          {
+            title: '行政边界_南沙',
+            type: 'geojson',
+            path: 'http://192.168.60.231:8085/数据库/城市底座/区划边界/行政边界_南沙.geojson',
+            config: 'http://192.168.60.231:8085/数据库/城市底座/区划边界/行政边界_南沙.config.json',
+            download: 'http://192.168.60.231:8085/数据库/城市底座/区划边界/行政边界_南沙.zip',
+          },
+          {
+            title: '行政边界_增城',
+            type: 'geojson',
+            path: 'http://192.168.60.231:8085/数据库/城市底座/区划边界/行政边界_增城.geojson',
+            config: 'http://192.168.60.231:8085/数据库/城市底座/区划边界/行政边界_增城.config.json',
+            download: 'http://192.168.60.231:8085/数据库/城市底座/区划边界/行政边界_增城.zip',
+          },
+          {
+            title: '行政边界_天河',
+            type: 'geojson',
+            path: 'http://192.168.60.231:8085/数据库/城市底座/区划边界/行政边界_天河.geojson',
+            config: 'http://192.168.60.231:8085/数据库/城市底座/区划边界/行政边界_天河.config.json',
+            download: 'http://192.168.60.231:8085/数据库/城市底座/区划边界/行政边界_天河.zip',
+          },
+          {
+            title: '行政边界_海珠',
+            type: 'geojson',
+            path: 'http://192.168.60.231:8085/数据库/城市底座/区划边界/行政边界_海珠.geojson',
+            config: 'http://192.168.60.231:8085/数据库/城市底座/区划边界/行政边界_海珠.config.json',
+            download: 'http://192.168.60.231:8085/数据库/城市底座/区划边界/行政边界_海珠.zip',
+          },
+          {
+            title: '行政边界_番禺',
+            type: 'geojson',
+            path: 'http://192.168.60.231:8085/数据库/城市底座/区划边界/行政边界_番禺.geojson',
+            config: 'http://192.168.60.231:8085/数据库/城市底座/区划边界/行政边界_番禺.config.json',
+            download: 'http://192.168.60.231:8085/数据库/城市底座/区划边界/行政边界_番禺.zip',
+          },
+          {
+            title: '行政边界_白云',
+            type: 'geojson',
+            path: 'http://192.168.60.231:8085/数据库/城市底座/区划边界/行政边界_白云.geojson',
+            config: 'http://192.168.60.231:8085/数据库/城市底座/区划边界/行政边界_白云.config.json',
+            download: 'http://192.168.60.231:8085/数据库/城市底座/区划边界/行政边界_白云.zip',
+          },
+          {
+            title: '行政边界_花都',
+            type: 'geojson',
+            path: 'http://192.168.60.231:8085/数据库/城市底座/区划边界/行政边界_花都.geojson',
+            config: 'http://192.168.60.231:8085/数据库/城市底座/区划边界/行政边界_花都.config.json',
+            download: 'http://192.168.60.231:8085/数据库/城市底座/区划边界/行政边界_花都.zip',
+          },
+          {
+            title: '行政边界_荔湾',
+            type: 'geojson',
+            path: 'http://192.168.60.231:8085/数据库/城市底座/区划边界/行政边界_荔湾.geojson',
+            config: 'http://192.168.60.231:8085/数据库/城市底座/区划边界/行政边界_荔湾.config.json',
+            download: 'http://192.168.60.231:8085/数据库/城市底座/区划边界/行政边界_荔湾.zip',
+          },
+          {
+            title: '行政边界_越秀',
+            type: 'geojson',
+            path: 'http://192.168.60.231:8085/数据库/城市底座/区划边界/行政边界_越秀.geojson',
+            config: 'http://192.168.60.231:8085/数据库/城市底座/区划边界/行政边界_越秀.config.json',
+            download: 'http://192.168.60.231:8085/数据库/城市底座/区划边界/行政边界_越秀.zip',
+          },
+          {
+            title: '行政边界_黄埔',
+            type: 'geojson',
+            path: 'http://192.168.60.231:8085/数据库/城市底座/区划边界/行政边界_黄埔.geojson',
+            config: 'http://192.168.60.231:8085/数据库/城市底座/区划边界/行政边界_黄埔.config.json',
+            download: 'http://192.168.60.231:8085/数据库/城市底座/区划边界/行政边界_黄埔.zip',
+          },
+        ],
+      },
+      {
+        title: '城市用地',
+        type: 'folder',
+        children: [
+          {
+            title: '现状用地',
+            type: 'txt',
+            path: 'http://192.168.60.231:8085/数据库/城市底座/城市用地/现状用地.txt',
+          },
+          {
+            title: '规划用地',
+            type: 'txt',
+            path: 'http://192.168.60.231:8085/数据库/城市底座/城市用地/规划用地.txt',
+          },
+        ],
+      },
+      {
+        title: '建筑白膜',
+        type: 'geojson',
+        path: 'http://192.168.60.231:8085/数据库/城市底座/建筑白膜.geojson',
+        config: 'http://192.168.60.231:8085/数据库/城市底座/建筑白膜.config.json',
+        download: 'http://192.168.60.231:8085/数据库/城市底座/建筑白膜.zip',
+      },
+    ],
+  },
+  {
+    title: '交通调查',
+    type: 'folder',
+    children: [
+      {
+        title: '拍照图片',
+        type: 'upload_image',
+      },
+      {
+        title: '路段流量',
+        type: 'upload_link_flow',
+      },
+      {
+        title: '交叉口流量',
+        type: 'upload_intersection_flow',
+      },
+    ],
+  },
+  {
+    title: '职住通勤',
+    type: 'folder',
+    children: [
+      {
+        title: '高德通勤',
+        type: 'iframe',
+        path: 'http://192.168.60.231:8085/数据库/职住通勤/高德通勤',
+        msgPath: 'http://192.168.60.231:8085/数据库/职住通勤/高德通勤/高德通勤.txt',
+      },
+      {
+        title: '普查人口',
+        type: 'geojson',
+        path: 'http://192.168.60.231:8085/数据库/职住通勤/普查人口.geojson',
+        config: 'http://192.168.60.231:8085/数据库/职住通勤/普查人口.config.json',
+        download: 'http://192.168.60.231:8085/数据库/职住通勤/普查人口.zip',
+      },
+    ],
+  },
+  {
+    title: '道路交通',
+    type: 'folder',
+    children: [
+      {
+        title: '城市路网',
+        type: 'folder',
+        children: [
+          {
+            title: 'OSM路网',
+            type: 'folder',
+            children: [
+              {
+                title: '2015年',
+                type: 'geojson',
+                path: 'http://192.168.60.231:8085/数据库/道路交通/城市路网/OSM路网/2015年.geojson',
+                config:
+                  'http://192.168.60.231:8085/数据库/道路交通/城市路网/OSM路网/2015年.config.json',
+                download: 'http://192.168.60.231:8085/数据库/道路交通/城市路网/OSM路网/2015年.zip',
+                spatialQuery: 'RouteInfo',
+              },
+              {
+                title: '2020年',
+                type: 'geojson',
+                path: 'http://192.168.60.231:8085/数据库/道路交通/城市路网/OSM路网/2020年.geojson',
+                config:
+                  'http://192.168.60.231:8085/数据库/道路交通/城市路网/OSM路网/2020年.config.json',
+                download: 'http://192.168.60.231:8085/数据库/道路交通/城市路网/OSM路网/2020年.zip',
+                spatialQuery: 'RouteInfo',
+              },
+              {
+                title: '2025年',
+                type: 'geojson',
+                path: 'http://192.168.60.231:8085/数据库/道路交通/城市路网/OSM路网/2025年.geojson',
+                config:
+                  'http://192.168.60.231:8085/数据库/道路交通/城市路网/OSM路网/2025年.config.json',
+                download: 'http://192.168.60.231:8085/数据库/道路交通/城市路网/OSM路网/2025年.zip',
+                spatialQuery: 'RouteInfo',
+              },
+            ],
+          },
+          {
+            title: '四维图新导航级路网',
+            type: 'iframe',
+            path: 'http://192.168.60.231:8085/数据库/道路交通/城市路网/四维图新导航级路网',
+            msgPath:
+              'http://192.168.60.231:8085/数据库/道路交通/城市路网/四维图新导航级路网/四维图新导航级路网.txt',
+          },
+        ],
+      },
+      {
+        title: '路况态势',
+        type: 'folder',
+        children: [
+          {
+            title: '路况态势_从化区',
+            type: 'geojson',
+            path: 'http://192.168.60.231:8085/数据库/道路交通/路况态势/路况态势_从化区.geojson',
+            config:
+              'http://192.168.60.231:8085/数据库/道路交通/路况态势/路况态势_从化区.config.json',
+            download: 'http://192.168.60.231:8085/数据库/道路交通/路况态势/路况态势_从化区.zip',
+          },
+          {
+            title: '路况态势_南沙区',
+            type: 'geojson',
+            path: 'http://192.168.60.231:8085/数据库/道路交通/路况态势/路况态势_南沙区.geojson',
+            config:
+              'http://192.168.60.231:8085/数据库/道路交通/路况态势/路况态势_南沙区.config.json',
+            download: 'http://192.168.60.231:8085/数据库/道路交通/路况态势/路况态势_南沙区.zip',
+          },
+          {
+            title: '路况态势_增城区',
+            type: 'geojson',
+            path: 'http://192.168.60.231:8085/数据库/道路交通/路况态势/路况态势_增城区.geojson',
+            config:
+              'http://192.168.60.231:8085/数据库/道路交通/路况态势/路况态势_增城区.config.json',
+            download: 'http://192.168.60.231:8085/数据库/道路交通/路况态势/路况态势_增城区.zip',
+          },
+          {
+            title: '路况态势_天河区',
+            type: 'geojson',
+            path: 'http://192.168.60.231:8085/数据库/道路交通/路况态势/路况态势_天河区.geojson',
+            config:
+              'http://192.168.60.231:8085/数据库/道路交通/路况态势/路况态势_天河区.config.json',
+            download: 'http://192.168.60.231:8085/数据库/道路交通/路况态势/路况态势_天河区.zip',
+          },
+          {
+            title: '路况态势_海珠区',
+            type: 'geojson',
+            path: 'http://192.168.60.231:8085/数据库/道路交通/路况态势/路况态势_海珠区.geojson',
+            config:
+              'http://192.168.60.231:8085/数据库/道路交通/路况态势/路况态势_海珠区.config.json',
+            download: 'http://192.168.60.231:8085/数据库/道路交通/路况态势/路况态势_海珠区.zip',
+          },
+          {
+            title: '路况态势_番禺区',
+            type: 'geojson',
+            path: 'http://192.168.60.231:8085/数据库/道路交通/路况态势/路况态势_番禺区.geojson',
+            config:
+              'http://192.168.60.231:8085/数据库/道路交通/路况态势/路况态势_番禺区.config.json',
+            download: 'http://192.168.60.231:8085/数据库/道路交通/路况态势/路况态势_番禺区.zip',
+          },
+          {
+            title: '路况态势_白云区',
+            type: 'geojson',
+            path: 'http://192.168.60.231:8085/数据库/道路交通/路况态势/路况态势_白云区.geojson',
+            config:
+              'http://192.168.60.231:8085/数据库/道路交通/路况态势/路况态势_白云区.config.json',
+            download: 'http://192.168.60.231:8085/数据库/道路交通/路况态势/路况态势_白云区.zip',
+          },
+          {
+            title: '路况态势_花都区',
+            type: 'geojson',
+            path: 'http://192.168.60.231:8085/数据库/道路交通/路况态势/路况态势_花都区.geojson',
+            config:
+              'http://192.168.60.231:8085/数据库/道路交通/路况态势/路况态势_花都区.config.json',
+            download: 'http://192.168.60.231:8085/数据库/道路交通/路况态势/路况态势_花都区.zip',
+          },
+          {
+            title: '路况态势_荔湾区',
+            type: 'geojson',
+            path: 'http://192.168.60.231:8085/数据库/道路交通/路况态势/路况态势_荔湾区.geojson',
+            config:
+              'http://192.168.60.231:8085/数据库/道路交通/路况态势/路况态势_荔湾区.config.json',
+            download: 'http://192.168.60.231:8085/数据库/道路交通/路况态势/路况态势_荔湾区.zip',
+          },
+          {
+            title: '路况态势_越秀区',
+            type: 'geojson',
+            path: 'http://192.168.60.231:8085/数据库/道路交通/路况态势/路况态势_越秀区.geojson',
+            config:
+              'http://192.168.60.231:8085/数据库/道路交通/路况态势/路况态势_越秀区.config.json',
+            download: 'http://192.168.60.231:8085/数据库/道路交通/路况态势/路况态势_越秀区.zip',
+          },
+          {
+            title: '路况态势_黄埔区',
+            type: 'geojson',
+            path: 'http://192.168.60.231:8085/数据库/道路交通/路况态势/路况态势_黄埔区.geojson',
+            config:
+              'http://192.168.60.231:8085/数据库/道路交通/路况态势/路况态势_黄埔区.config.json',
+            download: 'http://192.168.60.231:8085/数据库/道路交通/路况态势/路况态势_黄埔区.zip',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    title: '公共交通',
+    type: 'folder',
+    children: [
+      {
+        title: 'PTAL',
+        type: 'folder',
+        children: [
+          {
+            title: '广州市',
+            type: 'geojson',
+            path: 'http://192.168.60.231:8085/数据库/公共交通/PTAL/广州市.geojson',
+            config: 'http://192.168.60.231:8085/数据库/公共交通/PTAL/广州市.config.json',
+            download: 'http://192.168.60.231:8085/数据库/公共交通/PTAL/广州市.zip',
+          },
+          {
+            title: '从化',
+            type: 'geojson',
+            path: 'http://192.168.60.231:8085/数据库/公共交通/PTAL/从化.geojson',
+            config: 'http://192.168.60.231:8085/数据库/公共交通/PTAL/从化.config.json',
+            download: 'http://192.168.60.231:8085/数据库/公共交通/PTAL/从化.zip',
+          },
+          {
+            title: '南沙',
+            type: 'geojson',
+            path: 'http://192.168.60.231:8085/数据库/公共交通/PTAL/南沙.geojson',
+            config: 'http://192.168.60.231:8085/数据库/公共交通/PTAL/南沙.config.json',
+            download: 'http://192.168.60.231:8085/数据库/公共交通/PTAL/南沙.zip',
+          },
+          {
+            title: '增城',
+            type: 'geojson',
+            path: 'http://192.168.60.231:8085/数据库/公共交通/PTAL/增城.geojson',
+            config: 'http://192.168.60.231:8085/数据库/公共交通/PTAL/增城.config.json',
+            download: 'http://192.168.60.231:8085/数据库/公共交通/PTAL/增城.zip',
+          },
+          {
+            title: '天河',
+            type: 'geojson',
+            path: 'http://192.168.60.231:8085/数据库/公共交通/PTAL/天河.geojson',
+            config: 'http://192.168.60.231:8085/数据库/公共交通/PTAL/天河.config.json',
+            download: 'http://192.168.60.231:8085/数据库/公共交通/PTAL/天河.zip',
+          },
+          {
+            title: '海珠',
+            type: 'geojson',
+            path: 'http://192.168.60.231:8085/数据库/公共交通/PTAL/海珠.geojson',
+            config: 'http://192.168.60.231:8085/数据库/公共交通/PTAL/海珠.config.json',
+            download: 'http://192.168.60.231:8085/数据库/公共交通/PTAL/海珠.zip',
+          },
+          {
+            title: '番禺',
+            type: 'geojson',
+            path: 'http://192.168.60.231:8085/数据库/公共交通/PTAL/番禺.geojson',
+            config: 'http://192.168.60.231:8085/数据库/公共交通/PTAL/番禺.config.json',
+            download: 'http://192.168.60.231:8085/数据库/公共交通/PTAL/番禺.zip',
+          },
+          {
+            title: '白云',
+            type: 'geojson',
+            path: 'http://192.168.60.231:8085/数据库/公共交通/PTAL/白云.geojson',
+            config: 'http://192.168.60.231:8085/数据库/公共交通/PTAL/白云.config.json',
+            download: 'http://192.168.60.231:8085/数据库/公共交通/PTAL/白云.zip',
+          },
+          {
+            title: '花都',
+            type: 'geojson',
+            path: 'http://192.168.60.231:8085/数据库/公共交通/PTAL/花都.geojson',
+            config: 'http://192.168.60.231:8085/数据库/公共交通/PTAL/花都.config.json',
+            download: 'http://192.168.60.231:8085/数据库/公共交通/PTAL/花都.zip',
+          },
+          {
+            title: '荔湾',
+            type: 'geojson',
+            path: 'http://192.168.60.231:8085/数据库/公共交通/PTAL/荔湾.geojson',
+            config: 'http://192.168.60.231:8085/数据库/公共交通/PTAL/荔湾.config.json',
+            download: 'http://192.168.60.231:8085/数据库/公共交通/PTAL/荔湾.zip',
+          },
+          {
+            title: '越秀',
+            type: 'geojson',
+            path: 'http://192.168.60.231:8085/数据库/公共交通/PTAL/越秀.geojson',
+            config: 'http://192.168.60.231:8085/数据库/公共交通/PTAL/越秀.config.json',
+            download: 'http://192.168.60.231:8085/数据库/公共交通/PTAL/越秀.zip',
+          },
+          {
+            title: '黄埔',
+            type: 'geojson',
+            path: 'http://192.168.60.231:8085/数据库/公共交通/PTAL/黄埔.geojson',
+            config: 'http://192.168.60.231:8085/数据库/公共交通/PTAL/黄埔.config.json',
+            download: 'http://192.168.60.231:8085/数据库/公共交通/PTAL/黄埔.zip',
+          },
+        ],
+      },
+      {
+        title: '地铁线网',
+        type: 'folder',
+        children: [
+          {
+            title: '地铁站点',
+            type: 'geojson',
+            path: 'http://192.168.60.231:8085/数据库/公共交通/地铁线网/地铁站点.geojson',
+            config: 'http://192.168.60.231:8085/数据库/公共交通/地铁线网/地铁站点.config.json',
+            download: 'http://192.168.60.231:8085/数据库/公共交通/地铁线网/地铁站点.zip',
+          },
+          {
+            title: '地铁线路',
+            type: 'geojson',
+            path: 'http://192.168.60.231:8085/数据库/公共交通/地铁线网/地铁线路.geojson',
+            config: 'http://192.168.60.231:8085/数据库/公共交通/地铁线网/地铁线路.config.json',
+            download: 'http://192.168.60.231:8085/数据库/公共交通/地铁线网/地铁线路.zip',
+          },
+        ],
+      },
+      {
+        title: '常规公交线网',
+        type: 'folder',
+        children: [
+          {
+            title: '公交站点',
+            type: 'geojson',
+            path: 'http://192.168.60.231:8085/数据库/公共交通/常规公交线网/公交站点.geojson',
+            config: 'http://192.168.60.231:8085/数据库/公共交通/常规公交线网/公交站点.config.json',
+            download: 'http://192.168.60.231:8085/数据库/公共交通/常规公交线网/公交站点.zip',
+          },
+          {
+            title: '公交线路',
+            type: 'geojson',
+            path: 'http://192.168.60.231:8085/数据库/公共交通/常规公交线网/公交线路.geojson',
+            config: 'http://192.168.60.231:8085/数据库/公共交通/常规公交线网/公交线路.config.json',
+            download: 'http://192.168.60.231:8085/数据库/公共交通/常规公交线网/公交线路.zip',
+          },
+        ],
+      },
+      {
+        title: '铁路线网',
+        type: 'geojson',
+        path: 'http://192.168.60.231:8085/数据库/公共交通/铁路线网.geojson',
+        config: 'http://192.168.60.231:8085/数据库/公共交通/铁路线网.config.json',
+        download: 'http://192.168.60.231:8085/数据库/公共交通/铁路线网.zip',
+      },
+    ],
+  },
+  {
+    title: '货运物流',
+    type: 'folder',
+    children: [
+      {
+        title: '货车轨迹',
+        type: 'iframe',
+        path: 'http://192.168.60.231:8085/数据库/货运物流/货车轨迹',
+        msgPath: 'http://192.168.60.231:8085/数据库/货运物流/货车轨迹/货车轨迹.txt',
+      },
+      {
+        title: '末端物流网点',
+        type: 'geojson',
+        path: 'http://192.168.60.231:8085/数据库/货运物流/末端物流网点.geojson',
+        config: 'http://192.168.60.231:8085/数据库/货运物流/末端物流网点.config.json',
+        download: 'http://192.168.60.231:8085/数据库/货运物流/末端物流网点.zip',
+      },
+    ],
+  },
+  {
+    title: '设施场所',
+    type: 'folder',
+    children: [
+      {
+        title: '企业地址',
+        type: 'iframe',
+        path: 'http://192.168.60.231:8085/数据库/设施场所/企业地址',
+        msgPath: 'http://192.168.60.231:8085/数据库/设施场所/企业地址/企业地址.txt',
+      },
+      {
+        title: 'A级景区',
+        type: 'geojson',
+        path: 'http://192.168.60.231:8085/数据库/设施场所/A级景区.geojson',
+        config: 'http://192.168.60.231:8085/数据库/设施场所/A级景区.config.json',
+        download: 'http://192.168.60.231:8085/数据库/设施场所/A级景区.zip',
+      },
+      {
+        title: '医疗卫生机构',
+        type: 'geojson',
+        path: 'http://192.168.60.231:8085/数据库/设施场所/医疗卫生机构.geojson',
+        config: 'http://192.168.60.231:8085/数据库/设施场所/医疗卫生机构.config.json',
+        download: 'http://192.168.60.231:8085/数据库/设施场所/医疗卫生机构.zip',
+      },
+      {
+        title: '星级酒店',
+        type: 'geojson',
+        path: 'http://192.168.60.231:8085/数据库/设施场所/星级酒店.geojson',
+        config: 'http://192.168.60.231:8085/数据库/设施场所/星级酒店.config.json',
+        download: 'http://192.168.60.231:8085/数据库/设施场所/星级酒店.zip',
+      },
+      {
+        title: '高速服务区',
+        type: 'geojson',
+        path: 'http://192.168.60.231:8085/数据库/设施场所/高速服务区.geojson',
+        config: 'http://192.168.60.231:8085/数据库/设施场所/高速服务区.config.json',
+        download: 'http://192.168.60.231:8085/数据库/设施场所/高速服务区.zip',
+      },
+    ],
+  },
+]

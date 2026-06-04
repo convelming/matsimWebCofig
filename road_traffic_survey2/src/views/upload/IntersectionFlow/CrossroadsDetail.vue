@@ -3,8 +3,8 @@
   <MDialog
     class="CrossroadsDetail"
     :title="{ 1: '人工录入交叉口', 2: '视频录入交叉口' }[detail.type]"
-    :top="80"
-    :left="80"
+    :y="80"
+    :x="80"
     width="calc(100vw - 100px)"
     hideClose
     :visible="visible"

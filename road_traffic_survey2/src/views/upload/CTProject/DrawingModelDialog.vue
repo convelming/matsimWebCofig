@@ -3,8 +3,8 @@
   <MDialog
     title="出图模式"
     class="DrawingModelDialog1"
-    :top="80"
-    :left="80"
+    :y="80"
+    :x="80"
     width="600px"
     hideMinimize
     :visible="showMainDialog"
@@ -216,7 +216,7 @@
   <MDialog
     title="框选批量赋值：饱和度&服务水平"
     class="DrawingModelDialog1"
-    :top="20"
+    :y="80"
     :left="20"
     width="300px"
     hideMinimize
