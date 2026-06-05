@@ -9,17 +9,11 @@ export class PolygonSelectLayer extends Layer {
   state = SELECT_STATE_KEY.NOT_STARTED
 
   center = [0, 0]
-  pointList = [
-    [0, 0],
-    [0, 0],
-  ]
+  pointList = []
+  movePoint = null
 
   get path() {
-    if (this.pointList.length < 2) {
-      return []
-    } else {
-      return [...this.pointList, this.pointList[0]]
-    }
+    return [...this.pointList, this.movePoint, this.pointList[0]].filter((v) => !!v)
   }
 
   constructor(opt) {
@@ -61,22 +55,20 @@ export class PolygonSelectLayer extends Layer {
         this.state = SELECT_STATE_KEY.IN_PROGREES
         const [x, y] = data.webMercatorXY
         this.center = [x, y]
-        this.pointList = [
-          [x, y],
-          [x, y],
-        ]
+        this.pointList = [[x, y]]
+        this.movePoint = [x, y]
         this.update()
         this.handleStateChange()
       } else if (this.state == SELECT_STATE_KEY.IN_PROGREES) {
-        const [x, y] = data.webMercatorXY
-        this.pointList[this.pointList.length] = [x, y]
-        this.update()
-        this.handleStateChange()
-      }
-      if (this.state == SELECT_STATE_KEY.IN_PROGREES) {
         isDoubleClick(this.id, 250, (res) => {
           if (res) {
             this.state = SELECT_STATE_KEY.ENDED
+            const [x, y] = data.webMercatorXY
+            this.pointList[this.pointList.length] = [x, y]
+            this.movePoint = null
+            this.update()
+            this.handleStateChange()
+          } else {
             const [x, y] = data.webMercatorXY
             this.pointList[this.pointList.length] = [x, y]
             this.update()
@@ -88,7 +80,7 @@ export class PolygonSelectLayer extends Layer {
     if (type == MAP_EVENT.HANDLE_MOUSE_MOVE) {
       if (this.state == SELECT_STATE_KEY.IN_PROGREES) {
         const [x, y] = data.webMercatorXY
-        this.pointList[this.pointList.length - 1] = [x, y]
+        this.movePoint = [x, y]
         this.update()
         this.handleStateChange()
       }
@@ -98,7 +90,7 @@ export class PolygonSelectLayer extends Layer {
   handleStateChange() {
     this.handleEventListener(SELECT_EVENT.STATE_CHANGE, {
       state: this.state,
-      path: this.pointList,
+      path: this.path,
     })
   }
 
@@ -116,8 +108,13 @@ export class PolygonSelectLayer extends Layer {
     this.state = SELECT_STATE_KEY.NOT_STARTED
     this.pointList = []
     this.center = [0, 0]
+    this.movePoint = null
     this.update()
     this.handleStateChange()
+  }
+  onAdd(map) {
+    super.onAdd(map)
+    this.on(MAP_EVENT.UPDATE_CENTER)
   }
 
   update() {
@@ -145,5 +142,7 @@ export class PolygonSelectLayer extends Layer {
       this.geometry2 = new THREE.BufferGeometry()
       this.mesh2.geometry = this.geometry2
     }
+
+    if (this.map) this.on(MAP_EVENT.UPDATE_CENTER)
   }
 }

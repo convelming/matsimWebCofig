@@ -4,6 +4,9 @@ import mitt from 'mitt'
 
 // 初始化空间查询功能
 export const SpatialQueryEvent = mitt()
+export const SpatialQueryTypeEnum = {
+  RouteInfo: 'SpatialQuery:RouteInfo',
+}
 export function handleEmitSpatialQuery(props) {
   if (!props.spatialQuery) return
   const keys = props.spatialQuery.split('|')

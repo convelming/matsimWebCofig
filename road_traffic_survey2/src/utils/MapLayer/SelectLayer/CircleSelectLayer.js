@@ -21,7 +21,6 @@ function generateCirclePoints(center, pointOnCircle, numPoints = 100) {
     const y = center[1] + r * Math.sin(theta)
     points.push([x, y])
   }
-  points.push(points[0])
   return points
 }
 
@@ -87,18 +86,16 @@ export class CircleSelectLayer extends Layer {
         this.endPoint = [x, y]
         this.update()
         this.handleStateChange()
-      }
-
-      if (this.state == SELECT_STATE_KEY.IN_PROGREES) {
-        isDoubleClick(this.id, 250, (res) => {
-          if (res) {
-            this.state = SELECT_STATE_KEY.ENDED
-            const [x, y] = data.webMercatorXY
-            this.endPoint = [x, y]
-            this.update()
-            this.handleStateChange()
-          }
-        })
+      } else if (this.state == SELECT_STATE_KEY.IN_PROGREES) {
+        // isDoubleClick(this.id, 250, (res) => {
+        //   if (res) {
+        this.state = SELECT_STATE_KEY.ENDED
+        const [x, y] = data.webMercatorXY
+        this.endPoint = [x, y]
+        this.update()
+        this.handleStateChange()
+        //   }
+        // })
       }
     }
     if (type == MAP_EVENT.HANDLE_MOUSE_MOVE) {
@@ -137,6 +134,10 @@ export class CircleSelectLayer extends Layer {
     this.handleStateChange()
   }
 
+  onAdd(map) {
+    super.onAdd(map)
+    this.on(MAP_EVENT.UPDATE_CENTER)
+  }
   update() {
     const [cx, cy] = this.center
     if (this.path.length > 0) {
@@ -162,5 +163,6 @@ export class CircleSelectLayer extends Layer {
       this.geometry2 = new THREE.BufferGeometry()
       this.mesh2.geometry = this.geometry2
     }
+    if (this.map) this.on(MAP_EVENT.UPDATE_CENTER)
   }
 }
