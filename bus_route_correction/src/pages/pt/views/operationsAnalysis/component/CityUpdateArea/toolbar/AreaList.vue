@@ -50,7 +50,7 @@
                   <div class="setting_item_label">{{ $l("Visual map") }}</div>
                   <div class="setting_item_value">
                     <el-switch v-model="showVisualMap_odTarget" :active-value="true" />
-                    <GeoJSONVisualMap v-show="showVisualMap_odTarget && showLayer_odTarget" :list="configForm_odTarget.colorBar.data" />
+                    <GeoJSONVisualMap v-show="showVisualMap_odTarget && showLayer_odTarget" :title="vm_title_odTarget" :list="configForm_odTarget.colorBar.data" />
                   </div>
                 </div>
                 <div class="setting_item">
@@ -88,7 +88,7 @@
                   <div class="setting_item_label">{{ $l("Visual map") }}</div>
                   <div class="setting_item_value">
                     <el-switch v-model="showVisualMap_odSource" :active-value="true" />
-                    <GeoJSONVisualMap v-show="showVisualMap_odSource && showLayer_odSource" :list="configForm_odSource.colorBar.data" />
+                    <GeoJSONVisualMap v-show="showVisualMap_odSource && showLayer_odSource" :title="vm_title_odSource" :list="configForm_odSource.colorBar.data" />
                   </div>
                 </div>
                 <div class="setting_item">
@@ -165,7 +165,7 @@
             <el-button type="primary" size="mini" @click="handleReplayPolygonSelect()">{{ $l("重新圈定") }}</el-button>
             <el-button type="primary" size="mini" @click="handleStopPolygonSelect()">{{ $l("结束圈定") }}</el-button>
           </template>
-          <el-table class="small" v-if="addForm.xyarr && addForm.xyarr.length" :data="addForm.xyarr" border stripe>
+          <el-table class="small" v-if="addForm.xyarr && addForm.xyarr.length" :data="addForm.xyarr" border stripe height="30vh" :show-header="false">
             <el-table-column type="index" width="50"></el-table-column>
             <el-table-column>
               <span slot-scope="{ row }">{{ row }}</span>
@@ -460,6 +460,7 @@ export default {
       useTimeRange_odTarget: true,
       timeRange_odTarget: [0, 24 * 60 * 60],
       showVisualMap_odTarget: true,
+      vm_title_odTarget: "",
       showConfig_odTarget: false,
       size_odTarget: GRID_STEP,
       configForm_odTarget: {
@@ -508,6 +509,7 @@ export default {
       useTimeRange_odSource: true,
       timeRange_odSource: [0, 24 * 60 * 60],
       showVisualMap_odSource: true,
+      vm_title_odSource: "",
       showConfig_odSource: false,
       size_odSource: GRID_STEP,
       configForm_odSource: {
@@ -631,6 +633,7 @@ export default {
         this.$refs.originConfig_odSource.handleAutogenerate(this.configLayout_odSource[1]);
         this.$refs.originConfig_odSource.handleConfirm();
       });
+      this.vm_title_odSource = `数据总量： ${propertiesLabels.num.values.reduce((a, b) => a + b, 0)}`;
     };
     this._worker_odSource.addEventListener("error", (error) => {
       console.log(error);
@@ -651,6 +654,7 @@ export default {
         this.$refs.originConfig_odTarget.handleAutogenerate(this.configLayout_odTarget[1]);
         this.$refs.originConfig_odTarget.handleConfirm();
       });
+      this.vm_title_odTarget = `数据总量： ${propertiesLabels.num.values.reduce((a, b) => a + b, 0)}`;
     };
     this._worker_odTarget.addEventListener("error", (error) => {
       console.log(error);

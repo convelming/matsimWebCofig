@@ -83,8 +83,9 @@ onmessage = function (e) {
     const col = Math.floor(x / gridSize);
     const row = Math.floor(y / gridSize);
     const key = col + "_" + row;
-    if (!gridMap[key]) {
-      gridMap[key] = {
+    let item = gridMap[key];
+    if (!item) {
+      item = gridMap[key] = {
         geometry: [
           [
             [
@@ -96,12 +97,11 @@ onmessage = function (e) {
             ],
           ],
         ],
-        properties,
+        properties: {},
       };
-    } else {
-      for (const pkey in properties) {
-        gridMap[key].properties[pkey] += properties[pkey];
-      }
+    }
+    for (const pkey in properties) {
+      item.properties[pkey] = (item.properties[pkey] || 0) + properties[pkey];
     }
   }
 

@@ -275,6 +275,11 @@ class GeoJSONParser {
               label.min = Math.min(label.min, value);
             }
           }
+          if (propertiesList.length == 1) {
+            label.min = 0;
+            label.max = 1;
+            label.values = [0];
+          }
           if (label.max == label.min) label.max += 1;
         }
       }

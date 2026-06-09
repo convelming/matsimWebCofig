@@ -1,5 +1,8 @@
 <template>
   <div class="GeoJSONVisualMap" @mousedown="startMove" :style="s_style">
+    <div v-if="title" class="item" style="margin-right: 0;" :key="index">
+      <div class="text">{{ title }}</div>
+    </div>
     <template v-for="(item, index) in list">
       <div class="item" :key="index" v-if="item.use">
         <div class="text">{{ item.label }}</div>
@@ -16,6 +19,10 @@ export default {
     list: {
       type: Array,
       default: () => [],
+    },
+    title: {
+      type: String,
+      default: "",
     },
   },
   components: {},
