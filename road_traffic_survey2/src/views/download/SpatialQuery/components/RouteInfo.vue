@@ -1,7 +1,32 @@
 <!-- RouteInfo -->
 <template>
+  <div class="RouteInfo_btn" v-bind="$attrs" v-if="!showRouteInfo" @click="showRouteInfo = true">
+    <el-icon><Aim /></el-icon>
+    <div class="help-btn" @click.stop="handleChangeTour(0)">
+      <el-icon><QuestionFilled /></el-icon>
+    </div>
+  </div>
+
+  <div id="tour1_div" class="tour1_div" v-if="currentTour == 1"></div>
+
+  <el-tour v-model="showTour" @change="handleChangeTour" @close="handleTourClose">
+    <el-tour-step target="#RouteInfoDialog" title="第一步" description="选择圈选方式" />
+    <el-tour-step target="#tour1_div" title="第二步" description="在地图上圈选分析区域" />
+    <el-tour-step target="#DownloadDialog" placement="right" title="第三步">
+      <div>选择要分析的路网数据</div>
+      <div>目前只有 “道路交通/城市路网” 下的数据支持分析</div>
+      <div>只支持单个路网分析，选择多个路网时，分析最后一个选择的路网</div>
+    </el-tour-step>
+    <el-tour-step
+      target="#RouteInfoDialog"
+      placement="left"
+      title="第四步"
+      description="显示分析结果"
+    />
+  </el-tour>
+
   <MDialog
-    ref="RouteInfo_bialog"
+    id="RouteInfoDialog"
     class="RouteInfo_bialog"
     title="路网信息查询"
     :subTitle="`数据源：${routeInfoParams?.title || '未选择'}`"
@@ -9,8 +34,7 @@
     :x="20"
     placement="top-right"
     width="350px"
-    :visible="s_visible"
-    @close="handleClose"
+    v-model:visible="showRouteInfo"
   >
     <el-scrollbar class="flex-scrollbar">
       <SelectArea v-if="!areaPath?.length" @select="handleSelectArea" />
@@ -79,32 +103,40 @@
 <script setup>
 import { addWatch, injectSync } from '@/utils'
 import { roadInfo } from '@/api/download.js'
+import {
+  Setting,
+  Download,
+  Loading,
+  Delete,
+  Plus,
+  Aim,
+  QuestionFilled,
+} from '@element-plus/icons-vue'
 import SelectArea from './SelectArea.vue'
 import { SpatialQueryEvent, SpatialQueryTypeEnum } from '../mixins.js'
 
 import { PathLayer } from '@/utils/MapLayer/SelectLayer'
 
 import proj4 from 'proj4'
-
+import { nextTick } from 'vue'
 proj4.defs(
   'EPSG:4526',
   '+proj=tmerc +lat_0=0 +lon_0=114 +k=1 +x_0=38500000 +y_0=0 +ellps=GRS80 +units=m +no_defs',
 )
 proj4.defs('urn:ogc:def:crs:OGC:1.3:CRS84', proj4.defs('EPSG:4326'))
 
-const props = defineProps({
-  visible: {
-    type: Boolean,
-    default: false,
-  },
+// 禁用 attribute 自动继承
+defineOptions({
+  inheritAttrs: false,
 })
-const emit = defineEmits(['update:visible', 'close'])
 
 let _Map = null
 const _PathLayer = new PathLayer({
   zIndex: 1000,
 })
-const s_visible = ref(props.visible)
+const showRouteInfo = ref(false)
+const showTour = ref(false)
+const currentTour = ref(0)
 const routeInfoParams = ref(null)
 const areaPath = ref(null)
 const routeInfo = ref(null)
@@ -191,10 +223,8 @@ injectSync('MapRef').then((map) => {
 })
 
 watch(
-  () => props.visible,
+  showRouteInfo,
   (val) => {
-    s_visible.value = val
-    console.log('RouteInfo_bialog', val)
     if (val) {
       _Map?.addLayer(_PathLayer)
     } else {
@@ -205,12 +235,6 @@ watch(
     immediate: true,
   },
 )
-
-function handleClose() {
-  s_visible.value = false
-  emit('update:visible', false)
-  emit('close')
-}
 function handleSelectArea(path) {
   console.log('handleSelectArea', path)
   _PathLayer.setPath(path)
@@ -218,6 +242,7 @@ function handleSelectArea(path) {
   handleGetRouteInfo()
 }
 function handleSelectRouteInfoParams(props) {
+  console.log('handleSelectRouteInfoParams', props)
   routeInfoParams.value = props
   handleGetRouteInfo()
 }
@@ -244,11 +269,98 @@ onUnmounted(() => {
   SpatialQueryEvent.off(SpatialQueryTypeEnum.RouteInfo, handleSelectRouteInfoParams)
   _PathLayer.dispose()
 })
+
+function handleChangeTour(val) {
+  currentTour.value = val
+  switch (val) {
+    case 0:
+      showRouteInfo.value = true
+      handleSelectArea(null)
+      handleSelectRouteInfoParams(null)
+      setTimeout(() => {
+        showTour.value = true
+      }, 300)
+      break
+    case 1:
+      handleSelectArea([
+        [12629762.39158248, 2665940.802757959],
+        [12629762.39158248, 2660322.441362447],
+        [12635133.791930133, 2660322.441362447],
+        [12635133.791930133, 2665940.802757959],
+        [12629762.39158248, 2665940.802757959],
+      ])
+      break
+    case 3:
+      handleSelectRouteInfoParams({
+        title: '2015年',
+        type: 'geojson',
+        path: 'http://192.168.60.231:8085/数据库/道路交通/城市路网/OSM路网/2015年.geojson',
+        config: 'http://192.168.60.231:8085/数据库/道路交通/城市路网/OSM路网/2015年.config.json',
+        download: 'http://192.168.60.231:8085/数据库/道路交通/城市路网/OSM路网/2015年.zip',
+        spatialQuery: 'RouteInfo',
+        check: false,
+      })
+      break
+    default:
+      break
+  }
+}
+
+function handleTourClose() {
+  showRouteInfo.value = false
+  showTour.value = false
+  handleSelectArea(null)
+  handleSelectRouteInfoParams(null)
+}
 </script>
 
 <style lang="scss" scoped>
 .flex-scrollbar {
   max-height: calc(100vh - 200px);
+}
+.tour1_div {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 300px;
+  height: 300px;
+}
+.RouteInfo_btn {
+  cursor: pointer;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #065f46;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 25px;
+  position: relative;
+
+  .help-btn {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #448371;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    cursor: pointer;
+    border: 2px solid #fff;
+    transition: all 0.3s;
+
+    &:hover {
+      background: #5a9d87;
+      transform: scale(1.1);
+    }
+  }
 }
 .RouteInfo_content {
   padding: 20px 10px;

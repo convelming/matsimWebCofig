@@ -2,7 +2,8 @@
 <template>
   <MDialog
     ref="treeRef"
-    class="ImageDialog"
+    id="DownloadDialog"
+    class="DownloadDialog"
     title="数据下载"
     subTitle="数据下载 /"
     :y="80"

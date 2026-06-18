@@ -1,7 +1,7 @@
 <template>
   <Teleport to="body">
     <transition name="el-zoom-in-center">
-      <div v-show="visible" class="MDialog" :class="class" :style="s_style" @click="toTop">
+      <div v-bind="$attrs" v-show="visible" class="MDialog" :style="s_style" @click="toTop">
         <div class="dg_header" @mousedown="startMove">
           <img class="dg_icon" :src="icon" alt="" />
           <div class="dg_title_box">
@@ -32,13 +32,12 @@ if (!window.MDialogData) {
     zIndex: 1000,
   }
 }
-
+// 禁用 attribute 自动继承
+defineOptions({
+  inheritAttrs: false,
+})
 const emit = defineEmits(['close', 'update:visible', 'open'])
 const props = defineProps({
-  class: {
-    type: String,
-    default: '',
-  },
   // 是否显示
   visible: {
     type: Boolean,
