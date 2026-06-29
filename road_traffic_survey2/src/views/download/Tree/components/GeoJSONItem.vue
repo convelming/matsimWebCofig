@@ -558,7 +558,7 @@ import {
   parserGeoJSON,
   LINE_STYLE,
   LINE_WIDTH_STYLE,
-  ICON_LIST
+  ICON_LIST,
 } from '@/utils/MapLayer/GeoJSONLayer'
 import { getColorBarByPropertie } from '@/utils/MapLayer/ColorBar2DUtil'
 import {
@@ -1055,6 +1055,11 @@ injectSync('MapRef').then((map) => {
   watchCheck.callback(check.value)
 })
 
+onMounted(() => {
+  if (check.value) {
+    handleEmitSpatialQuery(toRaw(props))
+  }
+})
 onUnmounted(() => {
   watchShowDialog.callback(false)
   _GeoJSONLayer.dispose()
