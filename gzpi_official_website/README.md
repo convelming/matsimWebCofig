@@ -26,7 +26,7 @@
 
 ## 页面模块
 
-项目位于 `src/views/` 目录，共包含以下 6 个页面：
+项目位于 [views/](./src/views/) 目录，共包含以下 6 个页面：
 
 ### 1. 首页 (home.vue)
 - 路径：`/`
@@ -94,18 +94,18 @@
 
 | 组件 | 路径 | 说明 |
 |------|------|------|
-| MHeader | `src/components/MHeader.vue` | 全局顶部导航栏（Logo、6 个页面导航、搜索框），sticky 吸顶 |
-| MFooter | `src/components/MFooter.vue` | 全局页脚组件 |
+| MHeader | [MHeader.vue](./src/components/MHeader.vue) | 全局顶部导航栏（Logo、6 个页面导航、搜索框），sticky 吸顶 |
+| MFooter | [MFooter.vue](./src/components/MFooter.vue) | 全局页脚组件 |
 
 ## 路由配置
 
 - 路由模式：Hash 模式（`createWebHashHistory`）
-- 入口文件：`src/router/index.js`
+- 入口文件：[index.js](./src/router/index.js)
 - 支持通过 query 参数 `?scroll=id` 定位到页面锚点
 
 ## API 接口
 
-接口定义位于 `src/api/home.js`，基于 Axios 封装：
+接口定义位于 [home.js](./src/api/home.js)，基于 Axios 封装：
 
 | 接口函数 | 方法 | 路径 | 说明 |
 |----------|------|------|------|
@@ -121,7 +121,7 @@
 | `indexHotLinkClick` | POST | `/indexHotLink/click` | 热点链接点击统计 |
 | `indexHotLinkHotLinks` | GET | `/indexHotLink/hotLinks` | 获取热点链接列表 |
 
-接口基础地址通过环境变量 `VITE_APP_BASE_API` 配置，详见 `.env.development` 和 `.env.production`。
+接口基础地址通过环境变量 `VITE_APP_BASE_API` 配置，详见 [.env.development](./.env.development) 和 [.env.production](./.env.production)。
 
 ## 项目结构
 
